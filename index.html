@@ -516,6 +516,60 @@
             padding: 20px;
             color: #888;
         }
+        
+        /* 프로필 버튼 스타일 추가 */
+        .profile-button {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            background-color: white;
+            color: #c62917;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .profile-button .profile-icon {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+        
+        /* 프로필 드롭다운 메뉴 스타일 */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            text-align: left;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -525,7 +579,10 @@
             <div class="header-icons">
                 <span class="icon">🔍</span>
                 <span class="icon">🔔</span>
-                <a href="login.html" class="login-button">로그인</a>
+                <!-- 로그인 버튼 / 프로필 버튼 (조건부 렌더링) -->
+                <div id="auth-section">
+                    <a href="login.html" class="login-button" id="login-button">로그인</a>
+                </div>
             </div>
         </header>
         
@@ -967,7 +1024,7 @@
                         <div class="menu-title">앱 정보</div>
                         <div class="menu-arrow">›</div>
                     </li>
-                    <li class="menu-item">
+                    <li class="menu-item" onclick="logout()">
                         <div class="menu-title">로그아웃</div>
                         <div class="menu-arrow">›</div>
                     </li>
@@ -1052,8 +1109,82 @@
             alert(`${buildingName} 상세 페이지로 이동합니다.`);
         }
         
-        // 카테고리 필터 기능
+        // 로그인 상태 확인 및 UI 업데이트 함수
+        function checkLoginStatus() {
+            // 로그인 상태 확인 (세션 또는 로컬 스토리지 활용)
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const authSection = document.getElementById('auth-section');
+            
+            if (isLoggedIn) {
+                // 로그인된 경우 - 학번 가져오기
+                const currentStudentId = localStorage.getItem('currentStudentId');
+                // 사용자 정보 가져오기
+                const userName = localStorage.getItem(`user_${currentStudentId}_name`) || '사용자';
+                const userDepartment = localStorage.getItem(`user_${currentStudentId}_department`) || '';
+                
+                // 학과 이름 매핑
+                const departmentNames = {
+                    'computerScience': '컴퓨터정보학과',
+                    'business': '경영학과',
+                    'nursing': '간호학과',
+                    'engineering': '공학계열',
+                    'arts': '예술계열'
+                };
+                
+                const displayDepartment = departmentNames[userDepartment] || userDepartment;
+                
+                // 로그인 버튼 대신 프로필 드롭다운 버튼 표시
+                authSection.innerHTML = `
+                    <div class="profile-dropdown">
+                        <div class="profile-button">
+                            <span class="profile-icon">👤</span>
+                            <span>${userName}</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="#"><b>${userName}</b><br><small>${displayDepartment}</small></a>
+                            <a href="profile-edit.html">프로필 설정</a>
+                            <a href="widget-settings.html">위젯 및 메뉴 설정</a>
+                            <a href="#" onclick="logout()">로그아웃</a>
+                        </div>
+                    </div>
+                `;
+                
+                // 내 정보 탭에도 사용자 정보 업데이트
+                const profileName = document.querySelector('.profile-name');
+                const profileDetail = document.querySelectorAll('.profile-detail');
+                
+                if (profileName) {
+                    profileName.textContent = userName;
+                }
+                
+                if (profileDetail.length >= 2) {
+                    const userGrade = localStorage.getItem(`user_${currentStudentId}_grade`) || '';
+                    profileDetail[0].textContent = `${displayDepartment} | ${userGrade}학년`;
+                    profileDetail[1].textContent = `학번: ${currentStudentId}`;
+                }
+            } else {
+                // 로그인되지 않은 경우 - 로그인 버튼 표시
+                authSection.innerHTML = `<a href="login.html" class="login-button" id="login-button">로그인</a>`;
+            }
+        }
+        
+        // 로그아웃 함수
+        function logout() {
+            // 로그인 상태 제거
+            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.removeItem('currentStudentId');
+            
+            // 페이지 새로고침
+            alert('로그아웃 되었습니다.');
+            window.location.reload();
+        }
+        
+        // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 상태 확인
+            checkLoginStatus();
+            
+            // 카테고리 필터 기능
             const categoryTags = document.querySelectorAll('.category-tag');
             categoryTags.forEach(tag => {
                 tag.addEventListener('click', function() {

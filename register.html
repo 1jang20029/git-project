@@ -360,6 +360,10 @@
                 localStorage.setItem(`user_${studentId}_phone`, phone);
                 localStorage.setItem(`user_${studentId}_email`, email);
                 
+                // 비밀번호는 보안상 저장하지 않는 것이 좋지만, 예제를 위해 간단히 저장
+                // 실제 구현에서는 서버에서 해시 처리된 비밀번호를 저장해야 함
+                localStorage.setItem(`user_${studentId}_password`, password);
+                
                 alert('회원가입이 완료되었습니다!');
                 
                 // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
