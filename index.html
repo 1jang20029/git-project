@@ -1,401 +1,447 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>연성대학교 캠퍼스 가이드</title>
-    <style>
-        /* 기존 CSS 전부 유지 (생략 없이 전체 포함됨) */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>연성대학교 캠퍼스 가이드</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    }
 
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-        }
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+    }
 
-        .container {
-            max-width: 768px;
-            margin: 0 auto;
-            background-color: white;
-            min-height: 100vh;
-        }
+    .container {
+      max-width: 768px;
+      margin: 0 auto;
+      background-color: white;
+      min-height: 100vh;
+    }
 
-        header {
-            background-color: #c62917;
-            color: white;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    header {
+      background-color: #c62917;
+      color: white;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-        }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-        .header-icons {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
+    .header-icons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
 
-        .icon {
-            font-size: 18px;
-            cursor: pointer;
-        }
+    .icon {
+      font-size: 18px;
+      cursor: pointer;
+    }
 
-        .login-button {
-            padding: 6px 12px;
-            background-color: white;
-            color: #c62917;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-        }
+    .login-button {
+      padding: 6px 12px;
+      background-color: white;
+      color: #c62917;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+    }
 
-        .shortcut-menu {
-            display: flex;
-            padding: 16px;
-            justify-content: space-between;
-            border-bottom: 1px solid #eee;
-        }
+    .tab-menu {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 768px;
+      margin: 0 auto;
+      background-color: white;
+      border-top: 1px solid #ddd;
+    }
 
-        .shortcut-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 60px;
-        }
+    .tab-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 12px;
+      color: #888;
+      text-decoration: none;
+      cursor: pointer;
+    }
 
-        .shortcut-icon {
-            width: 40px;
-            height: 40px;
-            background-color: #f0f0f0;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 20px;
-        }
+    .tab-item.active {
+      color: #c62917;
+    }
 
-        .shortcut-text {
-            font-size: 12px;
-            text-align: center;
-            color: #555;
-        }
+    .tab-icon {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
 
-        .notification-banner {
-            background-color: #ffebee;
-            padding: 12px 16px;
-            border-bottom: 1px solid #ffcdd2;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .tab-content {
+      display: none;
+    }
 
-        .urgent-icon {
-            color: #c62917;
-            font-weight: bold;
-        }
+    .tab-content.active {
+      display: block;
+    }
 
-        .notification-text {
-            font-size: 14px;
-            flex: 1;
-        }
+    .notification-banner {
+      background-color: #ffebee;
+      padding: 12px 16px;
+      border-bottom: 1px solid #ffcdd2;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .content-pad {
-            padding-bottom: 60px;
-        }
+    .urgent-icon {
+      color: #c62917;
+      font-weight: bold;
+    }
 
-        .tab-menu {
-            display: flex;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 768px;
-            margin: 0 auto;
-            background-color: white;
-            border-top: 1px solid #ddd;
-        }
+    .notification-text {
+      font-size: 14px;
+      flex: 1;
+    }
 
-        .tab-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px 0;
-            font-size: 12px;
-            color: #888;
-            text-decoration: none;
-            cursor: pointer;
-        }
+    .search-bar {
+      padding: 12px 16px;
+      background-color: #f9f9f9;
+      display: flex;
+      border-bottom: 1px solid #eee;
+    }
 
-        .tab-item.active {
-            color: #c62917;
-        }
+    .search-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
 
-        .tab-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
+    .shortcut-menu {
+      display: flex;
+      padding: 16px;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-        .tab-content {
-            display: none;
-        }
+    .shortcut-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+    }
 
-        .tab-content.active {
-            display: block;
-        }
+    .shortcut-icon {
+      width: 40px;
+      height: 40px;
+      background-color: #f0f0f0;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
 
-        .content-section {
-            padding: 16px;
-        }
+    .shortcut-text {
+      font-size: 12px;
+      text-align: center;
+      color: #555;
+    }
 
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .content-section {
+      padding: 16px;
+    }
 
-        .see-all {
-            font-size: 13px;
-            color: #888;
-            text-decoration: none;
-        }
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .notice-list, .lecture-list {
-            list-style: none;
-        }
+    .see-all {
+      font-size: 13px;
+      color: #888;
+      text-decoration: none;
+    }
 
-        .notice-item, .lecture-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
+    .notice-list, .lecture-list {
+      list-style: none;
+    }
 
-        .notice-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
+    .notice-item, .lecture-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
 
-        .notice-category {
-            background-color: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #555;
-        }
+    .notice-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
 
-        .notice-date {
-            font-size: 12px;
-            color: #888;
-        }
+    .notice-category {
+      background-color: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #555;
+    }
 
-        .notice-title {
-            font-size: 15px;
-            margin-bottom: 6px;
-        }
+    .notice-date {
+      font-size: 12px;
+      color: #888;
+    }
 
-        .notice-summary {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.4;
-        }
+    .notice-title {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
 
-        .lecture-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
+    .notice-summary {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.4;
+    }
 
-        .lecture-title {
-            font-size: 15px;
-            font-weight: bold;
-        }
+    .lecture-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
 
-        .lecture-rating {
-            color: #ff9800;
-            font-weight: bold;
-        }
+    .lecture-title {
+      font-size: 15px;
+      font-weight: bold;
+    }
 
-        .lecture-info {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
+    .lecture-rating {
+      color: #ff9800;
+      font-weight: bold;
+    }
 
-        .lecture-professor {
-            color: #333;
-        }
+    .lecture-info {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
 
-        .rating-stars {
-            color: #ffb400;
-            letter-spacing: 2px;
-        }
+    .lecture-professor {
+      color: #333;
+    }
 
-        .lecture-reviews {
-            font-size: 12px;
-            color: #666;
-        }
-    </style>
+    .rating-stars {
+      color: #ffb400;
+      letter-spacing: 2px;
+    }
+
+    .lecture-reviews {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .content-pad {
+      padding-bottom: 60px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">연성대학교</div>
-            <div class="header-icons">
-                <span class="icon">🔍</span>
-                <span class="icon">🔔</span>
-                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
-            </div>
-        </header>
+  <div class="container">
+    <header>
+      <div class="logo">연성대학교</div>
+      <div class="header-icons">
+        <span class="icon">🔍</span>
+        <span class="icon">🔔</span>
+        <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
+      </div>
+    </header>
 
-        <div id="home-tab" class="tab-content active">
-            <div class="notification-banner">
-                <span class="urgent-icon">📢</span>
-                <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
-            </div>
+    <!-- 홈 탭 -->
+    <div id="home-tab" class="tab-content active">
+      <div class="notification-banner">
+        <span class="urgent-icon">📢</span>
+        <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
+      </div>
 
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색">
-            </div>
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색">
+      </div>
 
-            <div class="shortcut-menu">
-                <!-- 사용자 위젯에 따라 동적으로 채워짐 -->
-            </div>
+      <div class="shortcut-menu">
+        <!-- 위젯 자동 삽입됨 -->
+      </div>
 
-            <div class="content-section">
-                <div class="section-title">
-                    <span>주요 공지사항</span>
-                    <a href="#" class="see-all">전체보기</a>
-                </div>
-
-                <ul class="notice-list">
-                    <li class="notice-item">
-                        <div class="notice-header">
-                            <span class="notice-category">학사</span>
-                            <span class="notice-date">2025.04.08</span>
-                        </div>
-                        <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
-                        <div class="notice-summary">4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.</div>
-                    </li>
-                    <!-- 다른 공지들... -->
-                </ul>
-            </div>
-
-            <div class="content-section">
-                <div class="section-title">
-                    <span>인기 강의평가</span>
-                    <a href="#" class="see-all">전체보기</a>
-                </div>
-
-                <ul class="lecture-list">
-                    <li class="lecture-item">
-                        <div class="lecture-header">
-                            <div class="lecture-title">웹 프로그래밍 실습</div>
-                            <div class="lecture-rating">4.8</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">김민수 교수님</span>
-                            <span>컴퓨터정보학과</span>
-                        </div>
-                        <div class="rating-stars">★★★★★</div>
-                        <div class="lecture-reviews">"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="content-pad"></div>
+      <div class="content-section">
+        <div class="section-title">
+          <span>주요 공지사항</span>
+          <a href="#" class="see-all">전체보기</a>
         </div>
 
-        <!-- 다른 탭들 생략 없이 유지 가능 -->
+        <ul class="notice-list">
+          <li class="notice-item">
+            <div class="notice-header">
+              <span class="notice-category">학사</span>
+              <span class="notice-date">2025.04.08</span>
+            </div>
+            <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+            <div class="notice-summary">4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.</div>
+          </li>
+        </ul>
+      </div>
 
-        <div class="tab-menu">
-            <div class="tab-item active" onclick="switchTab('home')">
-                <span class="tab-icon">🏠</span>
-                <span>홈</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('facility')">
-                <span class="tab-icon">🏫</span>
-                <span>시설</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('community')">
-                <span class="tab-icon">💬</span>
-                <span>커뮤니티</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('alert')">
-                <span class="tab-icon">🔔</span>
-                <span>알림</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('profile')">
-                <span class="tab-icon">👤</span>
-                <span>내 정보</span>
-            </div>
+      <div class="content-section">
+        <div class="section-title">
+          <span>인기 강의평가</span>
+          <a href="#" class="see-all">전체보기</a>
         </div>
+
+        <ul class="lecture-list">
+          <li class="lecture-item">
+            <div class="lecture-header">
+              <div class="lecture-title">웹 프로그래밍 실습</div>
+              <div class="lecture-rating">4.8</div>
+            </div>
+            <div class="lecture-info">
+              <span class="lecture-professor">김민수 교수님</span>
+              <span>컴퓨터정보학과</span>
+            </div>
+            <div class="rating-stars">★★★★★</div>
+            <div class="lecture-reviews">"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-pad"></div>
     </div>
 
-    <script>
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-            const currentIndex = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
-            document.querySelector(`.tab-item:nth-child(${currentIndex + 1})`).classList.add('active');
-        }
+    <!-- 시설 탭 -->
+    <div id="facility-tab" class="tab-content">
+      <div class="content-section">
+        <div class="section-title">시설 안내</div>
+        <p>시설 탭 콘텐츠가 여기에 표시됩니다.</p>
+      </div>
+    </div>
 
-        function goToPage(pageName) {
-            if (pageName === 'login') {
-                window.location.href = 'login.html';
-            } else {
-                alert(`${pageName} 페이지로 이동합니다.`);
-            }
-        }
+    <!-- 커뮤니티 탭 -->
+    <div id="community-tab" class="tab-content">
+      <div class="content-section">
+        <div class="section-title">커뮤니티</div>
+        <p>커뮤니티 탭 콘텐츠가 여기에 표시됩니다.</p>
+      </div>
+    </div>
 
-        // 👇 사용자 위젯을 홈 탭에 반영
-        function renderSelectedWidgets() {
-            const shortcutMenu = document.querySelector('.shortcut-menu');
-            const storedWidgets = JSON.parse(localStorage.getItem('selectedWidgets') || '[]');
+    <!-- 알림 탭 -->
+    <div id="alert-tab" class="tab-content">
+      <div class="content-section">
+        <div class="section-title">알림</div>
+        <p>알림 탭 콘텐츠가 여기에 표시됩니다.</p>
+      </div>
+    </div>
 
-            if (!storedWidgets.length) return;
+    <!-- 내 정보 탭 -->
+    <div id="profile-tab" class="tab-content">
+      <div class="content-section">
+        <div class="section-title">내 정보</div>
+        <p>내 정보 탭 콘텐츠가 여기에 표시됩니다.</p>
+      </div>
+    </div>
 
-            shortcutMenu.innerHTML = '';
+    <!-- 하단 탭 메뉴 -->
+    <div class="tab-menu">
+      <div class="tab-item active" onclick="switchTab('home')">
+        <span class="tab-icon">🏠</span>
+        <span>홈</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('facility')">
+        <span class="tab-icon">🏫</span>
+        <span>시설</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('community')">
+        <span class="tab-icon">💬</span>
+        <span>커뮤니티</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('alert')">
+        <span class="tab-icon">🔔</span>
+        <span>알림</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('profile')">
+        <span class="tab-icon">👤</span>
+        <span>내 정보</span>
+      </div>
+    </div>
+  </div>
 
-            storedWidgets.forEach(widget => {
-                const item = document.createElement('div');
-                item.className = 'shortcut-item';
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+      document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+      const currentIndex = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
+      document.querySelector(`.tab-item:nth-child(${currentIndex + 1})`).classList.add('active');
+    }
 
-                const icon = document.createElement('div');
-                icon.className = 'shortcut-icon';
-                icon.textContent = widget.icon;
+    function goToPage(pageName) {
+      if (pageName === 'login') {
+        window.location.href = 'login.html';
+      } else {
+        alert(`${pageName} 페이지로 이동합니다.`);
+      }
+    }
 
-                const text = document.createElement('div');
-                text.className = 'shortcut-text';
-                text.textContent = widget.name;
+    function renderSelectedWidgets() {
+      const shortcutMenu = document.querySelector('.shortcut-menu');
+      const storedWidgets = JSON.parse(localStorage.getItem('selectedWidgets') || '[]');
 
-                item.appendChild(icon);
-                item.appendChild(text);
-                shortcutMenu.appendChild(item);
-            });
-        }
+      if (!storedWidgets.length) return;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderSelectedWidgets();
-        });
-    </script>
+      shortcutMenu.innerHTML = '';
+
+      storedWidgets.forEach(widget => {
+        const item = document.createElement('div');
+        item.className = 'shortcut-item';
+
+        const icon = document.createElement('div');
+        icon.className = 'shortcut-icon';
+        icon.textContent = widget.icon;
+
+        const text = document.createElement('div');
+        text.className = 'shortcut-text';
+        text.textContent = widget.name;
+
+        item.appendChild(icon);
+        item.appendChild(text);
+        shortcutMenu.appendChild(item);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSelectedWidgets();
+    });
+  </script>
 </body>
 </html>
