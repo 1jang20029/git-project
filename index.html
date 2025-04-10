@@ -60,38 +60,6 @@
             text-decoration: none;
         }
         
-        .profile-dropdown {
-            position: absolute;
-            top: 55px;
-            right: 10px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 180px;
-            z-index: 100;
-            display: none;
-        }
-        
-        .profile-dropdown.active {
-            display: block;
-        }
-        
-        .dropdown-item {
-            padding: 12px 16px;
-            font-size: 14px;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-        }
-        
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-        
-        .dropdown-item:hover {
-            background-color: #f5f5f5;
-        }
-        
         .search-bar {
             padding: 12px 16px;
             background-color: #f9f9f9;
@@ -557,7 +525,7 @@
             <div class="header-icons">
                 <span class="icon">🔍</span>
                 <span class="icon">🔔</span>
-                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
+                <a href="login.html" class="login-button">로그인</a>
             </div>
         </header>
         
@@ -902,6 +870,14 @@
                             <div class="alert-time">3시간 전</div>
                         </div>
                     </li>
+                    <li class="alert-item">
+                        <div class="alert-icon">💵</div>
+                        <div class="alert-info">
+                            <div class="alert-title">등록금 고지서 발송 안내</div>
+                            <div class="alert-message">2025학년도 1학기 등록금 고지서가 발송되었습니다. 학생포털에서 확인 가능합니다.</div>
+                            <div class="alert-time">어제</div>
+                        </div>
+                    </li>
                 </ul>
             </div>
             
@@ -937,7 +913,7 @@
                         <div class="menu-title">즐겨찾는 강의실</div>
                         <div class="menu-arrow">›</div>
                     </li>
-                    <li class="menu-item">
+                    <li class="menu-item" onclick="goToPage('profile-edit')">
                         <div class="menu-title">개인정보 수정</div>
                         <div class="menu-arrow">›</div>
                     </li>
@@ -979,11 +955,11 @@
                         <div class="menu-title">알림 설정</div>
                         <div class="menu-arrow">›</div>
                     </li>
-                    <li class="menu-item">
+                    <li class="menu-item" onclick="goToPage('widget-settings')">
                         <div class="menu-title">위젯 및 메뉴 설정</div>
                         <div class="menu-arrow">›</div>
                     </li>
-                    <li class="menu-item">
+                    <li class="menu-item" onclick="goToPage('onboarding')">
                         <div class="menu-title">초기 설정 다시하기</div>
                         <div class="menu-arrow">›</div>
                     </li>
@@ -1049,13 +1025,26 @@
         
         // 페이지 이동 함수
         function goToPage(pageName) {
-            if (pageName === 'login') {
-                // 로그인 페이지로 이동
-                window.location.href = 'login.html';
-            } else {
-                // 다른 페이지의 경우 간단한 알림 표시
-                alert(`${pageName} 페이지로 이동합니다.`);
+            // 위젯 설정 페이지로 이동
+            if (pageName === 'widget-settings') {
+                window.location.href = 'widget-settings.html';
+                return;
             }
+            
+            // 온보딩 페이지로 이동
+            if (pageName === 'onboarding') {
+                window.location.href = 'onboarding.html';
+                return;
+            }
+            
+            // 프로필 수정 페이지로 이동
+            if (pageName === 'profile-edit') {
+                window.location.href = 'profile-edit.html';
+                return;
+            }
+            
+            // 다른 페이지의 경우 간단한 알림 표시
+            alert(`${pageName} 페이지로 이동합니다.`);
         }
         
         // 건물 상세 보기
@@ -1080,6 +1069,66 @@
                     // 여기에 필터링 로직 추가 가능
                 });
             });
+            
+            // 저장된 위젯 설정 불러오기
+            const selectedWidgetsString = localStorage.getItem('selectedWidgets');
+            
+            if (selectedWidgetsString) {
+                try {
+                    const selectedWidgets = JSON.parse(selectedWidgetsString);
+                    const shortcutMenu = document.querySelector('.shortcut-menu');
+                    
+                    if (shortcutMenu && selectedWidgets.length > 0) {
+                        // 바로가기 메뉴 초기화
+                        shortcutMenu.innerHTML = '';
+                        
+                        // 선택된 위젯으로 바로가기 메뉴 생성
+                        selectedWidgets.forEach(widget => {
+                            const shortcutItem = document.createElement('div');
+                            shortcutItem.className = 'shortcut-item';
+                            shortcutItem.innerHTML = `
+                                <div class="shortcut-icon">${widget.icon}</div>
+                                <div class="shortcut-text">${widget.name}</div>
+                            `;
+                            shortcutMenu.appendChild(shortcutItem);
+                        });
+                    }
+                } catch (e) {
+                    console.error('위젯 설정을 불러오는 중 오류 발생:', e);
+                }
+            }
+            
+            // 저장된 메뉴 설정 불러오기
+            const activeMenusString = localStorage.getItem('activeMenus');
+            
+            if (activeMenusString) {
+                try {
+                    const activeMenus = JSON.parse(activeMenusString);
+                    const tabMenu = document.querySelector('.tab-menu');
+                    
+                    if (tabMenu && activeMenus.length > 0) {
+                        // 탭 메뉴 초기화
+                        tabMenu.innerHTML = '';
+                        
+                        // 활성화된 메뉴로 탭 메뉴 생성
+                        activeMenus.sort((a, b) => a.order - b.order); // 순서대로 정렬
+                        
+                        activeMenus.forEach((menu, index) => {
+                            const tabName = menu.name.toLowerCase();
+                            const tabItem = document.createElement('div');
+                            tabItem.className = 'tab-item' + (index === 0 ? ' active' : '');
+                            tabItem.setAttribute('onclick', `switchTab('${tabName}')`);
+                            tabItem.innerHTML = `
+                                <span class="tab-icon">${menu.icon}</span>
+                                <span>${menu.name}</span>
+                            `;
+                            tabMenu.appendChild(tabItem);
+                        });
+                    }
+                } catch (e) {
+                    console.error('메뉴 설정을 불러오는 중 오류 발생:', e);
+                }
+            }
         });
     </script>
 </body>

@@ -471,7 +471,11 @@
             // 선택된 위젯
             const selectedWidgets = [];
             document.querySelectorAll('.widget-item.selected').forEach(widget => {
-                selectedWidgets.push(widget.querySelector('.widget-name').textContent);
+                selectedWidgets.push({
+                    name: widget.querySelector('.widget-name').textContent,
+                    icon: widget.querySelector('.widget-icon').textContent,
+                    description: widget.querySelector('.widget-description').textContent
+                });
             });
             
             // 활성화된 메뉴
@@ -485,11 +489,12 @@
                 });
             });
             
-            // 로컬 스토리지에 저장 (실제 구현 시 서버에 저장)
+            // 로컬 스토리지에 저장
             localStorage.setItem('selectedWidgets', JSON.stringify(selectedWidgets));
             localStorage.setItem('activeMenus', JSON.stringify(activeMenus));
             
-            alert('설정이 저장되었습니다.');
+            alert('설정이 저장되었습니다. 메인 페이지로 이동합니다.');
+            window.location.href = "index.html";
         }
         
         // 설정 초기화
