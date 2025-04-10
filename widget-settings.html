@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>위젯 및 메뉴 설정 - 연성대학교</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #c62917;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-button {
+            font-size: 20px;
+            margin-right: 16px;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .section-title {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
+        
+        .section-description {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #666;
+            background-color: #f9f9f9;
+        }
+        
+        .widgets-section {
+            padding: 16px;
+        }
+        
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .widget-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .widget-item.selected {
+            border-color: #c62917;
+            background-color: #fff8f8;
+        }
+        
+        .widget-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .widget-name {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .widget-description {
+            font-size: 12px;
+            color: #888;
+            margin-top: 6px;
+            text-align: center;
+        }
+        
+        .widget-checkbox {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background-color: white;
+        }
+        
+        .widget-item.selected .widget-checkbox {
+            border-color: #c62917;
+            background-color: #c62917;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .menu-section {
+            padding: 16px;
+        }
+        
+        .menu-list {
+            margin-bottom: 24px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            cursor: grab;
+        }
+        
+        .menu-item.disabled {
+            opacity: 0.5;
+            background-color: #f5f5f5;
+        }
+        
+        .menu-icon {
+            font-size: 20px;
+            margin-right: 16px;
+        }
+        
+        .menu-info {
+            flex: 1;
+        }
+        
+        .menu-name {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .menu-status {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .menu-toggle {
+            width: 44px;
+            height: 24px;
+            background-color: #ccc;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle.active {
+            background-color: #c62917;
+        }
+        
+        .menu-toggle:before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle.active:before {
+            left: 22px;
+        }
+        
+        .drag-handle {
+            margin-left: 16px;
+            color: #ccc;
+            font-size: 20px;
+        }
+        
+        .save-button {
+            width: 100%;
+            padding: 14px;
+            background-color: #c62917;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 16px 0;
+        }
+        
+        .reset-button {
+            width: 100%;
+            padding: 14px;
+            background-color: white;
+            color: #555;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .actions-container {
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="header-title">위젯 및 메뉴 설정</div>
+        </header>
+        
+        <div class="section-title">홈 화면 위젯 설정</div>
+        <div class="section-description">홈 화면에 표시할 위젯을 선택해주세요</div>
+        
+        <div class="widgets-section">
+            <div class="widgets-grid">
+                <div class="widget-item selected" onclick="toggleWidget(this)">
+                    <div class="widget-icon">🏫</div>
+                    <div class="widget-name">강의실 찾기</div>
+                    <div class="widget-description">빈 강의실 정보 확인</div>
+                    <div class="widget-checkbox">✓</div>
+                </div>
+                <div class="widget-item selected" onclick="toggleWidget(this)">
+                    <div class="widget-icon">📅</div>
+                    <div class="widget-name">학사일정</div>
+                    <div class="widget-description">주요 일정 및 행사</div>
+                    <div class="widget-checkbox">✓</div>
+                </div>
+                <div class="widget-item selected" onclick="toggleWidget(this)">
+                    <div class="widget-icon">🍽️</div>
+                    <div class="widget-name">학식 메뉴</div>
+                    <div class="widget-description">오늘의 식단 정보</div>
+                    <div class="widget-checkbox">✓</div>
+                </div>
+                <div class="widget-item" onclick="toggleWidget(this)">
+                    <div class="widget-icon">🚌</div>
+                    <div class="widget-name">셔틀버스</div>
+                    <div class="widget-description">셔틀 시간표</div>
+                    <div class="widget-checkbox"></div>
+                </div>
+                <div class="widget-item" onclick="toggleWidget(this)">
+                    <div class="widget-icon">📚</div>
+                    <div class="widget-name">도서관</div>
+                    <div class="widget-description">좌석 현황 및 운영시간</div>
+                    <div class="widget-checkbox"></div>
+                </div>
+                <div class="widget-item" onclick="toggleWidget(this)">
+                    <div class="widget-icon">📝</div>
+                    <div class="widget-name">강의평가</div>
+                    <div class="widget-description">인기 강의 정보</div>
+                    <div class="widget-checkbox"></div>
+                </div>
+                <div class="widget-item" onclick="toggleWidget(this)">
+                    <div class="widget-icon">📢</div>
+                    <div class="widget-name">공지사항</div>
+                    <div class="widget-description">주요 공지 모아보기</div>
+                    <div class="widget-checkbox"></div>
+                </div>
+                <div class="widget-item" onclick="toggleWidget(this)">
+                    <div class="widget-icon">🗓️</div>
+                    <div class="widget-name">내 시간표</div>
+                    <div class="widget-description">수업 일정 확인</div>
+                    <div class="widget-checkbox"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">하단 메뉴 설정</div>
+        <div class="section-description">하단에 표시할 메뉴를 선택하고 순서를 변경해주세요 (최대 5개)</div>
+        
+        <div class="menu-section">
+            <div class="menu-list" id="menuList">
+                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-1">
+                    <div class="menu-icon">🏠</div>
+                    <div class="menu-info">
+                        <div class="menu-name">홈</div>
+                        <div class="menu-status">기본 메뉴 (비활성화 불가)</div>
+                    </div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this, true)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-2">
+                    <div class="menu-icon">🏫</div>
+                    <div class="menu-info">
+                        <div class="menu-name">시설</div>
+                        <div class="menu-status">활성화됨</div>
+                    </div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-3">
+                    <div class="menu-icon">💬</div>
+                    <div class="menu-info">
+                        <div class="menu-name">커뮤니티</div>
+                        <div class="menu-status">활성화됨</div>
+                    </div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-4">
+                    <div class="menu-icon">🔔</div>
+                    <div class="menu-info">
+                        <div class="menu-name">알림</div>
+                        <div class="menu-status">활성화됨</div>
+                    </div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-5">
+                    <div class="menu-icon">👤</div>
+                    <div class="menu-info">
+                        <div class="menu-name">내 정보</div>
+                        <div class="menu-status">활성화됨</div>
+                    </div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-6">
+                    <div class="menu-icon">🍽️</div>
+                    <div class="menu-info">
+                        <div class="menu-name">학식</div>
+                        <div class="menu-status">비활성화됨</div>
+                    </div>
+                    <div class="menu-toggle" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-7">
+                    <div class="menu-icon">🚌</div>
+                    <div class="menu-info">
+                        <div class="menu-name">셔틀버스</div>
+                        <div class="menu-status">비활성화됨</div>
+                    </div>
+                    <div class="menu-toggle" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-8">
+                    <div class="menu-icon">📝</div>
+                    <div class="menu-info">
+                        <div class="menu-name">강의평가</div>
+                        <div class="menu-status">비활성화됨</div>
+                    </div>
+                    <div class="menu-toggle" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions-container">
+            <button class="save-button" onclick="saveSettings()">설정 저장하기</button>
+            <button class="reset-button" onclick="resetSettings()">기본값으로 초기화</button>
+        </div>
+    </div>
+
+    <script>
+        // 위젯 선택/해제 토글
+        function toggleWidget(element) {
+            element.classList.toggle('selected');
+            
+            // 체크박스 상태 변경
+            const checkbox = element.querySelector('.widget-checkbox');
+            if (element.classList.contains('selected')) {
+                checkbox.textContent = '✓';
+            } else {
+                checkbox.textContent = '';
+            }
+        }
+        
+        // 메뉴 활성화/비활성화 토글
+        function toggleMenu(element, isFixed = false) {
+            // 홈 메뉴는 항상 활성화 (isFixed가 true인 경우)
+            if (isFixed) return;
+            
+            // 토글 상태 변경
+            element.classList.toggle('active');
+            
+            // 메뉴 아이템 상태 변경
+            const menuItem = element.closest('.menu-item');
+            menuItem.classList.toggle('disabled');
+            
+            // 상태 텍스트 변경
+            const statusEl = menuItem.querySelector('.menu-status');
+            if (element.classList.contains('active')) {
+                statusEl.textContent = '활성화됨';
+                
+                // 활성화된 메뉴가 5개 이상인지 확인
+                const activeMenus = document.querySelectorAll('.menu-toggle.active');
+                if (activeMenus.length > 5) {
+                    alert('메뉴는 최대 5개까지 활성화할 수 있습니다.');
+                    toggleMenu(element); // 다시 토글해서 원래 상태로 돌림
+                    return;
+                }
+            } else {
+                statusEl.textContent = '비활성화됨';
+            }
+        }
+        
+        // 드래그 앤 드롭 기능
+        let draggedItem = null;
+        
+        function drag(event) {
+            draggedItem = event.target;
+            event.dataTransfer.setData('text/plain', event.target.id);
+            setTimeout(() => {
+                event.target.style.opacity = '0.5';
+            }, 0);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuList = document.getElementById('menuList');
+            
+            menuList.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                const afterElement = getDragAfterElement(menuList, event.clientY);
+                const draggable = document.querySelector('.menu-item[draggable="true"][style*="opacity: 0.5"]');
+                if (afterElement == null) {
+                    menuList.appendChild(draggable);
+                } else {
+                    menuList.insertBefore(draggable, afterElement);
+                }
+            });
+            
+            menuList.addEventListener('dragend', (event) => {
+                event.target.style.opacity = '';
+                draggedItem = null;
+            });
+        });
+        
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.menu-item[draggable="true"]:not([style*="opacity: 0.5"])')];
+            
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+        
+        // 설정 저장
+        function saveSettings() {
+            // 선택된 위젯
+            const selectedWidgets = [];
+            document.querySelectorAll('.widget-item.selected').forEach(widget => {
+                selectedWidgets.push(widget.querySelector('.widget-name').textContent);
+            });
+            
+            // 활성화된 메뉴
+            const activeMenus = [];
+            document.querySelectorAll('.menu-toggle.active').forEach(toggle => {
+                const menuItem = toggle.closest('.menu-item');
+                activeMenus.push({
+                    name: menuItem.querySelector('.menu-name').textContent,
+                    icon: menuItem.querySelector('.menu-icon').textContent,
+                    order: Array.from(menuItem.parentNode.children).indexOf(menuItem)
+                });
+            });
+            
+            // 로컬 스토리지에 저장 (실제 구현 시 서버에 저장)
+            localStorage.setItem('selectedWidgets', JSON.stringify(selectedWidgets));
+            localStorage.setItem('activeMenus', JSON.stringify(activeMenus));
+            
+            alert('설정이 저장되었습니다.');
+        }
+        
+        // 설정 초기화
+        function resetSettings() {
+            if (confirm('모든 설정을 기본값으로 초기화하시겠습니까?')) {
+                // 기본 위젯으로 초기화
+                document.querySelectorAll('.widget-item').forEach((widget, index) => {
+                    if (index < 3) {
+                        widget.classList.add('selected');
+                        widget.querySelector('.widget-checkbox').textContent = '✓';
+                    } else {
+                        widget.classList.remove('selected');
+                        widget.querySelector('.widget-checkbox').textContent = '';
+                    }
+                });
+                
+                // 기본 메뉴로 초기화
+                document.querySelectorAll('.menu-item').forEach((item, index) => {
+                    const toggle = item.querySelector('.menu-toggle');
+                    
+                    if (index < 5) {
+                        toggle.classList.add('active');
+                        item.classList.remove('disabled');
+                        item.querySelector('.menu-status').textContent = '활성화됨';
+                    } else {
+                        toggle.classList.remove('active');
+                        item.classList.add('disabled');
+                        item.querySelector('.menu-status').textContent = '비활성화됨';
+                    }
+                });
+                
+                alert('설정이 초기화되었습니다.');
+            }
+        }
+        
+        // 뒤로 가기
+        function goBack() {
+            if (confirm('변경 사항을 저장하지 않고 나가시겠습니까?')) {
+                window.history.back();
+            }
+        }
+    </script>
+</body>
+</html>
