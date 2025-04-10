@@ -182,15 +182,15 @@
                 <div class="slogan">Campus Guide</div>
             </div>
             
-            <form id="loginForm">
+            <form>
                 <div class="form-group">
                     <label class="form-label">아이디 (학번)</label>
-                    <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
+                    <input type="text" class="form-input" placeholder="학번을 입력하세요">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">비밀번호</label>
-                    <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
+                    <input type="password" class="form-input" placeholder="비밀번호를 입력하세요">
                 </div>
                 
                 <button type="button" class="login-button" onclick="login()">로그인</button>
@@ -220,13 +220,6 @@
     </div>
 
     <script>
-        // 로컬 스토리지에 회원가입 여부 저장
-        function saveRegistrationStatus(studentId) {
-            localStorage.setItem(`user_${studentId}_registered`, 'true');
-            // 최초 로그인 상태를 true로 설정 (아직 로그인한 적 없음)
-            localStorage.setItem(`user_${studentId}_first_login`, 'true');
-        }
-        
         // 뒤로가기 함수
         function goBack() {
             window.location.href = "index.html";
@@ -234,60 +227,9 @@
         
         // 로그인 처리 함수
         function login() {
-            const studentId = document.getElementById('studentId').value;
-            const password = document.getElementById('password').value;
-            
-            // 간단한 유효성 검사
-            if (!studentId || !password) {
-                alert('학번과 비밀번호를 모두 입력해주세요.');
-                return;
-            }
-            
-            // 회원가입 여부 확인
-            const isRegistered = localStorage.getItem(`user_${studentId}_registered`) === 'true';
-            
-            if (!isRegistered) {
-                alert('등록되지 않은 학번입니다. 회원가입을 먼저 진행해주세요.');
-                return;
-            }
-            
-            // 비밀번호 검증은 실제 구현에서는 서버에서 처리
-            
-            // 최초 로그인 여부 확인
-            const isFirstLogin = localStorage.getItem(`user_${studentId}_first_login`) === 'true';
-            
-            if (isFirstLogin) {
-                // 최초 로그인인 경우 위젯 설정 페이지로 이동
-                localStorage.setItem(`user_${studentId}_first_login`, 'false');
-                alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
-                window.location.href = "widget-settings.html";
-            } else {
-                // 최초 로그인이 아닌 경우 메인 페이지로 이동
-                alert('로그인이 완료되었습니다.');
-                window.location.href = "index.html";
-            }
+            alert('로그인이 완료되었습니다.');
+            window.location.href = "index.html";
         }
-        
-        // URL 파라미터에서 새로 회원가입했는지 확인
-        function checkNewRegistration() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const newRegistration = urlParams.get('newRegistration');
-            const studentId = urlParams.get('studentId');
-            
-            if (newRegistration === 'true' && studentId) {
-                // 새로 회원가입한 경우 회원가입 상태 저장
-                saveRegistrationStatus(studentId);
-                
-                // 학번 자동 입력
-                document.getElementById('studentId').value = studentId;
-                
-                // 포커스를 비밀번호 필드로 이동
-                document.getElementById('password').focus();
-            }
-        }
-        
-        // 페이지 로드 시 실행
-        document.addEventListener('DOMContentLoaded', checkNewRegistration);
     </script>
 </body>
 </html>

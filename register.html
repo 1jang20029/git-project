@@ -318,18 +318,15 @@
             if (password !== confirmPassword) {
                 document.getElementById('confirmPassword-error').style.display = 'block';
                 isValid = false;
-                return;
             } else {
                 document.getElementById('confirmPassword-error').style.display = 'none';
             }
             
             // 학년 선택 검사
             let gradeSelected = false;
-            let selectedGrade = "";
             for (const radio of gradeRadios) {
                 if (radio.checked) {
                     gradeSelected = true;
-                    selectedGrade = radio.value;
                     break;
                 }
             }
@@ -349,21 +346,8 @@
             
             // 유효성 검사 통과
             if (isValid) {
-                // 실제 구현 시 서버에 데이터 전송
-                
-                // 로컬 스토리지에 간단히 저장 (데모용)
-                localStorage.setItem(`user_${studentId}_registered`, 'true');
-                localStorage.setItem(`user_${studentId}_first_login`, 'true');
-                localStorage.setItem(`user_${studentId}_name`, name);
-                localStorage.setItem(`user_${studentId}_department`, department);
-                localStorage.setItem(`user_${studentId}_grade`, selectedGrade);
-                localStorage.setItem(`user_${studentId}_phone`, phone);
-                localStorage.setItem(`user_${studentId}_email`, email);
-                
                 alert('회원가입이 완료되었습니다!');
-                
-                // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
-                window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+                window.location.href = "login.html";
             }
         }
     </script>
