@@ -4,271 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>연성대학교 캠퍼스 가이드</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-    }
-
-    body {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-
-    .container {
-      max-width: 768px;
-      margin: 0 auto;
-      background-color: white;
-      min-height: 100vh;
-    }
-
-    header {
-      background-color: #c62917;
-      color: white;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .header-icons {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .icon {
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .login-button {
-      padding: 6px 12px;
-      background-color: white;
-      color: #c62917;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .tab-menu {
-      display: flex;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-width: 768px;
-      margin: 0 auto;
-      background-color: white;
-      border-top: 1px solid #ddd;
-    }
-
-    .tab-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 8px 0;
-      font-size: 12px;
-      color: #888;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .tab-item.active {
-      color: #c62917;
-    }
-
-    .tab-icon {
-      font-size: 22px;
-      margin-bottom: 4px;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .notification-banner {
-      background-color: #ffebee;
-      padding: 12px 16px;
-      border-bottom: 1px solid #ffcdd2;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .urgent-icon {
-      color: #c62917;
-      font-weight: bold;
-    }
-
-    .notification-text {
-      font-size: 14px;
-      flex: 1;
-    }
-
-    .search-bar {
-      padding: 12px 16px;
-      background-color: #f9f9f9;
-      display: flex;
-      border-bottom: 1px solid #eee;
-    }
-
-    .search-input {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .shortcut-menu {
-      display: flex;
-      padding: 16px;
-      justify-content: space-between;
-      border-bottom: 1px solid #eee;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .shortcut-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 60px;
-    }
-
-    .shortcut-icon {
-      width: 40px;
-      height: 40px;
-      background-color: #f0f0f0;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 20px;
-    }
-
-    .shortcut-text {
-      font-size: 12px;
-      text-align: center;
-      color: #555;
-    }
-
-    .content-section {
-      padding: 16px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .see-all {
-      font-size: 13px;
-      color: #888;
-      text-decoration: none;
-    }
-
-    .notice-list, .lecture-list {
-      list-style: none;
-    }
-
-    .notice-item, .lecture-item {
-      padding: 12px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .notice-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-
-    .notice-category {
-      background-color: #f0f0f0;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-      color: #555;
-    }
-
-    .notice-date {
-      font-size: 12px;
-      color: #888;
-    }
-
-    .notice-title {
-      font-size: 15px;
-      margin-bottom: 6px;
-    }
-
-    .notice-summary {
-      font-size: 13px;
-      color: #666;
-      line-height: 1.4;
-    }
-
-    .lecture-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .lecture-title {
-      font-size: 15px;
-      font-weight: bold;
-    }
-
-    .lecture-rating {
-      color: #ff9800;
-      font-weight: bold;
-    }
-
-    .lecture-info {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .lecture-professor {
-      color: #333;
-    }
-
-    .rating-stars {
-      color: #ffb400;
-      letter-spacing: 2px;
-    }
-
-    .lecture-reviews {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .content-pad {
-      padding-bottom: 60px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
@@ -283,164 +19,207 @@
 
     <!-- 홈 탭 -->
     <div id="home-tab" class="tab-content active">
-      <div class="notification-banner">
-        <span class="urgent-icon">📢</span>
-        <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
-      </div>
-
       <div class="search-bar">
-        <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색">
+        <input type="text" placeholder="건물, 강의실, 편의시설 검색" />
       </div>
 
-      <div class="shortcut-menu">
-        <!-- 위젯 자동 삽입됨 -->
+      <!-- 위젯 영역 -->
+      <div class="shortcut-menu" id="shortcut-menu">
+        <!-- localStorage에서 불러온 위젯들이 여기에 표시됨 -->
       </div>
 
-      <div class="content-section">
-        <div class="section-title">
-          <span>주요 공지사항</span>
-          <a href="#" class="see-all">전체보기</a>
-        </div>
+      <img src="campus-map.png" alt="연성대학교 캠퍼스 지도" />
 
-        <ul class="notice-list">
-          <li class="notice-item">
-            <div class="notice-header">
-              <span class="notice-category">학사</span>
-              <span class="notice-date">2025.04.08</span>
-            </div>
-            <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
-            <div class="notice-summary">4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.</div>
-          </li>
+      <section>
+        <h3>주요 건물</h3>
+        <ul>
+          <li><strong>1호관</strong><br />행정실, 인문계열 강의실</li>
+          <li><strong>2호관</strong><br />공학계열 강의실, 실습실</li>
+          <li><strong>3호관</strong><br />컴퓨터정보계열 강의실</li>
+          <li><strong>4호관</strong><br />예술계열 강의실, 연습실</li>
+          <li><strong>5호관</strong><br />도서관, 자율학습실</li>
+          <li><strong>학생회관</strong><br />식당, 동아리실, 학생휴게실</li>
         </ul>
-      </div>
+      </section>
 
-      <div class="content-section">
-        <div class="section-title">
-          <span>인기 강의평가</span>
-          <a href="#" class="see-all">전체보기</a>
+      <section>
+        <h3>편의시설</h3>
+        <div class="facility-boxes">
+          <div class="box">
+            <img src="food.png" alt="학생식당" />
+            <p><strong>학생식당</strong><br />학생회관 1층</p>
+          </div>
+          <div class="box">
+            <img src="cafe.png" alt="카페" />
+            <p><strong>카페 연성</strong><br />도서관 1층</p>
+          </div>
+          <div class="box">
+            <img src="store.png" alt="편의점" />
+            <p><strong>CU 편의점</strong><br />학생회관 1층</p>
+          </div>
+          <div class="box">
+            <img src="atm.png" alt="ATM" />
+            <p><strong>ATM</strong><br />1호관 로비</p>
+          </div>
         </div>
-
-        <ul class="lecture-list">
-          <li class="lecture-item">
-            <div class="lecture-header">
-              <div class="lecture-title">웹 프로그래밍 실습</div>
-              <div class="lecture-rating">4.8</div>
-            </div>
-            <div class="lecture-info">
-              <span class="lecture-professor">김민수 교수님</span>
-              <span>컴퓨터정보학과</span>
-            </div>
-            <div class="rating-stars">★★★★★</div>
-            <div class="lecture-reviews">"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</div>
-          </li>
-        </ul>
-      </div>
-
-      <div class="content-pad"></div>
+      </section>
     </div>
 
     <!-- 시설 탭 -->
     <div id="facility-tab" class="tab-content">
-      <div class="content-section">
-        <div class="section-title">시설 안내</div>
-        <p>시설 탭 콘텐츠가 여기에 표시됩니다.</p>
+      <div class="search-bar">
+        <input type="text" placeholder="강의평가 검색" />
       </div>
+
+      <section>
+        <h3>강의평가</h3>
+        <div class="filter-buttons">
+          <button>전체</button>
+          <button>교양</button>
+          <button>전공필수</button>
+          <button>전공선택</button>
+        </div>
+
+        <ul class="lecture-list">
+          <li>
+            <strong>웹 프로그래밍 실습</strong> - 김민수 교수님
+            <br />
+            ⭐⭐⭐⭐☆ (4.8) - 컴퓨터정보학과
+            <p>"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</p>
+          </li>
+          <li>
+            <strong>마케팅 원론</strong> - 이지영 교수님
+            <br />
+            ⭐⭐⭐⭐☆ (4.5) - 경영학과
+            <p>"실제 사례를 많이 다루어서 이해하기 쉽고 재미있었어요."</p>
+          </li>
+          <li>
+            <strong>영어회화</strong> - John Smith 교수님
+            <br />
+            ⭐⭐⭐⭐ (4.3) - 교양과정
+            <p>"원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."</p>
+          </li>
+          <li>
+            <strong>경영통계학</strong> - 박성호 교수님
+            <br />
+            ⭐⭐⭐☆ (3.7) - 경영학과
+            <p>"내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."</p>
+          </li>
+        </ul>
+      </section>
     </div>
 
     <!-- 커뮤니티 탭 -->
     <div id="community-tab" class="tab-content">
-      <div class="content-section">
-        <div class="section-title">커뮤니티</div>
-        <p>커뮤니티 탭 콘텐츠가 여기에 표시됩니다.</p>
-      </div>
+      <p style="padding: 20px;">커뮤니티 탭 준비 중입니다.</p>
     </div>
 
     <!-- 알림 탭 -->
     <div id="alert-tab" class="tab-content">
-      <div class="content-section">
-        <div class="section-title">알림</div>
-        <p>알림 탭 콘텐츠가 여기에 표시됩니다.</p>
-      </div>
+      <section>
+        <h3>알림</h3>
+        <ul class="alert-list">
+          <li><strong>긴급 공지 🔴</strong><br />내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수<br /><span>10분 전</span></li>
+          <li><strong>강의실 알림</strong><br />웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.<br /><span>30분 전</span></li>
+          <li><strong>과제 알림</strong><br />마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.<br /><span>1시간 전</span></li>
+          <li><strong>도서관 알림</strong><br />대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.<br /><span>3시간 전</span></li>
+        </ul>
+      </section>
     </div>
 
     <!-- 내 정보 탭 -->
     <div id="profile-tab" class="tab-content">
-      <div class="content-section">
-        <div class="section-title">내 정보</div>
-        <p>내 정보 탭 콘텐츠가 여기에 표시됩니다.</p>
-      </div>
+      <section class="profile-header">
+        <img src="profile.jpg" alt="프로필 이미지" class="profile-img" />
+        <div>
+          <strong>홍길동</strong><br />
+          컴퓨터정보학과 | 2학년<br />
+          학번: 2023123456
+        </div>
+      </section>
+
+      <section>
+        <h3>내 정보 관리</h3>
+        <ul>
+          <li>내 시간표</li>
+          <li>내 수강 과목</li>
+          <li>즐겨찾는 강의실</li>
+          <li>개인정보 수정</li>
+        </ul>
+        <h3>학적 정보</h3>
+        <ul>
+          <li>성적 조회</li>
+          <li>수강 신청 내역</li>
+          <li>장학금 내역</li>
+          <li>등록금 납부 내역</li>
+        </ul>
+        <h3>앱 설정</h3>
+        <ul>
+          <li>알림 설정</li>
+          <li>위젯 및 메뉴 설정</li>
+          <li>초기 설정 다시하기</li>
+          <li>앱 정보</li>
+          <li>로그아웃</li>
+        </ul>
+      </section>
     </div>
 
     <!-- 하단 탭 메뉴 -->
     <div class="tab-menu">
       <div class="tab-item active" onclick="switchTab('home')">
-        <span class="tab-icon">🏠</span>
-        <span>홈</span>
+        <span class="tab-icon">🏠</span><br />홈
       </div>
       <div class="tab-item" onclick="switchTab('facility')">
-        <span class="tab-icon">🏫</span>
-        <span>시설</span>
+        <span class="tab-icon">🏫</span><br />시설
       </div>
       <div class="tab-item" onclick="switchTab('community')">
-        <span class="tab-icon">💬</span>
-        <span>커뮤니티</span>
+        <span class="tab-icon">💬</span><br />커뮤니티
       </div>
       <div class="tab-item" onclick="switchTab('alert')">
-        <span class="tab-icon">🔔</span>
-        <span>알림</span>
+        <span class="tab-icon">🔔</span><br />알림
       </div>
       <div class="tab-item" onclick="switchTab('profile')">
-        <span class="tab-icon">👤</span>
-        <span>내 정보</span>
+        <span class="tab-icon">👤</span><br />내 정보
       </div>
     </div>
   </div>
 
+  <!-- JavaScript -->
   <script>
     function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
       document.getElementById(`${tabName}-tab`).classList.add('active');
-      document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-      const currentIndex = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
-      document.querySelector(`.tab-item:nth-child(${currentIndex + 1})`).classList.add('active');
+
+      document.querySelectorAll('.tab-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      const index = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
+      document.querySelector(`.tab-item:nth-child(${index + 1})`).classList.add('active');
     }
 
     function goToPage(pageName) {
       if (pageName === 'login') {
         window.location.href = 'login.html';
-      } else {
-        alert(`${pageName} 페이지로 이동합니다.`);
       }
     }
 
-    function renderSelectedWidgets() {
-      const shortcutMenu = document.querySelector('.shortcut-menu');
-      const storedWidgets = JSON.parse(localStorage.getItem('selectedWidgets') || '[]');
+    // 사용자 설정한 위젯 로드
+    window.addEventListener('DOMContentLoaded', () => {
+      const shortcutMenu = document.getElementById('shortcut-menu');
+      const widgets = JSON.parse(localStorage.getItem('selectedWidgets') || '[]');
 
-      if (!storedWidgets.length) return;
-
-      shortcutMenu.innerHTML = '';
-
-      storedWidgets.forEach(widget => {
-        const item = document.createElement('div');
-        item.className = 'shortcut-item';
-
-        const icon = document.createElement('div');
-        icon.className = 'shortcut-icon';
-        icon.textContent = widget.icon;
-
-        const text = document.createElement('div');
-        text.className = 'shortcut-text';
-        text.textContent = widget.name;
-
-        item.appendChild(icon);
-        item.appendChild(text);
-        shortcutMenu.appendChild(item);
+      widgets.forEach(widget => {
+        const div = document.createElement('div');
+        div.className = 'shortcut-item';
+        div.innerHTML = `
+          <div class="shortcut-icon">${widget.icon}</div>
+          <div class="shortcut-label">${widget.name}</div>
+        `;
+        shortcutMenu.appendChild(div);
       });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      renderSelectedWidgets();
     });
   </script>
 </body>
