@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 연성대학교</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: #c62917;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-button {
+            font-size: 20px;
+            margin-right: 16px;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .login-container {
+            padding: 32px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .university-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c62917;
+            margin-bottom: 8px;
+        }
+        
+        .slogan {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-input:focus {
+            border-color: #c62917;
+            outline: none;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background-color: #c62917;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-top: 16px;
+        }
+        
+        .login-options a {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: 32px 0;
+            color: #888;
+        }
+        
+        .separator-line {
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+        
+        .separator-text {
+            padding: 0 16px;
+            font-size: 14px;
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+        
+        .social-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #c62917;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="header-title">로그인</div>
+        </header>
+        
+        <div class="login-container">
+            <div class="logo-container">
+                <div class="university-logo">연성대학교</div>
+                <div class="slogan">Campus Guide</div>
+            </div>
+            
+            <form>
+                <div class="form-group">
+                    <label class="form-label">아이디 (학번)</label>
+                    <input type="text" class="form-input" placeholder="학번을 입력하세요">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" class="form-input" placeholder="비밀번호를 입력하세요">
+                </div>
+                
+                <button type="button" class="login-button" onclick="login()">로그인</button>
+                
+                <div class="login-options">
+                    <a href="#">아이디 찾기</a>
+                    <a href="#">비밀번호 찾기</a>
+                </div>
+            </form>
+            
+            <div class="separator">
+                <div class="separator-line"></div>
+                <div class="separator-text">또는</div>
+                <div class="separator-line"></div>
+            </div>
+            
+            <div class="social-login">
+                <div class="social-button">N</div>
+                <div class="social-button">K</div>
+                <div class="social-button">G</div>
+            </div>
+            
+            <div class="register-link">
+                아직 계정이 없으신가요? <a href="#">회원가입</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 뒤로가기 함수
+        function goBack() {
+            window.location.href = "index.html";
+        }
+        
+        // 로그인 처리 함수
+        function login() {
+            alert('로그인이 완료되었습니다.');
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

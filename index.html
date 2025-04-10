@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연성대학교 캠퍼스 가이드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #c62917;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .icon {
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .login-button {
+            padding: 6px 12px;
+            background-color: white;
+            color: #c62917;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 180px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .profile-dropdown.active {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .search-bar {
+            padding: 12px 16px;
+            background-color: #f9f9f9;
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .notification-banner {
+            background-color: #ffebee;
+            padding: 12px 16px;
+            border-bottom: 1px solid #ffcdd2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .urgent-icon {
+            color: #c62917;
+            font-weight: bold;
+        }
+        
+        .notification-text {
+            font-size: 14px;
+            flex: 1;
+        }
+        
+        .shortcut-menu {
+            display: flex;
+            padding: 16px;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .shortcut-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+        
+        .shortcut-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+        
+        .shortcut-text {
+            font-size: 12px;
+            text-align: center;
+            color: #555;
+        }
+        
+        .content-section {
+            padding: 16px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .see-all {
+            font-size: 13px;
+            color: #888;
+            text-decoration: none;
+        }
+        
+        .notice-list {
+            list-style: none;
+        }
+        
+        .notice-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        
+        .notice-category {
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+        }
+        
+        .notice-date {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .notice-title {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+        
+        .notice-summary {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .facility-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .facility-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .facility-image {
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .facility-info {
+            padding: 10px;
+        }
+        
+        .facility-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .facility-location {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .lecture-list {
+            list-style: none;
+        }
+        
+        .lecture-item {
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .lecture-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .lecture-title {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        
+        .lecture-rating {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .lecture-info {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .lecture-professor {
+            color: #333;
+        }
+        
+        .lecture-reviews {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .tab-menu {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            border-top: 1px solid #ddd;
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 12px;
+            color: #888;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: #c62917;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        
+        .campus-map {
+            height: 200px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .content-pad {
+            padding-bottom: 60px; /* 하단 탭 메뉴 높이만큼 여백 */
+        }
+
+        /* 탭 콘텐츠 */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 건물 및 교실 목록 */
+        .building-list {
+            list-style: none;
+        }
+        
+        .building-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .building-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .building-info {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* 강의 평가 스타일 */
+        .rating-stars {
+            color: #ffb400;
+            letter-spacing: 2px;
+        }
+        
+        /* 카테고리 필터 */
+        .category-filter {
+            display: flex;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .category-tag {
+            flex-shrink: 0;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            margin-right: 8px;
+            font-size: 13px;
+            color: #555;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .category-tag.active {
+            background-color: #c62917;
+            color: white;
+            border-color: #c62917;
+        }
+        
+        /* 알림 리스트 */
+        .alert-list {
+            list-style: none;
+        }
+        
+        .alert-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+        }
+        
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .alert-info {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        
+        .alert-message {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .alert-time {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .alert-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background-color: #c62917;
+            color: white;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        /* 내 정보 탭 */
+        .profile-section {
+            padding: 24px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .profile-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background-color: #f0f0f0;
+            margin-right: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .profile-detail {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .menu-list {
+            list-style: none;
+        }
+        
+        .menu-item {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .menu-title {
+            font-size: 15px;
+        }
+        
+        .menu-arrow {
+            color: #ccc;
+        }
+
+        /* 공지사항 상세 */
+        .notice-detail {
+            padding: 20px 16px;
+        }
+        
+        .notice-detail-header {
+            margin-bottom: 16px;
+        }
+        
+        .notice-detail-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .notice-detail-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .notice-detail-content {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* 로딩 인디케이터 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">연성대학교</div>
+            <div class="header-icons">
+                <span class="icon">🔍</span>
+                <span class="icon">🔔</span>
+                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
+            </div>
+        </header>
+        
+        <!-- 홈 탭 -->
+        <div id="home-tab" class="tab-content active">
+            <!-- 긴급 알림 배너 -->
+            <div class="notification-banner">
+                <span class="urgent-icon">📢</span>
+                <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
+            </div>
+            
+            <!-- 검색 바 -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색">
+            </div>
+            
+            <!-- 바로가기 메뉴 -->
+            <div class="shortcut-menu">
+                <div class="shortcut-item">
+                    <div class="shortcut-icon">🏫</div>
+                    <div class="shortcut-text">강의실</div>
+                </div>
+                <div class="shortcut-item">
+                    <div class="shortcut-icon">📝</div>
+                    <div class="shortcut-text">강의평가</div>
+                </div>
+                <div class="shortcut-item">
+                    <div class="shortcut-icon">🚌</div>
+                    <div class="shortcut-text">셔틀버스</div>
+                </div>
+                <div class="shortcut-item">
+                    <div class="shortcut-icon">🍽️</div>
+                    <div class="shortcut-text">학식</div>
+                </div>
+                <div class="shortcut-item">
+                    <div class="shortcut-icon">📅</div>
+                    <div class="shortcut-text">학사일정</div>
+                </div>
+            </div>
+            
+            <!-- 공지사항 섹션 -->
+            <div class="content-section">
+                <div class="section-title">
+                    <span>주요 공지사항</span>
+                    <a href="#" class="see-all">전체보기</a>
+                </div>
+                
+                <div class="category-filter">
+                    <div class="category-tag active">전체</div>
+                    <div class="category-tag">학사</div>
+                    <div class="category-tag">장학</div>
+                    <div class="category-tag">취업</div>
+                    <div class="category-tag">행사</div>
+                    <div class="category-tag">학과</div>
+                </div>
+                
+                <ul class="notice-list">
+                    <li class="notice-item">
+                        <div class="notice-header">
+                            <span class="notice-category">학사</span>
+                            <span class="notice-date">2025.04.08</span>
+                        </div>
+                        <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+                        <div class="notice-summary">
+                            4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
+                        </div>
+                    </li>
+                    <li class="notice-item">
+                        <div class="notice-header">
+                            <span class="notice-category">장학</span>
+                            <span class="notice-date">2025.04.07</span>
+                        </div>
+                        <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
+                        <div class="notice-summary">
+                            국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
+                        </div>
+                    </li>
+                    <li class="notice-item">
+                        <div class="notice-header">
+                            <span class="notice-category">취업</span>
+                            <span class="notice-date">2025.04.06</span>
+                        </div>
+                        <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
+                        <div class="notice-summary">
+                            4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 강의평가 섹션 -->
+            <div class="content-section">
+                <div class="section-title">
+                    <span>인기 강의평가</span>
+                    <a href="#" class="see-all">전체보기</a>
+                </div>
+                
+                <ul class="lecture-list">
+                    <li class="lecture-item">
+                        <div class="lecture-header">
+                            <div class="lecture-title">웹 프로그래밍 실습</div>
+                            <div class="lecture-rating">4.8</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">김민수 교수님</span>
+                            <span>컴퓨터정보학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★★</div>
+                        <div class="lecture-reviews">
+                            "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                        </div>
+                    </li>
+                    <li class="lecture-item">
+                        <div class="lecture-header">
+                            <div class="lecture-title">마케팅 원론</div>
+                            <div class="lecture-rating">4.5</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">이지영 교수님</span>
+                            <span>경영학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★☆</div>
+                        <div class="lecture-reviews">
+                            "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 시설 탭 -->
+        <div id="facility-tab" class="tab-content">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="건물, 강의실, 편의시설 검색">
+            </div>
+            
+            <div class="campus-map">
+                <img src="/api/placeholder/300/200" alt="연성대학교 캠퍼스 지도">
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>주요 건물</span>
+                </div>
+                
+                <ul class="building-list">
+                    <li class="building-item" onclick="showBuildingDetail('1호관')">
+                        <div class="building-name">1호관</div>
+                        <div class="building-info">행정실, 인문계열 강의실</div>
+                    </li>
+                    <li class="building-item" onclick="showBuildingDetail('2호관')">
+                        <div class="building-name">2호관</div>
+                        <div class="building-info">공학계열 강의실, 실습실</div>
+                    </li>
+                    <li class="building-item" onclick="showBuildingDetail('3호관')">
+                        <div class="building-name">3호관</div>
+                        <div class="building-info">컴퓨터정보계열 강의실</div>
+                    </li>
+                    <li class="building-item" onclick="showBuildingDetail('4호관')">
+                        <div class="building-name">4호관</div>
+                        <div class="building-info">예술계열 강의실, 연습실</div>
+                    </li>
+                    <li class="building-item" onclick="showBuildingDetail('5호관')">
+                        <div class="building-name">5호관</div>
+                        <div class="building-info">도서관, 자율학습실</div>
+                    </li>
+                    <li class="building-item" onclick="showBuildingDetail('학생회관')">
+                        <div class="building-name">학생회관</div>
+                        <div class="building-info">식당, 동아리실, 학생휴게실</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>편의시설</span>
+                </div>
+                
+                <div class="facility-list">
+                    <div class="facility-item">
+                        <div class="facility-image">
+                            <img src="/api/placeholder/150/100" alt="학생식당">
+                        </div>
+                        <div class="facility-info">
+                            <div class="facility-name">학생식당</div>
+                            <div class="facility-location">학생회관 1층</div>
+                        </div>
+                    </div>
+                    <div class="facility-item">
+                        <div class="facility-image">
+                            <img src="/api/placeholder/150/100" alt="카페">
+                        </div>
+                        <div class="facility-info">
+                            <div class="facility-name">카페 연성</div>
+                            <div class="facility-location">도서관 1층</div>
+                        </div>
+                    </div>
+                    <div class="facility-item">
+                        <div class="facility-image">
+                            <img src="/api/placeholder/150/100" alt="편의점">
+                        </div>
+                        <div class="facility-info">
+                            <div class="facility-name">CU 편의점</div>
+                            <div class="facility-location">학생회관 1층</div>
+                        </div>
+                    </div>
+                    <div class="facility-item">
+                        <div class="facility-image">
+                            <img src="/api/placeholder/150/100" alt="ATM">
+                        </div>
+                        <div class="facility-info">
+                            <div class="facility-name">ATM</div>
+                            <div class="facility-location">1호관 로비</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 커뮤니티 탭 -->
+        <div id="community-tab" class="tab-content">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="강의평가 검색">
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>강의평가</span>
+                </div>
+                
+                <div class="category-filter">
+                    <div class="category-tag active">전체</div>
+                    <div class="category-tag">교양</div>
+                    <div class="category-tag">전공필수</div>
+                    <div class="category-tag">전공선택</div>
+                </div>
+                
+                <ul class="lecture-list">
+                    <li class="lecture-item">
+                        <div class="lecture-header">
+                            <div class="lecture-title">웹 프로그래밍 실습</div>
+                            <div class="lecture-rating">4.8</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">김민수 교수님</span>
+                            <span>컴퓨터정보학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★★</div>
+                        <div class="lecture-reviews">
+                            "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                        </div>
+                    </li>
+                    <li class="lecture-item">
+                        <div class="lecture-header">
+                            <div class="lecture-title">마케팅 원론</div>
+                            <div class="lecture-rating">4.5</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">이지영 교수님</span>
+                            <span>경영학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★☆</div>
+                        <div class="lecture-reviews">
+                            "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
+                        </div>
+                    </li>
+                    <li class="lecture-item">
+                        <div class="lecture-header">
+                            <div class="lecture-title">영어회화</div>
+                            <div class="lecture-rating">4.3</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">John Smith 교수님</span>
+                            <span>교양과정</span>
+                        </div>
+                        <div class="rating-stars">★★★★☆</div>
+                        <div class="lecture-reviews">
+                            "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
+                        </div>
+                    </li>
+                    <li class="lecture-item">
+                        <div class="lecture-header">
+                            <div class="lecture-title">경영통계학</div>
+                            <div class="lecture-rating">3.7</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">박성호 교수님</span>
+                            <span>경영학과</span>
+                        </div>
+                        <div class="rating-stars">★★★☆☆</div>
+                        <div class="lecture-reviews">
+                            "내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 알림 탭 -->
+        <div id="alert-tab" class="tab-content">
+            <div class="content-section">
+                <div class="section-title">
+                    <span>알림</span>
+                </div>
+                
+                <ul class="alert-list">
+                    <li class="alert-item">
+                        <div class="alert-icon">📢</div>
+                        <div class="alert-info">
+                            <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
+                            <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
+                            <div class="alert-time">10분 전</div>
+                        </div>
+                    </li>
+                    <li class="alert-item">
+                        <div class="alert-icon">🏫</div>
+                        <div class="alert-info">
+                            <div class="alert-title">강의실 알림</div>
+                            <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
+                            <div class="alert-time">30분 전</div>
+                        </div>
+                    </li>
+                    <li class="alert-item">
+                        <div class="alert-icon">📝</div>
+                        <div class="alert-info">
+                            <div class="alert-title">과제 알림</div>
+                            <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
+                            <div class="alert-time">1시간 전</div>
+                        </div>
+                    </li>
+                    <li class="alert-item">
+                        <div class="alert-icon">📚</div>
+                        <div class="alert-info">
+                            <div class="alert-title">도서관 알림</div>
+                            <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
+                            <div class="alert-time">3시간 전</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 내 정보 탭 -->
+        <div id="profile-tab" class="tab-content">
+            <div class="profile-section">
+                <div class="profile-image">👨‍🎓</div>
+                <div class="profile-info">
+                    <div class="profile-name">홍길동</div>
+                    <div class="profile-detail">컴퓨터정보학과 | 2학년</div>
+                    <div class="profile-detail">학번: 2023123456</div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>내 정보 관리</span>
+                </div>
+                
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <div class="menu-title">내 시간표</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">내 수강 강의</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">즐겨찾는 강의실</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">개인정보 수정</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>학적 정보</span>
+                </div>
+                
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <div class="menu-title">성적 조회</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">수강 신청 내역</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">장학금 내역</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">등록금 납부 내역</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>앱 설정</span>
+                </div>
+                
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <div class="menu-title">알림 설정</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">위젯 및 메뉴 설정</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">초기 설정 다시하기</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">앱 정보</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item">
+                        <div class="menu-title">로그아웃</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 하단 탭 메뉴 -->
+        <div class="tab-menu">
+            <div class="tab-item active" onclick="switchTab('home')">
+                <span class="tab-icon">🏠</span>
+                <span>홈</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('facility')">
+                <span class="tab-icon">🏫</span>
+                <span>시설</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('community')">
+                <span class="tab-icon">💬</span>
+                <span>커뮤니티</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('alert')">
+                <span class="tab-icon">🔔</span>
+                <span>알림</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('profile')">
+                <span class="tab-icon">👤</span>
+                <span>내 정보</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 탭 전환 함수
+        function switchTab(tabName) {
+            // 모든 탭 콘텐츠 숨기기
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택한 탭 콘텐츠 표시
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // 탭 메뉴 활성화 상태 변경
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 현재 선택된 탭 버튼 활성화
+            const currentIndex = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
+            document.querySelector(`.tab-item:nth-child(${currentIndex + 1})`).classList.add('active');
+        }
+        
+        // 페이지 이동 함수
+        function goToPage(pageName) {
+            if (pageName === 'login') {
+                // 로그인 페이지로 이동
+                window.location.href = 'login.html';
+            } else {
+                // 다른 페이지의 경우 간단한 알림 표시
+                alert(`${pageName} 페이지로 이동합니다.`);
+            }
+        }
+        
+        // 건물 상세 보기
+        function showBuildingDetail(buildingName) {
+            alert(`${buildingName} 상세 페이지로 이동합니다.`);
+        }
+        
+        // 카테고리 필터 기능
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryTags = document.querySelectorAll('.category-tag');
+            categoryTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // 이미 선택된 태그 클릭 시 무시
+                    if (this.classList.contains('active')) return;
+                    
+                    // 현재 활성화된 태그 비활성화
+                    document.querySelector('.category-tag.active').classList.remove('active');
+                    
+                    // 클릭한 태그 활성화
+                    this.classList.add('active');
+                    
+                    // 여기에 필터링 로직 추가 가능
+                });
+            });
+        });
+    </script>
+</body>
+</html>
