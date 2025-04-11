@@ -60,15 +60,24 @@
             text-decoration: none;
         }
         
+        .profile-dropdown-container {
+            position: relative;
+        }
+        
+        .profile-icon {
+            cursor: pointer;
+        }
+        
         .profile-dropdown {
             position: absolute;
-            top: 55px;
-            right: 10px;
+            top: 40px;
+            right: 0;
+            width: 220px;
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 180px;
-            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            overflow: hidden;
             display: none;
         }
         
@@ -76,20 +85,43 @@
             display: block;
         }
         
-        .dropdown-item {
-            padding: 12px 16px;
-            font-size: 14px;
-            color: #333;
+        .dropdown-profile-info {
+            padding: 16px;
+            background-color: #f9f9f9;
             border-bottom: 1px solid #eee;
-            cursor: pointer;
         }
         
-        .dropdown-item:last-child {
-            border-bottom: none;
+        .dropdown-profile-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .dropdown-profile-detail {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
         }
         
         .dropdown-item:hover {
             background-color: #f5f5f5;
+        }
+        
+        .dropdown-icon {
+            margin-right: 8px;
+            font-size: 18px;
         }
         
         .search-bar {
@@ -558,6 +590,26 @@
                 <span class="icon">🔍</span>
                 <span class="icon">🔔</span>
                 <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
+                <!-- 프로필 드롭다운 메뉴 (로그인 시 표시) -->
+                <div class="profile-dropdown-container" style="display: none;">
+                    <span class="icon profile-icon" onclick="toggleProfileDropdown()">👤</span>
+                    <div class="profile-dropdown">
+                        <div class="dropdown-profile-info">
+                            <div class="dropdown-profile-name">사용자</div>
+                            <div class="dropdown-profile-detail">학과 | 학년</div>
+                            <div class="dropdown-profile-detail">학번: 0000000000</div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="goToPage('profile-edit')">
+                            <span class="dropdown-icon">✏️</span>
+                            <span>프로필 수정</span>
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <span class="dropdown-icon">🚪</span>
+                            <span>로그아웃</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
         
@@ -874,7 +926,6 @@
                         <div class="alert-icon">📢</div>
                         <div class="alert-info">
                             <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
-                            ```html
                             <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
                             <div class="alert-time">10분 전</div>
                         </div>
@@ -1059,35 +1110,101 @@
             });
         }
 
+        // 프로필 드롭다운 토글 함수
+        function toggleProfileDropdown() {
+            const dropdown = document.querySelector('.profile-dropdown');
+            dropdown.classList.toggle('active');
+            
+            // 드롭다운 외부 클릭 시 닫기 이벤트 추가
+            if (dropdown.classList.contains('active')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeProfileDropdown);
+                }, 0);
+            }
+        }
+
+        // 드롭다운 닫기 함수
+        function closeProfileDropdown(event) {
+            const dropdown = document.querySelector('.profile-dropdown');
+            const profileIcon = document.querySelector('.profile-icon');
+            
+            if (!dropdown.contains(event.target) && event.target !== profileIcon) {
+                dropdown.classList.remove('active');
+                document.removeEventListener('click', closeProfileDropdown);
+            }
+        }
+
         // 로그인 상태 확인 및 UI 업데이트
         function checkLoginStatus() {
             // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
             const currentUser = localStorage.getItem('currentLoggedInUser');
             
+            // 로그인 버튼과 프로필 드롭다운 컨테이너
+            const loginButton = document.querySelector('.login-button');
+            const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+            
             if (currentUser) {
-                // 로그인 상태: 로그인 버튼을 프로필 아이콘으로 변경
-                const headerIcons = document.querySelector('.header-icons');
-                const loginButton = headerIcons.querySelector('.login-button');
+                // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
+                if (loginButton) loginButton.style.display = 'none';
+                if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
                 
-                if (loginButton) {
-                    // 로그인 버튼 제거
-                    loginButton.remove();
-                    
-                    // 프로필 아이콘 추가
-                    const profileIcon = document.createElement('span');
-                    profileIcon.className = 'icon';
-                    profileIcon.textContent = '👤';
-                    profileIcon.style.cursor = 'pointer';
-                    profileIcon.onclick = function() {
-                        // 프로필 아이콘 클릭 시 프로필 탭으로 이동
-                        switchTab('profile');
-                    };
-                    
-                    headerIcons.appendChild(profileIcon);
+                // 드롭다운 내 프로필 정보 업데이트
+                updateDropdownProfileInfo(currentUser);
+                
+                // 프로필 탭의 정보도 업데이트
+                updateProfileInfo(currentUser);
+            } else {
+                // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
+                if (loginButton) loginButton.style.display = 'block';
+                if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+            }
+        }
+
+        // 드롭다운 프로필 정보 업데이트
+        function updateDropdownProfileInfo(studentId) {
+            const dropdown = document.querySelector('.profile-dropdown');
+            if (!dropdown) return;
+            
+            const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
+            const department = localStorage.getItem(`user_${studentId}_department`) || '';
+            const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
+            
+            // 이름 업데이트
+            const nameElement = dropdown.querySelector('.dropdown-profile-name');
+            if (nameElement) nameElement.textContent = name;
+            
+            // 학과 및 학년 정보 업데이트
+            const detailElement = dropdown.querySelector('.dropdown-profile-detail');
+            if (detailElement && department) {
+                let departmentText = '';
+                
+                switch(department) {
+                    case 'computerScience':
+                        departmentText = '컴퓨터정보학과';
+                        break;
+                    case 'business':
+                        departmentText = '경영학과';
+                        break;
+                    case 'nursing':
+                        departmentText = '간호학과';
+                        break;
+                    case 'engineering':
+                        departmentText = '공학계열';
+                        break;
+                    case 'arts':
+                        departmentText = '예술계열';
+                        break;
+                    default:
+                        departmentText = department;
                 }
                 
-                // 프로필 정보 업데이트
-                updateProfileInfo(currentUser);
+                detailElement.textContent = `${departmentText} | ${grade}학년`;
+            }
+            
+            // 학번 업데이트
+            const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
+            if (studentIdElement) {
+                studentIdElement.textContent = `학번: ${studentId}`;
             }
         }
 
@@ -1332,6 +1449,9 @@
             if (pageName === 'login') {
                 // 로그인 페이지로 이동
                 window.location.href = 'login.html';
+            } else if (pageName === 'profile-edit') {
+                // 프로필 수정 페이지로 이동 (아직 미구현)
+                alert('프로필 수정 페이지로 이동합니다.');
             } else {
                 // 다른 페이지의 경우 간단한 알림 표시
                 alert(`${pageName} 페이지로 이동합니다.`);
@@ -1345,11 +1465,13 @@
         
         // 로그아웃 기능
         function logout() {
-            // 현재 로그인 사용자 정보 삭제
-            localStorage.removeItem('currentLoggedInUser');
-            
-            // 페이지 새로고침
-            window.location.reload();
+            if (confirm('로그아웃 하시겠습니까?')) {
+                // 현재 로그인 사용자 정보 삭제
+                localStorage.removeItem('currentLoggedInUser');
+                
+                // 페이지 새로고침
+                window.location.reload();
+            }
         }
     </script>
 </body>
