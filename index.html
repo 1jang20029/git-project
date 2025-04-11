@@ -1,17 +1,48 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>연성대학교 캠퍼스 가이드</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; }
-    body { background-color: #f5f5f5; color: #333; }
-    .container { max-width: 768px; margin: 0 auto; background-color: white; min-height: 100vh; }
-    header { background-color: #c62917; color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 20px; font-weight: bold; }
-    .header-icons { display: flex; gap: 16px; align-items: center; }
-    .icon { font-size: 18px; cursor: pointer; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    }
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .container {
+      max-width: 768px;
+      margin: 0 auto;
+      background-color: white;
+      min-height: 100vh;
+      position: relative;
+    }
+    header {
+      background-color: #c62917;
+      color: white;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .header-icons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .icon {
+      font-size: 18px;
+      cursor: pointer;
+    }
     .login-button {
       padding: 6px 12px;
       background-color: white;
@@ -22,11 +53,48 @@
       cursor: pointer;
       text-decoration: none;
     }
-    .shortcut-menu { display: flex; padding: 16px; justify-content: space-between; border-bottom: 1px solid #eee; }
-    .shortcut-item { display: flex; flex-direction: column; align-items: center; width: 60px; }
-    .shortcut-icon { width: 40px; height: 40px; background-color: #f0f0f0; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; font-size: 20px; }
-    .shortcut-text { font-size: 12px; text-align: center; color: #555; }
-
+    .search-bar {
+      padding: 12px 16px;
+      background-color: #f9f9f9;
+      display: flex;
+      border-bottom: 1px solid #eee;
+    }
+    .search-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .notification-banner {
+      background-color: #ffebee;
+      padding: 12px 16px;
+      border-bottom: 1px solid #ffcdd2;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .urgent-icon {
+      color: #c62917;
+      font-weight: bold;
+    }
+    .notification-text {
+      font-size: 14px;
+      flex: 1;
+    }
+    .widget-container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 16px;
+      gap: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .widget-box {
+      padding: 10px 16px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
     .tab-menu {
       display: flex;
       position: fixed;
@@ -49,42 +117,18 @@
       text-decoration: none;
       cursor: pointer;
     }
-    .tab-item.active { color: #c62917; }
-    .tab-icon { font-size: 22px; margin-bottom: 4px; }
-
-    .content-pad { padding-bottom: 60px; }
-
+    .tab-item.active {
+      color: #c62917;
+    }
+    .tab-icon {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .content-pad {
+      padding-bottom: 60px;
+    }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-
-    .notification-banner {
-      background-color: #ffebee;
-      padding: 12px 16px;
-      border-bottom: 1px solid #ffcdd2;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .urgent-icon { color: #c62917; font-weight: bold; }
-    .notification-text { font-size: 14px; flex: 1; }
-
-    /* 홈 탭 내 위젯 렌더 영역 */
-    #custom-widgets {
-      padding: 16px;
-      border-bottom: 1px solid #eee;
-    }
-    #custom-widgets h3 {
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
-    .widget-box {
-      display: inline-block;
-      background-color: #f0f0f0;
-      border-radius: 8px;
-      padding: 8px 12px;
-      margin-right: 8px;
-      font-size: 14px;
-    }
   </style>
 </head>
 <body>
@@ -101,142 +145,80 @@
     <div id="home-tab" class="tab-content active">
       <div class="notification-banner">
         <span class="urgent-icon">📢</span>
-        <span class="notification-text">긴급 공지: 내일(4/9) 전체 휴강 안내</span>
+        <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
       </div>
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색">
+      </div>
+      <div id="widget-container" class="widget-container">
+        <!-- 사용자 위젯 표시 영역 -->
+      </div>
+      <div class="content-pad"></div>
+    </div>
 
-      <!-- 사용자 위젯 표시 -->
-      <div id="custom-widgets">
-        <h3>내가 설정한 위젯</h3>
-        <div id="widget-container"></div>
+    <div id="facility-tab" class="tab-content">시설 콘텐츠</div>
+    <div id="community-tab" class="tab-content">커뮤니티 콘텐츠</div>
+    <div id="alert-tab" class="tab-content">알림 콘텐츠</div>
+    <div id="profile-tab" class="tab-content">내 정보 콘텐츠</div>
+
+    <div class="tab-menu">
+      <div class="tab-item active" onclick="switchTab('home')">
+        <span class="tab-icon">🏠</span>
+        <span>홈</span>
       </div>
-            <!-- 검색 바 -->
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색">
-              </div>
-        
-              <!-- 바로가기 메뉴 -->
-              <div class="shortcut-menu">
-                <div class="shortcut-item"><div class="shortcut-icon">🏫</div><div class="shortcut-text">강의실</div></div>
-                <div class="shortcut-item"><div class="shortcut-icon">📝</div><div class="shortcut-text">강의평가</div></div>
-                <div class="shortcut-item"><div class="shortcut-icon">🚌</div><div class="shortcut-text">셔틀버스</div></div>
-                <div class="shortcut-item"><div class="shortcut-icon">🍽️</div><div class="shortcut-text">학식</div></div>
-                <div class="shortcut-item"><div class="shortcut-icon">📅</div><div class="shortcut-text">학사일정</div></div>
-              </div>
-        
-              <!-- 공지사항 섹션 -->
-              <div class="content-section">
-                <div class="section-title">
-                  <span>주요 공지사항</span>
-                  <a href="#" class="see-all">전체보기</a>
-                </div>
-        
-                <ul class="notice-list">
-                  <li class="notice-item">
-                    <div class="notice-header"><span class="notice-category">학사</span><span class="notice-date">2025.04.08</span></div>
-                    <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
-                    <div class="notice-summary">4월 22일~26일 중간고사. 학과 사무실 확인.</div>
-                  </li>
-                  <li class="notice-item">
-                    <div class="notice-header"><span class="notice-category">장학</span><span class="notice-date">2025.04.07</span></div>
-                    <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
-                    <div class="notice-summary">4월 11일까지 신청 마감. 미신청자는 서둘러주세요.</div>
-                  </li>
-                </ul>
-              </div>
-        
-              <!-- 강의평가 섹션 -->
-              <div class="content-section">
-                <div class="section-title">
-                  <span>인기 강의평가</span>
-                  <a href="#" class="see-all">전체보기</a>
-                </div>
-        
-                <ul class="lecture-list">
-                  <li class="lecture-item">
-                    <div class="lecture-header"><div class="lecture-title">웹 프로그래밍 실습</div><div class="lecture-rating">4.8</div></div>
-                    <div class="lecture-info"><span class="lecture-professor">김민수 교수님</span><span>컴퓨터정보학과</span></div>
-                    <div class="rating-stars">★★★★★</div>
-                    <div class="lecture-reviews">"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</div>
-                  </li>
-                  <li class="lecture-item">
-                    <div class="lecture-header"><div class="lecture-title">마케팅 원론</div><div class="lecture-rating">4.5</div></div>
-                    <div class="lecture-info"><span class="lecture-professor">이지영 교수님</span><span>경영학과</span></div>
-                    <div class="rating-stars">★★★★☆</div>
-                    <div class="lecture-reviews">"실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."</div>
-                  </li>
-                </ul>
-              </div>
-        
-              <div class="content-pad"></div>
-            </div>
-        
-            <!-- 하단 탭 메뉴 -->
-            <div class="tab-menu">
-              <div class="tab-item active" onclick="switchTab('home')">
-                <span class="tab-icon">🏠</span>
-                <span>홈</span>
-              </div>
-              <div class="tab-item" onclick="switchTab('facility')">
-                <span class="tab-icon">🏫</span>
-                <span>시설</span>
-              </div>
-              <div class="tab-item" onclick="switchTab('community')">
-                <span class="tab-icon">💬</span>
-                <span>커뮤니티</span>
-              </div>
-              <div class="tab-item" onclick="switchTab('alert')">
-                <span class="tab-icon">🔔</span>
-                <span>알림</span>
-              </div>
-              <div class="tab-item" onclick="switchTab('profile')">
-                <span class="tab-icon">👤</span>
-                <span>내 정보</span>
-              </div>
-            </div>
-          </div>
-          <script>
-            // 탭 전환
-            function switchTab(tabName) {
-              document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-              document.getElementById(`${tabName}-tab`).classList.add('active');
-        
-              document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-              const index = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
-              if (index >= 0) document.querySelector(`.tab-item:nth-child(${index + 1})`).classList.add('active');
-            }
-        
-            // 로그인 페이지 이동
-            function goToPage(pageName) {
-              if (pageName === 'login') {
-                window.location.href = 'login.html';
-              } else {
-                alert(`${pageName} 페이지로 이동합니다.`);
-              }
-            }
-        
-            // 위젯 불러오기
-            function loadWidgets() {
-              const widgetContainer = document.getElementById("widget-container");
-              const widgets = JSON.parse(localStorage.getItem("selectedWidgets")) || [];
-              widgetContainer.innerHTML = "";
-        
-              if (widgets.length === 0) {
-                widgetContainer.innerHTML = "<span style='color: #888;'>설정된 위젯이 없습니다.</span>";
-                return;
-              }
-        
-              widgets.forEach(widget => {
-                const div = document.createElement("div");
-                div.className = "widget-box";
-                div.textContent = widget;
-                widgetContainer.appendChild(div);
-              });
-            }
-        
-            // DOM 로딩 후 위젯 불러오기
-            document.addEventListener("DOMContentLoaded", loadWidgets);
-          </script>
-        </body>
-        </html>
-        
-        
+      <div class="tab-item" onclick="switchTab('facility')">
+        <span class="tab-icon">🏫</span>
+        <span>시설</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('community')">
+        <span class="tab-icon">💬</span>
+        <span>커뮤니티</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('alert')">
+        <span class="tab-icon">🔔</span>
+        <span>알림</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('profile')">
+        <span class="tab-icon">👤</span>
+        <span>내 정보</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+      document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+      const index = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
+      if (index >= 0) document.querySelector(`.tab-item:nth-child(${index + 1})`).classList.add('active');
+    }
+
+    function goToPage(pageName) {
+      if (pageName === 'login') {
+        window.location.href = 'login.html';
+      } else {
+        alert(`${pageName} 페이지로 이동합니다.`);
+      }
+    }
+
+    function loadWidgets() {
+      const widgetContainer = document.getElementById("widget-container");
+      const widgets = JSON.parse(localStorage.getItem("selectedWidgets")) || [];
+      widgetContainer.innerHTML = "";
+      if (widgets.length === 0) {
+        widgetContainer.innerHTML = "<span style='color: #888;'>설정된 위젯이 없습니다.</span>";
+        return;
+      }
+      widgets.forEach(widget => {
+        const div = document.createElement("div");
+        div.className = "widget-box";
+        div.textContent = widget;
+        widgetContainer.appendChild(div);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadWidgets);
+  </script>
+</body>
+</html>
