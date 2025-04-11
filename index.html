@@ -172,6 +172,7 @@
             flex-direction: column;
             align-items: center;
             width: 60px;
+            cursor: pointer;
         }
         
         .shortcut-icon {
@@ -218,6 +219,7 @@
         .notice-item {
             padding: 12px 0;
             border-bottom: 1px solid #eee;
+            cursor: pointer;
         }
         
         .notice-header {
@@ -260,6 +262,7 @@
             border: 1px solid #eee;
             border-radius: 8px;
             overflow: hidden;
+            cursor: pointer;
         }
         
         .facility-image {
@@ -294,6 +297,7 @@
             border: 1px solid #eee;
             border-radius: 8px;
             margin-bottom: 12px;
+            cursor: pointer;
         }
         
         .lecture-header {
@@ -448,6 +452,7 @@
             padding: 12px;
             border-bottom: 1px solid #eee;
             display: flex;
+            cursor: pointer;
         }
         
         .alert-icon {
@@ -587,10 +592,10 @@
 <body>
     <div class="container">
         <header>
-            <div class="logo">연성대학교</div>
+            <div class="logo" onclick="goToHome()">연성대학교</div>
             <div class="header-icons">
-                <span class="icon">🔍</span>
-                <span class="icon">🔔</span>
+                <span class="icon" onclick="openSearch()">🔍</span>
+                <span class="icon" onclick="switchTab('alert')">🔔</span>
                 <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
                 <div class="profile-dropdown-container" style="display: none;">
                     <span class="icon profile-icon" onclick="toggleProfileDropdown()">👤</span>
@@ -617,35 +622,35 @@
         <!-- 홈 탭 -->
         <div id="home-tab" class="tab-content active">
             <!-- 긴급 알림 배너 -->
-            <div class="notification-banner">
+            <div class="notification-banner" onclick="viewNotification('emergency')">
                 <span class="urgent-icon">📢</span>
                 <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
             </div>
             
             <!-- 검색 바 -->
             <div class="search-bar">
-                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색">
+                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
             </div>
             
             <!-- 바로가기 메뉴 -->
             <div class="shortcut-menu">
-                <div class="shortcut-item">
+                <div class="shortcut-item" onclick="switchTab('facility')">
                     <div class="shortcut-icon">🏫</div>
                     <div class="shortcut-text">강의실</div>
                 </div>
-                <div class="shortcut-item">
+                <div class="shortcut-item" onclick="switchTab('community')">
                     <div class="shortcut-icon">📝</div>
                     <div class="shortcut-text">강의평가</div>
                 </div>
-                <div class="shortcut-item">
+                <div class="shortcut-item" onclick="goToPage('shuttle')">
                     <div class="shortcut-icon">🚌</div>
                     <div class="shortcut-text">셔틀버스</div>
                 </div>
-                <div class="shortcut-item">
+                <div class="shortcut-item" onclick="goToPage('cafeteria')">
                     <div class="shortcut-icon">🍽️</div>
                     <div class="shortcut-text">학식</div>
                 </div>
-                <div class="shortcut-item">
+                <div class="shortcut-item" onclick="goToPage('academic-calendar')">
                     <div class="shortcut-icon">📅</div>
                     <div class="shortcut-text">학사일정</div>
                 </div>
@@ -655,20 +660,20 @@
             <div class="content-section">
                 <div class="section-title">
                     <span>주요 공지사항</span>
-                    <a href="#" class="see-all">전체보기</a>
+                    <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
                 </div>
                 
                 <div class="category-filter">
-                    <div class="category-tag active">전체</div>
-                    <div class="category-tag">학사</div>
-                    <div class="category-tag">장학</div>
-                    <div class="category-tag">취업</div>
-                    <div class="category-tag">행사</div>
-                    <div class="category-tag">학과</div>
+                    <div class="category-tag active" onclick="filterNotices('all')">전체</div>
+                    <div class="category-tag" onclick="filterNotices('academic')">학사</div>
+                    <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
+                    <div class="category-tag" onclick="filterNotices('job')">취업</div>
+                    <div class="category-tag" onclick="filterNotices('event')">행사</div>
+                    <div class="category-tag" onclick="filterNotices('department')">학과</div>
                 </div>
                 
                 <ul class="notice-list">
-                    <li class="notice-item">
+                    <li class="notice-item" onclick="viewNoticeDetail('notice1')">
                         <div class="notice-header">
                             <span class="notice-category">학사</span>
                             <span class="notice-date">2025.04.08</span>
@@ -678,7 +683,7 @@
                             4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
                         </div>
                     </li>
-                    <li class="notice-item">
+                    <li class="notice-item" onclick="viewNoticeDetail('notice2')">
                         <div class="notice-header">
                             <span class="notice-category">장학</span>
                             <span class="notice-date">2025.04.07</span>
@@ -688,7 +693,7 @@
                             국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
                         </div>
                     </li>
-                    <li class="notice-item">
+                    <li class="notice-item" onclick="viewNoticeDetail('notice3')">
                         <div class="notice-header">
                             <span class="notice-category">취업</span>
                             <span class="notice-date">2025.04.06</span>
@@ -705,11 +710,11 @@
             <div class="content-section">
                 <div class="section-title">
                     <span>인기 강의평가</span>
-                    <a href="#" class="see-all">전체보기</a>
+                    <a href="#" class="see-all" onclick="switchTab('community')">전체보기</a>
                 </div>
                 
                 <ul class="lecture-list">
-                    <li class="lecture-item">
+                    <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
                         <div class="lecture-header">
                             <div class="lecture-title">웹 프로그래밍 실습</div>
                             <div class="lecture-rating">4.8</div>
@@ -723,7 +728,7 @@
                             "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
                         </div>
                     </li>
-                    <li class="lecture-item">
+                    <li class="lecture-item" onclick="viewLectureDetail('marketing')">
                         <div class="lecture-header">
                             <div class="lecture-title">마케팅 원론</div>
                             <div class="lecture-rating">4.5</div>
@@ -746,10 +751,10 @@
         <!-- 시설 탭 -->
         <div id="facility-tab" class="tab-content">
             <div class="search-bar">
-                <input type="text" class="search-input" placeholder="건물, 강의실, 편의시설 검색">
+                <input type="text" class="search-input" placeholder="건물, 강의실, 편의시설 검색" onkeypress="handleSearchKeyPress(event)">
             </div>
             
-            <div class="campus-map">
+            <div class="campus-map" onclick="openFullMap()">
                 <img src="/api/placeholder/300/200" alt="연성대학교 캠퍼스 지도">
             </div>
             
@@ -792,7 +797,7 @@
                 </div>
                 
                 <div class="facility-list">
-                    <div class="facility-item">
+                    <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
                         <div class="facility-image">
                             <img src="/api/placeholder/150/100" alt="학생식당">
                         </div>
@@ -801,7 +806,7 @@
                             <div class="facility-location">유리관 2층</div>
                         </div>
                     </div>
-                    <div class="facility-item">
+                    <div class="facility-item" onclick="showFacilityDetail('cafe')">
                         <div class="facility-image">
                             <img src="/api/placeholder/150/100" alt="카페">
                         </div>
@@ -810,7 +815,7 @@
                             <div class="facility-location">도서관 1층</div>
                         </div>
                     </div>
-                    <div class="facility-item">
+                    <div class="facility-item" onclick="showFacilityDetail('convenience')">
                         <div class="facility-image">
                             <img src="/api/placeholder/150/100" alt="편의점">
                         </div>
@@ -819,7 +824,7 @@
                             <div class="facility-location">유리관 2층</div>
                         </div>
                     </div>
-                    <div class="facility-item">
+                    <div class="facility-item" onclick="showFacilityDetail('atm')">
                         <div class="facility-image">
                             <img src="/api/placeholder/150/100" alt="ATM">
                         </div>
@@ -837,7 +842,7 @@
         <!-- 커뮤니티 탭 -->
         <div id="community-tab" class="tab-content">
             <div class="search-bar">
-                <input type="text" class="search-input" placeholder="강의평가 검색">
+                <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
             </div>
             
             <div class="content-section">
@@ -846,14 +851,14 @@
                 </div>
                 
                 <div class="category-filter">
-                    <div class="category-tag active">전체</div>
-                    <div class="category-tag">교양</div>
-                    <div class="category-tag">전공필수</div>
-                    <div class="category-tag">전공선택</div>
+                    <div class="category-tag active" onclick="filterLectures('all')">전체</div>
+                    <div class="category-tag" onclick="filterLectures('general')">교양</div>
+                    <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
+                    <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
                 </div>
                 
                 <ul class="lecture-list">
-                    <li class="lecture-item">
+                    <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
                         <div class="lecture-header">
                             <div class="lecture-title">웹 프로그래밍 실습</div>
                             <div class="lecture-rating">4.8</div>
@@ -867,21 +872,7 @@
                             "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
                         </div>
                     </li>
-                    <li class="lecture-item">
-                        <div class="lecture-header">
-                            <div class="lecture-title">마케팅 원론</div>
-                            <div class="lecture-rating">4.5</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">이지영 교수님</span>
-                            <span>경영학과</span>
-                        </div>
-                        <div class="rating-stars">★★★★☆</div>
-                        <div class="lecture-reviews">
-                            "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
-                        </div>
-                    </li>
-                    <li class="lecture-item">
+                    <li class="lecture-item" onclick="viewLectureDetail('english')">
                         <div class="lecture-header">
                             <div class="lecture-title">영어회화</div>
                             <div class="lecture-rating">4.3</div>
@@ -895,7 +886,7 @@
                             "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
                         </div>
                     </li>
-                    <li class="lecture-item">
+                    <li class="lecture-item" onclick="viewLectureDetail('statistics')">
                         <div class="lecture-header">
                             <div class="lecture-title">경영통계학</div>
                             <div class="lecture-rating">3.7</div>
@@ -910,558 +901,762 @@
                         </div>
                     </li>
                 </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 알림 탭 -->
-        <div id="alert-tab" class="tab-content">
-            <div class="content-section">
-                <div class="section-title">
-                    <span>알림</span>
-                </div>
-                
-                <ul class="alert-list">
-                    <li class="alert-item">
-                        <div class="alert-icon">📢</div>
-                        <div class="alert-info">
-                            <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
-                            <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
-                            <div class="alert-time">10분 전</div>
+                            </div>
+                            
+                            <div class="content-pad"></div>
                         </div>
-                    </li>
-                    <li class="alert-item">
-                        <div class="alert-icon">🏫</div>
-                        <div class="alert-info">
-                            <div class="alert-title">강의실 알림</div>
-                            <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
-                            <div class="alert-time">30분 전</div>
+                        
+                        <!-- 알림 탭 -->
+                        <div id="alert-tab" class="tab-content">
+                            <div class="content-section">
+                                <div class="section-title">
+                                    <span>알림</span>
+                                </div>
+                                
+                                <ul class="alert-list">
+                                    <li class="alert-item" onclick="viewNotification('emergency')">
+                                        <div class="alert-icon">📢</div>
+                                        <div class="alert-info">
+                                            <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
+                                            <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
+                                            <div class="alert-time">10분 전</div>
+                                        </div>
+                                    </li>
+                                    <li class="alert-item" onclick="viewNotification('classroom')">
+                                        <div class="alert-icon">🏫</div>
+                                        <div class="alert-info">
+                                            <div class="alert-title">강의실 알림</div>
+                                            <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
+                                            <div class="alert-time">30분 전</div>
+                                        </div>
+                                    </li>
+                                    <li class="alert-item" onclick="viewNotification('assignment')">
+                                        <div class="alert-icon">📝</div>
+                                        <div class="alert-info">
+                                            <div class="alert-title">과제 알림</div>
+                                            <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
+                                            <div class="alert-time">1시간 전</div>
+                                        </div>
+                                    </li>
+                                    <li class="alert-item" onclick="viewNotification('library')">
+                                        <div class="alert-icon">📚</div>
+                                        <div class="alert-info">
+                                            <div class="alert-title">도서관 알림</div>
+                                            <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
+                                            <div class="alert-time">3시간 전</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-pad"></div>
                         </div>
-                    </li>
-                    <li class="alert-item">
-                        <div class="alert-icon">📝</div>
-                        <div class="alert-info">
-                            <div class="alert-title">과제 알림</div>
-                            <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
-                            <div class="alert-time">1시간 전</div>
+                        
+                        <!-- 내 정보 탭 -->
+                        <div id="profile-tab" class="tab-content">
+                            <div class="profile-section">
+                                <div class="profile-image">👨‍🎓</div>
+                                <div class="profile-info">
+                                    <div class="profile-name">조희정</div>
+                                    <div class="profile-detail">경영학과 | 3학년</div>
+                                    <div class="profile-detail">학번: 2021100215</div>
+                                </div>
+                            </div>
+                            
+                            <div class="content-section">
+                                <div class="section-title">
+                                    <span>내 정보 관리</span>
+                                </div>
+                                
+                                <ul class="menu-list">
+                                    <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                                        <div class="menu-title">내 시간표</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                                        <div class="menu-title">내 수강 강의</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                                        <div class="menu-title">즐겨찾는 강의실</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                                        <div class="menu-title">개인정보 수정</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-section">
+                                <div class="section-title">
+                                    <span>학적 정보</span>
+                                </div>
+                                
+                                <ul class="menu-list">
+                                    <li class="menu-item" onclick="navigateToProfilePage('grades')">
+                                        <div class="menu-title">성적 조회</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
+                                        <div class="menu-title">수강 신청 내역</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
+                                        <div class="menu-title">장학금 내역</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('tuition')">
+                                        <div class="menu-title">등록금 납부 내역</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-section">
+                                <div class="section-title">
+                                    <span>앱 설정</span>
+                                </div>
+                                
+                                <ul class="menu-list">
+                                    <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
+                                        <div class="menu-title">알림 설정</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
+                                        <div class="menu-title">위젯 및 메뉴 설정</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('reset-settings')">
+                                        <div class="menu-title">초기 설정 다시하기</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="navigateToProfilePage('app-info')">
+                                        <div class="menu-title">앱 정보</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                    <li class="menu-item" onclick="logout()">
+                                        <div class="menu-title">로그아웃</div>
+                                        <div class="menu-arrow">›</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-pad"></div>
                         </div>
-                    </li>
-                    <li class="alert-item">
-                        <div class="alert-icon">📚</div>
-                        <div class="alert-info">
-                            <div class="alert-title">도서관 알림</div>
-                            <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
-                            <div class="alert-time">3시간 전</div>
+                        
+                        <!-- 하단 탭 메뉴 -->
+                        <div class="tab-menu">
+                            <div class="tab-item active" onclick="switchTab('home')">
+                                <span class="tab-icon">🏠</span>
+                                <span>홈</span>
+                            </div>
+                            <div class="tab-item" onclick="switchTab('facility')">
+                                <span class="tab-icon">🏫</span>
+                                <span>시설</span>
+                            </div>
+                            <div class="tab-item" onclick="switchTab('community')">
+                                <span class="tab-icon">💬</span>
+                                <span>커뮤니티</span>
+                            </div>
+                            <div class="tab-item" onclick="switchTab('alert')">
+                                <span class="tab-icon">🔔</span>
+                                <span>알림</span>
+                            </div>
+                            <div class="tab-item" onclick="switchTab('profile')">
+                                <span class="tab-icon">👤</span>
+                                <span>내 정보</span>
+                            </div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 내 정보 탭 -->
-        <div id="profile-tab" class="tab-content">
-            <div class="profile-section">
-                <div class="profile-image">👨‍🎓</div>
-                <div class="profile-info">
-                    <div class="profile-name">홍길동</div>
-                    <div class="profile-detail">컴퓨터정보학과 | 2학년</div>
-                    <div class="profile-detail">학번: 2023123456</div>
-                </div>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>내 정보 관리</span>
-                </div>
+                    </div>
                 
-                <ul class="menu-list">
-                    <li class="menu-item">
-                        <div class="menu-title">내 시간표</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">내 수강 강의</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">즐겨찾는 강의실</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">개인정보 수정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>학적 정보</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item">
-                        <div class="menu-title">성적 조회</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">수강 신청 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">장학금 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">등록금 납부 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>앱 설정</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item">
-                        <div class="menu-title">알림 설정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">위젯 및 메뉴 설정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">초기 설정 다시하기</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item">
-                        <div class="menu-title">앱 정보</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="logout()">
-                        <div class="menu-title">로그아웃</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 하단 탭 메뉴 -->
-        <div class="tab-menu">
-            <div class="tab-item active" onclick="switchTab('home')">
-                <span class="tab-icon">🏠</span>
-                <span>홈</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('facility')">
-                <span class="tab-icon">🏫</span>
-                <span>시설</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('community')">
-                <span class="tab-icon">💬</span>
-                <span>커뮤니티</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('alert')">
-                <span class="tab-icon">🔔</span>
-                <span>알림</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('profile')">
-                <span class="tab-icon">👤</span>
-                <span>내 정보</span>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // 페이지 로드 시 실행되는 함수
-        document.addEventListener('DOMContentLoaded', function() {
-            // 카테고리 필터 기능
-            initCategoryFilter();
-            
-            // 로그인 상태 체크 및 UI 업데이트
-            checkLoginStatus();
-            
-            // 저장된 위젯 설정 불러오기
-            loadWidgetSettings();
-        });
-
-        // 카테고리 필터 초기화
-        function initCategoryFilter() {
-            const categoryTags = document.querySelectorAll('.category-tag');
-            categoryTags.forEach(tag => {
-                tag.addEventListener('click', function() {
-                    // 이미 선택된 태그 클릭 시 무시
-                    if (this.classList.contains('active')) return;
-                    
-                    // 현재 활성화된 태그 비활성화
-                    document.querySelector('.category-tag.active').classList.remove('active');
-                    
-                    // 클릭한 태그 활성화
-                    this.classList.add('active');
-                    
-                    // 여기에 필터링 로직 추가 가능
-                });
-            });
-        }
-
-        // 프로필 드롭다운 토글 함수
-        function toggleProfileDropdown() {
-            const dropdown = document.querySelector('.profile-dropdown');
-            dropdown.classList.toggle('active');
-            
-            // 드롭다운 외부 클릭 시 닫기 이벤트 추가
-            if (dropdown.classList.contains('active')) {
-                setTimeout(() => {
-                    document.addEventListener('click', closeProfileDropdown);
-                }, 0);
-            }
-        }
-
-        // 드롭다운 닫기 함수
-        function closeProfileDropdown(event) {
-            const dropdown = document.querySelector('.profile-dropdown');
-            const profileIcon = document.querySelector('.profile-icon');
-            
-            if (!dropdown.contains(event.target) && event.target !== profileIcon) {
-                dropdown.classList.remove('active');
-                document.removeEventListener('click', closeProfileDropdown);
-            }
-        }
-
-        // 로그인 상태 확인 및 UI 업데이트
-        function checkLoginStatus() {
-            // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            
-            // 로그인 버튼과 프로필 드롭다운 컨테이너
-            const loginButton = document.querySelector('.login-button');
-            const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
-            
-            if (currentUser) {
-                // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
-                if (loginButton) loginButton.style.display = 'none';
-                if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
-                
-                // 드롭다운 내 프로필 정보 업데이트
-                updateDropdownProfileInfo(currentUser);
-                
-                // 프로필 탭의 정보도 업데이트
-                updateProfileInfo(currentUser);
-            } else {
-                // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
-                if (loginButton) loginButton.style.display = 'block';
-                if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
-            }
-        }
-
-        // 드롭다운 프로필 정보 업데이트
-        function updateDropdownProfileInfo(studentId) {
-            const dropdown = document.querySelector('.profile-dropdown');
-            if (!dropdown) return;
-            
-            const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
-            const department = localStorage.getItem(`user_${studentId}_department`) || '';
-            const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
-            
-            // 이름 업데이트
-            const nameElement = dropdown.querySelector('.dropdown-profile-name');
-            if (nameElement) nameElement.textContent = name;
-            
-            // 학과 및 학년 정보 업데이트
-            const detailElement = dropdown.querySelector('.dropdown-profile-detail');
-            if (detailElement && department) {
-                let departmentText = '';
-                
-                switch(department) {
-                    case 'computerScience':
-                        departmentText = '컴퓨터정보학과';
-                        break;
-                    case 'business':
-                        departmentText = '경영학과';
-                        break;
-                    case 'nursing':
-                        departmentText = '간호학과';
-                        break;
-                    case 'engineering':
-                        departmentText = '공학계열';
-                        break;
-                    case 'arts':
-                        departmentText = '예술계열';
-                        break;
-                    default:
-                        departmentText = department;
-                }
-                
-                detailElement.textContent = `${departmentText} | ${grade}학년`;
-            }
-            
-            // 학번 업데이트
-            const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
-            if (studentIdElement) {
-                studentIdElement.textContent = `학번: ${studentId}`;
-            }
-        }
-
-        // 프로필 정보 업데이트
-        function updateProfileInfo(studentId) {
-            const profileTab = document.getElementById('profile-tab');
-            
-            if (profileTab) {
-                const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
-                const department = localStorage.getItem(`user_${studentId}_department`) || '';
-                const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
-                
-                // 프로필 이름 업데이트
-                const profileName = profileTab.querySelector('.profile-name');
-                if (profileName) {
-                    profileName.textContent = name;
-                }
-                
-                // 학과 및 학년 정보 업데이트
-                const profileDetail = profileTab.querySelector('.profile-detail');
-                if (profileDetail && department) {
-                    let departmentText = '';
-                    
-                    switch(department) {
-                        case 'computerScience':
-                            departmentText = '컴퓨터정보학과';
-                            break;
-                        case 'business':
-                            departmentText = '경영학과';
-                            break;
-                        case 'nursing':
-                            departmentText = '간호학과';
-                            break;
-                        case 'engineering':
-                            departmentText = '공학계열';
-                            break;
-                        case 'arts':
-                            departmentText = '예술계열';
-                            break;
-                        default:
-                            departmentText = department;
-                    }
-                    
-                    profileDetail.textContent = `${departmentText} | ${grade}학년`;
-                }
-                
-                // 학번 업데이트
-                const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
-                if (profileStudentId) {
-                    profileStudentId.textContent = `학번: ${studentId}`;
-                }
-            }
-        }
-
-        // 저장된 위젯 설정 불러오기
-        function loadWidgetSettings() {
-            // 로컬 스토리지에서 위젯 설정 가져오기
-            const widgetsData = localStorage.getItem('selectedWidgets');
-            
-            if (widgetsData) {
-                const selectedWidgets = JSON.parse(widgetsData);
-                
-                // 바로가기 메뉴 컨테이너
-                const shortcutMenu = document.querySelector('.shortcut-menu');
-                
-                if (shortcutMenu && selectedWidgets.length > 0) {
-                    // 기존 메뉴 아이템 제거
-                    shortcutMenu.innerHTML = '';
-                    
-                    // 선택된 위젯 추가 (최대 5개)
-                    const maxWidgets = Math.min(selectedWidgets.length, 5);
-                    
-                    for (let i = 0; i < maxWidgets; i++) {
-                        const widget = selectedWidgets[i];
-                        
-                        const shortcutItem = document.createElement('div');
-                        shortcutItem.className = 'shortcut-item';
-                        
-                        const shortcutIcon = document.createElement('div');
-                        shortcutIcon.className = 'shortcut-icon';
-                        shortcutIcon.textContent = widget.icon;
-                        
-                        const shortcutText = document.createElement('div');
-                        shortcutText.className = 'shortcut-text';
-                        shortcutText.textContent = widget.name;
-                        
-                        shortcutItem.appendChild(shortcutIcon);
-                        shortcutItem.appendChild(shortcutText);
-                        shortcutMenu.appendChild(shortcutItem);
-                        
-                        // 위젯 클릭 이벤트 추가
-                        shortcutItem.addEventListener('click', function() {
-                            handleWidgetClick(widget.name);
+                    <script>
+                        // 페이지 로드 시 실행되는 함수
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // 카테고리 필터 기능
+                            initCategoryFilter();
+                            
+                            // 로그인 상태 체크 및 UI 업데이트
+                            checkLoginStatus();
+                            
+                            // 저장된 위젯 설정 불러오기
+                            loadWidgetSettings();
                         });
-                    }
-                }
-            }
-            
-            // 하단 탭 메뉴 설정 불러오기
-            loadTabMenuSettings();
-        }
-
-        // 하단 탭 메뉴 설정 불러오기
-        function loadTabMenuSettings() {
-            const menuData = localStorage.getItem('activeMenus');
-            
-            if (menuData) {
-                const activeMenus = JSON.parse(menuData);
                 
-                // 하단 탭 메뉴 컨테이너
-                const tabMenu = document.querySelector('.tab-menu');
+                        // 카테고리 필터 초기화
+                        function initCategoryFilter() {
+                            const categoryTags = document.querySelectorAll('.category-tag');
+                            categoryTags.forEach(tag => {
+                                tag.addEventListener('click', function() {
+                                    // 이미 선택된 태그 클릭 시 무시
+                                    if (this.classList.contains('active')) return;
+                                    
+                                    // 현재 활성화된 태그 비활성화
+                                    document.querySelector('.category-tag.active').classList.remove('active');
+                                    
+                                    // 클릭한 태그 활성화
+                                    this.classList.add('active');
+                                    
+                                    // 여기에 필터링 로직 추가 가능
+                                });
+                            });
+                        }
                 
-                if (tabMenu && activeMenus.length > 0) {
-                    // 정렬
-                    activeMenus.sort((a, b) => a.order - b.order);
-                    
-                    // 기존 메뉴 아이템 제거
-                    tabMenu.innerHTML = '';
-                    
-                    // 활성화된 메뉴 추가
-                    activeMenus.forEach((menu, index) => {
-                        const tabItem = document.createElement('div');
-                        tabItem.className = 'tab-item';
-                        if (index === 0) {
-                            tabItem.classList.add('active');
+                        // 프로필 드롭다운 토글 함수
+                        function toggleProfileDropdown() {
+                            const dropdown = document.querySelector('.profile-dropdown');
+                            dropdown.classList.toggle('active');
+                            
+                            // 드롭다운 외부 클릭 시 닫기 이벤트 추가
+                            if (dropdown.classList.contains('active')) {
+                                setTimeout(() => {
+                                    document.addEventListener('click', closeProfileDropdown);
+                                }, 0);
+                            }
+                        }
+                
+                        // 드롭다운 닫기 함수
+                        function closeProfileDropdown(event) {
+                            const dropdown = document.querySelector('.profile-dropdown');
+                            const profileIcon = document.querySelector('.profile-icon');
+                            
+                            if (!dropdown.contains(event.target) && event.target !== profileIcon) {
+                                dropdown.classList.remove('active');
+                                document.removeEventListener('click', closeProfileDropdown);
+                            }
+                        }
+                
+                        // 로그인 상태 확인 및 UI 업데이트
+                        function checkLoginStatus() {
+                            // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
+                            const currentUser = localStorage.getItem('currentLoggedInUser');
+                            
+                            // 로그인 버튼과 프로필 드롭다운 컨테이너
+                            const loginButton = document.querySelector('.login-button');
+                            const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+                            
+                            if (currentUser) {
+                                // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
+                                if (loginButton) loginButton.style.display = 'none';
+                                if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
+                                
+                                // 드롭다운 내 프로필 정보 업데이트
+                                updateDropdownProfileInfo(currentUser);
+                                
+                                // 프로필 탭의 정보도 업데이트
+                                updateProfileInfo(currentUser);
+                            } else {
+                                // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
+                                if (loginButton) loginButton.style.display = 'block';
+                                if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+                            }
+                        }
+                
+                        // 드롭다운 프로필 정보 업데이트
+                        function updateDropdownProfileInfo(studentId) {
+                            const dropdown = document.querySelector('.profile-dropdown');
+                            if (!dropdown) return;
+                            
+                            const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+                            const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+                            const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+                            
+                            // 이름 업데이트
+                            const nameElement = dropdown.querySelector('.dropdown-profile-name');
+                            if (nameElement) nameElement.textContent = name;
+                            
+                            // 학과 및 학년 정보 업데이트
+                            const detailElement = dropdown.querySelector('.dropdown-profile-detail');
+                            if (detailElement && department) {
+                                let departmentText = '';
+                                
+                                switch(department) {
+                                    case 'computerScience':
+                                        departmentText = '컴퓨터정보학과';
+                                        break;
+                                    case 'business':
+                                        departmentText = '경영학과';
+                                        break;
+                                    case 'nursing':
+                                        departmentText = '간호학과';
+                                        break;
+                                    case 'engineering':
+                                        departmentText = '공학계열';
+                                        break;
+                                    case 'arts':
+                                        departmentText = '예술계열';
+                                        break;
+                                    default:
+                                        departmentText = department;
+                                }
+                                
+                                detailElement.textContent = `${departmentText} | ${grade}학년`;
+                            }
+                            
+                            // 학번 업데이트
+                            const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
+                            if (studentIdElement) {
+                                studentIdElement.textContent = `학번: ${studentId}`;
+                            }
+                        }
+                
+                        // 프로필 정보 업데이트
+                        function updateProfileInfo(studentId) {
+                            const profileTab = document.getElementById('profile-tab');
+                            
+                            if (profileTab) {
+                                const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+                                const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+                                const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+                                
+                                // 프로필 이름 업데이트
+                                const profileName = profileTab.querySelector('.profile-name');
+                                if (profileName) {
+                                    profileName.textContent = name;
+                                }
+                                
+                                // 학과 및 학년 정보 업데이트
+                                const profileDetail = profileTab.querySelector('.profile-detail');
+                                if (profileDetail && department) {
+                                    let departmentText = '';
+                                    
+                                    switch(department) {
+                                        case 'computerScience':
+                                            departmentText = '컴퓨터정보학과';
+                                            break;
+                                        case 'business':
+                                            departmentText = '경영학과';
+                                            break;
+                                        case 'nursing':
+                                            departmentText = '간호학과';
+                                            break;
+                                        case 'engineering':
+                                            departmentText = '공학계열';
+                                            break;
+                                        case 'arts':
+                                            departmentText = '예술계열';
+                                            break;
+                                        default:
+                                            departmentText = department;
+                                    }
+                                    
+                                    profileDetail.textContent = `${departmentText} | ${grade}학년`;
+                                }
+                                
+                                // 학번 업데이트
+                                const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
+                                if (profileStudentId) {
+                                    profileStudentId.textContent = `학번: ${studentId}`;
+                                }
+                            }
+                        }
+                
+                        // 저장된 위젯 설정 불러오기
+                        function loadWidgetSettings() {
+                            // 로컬 스토리지에서 위젯 설정 가져오기
+                            const widgetsData = localStorage.getItem('selectedWidgets');
+                            
+                            if (widgetsData) {
+                                const selectedWidgets = JSON.parse(widgetsData);
+                                
+                                // 바로가기 메뉴 컨테이너
+                                const shortcutMenu = document.querySelector('.shortcut-menu');
+                                
+                                if (shortcutMenu && selectedWidgets.length > 0) {
+                                    // 기존 메뉴 아이템 제거
+                                    shortcutMenu.innerHTML = '';
+                                    
+                                    // 선택된 위젯 추가 (최대 5개)
+                                    const maxWidgets = Math.min(selectedWidgets.length, 5);
+                                    
+                                    for (let i = 0; i < maxWidgets; i++) {
+                                        const widget = selectedWidgets[i];
+                                        
+                                        const shortcutItem = document.createElement('div');
+                                        shortcutItem.className = 'shortcut-item';
+                                        
+                                        const shortcutIcon = document.createElement('div');
+                                        shortcutIcon.className = 'shortcut-icon';
+                                        shortcutIcon.textContent = widget.icon;
+                                        
+                                        const shortcutText = document.createElement('div');
+                                        shortcutText.className = 'shortcut-text';
+                                        shortcutText.textContent = widget.name;
+                                        
+                                        shortcutItem.appendChild(shortcutIcon);
+                                        shortcutItem.appendChild(shortcutText);
+                                        shortcutMenu.appendChild(shortcutItem);
+                                        
+                                        // 위젯 클릭 이벤트 추가
+                                        shortcutItem.addEventListener('click', function() {
+                                            handleWidgetClick(widget.name);
+                                        });
+                                    }
+                                }
+                            }
+                            
+                            // 하단 탭 메뉴 설정 불러오기
+                            loadTabMenuSettings();
+                        }
+                
+                        // 하단 탭 메뉴 설정 불러오기
+                        function loadTabMenuSettings() {
+                            const menuData = localStorage.getItem('activeMenus');
+                            
+                            if (menuData) {
+                                const activeMenus = JSON.parse(menuData);
+                                
+                                // 하단 탭 메뉴 컨테이너
+                                const tabMenu = document.querySelector('.tab-menu');
+                                
+                                if (tabMenu && activeMenus.length > 0) {
+                                    // 정렬
+                                    activeMenus.sort((a, b) => a.order - b.order);
+                                    
+                                    // 기존 메뉴 아이템 제거
+                                    tabMenu.innerHTML = '';
+                                    
+                                    // 활성화된 메뉴 추가
+                                    activeMenus.forEach((menu, index) => {
+                                        const tabItem = document.createElement('div');
+                                        tabItem.className = 'tab-item';
+                                        if (index === 0) {
+                                            tabItem.classList.add('active');
+                                        }
+                                        
+                                        // 탭 이름에 따라 ID 설정
+                                        let tabId;
+                                        switch (menu.name) {
+                                            case '홈':
+                                                tabId = 'home';
+                                                break;
+                                            case '시설':
+                                                tabId = 'facility';
+                                                break;
+                                            case '커뮤니티':
+                                                tabId = 'community';
+                                                break;
+                                            case '알림':
+                                                tabId = 'alert';
+                                                break;
+                                            case '내 정보':
+                                                tabId = 'profile';
+                                                break;
+                                            case '학식':
+                                                tabId = 'cafeteria';
+                                                break;
+                                            case '셔틀버스':
+                                                tabId = 'shuttle';
+                                                break;
+                                            case '강의평가':
+                                                tabId = 'lecture';
+                                                break;
+                                            default:
+                                                tabId = menu.name.toLowerCase();
+                                        }
+                                        
+                                        tabItem.onclick = function() {
+                                            switchTab(tabId);
+                                        };
+                                        
+                                        const tabIcon = document.createElement('span');
+                                        tabIcon.className = 'tab-icon';
+                                        tabIcon.textContent = menu.icon;
+                                        
+                                        const tabText = document.createElement('span');
+                                        tabText.textContent = menu.name;
+                                        
+                                        tabItem.appendChild(tabIcon);
+                                        tabItem.appendChild(tabText);
+                                        tabMenu.appendChild(tabItem);
+                                    });
+                                }
+                            }
+                        }
+                
+                        // 위젯 클릭 처리
+                        function handleWidgetClick(widgetName) {
+                            // 위젯 이름에 따른 기능 처리
+                            switch (widgetName) {
+                                case '강의실':
+                                    switchTab('facility');
+                                    break;
+                                case '강의평가':
+                                    switchTab('community');
+                                    break;
+                                case '셔틀버스':
+                                    goToPage('shuttle');
+                                    break;
+                                case '학식':
+                                    goToPage('cafeteria');
+                                    break;
+                                case '학사일정':
+                                    goToPage('academic-calendar');
+                                    break;
+                                case '도서관':
+                                    goToPage('library');
+                                    break;
+                                case '내 시간표':
+                                    navigateToProfilePage('timetable');
+                                    break;
+                                case '공지사항':
+                                    // 공지사항 섹션으로 스크롤
+                                    const noticeSection = document.querySelector('.notice-list');
+                                    if (noticeSection) {
+                                        noticeSection.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                    break;
+                                default:
+                                    alert(`${widgetName} 기능은 준비 중입니다.`);
+                            }
+                        }
+                
+                        // 탭 전환 함수
+                        function switchTab(tabName) {
+                            // 모든 탭 콘텐츠 숨기기
+                            document.querySelectorAll('.tab-content').forEach(tab => {
+                                tab.classList.remove('active');
+                            });
+                            
+                            // 선택한 탭 콘텐츠 표시
+                            document.getElementById(`${tabName}-tab`).classList.add('active');
+                            
+                            // 탭 메뉴 활성화 상태 변경
+                            document.querySelectorAll('.tab-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            
+                            // 현재 선택된 탭 버튼 활성화
+                            const tabItems = document.querySelectorAll('.tab-item');
+                            for (let i = 0; i < tabItems.length; i++) {
+                                if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+                                    tabItems[i].classList.add('active');
+                                    break;
+                                }
+                            }
                         }
                         
-                        // 탭 이름에 따라 ID 설정
-                        let tabId;
-                        switch (menu.name) {
-                            case '홈':
-                                tabId = 'home';
-                                break;
-                            case '시설':
-                                tabId = 'facility';
-                                break;
-                            case '커뮤니티':
-                                tabId = 'community';
-                                break;
-                            case '알림':
-                                tabId = 'alert';
-                                break;
-                            case '내 정보':
-                                tabId = 'profile';
-                                break;
-                            case '학식':
-                                tabId = 'cafeteria';
-                                break;
-                            case '셔틀버스':
-                                tabId = 'shuttle';
-                                break;
-                            case '강의평가':
-                                tabId = 'lecture';
-                                break;
-                            default:
-                                tabId = menu.name.toLowerCase();
+                        // 메인 홈으로 이동
+                        function goToHome() {
+                            switchTab('home');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
                         }
                         
-                        tabItem.onclick = function() {
-                            switchTab(tabId);
-                        };
+                        // 검색 열기
+                        function openSearch() {
+                            alert('검색 기능을 실행합니다.');
+                            // 검색 입력창에 포커스
+                            document.querySelector('.search-input').focus();
+                        }
                         
-                        const tabIcon = document.createElement('span');
-                        tabIcon.className = 'tab-icon';
-                        tabIcon.textContent = menu.icon;
+                        // 검색 키 입력 처리
+                        function handleSearchKeyPress(event) {
+                            if (event.key === 'Enter') {
+                                const searchTerm = event.target.value.trim();
+                                if (searchTerm) {
+                                    alert(`'${searchTerm}'에 대한 검색을 시작합니다.`);
+                                }
+                            }
+                        }
                         
-                        const tabText = document.createElement('span');
-                        tabText.textContent = menu.name;
+                        // 공지사항 필터링
+                        function filterNotices(category) {
+                            alert(`${category} 카테고리의 공지사항을 필터링합니다.`);
+                            
+                            // 카테고리 태그 활성화 상태 변경
+                            document.querySelectorAll('.category-tag').forEach(tag => {
+                                tag.classList.remove('active');
+                            });
+                            
+                            // 선택된 카테고리 활성화
+                            document.querySelectorAll('.category-tag').forEach(tag => {
+                                if (tag.textContent.toLowerCase().includes(category) || 
+                                    (category === 'all' && tag.textContent === '전체')) {
+                                    tag.classList.add('active');
+                                }
+                            });
+                        }
                         
-                        tabItem.appendChild(tabIcon);
-                        tabItem.appendChild(tabText);
-                        tabMenu.appendChild(tabItem);
-                    });
-                }
-            }
-        }
-
-        // 위젯 클릭 처리
-        function handleWidgetClick(widgetName) {
-            // 위젯 이름에 따른 기능 처리
-            switch (widgetName) {
-                case '강의실':
-                    switchTab('facility');
+                        // 강의 필터링
+                        function filterLectures(category) {
+                            alert(`${category} 카테고리의 강의를 필터링합니다.`);
+                            
+                            // 카테고리 태그 활성화 상태 변경
+                            const communityTab = document.getElementById('community-tab');
+                            communityTab.querySelectorAll('.category-tag').forEach(tag => {
+                                tag.classList.remove('active');
+                            });
+                            
+                            // 선택된 카테고리 활성화
+                            communityTab.querySelectorAll('.category-tag').forEach(tag => {
+                                if (tag.textContent.toLowerCase().includes(category) || 
+                                    (category === 'all' && tag.textContent === '전체')) {
+                                    tag.classList.add('active');
+                                }
+                            });
+                        }
+                        
+                        // 페이지 이동 함수
+                        function goToPage(pageName) {
+                            // 페이지 이름에 따라 분기 처리
+                            switch(pageName) {
+                                case 'login':
+                                    alert('로그인 페이지로 이동합니다.');
+                                    window.location.href = 'login.html';
+                                    break;
+                                    
+                                case 'profile-edit':
+                                    alert('프로필 수정 페이지로 이동합니다.');
+                                    window.location.href = 'profile-edit.html';
+                                    break;
+                                    
+                                case 'classroom':
+                                    switchTab('facility');
+                                    break;
+                                    
+                                case 'lecture-evaluation':
+                                    switchTab('community');
+                                    break;
+                                    
+                                case 'shuttle':
+                                    alert('셔틀버스 시간표 페이지로 이동합니다.');
+                                    break;
+                                    
+                                case 'cafeteria':
+                                    alert('학식 메뉴 페이지로 이동합니다.');
+                                    break;
+                                    
+                                case 'academic-calendar':
+                                    alert('학사일정 페이지로 이동합니다.');
+                                    break;
+                                    
+                                case 'library':
+                                    alert('도서관 페이지로 이동합니다.');
+                                    break;
+                                    
+                                case 'notices':
+                                    alert('전체 공지사항 페이지로 이동합니다.');
+                                    break;
+                                    
+                                default:
+                                    alert(`${pageName} 페이지로 이동합니다.`);
+                            }
+                        }
+                        
+                        // 내 정보 탭 메뉴 페이지 이동 함수
+                        function navigateToProfilePage(pageName) {
+                            // 현재 로그인 상태 확인
+                            const currentUser = localStorage.getItem('currentLoggedInUser');
+                            
+                            if (!currentUser) {
+                                alert('로그인이 필요한 서비스입니다.');
+                                goToPage('login');
+                                return;
+                            }
+                            
+                            // 페이지 이름에 따라 분기 처리
+                            switch(pageName) {
+                                case 'timetable':
+                                    alert('내 시간표 페이지로 이동합니다.');
+                                    window.location.href = 'timetable.html';
+                                    break;
+                                    
+                                case 'my-courses':
+                                    alert('내 수강 강의 페이지로 이동합니다.');
+                                    // window.location.href = 'my-courses.html';
+                                    break;
+                                    
+                                case 'favorite-classrooms':
+                                    alert('즐겨찾는 강의실 페이지로 이동합니다.');
+                                    // window.location.href = 'favorite-classrooms.html';
+                                    break;
+                                    
+                                    case 'profile-edit':
+                    alert('개인정보 수정 페이지로 이동합니다.');
+                    window.location.href = 'profile-edit.html';
                     break;
-                case '강의평가':
-                    switchTab('community');
+                    
+                case 'grades':
+                    alert('성적 조회 페이지로 이동합니다.');
+                    // window.location.href = 'grades.html';
                     break;
-                case '셔틀버스':
-                    alert('셔틀버스 시간표 페이지로 이동합니다.');
+                    
+                case 'course-registration':
+                    alert('수강 신청 내역 페이지로 이동합니다.');
+                    // window.location.href = 'course-registration.html';
                     break;
-                case '학식':
-                    alert('학식 메뉴 페이지로 이동합니다.');
+                    
+                case 'scholarships':
+                    alert('장학금 내역 페이지로 이동합니다.');
+                    // window.location.href = 'scholarships.html';
                     break;
-                case '학사일정':
-                    alert('학사일정 페이지로 이동합니다.');
+                    
+                case 'tuition':
+                    alert('등록금 납부 내역 페이지로 이동합니다.');
+                    // window.location.href = 'tuition.html';
                     break;
-                case '도서관':
-                    alert('도서관 페이지로 이동합니다.');
+                    
+                case 'notification-settings':
+                    alert('알림 설정 페이지로 이동합니다.');
+                    // window.location.href = 'notification-settings.html';
                     break;
-                case '내 시간표':
-                    alert('시간표 페이지로 이동합니다.');
+                    
+                case 'widget-settings':
+                    alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+                    // window.location.href = 'widget-settings.html';
                     break;
-                case '공지사항':
-                    // 공지사항 섹션으로 스크롤
-                    const noticeSection = document.querySelector('.notice-list');
-                    if (noticeSection) {
-                        noticeSection.scrollIntoView({ behavior: 'smooth' });
+                    
+                case 'reset-settings':
+                    if (confirm('모든 설정을 초기화하고 처음 설정으로 돌아가시겠습니까?')) {
+                        localStorage.setItem(`user_${currentUser}_first_login`, 'true');
+                        alert('설정이 초기화되었습니다.');
+                        // window.location.href = 'widget-settings.html';
                     }
                     break;
+                    
+                case 'app-info':
+                    alert('앱 정보 페이지로 이동합니다.');
+                    // window.location.href = 'app-info.html';
+                    break;
+                    
                 default:
-                    alert(`${widgetName} 기능은 준비 중입니다.`);
-            }
-        }
-
-        // 탭 전환 함수
-        function switchTab(tabName) {
-            // 모든 탭 콘텐츠 숨기기
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // 선택한 탭 콘텐츠 표시
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            
-            // 탭 메뉴 활성화 상태 변경
-            document.querySelectorAll('.tab-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // 현재 선택된 탭 버튼 활성화
-            const tabItems = document.querySelectorAll('.tab-item');
-            for (let i = 0; i < tabItems.length; i++) {
-                if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
-                    tabItems[i].classList.add('active');
-                    break;
-                }
+                    alert('준비 중인 기능입니다.');
             }
         }
         
-        // 페이지 이동 함수
-        function goToPage(pageName) {
-            if (pageName === 'login') {
-                // 로그인 페이지로 이동
-                window.location.href = 'login.html';
-            } else if (pageName === 'profile-edit') {
-                // 프로필 수정 페이지로 이동 (아직 미구현)
-                alert('프로필 수정 페이지로 이동합니다.');
-            } else {
-                // 다른 페이지의 경우 간단한 알림 표시
-                alert(`${pageName} 페이지로 이동합니다.`);
-            }
+        // 공지사항 상세 보기
+        function viewNoticeDetail(noticeId) {
+            alert(`공지사항 ${noticeId} 상세 페이지로 이동합니다.`);
+            // window.location.href = `notice-detail.html?id=${noticeId}`;
+        }
+        
+        // 강의 상세 보기
+        function viewLectureDetail(lectureId) {
+            alert(`강의 ${lectureId} 상세 페이지로 이동합니다.`);
+            // window.location.href = `lecture-detail.html?id=${lectureId}`;
+        }
+        
+        // 알림 상세 보기
+        function viewNotification(notificationId) {
+            alert(`${notificationId} 알림 상세 내용을 확인합니다.`);
         }
         
         // 건물 상세 보기
         function showBuildingDetail(buildingName) {
             alert(`${buildingName} 상세 페이지로 이동합니다.`);
+            // window.location.href = `building-detail.html?name=${encodeURIComponent(buildingName)}`;
+        }
+        
+        // 편의 시설 상세 보기
+        function showFacilityDetail(facilityId) {
+            alert(`${facilityId} 시설 상세 정보를 확인합니다.`);
+            // window.location.href = `facility-detail.html?id=${facilityId}`;
+        }
+        
+        // 전체 지도 보기
+        function openFullMap() {
+            alert('캠퍼스 전체 지도를 확인합니다.');
+            // window.location.href = 'campus-map.html';
         }
         
         // 로그아웃 기능
@@ -1471,9 +1666,27 @@
                 localStorage.removeItem('currentLoggedInUser');
                 
                 // 페이지 새로고침
+                alert('로그아웃 되었습니다.');
                 window.location.reload();
             }
         }
+
+        // 페이지 첫 로드시 로컬 스토리지에 기본 사용자 설정
+        function initializeDefaultUser() {
+            const studentId = '2021100215'; // 기본 학번
+            if (!localStorage.getItem('currentLoggedInUser')) {
+                localStorage.setItem('currentLoggedInUser', studentId);
+                localStorage.setItem(`user_${studentId}_name`, '조희정');
+                localStorage.setItem(`user_${studentId}_department`, 'business');
+                localStorage.setItem(`user_${studentId}_grade`, '3');
+                localStorage.setItem(`user_${studentId}_email`, 'student@yeonsung.ac.kr');
+                localStorage.setItem(`user_${studentId}_phone`, '010-1234-5678');
+                localStorage.setItem(`user_${studentId}_password`, 'Password1!');
+            }
+        }
+
+        // 페이지 로드시 기본 사용자 초기화
+        initializeDefaultUser();
     </script>
 </body>
 </html>

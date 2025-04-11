@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 시간표 - 연성대학교 캠퍼스 가이드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #c62917;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .content-section {
+            padding: 16px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .timetable-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+            border: 1px solid #ddd;
+        }
+        
+        .timetable th, .timetable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .timetable th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .timetable .time-col {
+            width: 60px;
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .timetable .class-cell {
+            height: 80px;
+            vertical-align: top;
+            padding: 4px;
+            background-color: #ffffff;
+        }
+        
+        .class-item {
+            padding: 4px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 2px;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .class-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .class-info {
+            font-size: 10px;
+        }
+        
+        .class-room {
+            text-align: right;
+        }
+        
+        .cs-class { background-color: #4caf50; }
+        .eng-class { background-color: #2196f3; }
+        .art-class { background-color: #9c27b0; }
+        .biz-class { background-color: #ff9800; }
+        .gen-class { background-color: #607d8b; }
+        
+        .semester-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .semester-button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .semester-button.active {
+            background-color: #c62917;
+            color: white;
+            border-color: #c62917;
+        }
+        
+        .class-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+        
+        .class-list-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .class-list-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .class-list-title {
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        .class-list-details {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .class-list-time {
+            color: #888;
+            font-size: 13px;
+        }
+        
+        .class-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            align-self: flex-start;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 40px 0;
+            color: #999;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="back-button" onclick="goToBack()">
+                <span>←</span>
+                <span>뒤로</span>
+            </div>
+            <div class="page-title">내 시간표</div>
+            <div style="width: 40px;"></div> <!-- 균형을 위한 빈 공간 -->
+        </header>
+        
+        <div class="content-section">
+            <div class="semester-selector">
+                <button class="semester-button" onclick="changeSemester('2024-1')">2024년 1학기</button>
+                <button class="semester-button active" onclick="changeSemester('2025-1')">2025년 1학기</button>
+            </div>
+            
+            <div class="timetable-container">
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th class="time-col">시간</th>
+                            <th>월</th>
+                            <th>화</th>
+                            <th>수</th>
+                            <th>목</th>
+                            <th>금</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="time-col">1교시<br>9:00</td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item eng-class">
+                                    <div class="class-name">자료구조</div>
+                                    <div class="class-info">김영수 교수님</div>
+                                    <div class="class-room">3-101호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item eng-class">
+                                    <div class="class-name">자료구조</div>
+                                    <div class="class-info">김영수 교수님</div>
+                                    <div class="class-room">3-101호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell"></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">2교시<br>10:00</td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item eng-class">
+                                    <div class="class-name">자료구조</div>
+                                    <div class="class-info">김영수 교수님</div>
+                                    <div class="class-room">3-101호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item gen-class">
+                                    <div class="class-name">대학영어</div>
+                                    <div class="class-info">John Smith 교수님</div>
+                                    <div class="class-room">1-301호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item eng-class">
+                                    <div class="class-name">자료구조</div>
+                                    <div class="class-info">김영수 교수님</div>
+                                    <div class="class-room">3-101호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell"></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">3교시<br>11:00</td>
+                            <td class="class-cell">
+                                <div class="class-item biz-class">
+                                    <div class="class-name">마케팅원론</div>
+                                    <div class="class-info">이지영 교수님</div>
+                                    <div class="class-room">2-201호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item gen-class">
+                                    <div class="class-name">대학영어</div>
+                                    <div class="class-info">John Smith 교수님</div>
+                                    <div class="class-room">1-301호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item cs-class">
+                                    <div class="class-name">웹프로그래밍실습</div>
+                                    <div class="class-info">김민수 교수님</div>
+                                    <div class="class-room">3-201호</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">4교시<br>12:00</td>
+                            <td class="class-cell">
+                                <div class="class-item biz-class">
+                                    <div class="class-name">마케팅원론</div>
+                                    <div class="class-info">이지영 교수님</div>
+                                    <div class="class-room">2-201호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item cs-class">
+                                    <div class="class-name">웹프로그래밍실습</div>
+                                    <div class="class-info">김민수 교수님</div>
+                                    <div class="class-room">3-201호</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">5교시<br>13:00</td>
+                            <td class="class-cell">
+                                <div class="class-item biz-class">
+                                    <div class="class-name">마케팅원론</div>
+                                    <div class="class-info">이지영 교수님</div>
+                                    <div class="class-room">2-201호</div>
+                                </div>
+                            </td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item cs-class">
+                                    <div class="class-name">웹프로그래밍실습</div>
+                                    <div class="class-info">김민수 교수님</div>
+                                    <div class="class-room">3-201호</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">6교시<br>14:00</td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">7교시<br>15:00</td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">8교시<br>16:00</td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                            <td class="class-cell"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section-title">수강 과목 목록</div>
+            
+            <ul class="class-list">
+                <li class="class-list-item">
+                    <div class="class-list-info">
+                        <div class="class-list-title">자료구조</div>
+                        <div class="class-list-details">김영수 교수님 | 3학점 | 전공필수</div>
+                        <div class="class-list-time">화, 목 1-2교시 | 3-101호</div>
+                    </div>
+                    <div class="class-badge eng-class">공학</div>
+                </li>
+                <li class="class-list-item">
+                    <div class="class-list-info">
+                        <div class="class-list-title">대학영어</div>
+                        <div class="class-list-details">John Smith 교수님 | 2학점 | 교양필수</div>
+                        <div class="class-list-time">수 2-3교시 | 1-301호</div>
+                    </div>
+                    <div class="class-badge gen-class">교양</div>
+                </li>
+                <li class="class-list-item">
+                    <div class="class-list-info">
+                        <div class="class-list-title">마케팅원론</div>
+                        <div class="class-list-details">이지영 교수님 | 3학점 | 전공선택</div>
+                        <div class="class-list-time">월 3-5교시 | 2-201호</div>
+                    </div>
+                    <div class="class-badge biz-class">경영</div>
+                </li>
+                <li class="class-list-item">
+                    <div class="class-list-info">
+                        <div class="class-list-title">웹프로그래밍실습</div>
+                        <div class="class-list-details">김민수 교수님 | 3학점 | 전공필수</div>
+                        <div class="class-list-time">금 3-5교시 | 3-201호</div>
+                    </div>
+                    <div class="class-badge cs-class">컴퓨터</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 실행되는 함수
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 상태 체크
+            checkLoginStatus();
+        });
+        
+        // 로그인 상태 확인
+        function checkLoginStatus() {
+            // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            if (!currentUser) {
+                // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+                alert('로그인이 필요한 서비스입니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // 사용자의 시간표 정보 로드
+            loadTimetable(currentUser);
+        }
+        
+        // 시간표 로드 함수
+        function loadTimetable(studentId) {
+            // 여기서는 기본적인 시간표를 표시합니다.
+            // 실제 구현에서는 사용자별 시간표 데이터를 서버나 로컬 스토리지에서 로드하여 표시합니다.
+            console.log('시간표를 로드합니다. 학번: ' + studentId);
+        }
+        
+        // 학기 변경 함수
+        function changeSemester(semester) {
+            // 선택된 버튼 스타일 변경
+            const buttons = document.querySelectorAll('.semester-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+                if (button.textContent.includes(semester)) {
+                    button.classList.add('active');
+                }
+            });
+            
+            // 여기서는 2025-1 학기의 시간표만 표시합니다.
+            // 다른 학기를 선택하면 빈 시간표를 보여줍니다.
+            const timetableContainer = document.querySelector('.timetable-container');
+            const classList = document.querySelector('.class-list');
+            
+            if (semester === '2025-1') {
+                timetableContainer.style.display = 'block';
+                classList.style.display = 'block';
+                document.querySelector('.empty-message')?.remove();
+            } else {
+                timetableContainer.style.display = 'none';
+                classList.style.display = 'none';
+                
+                // 빈 메시지 표시
+                if (!document.querySelector('.empty-message')) {
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.className = 'empty-message';
+                    emptyMessage.textContent = '해당 학기에 수강한 과목이 없습니다.';
+                    document.querySelector('.content-section').appendChild(emptyMessage);
+                }
+            }
+        }
+        
+        // 이전 페이지로 이동
+        function goToBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
