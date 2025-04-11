@@ -874,6 +874,7 @@
                         <div class="alert-icon">📢</div>
                         <div class="alert-info">
                             <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
+                            ```html
                             <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
                             <div class="alert-time">10분 전</div>
                         </div>
@@ -991,7 +992,7 @@
                         <div class="menu-title">앱 정보</div>
                         <div class="menu-arrow">›</div>
                     </li>
-                    <li class="menu-item">
+                    <li class="menu-item" onclick="logout()">
                         <div class="menu-title">로그아웃</div>
                         <div class="menu-arrow">›</div>
                     </li>
@@ -1027,6 +1028,280 @@
     </div>
 
     <script>
+        // 페이지 로드 시 실행되는 함수
+        document.addEventListener('DOMContentLoaded', function() {
+            // 카테고리 필터 기능
+            initCategoryFilter();
+            
+            // 로그인 상태 체크 및 UI 업데이트
+            checkLoginStatus();
+            
+            // 저장된 위젯 설정 불러오기
+            loadWidgetSettings();
+        });
+
+        // 카테고리 필터 초기화
+        function initCategoryFilter() {
+            const categoryTags = document.querySelectorAll('.category-tag');
+            categoryTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // 이미 선택된 태그 클릭 시 무시
+                    if (this.classList.contains('active')) return;
+                    
+                    // 현재 활성화된 태그 비활성화
+                    document.querySelector('.category-tag.active').classList.remove('active');
+                    
+                    // 클릭한 태그 활성화
+                    this.classList.add('active');
+                    
+                    // 여기에 필터링 로직 추가 가능
+                });
+            });
+        }
+
+        // 로그인 상태 확인 및 UI 업데이트
+        function checkLoginStatus() {
+            // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            if (currentUser) {
+                // 로그인 상태: 로그인 버튼을 프로필 아이콘으로 변경
+                const headerIcons = document.querySelector('.header-icons');
+                const loginButton = headerIcons.querySelector('.login-button');
+                
+                if (loginButton) {
+                    // 로그인 버튼 제거
+                    loginButton.remove();
+                    
+                    // 프로필 아이콘 추가
+                    const profileIcon = document.createElement('span');
+                    profileIcon.className = 'icon';
+                    profileIcon.textContent = '👤';
+                    profileIcon.style.cursor = 'pointer';
+                    profileIcon.onclick = function() {
+                        // 프로필 아이콘 클릭 시 프로필 탭으로 이동
+                        switchTab('profile');
+                    };
+                    
+                    headerIcons.appendChild(profileIcon);
+                }
+                
+                // 프로필 정보 업데이트
+                updateProfileInfo(currentUser);
+            }
+        }
+
+        // 프로필 정보 업데이트
+        function updateProfileInfo(studentId) {
+            const profileTab = document.getElementById('profile-tab');
+            
+            if (profileTab) {
+                const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
+                const department = localStorage.getItem(`user_${studentId}_department`) || '';
+                const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
+                
+                // 프로필 이름 업데이트
+                const profileName = profileTab.querySelector('.profile-name');
+                if (profileName) {
+                    profileName.textContent = name;
+                }
+                
+                // 학과 및 학년 정보 업데이트
+                const profileDetail = profileTab.querySelector('.profile-detail');
+                if (profileDetail && department) {
+                    let departmentText = '';
+                    
+                    switch(department) {
+                        case 'computerScience':
+                            departmentText = '컴퓨터정보학과';
+                            break;
+                        case 'business':
+                            departmentText = '경영학과';
+                            break;
+                        case 'nursing':
+                            departmentText = '간호학과';
+                            break;
+                        case 'engineering':
+                            departmentText = '공학계열';
+                            break;
+                        case 'arts':
+                            departmentText = '예술계열';
+                            break;
+                        default:
+                            departmentText = department;
+                    }
+                    
+                    profileDetail.textContent = `${departmentText} | ${grade}학년`;
+                }
+                
+                // 학번 업데이트
+                const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
+                if (profileStudentId) {
+                    profileStudentId.textContent = `학번: ${studentId}`;
+                }
+            }
+        }
+
+        // 저장된 위젯 설정 불러오기
+        function loadWidgetSettings() {
+            // 로컬 스토리지에서 위젯 설정 가져오기
+            const widgetsData = localStorage.getItem('selectedWidgets');
+            
+            if (widgetsData) {
+                const selectedWidgets = JSON.parse(widgetsData);
+                
+                // 바로가기 메뉴 컨테이너
+                const shortcutMenu = document.querySelector('.shortcut-menu');
+                
+                if (shortcutMenu && selectedWidgets.length > 0) {
+                    // 기존 메뉴 아이템 제거
+                    shortcutMenu.innerHTML = '';
+                    
+                    // 선택된 위젯 추가 (최대 5개)
+                    const maxWidgets = Math.min(selectedWidgets.length, 5);
+                    
+                    for (let i = 0; i < maxWidgets; i++) {
+                        const widget = selectedWidgets[i];
+                        
+                        const shortcutItem = document.createElement('div');
+                        shortcutItem.className = 'shortcut-item';
+                        
+                        const shortcutIcon = document.createElement('div');
+                        shortcutIcon.className = 'shortcut-icon';
+                        shortcutIcon.textContent = widget.icon;
+                        
+                        const shortcutText = document.createElement('div');
+                        shortcutText.className = 'shortcut-text';
+                        shortcutText.textContent = widget.name;
+                        
+                        shortcutItem.appendChild(shortcutIcon);
+                        shortcutItem.appendChild(shortcutText);
+                        shortcutMenu.appendChild(shortcutItem);
+                        
+                        // 위젯 클릭 이벤트 추가
+                        shortcutItem.addEventListener('click', function() {
+                            handleWidgetClick(widget.name);
+                        });
+                    }
+                }
+            }
+            
+            // 하단 탭 메뉴 설정 불러오기
+            loadTabMenuSettings();
+        }
+
+        // 하단 탭 메뉴 설정 불러오기
+        function loadTabMenuSettings() {
+            const menuData = localStorage.getItem('activeMenus');
+            
+            if (menuData) {
+                const activeMenus = JSON.parse(menuData);
+                
+                // 하단 탭 메뉴 컨테이너
+                const tabMenu = document.querySelector('.tab-menu');
+                
+                if (tabMenu && activeMenus.length > 0) {
+                    // 정렬
+                    activeMenus.sort((a, b) => a.order - b.order);
+                    
+                    // 기존 메뉴 아이템 제거
+                    tabMenu.innerHTML = '';
+                    
+                    // 활성화된 메뉴 추가
+                    activeMenus.forEach((menu, index) => {
+                        const tabItem = document.createElement('div');
+                        tabItem.className = 'tab-item';
+                        if (index === 0) {
+                            tabItem.classList.add('active');
+                        }
+                        
+                        // 탭 이름에 따라 ID 설정
+                        let tabId;
+                        switch (menu.name) {
+                            case '홈':
+                                tabId = 'home';
+                                break;
+                            case '시설':
+                                tabId = 'facility';
+                                break;
+                            case '커뮤니티':
+                                tabId = 'community';
+                                break;
+                            case '알림':
+                                tabId = 'alert';
+                                break;
+                            case '내 정보':
+                                tabId = 'profile';
+                                break;
+                            case '학식':
+                                tabId = 'cafeteria';
+                                break;
+                            case '셔틀버스':
+                                tabId = 'shuttle';
+                                break;
+                            case '강의평가':
+                                tabId = 'lecture';
+                                break;
+                            default:
+                                tabId = menu.name.toLowerCase();
+                        }
+                        
+                        tabItem.onclick = function() {
+                            switchTab(tabId);
+                        };
+                        
+                        const tabIcon = document.createElement('span');
+                        tabIcon.className = 'tab-icon';
+                        tabIcon.textContent = menu.icon;
+                        
+                        const tabText = document.createElement('span');
+                        tabText.textContent = menu.name;
+                        
+                        tabItem.appendChild(tabIcon);
+                        tabItem.appendChild(tabText);
+                        tabMenu.appendChild(tabItem);
+                    });
+                }
+            }
+        }
+
+        // 위젯 클릭 처리
+        function handleWidgetClick(widgetName) {
+            // 위젯 이름에 따른 기능 처리
+            switch (widgetName) {
+                case '강의실':
+                    switchTab('facility');
+                    break;
+                case '강의평가':
+                    switchTab('community');
+                    break;
+                case '셔틀버스':
+                    alert('셔틀버스 시간표 페이지로 이동합니다.');
+                    break;
+                case '학식':
+                    alert('학식 메뉴 페이지로 이동합니다.');
+                    break;
+                case '학사일정':
+                    alert('학사일정 페이지로 이동합니다.');
+                    break;
+                case '도서관':
+                    alert('도서관 페이지로 이동합니다.');
+                    break;
+                case '내 시간표':
+                    alert('시간표 페이지로 이동합니다.');
+                    break;
+                case '공지사항':
+                    // 공지사항 섹션으로 스크롤
+                    const noticeSection = document.querySelector('.notice-list');
+                    if (noticeSection) {
+                        noticeSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    break;
+                default:
+                    alert(`${widgetName} 기능은 준비 중입니다.`);
+            }
+        }
+
         // 탭 전환 함수
         function switchTab(tabName) {
             // 모든 탭 콘텐츠 숨기기
@@ -1043,8 +1318,13 @@
             });
             
             // 현재 선택된 탭 버튼 활성화
-            const currentIndex = ['home', 'facility', 'community', 'alert', 'profile'].indexOf(tabName);
-            document.querySelector(`.tab-item:nth-child(${currentIndex + 1})`).classList.add('active');
+            const tabItems = document.querySelectorAll('.tab-item');
+            for (let i = 0; i < tabItems.length; i++) {
+                if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+                    tabItems[i].classList.add('active');
+                    break;
+                }
+            }
         }
         
         // 페이지 이동 함수
@@ -1063,24 +1343,14 @@
             alert(`${buildingName} 상세 페이지로 이동합니다.`);
         }
         
-        // 카테고리 필터 기능
-        document.addEventListener('DOMContentLoaded', function() {
-            const categoryTags = document.querySelectorAll('.category-tag');
-            categoryTags.forEach(tag => {
-                tag.addEventListener('click', function() {
-                    // 이미 선택된 태그 클릭 시 무시
-                    if (this.classList.contains('active')) return;
-                    
-                    // 현재 활성화된 태그 비활성화
-                    document.querySelector('.category-tag.active').classList.remove('active');
-                    
-                    // 클릭한 태그 활성화
-                    this.classList.add('active');
-                    
-                    // 여기에 필터링 로직 추가 가능
-                });
-            });
-        });
+        // 로그아웃 기능
+        function logout() {
+            // 현재 로그인 사용자 정보 삭제
+            localStorage.removeItem('currentLoggedInUser');
+            
+            // 페이지 새로고침
+            window.location.reload();
+        }
     </script>
 </body>
 </html>

@@ -493,6 +493,12 @@
             localStorage.setItem('selectedWidgets', JSON.stringify(selectedWidgets));
             localStorage.setItem('activeMenus', JSON.stringify(activeMenus));
             
+            // 현재 로그인한 사용자가 있다면 설정 완료 표시
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            if (currentUser) {
+                localStorage.setItem(`user_${currentUser}_setup_completed`, 'true');
+            }
+            
             alert('설정이 저장되었습니다. 메인 페이지로 이동합니다.');
             window.location.href = "index.html";
         }
