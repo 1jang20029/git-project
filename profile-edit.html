@@ -63,34 +63,43 @@
             flex-direction: column;
         }
         
+        /* 수정된 프로필 이미지 섹션 스타일 */
         .profile-image-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding: 16px;
+            padding: 24px 16px;
+            position: relative;
+        }
+        
+        /* 수정된 프로필 이미지 스타일 */
+        .profile-image-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 16px;
         }
         
         .profile-image {
-            width: 100px;
-            height: 100px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 40px;
-            margin-bottom: 8px;
-            position: relative;
+            overflow: hidden;
         }
         
+        /* 수정된 편집 버튼 스타일 - 프로필과 겹치도록 */
         .edit-image-button {
             position: absolute;
-            right: 0;
-            bottom: 0;
-            width: 30px;
-            height: 30px;
+            bottom: -12px; /* 기존 -6px에서 -12px로 변경 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 32px;
             background-color: #c62917;
             color: white;
             border-radius: 50%;
@@ -98,6 +107,10 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            z-index: 10;
+            font-size: 18px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .form-group {
@@ -197,6 +210,130 @@
             color: #666;
             margin-top: 6px;
         }
+        
+        /* 모달 스타일 개선 */
+        .modal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .modal-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 0 16px 0;
+            text-align: center;
+        }
+        
+        .upload-button {
+            display: block;
+            width: 100%;
+            padding: 14px 0;
+            background-color: #c62917;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .preview-container {
+            margin-top: 16px;
+            display: none;
+            text-align: center;
+        }
+        
+        .preview-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 16px;
+            display: block;
+        }
+        
+        .apply-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #c62917;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+        
+        .image-option {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .image-option:hover {
+            border-color: #c62917;
+            background-color: #fff8f8;
+        }
+        
+        .emoji-image {
+            font-size: 36px;
+        }
+        
+        .modal-footer {
+            padding: 16px;
+            text-align: center;
+            background-color: #f5f5f5;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -211,8 +348,10 @@
         </header>
         
         <div class="profile-image-section">
-            <div class="profile-image" id="profileImage">
-                👨‍🎓
+            <div class="profile-image-container">
+                <div class="profile-image" id="profileImage">
+                    👨‍🎓
+                </div>
                 <div class="edit-image-button" onclick="changeProfileImage()">+</div>
             </div>
         </div>
@@ -323,7 +462,7 @@
             loadProfileInfo(currentUser);
         }
         
-        // 프로필 정보 로드
+        // 프로필 정보 로드 - 수정된 버전
         function loadProfileInfo(studentId) {
             // 기본 정보 설정
             document.getElementById('studentId').value = studentId;
@@ -335,12 +474,206 @@
             const email = localStorage.getItem(`user_${studentId}_email`) || 'student@yeonsung.ac.kr';
             const phone = localStorage.getItem(`user_${studentId}_phone`) || '010-1234-5678';
             
+            // 프로필 이미지 관련 정보 가져오기
+            const profileImageType = localStorage.getItem(`user_${studentId}_profileImageType`) || 'emoji';
+            const profileImage = localStorage.getItem(`user_${studentId}_profileImage`) || '👨‍🎓';
+            const customProfileImage = localStorage.getItem(`user_${studentId}_customProfileImage`);
+            
             // 폼에 정보 설정
             document.getElementById('name').value = name;
             document.getElementById('department').value = department;
             document.getElementById('grade').value = grade;
             document.getElementById('email').value = email;
             document.getElementById('phone').value = phone;
+            
+            // 프로필 이미지 설정 - 수정된 방식
+            const profileImageElement = document.getElementById('profileImage');
+            
+            if (profileImageType === 'emoji') {
+                profileImageElement.innerHTML = profileImage;
+            } else if (profileImageType === 'image') {
+                profileImageElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else if (profileImage === 'custom' && customProfileImage) {
+                profileImageElement.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                profileImageElement.innerHTML = '👨‍🎓';
+            }
+        }
+        
+        // 프로필 이미지 변경 함수 - UI 개선 버전
+        function changeProfileImage() {
+            // 프로필 이미지 옵션 배열
+            const profileImages = [
+                { type: 'emoji', value: '👨‍🎓' },
+                { type: 'emoji', value: '👩‍🎓' },
+                { type: 'emoji', value: '👨‍💼' },
+                { type: 'emoji', value: '👩‍💼' },
+                { type: 'emoji', value: '👨‍🏫' },
+                { type: 'emoji', value: '👩‍🏫' },
+                { type: 'emoji', value: '👨‍🔬' },
+                { type: 'emoji', value: '👩‍🔬' },
+                { type: 'emoji', value: '👨‍💻' },
+                { type: 'emoji', value: '👩‍💻' }
+            ];
+            
+            // 모달 컨테이너 생성
+            const modalContainer = document.createElement('div');
+            modalContainer.className = 'modal-container';
+            modalContainer.id = 'profileImageModal';
+            
+            // 모달 내용
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            
+            // 모달 헤더
+            const modalHeader = document.createElement('div');
+            modalHeader.className = 'modal-header';
+            modalHeader.innerHTML = '<h3 class="modal-title">프로필 이미지 선택</h3>';
+            
+            // 사진 업로드 섹션
+            const uploadSection = document.createElement('div');
+            uploadSection.className = 'modal-section';
+            
+            // 업로드 버튼
+            const uploadLabel = document.createElement('label');
+            uploadLabel.className = 'upload-button';
+            uploadLabel.htmlFor = 'imageUpload';
+            uploadLabel.textContent = '사진 업로드';
+            
+            const uploadInput = document.createElement('input');
+            uploadInput.type = 'file';
+            uploadInput.id = 'imageUpload';
+            uploadInput.accept = 'image/*';
+            uploadInput.style.display = 'none';
+            uploadInput.addEventListener('change', handleImageUpload);
+            
+            const previewContainer = document.createElement('div');
+            previewContainer.className = 'preview-container';
+            previewContainer.id = 'previewContainer';
+            
+            uploadSection.appendChild(uploadLabel);
+            uploadSection.appendChild(uploadInput);
+            uploadSection.appendChild(previewContainer);
+            
+            // 기본 이미지 섹션
+            const emojiSection = document.createElement('div');
+            emojiSection.className = 'modal-section';
+            
+            const emojiTitle = document.createElement('h4');
+            emojiTitle.className = 'modal-section-title';
+            emojiTitle.textContent = '기본 이미지';
+            
+            const emojiGrid = document.createElement('div');
+            emojiGrid.className = 'image-grid';
+            
+            // 이모티콘 옵션 추가
+            profileImages.forEach(image => {
+                const option = document.createElement('div');
+                option.className = 'image-option';
+                option.onclick = () => selectProfileImage(image.value, 'emoji');
+                
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji-image';
+                emoji.textContent = image.value;
+                
+                option.appendChild(emoji);
+                emojiGrid.appendChild(option);
+            });
+            
+            emojiSection.appendChild(emojiTitle);
+            emojiSection.appendChild(emojiGrid);
+            
+            // 모달 푸터 (닫기 버튼)
+            const modalFooter = document.createElement('div');
+            modalFooter.className = 'modal-footer';
+            modalFooter.textContent = '닫기';
+            modalFooter.onclick = closeProfileImageModal;
+            
+            // 모달 내용 조립
+            modalContent.appendChild(modalHeader);
+            modalContent.appendChild(uploadSection);
+            modalContent.appendChild(emojiSection);
+            modalContent.appendChild(modalFooter);
+            
+            modalContainer.appendChild(modalContent);
+            
+            // 모달 표시
+            document.body.appendChild(modalContainer);
+        }
+
+        // 파일 업로드 처리 함수
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const previewContainer = document.getElementById('previewContainer');
+                    previewContainer.innerHTML = '';
+                    
+                    // 이미지 미리보기
+                    const imagePreview = document.createElement('img');
+                    imagePreview.className = 'preview-image';
+                    imagePreview.src = e.target.result;
+                    
+                    // 적용 버튼
+                    const applyButton = document.createElement('button');
+                    applyButton.className = 'apply-button';
+                    applyButton.textContent = '이 사진으로 설정';
+                    applyButton.onclick = function() {
+                        uploadCustomImage(e.target.result);
+                    };
+                    
+                    previewContainer.appendChild(imagePreview);
+                    previewContainer.appendChild(applyButton);
+                    previewContainer.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 사용자 지정 이미지 설정 - 수정된 버전
+        function uploadCustomImage(imageData) {
+            // 이미지 데이터를 사용하여 프로필 이미지 업데이트
+            const profileImageElement = document.getElementById('profileImage');
+            profileImageElement.innerHTML = `<img src="${imageData}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            
+            // 로컬 스토리지에 저장
+            const studentId = document.getElementById('studentId').value;
+            localStorage.setItem(`user_${studentId}_profileImage`, 'custom');
+            localStorage.setItem(`user_${studentId}_customProfileImage`, imageData);
+            
+            // 모달 닫기
+            closeProfileImageModal();
+        }
+
+        // 프로필 이미지 선택 함수 - 수정된 버전
+        function selectProfileImage(image, type) {
+            // 선택한 이미지로 프로필 이미지 변경
+            const profileImageElement = document.getElementById('profileImage');
+            
+            if (type === 'emoji') {
+                profileImageElement.innerHTML = image;
+            } else {
+                profileImageElement.innerHTML = `<img src="${image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            }
+            
+            // 로컬 스토리지에 저장
+            const studentId = document.getElementById('studentId').value;
+            localStorage.setItem(`user_${studentId}_profileImageType`, type);
+            localStorage.setItem(`user_${studentId}_profileImage`, image);
+            
+            // 모달 닫기
+            closeProfileImageModal();
+        }
+
+        // 프로필 이미지 모달 닫기 함수
+        function closeProfileImageModal() {
+            const modal = document.getElementById('profileImageModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
         }
         
         // 폼 유효성 검사 설정
@@ -440,12 +773,6 @@
             goToBack();
             
             return false;
-        }
-        
-        // 프로필 이미지 변경
-        function changeProfileImage() {
-            // 실제 구현에서는 파일 업로드 기능 연결
-            alert('프로필 이미지 변경 기능은 현재 준비 중입니다.');
         }
         
         // 이전 페이지로 이동
