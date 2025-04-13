@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>개인정보 수정 - 연성대학교 캠퍼스 가이드</title>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3836f1efa74c42d67fb12b4c2dda5aa9"></script> 
     <style>
         * {
             margin: 0;
@@ -92,10 +93,23 @@
             overflow: hidden;
         }
         
+        /* 헤더에 있는 프로필 이미지 스타일 */
+        .header-profile {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-left: auto; /* 우측으로 정렬 */
+        }
+        
         /* 수정된 편집 버튼 스타일 - 프로필과 겹치도록 */
         .edit-image-button {
             position: absolute;
-            bottom: -12px; /* 기존 -6px에서 -12px로 변경 */
+            bottom: -12px;
             left: 50%;
             transform: translateX(-50%);
             width: 32px;
@@ -344,7 +358,9 @@
                 <span>뒤로</span>
             </div>
             <div class="page-title">개인정보 수정</div>
-            <div style="width: 40px;"></div> <!-- 균형을 위한 빈 공간 -->
+            <div class="header-profile" id="headerProfileImage">
+                <!-- 여기에 헤더 프로필 이미지가 들어갑니다 -->
+            </div>
         </header>
         
         <div class="profile-image-section">
@@ -488,15 +504,21 @@
             
             // 프로필 이미지 설정 - 수정된 방식
             const profileImageElement = document.getElementById('profileImage');
+            const headerProfileElement = document.getElementById('headerProfileImage');
             
             if (profileImageType === 'emoji') {
                 profileImageElement.innerHTML = profileImage;
+                headerProfileElement.innerHTML = profileImage;
             } else if (profileImageType === 'image') {
                 profileImageElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                headerProfileElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
             } else if (profileImage === 'custom' && customProfileImage) {
+                // 여기서 custom 텍스트 대신 실제 이미지 표시
                 profileImageElement.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                headerProfileElement.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
             } else {
                 profileImageElement.innerHTML = '👨‍🎓';
+                headerProfileElement.innerHTML = '👨‍🎓';
             }
         }
         
@@ -639,24 +661,50 @@
             const profileImageElement = document.getElementById('profileImage');
             profileImageElement.innerHTML = `<img src="${imageData}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
             
+            // 헤더 프로필 이미지도 업데이트
+            const headerProfileElement = document.getElementById('headerProfileImage');
+            headerProfileElement.innerHTML = `<img src="${imageData}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            
             // 로컬 스토리지에 저장
             const studentId = document.getElementById('studentId').value;
+            localStorage.setItem(`user_${studentId}_profileImageType`, 'custom');
             localStorage.setItem(`user_${studentId}_profileImage`, 'custom');
             localStorage.setItem(`user_${studentId}_customProfileImage`, imageData);
             
             // 모달 닫기
             closeProfileImageModal();
+            
+            // 부모 창(메인 앱)에 이벤트를 전송하여 프로필 이미지 업데이트
+            updateParentWindowProfileImage(imageData);
+        }
+        
+        // 부모 창의 프로필 이미지 업데이트 함수
+        function updateParentWindowProfileImage(imageData) {
+            try {
+                // 이벤트를 발생시켜 메인 앱에 알림
+                localStorage.setItem('profileImageUpdated', 'true');
+                
+                // 혹시 부모 창이 있다면 직접 접근
+                if (window.opener && !window.opener.closed) {
+                    window.opener.updateProfileImage(imageData);
+                }
+            } catch (e) {
+                console.log('부모 창 업데이트 시도 중 오류:', e);
+            }
         }
 
         // 프로필 이미지 선택 함수 - 수정된 버전
         function selectProfileImage(image, type) {
             // 선택한 이미지로 프로필 이미지 변경
             const profileImageElement = document.getElementById('profileImage');
+            const headerProfileElement = document.getElementById('headerProfileImage');
             
             if (type === 'emoji') {
                 profileImageElement.innerHTML = image;
+                headerProfileElement.innerHTML = image;
             } else {
                 profileImageElement.innerHTML = `<img src="${image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                headerProfileElement.innerHTML = `<img src="${image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
             }
             
             // 로컬 스토리지에 저장
@@ -666,6 +714,25 @@
             
             // 모달 닫기
             closeProfileImageModal();
+            
+            // 부모 창 업데이트
+            if (type === 'emoji') {
+                updateParentWindowProfileEmoji(image);
+            }
+        }
+        
+        // 부모 창의 이모지 프로필 업데이트
+        function updateParentWindowProfileEmoji(emoji) {
+            try {
+                localStorage.setItem('profileEmojiUpdated', 'true');
+                localStorage.setItem('profileEmojiValue', emoji);
+                
+                if (window.opener && !window.opener.closed) {
+                    window.opener.updateProfileEmoji(emoji);
+                }
+            } catch (e) {
+                console.log('부모 창 이모지 업데이트 시도 중 오류:', e);
+            }
         }
 
         // 프로필 이미지 모달 닫기 함수
@@ -705,80 +772,88 @@
         }
         
         // 필드 유효성 검사 및 에러 표시
-        function validateField(field, isValid) {
-            const formGroup = field.parentElement;
-            
-            if (!isValid && field.value.trim() !== '') {
-                formGroup.classList.add('has-error');
-            } else {
-                formGroup.classList.remove('has-error');
-            }
-        }
-        
-        // 프로필 저장
-        function saveProfile(event) {
-            event.preventDefault();
-            
-            // 필수 입력 검사
-            const name = document.getElementById('name').value.trim();
-            const department = document.getElementById('department').value;
-            const grade = document.getElementById('grade').value;
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            
-            if (!name || !department || !grade || !email || !phone) {
-                alert('모든 필수 항목을 입력해주세요.');
-                return false;
-            }
-            
-            // 비밀번호 변경 검사
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (newPassword) {
-                if (!currentPassword) {
-                    alert('현재 비밀번호를 입력해주세요.');
-                    return false;
-                }
-                
-                if (newPassword !== confirmPassword) {
-                    alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
-                    return false;
-                }
-                
-                // 비밀번호 정책 검사 (영문, 숫자, 특수문자 조합 8자 이상)
-                const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-                if (!passwordRegex.test(newPassword)) {
-                    alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.');
-                    return false;
-                }
-            }
-            
-            // 로컬 스토리지에 저장
-            const studentId = document.getElementById('studentId').value;
-            localStorage.setItem(`user_${studentId}_name`, name);
-            localStorage.setItem(`user_${studentId}_department`, department);
-            localStorage.setItem(`user_${studentId}_grade`, grade);
-            localStorage.setItem(`user_${studentId}_email`, email);
-            localStorage.setItem(`user_${studentId}_phone`, phone);
-            
-            if (newPassword) {
-                localStorage.setItem(`user_${studentId}_password`, newPassword);
-            }
-            
-            alert('개인정보가 성공적으로 수정되었습니다.');
-            
-            // 이전 페이지로 이동
-            goToBack();
-            
+function validateField(field, isValid) {
+    const formGroup = field.parentElement;
+    
+    if (!isValid && field.value.trim() !== '') {
+        formGroup.classList.add('has-error');
+    } else {
+        formGroup.classList.remove('has-error');
+    }
+}
+
+// 프로필 저장
+function saveProfile(event) {
+    event.preventDefault();
+    
+    // 필수 입력 검사
+    const name = document.getElementById('name').value.trim();
+    const department = document.getElementById('department').value;
+    const grade = document.getElementById('grade').value;
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    if (!name || !department || !grade || !email || !phone) {
+        alert('모든 필수 항목을 입력해주세요.');
+        return false;
+    }
+    
+    // 비밀번호 변경 검사
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (newPassword) {
+        if (!currentPassword) {
+            alert('현재 비밀번호를 입력해주세요.');
             return false;
         }
         
-        // 이전 페이지로 이동
-        function goToBack() {
-            window.history.back();
+        if (newPassword !== confirmPassword) {
+            alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+            return false;
         }
-    </script>
+        
+        // 비밀번호 정책 검사 (영문, 숫자, 특수문자 조합 8자 이상)
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.');
+            return false;
+        }
+    }
+    
+    // 로컬 스토리지에 저장
+    const studentId = document.getElementById('studentId').value;
+    localStorage.setItem(`user_${studentId}_name`, name);
+    localStorage.setItem(`user_${studentId}_department`, department);
+    localStorage.setItem(`user_${studentId}_grade`, grade);
+    localStorage.setItem(`user_${studentId}_email`, email);
+    localStorage.setItem(`user_${studentId}_phone`, phone);
+    
+    if (newPassword) {
+        localStorage.setItem(`user_${studentId}_password`, newPassword);
+    }
+    
+    // 프로필 이미지 정보 가져오기 (이미 있는 경우 업데이트되었을 것임)
+    const profileImageType = localStorage.getItem(`user_${studentId}_profileImageType`) || 'emoji';
+    const profileImage = localStorage.getItem(`user_${studentId}_profileImage`) || '👨‍🎓';
+    const customProfileImage = localStorage.getItem(`user_${studentId}_customProfileImage`);
+    
+    // 모든 페이지에 프로필 이미지 업데이트를 알리는 플래그 설정
+    localStorage.setItem('profileUpdated', 'true');
+    
+    alert('개인정보가 성공적으로 수정되었습니다.');
+    
+    // 이전 페이지로 이동
+    goToBack();
+    
+    return false;
+}
+
+// 이전 페이지로 이동
+function goToBack() {
+    window.history.back();
+}
+</script>
 </body>
 </html>
