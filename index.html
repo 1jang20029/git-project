@@ -889,7 +889,6 @@
                     <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
                     <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
                 </div>
-                
                 <ul class="lecture-list">
                     <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
                         <div class="lecture-header">
@@ -1102,11 +1101,11 @@
             </div>
         </div>
     </div>
-
+    
     <script>
         // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(replaceCustomTextWithImage, 100);
+            setTimeout(updateAllProfileImages, 100);
             
             // localStorage 변경 감지를 위한 이벤트 리스너
             window.addEventListener('storage', function(event) {
@@ -1115,7 +1114,7 @@
                     event.key === 'profileImageUpdated' || 
                     event.key.includes('_profileImage') || 
                     event.key.includes('_customProfileImage')) {
-                    replaceCustomTextWithImage();
+                    updateAllProfileImages();
                 }
             });
             
@@ -1133,77 +1132,73 @@
                 // bfcache에서 페이지가 복원된 경우에도 실행
                 if (event.persisted) {
                     checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+                    updateAllProfileImages(); // 프로필 이미지도 다시 확인
                 }
             });
         });
-
-        // custom 텍스트를 이미지로 교체하는 함수
-        function replaceCustomTextWithImage() {
+    
+        // 프로필 이미지 전체 업데이트 함수 (모든 화면에서 일관되게 업데이트)
+        function updateAllProfileImages() {
             const currentUser = localStorage.getItem('currentLoggedInUser');
             if (!currentUser) return;
             
+            const profileImageType = localStorage.getItem(`user_${currentUser}_profileImageType`) || 'emoji';
+            const profileImage = localStorage.getItem(`user_${currentUser}_profileImage`) || '👨‍🎓';
             const customProfileImage = localStorage.getItem(`user_${currentUser}_customProfileImage`);
-            if (!customProfileImage) return;
             
-            // 헤더의 프로필 이미지 업데이트
+            // 1. 헤더 프로필 이미지 업데이트
             const headerProfileImg = document.getElementById('headerProfileImg');
-            if (headerProfileImg) {
-                headerProfileImg.src = customProfileImage;
+            const headerProfileContainer = document.querySelector('.header-profile-image');
+            
+            if (headerProfileContainer) {
+                if (profileImageType === 'emoji') {
+                    headerProfileContainer.innerHTML = profileImage;
+                } else if (profileImageType === 'custom' && customProfileImage) {
+                    if (headerProfileImg) {
+                        headerProfileImg.src = customProfileImage;
+                    } else {
+                        headerProfileContainer.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
+                    }
+                } else if (profileImageType === 'image') {
+                    if (headerProfileImg) {
+                        headerProfileImg.src = profileImage;
+                    } else {
+                        headerProfileContainer.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
+                    }
+                } else {
+                    headerProfileContainer.innerHTML = '👤';
+                }
             }
             
-            // 헤더의 custom 텍스트 찾기 (현재 로그인한 사용자에 대해서만)
-            const headerElements = document.querySelectorAll('header');
-            
-            headerElements.forEach(header => {
-                // 텍스트 노드들을 검사
-                const textNodes = [];
-                const walker = document.createTreeWalker(header, NodeFilter.SHOW_TEXT);
-                
-                let node;
-                while (node = walker.nextNode()) {
-                    if (node.textContent.trim() === 'custom') {
-                        textNodes.push(node);
-                    }
-                }
-                
-                // 찾은 모든 'custom' 텍스트 노드를 이미지로 교체
-                textNodes.forEach(textNode => {
-                    const parentElement = textNode.parentElement;
-                    
-                    // 이미지 컨테이너 생성
-                    const imgContainer = document.createElement('div');
-                    imgContainer.className = 'header-profile-image';
-                    imgContainer.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
-                    
-                    // 텍스트 노드 교체
-                    if (parentElement) {
-                        parentElement.replaceChild(imgContainer, textNode);
-                    }
-                });
-            });
-            
-            // 프로필 탭의 이미지도 업데이트 (현재 로그인한 사용자만)
+            // 2. 내 정보 탭의 프로필 이미지 업데이트 (중요!)
             const profileTabImage = document.querySelector('#profile-tab .profile-image');
             if (profileTabImage) {
-                profileTabImage.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
-            }
-            
-            // 프로필 탭의 첫 번째 이미지 업데이트 (프로필 페이지의 "custom" 텍스트)
-            const profileFirstImage = document.querySelector('#profile-tab > div:first-child > div');
-            if (profileFirstImage && profileFirstImage.textContent.trim() === 'custom') {
-                profileFirstImage.innerHTML = '';
-                
-                const img = document.createElement('img');
-                img.src = customProfileImage;
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                img.style.borderRadius = '50%';
-                
-                profileFirstImage.appendChild(img);
+                if (profileImageType === 'emoji') {
+                    profileTabImage.innerHTML = profileImage;
+                } else if (profileImageType === 'custom' && customProfileImage) {
+                    profileTabImage.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = customProfileImage;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '50%';
+                    profileTabImage.appendChild(img);
+                } else if (profileImageType === 'image') {
+                    profileTabImage.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = profileImage;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '50%';
+                    profileTabImage.appendChild(img);
+                } else {
+                    profileTabImage.innerHTML = '👤';
+                }
             }
         }
-
+    
         // 다른 페이지에서 프로필 이미지가 업데이트 되었을 때 호출할 함수
         function updateProfileImage(imageData) {
             const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -1214,9 +1209,10 @@
             localStorage.setItem(`user_${currentUser}_profileImage`, 'custom');
             localStorage.setItem(`user_${currentUser}_customProfileImage`, imageData);
             
-            replaceCustomTextWithImage();
+            // 전체 프로필 이미지 업데이트
+            updateAllProfileImages();
         }
-
+    
         // 이모지 선택 시 업데이트
         function updateProfileEmoji(emoji) {
             const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -1226,18 +1222,10 @@
             localStorage.setItem(`user_${currentUser}_profileImageType`, 'emoji');
             localStorage.setItem(`user_${currentUser}_profileImage`, emoji);
             
-            // 페이지 새로고침 없이 이모지 업데이트
-            const profileIcon = document.querySelector('.profile-icon');
-            if (profileIcon) {
-                profileIcon.textContent = emoji;
-            }
-            
-            const profileImage = document.querySelector('#profile-tab .profile-image');
-            if (profileImage) {
-                profileImage.innerHTML = emoji;
-            }
+            // 전체 프로필 이미지 업데이트
+            updateAllProfileImages();
         }
-
+    
         // 카테고리 필터 초기화
         function initCategoryFilter() {
             const categoryTags = document.querySelectorAll('.category-tag');
@@ -1255,7 +1243,7 @@
                 });
             });
         }
-
+    
         // 프로필 드롭다운 토글 함수
         function toggleProfileDropdown() {
             const dropdown = document.querySelector('.profile-dropdown');
@@ -1268,7 +1256,7 @@
                 }, 0);
             }
         }
-
+    
         // 드롭다운 닫기 함수
         function closeProfileDropdown(event) {
             const dropdown = document.querySelector('.profile-dropdown');
@@ -1279,7 +1267,7 @@
                 document.removeEventListener('click', closeProfileDropdown);
             }
         }
-
+    
         // 로그인 상태 확인 및 UI 업데이트
         function checkLoginStatus() {
             // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
@@ -1299,40 +1287,13 @@
                 
                 // 프로필 탭의 정보도 업데이트
                 updateProfileInfo(currentUser);
-                
-                // 프로필 이미지 초기화 (현재 로그인한 사용자만)
-                initProfileImage(currentUser);
             } else {
                 // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
                 if (loginButton) loginButton.style.display = 'block';
                 if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
             }
         }
-        
-        // 프로필 이미지 초기화
-        function initProfileImage(studentId) {
-            // 현재 로그인한 사용자의 프로필 이미지 정보만 가져옴
-            const profileImageType = localStorage.getItem(`user_${studentId}_profileImageType`) || 'emoji';
-            const profileImage = localStorage.getItem(`user_${studentId}_profileImage`) || '👨‍🎓';
-            const customProfileImage = localStorage.getItem(`user_${studentId}_customProfileImage`);
-            
-            // 헤더 프로필 이미지 설정
-            const headerProfileImg = document.getElementById('headerProfileImg');
-            const headerProfileContainer = document.querySelector('.header-profile-image');
-            
-            if (headerProfileImg && headerProfileContainer) {
-                if (profileImageType === 'emoji') {
-                    headerProfileContainer.innerHTML = profileImage;
-                } else if (profileImageType === 'custom' && customProfileImage) {
-                    headerProfileImg.src = customProfileImage;
-                } else if (profileImageType === 'image') {
-                    headerProfileImg.src = profileImage;
-                } else {
-                    headerProfileContainer.innerHTML = '👤';
-                }
-            }
-        }
-
+    
         // 드롭다운 프로필 정보 업데이트
         function updateDropdownProfileInfo(studentId) {
             const dropdown = document.querySelector('.profile-dropdown');
@@ -1380,7 +1341,7 @@
                 studentIdElement.textContent = `학번: ${studentId}`;
             }
         }
-
+    
         // 프로필 정보 업데이트
         function updateProfileInfo(studentId) {
             const profileTab = document.getElementById('profile-tab');
@@ -1389,11 +1350,6 @@
                 const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
                 const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
                 const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
-                
-                // 프로필 이미지 관련 정보 가져오기
-                const profileImageType = localStorage.getItem(`user_${studentId}_profileImageType`) || 'emoji';
-                const profileImage = localStorage.getItem(`user_${studentId}_profileImage`) || '👨‍🎓';
-                const customProfileImage = localStorage.getItem(`user_${studentId}_customProfileImage`);
                 
                 // 프로필 이름 업데이트
                 const profileName = profileTab.querySelector('.profile-name');
@@ -1434,23 +1390,9 @@
                 if (profileStudentId) {
                     profileStudentId.textContent = `학번: ${studentId}`;
                 }
-                
-                // 프로필 이미지 업데이트
-                const profileImageElement = profileTab.querySelector('.profile-image');
-                if (profileImageElement) {
-                    if (profileImageType === 'emoji') {
-                        profileImageElement.innerHTML = profileImage;
-                    } else if (profileImageType === 'image') {
-                        profileImageElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-                    } else if (profileImage === 'custom' && customProfileImage) {
-                        profileImageElement.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-                    } else {
-                        profileImageElement.innerHTML = '👨‍🎓';
-                    }
-                }
             }
         }
-
+    
         // 저장된 위젯 설정 불러오기
         function loadWidgetSettings() {
             // 로컬 스토리지에서 위젯 설정 가져오기
@@ -1498,7 +1440,7 @@
             // 하단 탭 메뉴 설정 불러오기
             loadTabMenuSettings();
         }
-
+    
         // 하단 탭 메뉴 설정 불러오기
         function loadTabMenuSettings() {
             const menuData = localStorage.getItem('activeMenus');
@@ -1543,96 +1485,103 @@
                                 tabId = 'profile';
                                 break;
                             case '학식':
-                            tabId = 'cafeteria';
-                               break;
-                           case '셔틀버스':
-                               tabId = 'shuttle';
-                               break;
-                           case '강의평가':
-                               tabId = 'lecture';
-                               break;
-                           default:
-                               tabId = menu.name.toLowerCase();
-                       }
-                       
-                       tabItem.onclick = function() {
-                           switchTab(tabId);
-                       };
-                       
-                       const tabIcon = document.createElement('span');
-                       tabIcon.className = 'tab-icon';
-                       tabIcon.textContent = menu.icon;
-                       
-                       const tabText = document.createElement('span');
-                       tabText.textContent = menu.name;
-                       
-                       tabItem.appendChild(tabIcon);
-                       tabItem.appendChild(tabText);
-                       tabMenu.appendChild(tabItem);
-                   });
-               }
-           }
-       }
-
-       // 위젯 클릭 처리
-       function handleWidgetClick(widgetName) {
-           // 위젯 이름에 따른 기능 처리
-           switch (widgetName) {
-               case '강의실':
-                   switchTab('facility');
-                   break;
-               case '강의평가':
-                   switchTab('community');
-                   break;
-               case '셔틀버스':
-                   goToPage('shuttle');
-                   break;
-               case '학식':
-                   goToPage('cafeteria');
-                   break;
-               case '학사일정':
-                   goToPage('academic-calendar');
-                   break;
-               case '도서관':
-                   goToPage('library');
-                   break;
-               case '내 시간표':
-                   navigateToProfilePage('timetable');
-                   break;
-               case '공지사항':
-                   // 공지사항 섹션으로 스크롤
-                   const noticeSection = document.querySelector('.notice-list');
-                   if (noticeSection) {
-                       noticeSection.scrollIntoView({ behavior: 'smooth' });
-                   }
-                   break;
-               default:
-                   alert(`${widgetName} 기능은 준비 중입니다.`);
-           }
-       }
-
-       // 탭 전환 함수
-       function switchTab(tabName) {
-           // 모든 탭 콘텐츠 숨기기
-           document.querySelectorAll('.tab-content').forEach(tab => {
-               tab.classList.remove('active');
-           });
-           
-           // 선택한 탭 콘텐츠 표시
-           document.getElementById(`${tabName}-tab`).classList.add('active');
-           
-           // 탭 메뉴 활성화 상태 변경
-           document.querySelectorAll('.tab-item').forEach(item => {
-               item.classList.remove('active');
-           });
-           
-           // 현재 선택된 탭 버튼 활성화
+                                tabId = 'cafeteria';
+                                break;
+                            case '셔틀버스':
+                                tabId = 'shuttle';
+                                break;
+                            case '강의평가':
+                                tabId = 'lecture';
+                                break;
+                            default:
+                                tabId = menu.name.toLowerCase();
+                        }
+                        
+                        tabItem.onclick = function() {
+                            switchTab(tabId);
+                        };
+                        
+                        const tabIcon = document.createElement('span');
+                        tabIcon.className = 'tab-icon';
+                        tabIcon.textContent = menu.icon;
+                        
+                        const tabText = document.createElement('span');
+                        tabText.textContent = menu.name;
+                        
+                        tabItem.appendChild(tabIcon);
+                        tabItem.appendChild(tabText);
+                        tabMenu.appendChild(tabItem);
+                    });
+                }
+            }
+        }
+    
+        // 위젯 클릭 처리
+        function handleWidgetClick(widgetName) {
+            // 위젯 이름에 따른 기능 처리
+            switch (widgetName) {
+                case '강의실':
+                    switchTab('facility');
+                    break;
+                case '강의평가':
+                    switchTab('community');
+                    break;
+                case '셔틀버스':
+                    goToPage('shuttle');
+                    break;
+                case '학식':
+                    goToPage('cafeteria');
+                    break;
+                case '학사일정':
+                    goToPage('academic-calendar');
+                    break;
+                case '도서관':
+                    goToPage('library');
+                    break;
+                case '내 시간표':
+                    navigateToProfilePage('timetable');
+                    break;
+                case '공지사항':
+                    // 공지사항 섹션으로 스크롤
+                    const noticeSection = document.querySelector('.notice-list');
+                    if (noticeSection) {
+                        noticeSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    break;
+                default:
+                    alert(`${widgetName} 기능은 준비 중입니다.`);
+            }
+        }
+    
+        // 탭 전환 함수
+        function switchTab(tabName) {
+            // 모든 탭 콘텐츠 숨기기
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택한 탭 콘텐츠 표시
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // 탭 메뉴 활성화 상태 변경
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 현재 선택된 탭 버튼 활성화
            const tabItems = document.querySelectorAll('.tab-item');
            for (let i = 0; i < tabItems.length; i++) {
                if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
                    tabItems[i].classList.add('active');
                    break;
                }
+           }
+           
+           // 프로필 탭으로 전환 시 프로필 이미지 업데이트
+           if (tabName === 'profile') {
+               setTimeout(() => {
+                   updateAllProfileImages();
+               }, 100);
            }
        }
        
