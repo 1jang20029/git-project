@@ -1693,83 +1693,83 @@
        }
        
        function navigateToProfilePage(pageName) {
-           // 현재 로그인 상태 확인
-           const currentUser = localStorage.getItem('currentLoggedInUser');
-           
-           if (!currentUser) {
-               alert('로그인이 필요한 서비스입니다.');
-               goToPage('login');
-               return;
-           }
-           
-           // 페이지 이름에 따라 분기 처리
-           switch(pageName) {
-               case 'timetable':
-                   alert('내 시간표 페이지로 이동합니다.');
-                   window.location.href = 'timetable.html';
-                   break;
-               
-               case 'my-courses':
-                   alert('내 수강 강의 페이지로 이동합니다.');
-                   // window.location.href = 'my-courses.html';
-                   break;
+        // 현재 로그인 상태 확인
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+    
+        if (!currentUser) {
+            alert('로그인이 필요한 서비스입니다.');
+            goToPage('login');
+            return;
+        }
+    
+        // 페이지 이름에 따라 분기 처리
+        switch(pageName) {
+            case 'timetable':
+                alert('내 시간표 페이지로 이동합니다.');
+                window.location.href = 'timetable.html';
+                break;
+        
+            case 'my-courses':
+                alert('내 수강 강의 페이지로 이동합니다.');
+                // window.location.href = 'my-courses.html';
+                break;
 
-               case 'favorite-classrooms':
-                   alert('즐겨찾는 강의실 페이지로 이동합니다.');
-                   // window.location.href = 'favorite-classrooms.html';
-                   break;
+            case 'favorite-classrooms':
+                alert('즐겨찾는 강의실 페이지로 이동합니다.');
+                // window.location.href = 'favorite-classrooms.html';
+                break;
 
-               case 'profile-edit':
-                   alert('개인정보 수정 페이지로 이동합니다.');
-                   window.location.href = 'profile-edit.html';
-                   break;
+            case 'profile-edit':
+                alert('개인정보 수정 페이지로 이동합니다.');
+                window.location.href = 'profile-edit.html';
+                break;
 
-               case 'grades':
-                   alert('성적 조회 페이지로 이동합니다.');
-                   // window.location.href = 'grades.html';
-                   break;
-               
-               case 'course-registration':
-                   alert('수강 신청 내역 페이지로 이동합니다.');
-                   // window.location.href = 'course-registration.html';
-                   break;
-                   
-               case 'scholarships':
-                   alert('장학금 내역 페이지로 이동합니다.');
-                   // window.location.href = 'scholarships.html';
-                   break;
+            case 'grades':
+                alert('성적 조회 페이지로 이동합니다.');
+                // window.location.href = 'grades.html';
+                break;
+        
+            case 'course-registration':
+                alert('수강 신청 내역 페이지로 이동합니다.');
+                // window.location.href = 'course-registration.html';
+                break;
+            
+            case 'scholarships':
+                alert('장학금 내역 페이지로 이동합니다.');
+                // window.location.href = 'scholarships.html';
+                break;
 
-               case 'tuition':
-                   alert('등록금 납부 내역 페이지로 이동합니다.');
-                   // window.location.href = 'tuition.html';
-                   break;
+            case 'tuition':
+                alert('등록금 납부 내역 페이지로 이동합니다.');
+                // window.location.href = 'tuition.html';
+                break;
 
-               case 'notification-settings':
-                   alert('알림 설정 페이지로 이동합니다.');
-                   // window.location.href = 'notification-settings.html';
-                   break;
+            case 'notification-settings':
+                alert('알림 설정 페이지로 이동합니다.');
+                // window.location.href = 'notification-settings.html';
+                break;
 
-               case 'widget-settings':
-                   alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
-                   window.location.href = 'widget-settings.html';
-                   break;
+            case 'widget-settings':
+                alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+                window.location.href = 'widget-settings.html';
+                break;
 
-               case 'reset-settings':
-                   if (confirm('모든 설정을 초기화하고 처음 설정으로 돌아가시겠습니까?')) {
-                       localStorage.setItem(`user_${currentUser}_first_login`, 'true');
-                       alert('설정이 초기화되었습니다.');
-                       // window.location.href = 'widget-settings.html';
-                   }
-                   break;
+            case 'reset-settings':
+                if (confirm('모든 설정을 초기화하고 처음 설정으로 돌아가시겠습니까?')) {
+                    localStorage.setItem(`user_${currentUser}_first_login`, 'true');
+                    alert('설정이 초기화되었습니다.');
+                    // window.location.href = 'widget-settings.html';
+                }
+                break;
 
-               case 'app-info':
-                   alert('앱 정보 페이지로 이동합니다.');
-                   // window.location.href = 'app-info.html';
-                   break;
-               default:
-                   alert('준비 중인 기능입니다.');
-           }
-       }
+            case 'app-info':
+                alert('앱 정보 페이지로 이동합니다.');
+                window.location.href = 'app-info.html';
+                break;
+            default:
+                alert('준비 중인 기능입니다.');
+            }
+        }
 
        // 공지사항 상세 보기
        function viewNoticeDetail(noticeId) {
