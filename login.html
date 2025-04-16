@@ -558,10 +558,9 @@
         // 카카오 로그인 처리
         function kakaoLogin() {
             try {
-                // 카카오 로그인 요청 - 리다이렉트 방식
+                // 카카오 로그인 요청 - 리다이렉트 방식 (scope 옵션 제거)
                 Kakao.Auth.authorize({
-                    redirectUri: 'https://ysu-guide.netlify.app/kakao-callback.html',
-                    scope: 'profile_nickname,profile_image,account_email'
+                    redirectUri: 'https://ysu-guide.netlify.app/kakao-callback.html'
                 });
             } catch (error) {
                 console.error('카카오 로그인 시도 중 오류:', error);

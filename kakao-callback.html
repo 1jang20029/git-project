@@ -153,12 +153,12 @@
             window.location.href = "login.html";
         }
 
-        // 페이지 로드 시 콜백 처리
+        // 페이지 로드 시 실행되는 함수
         window.onload = function() {
             try {
                 console.log('카카오 로그인 콜백 페이지 로드됨');
                 
-                // 카카오 SDK 초기화 - JavaScript 키 사용
+                // 카카오 SDK 초기화
                 Kakao.init('5ce85216b7f9a4d297356d8c3067b654');
                 console.log('카카오 SDK 초기화 상태:', Kakao.isInitialized());
                 
@@ -192,92 +192,90 @@
                     return;
                 }
                 
-                updateStatus('인증 코드 확인 중', '카카오 인증 서버와 통신하고 있습니다...');
+                // 카카오 인증 코드를 사용하여 직접 로그인 처리
+                // 이 방식은 클라이언트 측에서만 테스트용으로 사용하는 것이며,
+                // 실제 서비스에서는 보안을 위해 백엔드에서 처리해야 합니다.
+                updateStatus('로그인 처리 중', '카카오 서버와 통신하고 있습니다...');
                 
-                // REST API 키를 사용하여 토큰 얻기 (실제로는 서버에서 처리하는 것이 안전)
-                fetch('https://kauth.kakao.com/oauth/token', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                // 카카오 REST API로 토큰 요청
+                Kakao.Auth.authorize({
+                    // 인증이 이미 되었으므로 직접 처리
+                    success: function(authObj) {
+                        console.log('인증 성공:', authObj);
+                        
+                        // 액세스 토큰 설정
+                        Kakao.Auth.setAccessToken(authObj.access_token);
+                        
+                        // 사용자 정보 요청
+                        Kakao.API.request({
+                            url: '/v2/user/me',
+                            success: function(response) {
+                                console.log('사용자 정보:', response);
+                                
+                                // 사용자 정보 처리
+                                const kakaoAccount = response.kakao_account || {};
+                                const profile = kakaoAccount.profile || {};
+                                
+                                // 로컬 스토리지에 사용자 정보 저장
+                                const kakaoId = 'kakao_' + response.id;
+                                
+                                localStorage.setItem(`user_${kakaoId}_registered`, 'true');
+                                localStorage.setItem(`user_${kakaoId}_name`, profile.nickname || '카카오 사용자');
+                                localStorage.setItem(`user_${kakaoId}_department`, 'defaultDepartment');
+                                localStorage.setItem(`user_${kakaoId}_grade`, '1');
+                                
+                                // 이메일이 있으면 저장
+                                if (kakaoAccount.email) {
+                                    localStorage.setItem(`user_${kakaoId}_email`, kakaoAccount.email);
+                                }
+                                
+                                // 프로필 이미지가 있으면 저장
+                                if (profile.profile_image_url) {
+                                    localStorage.setItem(`user_${kakaoId}_profileImage`, profile.profile_image_url);
+                                }
+                                
+                                // 현재 로그인된 사용자 저장
+                                localStorage.setItem('currentLoggedInUser', kakaoId);
+                                
+                                // 소셜 로그인 사용자 표시
+                                localStorage.setItem(`user_${kakaoId}_socialType`, 'kakao');
+                                
+                                // 최초 로그인 여부 확인 및 설정
+                                const isFirstLogin = localStorage.getItem(`user_${kakaoId}_first_login`) !== 'false';
+                                
+                                if (isFirstLogin) {
+                                    localStorage.setItem(`user_${kakaoId}_first_login`, 'false');
+                                    updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
+                                    
+                                    // 최초 로그인 시 위젯 설정 페이지로 이동
+                                    setTimeout(function() {
+                                        window.location.href = "widget-settings.html";
+                                    }, 1500);
+                                } else {
+                                    updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                                    
+                                    // 기존 사용자는 메인 페이지로 이동
+                                    setTimeout(function() {
+                                        window.location.href = "index.html";
+                                    }, 1500);
+                                }
+                            },
+                            fail: function(error) {
+                                console.error('사용자 정보 요청 실패:', error);
+                                showError({
+                                    message: '카카오 사용자 정보를 가져오는 데 실패했습니다.',
+                                    details: JSON.stringify(error)
+                                });
+                            }
+                        });
                     },
-                    body: new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: 'beed5990dc19ffd7ab4f2355afa70129', // REST API 키
-                        redirect_uri: 'https://ysu-guide.netlify.app/kakao-callback.html',
-                        code: authCode
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw new Error(JSON.stringify(errorData));
+                    fail: function(error) {
+                        console.error('인증 실패:', error);
+                        showError({
+                            message: '카카오 인증 처리 중 오류가 발생했습니다.',
+                            details: JSON.stringify(error)
                         });
                     }
-                    return response.json();
-                })
-                .then(tokenData => {
-                    console.log('토큰 데이터 받음:', tokenData);
-                    updateStatus('로그인 성공', '로그인 정보를 처리하고 있습니다...');
-                    
-                    // 액세스 토큰 설정
-                    Kakao.Auth.setAccessToken(tokenData.access_token);
-                    
-                    // 사용자 정보 요청
-                    return Kakao.API.request({
-                        url: '/v2/user/me'
-                    });
-                })
-                .then(response => {
-                    console.log('사용자 정보:', response);
-                    
-                    // 사용자 정보 처리
-                    const kakaoAccount = response.kakao_account;
-                    const profile = kakaoAccount?.profile || {};
-                    
-                    // 로컬 스토리지에 사용자 정보 저장
-                    const kakaoId = 'kakao_' + response.id;
-                    
-                    localStorage.setItem(`user_${kakaoId}_registered`, 'true');
-                    localStorage.setItem(`user_${kakaoId}_name`, profile.nickname || '카카오 사용자');
-                    localStorage.setItem(`user_${kakaoId}_email`, kakaoAccount?.email || '');
-                    localStorage.setItem(`user_${kakaoId}_department`, 'defaultDepartment');
-                    localStorage.setItem(`user_${kakaoId}_grade`, '1');
-                    localStorage.setItem(`user_${kakaoId}_socialType`, 'kakao');
-                    
-                    // 사용자 프로필 이미지가 있으면 저장
-                    if (profile.profile_image_url) {
-                        localStorage.setItem(`user_${kakaoId}_profileImage`, profile.profile_image_url);
-                    }
-                    
-                    // 현재 로그인된 사용자 저장
-                    localStorage.setItem('currentLoggedInUser', kakaoId);
-                    
-                    // 최초 로그인 여부 확인 및 설정
-                    const isFirstLogin = localStorage.getItem(`user_${kakaoId}_first_login`) !== 'false';
-                    
-                    if (isFirstLogin) {
-                        localStorage.setItem(`user_${kakaoId}_first_login`, 'false');
-                        updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
-                        
-                        // 최초 로그인 시 위젯 설정 페이지로 이동
-                        setTimeout(function() {
-                            window.location.href = "widget-settings.html";
-                        }, 1500);
-                    } else {
-                        updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
-                        
-                        // 기존 사용자는 메인 페이지로 이동
-                        setTimeout(function() {
-                            window.location.href = "index.html";
-                        }, 1500);
-                    }
-                })
-                .catch(error => {
-                    console.error('카카오 로그인 처리 중 오류:', error);
-                    showError({
-                        message: '카카오 로그인 처리 중 오류가 발생했습니다.',
-                        details: error.toString()
-                    });
                 });
                 
             } catch (error) {
