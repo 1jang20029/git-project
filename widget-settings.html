@@ -237,7 +237,7 @@
         </header>
         
         <div class="section-title">홈 화면 위젯 설정</div>
-        <div class="section-description">홈 화면에 표시할 위젯을 선택해주세요</div>
+        <div class="section-description">홈 화면에 표시할 위젯을 선택해주세요 (최대 5개)</div>
         
         <div class="widgets-section">
             <div class="widgets-grid">
@@ -337,9 +337,9 @@
                     <div class="menu-icon">👤</div>
                     <div class="menu-info">
                         <div class="menu-name">내 정보</div>
-                        <div class="menu-status">활성화됨</div>
+                        <div class="menu-status">기본 메뉴 (비활성화 불가)</div>
                     </div>
-                    <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this, true)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
                 <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-6">
@@ -381,20 +381,28 @@
     <script>
         // 위젯 선택/해제 토글
         function toggleWidget(element) {
-            element.classList.toggle('selected');
-            
-            // 체크박스 상태 변경
-            const checkbox = element.querySelector('.widget-checkbox');
-            if (element.classList.contains('selected')) {
-                checkbox.textContent = '✓';
-            } else {
-                checkbox.textContent = '';
+            // 이미 선택되어 있는 경우 (선택 해제하려는 경우)
+            if(element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                element.querySelector('.widget-checkbox').textContent = '';
+            } 
+            // 선택되어 있지 않은 경우 (선택하려는 경우)
+            else {
+                // 선택된 위젯 개수 확인
+                const selectedCount = document.querySelectorAll('.widget-item.selected').length;
+                if (selectedCount >= 5) {
+                    alert('위젯은 최대 5개까지만 선택할 수 있습니다.');
+                    return;
+                }
+                
+                element.classList.add('selected');
+                element.querySelector('.widget-checkbox').textContent = '✓';
             }
         }
         
         // 메뉴 활성화/비활성화 토글
         function toggleMenu(element, isFixed = false) {
-            // 홈 메뉴는 항상 활성화 (isFixed가 true인 경우)
+            // 홈 메뉴 또는 내 정보 메뉴는 항상 활성화 (isFixed가 true인 경우)
             if (isFixed) return;
             
             // 토글 상태 변경
@@ -506,7 +514,7 @@
         // 설정 초기화
         function resetSettings() {
             if (confirm('모든 설정을 기본값으로 초기화하시겠습니까?')) {
-                // 기본 위젯으로 초기화
+                // 기본 위젯으로 초기화 (처음 3개 선택)
                 document.querySelectorAll('.widget-item').forEach((widget, index) => {
                     if (index < 3) {
                         widget.classList.add('selected');
@@ -517,14 +525,20 @@
                     }
                 });
                 
-                // 기본 메뉴로 초기화
+                // 기본 메뉴로 초기화 (처음 5개 활성화)
                 document.querySelectorAll('.menu-item').forEach((item, index) => {
                     const toggle = item.querySelector('.menu-toggle');
                     
                     if (index < 5) {
                         toggle.classList.add('active');
                         item.classList.remove('disabled');
-                        item.querySelector('.menu-status').textContent = '활성화됨';
+                        
+                        // 홈과 내 정보 메뉴는 비활성화 불가 상태로 표시
+                        if (index === 0 || index === 4) {
+                            item.querySelector('.menu-status').textContent = '기본 메뉴 (비활성화 불가)';
+                        } else {
+                            item.querySelector('.menu-status').textContent = '활성화됨';
+                        }
                     } else {
                         toggle.classList.remove('active');
                         item.classList.add('disabled');
