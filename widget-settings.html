@@ -297,13 +297,22 @@
         
         <div class="menu-section">
             <div class="menu-list" id="menuList">
+                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-5">
+                    <div class="menu-icon">👤</div>
+                    <div class="menu-info">
+                        <div class="menu-name">내 정보</div>
+                        <div class="menu-status">기본 메뉴 (비활성화 불가)</div>
+                    </div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this, true)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
                 <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-1">
                     <div class="menu-icon">🏠</div>
                     <div class="menu-info">
                         <div class="menu-name">홈</div>
-                        <div class="menu-status">기본 메뉴 (비활성화 불가)</div>
+                        <div class="menu-status">활성화됨</div>
                     </div>
-                    <div class="menu-toggle active" onclick="toggleMenu(this, true)"></div>
+                    <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
                 <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-2">
@@ -331,15 +340,6 @@
                         <div class="menu-status">활성화됨</div>
                     </div>
                     <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
-                    <div class="drag-handle">⋮⋮</div>
-                </div>
-                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-5">
-                    <div class="menu-icon">👤</div>
-                    <div class="menu-info">
-                        <div class="menu-name">내 정보</div>
-                        <div class="menu-status">기본 메뉴 (비활성화 불가)</div>
-                    </div>
-                    <div class="menu-toggle active" onclick="toggleMenu(this, true)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
                 <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-6">
@@ -402,7 +402,7 @@
         
         // 메뉴 활성화/비활성화 토글
         function toggleMenu(element, isFixed = false) {
-            // 홈 메뉴 또는 내 정보 메뉴는 항상 활성화 (isFixed가 true인 경우)
+            // 내 정보 메뉴는 항상 활성화 (isFixed가 true인 경우)
             if (isFixed) return;
             
             // 토글 상태 변경
@@ -525,16 +525,31 @@
                     }
                 });
                 
+                // 메뉴 리스트 가져오기
+                const menuList = document.getElementById('menuList');
+                const items = Array.from(menuList.children);
+                
+                // 내 정보 메뉴 항목 찾기
+                const myInfoMenu = items.find(item => 
+                    item.querySelector('.menu-name').textContent === '내 정보'
+                );
+                
+                // 내 정보 메뉴가 있으면, 첫 번째 위치로 이동
+                if(myInfoMenu) {
+                    menuList.insertBefore(myInfoMenu, menuList.firstChild);
+                }
+                
                 // 기본 메뉴로 초기화 (처음 5개 활성화)
-                document.querySelectorAll('.menu-item').forEach((item, index) => {
+                items.forEach((item, index) => {
                     const toggle = item.querySelector('.menu-toggle');
+                    const itemName = item.querySelector('.menu-name').textContent;
                     
                     if (index < 5) {
                         toggle.classList.add('active');
                         item.classList.remove('disabled');
                         
-                        // 홈과 내 정보 메뉴는 비활성화 불가 상태로 표시
-                        if (index === 0 || index === 4) {
+                        // 내 정보 메뉴는 비활성화 불가 상태로 표시
+                        if (itemName === '내 정보') {
                             item.querySelector('.menu-status').textContent = '기본 메뉴 (비활성화 불가)';
                         } else {
                             item.querySelector('.menu-status').textContent = '활성화됨';
