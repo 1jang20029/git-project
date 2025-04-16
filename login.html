@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인 - 연성대학교</title>
+    <title>카카오 로그인 처리 중 - 연성대학교</title>
     <style>
         * {
             margin: 0;
@@ -15,665 +15,307 @@
         body {
             background-color: #f5f5f5;
             color: #333;
-        }
-        
-        .container {
-            max-width: 768px;
-            margin: 0 auto;
-            background-color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        header {
-            background-color: #c62917;
-            color: white;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .back-button {
-            font-size: 20px;
-            margin-right: 16px;
-            cursor: pointer;
-        }
-        
-        .header-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .login-container {
-            padding: 32px 24px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .logo-container {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .university-logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #c62917;
-            margin-bottom: 8px;
-        }
-        
-        .slogan {
-            font-size: 16px;
-            color: #666;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 8px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .form-input:focus {
-            border-color: #c62917;
-            outline: none;
-        }
-        
-        .login-button {
-            width: 100%;
-            padding: 14px;
-            background-color: #c62917;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-        
-        .login-options {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #666;
-            margin-top: 16px;
-        }
-        
-        .login-options a {
-            color: #666;
-            text-decoration: none;
-        }
-        
-        .separator {
-            display: flex;
-            align-items: center;
-            margin: 32px 0;
-            color: #888;
-        }
-        
-        .separator-line {
-            flex: 1;
-            height: 1px;
-            background-color: #ddd;
-        }
-        
-        .separator-text {
-            padding: 0 16px;
-            font-size: 14px;
-        }
-        
-        .social-login {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-        }
-        
-        .social-button {
-            width: 48px;
-            height: 48px;
-            border-radius: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-decoration: none;
-        }
-        
-        .social-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        
-        .naver-button {
-            background-color: #03C75A;
-            color: white;
-        }
-        
-        .kakao-button {
-            background-color: #FEE500;
-            color: #3A1D1D;
-        }
-        
-        .google-button {
-            background-color: white;
-            color: #4285F4;
-            border: 1px solid #ddd;
-        }
-        
-        .register-link {
+            height: 100vh;
             text-align: center;
-            margin-top: 32px;
-            font-size: 14px;
-            color: #666;
         }
         
-        .register-link a {
-            color: #c62917;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        
-        /* 네이버 로그인 모달 스타일 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            animation: fadeIn 0.3s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 0;
-            width: 90%;
-            max-width: 400px;
+        .loading-container {
+            background-color: white;
+            padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: slideDown 0.3s;
-            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
         }
         
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .modal-header {
-            background-color: #03C75A;
-            color: white;
-            padding: 16px 20px;
-            position: relative;
-        }
-        
-        .modal-title {
-            font-size: 18px;
+        .kakao-logo {
+            width: 60px;
+            height: 60px;
+            background-color: #FEE500;
+            border-radius: 12px;
+            color: #3A1D1D;
+            font-size: 30px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-        }
-        
-        .modal-title:before {
-            content: "N";
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 28px;
-            height: 28px;
-            background-color: white;
-            color: #03C75A;
-            border-radius: 50%;
-            margin-right: 10px;
-            font-weight: bold;
+            margin: 0 auto 20px;
         }
         
-        .close-modal {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-        
-        .close-modal:hover {
-            opacity: 1;
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .modal-form-group {
+        h1 {
+            font-size: 20px;
             margin-bottom: 16px;
-            position: relative;
-        }
-        
-        .modal-form-group .form-label {
             color: #333;
-            font-weight: 500;
         }
         
-        .modal-form-group .form-input {
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            transition: all 0.3s;
-        }
-        
-        .modal-form-group .form-input:focus {
-            border-color: #03C75A;
-            background-color: white;
-            box-shadow: 0 0 0 2px rgba(3, 199, 90, 0.2);
-        }
-        
-        .input-icon {
-            position: absolute;
-            right: 12px;
-            top: 38px;
-            color: #aaa;
-        }
-        
-        .modal-footer {
-            padding: 16px 20px;
-            background-color: #f5f5f5;
-            text-align: right;
-            border-top: 1px solid #eee;
-        }
-        
-        .modal-button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        
-        .modal-button.cancel {
-            background-color: #eee;
+        p {
             color: #666;
-            margin-right: 10px;
-        }
-        
-        .modal-button.cancel:hover {
-            background-color: #ddd;
-        }
-        
-        .modal-button.login {
-            background-color: #03C75A;
-            color: white;
-        }
-        
-        .modal-button.login:hover {
-            background-color: #02b050;
-        }
-        
-        .naver-benefits {
-            margin-top: 16px;
-            background-color: #f5f9f7;
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #555;
+            margin-bottom: 24px;
             line-height: 1.5;
         }
         
-        .benefits-title {
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #FEE500;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            display: none;
+            background-color: #fff9f9;
+            border: 1px solid #ffdddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .error-title {
+            color: #e74c3c;
             font-weight: bold;
-            margin-bottom: 6px;
-            color: #03C75A;
+            margin-bottom: 10px;
         }
-        
-        /* 자동 입력 체크박스 */
-        .auto-login {
-            display: flex;
-            align-items: center;
-            margin-top: 12px;
+
+        .error-message {
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
         }
-        
-        .auto-login input {
-            margin-right: 8px;
-        }
-        
-        .auto-login label {
-            font-size: 13px;
-            color: #666;
+
+        .button {
+            background-color: #FEE500;
+            color: #3A1D1D;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="back-button" onclick="goBack()">←</div>
-            <div class="header-title">로그인</div>
-        </header>
+    <div class="loading-container">
+        <div class="kakao-logo">K</div>
+        <h1 id="status-title">카카오 로그인 처리 중</h1>
+        <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
+        <div class="spinner" id="loading-spinner"></div>
         
-        <div class="login-container">
-            <div class="logo-container">
-                <div class="university-logo">연성대학교</div>
-                <div class="slogan">Campus Guide</div>
-            </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label class="form-label">아이디 (학번)</label>
-                    <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">비밀번호</label>
-                    <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
-                </div>
-                
-                <button type="button" class="login-button" onclick="login()">로그인</button>
-                
-                <div class="login-options">
-                    <a href="find-id.html">아이디 찾기</a>
-                    <a href="find-password.html">비밀번호 찾기</a>
-                </div>
-            </form>
-            
-            <div class="separator">
-                <div class="separator-line"></div>
-                <div class="separator-text">또는</div>
-                <div class="separator-line"></div>
-            </div>
-            
-            <div class="social-login">
-                <div class="social-button naver-button" onclick="naverLogin()">N</div>
-                <!-- 카카오 로그인 버튼을 a 태그로 변경하여 직접 링크 -->
-                <a href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code" class="social-button kakao-button">K</a>
-                <div class="social-button google-button" onclick="googleLogin()">G</div>
-            </div>
-            
-            <div class="register-link">
-                아직 계정이 없으신가요? <a href="register.html">회원가입</a>
-            </div>
+        <div id="error-container" class="error-container">
+            <div class="error-title">오류 정보</div>
+            <div class="error-message" id="error-details"></div>
         </div>
+        
+        <button class="button" id="retry-button" style="display: none;" onclick="goToLogin()">다시 시도하기</button>
     </div>
-    
-    <!-- 네이버 로그인 모달 -->
-    <div id="naverLoginModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">네이버 로그인</div>
-                <span class="close-modal" onclick="closeModal('naverLoginModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="modal-form-group">
-                    <label class="form-label">네이버 아이디</label>
-                    <input type="text" class="form-input" id="naverId" placeholder="아이디를 입력하세요">
-                    <span class="input-icon">👤</span>
-                </div>
-                <div class="modal-form-group">
-                    <label class="form-label">네이버 비밀번호</label>
-                    <input type="password" class="form-input" id="naverPw" placeholder="비밀번호를 입력하세요">
-                    <span class="input-icon">🔒</span>
-                </div>
-                
-                <div class="auto-login">
-                    <input type="checkbox" id="autoLogin">
-                    <label for="autoLogin">로그인 상태 유지</label>
-                </div>
-                
-                <div class="naver-benefits">
-                    <div class="benefits-title">네이버 계정으로 로그인 시 혜택</div>
-                    <ul>
-                        <li>네이버 캘린더와 학사일정 연동</li>
-                        <li>네이버 지도로 캠퍼스 건물 찾기</li>
-                        <li>네이버 메일을 통한 알림 수신</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-button cancel" onclick="closeModal('naverLoginModal')">취소</button>
-                <button class="modal-button login" onclick="processNaverLogin()">로그인</button>
-            </div>
-        </div>
-    </div>
-    
+
     <script>
-        // 로컬 스토리지에 회원가입 여부 저장
-        function saveRegistrationStatus(studentId) {
-            localStorage.setItem(`user_${studentId}_registered`, 'true');
-            // 최초 로그인 상태를 true로 설정 (아직 로그인한 적 없음)
-            localStorage.setItem(`user_${studentId}_first_login`, 'true');
-        }
-        
-        // 뒤로가기 함수
-        function goBack() {
-            window.location.href = "index.html";
-        }
-        
-        // 일반 로그인 처리 함수
-        function login() {
-            const studentId = document.getElementById('studentId').value;
-            const password = document.getElementById('password').value;
+        // 상태 메시지 업데이트 함수
+        function updateStatus(title, message, isError = false) {
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message;
             
-            // 간단한 유효성 검사
-            if (!studentId || !password) {
-                alert('학번과 비밀번호를 모두 입력해주세요.');
-                return;
-            }
-            
-            // 회원가입 여부 확인
-            const isRegistered = localStorage.getItem(`user_${studentId}_registered`) === 'true';
-            
-            if (!isRegistered) {
-                alert('등록되지 않은 학번입니다. 회원가입을 먼저 진행해주세요.');
-                return;
-            }
-            
-            // 비밀번호 검증은 실제 구현에서는 서버에서 처리
-            
-            // 현재 로그인된 사용자 저장
-            localStorage.setItem('currentLoggedInUser', studentId);
-            
-            // 최초 로그인 여부 확인
-            const isFirstLogin = localStorage.getItem(`user_${studentId}_first_login`) === 'true';
-            
-            if (isFirstLogin) {
-                // 최초 로그인인 경우 위젯 설정 페이지로 이동
-                localStorage.setItem(`user_${studentId}_first_login`, 'false');
-                alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
-                window.location.href = "widget-settings.html";
-            } else {
-                // 최초 로그인이 아닌 경우 메인 페이지로 이동
-                alert('로그인이 완료되었습니다.');
-                window.location.href = "index.html";
+            if (isError) {
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('retry-button').style.display = 'block';
             }
         }
-        
-        // URL 파라미터에서 새로 회원가입했는지 확인
-        function checkNewRegistration() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const newRegistration = urlParams.get('newRegistration');
-            const studentId = urlParams.get('studentId');
-            
-            if (newRegistration === 'true' && studentId) {
-                // 새로 회원가입한 경우 회원가입 상태 저장
-                saveRegistrationStatus(studentId);
+
+        // 오류 표시 함수
+        function showError(errorDetails) {
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('error-details').textContent = JSON.stringify(errorDetails, null, 2);
+            updateStatus('카카오 로그인 오류', '로그인 처리 중 문제가 발생했습니다. 오류 정보를 확인하세요.', true);
+        }
+
+        // 로그인 페이지로 이동
+        function goToLogin() {
+            window.location.href = "login.html";
+        }
+
+        // 페이지 로드 시 실행되는 함수
+        window.onload = function() {
+            try {
+                console.log('카카오 로그인 콜백 페이지 로드됨');
                 
-                // 학번 자동 입력
-                document.getElementById('studentId').value = studentId;
+                // URL 파라미터에서 코드와 오류 정보 추출
+                const urlParams = new URLSearchParams(window.location.search);
+                const authCode = urlParams.get('code');
+                const error = urlParams.get('error');
+                const errorDescription = urlParams.get('error_description');
                 
-                // 포커스를 비밀번호 필드로 이동
-                document.getElementById('password').focus();
-            }
-        }
-        
-        // 네이버 로그인 모달 열기
-        function naverLogin() {
-            const modal = document.getElementById('naverLoginModal');
-            modal.style.display = 'block';
-            
-            // 아이디 입력 필드에 포커스
-            setTimeout(() => {
-                document.getElementById('naverId').focus();
-            }, 300);
-            
-            // 모달이 닫히지 않도록 이벤트 관리
-            setupModalEvents();
-        }
-        
-        // 구글 로그인 처리
-        function googleLogin() {
-            alert('구글 로그인 기능은 준비 중입니다.');
-        }
-        
-        // 모달 닫기
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // 모달 이벤트 설정
-        function setupModalEvents() {
-            const modal = document.getElementById('naverLoginModal');
-            const modalContent = modal.querySelector('.modal-content');
-            
-            // 모달 외부 클릭 시 닫기 (단, 입력 중일 때는 예외)
-            window.onclick = function(event) {
-                if (event.target === modal) {
-                    // 아이디나 비밀번호 입력 중이 아닌 경우에만 모달 닫기
-                    const naverId = document.getElementById('naverId');
-                    const naverPw = document.getElementById('naverPw');
-                    
-                    if (document.activeElement !== naverId && document.activeElement !== naverPw) {
-                        modal.style.display = 'none';
-                    }
-                }
-            };
-            
-            // 입력 필드에서 포커스가 나가도 모달이 유지되도록 설정
-            const inputFields = modal.querySelectorAll('input');
-            inputFields.forEach(input => {
-                input.addEventListener('blur', function(e) {
-                    e.stopPropagation();
+                console.log('URL 파라미터:', {
+                    code: authCode,
+                    error: error,
+                    errorDescription: errorDescription
                 });
-            });
-            
-            // 모달 내부 클릭 시 이벤트 버블링 방지
-            modalContent.addEventListener('click', function(e) {
-                e.stopPropagation();
+                
+                // 오류 파라미터가 있는 경우
+                if (error) {
+                    showError({
+                        error: error,
+                        description: errorDescription,
+                        message: '카카오 인증 서버에서 오류 응답이 반환되었습니다.'
+                    });
+                    return;
+                }
+                
+                // 인증 코드가 없는 경우
+                if (!authCode) {
+                    showError({
+                        message: '인증 코드가 없습니다. 로그인을 다시 시도해주세요.'
+                    });
+                    return;
+                }
+                
+                updateStatus('인증 코드 확인 중', '카카오 인증 서버와 통신하고 있습니다...');
+                
+                // REST API 키를 사용하여 토큰 얻기
+                fetch('https://kauth.kakao.com/oauth/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    },
+                    body: new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        client_id: 'beed5990dc19ffd7ab4f2355afa70129', // REST API 키
+                        redirect_uri: 'https://ysu-guide.netlify.app/kakao-callback.html',
+                        code: authCode
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(JSON.stringify(errorData));
+                        });
+                    }
+                    return response.json();
+                })
+                .then(tokenData => {
+                    console.log('토큰 데이터 받음:', tokenData);
+                    updateStatus('로그인 성공', '사용자 정보를 가져오는 중...');
+                    
+                    // 토큰으로 사용자 정보 요청
+                    return fetch('https://kapi.kakao.com/v2/user/me', {
+                        headers: {
+                            'Authorization': `Bearer ${tokenData.access_token}`,
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                        }
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(JSON.stringify(errorData));
+                        });
+                    }
+                    return response.json();
+                })
+                .then(userData => {
+                    console.log('사용자 정보:', userData);
+                    
+                    // 사용자 정보 처리
+                    const kakaoAccount = userData.kakao_account || {};
+                    const profile = kakaoAccount.profile || {};
+                    
+                    // 로컬 스토리지에 사용자 정보 저장
+                    const kakaoId = 'kakao_' + userData.id;
+                    
+                    localStorage.setItem(`user_${kakaoId}_registered`, 'true');
+                    localStorage.setItem(`user_${kakaoId}_name`, profile.nickname || '카카오 사용자');
+                    localStorage.setItem(`user_${kakaoId}_department`, 'defaultDepartment');
+                    localStorage.setItem(`user_${kakaoId}_grade`, '1');
+                    
+                    // 이메일이 있으면 저장
+                    if (kakaoAccount.email) {
+                        localStorage.setItem(`user_${kakaoId}_email`, kakaoAccount.email);
+                    }
+                    
+                    // 프로필 이미지가 있으면 저장
+                    if (profile.profile_image_url) {
+                        localStorage.setItem(`user_${kakaoId}_profileImage`, profile.profile_image_url);
+                    }
+                    
+                    // 현재 로그인된 사용자 저장
+                    localStorage.setItem('currentLoggedInUser', kakaoId);
+                    
+                    // 소셜 로그인 사용자 표시
+                    localStorage.setItem(`user_${kakaoId}_socialType`, 'kakao');
+                    
+                    // 최초 로그인 여부 확인 및 설정
+                    const isFirstLogin = localStorage.getItem(`user_${kakaoId}_first_login`) !== 'false';
+                    
+                    if (isFirstLogin) {
+                        localStorage.setItem(`user_${kakaoId}_first_login`, 'false');
+                        updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
+                        
+                        // 최초 로그인 시 위젯 설정 페이지로 이동
+                        setTimeout(function() {
+                            window.location.href = "widget-settings.html";
+                        }, 1500);
+                    } else {
+                        updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                        
+                        // 기존 사용자는 메인 페이지로 이동
+                        setTimeout(function() {
+                            window.location.href = "index.html";
+                        }, 1500);
+                    }
+                })
+                .catch(error => {
+                    console.error('카카오 로그인 처리 중 오류:', error);
+                    showError({
+                        message: '카카오 로그인 처리 중 오류가 발생했습니다.',
+                        details: error.toString()
+                    });
+                });
+                
+            } catch (error) {
+                console.error('초기화 중 예외 발생:', error);
+                showError({
+                    message: '초기화 중 예외가 발생했습니다.',
+                    details: error.toString()
+                });
+            }
+        };
+
+        // 카카오 로그아웃 함수 (필요 시 사용)
+        function kakaoLogout(accessToken) {
+            return fetch('https://kapi.kakao.com/v1/user/logout', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('카카오 로그아웃 성공:', data);
+                return data;
+            })
+            .catch(error => {
+                console.error('카카오 로그아웃 실패:', error);
+                throw error;
             });
         }
-        
-        // 네이버 로그인 처리
-        function processNaverLogin() {
-            const naverId = document.getElementById('naverId').value;
-            const naverPw = document.getElementById('naverPw').value;
-            const autoLogin = document.getElementById('autoLogin').checked;
-            
-            // 간단한 유효성 검사
-            if (!naverId || !naverPw) {
-                alert('네이버 아이디와 비밀번호를 모두 입력해주세요.');
-                return;
-            }
-            
-            // 여기서는 임시로 처리 (실제로는 네이버 OAuth API를 사용)
-            // 네이버 로그인 성공 시 임시 학번 생성
-            const tempStudentId = 'naver_' + naverId;
-            
-            // 사용자 정보 저장
-            localStorage.setItem(`user_${tempStudentId}_registered`, 'true');
-            localStorage.setItem(`user_${tempStudentId}_name`, '네이버 사용자');
-            localStorage.setItem(`user_${tempStudentId}_department`, 'computerScience');
-            localStorage.setItem(`user_${tempStudentId}_grade`, '1');
-            localStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
-            localStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
-            
-            // 자동 로그인 설정 저장
-            if (autoLogin) {
-                localStorage.setItem(`user_${tempStudentId}_autoLogin`, 'true');
-            }
-            
-            // 현재 로그인된 사용자 저장
-            localStorage.setItem('currentLoggedInUser', tempStudentId);
-            
-            // 소셜 로그인 사용자 표시
-            localStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
-            
-            // 최초 로그인 여부 확인 및 설정
-            const isFirstLogin = localStorage.getItem(`user_${tempStudentId}_first_login`) !== 'false';
-            if (isFirstLogin) {
-                localStorage.setItem(`user_${tempStudentId}_first_login`, 'false');
-                
-                // 모달 닫기
-                closeModal('naverLoginModal');
-                
-                alert('네이버 계정으로 로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
-                window.location.href = "widget-settings.html";
-            } else {
-                // 모달 닫기
-                closeModal('naverLoginModal');
-                
-                alert('네이버 계정으로 로그인이 완료되었습니다.');
-                window.location.href = "index.html";
-            }
-        }
-        
-        // 엔터 키로 로그인 처리
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                const modal = document.getElementById('naverLoginModal');
-                
-                // 네이버 로그인 모달이 열려있고 입력 필드에 포커스가 있을 때
-                if (modal.style.display === 'block') {
-                    const naverId = document.getElementById('naverId');
-                    const naverPw = document.getElementById('naverPw');
-                    
-                    if (document.activeElement === naverId || document.activeElement === naverPw) {
-                        processNaverLogin();
-                    }
-                }
-                // 일반 로그인 폼에서 엔터키를 눌렀을 때
-                else {
-                    const studentId = document.getElementById('studentId');
-                    const password = document.getElementById('password');
-                    
-                    if (document.activeElement === studentId || document.activeElement === password) {
-                        login();
-                    }
-                }
-            }
-        });
-        
-        // 페이지 로드 시 실행
-        document.addEventListener('DOMContentLoaded', checkNewRegistration);
     </script>
 </body>
 </html>
