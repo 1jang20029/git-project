@@ -154,10 +154,12 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .social-button:hover {
             transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
         
         .naver-button {
@@ -189,7 +191,7 @@
             text-decoration: none;
         }
         
-        /* 모달 스타일 */
+        /* 개선된 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -200,64 +202,175 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
+            margin: 10% auto;
+            padding: 0;
+            width: 90%;
+            max-width: 400px;
             border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+            overflow: hidden;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+            background-color: #03C75A;
+            color: white;
+            padding: 16px 20px;
+            position: relative;
         }
         
         .modal-title {
             font-size: 18px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .modal-title:before {
+            content: "N";
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 28px;
+            height: 28px;
+            background-color: white;
+            color: #03C75A;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
         }
         
         .close-modal {
-            color: #aaa;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
             font-size: 24px;
             font-weight: bold;
             cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
         }
         
         .close-modal:hover {
-            color: #000;
+            opacity: 1;
         }
         
         .modal-body {
-            margin-bottom: 20px;
+            padding: 20px;
+        }
+        
+        .modal-form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .modal-form-group .form-label {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .modal-form-group .form-input {
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            transition: all 0.3s;
+        }
+        
+        .modal-form-group .form-input:focus {
+            border-color: #03C75A;
+            background-color: white;
+            box-shadow: 0 0 0 2px rgba(3, 199, 90, 0.2);
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            color: #aaa;
         }
         
         .modal-footer {
+            padding: 16px 20px;
+            background-color: #f5f5f5;
             text-align: right;
+            border-top: 1px solid #eee;
         }
         
         .modal-button {
-            padding: 8px 16px;
-            background-color: #c62917;
-            color: white;
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
         }
         
         .modal-button.cancel {
-            background-color: #ddd;
-            color: #333;
+            background-color: #eee;
+            color: #666;
             margin-right: 10px;
+        }
+        
+        .modal-button.cancel:hover {
+            background-color: #ddd;
+        }
+        
+        .modal-button.login {
+            background-color: #03C75A;
+            color: white;
+        }
+        
+        .modal-button.login:hover {
+            background-color: #02b050;
+        }
+        
+        .naver-benefits {
+            margin-top: 16px;
+            background-color: #f5f9f7;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .benefits-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #03C75A;
+        }
+        
+        /* 자동 입력 체크박스 */
+        .auto-login {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+        }
+        
+        .auto-login input {
+            margin-right: 8px;
+        }
+        
+        .auto-login label {
+            font-size: 13px;
+            color: #666;
         }
     </style>
 </head>
@@ -311,7 +424,7 @@
         </div>
     </div>
     
-    <!-- 네이버 로그인 모달 -->
+    <!-- 개선된 네이버 로그인 모달 -->
     <div id="naverLoginModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -319,18 +432,34 @@
                 <span class="close-modal" onclick="closeModal('naverLoginModal')">&times;</span>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div class="modal-form-group">
                     <label class="form-label">네이버 아이디</label>
-                    <input type="text" class="form-input" id="naverId" placeholder="네이버 아이디를 입력하세요">
+                    <input type="text" class="form-input" id="naverId" placeholder="아이디를 입력하세요">
+                    <span class="input-icon">👤</span>
                 </div>
-                <div class="form-group">
+                <div class="modal-form-group">
                     <label class="form-label">네이버 비밀번호</label>
-                    <input type="password" class="form-input" id="naverPw" placeholder="네이버 비밀번호를 입력하세요">
+                    <input type="password" class="form-input" id="naverPw" placeholder="비밀번호를 입력하세요">
+                    <span class="input-icon">🔒</span>
+                </div>
+                
+                <div class="auto-login">
+                    <input type="checkbox" id="autoLogin">
+                    <label for="autoLogin">로그인 상태 유지</label>
+                </div>
+                
+                <div class="naver-benefits">
+                    <div class="benefits-title">네이버 계정으로 로그인 시 혜택</div>
+                    <ul>
+                        <li>네이버 캘린더와 학사일정 연동</li>
+                        <li>네이버 지도로 캠퍼스 건물 찾기</li>
+                        <li>네이버 메일을 통한 알림 수신</li>
+                    </ul>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="modal-button cancel" onclick="closeModal('naverLoginModal')">취소</button>
-                <button class="modal-button" onclick="processNaverLogin()">로그인</button>
+                <button class="modal-button login" onclick="processNaverLogin()">로그인</button>
             </div>
         </div>
     </div>
@@ -407,7 +536,16 @@
         
         // 네이버 로그인 모달 열기
         function naverLogin() {
-            document.getElementById('naverLoginModal').style.display = 'block';
+            const modal = document.getElementById('naverLoginModal');
+            modal.style.display = 'block';
+            
+            // 아이디 입력 필드에 포커스
+            setTimeout(() => {
+                document.getElementById('naverId').focus();
+            }, 300);
+            
+            // 모달이 닫히지 않도록 이벤트 관리
+            setupModalEvents();
         }
         
         // 카카오 로그인 처리
@@ -425,17 +563,43 @@
             document.getElementById(modalId).style.display = 'none';
         }
         
-        // 모달 외부 클릭 시 닫기
-        window.onclick = function(event) {
-            if (event.target.className === 'modal') {
-                event.target.style.display = 'none';
-            }
-        };
+        // 모달 이벤트 설정
+        function setupModalEvents() {
+            const modal = document.getElementById('naverLoginModal');
+            const modalContent = modal.querySelector('.modal-content');
+            
+            // 모달 외부 클릭 시 닫기 (단, 입력 중일 때는 예외)
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    // 아이디나 비밀번호 입력 중이 아닌 경우에만 모달 닫기
+                    const naverId = document.getElementById('naverId');
+                    const naverPw = document.getElementById('naverPw');
+                    
+                    if (document.activeElement !== naverId && document.activeElement !== naverPw) {
+                        modal.style.display = 'none';
+                    }
+                }
+            };
+            
+            // 입력 필드에서 포커스가 나가도 모달이 유지되도록 설정
+            const inputFields = modal.querySelectorAll('input');
+            inputFields.forEach(input => {
+                input.addEventListener('blur', function(e) {
+                    e.stopPropagation();
+                });
+            });
+            
+            // 모달 내부 클릭 시 이벤트 버블링 방지
+            modalContent.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
         
         // 네이버 로그인 처리
         function processNaverLogin() {
             const naverId = document.getElementById('naverId').value;
             const naverPw = document.getElementById('naverPw').value;
+            const autoLogin = document.getElementById('autoLogin').checked;
             
             // 간단한 유효성 검사
             if (!naverId || !naverPw) {
@@ -454,6 +618,11 @@
             localStorage.setItem(`user_${tempStudentId}_grade`, '1');
             localStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
             localStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
+            
+            // 자동 로그인 설정 저장
+            if (autoLogin) {
+                localStorage.setItem(`user_${tempStudentId}_autoLogin`, 'true');
+            }
             
             // 현재 로그인된 사용자 저장
             localStorage.setItem('currentLoggedInUser', tempStudentId);
@@ -479,6 +648,23 @@
                 window.location.href = "index.html";
             }
         }
+        
+        // 엔터 키로 로그인 처리
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const modal = document.getElementById('naverLoginModal');
+                
+                // 네이버 로그인 모달이 열려있고 입력 필드에 포커스가 있을 때
+                if (modal.style.display === 'block') {
+                    const naverId = document.getElementById('naverId');
+                    const naverPw = document.getElementById('naverPw');
+                    
+                    if (document.activeElement === naverId || document.activeElement === naverPw) {
+                        processNaverLogin();
+                    }
+                }
+            }
+        });
         
         // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', checkNewRegistration);
