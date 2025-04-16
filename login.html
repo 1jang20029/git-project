@@ -247,11 +247,16 @@
             const isRegistered = localStorage.getItem(`user_${studentId}_registered`) === 'true';
             
             if (!isRegistered) {
-                alert('등록되지 않은 학번입니다. 회원가입을 먼저 진행해주세요.');
+                alert('존재하지 않는 계정입니다. 회원가입을 먼저 진행해주세요.');
                 return;
             }
             
-            // 비밀번호 검증은 실제 구현에서는 서버에서 처리
+            // 비밀번호 확인 (실제 구현에서는 서버에서 처리)
+            const savedPassword = localStorage.getItem(`user_${studentId}_password`);
+            if (savedPassword && savedPassword !== password) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
             
             // 현재 로그인된 사용자 저장
             localStorage.setItem('currentLoggedInUser', studentId);
