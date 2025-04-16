@@ -140,6 +140,22 @@
             cursor: grab;
         }
         
+        .menu-item.clickable {
+            position: relative;
+        }
+
+        /* 드래그 핸들만 제외한 아이템 공백 영역에 투명 오버레이 추가 */
+        .menu-item.clickable::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 35px; /* 드래그 핸들 영역 제외 */
+            bottom: 0;
+            z-index: 1;
+            cursor: pointer;
+        }
+        
         .menu-item.disabled {
             opacity: 0.5;
             background-color: #f5f5f5;
@@ -172,6 +188,7 @@
             position: relative;
             cursor: pointer;
             transition: all 0.3s ease;
+            z-index: 2; /* 투명 오버레이보다 위에 있도록 */
         }
         
         .menu-toggle.active {
@@ -198,6 +215,7 @@
             margin-left: 16px;
             color: #ccc;
             font-size: 20px;
+            z-index: 2; /* 투명 오버레이보다 위에 있도록 */
         }
         
         .save-button {
@@ -297,7 +315,7 @@
         
         <div class="menu-section">
             <div class="menu-list" id="menuList">
-                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-5">
+                <div class="menu-item clickable" draggable="true" ondragstart="drag(event)" id="menu-5">
                     <div class="menu-icon">👤</div>
                     <div class="menu-info">
                         <div class="menu-name">내 정보</div>
@@ -306,7 +324,7 @@
                     <div class="menu-toggle active" onclick="toggleMenu(this, true)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-1">
+                <div class="menu-item clickable" draggable="true" ondragstart="drag(event)" id="menu-1">
                     <div class="menu-icon">🏠</div>
                     <div class="menu-info">
                         <div class="menu-name">홈</div>
@@ -315,7 +333,7 @@
                     <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-2">
+                <div class="menu-item clickable" draggable="true" ondragstart="drag(event)" id="menu-2">
                     <div class="menu-icon">🏫</div>
                     <div class="menu-info">
                         <div class="menu-name">시설</div>
@@ -324,7 +342,7 @@
                     <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-3">
+                <div class="menu-item clickable" draggable="true" ondragstart="drag(event)" id="menu-3">
                     <div class="menu-icon">💬</div>
                     <div class="menu-info">
                         <div class="menu-name">커뮤니티</div>
@@ -333,7 +351,7 @@
                     <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item" draggable="true" ondragstart="drag(event)" id="menu-4">
+                <div class="menu-item clickable" draggable="true" ondragstart="drag(event)" id="menu-4">
                     <div class="menu-icon">🔔</div>
                     <div class="menu-info">
                         <div class="menu-name">알림</div>
@@ -342,7 +360,7 @@
                     <div class="menu-toggle active" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-6">
+                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-6">
                     <div class="menu-icon">🍽️</div>
                     <div class="menu-info">
                         <div class="menu-name">학식</div>
@@ -351,7 +369,7 @@
                     <div class="menu-toggle" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-7">
+                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-7">
                     <div class="menu-icon">🚌</div>
                     <div class="menu-info">
                         <div class="menu-name">셔틀버스</div>
@@ -360,7 +378,7 @@
                     <div class="menu-toggle" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item disabled" draggable="true" ondragstart="drag(event)" id="menu-8">
+                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-8">
                     <div class="menu-icon">📝</div>
                     <div class="menu-info">
                         <div class="menu-name">강의평가</div>
@@ -379,6 +397,40 @@
     </div>
 
     <script>
+        // 페이지 로드 시 메뉴 아이템에 클릭 이벤트 리스너 추가
+        document.addEventListener('DOMContentLoaded', function() {
+            setupMenuItemClickListeners();
+        });
+        
+        // 메뉴 아이템 클릭 이벤트 설정
+        function setupMenuItemClickListeners() {
+            const menuItems = document.querySelectorAll('.menu-item.clickable');
+            
+            menuItems.forEach(item => {
+                // before 가상 요소에 대한 클릭 이벤트를 감지하기 위해 전체 아이템에 클릭 이벤트 추가
+                item.addEventListener('click', function(event) {
+                    // 드래그 핸들이나 토글 버튼을 직접 클릭한 경우는 제외
+                    if (!event.target.matches('.drag-handle') && 
+                        !event.target.matches('.menu-toggle') &&
+                        !event.target.closest('.drag-handle') &&
+                        !event.target.closest('.menu-toggle')) {
+                        
+                        // 해당 메뉴 아이템의 토글 버튼 찾기
+                        const toggle = this.querySelector('.menu-toggle');
+                        
+                        // 메뉴 이름이 '내 정보'인 경우 토글 비활성화
+                        const menuName = this.querySelector('.menu-name').textContent;
+                        if (menuName === '내 정보') {
+                            return; // 내 정보는 토글 불가
+                        }
+                        
+                        // 토글 버튼 클릭 시와 동일한 동작 수행
+                        toggleMenu(toggle);
+                    }
+                });
+            });
+        }
+        
         // 위젯 선택/해제 토글
         function toggleWidget(element) {
             // 이미 선택되어 있는 경우 (선택 해제하려는 경우)
