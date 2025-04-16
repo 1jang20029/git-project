@@ -1943,23 +1943,6 @@
                 window.location.reload();
             }
         }
-
-       // 페이지 첫 로드시 로컬 스토리지에 기본 사용자 설정
-       function initializeDefaultUser() {
-           const studentId = '2021100215'; // 기본 학번
-           if (!localStorage.getItem('currentLoggedInUser')) {
-               localStorage.setItem('currentLoggedInUser', studentId);
-               localStorage.setItem(`user_${studentId}_name`, '조희정');
-               localStorage.setItem(`user_${studentId}_department`, 'business');
-               localStorage.setItem(`user_${studentId}_grade`, '3');
-               localStorage.setItem(`user_${studentId}_email`, 'student@yeonsung.ac.kr');
-               localStorage.setItem(`user_${studentId}_phone`, '010-1234-5678');
-               localStorage.setItem(`user_${studentId}_password`, 'Password1!');
-           }
-       }
-
-       // 페이지 로드시 기본 사용자 초기화
-       initializeDefaultUser();
    </script>
 </body>
 </html>
