@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>네이버 로그인 처리</title>
+</head>
+<body>
+  <h2>로그인 중입니다...</h2>
+
+  <script>
+    const clientId = "YOUR_CLIENT_ID"; // 네이버에서 발급받은 Client ID
+    const clientSecret = "YOUR_CLIENT_SECRET"; // 네이버에서 발급받은 Client Secret
+    const redirectUri = "https://ysu-guide.netlify.app/naver-callback.html";
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const state = params.get("state");
+
+    if (!code) {
+      alert("로그인 실패 혹은 사용자가 취소했습니다.");
+      throw new Error("네이버 로그인 실패");
+    }
+
+    fetch("https://nid.naver.com/oauth2.0/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: clientId,
+        client_secret: clientSecret,
+        code: code,
+        state: state
+      }),
+    })
+    .then(res => res.json())
+    .then(tokenRes => {
+      const accessToken = tokenRes.access_token;
+      return fetch("https://openapi.naver.com/v1/nid/me", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+    })
+    .then(res => res.json())
+    .then(userData => {
+      const user = userData.response;
+      alert(`로그인 성공! ${user.name}님 환영합니다.`);
+      localStorage.setItem("naver_user_email", user.email);
+      localStorage.setItem("naver_user_name", user.name);
+      window.location.href = "index.html";
+    })
+    .catch(err => {
+      console.error("네이버 로그인 에러:", err);
+      alert("로그인 처리 중 문제가 발생했습니다.");
+    });
+  </script>
+</body>
+</html>
