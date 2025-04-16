@@ -155,6 +155,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-decoration: none;
         }
         
         .social-button:hover {
@@ -414,7 +415,8 @@
             
             <div class="social-login">
                 <div class="social-button naver-button" onclick="naverLogin()">N</div>
-                <div class="social-button kakao-button" onclick="kakaoLogin()">K</div>
+                <!-- 카카오 로그인 버튼을 a 태그로 변경하여 직접 링크 -->
+                <a href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code" class="social-button kakao-button">K</a>
                 <div class="social-button google-button" onclick="googleLogin()">G</div>
             </div>
             
@@ -463,15 +465,8 @@
             </div>
         </div>
     </div>
-
-    <!-- 카카오 SDK 스크립트 -->
-    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     
     <script>
-        // 카카오 SDK 초기화 - JavaScript 키 입력
-        Kakao.init('5ce85216b7f9a4d297356d8c3067b654');
-        console.log('카카오 SDK 초기화 상태:', Kakao.isInitialized());
-        
         // 로컬 스토리지에 회원가입 여부 저장
         function saveRegistrationStatus(studentId) {
             localStorage.setItem(`user_${studentId}_registered`, 'true');
@@ -553,19 +548,6 @@
             
             // 모달이 닫히지 않도록 이벤트 관리
             setupModalEvents();
-        }
-        
-        // 카카오 로그인 처리
-        function kakaoLogin() {
-            try {
-                // 카카오 로그인 요청 - 리다이렉트 방식 (scope 옵션 제거)
-                Kakao.Auth.authorize({
-                    redirectUri: 'https://ysu-guide.netlify.app/kakao-callback.html'
-                });
-            } catch (error) {
-                console.error('카카오 로그인 시도 중 오류:', error);
-                alert('카카오 로그인 시도 중 오류가 발생했습니다. 다시 시도해주세요.');
-            }
         }
         
         // 구글 로그인 처리
