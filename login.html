@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Apple SD Gothic Neo', 'Noto Sans KW', sans-serif;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
         }
         
         body {
@@ -471,9 +471,6 @@
         </div>
     </div>
     
-    <!-- 구글 OAuth 라이브러리 -->
-    <script src="https://accounts.google.com/gsi/client"></script>
-    
     <!-- 카카오 SDK 스크립트 -->
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     
@@ -481,9 +478,6 @@
         // 카카오 SDK 초기화
         Kakao.init('5ce85216b7f9a4d297356d8c3067b654');
         console.log('카카오 SDK 초기화 상태:', Kakao.isInitialized());
-        
-        // 구글 클라이언트 ID
-        const GOOGLE_CLIENT_ID = '166471619172-ugufgkv30f9lic9nj7rcts1hqectmv01.apps.googleusercontent.com';
         
         // 로컬 스토리지에 회원가입 여부 저장
         function saveRegistrationStatus(studentId) {
@@ -570,83 +564,20 @@
         
         // 구글 로그인 처리 함수
         function googleLogin() {
-            // 구글 OAuth 클라이언트 초기화
-            const client = google.accounts.oauth2.initCodeClient({
-                client_id: GOOGLE_CLIENT_ID,
-                scope: 'email profile openid',
-                ux_mode: 'redirect',
-                redirect_uri: 'https://ysu-guide.netlify.app/google-callback.html',
-                state: 'google-login'
-            });
+            // 구글 OAuth URL 직접 구성
+            const clientId = '166471619172-ugufgkv30f9lic9nj7rcts1hqectmv01.apps.googleusercontent.com';
+            const redirectUri = encodeURIComponent('https://ysu-guide.netlify.app/google-callback.html');
+            const scope = encodeURIComponent('email profile openid');
+            const responseType = 'code';
+            const accessType = 'offline';
+            const prompt = 'consent';
             
-            // 구글 로그인 창 열기
-            client.requestCode();
-        }
-        
-        // 카카오 로그인 처리
-        function kakaoLogin() {
-            // 카카오 로그인 요청 - 이 함수는 실제로는 카카오 버튼 a 태그로 대체됨
-            Kakao.Auth.authorize({
-                redirectUri: 'https://ysu-guide.netlify.app/kakao-callback.html',
-                prompt: 'login'
-            });
-        }
-        
-        // 구글 로그인 처리 (참고용, 실제로는 콜백 페이지에서 처리)
-        function handleGoogleResponse(response) {
-            // 인증 코드를 서버로 전송하여 처리
-            fetch('https://ysu-guide.netlify.app/auth/google', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ code: response.code })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // 사용자 정보 저장 및 처리
-                const googleId = 'google_' + data.sub;
-                localStorage.setItem(`user_${googleId}_registered`, 'true');
-                localStorage.setItem(`user_${googleId}_name`, data.name || '구글 사용자');
-                localStorage.setItem(`user_${googleId}_email`, data.email || '');
-                localStorage.setItem(`user_${googleId}_socialType`, 'google');
-                
-                // 프로필 이미지가 있으면 저장
-                if (data.picture) {
-                    localStorage.setItem(`user_${googleId}_profileImage`, data.picture);
-                }
-                
-                // 현재 로그인된 사용자 저장
-                localStorage.setItem('currentLoggedInUser', googleId);
-                
-                // 최초 로그인 여부 확인 및 설정
-                const isFirstLogin = localStorage.getItem(`user_${googleId}_first_login`) !== 'false';
-                if (isFirstLogin) {
-                    localStorage.setItem(`user_${googleId}_first_login`, 'false');
-                    window.location.href = "widget-settings.html";
-                } else {
-                    window.location.href = "index.html";
-                }
-            })
-            .catch(error => {
-                console.error('구글 로그인 처리 중 오류:', error);
-                alert('구글 로그인 처리 중 문제가 발생했습니다. 다시 시도해주세요.');
-            });
-        }
-        
-        // 구글 로그인 처리 함수
-        function googleLogin() {
-            // 구글 OAuth 클라이언트 초기화
-            const client = google.accounts.oauth2.initCodeClient({
-                client_id: GOOGLE_CLIENT_ID,
-                scope: 'email profile openid',
-                ux_mode: 'redirect',
-                redirect_uri: 'https://ysu-guide.netlify.app/google-callback.html',
-                state: 'google-login'
-            });
+            // 구글 OAuth 인증 URL 구성
+            const googleAuthUrl = 
+                `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}&access_type=${accessType}&prompt=${prompt}`;
             
-            // 구글 로그인 창 열기
-            client.requestCode();
+            // 인증 페이지로 이동
+            window.location.href = googleAuthUrl;
         }
         
         // 모달 닫기
