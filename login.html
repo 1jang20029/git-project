@@ -208,7 +208,7 @@
             </div>
             
             <div class="social-login">
-                <div class="social-button" id="naver-login-button">N</div>
+                <div class="social-button">N</div>
                 <div class="social-button">K</div>
                 <div class="social-button">G</div>
             </div>
@@ -296,16 +296,6 @@
         
         // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', checkNewRegistration);
-
-        const naverClientId = "YOUR_CLIENT_ID";
-const redirectUri = encodeURIComponent("https://ysu-guide.netlify.app/naver-callback.html");
-const state = "NAVER_STATE_123";
-
-document.getElementById("naver-login-button").addEventListener("click", function () {
-    const loginUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${naverClientId}&redirect_uri=${redirectUri}&state=${state}`;
-    window.location.href = loginUrl;
-});
-
     </script>
 </body>
 </html>
