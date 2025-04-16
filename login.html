@@ -191,7 +191,7 @@
             text-decoration: none;
         }
         
-        /* 개선된 모달 스타일 */
+        /* 네이버 로그인 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -401,8 +401,8 @@
                 <button type="button" class="login-button" onclick="login()">로그인</button>
                 
                 <div class="login-options">
-                    <a href="#">아이디 찾기</a>
-                    <a href="#">비밀번호 찾기</a>
+                    <a href="find-id.html">아이디 찾기</a>
+                    <a href="find-password.html">비밀번호 찾기</a>
                 </div>
             </form>
             
@@ -424,7 +424,7 @@
         </div>
     </div>
     
-    <!-- 개선된 네이버 로그인 모달 -->
+    <!-- 네이버 로그인 모달 -->
     <div id="naverLoginModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -464,7 +464,13 @@
         </div>
     </div>
 
+    <!-- 카카오 SDK 스크립트 -->
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    
     <script>
+        // 카카오 SDK 초기화 (이곳에 JavaScript 키를 입력하세요)
+        Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY');
+        
         // 로컬 스토리지에 회원가입 여부 저장
         function saveRegistrationStatus(studentId) {
             localStorage.setItem(`user_${studentId}_registered`, 'true');
@@ -550,7 +556,10 @@
         
         // 카카오 로그인 처리
         function kakaoLogin() {
-            alert('카카오 로그인 기능은 준비 중입니다.');
+            // 카카오 로그인 요청
+            Kakao.Auth.authorize({
+                redirectUri: 'https://ysu-guide.netlify.app/kakao-callback.html'
+            });
         }
         
         // 구글 로그인 처리
@@ -661,6 +670,15 @@
                     
                     if (document.activeElement === naverId || document.activeElement === naverPw) {
                         processNaverLogin();
+                    }
+                }
+                // 일반 로그인 폼에서 엔터키를 눌렀을 때
+                else {
+                    const studentId = document.getElementById('studentId');
+                    const password = document.getElementById('password');
+                    
+                    if (document.activeElement === studentId || document.activeElement === password) {
+                        login();
                     }
                 }
             }
