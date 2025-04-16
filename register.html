@@ -117,19 +117,53 @@
             background-color: white;
         }
         
-        .radio-group {
-            display: flex;
-            gap: 16px;
-            margin-top: 8px;
+        .grade-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
         
-        .radio-item {
+        .grade-button {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            text-align: left;
+            cursor: pointer;
             display: flex;
-            align-items: center;
+            justify-content: space-between;
         }
         
-        .radio-item input[type="radio"] {
-            margin-right: 6px;
+        .grade-button:after {
+            content: "▼";
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .grade-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .grade-option {
+            padding: 12px;
+            cursor: pointer;
+        }
+        
+        .grade-option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .show {
+            display: block;
         }
         
         .agreement {
@@ -217,25 +251,21 @@
                 
                 <div class="form-group">
                     <label class="form-label">학년</label>
-                    <div class="radio-group">
-                        <label class="radio-item">
-                            <input type="radio" name="grade" value="1"> 1학년
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="grade" value="2"> 2학년
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="grade" value="3"> 3학년
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="grade" value="4"> 4학년
-                        </label>
+                    <div class="grade-dropdown">
+                        <button type="button" class="grade-button" id="gradeDropdownBtn">학년을 선택하세요</button>
+                        <div class="grade-content" id="gradeDropdown">
+                            <div class="grade-option" data-value="1">1학년</div>
+                            <div class="grade-option" data-value="2">2학년</div>
+                            <div class="grade-option" data-value="3">3학년</div>
+                            <div class="grade-option" data-value="4">4학년</div>
+                        </div>
+                        <input type="hidden" id="selectedGrade" name="grade" value="">
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">휴대폰 번호</label>
-                    <input type="tel" class="form-input" id="phone" placeholder="휴대폰 번호를 입력하세요 (-없이)">
+                    <input type="tel" class="form-input" id="phone" placeholder="휴대폰 번호를 입력하세요">
                 </div>
                 
                 <div class="form-group">
@@ -287,6 +317,43 @@
     </div>
     
     <script>
+        // 학년 드롭다운 기능
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.getElementById('gradeDropdownBtn');
+            const dropdown = document.getElementById('gradeDropdown');
+            const options = document.querySelectorAll('.grade-option');
+            const selectedGradeInput = document.getElementById('selectedGrade');
+            
+            // 드롭다운 표시/숨김 토글
+            dropdownBtn.addEventListener('click', function() {
+                dropdown.classList.toggle('show');
+            });
+            
+            // 학년 옵션 선택 시
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    const value = this.dataset.value;
+                    const text = this.textContent;
+                    
+                    // 버튼 텍스트 업데이트
+                    dropdownBtn.textContent = text;
+                    
+                    // 숨겨진 입력 필드에 값 설정
+                    selectedGradeInput.value = value;
+                    
+                    // 드롭다운 닫기
+                    dropdown.classList.remove('show');
+                });
+            });
+            
+            // 드롭다운 외부 클릭 시 닫기
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.grade-button') && !event.target.matches('.grade-option')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        });
+        
         function goBack() {
             window.location.href = "login.html";
         }
@@ -298,7 +365,7 @@
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const department = document.getElementById('department').value;
-            const gradeRadios = document.getElementsByName('grade');
+            const selectedGrade = document.getElementById('selectedGrade').value;
             const phone = document.getElementById('phone').value;
             const email = document.getElementById('email').value;
             const agreeTerms = document.getElementById('agreeTerms').checked;
@@ -314,6 +381,13 @@
                 return;
             }
             
+            // 학년 선택 검사
+            if (!selectedGrade) {
+                alert('학년을 선택해주세요.');
+                isValid = false;
+                return;
+            }
+            
             // 비밀번호 일치 검사
             if (password !== confirmPassword) {
                 document.getElementById('confirmPassword-error').style.display = 'block';
@@ -321,23 +395,6 @@
                 return;
             } else {
                 document.getElementById('confirmPassword-error').style.display = 'none';
-            }
-            
-            // 학년 선택 검사
-            let gradeSelected = false;
-            let selectedGrade = "";
-            for (const radio of gradeRadios) {
-                if (radio.checked) {
-                    gradeSelected = true;
-                    selectedGrade = radio.value;
-                    break;
-                }
-            }
-            
-            if (!gradeSelected) {
-                alert('학년을 선택해주세요.');
-                isValid = false;
-                return;
             }
             
             // 약관 동의 검사
