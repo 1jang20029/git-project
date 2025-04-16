@@ -71,59 +71,175 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .error-container {
+            display: none;
+            background-color: #fff9f9;
+            border: 1px solid #ffdddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .error-title {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .button {
+            background-color: #FEE500;
+            color: #3A1D1D;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="loading-container">
         <div class="kakao-logo">K</div>
-        <h1>카카오 로그인 처리 중</h1>
-        <p>잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
-        <div class="spinner"></div>
+        <h1 id="status-title">카카오 로그인 처리 중</h1>
+        <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
+        <div class="spinner" id="loading-spinner"></div>
+        
+        <div id="error-container" class="error-container">
+            <div class="error-title">오류 정보</div>
+            <div class="error-message" id="error-details"></div>
+        </div>
+        
+        <button class="button" id="retry-button" style="display: none;" onclick="goToLogin()">다시 시도하기</button>
     </div>
 
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script>
-        // 카카오 SDK 초기화
-        Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY'); // 여기에 JavaScript 키를 입력하세요
-        
+        // 상태 메시지 업데이트 함수
+        function updateStatus(title, message, isError = false) {
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message;
+            
+            if (isError) {
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('retry-button').style.display = 'block';
+            }
+        }
+
+        // 오류 표시 함수
+        function showError(errorDetails) {
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('error-details').textContent = JSON.stringify(errorDetails, null, 2);
+            updateStatus('카카오 로그인 오류', '로그인 처리 중 문제가 발생했습니다. 오류 정보를 확인하세요.', true);
+        }
+
+        // 로그인 페이지로 이동
+        function goToLogin() {
+            window.location.href = "login.html";
+        }
+
         // 페이지 로드 시 콜백 처리
         window.onload = function() {
-            // URL 파라미터에서 코드 추출
-            const urlParams = new URLSearchParams(window.location.search);
-            const authCode = urlParams.get('code');
-            
-            if (authCode) {
-                // 인증 코드가 있으면 사용자 정보 요청
-                processKakaoLogin(authCode);
-            } else {
-                // 인증 코드가 없으면 오류 처리
-                alert('카카오 로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
-                window.location.href = "login.html";
-            }
-        };
-        
-        // 카카오 로그인 처리 함수
-        function processKakaoLogin(authCode) {
-            // 실제 구현에서는 서버에서 처리하는 것이 안전합니다.
-            // 여기서는 클라이언트에서 직접 처리하는 예시를 보여줍니다.
-            
-            // 토큰 요청 (실제로는 서버에서 수행)
-            Kakao.Auth.setAccessToken(authCode);
-            
-            // 사용자 정보 요청
-            Kakao.API.request({
-                url: '/v2/user/me',
-                success: function(response) {
+            try {
+                console.log('카카오 로그인 콜백 페이지 로드됨');
+                
+                // 카카오 SDK 초기화 - JavaScript 키 사용
+                Kakao.init('5ce85216b7f9a4d297356d8c3067b654');
+                console.log('카카오 SDK 초기화 상태:', Kakao.isInitialized());
+                
+                // URL 파라미터에서 코드와 오류 정보 추출
+                const urlParams = new URLSearchParams(window.location.search);
+                const authCode = urlParams.get('code');
+                const error = urlParams.get('error');
+                const errorDescription = urlParams.get('error_description');
+                
+                console.log('URL 파라미터:', {
+                    code: authCode,
+                    error: error,
+                    errorDescription: errorDescription
+                });
+                
+                // 오류 파라미터가 있는 경우
+                if (error) {
+                    showError({
+                        error: error,
+                        description: errorDescription,
+                        message: '카카오 인증 서버에서 오류 응답이 반환되었습니다.'
+                    });
+                    return;
+                }
+                
+                // 인증 코드가 없는 경우
+                if (!authCode) {
+                    showError({
+                        message: '인증 코드가 없습니다. 로그인을 다시 시도해주세요.'
+                    });
+                    return;
+                }
+                
+                updateStatus('인증 코드 확인 중', '카카오 인증 서버와 통신하고 있습니다...');
+                
+                // REST API 키를 사용하여 토큰 얻기 (실제로는 서버에서 처리하는 것이 안전)
+                fetch('https://kauth.kakao.com/oauth/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    },
+                    body: new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        client_id: 'beed5990dc19ffd7ab4f2355afa70129', // REST API 키
+                        redirect_uri: 'https://ysu-guide.netlify.app/kakao-callback.html',
+                        code: authCode
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(JSON.stringify(errorData));
+                        });
+                    }
+                    return response.json();
+                })
+                .then(tokenData => {
+                    console.log('토큰 데이터 받음:', tokenData);
+                    updateStatus('로그인 성공', '로그인 정보를 처리하고 있습니다...');
+                    
+                    // 액세스 토큰 설정
+                    Kakao.Auth.setAccessToken(tokenData.access_token);
+                    
+                    // 사용자 정보 요청
+                    return Kakao.API.request({
+                        url: '/v2/user/me'
+                    });
+                })
+                .then(response => {
+                    console.log('사용자 정보:', response);
+                    
                     // 사용자 정보 처리
                     const kakaoAccount = response.kakao_account;
-                    const profile = kakaoAccount.profile;
+                    const profile = kakaoAccount?.profile || {};
                     
                     // 로컬 스토리지에 사용자 정보 저장
                     const kakaoId = 'kakao_' + response.id;
                     
                     localStorage.setItem(`user_${kakaoId}_registered`, 'true');
                     localStorage.setItem(`user_${kakaoId}_name`, profile.nickname || '카카오 사용자');
-                    localStorage.setItem(`user_${kakaoId}_email`, kakaoAccount.email || '');
+                    localStorage.setItem(`user_${kakaoId}_email`, kakaoAccount?.email || '');
                     localStorage.setItem(`user_${kakaoId}_department`, 'defaultDepartment');
                     localStorage.setItem(`user_${kakaoId}_grade`, '1');
                     localStorage.setItem(`user_${kakaoId}_socialType`, 'kakao');
@@ -141,25 +257,37 @@
                     
                     if (isFirstLogin) {
                         localStorage.setItem(`user_${kakaoId}_first_login`, 'false');
+                        updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
                         
                         // 최초 로그인 시 위젯 설정 페이지로 이동
                         setTimeout(function() {
                             window.location.href = "widget-settings.html";
                         }, 1500);
                     } else {
+                        updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                        
                         // 기존 사용자는 메인 페이지로 이동
                         setTimeout(function() {
                             window.location.href = "index.html";
                         }, 1500);
                     }
-                },
-                fail: function(error) {
-                    console.error('카카오 사용자 정보 요청 실패:', error);
-                    alert('카카오 로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
-                    window.location.href = "login.html";
-                }
-            });
-        }
+                })
+                .catch(error => {
+                    console.error('카카오 로그인 처리 중 오류:', error);
+                    showError({
+                        message: '카카오 로그인 처리 중 오류가 발생했습니다.',
+                        details: error.toString()
+                    });
+                });
+                
+            } catch (error) {
+                console.error('초기화 중 예외 발생:', error);
+                showError({
+                    message: '초기화 중 예외가 발생했습니다.',
+                    details: error.toString()
+                });
+            }
+        };
     </script>
 </body>
 </html>

@@ -470,6 +470,7 @@
     <script>
         // 카카오 SDK 초기화 - JavaScript 키 입력
         Kakao.init('5ce85216b7f9a4d297356d8c3067b654');
+        console.log('카카오 SDK 초기화 상태:', Kakao.isInitialized());
         
         // 로컬 스토리지에 회원가입 여부 저장
         function saveRegistrationStatus(studentId) {
@@ -556,10 +557,16 @@
         
         // 카카오 로그인 처리
         function kakaoLogin() {
-            // 카카오 로그인 요청
-            Kakao.Auth.authorize({
-                redirectUri: 'https://ysu-guide.netlify.app/kakao-callback.html'
-            });
+            try {
+                // 카카오 로그인 요청 - 리다이렉트 방식
+                Kakao.Auth.authorize({
+                    redirectUri: 'https://ysu-guide.netlify.app/kakao-callback.html',
+                    scope: 'profile_nickname,profile_image,account_email'
+                });
+            } catch (error) {
+                console.error('카카오 로그인 시도 중 오류:', error);
+                alert('카카오 로그인 시도 중 오류가 발생했습니다. 다시 시도해주세요.');
+            }
         }
         
         // 구글 로그인 처리
