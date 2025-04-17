@@ -550,18 +550,19 @@
            setupModalEvents();
        }
        
-       // 구글 로그인 처리 - 수정된 클라이언트 ID
+       // 구글 로그인 처리 - 수정된 버전
        function googleLogin() {
-           // 올바른 클라이언트 ID 사용
-           const CLIENT_ID = '166471619172-impvkkmqf48toev2fjn37vfa5irke9pq.apps.googleusercontent.com';
+           // Google OAuth 2.0 설정 - 클라이언트 ID 확인
+           const CLIENT_ID = '166471619172-ugufgkv30f9lic9nj7rcts1hqectmv01.apps.googleusercontent.com';
            
            // 콜백 URL이 구글 콘솔에 등록된 리디렉션 URI와 정확히 일치해야 함
+           // 주의: .app -> .netlify.app으로 수정
            const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
            
            // 권한 범위 지정
            const SCOPE = 'email profile';
            
-           // Google OAuth 2.0 인증 URL 생성
+           // Google OAuth 2.0 인증 URL 생성 - 매개변수 형식 변경
            const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
                'client_id=' + encodeURIComponent(CLIENT_ID) +
                '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
