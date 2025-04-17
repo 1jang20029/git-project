@@ -415,7 +415,7 @@
             
             <div class="social-login">
                 <div class="social-button naver-button" onclick="naverLogin()">N</div>
-                <!-- 카카오 로그인 버튼을 a 태그로 변경하여 직접 링크 -->
+                <!-- 카카오 로그인 버튼을 a 태그로 변경하여 직접 링크 - prompt=login 추가 -->
                 <a href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code&prompt=login" class="social-button kakao-button">K</a>
                 <div class="social-button google-button" onclick="googleLogin()">G</div>
             </div>
@@ -550,29 +550,9 @@
            setupModalEvents();
        }
        
-       // 구글 로그인 처리 - 수정된 버전
+       // 구글 로그인 처리
        function googleLogin() {
-           // Google OAuth 2.0 설정 - 클라이언트 ID 확인
-           const CLIENT_ID = '166471619172-ugufgkv30f9lic9nj7rcts1hqectmv01.apps.googleusercontent.com';
-           
-           // 콜백 URL이 구글 콘솔에 등록된 리디렉션 URI와 정확히 일치해야 함
-           // 주의: .app -> .netlify.app으로 수정
-           const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
-           
-           // 권한 범위 지정
-           const SCOPE = 'email profile';
-           
-           // Google OAuth 2.0 인증 URL 생성 - 매개변수 형식 변경
-           const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
-               'client_id=' + encodeURIComponent(CLIENT_ID) +
-               '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
-               '&response_type=code' +
-               '&scope=' + encodeURIComponent(SCOPE) +
-               '&prompt=select_account' +
-               '&access_type=offline';
-           
-           // 구글 로그인 페이지로 이동
-           window.location.href = authUrl;
+           alert('구글 로그인 기능은 준비 중입니다.');
        }
        
        // 모달 닫기
