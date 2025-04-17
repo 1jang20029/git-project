@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>구글 로그인 처리 중 - 연성대학교</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        
+        .loading-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .google-logo {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 30px;
+            color: #4285F4;
+            font-size: 30px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .google-logo::before {
+            content: "G";
+            font-family: Arial, sans-serif;
+            color: #4285F4;
+            font-size: 28px;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4285F4;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            display: none;
+            background-color: #fff9f9;
+            border: 1px solid #ffdddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .error-title {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .button:hover {
+            background-color: #3367d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="google-logo"></div>
+        <h1 id="status-title">구글 로그인 처리 중</h1>
+        <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
+        <div class="spinner" id="loading-spinner"></div>
+        
+        <div id="error-container" class="error-container">
+            <div class="error-title">오류 정보</div>
+            <div class="error-message" id="error-details"></div>
+        </div>
+        
+        <button class="button" id="retry-button" style="display: none;" onclick="goToLogin()">다시 시도하기</button>
+    </div>
+
+    <script>
+        // 상태 메시지 업데이트 함수
+        function updateStatus(title, message, isError = false) {
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message;
+            
+            if (isError) {
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('retry-button').style.display = 'block';
+            }
+        }
+
+        // 오류 표시 함수
+        function showError(errorDetails) {
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('error-details').textContent = JSON.stringify(errorDetails, null, 2);
+            updateStatus('구글 로그인 오류', '로그인 처리 중 문제가 발생했습니다. 오류 정보를 확인하세요.', true);
+        }
+
+        // 로그인 페이지로 이동
+        function goToLogin() {
+            window.location.href = "login.html";
+        }
+
+        // 페이지 로드 시 실행되는 함수
+        window.onload = function() {
+            try {
+                console.log('구글 로그인 콜백 페이지 로드됨');
+                
+                // URL 파라미터에서 코드와 오류 정보 추출
+                const urlParams = new URLSearchParams(window.location.search);
+                const authCode = urlParams.get('code');
+                const error = urlParams.get('error');
+                
+                console.log('URL 파라미터 확인:', {
+                    code: authCode ? '코드 존재함' : '코드 없음',
+                    error: error
+                });
+                
+                // 오류 파라미터가 있는 경우
+                if (error) {
+                    showError({
+                        error: error,
+                        message: '구글 인증 서버에서 오류 응답이 반환되었습니다.'
+                    });
+                    return;
+                }
+                
+                // 인증 코드가 없는 경우
+                if (!authCode) {
+                    showError({
+                        message: '인증 코드가 없습니다. 로그인을 다시 시도해주세요.'
+                    });
+                    return;
+                }
+                
+                updateStatus('인증 코드 확인됨', '사용자 정보를 처리하고 있습니다...');
+                
+                // 실제 서버에서는 이 코드를 사용하여 Google API에 토큰을 요청합니다
+                // 여기서는 클라이언트 측에서 직접 처리하는 것으로 시뮬레이션합니다.
+                
+                // 안전한 방식으로 임시 사용자 ID 생성 (실제로는 Google에서 받은 ID 사용)
+                const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+                const googleId = 'google_' + randomId;
+                
+                setTimeout(function() {
+                    try {
+                        // 사용자 정보 로컬 스토리지에 저장
+                        localStorage.setItem(`user_${googleId}_registered`, 'true');
+                        localStorage.setItem(`user_${googleId}_name`, '구글 사용자');
+                        localStorage.setItem(`user_${googleId}_department`, 'computerScience');
+                        localStorage.setItem(`user_${googleId}_grade`, '1');
+                        localStorage.setItem(`user_${googleId}_email`, `user_${randomId}@gmail.com`);
+                        
+                        // 소셜 로그인 유형 표시
+                        localStorage.setItem(`user_${googleId}_socialType`, 'google');
+                        
+                        // 현재 로그인된 사용자로 설정
+                        localStorage.setItem('currentLoggedInUser', googleId);
+                        
+                        // 최초 로그인 여부 확인
+                        const isFirstLogin = localStorage.getItem(`user_${googleId}_first_login`) !== 'false';
+                        
+                        // 최초 로그인 상태 업데이트
+                        localStorage.setItem(`user_${googleId}_first_login`, 'false');
+                        
+                        updateStatus('로그인 성공', isFirstLogin ? 
+                            '위젯 설정 페이지로 이동합니다...' : 
+                            '메인 페이지로 이동합니다...');
+                        
+                        // 리디렉션
+                        setTimeout(function() {
+                            window.location.href = isFirstLogin ? 
+                                "widget-settings.html" : "index.html";
+                        }, 1500);
+                    } catch (error) {
+                        console.error('사용자 정보 처리 중 오류:', error);
+                        showError({
+                            message: '사용자 정보 처리 중 오류가 발생했습니다.',
+                            details: error.toString()
+                        });
+                    }
+                }, 2000); // 로딩 효과를 위한 지연
+            } catch (error) {
+                console.error('초기화 중 예외 발생:', error);
+                showError({
+                    message: '초기화 중 예외가 발생했습니다.',
+                    details: error.toString()
+                });
+            }
+        };
+    </script>
+</body>
+</html>
