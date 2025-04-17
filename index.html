@@ -1457,79 +1457,98 @@
         }
     
         // 하단 탭 메뉴 설정 불러오기
-        function loadTabMenuSettings() {
-            const menuData = localStorage.getItem('activeMenus');
+function loadTabMenuSettings() {
+    const menuData = localStorage.getItem('activeMenus');
+    
+    if (menuData) {
+        const activeMenus = JSON.parse(menuData);
+        
+        // 하단 탭 메뉴 컨테이너
+        const tabMenu = document.querySelector('.tab-menu');
+        
+        if (tabMenu && activeMenus.length > 0) {
+            // 기본 순서 정의 (홈 - 시설 - 커뮤니티 - 내정보 - 알림)
+            const defaultOrder = [
+                { name: '홈', icon: '🏠', order: 0 },
+                { name: '시설', icon: '🏫', order: 1 },
+                { name: '커뮤니티', icon: '💬', order: 2 },
+                { name: '내 정보', icon: '👤', order: 3 },
+                { name: '알림', icon: '🔔', order: 4 }
+            ];
             
-            if (menuData) {
-                const activeMenus = JSON.parse(menuData);
-                
-                // 하단 탭 메뉴 컨테이너
-                const tabMenu = document.querySelector('.tab-menu');
-                
-                if (tabMenu && activeMenus.length > 0) {
-                    // 정렬
-                    activeMenus.sort((a, b) => a.order - b.order);
-                    
-                    // 기존 메뉴 아이템 제거
-                    tabMenu.innerHTML = '';
-                    
-                    // 활성화된 메뉴 추가
-                    activeMenus.forEach((menu, index) => {
-                        const tabItem = document.createElement('div');
-                        tabItem.className = 'tab-item';
-                        if (index === 0) {
-                            tabItem.classList.add('active');
-                        }
-                        
-                        // 탭 이름에 따라 ID 설정
-                        let tabId;
-                        switch (menu.name) {
-                            case '홈':
-                                tabId = 'home';
-                                break;
-                            case '시설':
-                                tabId = 'facility';
-                                break;
-                            case '커뮤니티':
-                                tabId = 'community';
-                                break;
-                            case '알림':
-                                tabId = 'alert';
-                                break;
-                            case '내 정보':
-                                tabId = 'profile';
-                                break;
-                            case '학식':
-                                tabId = 'cafeteria';
-                                break;
-                            case '셔틀버스':
-                                tabId = 'shuttle';
-                                break;
-                            case '강의평가':
-                                tabId = 'lecture';
-                                break;
-                            default:
-                                tabId = menu.name.toLowerCase();
-                        }
-                        
-                        tabItem.onclick = function() {
-                            switchTab(tabId);
-                        };
-                        
-                        const tabIcon = document.createElement('span');
-                        tabIcon.className = 'tab-icon';
-                        tabIcon.textContent = menu.icon;
-                        
-                        const tabText = document.createElement('span');
-                        tabText.textContent = menu.name;
-                        
-                        tabItem.appendChild(tabIcon);
-                        tabItem.appendChild(tabText);
-                        tabMenu.appendChild(tabItem);
-                    });
+            // 기존 메뉴 아이템 제거
+            tabMenu.innerHTML = '';
+            
+            // 활성화된 메뉴 추가
+            defaultOrder.forEach((menu, index) => {
+                const tabItem = document.createElement('div');
+                tabItem.className = 'tab-item';
+                if (index === 0) {
+                    tabItem.classList.add('active');
                 }
-            }
+                
+                // 탭 이름에 따라 ID 설정
+                let tabId;
+                switch (menu.name) {
+                    case '홈':
+                        tabId = 'home';
+                        break;
+                    case '시설':
+                        tabId = 'facility';
+                        break;
+                    case '커뮤니티':
+                        tabId = 'community';
+                        break;
+                    case '알림':
+                        tabId = 'alert';
+                        break;
+                    case '내 정보':
+                        tabId = 'profile';
+                        break;
+                    case '학식':
+                        tabId = 'cafeteria';
+                        break;
+                    case '셔틀버스':
+                        tabId = 'shuttle';
+                        break;
+                    case '강의평가':
+                        tabId = 'lecture';
+                        break;
+                    default:
+                        tabId = menu.name.toLowerCase();
+                }
+                
+                tabItem.onclick = function() {
+                    switchTab(tabId);
+                };
+                
+                const tabIcon = document.createElement('span');
+                tabIcon.className = 'tab-icon';
+                tabIcon.textContent = menu.icon;
+                
+                const tabText = document.createElement('span');
+                tabText.textContent = menu.name;
+                
+                tabItem.appendChild(tabIcon);
+                tabItem.appendChild(tabText);
+                tabMenu.appendChild(tabItem);
+            });
+            
+            // 메뉴 설정 업데이트
+            localStorage.setItem('activeMenus', JSON.stringify(defaultOrder));
         }
+    } else {
+        // 기본값으로 설정
+        const defaultMenus = [
+            { name: '홈', icon: '🏠', order: 0 },
+            { name: '시설', icon: '🏫', order: 1 },
+            { name: '커뮤니티', icon: '💬', order: 2 },
+            { name: '내 정보', icon: '👤', order: 3 },
+            { name: '알림', icon: '🔔', order: 4 }
+        ];
+        localStorage.setItem('activeMenus', JSON.stringify(defaultMenus));
+    }
+}
     
         // 위젯 클릭 처리
         function handleWidgetClick(widgetName) {
