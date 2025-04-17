@@ -620,40 +620,29 @@
            setupModalEvents();
        }
        
-       // 구글 로그인 처리 - 신규 ID 적용
-       function googleLogin() {
-           try {
-               // 새로운 클라이언트 ID로 업데이트
-               const CLIENT_ID = '520363820071-t99s0b2akun1bk7mpd8o6a0vtjmtvce4.apps.googleusercontent.com';
-               
-               // 콜백 URL이 구글 콘솔에 등록된 리디렉션 URI와 정확히 일치해야 함
-               const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
-               
-               // 권한 범위 지정
-               const SCOPE = 'email profile';
-               
-               // Google OAuth 2.0 인증 URL 생성
-               const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
-                   'client_id=' + encodeURIComponent(CLIENT_ID) +
-                   '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
-                   '&response_type=code' +
-                   '&scope=' + encodeURIComponent(SCOPE) +
-                   '&prompt=select_account' +
-                   '&access_type=offline';
-               
-               // 로컬 스토리지가 사용 가능한지 미리 확인
-               if (!isLocalStorageAvailable()) {
-                   alert('브라우저에서 로컬 스토리지를 사용할 수 없습니다. 로그인 정보가 유지되지 않을 수 있습니다.');
-               }
-               
-               // 구글 로그인 페이지로 이동
-               console.log('구글 로그인 페이지로 이동합니다:', authUrl);
-               window.location.href = authUrl;
-           } catch (error) {
-               console.error('구글 로그인 시도 중 오류:', error);
-               alert('구글 로그인을 시도하는 중 오류가 발생했습니다: ' + error.message);
-           }
-       }
+      // 구글 로그인 처리 - 새 ID로 업데이트
+function googleLogin() {
+    // 새로운 클라이언트 ID 사용
+    const CLIENT_ID = '682526101032-6fpr7h5u93gkf762m0rkoj5bo5hpgs2u.apps.googleusercontent.com';
+    
+    // 리디렉션 URI - 이 부분은 변경하지 않음
+    const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
+    
+    // 권한 범위 유지
+    const SCOPE = 'email profile';
+    
+    // Google OAuth 2.0 인증 URL 생성
+    const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+        'client_id=' + encodeURIComponent(CLIENT_ID) +
+        '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+        '&response_type=code' +
+        '&scope=' + encodeURIComponent(SCOPE) +
+        '&prompt=select_account' +
+        '&access_type=offline';
+    
+    // 구글 로그인 페이지로 이동
+    window.location.href = authUrl;
+}
        
        // 모달 닫기
        function closeModal(modalId) {
