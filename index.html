@@ -369,7 +369,7 @@
             text-decoration: none;
             cursor: pointer;
         }
-
+        
         .tab-item.active {
             color: #c62917;
         }
@@ -1591,35 +1591,58 @@ function loadTabMenuSettings() {
     
         // 탭 전환 함수
         function switchTab(tabName) {
-    // 모든 탭 콘텐츠 숨기기
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // 선택한 탭 콘텐츠 표시
-    document.getElementById(`${tabName}-tab`).classList.add('active');
-    
-    // 탭 메뉴 활성화 상태 변경
-    document.querySelectorAll('.tab-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // 현재 선택된 탭 버튼 활성화
-    const tabItems = document.querySelectorAll('.tab-item');
-    for (let i = 0; i < tabItems.length; i++) {
-        if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
-            tabItems[i].classList.add('active');
-            break;
-        }
-    }
-    
-    // 프로필 탭으로 전환 시 프로필 이미지 업데이트
-    if (tabName === 'profile') {
-        setTimeout(() => {
-            updateAllProfileImages();
-        }, 100);
-    }
-}
+            // 모든 탭 콘텐츠 숨기기
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택한 탭 콘텐츠 표시
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // 탭 메뉴 활성화 상태 변경
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 현재 선택된 탭 버튼 활성화
+           const tabItems = document.querySelectorAll('.tab-item');
+           for (let i = 0; i < tabItems.length; i++) {
+               if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+                   tabItems[i].classList.add('active');
+                   break;
+               }
+           }
+           
+           // 프로필 탭으로 전환 시 프로필 이미지 업데이트
+           if (tabName === 'profile') {
+               setTimeout(() => {
+                   updateAllProfileImages();
+               }, 100);
+           }
+       }
+       
+       // 메인 홈으로 이동
+       function goToHome() {
+           switchTab('home');
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+       }
+       
+       // 검색 열기
+       function openSearch() {
+           alert('검색 기능을 실행합니다.');
+           // 검색 입력창에 포커스
+           document.querySelector('.search-input').focus();
+       }
+       
+       // 검색 키 입력 처리
+       function handleSearchKeyPress(event) {
+           if (event.key === 'Enter') {
+               const searchTerm = event.target.value.trim();
+               if (searchTerm) {
+                   alert(`'${searchTerm}'에 대한 검색을 시작합니다.`);
+               }
+           }
+       }
        
        // 공지사항 필터링
        function filterNotices(category) {
