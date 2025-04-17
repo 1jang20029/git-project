@@ -373,6 +373,18 @@
             font-size: 13px;
             color: #666;
         }
+        
+        /* 저장소 접근 관련 알림 */
+        .storage-notice {
+            background-color: #fffde7;
+            border: 1px solid #fff9c4;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #5d4037;
+            margin-bottom: 15px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -383,6 +395,10 @@
         </header>
         
         <div class="login-container">
+            <div id="storage-notice" class="storage-notice">
+                미리보기 환경에서는 데이터 저장 기능이 제한됩니다. 실제 환경에서 테스트해주세요.
+            </div>
+            
             <div class="logo-container">
                 <div class="university-logo">연성대학교</div>
                 <div class="slogan">Campus Guide</div>
@@ -415,7 +431,7 @@
             
             <div class="social-login">
                 <div class="social-button naver-button" onclick="naverLogin()">N</div>
-                <!-- 카카오 로그인 버튼을 a 태그로 변경하여 직접 링크 - prompt=login 추가 -->
+                <!-- 카카오 로그인 버튼을 a 태그로 변경하여 직접 링크 -->
                 <a href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code&prompt=login" class="social-button kakao-button">K</a>
                 <div class="social-button google-button" onclick="googleLogin()">G</div>
             </div>
@@ -467,11 +483,54 @@
     </div>
     
     <script>
+        // localStorage 사용 가능 여부 확인 함수
+        function isLocalStorageAvailable() {
+            try {
+                const test = 'test';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                console.error('localStorage를 사용할 수 없습니다:', e);
+                return false;
+            }
+        }
+        
+        // 안전한 로컬 스토리지 접근 함수
+        const safeStorage = {
+            data: {}, // 메모리 데이터 저장소
+            
+            setItem: function(key, value) {
+                if (isLocalStorageAvailable()) {
+                    localStorage.setItem(key, value);
+                } else {
+                    this.data[key] = value;
+                    document.getElementById('storage-notice').style.display = 'block';
+                }
+            },
+            
+            getItem: function(key) {
+                if (isLocalStorageAvailable()) {
+                    return localStorage.getItem(key);
+                } else {
+                    return this.data[key] || null;
+                }
+            },
+            
+            removeItem: function(key) {
+                if (isLocalStorageAvailable()) {
+                    localStorage.removeItem(key);
+                } else {
+                    delete this.data[key];
+                }
+            }
+        };
+        
         // 로컬 스토리지에 회원가입 여부 저장
         function saveRegistrationStatus(studentId) {
-            localStorage.setItem(`user_${studentId}_registered`, 'true');
+            safeStorage.setItem(`user_${studentId}_registered`, 'true');
             // 최초 로그인 상태를 true로 설정 (아직 로그인한 적 없음)
-            localStorage.setItem(`user_${studentId}_first_login`, 'true');
+            safeStorage.setItem(`user_${studentId}_first_login`, 'true');
         }
         
         // 뒤로가기 함수
@@ -491,7 +550,7 @@
             }
             
             // 회원가입 여부 확인
-            const isRegistered = localStorage.getItem(`user_${studentId}_registered`) === 'true';
+            const isRegistered = safeStorage.getItem(`user_${studentId}_registered`) === 'true';
             
             if (!isRegistered) {
                 alert('등록되지 않은 학번입니다. 회원가입을 먼저 진행해주세요.');
@@ -501,14 +560,14 @@
             // 비밀번호 검증은 실제 구현에서는 서버에서 처리
             
             // 현재 로그인된 사용자 저장
-            localStorage.setItem('currentLoggedInUser', studentId);
+            safeStorage.setItem('currentLoggedInUser', studentId);
             
             // 최초 로그인 여부 확인
-            const isFirstLogin = localStorage.getItem(`user_${studentId}_first_login`) === 'true';
+            const isFirstLogin = safeStorage.getItem(`user_${studentId}_first_login`) === 'true';
             
             if (isFirstLogin) {
                 // 최초 로그인인 경우 위젯 설정 페이지로 이동
-                localStorage.setItem(`user_${studentId}_first_login`, 'false');
+                safeStorage.setItem(`user_${studentId}_first_login`, 'false');
                 alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
                 window.location.href = "widget-settings.html";
             } else {
@@ -520,6 +579,11 @@
         
         // URL 파라미터에서 새로 회원가입했는지 확인
        function checkNewRegistration() {
+           // localStorage 사용 가능 여부 확인
+           if (!isLocalStorageAvailable()) {
+               document.getElementById('storage-notice').style.display = 'block';
+           }
+           
            const urlParams = new URLSearchParams(window.location.search);
            const newRegistration = urlParams.get('newRegistration');
            const studentId = urlParams.get('studentId');
@@ -550,9 +614,28 @@
            setupModalEvents();
        }
        
-       // 구글 로그인 처리
+       // 구글 로그인 처리 - 수정된 클라이언트 ID
        function googleLogin() {
-           alert('구글 로그인 기능은 준비 중입니다.');
+           // 올바른 클라이언트 ID 사용
+           const CLIENT_ID = '166471619172-impvkkmqf48toev2fjn37vfa5irke9pq.apps.googleusercontent.com';
+           
+           // 콜백 URL이 구글 콘솔에 등록된 리디렉션 URI와 정확히 일치해야 함
+           const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
+           
+           // 권한 범위 지정
+           const SCOPE = 'email profile';
+           
+           // Google OAuth 2.0 인증 URL 생성
+           const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+               'client_id=' + encodeURIComponent(CLIENT_ID) +
+               '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+               '&response_type=code' +
+               '&scope=' + encodeURIComponent(SCOPE) +
+               '&prompt=select_account' +
+               '&access_type=offline';
+           
+           // 구글 로그인 페이지로 이동
+           window.location.href = authUrl;
        }
        
        // 모달 닫기
@@ -609,28 +692,28 @@
            const tempStudentId = 'naver_' + naverId;
            
            // 사용자 정보 저장
-           localStorage.setItem(`user_${tempStudentId}_registered`, 'true');
-           localStorage.setItem(`user_${tempStudentId}_name`, '네이버 사용자');
-           localStorage.setItem(`user_${tempStudentId}_department`, 'computerScience');
-           localStorage.setItem(`user_${tempStudentId}_grade`, '1');
-           localStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
-           localStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
+           safeStorage.setItem(`user_${tempStudentId}_registered`, 'true');
+           safeStorage.setItem(`user_${tempStudentId}_name`, '네이버 사용자');
+           safeStorage.setItem(`user_${tempStudentId}_department`, 'computerScience');
+           safeStorage.setItem(`user_${tempStudentId}_grade`, '1');
+           safeStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
+           safeStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
            
            // 자동 로그인 설정 저장
            if (autoLogin) {
-               localStorage.setItem(`user_${tempStudentId}_autoLogin`, 'true');
+               safeStorage.setItem(`user_${tempStudentId}_autoLogin`, 'true');
            }
            
            // 현재 로그인된 사용자 저장
-           localStorage.setItem('currentLoggedInUser', tempStudentId);
+           safeStorage.setItem('currentLoggedInUser', tempStudentId);
            
            // 소셜 로그인 사용자 표시
-           localStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
+           safeStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
            
            // 최초 로그인 여부 확인 및 설정
-           const isFirstLogin = localStorage.getItem(`user_${tempStudentId}_first_login`) !== 'false';
+           const isFirstLogin = safeStorage.getItem(`user_${tempStudentId}_first_login`) !== 'false';
            if (isFirstLogin) {
-               localStorage.setItem(`user_${tempStudentId}_first_login`, 'false');
+               safeStorage.setItem(`user_${tempStudentId}_first_login`, 'false');
                
                // 모달 닫기
                closeModal('naverLoginModal');
