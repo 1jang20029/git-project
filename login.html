@@ -430,9 +430,7 @@
             </div>
             
             <div class="social-login">
-                <!-- 네이버 로그인 버튼만 수정 - 직접 네이버 로그인 페이지로 이동하도록 -->
-                <a href="https://nid.naver.com/nidlogin.login?mode=form&url=https://ysu-guide.netlify.app/naver-callback.html" class="social-button naver-button">N</a>
-                <!-- 카카오 로그인 버튼을 a 태그로 변경하여 직접 링크 -->
+                <div class="social-button naver-button" onclick="naverLogin()">N</div>
                 <a href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code&prompt=login" class="social-button kakao-button">K</a>
                 <div class="social-button google-button" onclick="googleLogin()">G</div>
             </div>
@@ -443,7 +441,7 @@
         </div>
     </div>
     
-    <!-- 네이버 로그인 모달 - 필요 없지만 기존 코드 유지 -->
+    <!-- 네이버 로그인 모달 -->
     <div id="naverLoginModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -607,18 +605,33 @@
            }
        }
        
-       // 네이버 로그인 모달 열기 - 기존 함수 유지하지만 이제는 직접 네이버로 이동
+       // 네이버 로그인 모달 열기
        function naverLogin() {
-           // 네이버 로그인 페이지로 직접 이동
-           window.location.href = "https://nid.naver.com/nidlogin.login?mode=form&url=https://ysu-guide.netlify.app/naver-callback.html";
+           // 네이버 로그인 API 사용 - 실제 네이버 로그인 페이지로 이동
+           const CLIENT_ID = '4s_r7FMu5Bfr3er3GXci'; // 이미지에서 보이는 클라이언트 ID
+           const REDIRECT_URI = 'https://ysu-guide.netlify.app/naver-callback.html';
+           const STATE = Math.random().toString(36).substr(2, 11);
+           
+           // 상태 토큰 저장 (CSRF 방지)
+           safeStorage.setItem('naverOAuthState', STATE);
+           
+           // 네이버 OAuth 2.0 인증 URL 생성
+           const authUrl = 'https://nid.naver.com/oauth2.0/authorize?' +
+               'client_id=' + CLIENT_ID +
+               '&response_type=code' +
+               '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+               '&state=' + STATE;
+           
+           // 네이버 로그인 페이지로 이동
+           window.location.href = authUrl;
        }
        
-       // 모달 닫기 - 기존 함수 유지
+       // 모달 닫기
        function closeModal(modalId) {
            document.getElementById(modalId).style.display = 'none';
        }
        
-       // 모달 이벤트 설정 - 기존 함수 유지
+       // 모달 이벤트 설정
        function setupModalEvents() {
            const modal = document.getElementById('naverLoginModal');
            const modalContent = modal.querySelector('.modal-content');
@@ -650,7 +663,7 @@
            });
        }
        
-       // 네이버 로그인 처리 - 기존 함수 유지
+       // 네이버 모달 로그인 처리
        function processNaverLogin() {
            const naverId = document.getElementById('naverId').value;
            const naverPw = document.getElementById('naverPw').value;
