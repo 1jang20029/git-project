@@ -397,18 +397,17 @@
         
         /* 지도 컨테이너 스타일 수정 */
         .campus-map {
-            width: 100%; /* 가로 폭을 100%로 설정 */
-            height: 500px; /* 높이를 충분히 설정 */
+            height: 200px;
+            width: 100%;
             position: relative;
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 16px;
-        }
-
-        /* 이 부분 추가: 지도 요소 자체가 컨테이너를 채우도록 설정 */
-        #naverMap {
-            width: 100% !important; /* !important로 다른 스타일 덮어쓰기 */
-            height: 100% !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
         }
         
         .campus-map img {
