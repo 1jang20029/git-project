@@ -1654,22 +1654,25 @@
             return;
         }
         
-        // 업데이트된 연성대학교 위치 좌표
-        const yeonsung = new naver.maps.LatLng(37.39746920802219, 126.9092338429202);
+        // 건물 데이터 로그 출력
+        console.log('건물 데이터:', buildingData);
+        
+        // 연성대학교 위치 (실제 좌표로 설정)
+        const yeonsung = new naver.maps.LatLng(37.379268, 126.6618528);
         
         // 지도 옵션
         const mapOptions = {
             center: yeonsung,
-            zoom: 16,
+            zoom: 17,
             minZoom: 14,
             maxZoom: 19,
-            zoomControl: true,  // 줌 컨트롤 활성화
+            zoomControl: false,
             mapTypeControl: false,
             scaleControl: false,
             logoControl: false,
             mapDataControl: false,
-            draggable: true,    // 드래그 가능하도록 변경
-            scrollWheel: true   // 스크롤 확대/축소 가능하도록 변경
+            draggable: false,
+            scrollWheel: false
         };
         
         // 지도 생성
@@ -1681,7 +1684,7 @@
         
         // 건물 데이터를 기반으로 마커 생성
         buildingData.forEach(building => {
-            console.log(`마커 생성 시도: ${building.name}, 좌표: ${building.position.lat}, ${building.position.lng}`);
+            console.log(`마커 생성 시도: ${building.name}`);
             
             try {
                 const marker = new naver.maps.Marker({
@@ -1694,23 +1697,7 @@
                     }
                 });
                 
-                // 정보창 추가
-                const infoWindow = new naver.maps.InfoWindow({
-                    content: `<div style="padding:10px;">${building.name}</div>`,
-                    maxWidth: 200
-                });
-
-                // 마커 클릭 이벤트 추가
-                naver.maps.Event.addListener(marker, 'click', function() {
-                    if (infoWindow.getMap()) {
-                        infoWindow.close();
-                    } else {
-                        infoWindow.open(naverMap, marker);
-                    }
-                });
-                
                 mapMarkers.push(marker);
-                infoWindows.push(infoWindow);
                 
                 console.log(`${building.name} 마커 생성 완료`);
             } catch (error) {
