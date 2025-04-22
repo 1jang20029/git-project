@@ -1680,43 +1680,44 @@
         infoWindows = [];
         
         // 건물 데이터를 기반으로 마커 생성
-        buildingData.forEach(building => {
-            console.log(`마커 생성 시도: ${building.name}, 좌표: ${building.position.lat}, ${building.position.lng}`);
-            
-            try {
-                const marker = new naver.maps.Marker({
-                    position: new naver.maps.LatLng(building.position.lat, building.position.lng),
-                    map: naverMap,
-                    title: building.name,
-                    icon: {
-                        content: `<div style="background-color: #c62917; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">${building.name}</div>`,
-                        anchor: new naver.maps.Point(30, 15)
-                    }
-                });
-                
-                // 정보창 추가
-                const infoWindow = new naver.maps.InfoWindow({
-                    content: `<div style="padding:10px;">${building.name}</div>`,
-                    maxWidth: 200
-                });
+buildingData.forEach(building => {
+    try {
+        const marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+            map: naverMap,
+            title: building.name
+        });
+        
+        // 정보창 내용 스타일링
+        const infoWindow = new naver.maps.InfoWindow({
+            content: `
+                <div style="padding:10px; width:200px;">
+                    <div style="font-weight:bold; font-size:16px; margin-bottom:6px;">${building.name}</div>
+                    <div style="color:#666; font-size:14px;">${building.description}</div>
+                </div>
+            `,
+            maxWidth: 250,
+            backgroundColor: "white",
+            borderColor: "#ddd",
+            borderWidth: 1,
+            pixelOffset: new naver.maps.Point(0, -10)
+        });
 
-                // 마커 클릭 이벤트 추가
-                naver.maps.Event.addListener(marker, 'click', function() {
-                    if (infoWindow.getMap()) {
-                        infoWindow.close();
-                    } else {
-                        infoWindow.open(naverMap, marker);
-                    }
-                });
-                
-                mapMarkers.push(marker);
-                infoWindows.push(infoWindow);
-                
-                console.log(`${building.name} 마커 생성 완료`);
-            } catch (error) {
-                console.error(`${building.name} 마커 생성 중 오류:`, error);
+        // 마커 클릭 이벤트 추가
+        naver.maps.Event.addListener(marker, "click", function() {
+            if (infoWindow.getMap()) {
+                infoWindow.close();
+            } else {
+                infoWindow.open(naverMap, marker);
             }
         });
+        
+        mapMarkers.push(marker);
+        infoWindows.push(infoWindow);
+    } catch (error) {
+        console.error(`${building.name} 마커 생성 중 오류:`, error);
+    }
+});
         
         console.log('총 마커 수:', mapMarkers.length);
     } catch (error) {
