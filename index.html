@@ -1660,16 +1660,16 @@
         // 지도 옵션
         const mapOptions = {
             center: yeonsung,
-            zoom: 16, // 좌표 변경에 따라 줌 레벨 조정
+            zoom: 16,
             minZoom: 14,
             maxZoom: 19,
-            zoomControl: false,
+            zoomControl: true,  // 줌 컨트롤 활성화
             mapTypeControl: false,
             scaleControl: false,
             logoControl: false,
             mapDataControl: false,
-            draggable: false,
-            scrollWheel: false
+            draggable: true,    // 드래그 가능하도록 변경
+            scrollWheel: true   // 스크롤 확대/축소 가능하도록 변경
         };
         
         // 지도 생성
@@ -1679,9 +1679,9 @@
         mapMarkers = [];
         infoWindows = [];
         
-        // 건물 데이터의 좌표도 새 위치에 맞게 업데이트 필요
+        // 건물 데이터를 기반으로 마커 생성
         buildingData.forEach(building => {
-            console.log(`마커 생성 시도: ${building.name}`);
+            console.log(`마커 생성 시도: ${building.name}, 좌표: ${building.position.lat}, ${building.position.lng}`);
             
             try {
                 const marker = new naver.maps.Marker({
@@ -1694,7 +1694,23 @@
                     }
                 });
                 
+                // 정보창 추가
+                const infoWindow = new naver.maps.InfoWindow({
+                    content: `<div style="padding:10px;">${building.name}</div>`,
+                    maxWidth: 200
+                });
+
+                // 마커 클릭 이벤트 추가
+                naver.maps.Event.addListener(marker, 'click', function() {
+                    if (infoWindow.getMap()) {
+                        infoWindow.close();
+                    } else {
+                        infoWindow.open(naverMap, marker);
+                    }
+                });
+                
                 mapMarkers.push(marker);
+                infoWindows.push(infoWindow);
                 
                 console.log(`${building.name} 마커 생성 완료`);
             } catch (error) {
