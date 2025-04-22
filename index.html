@@ -1666,16 +1666,16 @@
                 
                 // 지도 옵션
                 const mapOptions = {
-                    center: yeonsung,
-                    zoom: 16,
-                    minZoom: 14,
-                    maxZoom: 19,
-                    zoomControl: false,
-                    mapTypeControl: false,
-                    scaleControl: false,
-                    logoControl: false,
-                    mapDataControl: false
-                };
+                center: yeonsung,
+                zoom: 17, // zoom 레벨을 17로 조정
+                minZoom: 15, // 최소 줌 레벨 조정
+                maxZoom: 19,
+                zoomControl: false,
+                mapTypeControl: false,
+                scaleControl: false,
+                logoControl: false,
+                apDataControl: false
+            };
                 
                 // 지도 생성
                 naverMap = new naver.maps.Map('naverMap', mapOptions);
