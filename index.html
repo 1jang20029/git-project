@@ -395,24 +395,22 @@
             margin-bottom: 4px;
         }
         
-        /* 지도 컨테이너 스타일 수정 */
+        /* 지도 컨테이너 스타일 수정 - 전체 지도가 보이도록 수정 */
         .campus-map {
-            height: 200px;
+            height: 500px; /* 높이를 충분히 크게 설정 */
             width: 100%;
             position: relative;
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 16px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
         }
         
-        .campus-map img {
-            max-width: 100%;
-            max-height: 100%;
+        /* 지도 요소 자체가 컨테이너를 꽉 채우도록 설정 */
+        .campus-map img, 
+        .campus-map #naverMap {
+            width: 100%;
+            height: 100%;
         }
         
         /* 지도 마커 정보창 스타일 */
@@ -787,6 +785,19 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
+        /* 반응형 지도 설정 */
+        @media (max-width: 768px) {
+            .campus-map {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .campus-map {
+                height: 350px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -969,8 +980,9 @@
             
             <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
             <div id="original-content">
-                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
+                <!-- 네이버 지도로 대체된 캠퍼스 맵 - 전체 캠퍼스가 보이도록 수정 -->
                 <div class="campus-map" id="naverMap">
+                    <!-- 지도가 로드되기 전 표시될 이미지 -->
                     <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도">
                     <div class="map-control-buttons">
                         <div class="map-button" onclick="zoomIn()">🔍+</div>
@@ -1565,6 +1577,7 @@
                     
                     paginationContainer.appendChild(pageButton);
                 }
+            }
                 
                 // 마지막 페이지가 totalPages보다 작으면 ellipsis와 마지막 페이지 표시
                 if (endPage < totalPages) {
@@ -1598,7 +1611,6 @@
                 }
             };
             paginationContainer.appendChild(nextButton);
-        }
         
         // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
         document.addEventListener('DOMContentLoaded', function() {
@@ -1640,7 +1652,7 @@
             });
         });
         
-        // 네이버 지도 초기화
+        // 네이버 지도 초기화 - 전체 지도 보이도록 수정
         function initNaverMap() {
             // 네이버 지도 라이브러리가 로드되었는지 확인
             if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
@@ -1659,21 +1671,33 @@
                 // 연성대학교 위치 (실제 좌표로 설정)
                 const yeonsung = new naver.maps.LatLng(37.379268, 126.6618528);
                 
-                // 지도 옵션
+                // 지도 옵션 수정 - 더 넓은 영역을 볼 수 있도록 설정
                 const mapOptions = {
                     center: yeonsung,
-                    zoom: 16,
-                    minZoom: 14,
+                    zoom: 15, // 줌 레벨을 낮춰서 더 넓은 지역 표시
+                    minZoom: 13, // 최소 줌 레벨도 낮춤
                     maxZoom: 19,
-                    zoomControl: false,
+                    zoomControl: true,
+                    zoomControlOptions: {
+                        position: naver.maps.Position.RIGHT_TOP
+                    },
                     mapTypeControl: false,
-                    scaleControl: false,
+                    scaleControl: true,
                     logoControl: false,
                     mapDataControl: false
                 };
                 
                 // 지도 생성
                 naverMap = new naver.maps.Map('naverMap', mapOptions);
+                
+                // 캠퍼스 경계를 표시하기 위한 영역 설정
+                const campusBounds = new naver.maps.LatLngBounds(
+                    new naver.maps.LatLng(37.377000, 126.660000), // 남서쪽 좌표
+                    new naver.maps.LatLng(37.381000, 126.664000)  // 북동쪽 좌표
+                );
+                
+                // 지도의 표시 영역을 캠퍼스 전체가 보이도록 설정
+                naverMap.fitBounds(campusBounds);
                 
                 // 건물 데이터를 기반으로 마커 생성
                 buildingData.forEach(building => {
@@ -1928,8 +1952,14 @@
         // 지도 초기 뷰로 리셋
         function resetMapView() {
             if (naverMap) {
-                naverMap.setCenter(new naver.maps.LatLng(37.379268, 126.6618528));
-                naverMap.setZoom(16);
+                // 캠퍼스 전체 영역으로 뷰 리셋
+                const campusBounds = new naver.maps.LatLngBounds(
+                    new naver.maps.LatLng(37.377000, 126.660000), // 남서쪽 좌표
+                    new naver.maps.LatLng(37.381000, 126.664000)  // 북동쪽 좌표
+                );
+                
+                // 지도의 표시 영역을 캠퍼스 전체가 보이도록 설정
+                naverMap.fitBounds(campusBounds);
                 
                 // 모든 정보창 닫기
                 infoWindows.forEach(window => window.close());
@@ -2050,6 +2080,8 @@
                 setTimeout(() => {
                     if (naverMap) {
                         naverMap.refresh();
+                        // 전체 캠퍼스가 보이도록 뷰 재설정
+                        resetMapView();
                     }
                 }, 100);
             }
