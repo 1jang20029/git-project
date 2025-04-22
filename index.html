@@ -1279,51 +1279,105 @@
     </div>
     
     <script>
-        // 건물 데이터 배열
-const buildingData = [
-    {
-        id: '도의관',
-        name: '도의관',
-        description: '교양 수업, 강당',
-        image: '/api/placeholder/80/60',
-        type: 'building'
-    },
-    {
-        id: '공학2관',
-        name: '공학2관',
-        description: '공학계열 실습실, 연구실',
-        image: '/api/placeholder/80/60',
-        type: 'building'
-    },
-    {
-        id: '산학협력관',
-        name: '연성대학교 산학협력관',
-        description: '산학협력 프로젝트, 연구실',
-        image: '/api/placeholder/80/60',
-        type: 'building'
-    },
-    {
-        id: '문화1관',
-        name: '문화1관',
-        description: '인문사회계열 강의실',
-        image: '/api/placeholder/80/60',
-        type: 'building'
-    },
-    {
-        id: '문화2관',
-        name: '문화2관',
-        description: '예술계열 강의실, 연습실',
-        image: '/api/placeholder/80/60',
-        type: 'building'
-    },
-    {
-        id: '운동장',
-        name: '운동장',
-        description: '체육활동, 행사장',
-        image: '/api/placeholder/80/60',
-        type: 'building'
-    }
-];
+        // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
+        const buildingData = [
+            {
+                id: '공학1관',
+                name: '공학1관',
+                description: '공학계열 강의실, 실험실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.379100, lng: 126.661800 }
+            },
+            {
+                id: '산학협력관',
+                name: '연성대학교 산학협력관',
+                description: '산학협력 프로젝트, 연구실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.379400, lng: 126.661400 }
+            },
+            {
+                id: '식품과학관',
+                name: '식품과학관',
+                description: '식품영양학과, 조리실습실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.380100, lng: 126.661000 }
+            },
+            {
+                id: '도의관',
+                name: '도의관',
+                description: '교양 수업, 강당',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.380300, lng: 126.661500 }
+            },
+            {
+                id: '공학2관',
+                name: '공학2관',
+                description: '공학계열 실습실, 연구실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.379200, lng: 126.662100 }
+            },
+            {
+                id: '문화1관',
+                name: '문화1관',
+                description: '인문사회계열 강의실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.378700, lng: 126.662400 }
+            },
+            {
+                id: '문화2관',
+                name: '문화2관',
+                description: '예술계열 강의실, 연습실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.378300, lng: 126.662700 }
+            },
+            {
+                id: '연극문화센터',
+                name: '연극문화센터',
+                description: '공연장, 연습실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.378000, lng: 126.663000 }
+            },
+            {
+                id: '창조관',
+                name: '창조관',
+                description: '학과 사무실, 강의실',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.377700, lng: 126.663300 }
+            },
+            {
+                id: '운동장',
+                name: '운동장',
+                description: '체육활동, 행사장',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.377400, lng: 126.662000 }
+            },
+            {
+                id: '농구장',
+                name: '농구장',
+                description: '체육활동',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.377800, lng: 126.662300 }
+            },
+            {
+                id: '학생복지센터',
+                name: '학생복지센터',
+                description: '학생지원 시설',
+                image: '/api/placeholder/80/60',
+                type: 'building',
+                position: { lat: 37.377100, lng: 126.663000 }
+            }
+        ];
 
         // 편의시설 데이터 정의
         const facilityData = [
@@ -1587,100 +1641,112 @@ const buildingData = [
         });
         
         // 네이버 지도 초기화
-        javascriptfunction initNaverMap() {
-    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-        console.log('네이버 지도 API가 로드되지 않았습니다.');
-        return;
-    }
-    
-    try {
-        const mapContainer = document.getElementById('naverMap');
-        if (!mapContainer) {
-            console.log('지도 컨테이너가 존재하지 않습니다.');
-            return;
+        function initNaverMap() {
+            // 네이버 지도 라이브러리가 로드되었는지 확인
+            if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+                console.log('네이버 지도 API가 로드되지 않았습니다.');
+                return;
+            }
+            
+            try {
+                // 지도 컨테이너 존재 확인
+                const mapContainer = document.getElementById('naverMap');
+                if (!mapContainer) {
+                    console.log('지도 컨테이너가 존재하지 않습니다.');
+                    return;
+                }
+                
+                // 연성대학교 위치 (실제 좌표로 설정)
+                const yeonsung = new naver.maps.LatLng(37.379268, 126.6618528);
+                
+                // 지도 옵션
+                const mapOptions = {
+                    center: yeonsung,
+                    zoom: 16,
+                    minZoom: 14,
+                    maxZoom: 19,
+                    zoomControl: false,
+                    mapTypeControl: false,
+                    scaleControl: false,
+                    logoControl: false,
+                    mapDataControl: false
+                };
+                
+                // 지도 생성
+                naverMap = new naver.maps.Map('naverMap', mapOptions);
+                
+                // 건물 데이터를 기반으로 마커 생성
+                buildingData.forEach(building => {
+                    // 마커 생성
+                    const marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                        map: naverMap,
+                        title: building.name,
+                        icon: {
+                            content: `<div style="background-color: #c62917; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">${building.name}</div>`,
+                            anchor: new naver.maps.Point(30, 15)
+                        }
+                    });
+                    
+                    // 정보창 내용
+                    const contentString = `
+                        <div class="map-info-window">
+                            <div class="map-info-title">${building.name}</div>
+                            <div class="map-info-desc">${building.description}</div>
+                        </div>
+                    `;
+                    
+                    // 정보창 생성
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: contentString,
+                        maxWidth: 200,
+                        backgroundColor: "white",
+                        borderColor: "#ddd",
+                        borderWidth: 1,
+                        anchorSize: new naver.maps.Size(10, 10),
+                        pixelOffset: new naver.maps.Point(0, -10)
+                    });
+                    
+                    // 마커 클릭 이벤트
+                    naver.maps.Event.addListener(marker, 'click', function() {
+                        // 다른 모든 정보창 닫기
+                        infoWindows.forEach(window => window.close());
+                        
+                        // 현재 정보창 열기
+                        infoWindow.open(naverMap, marker);
+                        
+                        // 지도 중심 이동
+                        naverMap.setCenter(building.position);
+                    });
+                    
+                    // 배열에 추가
+                    mapMarkers.push(marker);
+                    infoWindows.push(infoWindow);
+                });
+                
+                // 지도 리사이즈 이벤트
+                window.addEventListener('resize', function() {
+                    if (naverMap) {
+                        naverMap.refresh();
+                    }
+                });
+                
+                // 페이지 전환 시 지도 리사이즈
+                document.querySelectorAll('.tab-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        setTimeout(function() {
+                            if (naverMap) {
+                                naverMap.refresh();
+                            }
+                        }, 100);
+                    });
+                });
+                
+                console.log('네이버 지도가 성공적으로 초기화되었습니다.');
+            } catch (error) {
+                console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
+            }
         }
-        
-        // 연성대학교 정확한 주소 좌표 (인천광역시 미추홀구)
-        const yeonsung = new naver.maps.LatLng(37.4563, 126.7052);
-        
-        // 지도 옵션
-        const mapOptions = {
-            center: yeonsung,
-            zoom: 17,  // 캠퍼스가 잘 보이도록 줌 레벨 조정
-            minZoom: 14,
-            maxZoom: 19,
-            zoomControl: true,
-            mapTypeControl: false,
-            scaleControl: false,
-            logoControl: false,
-            mapDataControl: false,
-            draggable: true,
-            scrollWheel: true
-        };
-        
-        // 지도 생성
-        naverMap = new naver.maps.Map('naverMap', mapOptions);
-        
-        // 마커와 정보창 배열 초기화
-        mapMarkers = [];
-        infoWindows = [];
-        
-        // 건물 데이터를 기반으로 마커 생성
-        buildingData.forEach((building, index) => {
-            // 각 건물에 미세하게 다른 좌표 부여 (겹치지 않도록)
-            const offsetLat = yeonsung.lat() + (index * 0.0005);
-            const offsetLng = yeonsung.lng() + (index * 0.0005);
-            
-            const marker = new naver.maps.Marker({
-                position: new naver.maps.LatLng(offsetLat, offsetLng),
-                map: naverMap,
-                title: building.name,
-                icon: {
-                    content: `
-                        <div style="
-                            background-color: #c62917; 
-                            color: white; 
-                            padding: 5px 10px; 
-                            border-radius: 15px; 
-                            font-weight: bold; 
-                            font-size: 12px; 
-                            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                            white-space: nowrap;
-                        ">${building.name}</div>
-                    `,
-                    anchor: new naver.maps.Point(0, 0)
-                }
-            });
-            
-            // 정보창 생성
-            const infoWindow = new naver.maps.InfoWindow({
-                content: `
-                    <div style="padding:10px; width:200px;">
-                        <div style="font-weight:bold; font-size:16px; margin-bottom:6px;">${building.name}</div>
-                        <div style="color:#666; font-size:14px;">${building.description}</div>
-                    </div>
-                `,
-                maxWidth: 250
-            });
-
-            // 마커 클릭 이벤트
-            naver.maps.Event.addListener(marker, "click", function() {
-                if (infoWindow.getMap()) {
-                    infoWindow.close();
-                } else {
-                    infoWindows.forEach(window => window.close());
-                    infoWindow.open(naverMap, marker);
-                }
-            });
-            
-            mapMarkers.push(marker);
-            infoWindows.push(infoWindow);
-        });
-    } catch (error) {
-        console.error('네이버 지도 초기화 중 오류:', error);
-    }
-}
-
         
         // 건물 시설 검색 기능 - 대소문자 구분 없이 검색
         function searchFacilities(query) {
