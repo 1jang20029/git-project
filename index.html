@@ -938,676 +938,676 @@
                         </div>
                         <div class="lecture-info">
                             <span class="lecture-professor">이지영 교수님</span>
-                            <span>경영학과</span>
-                        </div>
-                        <div class="rating-stars">★★★★☆</div>
-                        <div class="lecture-reviews">
-                            "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 시설 탭 -->
-        <div id="facility-tab" class="tab-content">
-            <div class="search-bar">
-                <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
-            </div>
-            
-            <!-- 검색 결과를 표시할 컨테이너 추가 -->
-            <div id="search-results" class="search-results" style="display: none;">
-                <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
-            </div>
-            
-            <!-- 검색 결과가 없을 때 표시될 내용 -->
-            <div id="no-results" class="no-results" style="display: none;">
-                검색 결과가 없습니다.
-            </div>
-            
-            <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
-            <div id="original-content">
-                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
-                <div class="campus-map" id="naverMap">
-                    <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도">
-                    <div class="map-control-buttons">
-                        <div class="map-button" onclick="zoomIn()">🔍+</div>
-                        <div class="map-button" onclick="zoomOut()">🔍-</div>
-                        <div class="map-button" onclick="resetMapView()">🏠</div>
-                    </div>
-                </div>
-                
-                <div class="content-section">
-                    <div class="section-title">
-                        <span>주요 건물</span>
-                    </div>
-                    
-                    <ul class="building-list">
-                        <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
-                    </ul>
-                    
-                    <!-- 페이지네이션 컨트롤 추가 -->
-                    <div id="pagination-controls" class="pagination-controls">
-                        <!-- 페이지 버튼들이 JavaScript로 동적 생성됩니다 -->
-                    </div>
-                </div>
-                
-                <div class="content-section">
-                    <div class="section-title">
-                        <span>편의시설</span>
-                    </div>
-                    
-                    <div class="facility-list">
-                        <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
-                            <div class="facility-image">
-                                <img src="/api/placeholder/150/100" alt="학생식당">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">학생식당</div>
-                                <div class="facility-location">학생복지센터 2층</div>
-                            </div>
-                        </div>
-                        <div class="facility-item" onclick="showFacilityDetail('cafe')">
-                            <div class="facility-image">
-                                <img src="/api/placeholder/150/100" alt="카페">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">카페 연성</div>
-                                <div class="facility-location">문화1관 1층</div>
-                            </div>
-                        </div>
-                        <div class="facility-item" onclick="showFacilityDetail('convenience')">
-                            <div class="facility-image">
-                                <img src="/api/placeholder/150/100" alt="편의점">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">CU 편의점</div>
-                                <div class="facility-location">학생복지센터 1층</div>
-                            </div>
-                        </div>
-                        <div class="facility-item" onclick="showFacilityDetail('atm')">
-                            <div class="facility-image">
-                                <img src="/api/placeholder/150/100" alt="ATM">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">ATM</div>
-                                <div class="facility-location">학생복지센터 1층</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 커뮤니티 탭 -->
-        <div id="community-tab" class="tab-content">
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>강의평가</span>
-                </div>
-                
-                <div class="category-filter">
-                    <div class="category-tag active" onclick="filterLectures('all')">전체</div>
-                    <div class="category-tag" onclick="filterLectures('general')">교양</div>
-                    <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
-                    <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
-                </div>
-                <ul class="lecture-list">
-                    <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
-                        <div class="lecture-header">
-                            <div class="lecture-title">웹 프로그래밍 실습</div>
-                            <div class="lecture-rating">4.8</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">김민수 교수님</span>
-                            <span>컴퓨터정보학과</span>
-                        </div>
-                        <div class="rating-stars">★★★★★</div>
-                        <div class="lecture-reviews">
-                            "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
-                        </div>
-                    </li>
-                    <li class="lecture-item" onclick="viewLectureDetail('english')">
-                        <div class="lecture-header">
-                            <div class="lecture-title">영어회화</div>
-                            <div class="lecture-rating">4.3</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">John Smith 교수님</span>
-                            <span>교양과정</span>
-                        </div>
-                        <div class="rating-stars">★★★★☆</div>
-                        <div class="lecture-reviews">
-                            "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
-                        </div>
-                    </li>
-                    <li class="lecture-item" onclick="viewLectureDetail('statistics')">
-                        <div class="lecture-header">
-                            <div class="lecture-title">경영통계학</div>
-                            <div class="lecture-rating">3.7</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">박성호 교수님</span>
-                            <span>경영학과</span>
-                        </div>
-                        <div class="rating-stars">★★★☆☆</div>
-                        <div class="lecture-reviews">
-                            "내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 내 정보 탭 -->
-        <div id="profile-tab" class="tab-content">
-            <div class="profile-section">
-                <div class="profile-image">👨‍🎓</div>
-                <div class="profile-info">
-                    <div class="profile-name">조희정</div>
-                    <div class="profile-detail">경영학과 | 3학년</div>
-                    <div class="profile-detail">학번: 2021100215</div>
-                </div>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>내 정보 관리</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item" onclick="navigateToProfilePage('timetable')">
-                        <div class="menu-title">내 시간표</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
-                        <div class="menu-title">내 수강 강의</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
-                        <div class="menu-title">즐겨찾는 강의실</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
-                        <div class="menu-title">개인정보 수정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <!-- 회원 탈퇴 메뉴 추가 -->
-                    <li class="menu-item" onclick="deleteAccount()">
-                        <div class="menu-title delete-account">회원 탈퇴</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>학적 정보</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item" onclick="navigateToProfilePage('grades')">
-                        <div class="menu-title">성적 조회</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
-                        <div class="menu-title">수강 신청 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
-                        <div class="menu-title">장학금 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('tuition')">
-                        <div class="menu-title">등록금 납부 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>앱 설정</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
-                        <div class="menu-title">알림 설정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
-                        <div class="menu-title">위젯 및 메뉴 설정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="resetAllSettings()">
-                        <div class="menu-title">모든 설정 초기화</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('app-info')">
-                        <div class="menu-title">앱 정보</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="logout()">
-                        <div class="menu-title">로그아웃</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 알림 탭 -->
-        <div id="alert-tab" class="tab-content">
-            <div class="content-section">
-                <div class="section-title">
-                    <span>알림</span>
-                </div>
-                
-                <ul class="alert-list">
-                    <li class="alert-item" onclick="viewNotification('emergency')">
-                        <div class="alert-icon">📢</div>
-                        <div class="alert-info">
-                            <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
-                            <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
-                            <div class="alert-time">10분 전</div>
-                        </div>
-                    </li>
-                    <li class="alert-item" onclick="viewNotification('classroom')">
-                        <div class="alert-icon">🏫</div>
-                        <div class="alert-info">
-                            <div class="alert-title">강의실 알림</div>
-                            <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
-                            <div class="alert-time">30분 전</div>
-                        </div>
-                    </li>
-                    <li class="alert-item" onclick="viewNotification('assignment')">
-                        <div class="alert-icon">📝</div>
-                        <div class="alert-info">
-                            <div class="alert-title">과제 알림</div>
-                            <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
-                            <div class="alert-time">1시간 전</div>
-                        </div>
-                    </li>
-                    <li class="alert-item" onclick="viewNotification('library')">
-                        <div class="alert-icon">📚</div>
-                        <div class="alert-info">
-                            <div class="alert-title">도서관 알림</div>
-                            <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
-                            <div class="alert-time">3시간 전</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 하단 탭 메뉴 -->
-        <div class="tab-menu">
-            <div class="tab-item active" onclick="switchTab('home')">
-                <span class="tab-icon">🏠</span>
-                <span>홈</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('facility')">
-                <span class="tab-icon">🏫</span>
-                <span>시설</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('community')">
-                <span class="tab-icon">💬</span>
-                <span>커뮤니티</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('profile')">
-                <span class="tab-icon">👤</span>
-                <span>내 정보</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('alert')">
-                <span class="tab-icon">🔔</span>
-                <span>알림</span>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
-        const buildingData = [
-            {
-                id: '공학1관',
-                name: '공학1관',
-                description: '공학계열 강의실, 실험실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.379100, lng: 126.661800 }
-            },
-            {
-                id: '산학협력관',
-                name: '연성대학교 산학협력관',
-                description: '산학협력 프로젝트, 연구실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.379400, lng: 126.661400 }
-            },
-            {
-                id: '식품과학관',
-                name: '식품과학관',
-                description: '식품영양학과, 조리실습실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.380100, lng: 126.661000 }
-            },
-            {
-                id: '도의관',
-                name: '도의관',
-                description: '교양 수업, 강당',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.380300, lng: 126.661500 }
-            },
-            {
-                id: '공학2관',
-                name: '공학2관',
-                description: '공학계열 실습실, 연구실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.379200, lng: 126.662100 }
-            },
-            {
-                id: '문화1관',
-                name: '문화1관',
-                description: '인문사회계열 강의실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.378700, lng: 126.662400 }
-            },
-            {
-                id: '문화2관',
-                name: '문화2관',
-                description: '예술계열 강의실, 연습실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.378300, lng: 126.662700 }
-            },
-            {
-                id: '연극문화센터',
-                name: '연극문화센터',
-                description: '공연장, 연습실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.378000, lng: 126.663000 }
-            },
-            {
-                id: '창조관',
-                name: '창조관',
-                description: '학과 사무실, 강의실',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.377700, lng: 126.663300 }
-            },
-            {
-                id: '운동장',
-                name: '운동장',
-                description: '체육활동, 행사장',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.377400, lng: 126.662000 }
-            },
-            {
-                id: '농구장',
-                name: '농구장',
-                description: '체육활동',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.377800, lng: 126.662300 }
-            },
-            {
-                id: '학생복지센터',
-                name: '학생복지센터',
-                description: '학생지원 시설',
-                image: '/api/placeholder/80/60',
-                type: 'building',
-                position: { lat: 37.377100, lng: 126.663000 }
-            }
-        ];
+                           <span>경영학과</span>
+                       </div>
+                       <div class="rating-stars">★★★★☆</div>
+                       <div class="lecture-reviews">
+                           "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
+                       </div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 시설 탭 -->
+       <div id="facility-tab" class="tab-content">
+           <div class="search-bar">
+               <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
+           </div>
+           
+           <!-- 검색 결과를 표시할 컨테이너 추가 -->
+           <div id="search-results" class="search-results" style="display: none;">
+               <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+           </div>
+           
+           <!-- 검색 결과가 없을 때 표시될 내용 -->
+           <div id="no-results" class="no-results" style="display: none;">
+               검색 결과가 없습니다.
+           </div>
+           
+           <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
+           <div id="original-content">
+               <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
+               <div class="campus-map" id="naverMap">
+                   <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도">
+                   <div class="map-control-buttons">
+                       <div class="map-button" onclick="zoomIn()">🔍+</div>
+                       <div class="map-button" onclick="zoomOut()">🔍-</div>
+                       <div class="map-button" onclick="resetMapView()">🏠</div>
+                   </div>
+               </div>
+               
+               <div class="content-section">
+                   <div class="section-title">
+                       <span>주요 건물</span>
+                   </div>
+                   
+                   <ul class="building-list">
+                       <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
+                   </ul>
+                   
+                   <!-- 페이지네이션 컨트롤 추가 -->
+                   <div id="pagination-controls" class="pagination-controls">
+                       <!-- 페이지 버튼들이 JavaScript로 동적 생성됩니다 -->
+                   </div>
+               </div>
+               
+               <div class="content-section">
+                   <div class="section-title">
+                       <span>편의시설</span>
+                   </div>
+                   
+                   <div class="facility-list">
+                       <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
+                           <div class="facility-image">
+                               <img src="/api/placeholder/150/100" alt="학생식당">
+                           </div>
+                           <div class="facility-info">
+                               <div class="facility-name">학생식당</div>
+                               <div class="facility-location">학생복지센터 2층</div>
+                           </div>
+                       </div>
+                       <div class="facility-item" onclick="showFacilityDetail('cafe')">
+                           <div class="facility-image">
+                               <img src="/api/placeholder/150/100" alt="카페">
+                           </div>
+                           <div class="facility-info">
+                               <div class="facility-name">카페 연성</div>
+                               <div class="facility-location">문화1관 1층</div>
+                           </div>
+                       </div>
+                       <div class="facility-item" onclick="showFacilityDetail('convenience')">
+                           <div class="facility-image">
+                               <img src="/api/placeholder/150/100" alt="편의점">
+                           </div>
+                           <div class="facility-info">
+                               <div class="facility-name">CU 편의점</div>
+                               <div class="facility-location">학생복지센터 1층</div>
+                           </div>
+                       </div>
+                       <div class="facility-item" onclick="showFacilityDetail('atm')">
+                           <div class="facility-image">
+                               <img src="/api/placeholder/150/100" alt="ATM">
+                           </div>
+                           <div class="facility-info">
+                               <div class="facility-name">ATM</div>
+                               <div class="facility-location">학생복지센터 1층</div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 커뮤니티 탭 -->
+       <div id="community-tab" class="tab-content">
+           <div class="search-bar">
+               <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>강의평가</span>
+               </div>
+               
+               <div class="category-filter">
+                   <div class="category-tag active" onclick="filterLectures('all')">전체</div>
+                   <div class="category-tag" onclick="filterLectures('general')">교양</div>
+                   <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
+                   <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
+               </div>
+               <ul class="lecture-list">
+                   <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
+                       <div class="lecture-header">
+                           <div class="lecture-title">웹 프로그래밍 실습</div>
+                           <div class="lecture-rating">4.8</div>
+                       </div>
+                       <div class="lecture-info">
+                           <span class="lecture-professor">김민수 교수님</span>
+                           <span>컴퓨터정보학과</span>
+                       </div>
+                       <div class="rating-stars">★★★★★</div>
+                       <div class="lecture-reviews">
+                           "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                       </div>
+                   </li>
+                   <li class="lecture-item" onclick="viewLectureDetail('english')">
+                       <div class="lecture-header">
+                           <div class="lecture-title">영어회화</div>
+                           <div class="lecture-rating">4.3</div>
+                       </div>
+                       <div class="lecture-info">
+                           <span class="lecture-professor">John Smith 교수님</span>
+                           <span>교양과정</span>
+                       </div>
+                       <div class="rating-stars">★★★★☆</div>
+                       <div class="lecture-reviews">
+                           "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
+                       </div>
+                   </li>
+                   <li class="lecture-item" onclick="viewLectureDetail('statistics')">
+                       <div class="lecture-header">
+                           <div class="lecture-title">경영통계학</div>
+                           <div class="lecture-rating">3.7</div>
+                       </div>
+                       <div class="lecture-info">
+                           <span class="lecture-professor">박성호 교수님</span>
+                           <span>경영학과</span>
+                       </div>
+                       <div class="rating-stars">★★★☆☆</div>
+                       <div class="lecture-reviews">
+                           "내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."
+                       </div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 내 정보 탭 -->
+       <div id="profile-tab" class="tab-content">
+           <div class="profile-section">
+               <div class="profile-image">👨‍🎓</div>
+               <div class="profile-info">
+                   <div class="profile-name">조희정</div>
+                   <div class="profile-detail">경영학과 | 3학년</div>
+                   <div class="profile-detail">학번: 2021100215</div>
+               </div>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>내 정보 관리</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                       <div class="menu-title">내 시간표</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                       <div class="menu-title">내 수강 강의</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                       <div class="menu-title">즐겨찾는 강의실</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                       <div class="menu-title">개인정보 수정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <!-- 회원 탈퇴 메뉴 추가 -->
+                   <li class="menu-item" onclick="deleteAccount()">
+                       <div class="menu-title delete-account">회원 탈퇴</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>학적 정보</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('grades')">
+                       <div class="menu-title">성적 조회</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
+                       <div class="menu-title">수강 신청 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
+                       <div class="menu-title">장학금 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('tuition')">
+                       <div class="menu-title">등록금 납부 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>앱 설정</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
+                       <div class="menu-title">알림 설정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
+                       <div class="menu-title">위젯 및 메뉴 설정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="resetAllSettings()">
+                       <div class="menu-title">모든 설정 초기화</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('app-info')">
+                       <div class="menu-title">앱 정보</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="logout()">
+                       <div class="menu-title">로그아웃</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 알림 탭 -->
+       <div id="alert-tab" class="tab-content">
+           <div class="content-section">
+               <div class="section-title">
+                   <span>알림</span>
+               </div>
+               
+               <ul class="alert-list">
+                   <li class="alert-item" onclick="viewNotification('emergency')">
+                       <div class="alert-icon">📢</div>
+                       <div class="alert-info">
+                           <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
+                           <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
+                           <div class="alert-time">10분 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('classroom')">
+                       <div class="alert-icon">🏫</div>
+                       <div class="alert-info">
+                           <div class="alert-title">강의실 알림</div>
+                           <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
+                           <div class="alert-time">30분 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('assignment')">
+                       <div class="alert-icon">📝</div>
+                       <div class="alert-info">
+                           <div class="alert-title">과제 알림</div>
+                           <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
+                           <div class="alert-time">1시간 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('library')">
+                       <div class="alert-icon">📚</div>
+                       <div class="alert-info">
+                           <div class="alert-title">도서관 알림</div>
+                           <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
+                           <div class="alert-time">3시간 전</div>
+                       </div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 하단 탭 메뉴 -->
+       <div class="tab-menu">
+           <div class="tab-item active" onclick="switchTab('home')">
+               <span class="tab-icon">🏠</span>
+               <span>홈</span>
+           </div>
+           <div class="tab-item" onclick="switchTab('facility')">
+               <span class="tab-icon">🏫</span>
+               <span>시설</span>
+           </div>
+           <div class="tab-item" onclick="switchTab('community')">
+               <span class="tab-icon">💬</span>
+               <span>커뮤니티</span>
+           </div>
+           <div class="tab-item" onclick="switchTab('profile')">
+               <span class="tab-icon">👤</span>
+               <span>내 정보</span>
+           </div>
+           <div class="tab-item" onclick="switchTab('alert')">
+               <span class="tab-icon">🔔</span>
+               <span>알림</span>
+           </div>
+       </div>
+   </div>
+   
+   <script>
+       // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
+       const buildingData = [
+           {
+               id: '공학1관',
+               name: '공학1관',
+               description: '공학계열 강의실, 실험실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.379100, lng: 126.661800 }
+           },
+           {
+               id: '산학협력관',
+               name: '연성대학교 산학협력관',
+               description: '산학협력 프로젝트, 연구실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.379400, lng: 126.661400 }
+           },
+           {
+               id: '식품과학관',
+               name: '식품과학관',
+               description: '식품영양학과, 조리실습실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.380100, lng: 126.661000 }
+           },
+           {
+               id: '도의관',
+               name: '도의관',
+               description: '교양 수업, 강당',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.380300, lng: 126.661500 }
+           },
+           {
+               id: '공학2관',
+               name: '공학2관',
+               description: '공학계열 실습실, 연구실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.379200, lng: 126.662100 }
+           },
+           {
+               id: '문화1관',
+               name: '문화1관',
+               description: '인문사회계열 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.378700, lng: 126.662400 }
+           },
+           {
+               id: '문화2관',
+               name: '문화2관',
+               description: '예술계열 강의실, 연습실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.378300, lng: 126.662700 }
+           },
+           {
+               id: '연극문화센터',
+               name: '연극문화센터',
+               description: '공연장, 연습실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.378000, lng: 126.663000 }
+           },
+           {
+               id: '창조관',
+               name: '창조관',
+               description: '학과 사무실, 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.377700, lng: 126.663300 }
+           },
+           {
+               id: '운동장',
+               name: '운동장',
+               description: '체육활동, 행사장',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.377400, lng: 126.662000 }
+           },
+           {
+               id: '농구장',
+               name: '농구장',
+               description: '체육활동',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.377800, lng: 126.662300 }
+           },
+           {
+               id: '학생복지센터',
+               name: '학생복지센터',
+               description: '학생지원 시설',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.377100, lng: 126.663000 }
+           }
+       ];
 
-        // 편의시설 데이터 정의
-        const facilityData = [
-            {
-                id: 'cafeteria',
-                name: '학생식당',
-                description: '학생복지센터 2층',
-                image: '/api/placeholder/150/100',
-                type: 'facility',
-                position: { lat: 37.377100, lng: 126.663600 },
-                relatedBuilding: '학생복지센터'
-            },
-            {
-                id: 'cafe',
-                name: '카페 연성',
-                description: '문화1관 1층',
-                image: '/api/placeholder/150/100',
-                type: 'facility',
-                position: { lat: 37.378300, lng: 126.662700 },
-                relatedBuilding: '문화1관'
-            },
-            {
-                id: 'convenience',
-                name: 'CU 편의점',
-                description: '학생복지센터 1층',
-                image: '/api/placeholder/150/100',
-                type: 'facility',
-                position: { lat: 37.377100, lng: 126.663700 },
-                relatedBuilding: '학생복지센터'
-            },
-            {
-                id: 'atm',
-                name: 'ATM',
-                description: '학생복지센터 1층',
-                image: '/api/placeholder/150/100',
-                type: 'facility',
-                position: { lat: 37.377100, lng: 126.663800 },
-                relatedBuilding: '학생복지센터'
-            }
-        ];
-        
-        // 네이버 지도 관련 변수
-        let naverMap;
-        let mapMarkers = [];
-        let infoWindows = [];
-        
-        // 페이지네이션 변수
-        let currentPage = 1;
-        const buildingsPerPage = 5;
-        
-        // 시설 탭 초기화 함수 (페이지네이션 포함)
-        function initFacilityTab() {
-            loadBuildingsByPage(currentPage);
-            updatePaginationControls();
-        }
-        
-        // 해당 페이지의 건물 목록 로드 함수
-        function loadBuildingsByPage(page) {
-            // 건물 목록 컨테이너
-            const buildingListElement = document.querySelector('#facility-tab .building-list');
-            if (!buildingListElement) return;
-            
-            // 목록 초기화
-            buildingListElement.innerHTML = '';
-            
-            // 페이지에 해당하는 건물 인덱스 계산
-            const startIndex = (page - 1) * buildingsPerPage;
-            const endIndex = Math.min(startIndex + buildingsPerPage, buildingData.length);
-            
-            // 페이지에 해당하는 건물 목록 생성
-            for (let i = startIndex; i < endIndex; i++) {
-                const building = buildingData[i];
-                
-                const listItem = document.createElement('li');
-                listItem.className = 'building-item';
-                listItem.onclick = function() { 
-                    showBuildingDetail(building.id);
-                };
-                
-                listItem.innerHTML = `
-                    <div class="building-image">
-                        <img src="${building.image}" alt="${building.name}">
-                    </div>
-                    <div class="building-info-container">
-                        <div class="building-info">
-                            <div class="building-name">${building.name}</div>
-                            <div class="building-description">${building.description}</div>
-                        </div>
-                        <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
-                            <span>길찾기</span>
-                            <span>🧭</span>
-                        </div>
-                    </div>
-                `;
-                
-                buildingListElement.appendChild(listItem);
-            }
-            
-            // 현재 페이지 저장
-            currentPage = page;
-        }
-        
-        // 페이지네이션 컨트롤 업데이트
-        function updatePaginationControls() {
-            // 총 페이지 수 계산
-            const totalPages = Math.ceil(buildingData.length / buildingsPerPage);
-            
-            // 페이지네이션 컨트롤 컨테이너
-            const paginationContainer = document.querySelector('#pagination-controls');
-            if (!paginationContainer) return;
-            
-            // 컨트롤 초기화
-            paginationContainer.innerHTML = '';
-            
-            // 이전 페이지 버튼
-            const prevButton = document.createElement('button');
-            prevButton.className = 'pagination-button';
-            prevButton.textContent = '이전';
-            prevButton.disabled = currentPage === 1;
-            prevButton.onclick = function() {
-                if (currentPage > 1) {
-                    loadBuildingsByPage(currentPage - 1);
-                    updatePaginationControls();
-                }
-            };
-            paginationContainer.appendChild(prevButton);
-            
-            // 페이지 번호 버튼
-            // 총 페이지 수가 5개 이하면 모든 페이지 표시
-            if (totalPages <= 5) {
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageButton = document.createElement('button');
-                    pageButton.className = 'pagination-button';
-                    pageButton.textContent = i;
-                    
-                    if (i === currentPage) {
-                        pageButton.classList.add('active');
-                    }
-                    
-                    pageButton.onclick = function() {
-                        loadBuildingsByPage(i);
-                        updatePaginationControls();
-                    };
-                    
-                    paginationContainer.appendChild(pageButton);
-                }
-            } else {
-                // 페이지가 많은 경우, 현재 페이지 주변 페이지만 표시
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, startPage + 4);
-                
-                // 시작 페이지가 1보다 크면 첫 페이지와 ellipsis 표시
-                if (startPage > 1) {
-                    const firstButton = document.createElement('button');
-                    firstButton.className = 'pagination-button';
-                    firstButton.textContent = '1';
-                    firstButton.onclick = function() {
-                        loadBuildingsByPage(1);
-                        updatePaginationControls();
-                    };
-                    paginationContainer.appendChild(firstButton);
-                    
-                    if (startPage > 2) {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.textContent = '...';
-                        ellipsis.style.padding = '0 5px';
-                        paginationContainer.appendChild(ellipsis);
-                    }
-                }
-                
-                // 페이지 번호 표시
-                for (let i = startPage; i <= endPage; i++) {
-                    const pageButton = document.createElement('button');
-                    pageButton.className = 'pagination-button';
-                    pageButton.textContent = i;
-                    
-                    if (i === currentPage) {
-                        pageButton.classList.add('active');
-                    }
-                    
-                    pageButton.onclick = function() {
-                        loadBuildingsByPage(i);
-                        updatePaginationControls();
-                    };
-                    
-                    paginationContainer.appendChild(pageButton);
-                }
-                
-                // 마지막 페이지가 totalPages보다 작으면 ellipsis와 마지막 페이지 표시
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.textContent = '...';
-                        ellipsis.style.padding = '0 5px';
-                        paginationContainer.appendChild(ellipsis);
-                    }
-                    
-                    const lastButton = document.createElement('button');
-                    lastButton.className = 'pagination-button';
-                    lastButton.textContent = totalPages;
-                    lastButton.onclick = function() {
-                        loadBuildingsByPage(totalPages);
-                        updatePaginationControls();
-                    };
-                    paginationContainer.appendChild(lastButton);
-                }
-            }
-            
-            // 다음 페이지 버튼
-            const nextButton = document.createElement('button');
-            nextButton.className = 'pagination-button';
-            nextButton.textContent = '다음';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.onclick = function() {
-                if (currentPage < totalPages) {
-                    loadBuildingsByPage(currentPage + 1);
-                    updatePaginationControls();
-                }
-            };
-            paginationContainer.appendChild(nextButton);
-        }
-        
-        // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(updateAllProfileImages, 100);
-            
-            // localStorage 변경 감지를 위한 이벤트 리스너
-            window.addEventListener('storage', function(event) {
-                // 프로필 관련 변경사항 감지
-                if (event.key === 'profileUpdated' || 
+       // 편의시설 데이터 정의
+       const facilityData = [
+           {
+               id: 'cafeteria',
+               name: '학생식당',
+               description: '학생복지센터 2층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.377100, lng: 126.663600 },
+               relatedBuilding: '학생복지센터'
+           },
+           {
+               id: 'cafe',
+               name: '카페 연성',
+               description: '문화1관 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.378300, lng: 126.662700 },
+               relatedBuilding: '문화1관'
+           },
+           {
+               id: 'convenience',
+               name: 'CU 편의점',
+               description: '학생복지센터 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.377100, lng: 126.663700 },
+               relatedBuilding: '학생복지센터'
+           },
+           {
+               id: 'atm',
+               name: 'ATM',
+               description: '학생복지센터 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.377100, lng: 126.663800 },
+               relatedBuilding: '학생복지센터'
+           }
+       ];
+       
+       // 네이버 지도 관련 변수
+       let naverMap;
+       let mapMarkers = [];
+       let infoWindows = [];
+       
+       // 페이지네이션 변수
+       let currentPage = 1;
+       const buildingsPerPage = 5;
+       
+       // 시설 탭 초기화 함수 (페이지네이션 포함)
+       function initFacilityTab() {
+           loadBuildingsByPage(currentPage);
+           updatePaginationControls();
+       }
+       
+       // 해당 페이지의 건물 목록 로드 함수
+       function loadBuildingsByPage(page) {
+           // 건물 목록 컨테이너
+           const buildingListElement = document.querySelector('#facility-tab .building-list');
+           if (!buildingListElement) return;
+           
+           // 목록 초기화
+           buildingListElement.innerHTML = '';
+           
+           // 페이지에 해당하는 건물 인덱스 계산
+           const startIndex = (page - 1) * buildingsPerPage;
+           const endIndex = Math.min(startIndex + buildingsPerPage, buildingData.length);
+           
+           // 페이지에 해당하는 건물 목록 생성
+           for (let i = startIndex; i < endIndex; i++) {
+               const building = buildingData[i];
+               
+               const listItem = document.createElement('li');
+               listItem.className = 'building-item';
+               listItem.onclick = function() { 
+                   showBuildingDetail(building.id);
+               };
+               
+               listItem.innerHTML = `
+                   <div class="building-image">
+                       <img src="${building.image}" alt="${building.name}">
+                   </div>
+                   <div class="building-info-container">
+                       <div class="building-info">
+                           <div class="building-name">${building.name}</div>
+                           <div class="building-description">${building.description}</div>
+                       </div>
+                       <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
+                           <span>길찾기</span>
+                           <span>🧭</span>
+                       </div>
+                   </div>
+               `;
+               
+               buildingListElement.appendChild(listItem);
+           }
+           
+           // 현재 페이지 저장
+           currentPage = page;
+       }
+       
+       // 페이지네이션 컨트롤 업데이트
+       function updatePaginationControls() {
+           // 총 페이지 수 계산
+           const totalPages = Math.ceil(buildingData.length / buildingsPerPage);
+           
+           // 페이지네이션 컨트롤 컨테이너
+           const paginationContainer = document.querySelector('#pagination-controls');
+           if (!paginationContainer) return;
+           
+           // 컨트롤 초기화
+           paginationContainer.innerHTML = '';
+           
+           // 이전 페이지 버튼
+           const prevButton = document.createElement('button');
+           prevButton.className = 'pagination-button';
+           prevButton.textContent = '이전';
+           prevButton.disabled = currentPage === 1;
+           prevButton.onclick = function() {
+               if (currentPage > 1) {
+                   loadBuildingsByPage(currentPage - 1);
+                   updatePaginationControls();
+               }
+           };
+           paginationContainer.appendChild(prevButton);
+           
+           // 페이지 번호 버튼
+           // 총 페이지 수가 5개 이하면 모든 페이지 표시
+           if (totalPages <= 5) {
+               for (let i = 1; i <= totalPages; i++) {
+                   const pageButton = document.createElement('button');
+                   pageButton.className = 'pagination-button';
+                   pageButton.textContent = i;
+                   
+                   if (i === currentPage) {
+                       pageButton.classList.add('active');
+                   }
+                   
+                   pageButton.onclick = function() {
+                       loadBuildingsByPage(i);
+                       updatePaginationControls();
+                   };
+                   
+                   paginationContainer.appendChild(pageButton);
+               }
+           } else {
+               // 페이지가 많은 경우, 현재 페이지 주변 페이지만 표시
+               let startPage = Math.max(1, currentPage - 2);
+               let endPage = Math.min(totalPages, startPage + 4);
+               
+               // 시작 페이지가 1보다 크면 첫 페이지와 ellipsis 표시
+               if (startPage > 1) {
+                   const firstButton = document.createElement('button');
+                   firstButton.className = 'pagination-button';
+                   firstButton.textContent = '1';
+                   firstButton.onclick = function() {
+                       loadBuildingsByPage(1);
+                       updatePaginationControls();
+                   };
+                   paginationContainer.appendChild(firstButton);
+                   
+                   if (startPage > 2) {
+                       const ellipsis = document.createElement('span');
+                       ellipsis.textContent = '...';
+                       ellipsis.style.padding = '0 5px';
+                       paginationContainer.appendChild(ellipsis);
+                   }
+               }
+               
+               // 페이지 번호 표시
+               for (let i = startPage; i <= endPage; i++) {
+                   const pageButton = document.createElement('button');
+                   pageButton.className = 'pagination-button';
+                   pageButton.textContent = i;
+                   
+                   if (i === currentPage) {
+                       pageButton.classList.add('active');
+                   }
+                   
+                   pageButton.onclick = function() {
+                       loadBuildingsByPage(i);
+                       updatePaginationControls();
+                   };
+                   
+                   paginationContainer.appendChild(pageButton);
+               }
+               
+               // 마지막 페이지가 totalPages보다 작으면 ellipsis와 마지막 페이지 표시
+               if (endPage < totalPages) {
+                   if (endPage < totalPages - 1) {
+                       const ellipsis = document.createElement('span');
+                       ellipsis.textContent = '...';
+                       ellipsis.style.padding = '0 5px';
+                       paginationContainer.appendChild(ellipsis);
+                   }
+                   
+                   const lastButton = document.createElement('button');
+                   lastButton.className = 'pagination-button';
+                   lastButton.textContent = totalPages;
+                   lastButton.onclick = function() {
+                       loadBuildingsByPage(totalPages);
+                       updatePaginationControls();
+                   };
+                   paginationContainer.appendChild(lastButton);
+               }
+           }
+           
+           // 다음 페이지 버튼
+           const nextButton = document.createElement('button');
+           nextButton.className = 'pagination-button';
+           nextButton.textContent = '다음';
+           nextButton.disabled = currentPage === totalPages;
+           nextButton.onclick = function() {
+               if (currentPage < totalPages) {
+                   loadBuildingsByPage(currentPage + 1);
+                   updatePaginationControls();
+               }
+           };
+           paginationContainer.appendChild(nextButton);
+       }
+       
+       // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
+       document.addEventListener('DOMContentLoaded', function() {
+           setTimeout(updateAllProfileImages, 100);
+           
+           // localStorage 변경 감지를 위한 이벤트 리스너
+           window.addEventListener('storage', function(event) {
+               // 프로필 관련 변경사항 감지
+               if (event.key === 'profileUpdated' || 
                    event.key === 'profileImageUpdated' || 
                    event.key.includes('_profileImage') || 
                    event.key.includes('_customProfileImage')) {
@@ -1657,7 +1657,7 @@
                }
                
                // 연성대학교 위치 (실제 좌표로 설정)
-               const yeonsung = new naver.maps.LatLng(37.379268, 126.6618528);
+               const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
                
                // 지도 옵션
                const mapOptions = {
@@ -1946,7 +1946,7 @@
        // 지도 초기 뷰로 리셋
        function resetMapView() {
            if (naverMap) {
-               naverMap.setCenter(new naver.maps.LatLng(37.379268, 126.6618528));
+               naverMap.setCenter(new naver.maps.LatLng(37.39661657434427, 126.90772437800818));
                naverMap.setZoom(16);
                
                // 모든 정보창 닫기
