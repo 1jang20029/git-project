@@ -397,7 +397,7 @@
         
         /* 지도 컨테이너 스타일 수정 */
         .campus-map {
-            height: 200px;
+            height: 500px;
             width: 100%;
             position: relative;
             border-radius: 8px;
@@ -408,6 +408,12 @@
             justify-content: center;
             align-items: center;
             background-color: #f0f0f0;
+        }
+
+        /* 이 부분 추가: 지도 요소 자체가 컨테이너를 채우도록 설정 */
+        #naverMap {
+            width: 100% !important; /* !important로 다른 스타일 덮어쓰기 */
+            height: 100% !important;
         }
         
         .campus-map img {
