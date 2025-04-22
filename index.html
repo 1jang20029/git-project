@@ -1709,6 +1709,100 @@
     } catch (error) {
         console.error('네이버 지도 초기화 중 오류:', error);
     }
+}function initNaverMap() {
+    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+        console.log('네이버 지도 API가 로드되지 않았습니다.');
+        return;
+    }
+    
+    try {
+        const mapContainer = document.getElementById('naverMap');
+        if (!mapContainer) {
+            console.log('지도 컨테이너가 존재하지 않습니다.');
+            return;
+        }
+        
+        // 건물 데이터 로그 출력
+        console.log('건물 데이터:', buildingData);
+        
+        // 캠퍼스 전체를 포함할 수 있는 중심점 계산
+        const centerLat = buildingData.reduce((sum, building) => sum + building.position.lat, 0) / buildingData.length;
+        const centerLng = buildingData.reduce((sum, building) => sum + building.position.lng, 0) / buildingData.length;
+        
+        const yeonsung = new naver.maps.LatLng(centerLat, centerLng);
+        
+        // 지도 옵션
+        const mapOptions = {
+            center: yeonsung,
+            zoom: 16,
+            minZoom: 14,
+            maxZoom: 19,
+            zoomControl: true,    // 줌 컨트롤 활성화
+            mapTypeControl: false,
+            scaleControl: false,
+            logoControl: false,
+            mapDataControl: false,
+            draggable: true,      // 드래그 가능하도록 변경
+            scrollWheel: true     // 스크롤 확대/축소 가능하도록 변경
+        };
+        
+        // 지도 생성
+        naverMap = new naver.maps.Map('naverMap', mapOptions);
+        
+        // 마커와 정보창 배열 초기화
+        mapMarkers = [];
+        infoWindows = [];
+        
+        // 건물 데이터를 기반으로 마커 생성
+        buildingData.forEach(building => {
+            console.log(`마커 생성 시도: ${building.name}`);
+            
+            try {
+                const marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                    map: naverMap,
+                    title: building.name
+                });
+                
+                // 정보창 내용 스타일링
+                const infoWindow = new naver.maps.InfoWindow({
+                    content: `
+                        <div style="padding:10px; width:200px;">
+                            <div style="font-weight:bold; font-size:16px; margin-bottom:6px;">${building.name}</div>
+                            <div style="color:#666; font-size:14px;">${building.description}</div>
+                        </div>
+                    `,
+                    maxWidth: 250,
+                    backgroundColor: "white",
+                    borderColor: "#ddd",
+                    borderWidth: 1,
+                    pixelOffset: new naver.maps.Point(0, -10)
+                });
+
+                // 마커 클릭 이벤트 추가
+                naver.maps.Event.addListener(marker, "click", function() {
+                    if (infoWindow.getMap()) {
+                        infoWindow.close();
+                    } else {
+                        // 기존에 열려있는 모든 정보창 닫기
+                        infoWindows.forEach(window => window.close());
+                        infoWindow.open(naverMap, marker);
+                    }
+                });
+                
+                mapMarkers.push(marker);
+                infoWindows.push(infoWindow);
+                
+                console.log(`${building.name} 마커 생성 완료`);
+            } catch (error) {
+                console.error(`${building.name} 마커 생성 중 오류:`, error);
+            }
+        });
+        
+        console.log('총 마커 수:', mapMarkers.length);
+    } catch (error) {
+        console.error('네이버 지도 초기화 중 오류:', error);
+    }
 }
         
         // 건물 시설 검색 기능 - 대소문자 구분 없이 검색
