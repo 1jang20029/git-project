@@ -1679,9 +1679,10 @@ function initNaverMap() {
         mapMarkers = [];
         infoWindows = [];
         
-        // 메인 마커 추가 (연성대학교 위치) - 파란색 원형 마커
+        // 항공 사진과 일치하는 위치에 마커 배치
+        // 연성대학교 위치 (중앙에 파란색 버블로 표시)
         const mainMarker = new naver.maps.Marker({
-            position: yeonsung,
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0003, yeonsung.lng() - 0.0003),
             map: naverMap,
             title: '연성대학교',
             zIndex: 100,
@@ -1692,9 +1693,9 @@ function initNaverMap() {
         });
         mapMarkers.push(mainMarker);
         
-        // 산학협력관 마커 추가 (메인 마커 바로 옆에 배치) - 진한 빨간색 마커
+        // 산학협력관 마커 추가 (메인 마커 바로 오른쪽에 배치) - 진한 빨간색 마커
         const industryCoopCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat(), yeonsung.lng() + 0.0002),
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0003, yeonsung.lng() + 0.0007),
             map: naverMap,
             title: '산학협력관',
             zIndex: 99,
@@ -1705,9 +1706,9 @@ function initNaverMap() {
         });
         mapMarkers.push(industryCoopCenter);
         
-        // 식품과학관 마커 추가 (좌측 상단)
+        // 식품과학관 마커 추가 (왼쪽 상단)
         const foodScienceCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0005, yeonsung.lng() - 0.0010),
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0001, yeonsung.lng() - 0.0015),
             map: naverMap,
             title: '식품과학관',
             zIndex: 98,
@@ -1718,9 +1719,9 @@ function initNaverMap() {
         });
         mapMarkers.push(foodScienceCenter);
         
-        // 장의교육센터 마커 추가 (오른쪽)
+        // 장의교육센터 마커 추가 (우측 상단)
         const educationCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0001, yeonsung.lng() + 0.0015),
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0004, yeonsung.lng() - 0.0001),
             map: naverMap,
             title: '장의교육센터',
             zIndex: 98,
@@ -1731,9 +1732,9 @@ function initNaverMap() {
         });
         mapMarkers.push(educationCenter);
         
-        // 안양서초등학교 마커 추가 (오른쪽 상단)
+        // 안양서초등학교 마커 추가 (우측 상단)
         const elementarySchool = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() + 0.0005, yeonsung.lng() + 0.0012),
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0003, yeonsung.lng() + 0.0013),
             map: naverMap,
             title: '안양서초등학교',
             zIndex: 98,
@@ -1744,9 +1745,9 @@ function initNaverMap() {
         });
         mapMarkers.push(elementarySchool);
         
-        // 문화1관 마커 추가 (하단)
-        const cultureBldg = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0012, yeonsung.lng() - 0.0002),
+        // 문화1관 마커 추가 (좌측 하단)
+        const cultureBldg1 = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0013, yeonsung.lng() - 0.0012),
             map: naverMap,
             title: '문화1관',
             zIndex: 98,
@@ -1755,11 +1756,24 @@ function initNaverMap() {
                 anchor: new naver.maps.Point(30, 10)
             }
         });
-        mapMarkers.push(cultureBldg);
+        mapMarkers.push(cultureBldg1);
         
-        // 안양외국어고등학교 마커 추가 (오른쪽 하단)
+        // 문화2관 마커 추가 (문화1관 왼쪽)
+        const cultureBldg2 = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0013, yeonsung.lng() - 0.0018),
+            map: naverMap,
+            title: '문화2관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">문화2관</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(cultureBldg2);
+        
+        // 안양외국어고등학교 마커 추가 (우측 하단)
         const foreignLanguageSchool = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0013, yeonsung.lng() + 0.0018),
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0010, yeonsung.lng() + 0.0015),
             map: naverMap,
             title: '안양외국어고등학교',
             zIndex: 98,
@@ -1770,22 +1784,87 @@ function initNaverMap() {
         });
         mapMarkers.push(foreignLanguageSchool);
         
-        // 안양예술고등학교 마커 추가 (오른쪽 하단)
-        const artsSchool = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0010, yeonsung.lng() + 0.0025),
+        // 학생복지센터 마커 추가 (하단)
+        const studentCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0015, yeonsung.lng() + 0.0001),
             map: naverMap,
-            title: '안양예술고등학교',
+            title: '학생복지센터',
             zIndex: 98,
             icon: {
-                content: `<div style="color: #666; font-size: 13px;">안양예술고등학교</div>`,
-                anchor: new naver.maps.Point(50, 10)
+                content: `<div style="color: #666; font-size: 13px;">학생복지센터</div>`,
+                anchor: new naver.maps.Point(40, 10)
             }
         });
-        mapMarkers.push(artsSchool);
+        mapMarkers.push(studentCenter);
         
-        // 파리바게트 마커 추가 (오른쪽 상단)
+        // 창조관 마커 추가
+        const changjoCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0008, yeonsung.lng() - 0.0008),
+            map: naverMap,
+            title: '창조관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">창조관</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(changjoCenter);
+        
+        // 연극문화센터 마커 추가
+        const theaterCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0010, yeonsung.lng() - 0.0005),
+            map: naverMap,
+            title: '연극문화센터',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">연극문화센터</div>`,
+                anchor: new naver.maps.Point(45, 10)
+            }
+        });
+        mapMarkers.push(theaterCenter);
+        
+        // 운동장 마커 추가 (중앙)
+        const playground = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0005, yeonsung.lng() - 0.0001),
+            map: naverMap,
+            title: '운동장',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">운동장</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(playground);
+        
+        // 공학1관 마커 추가
+        const engineeringBldg1 = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0002, yeonsung.lng() - 0.0007),
+            map: naverMap,
+            title: '공학1관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">공학1관</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(engineeringBldg1);
+        
+        // 공학2관 마커 추가
+        const engineeringBldg2 = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0000, yeonsung.lng() - 0.0012),
+            map: naverMap,
+            title: '공학2관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">공학2관</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(engineeringBldg2);
+        
+        // 파리바게트 마커 추가 (우측)
         const bakery = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() + 0.0001, yeonsung.lng() + 0.0030),
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0000, yeonsung.lng() + 0.0020),
             map: naverMap,
             title: '파리바게트',
             zIndex: 98,
