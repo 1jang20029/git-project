@@ -1679,97 +1679,22 @@ function initNaverMap() {
         mapMarkers = [];
         infoWindows = [];
         
-        // '관'으로 끝나는 건물 이름만 마커로 표시
-        // 연성대학교 마커 (메인 마커)
-        const mainMarker = new naver.maps.Marker({
-            position: yeonsung,
-            map: naverMap,
-            title: '연성대학교',
-            zIndex: 100,
-            icon: {
-                content: `<div style="background-color: #4E8AF4; color: white; padding: 8px 18px; border-radius: 25px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">연성대학교</div>`,
-                anchor: new naver.maps.Point(50, 15)
-            }
-        });
-        mapMarkers.push(mainMarker);
+        // 식품과학관만 마커로 표시
+        // 기존 마커 배열 초기화
+        mapMarkers = [];
         
-        // 식품과학관 마커 - 이미지에 정확히 표시된 위치
+        // 식품과학관 마커만 생성 - 이미지에 정확히 표시된 위치
         const foodScienceCenter = new naver.maps.Marker({
             position: new naver.maps.LatLng(yeonsung.lat() + 0.0010, yeonsung.lng() + 0.0020),
             map: naverMap,
             title: '식품과학관',
-            zIndex: 98,
+            zIndex: 100,
             icon: {
-                content: `<div style="color: #666; font-size: 13px;">식품과학관</div>`,
-                anchor: new naver.maps.Point(35, 10)
+                content: `<div style="background-color: #4A7EBC; color: white; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">식품과학관</div>`,
+                anchor: new naver.maps.Point(40, 15)
             }
         });
         mapMarkers.push(foodScienceCenter);
-        
-        // 자연과학관 마커
-        const scienceCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0003, yeonsung.lng() - 0.0012),
-            map: naverMap,
-            title: '자연과학관',
-            zIndex: 98,
-            icon: {
-                content: `<div style="color: #666; font-size: 13px;">자연과학관</div>`,
-                anchor: new naver.maps.Point(40, 10)
-            }
-        });
-        mapMarkers.push(scienceCenter);
-        
-        // 학술정보관 마커
-        const libraryCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0006, yeonsung.lng() - 0.0015),
-            map: naverMap,
-            title: '학술정보관',
-            zIndex: 98,
-            icon: {
-                content: `<div style="color: #666; font-size: 13px;">학술정보관</div>`,
-                anchor: new naver.maps.Point(40, 10)
-            }
-        });
-        mapMarkers.push(libraryCenter);
-        
-        // 문화2관 마커
-        const cultureBldg2 = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0010, yeonsung.lng() - 0.0003),
-            map: naverMap,
-            title: '문화2관',
-            zIndex: 98,
-            icon: {
-                content: `<div style="color: #666; font-size: 13px;">문화2관</div>`,
-                anchor: new naver.maps.Point(30, 10)
-            }
-        });
-        mapMarkers.push(cultureBldg2);
-        
-        // 창조관 마커
-        const changjoCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0002, yeonsung.lng() + 0.0012),
-            map: naverMap,
-            title: '창조관',
-            zIndex: 98,
-            icon: {
-                content: `<div style="color: #666; font-size: 13px;">창조관</div>`,
-                anchor: new naver.maps.Point(30, 10)
-            }
-        });
-        mapMarkers.push(changjoCenter);
-        
-        // 문화1관 마커
-        const cultureBldg1 = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0008, yeonsung.lng() + 0.0008),
-            map: naverMap,
-            title: '문화1관',
-            zIndex: 98,
-            icon: {
-                content: `<div style="color: #666; font-size: 13px;">문화1관</div>`,
-                anchor: new naver.maps.Point(30, 10)
-            }
-        });
-        mapMarkers.push(cultureBldg1);
         
         // 건물 데이터를 기반으로 나머지 마커 생성
         buildingData.forEach(building => {
