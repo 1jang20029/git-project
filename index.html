@@ -1679,22 +1679,24 @@ function initNaverMap() {
         mapMarkers = [];
         infoWindows = [];
         
-        // 식품과학관만 마커로 표시
+        // 모든 마커 제거하고 식품과학관만 마커로 표시
         // 기존 마커 배열 초기화
         mapMarkers = [];
         
         // 식품과학관 마커만 생성 - 이미지에 정확히 표시된 위치
         const foodScienceCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() + 0.0010, yeonsung.lng() + 0.0020),
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0007, yeonsung.lng() - 0.0018),
             map: naverMap,
             title: '식품과학관',
             zIndex: 100,
             icon: {
-                content: `<div style="background-color: #4A7EBC; color: white; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">식품과학관</div>`,
-                anchor: new naver.maps.Point(40, 15)
+                content: `<div style="color: #666; font-size: 13px;">식품과학관</div>`,
+                anchor: new naver.maps.Point(35, 10)
             }
         });
         mapMarkers.push(foodScienceCenter);
+        
+        // 나머지 모든 건물 마커는 생성하지 않음
         
         // 건물 데이터를 기반으로 나머지 마커 생성
         buildingData.forEach(building => {
