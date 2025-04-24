@@ -1641,130 +1641,291 @@
        });
        
        // 네이버 지도 초기화
-       function initNaverMap() {
-           // 네이버 지도 라이브러리가 로드되었는지 확인
-           if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-               console.log('네이버 지도 API가 로드되지 않았습니다.');
-               return;
-           }
-           
-           try {
-               // 지도 컨테이너 존재 확인
-               const mapContainer = document.getElementById('naverMap');
-               if (!mapContainer) {
-                   console.log('지도 컨테이너가 존재하지 않습니다.');
-                   return;
-               }
-               
-               // 연성대학교 위치 (실제 좌표로 설정)
-               const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-               
-               // 지도 옵션
-               const mapOptions = {
-                   center: yeonsung,
-                   zoom: 16,
-                   minZoom: 14,
-                   maxZoom: 19,
-                   zoomControl: false,
-                   mapTypeControl: false,
-                   scaleControl: false,
-                   logoControl: false,
-                   mapDataControl: false
-               };
-               
-               // 지도 생성
-               naverMap = new naver.maps.Map('naverMap', mapOptions);
-               
-               // 마커와 정보창 배열 초기화
-               mapMarkers = [];
-               infoWindows = [];
-               
-               // 메인 마커 추가 (연성대학교 위치)
-               const mainMarker = new naver.maps.Marker({
-                   position: yeonsung,
-                   map: naverMap,
-                   title: '연성대학교',
-                   zIndex: 100,
-                   icon: {
-                       content: `<div style="background-color: #2196F3; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">연성대학교</div>`,
-                       anchor: new naver.maps.Point(50, 15)
-                   }
-               });
-               mapMarkers.push(mainMarker);
-               
-               // 건물 데이터를 기반으로 마커 생성
-               buildingData.forEach(building => {
-                   // 마커 생성
-                   const marker = new naver.maps.Marker({
-                       position: new naver.maps.LatLng(building.position.lat, building.position.lng),
-                       map: naverMap,
-                       title: building.name,
-                       visible: true,
-                       icon: {
-                           content: `<div style="background-color: #c62917; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">${building.name}</div>`,
-                           anchor: new naver.maps.Point(30, 15)
-                       }
-                   });
-                   
-                   // 정보창 내용
-                   const contentString = `
-                       <div class="map-info-window">
-                           <div class="map-info-title">${building.name}</div>
-                           <div class="map-info-desc">${building.description}</div>
-                       </div>
-                   `;
-                   
-                   // 정보창 생성
-                   const infoWindow = new naver.maps.InfoWindow({
-                       content: contentString,
-                       maxWidth: 200,
-                       backgroundColor: "white",
-                       borderColor: "#ddd",
-                       borderWidth: 1,
-                       anchorSize: new naver.maps.Size(10, 10),
-                       pixelOffset: new naver.maps.Point(0, -10)
-                   });
-                   
-                   // 마커 클릭 이벤트
-                   naver.maps.Event.addListener(marker, 'click', function() {
-                       // 다른 모든 정보창 닫기
-                       infoWindows.forEach(window => window.close());
-                       
-                       // 현재 정보창 열기
-                       infoWindow.open(naverMap, marker);
-                       
-                       // 지도 중심 이동
-                       naverMap.setCenter(building.position);
-                   });
-                   
-                   // 배열에 추가
-                   mapMarkers.push(marker);
-                   infoWindows.push(infoWindow);
-               });
-               
-               // 지도 리사이즈 이벤트
-               window.addEventListener('resize', function() {
-                   if (naverMap) {
-                       naverMap.refresh();
-                   }
-               });
-               
-               // 페이지 전환 시 지도 리사이즈
-               document.querySelectorAll('.tab-item').forEach(item => {
-                   item.addEventListener('click', function() {
-                       setTimeout(function() {
-                           if (naverMap) {
-                               naverMap.refresh();
-                           }
-                       }, 100);
-                   });
-               });
-               
-               console.log('네이버 지도가 성공적으로 초기화되었습니다. 마커 수: ' + mapMarkers.length);
-           } catch (error) {
-               console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
-           }
-       }
+function initNaverMap() {
+    // 네이버 지도 라이브러리가 로드되었는지 확인
+    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+        console.log('네이버 지도 API가 로드되지 않았습니다.');
+        return;
+    }
+    
+    try {
+        // 지도 컨테이너 존재 확인
+        const mapContainer = document.getElementById('naverMap');
+        if (!mapContainer) {
+            console.log('지도 컨테이너가 존재하지 않습니다.');
+            return;
+        }
+        
+        // 연성대학교 위치 (고정 좌표값)
+        const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+        
+        // 지도 옵션
+        const mapOptions = {
+            center: yeonsung,
+            zoom: 16,
+            minZoom: 14,
+            maxZoom: 19,
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            logoControl: false,
+            mapDataControl: false
+        };
+        
+        // 지도 생성
+        naverMap = new naver.maps.Map('naverMap', mapOptions);
+        
+        // 마커와 정보창 배열 초기화
+        mapMarkers = [];
+        infoWindows = [];
+        
+        // '관'으로 끝나는 건물 이름만 마커로 표시
+        // 연성대학교 마커 (메인 마커)
+        const mainMarker = new naver.maps.Marker({
+            position: yeonsung,
+            map: naverMap,
+            title: '연성대학교',
+            zIndex: 100,
+            icon: {
+                content: `<div style="background-color: #4E8AF4; color: white; padding: 8px 18px; border-radius: 25px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">연성대학교</div>`,
+                anchor: new naver.maps.Point(50, 15)
+            }
+        });
+        mapMarkers.push(mainMarker);
+        
+        // 식품과학관 마커
+        const foodScienceCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0008, yeonsung.lng() - 0.0005),
+            map: naverMap,
+            title: '식품과학관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">식품과학관</div>`,
+                anchor: new naver.maps.Point(35, 10)
+            }
+        });
+        mapMarkers.push(foodScienceCenter);
+        
+        // 자연과학관 마커
+        const scienceCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0003, yeonsung.lng() - 0.0012),
+            map: naverMap,
+            title: '자연과학관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">자연과학관</div>`,
+                anchor: new naver.maps.Point(40, 10)
+            }
+        });
+        mapMarkers.push(scienceCenter);
+        
+        // 학술정보관 마커
+        const libraryCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0006, yeonsung.lng() - 0.0015),
+            map: naverMap,
+            title: '학술정보관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">학술정보관</div>`,
+                anchor: new naver.maps.Point(40, 10)
+            }
+        });
+        mapMarkers.push(libraryCenter);
+        
+        // 문화2관 마커
+        const cultureBldg2 = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0010, yeonsung.lng() - 0.0003),
+            map: naverMap,
+            title: '문화2관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">문화2관</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(cultureBldg2);
+        
+        // 창조관 마커
+        const changjoCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0002, yeonsung.lng() + 0.0012),
+            map: naverMap,
+            title: '창조관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">창조관</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(changjoCenter);
+        
+        // 문화1관 마커
+        const cultureBldg1 = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0008, yeonsung.lng() + 0.0008),
+            map: naverMap,
+            title: '문화1관',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">문화1관</div>`,
+                anchor: new naver.maps.Point(30, 10)
+            }
+        });
+        mapMarkers.push(cultureBldg1);
+        
+        // 건물 데이터를 기반으로 나머지 마커 생성
+        buildingData.forEach(building => {
+            // 이미 수동으로 추가된 마커는 건너뛰기
+            if (['산학협력관', '식품과학관', '문화1관', '안양서초등학교', '안양외국어고등학교', 
+                '안양예술고등학교', '파리바게트', '장의교육센터'].includes(building.name)) {
+                return;
+            }
+            
+            // 랜덤한 위치 오프셋 생성 (연성대학교 주변에 분포)
+            const latOffset = (Math.random() - 0.5) * 0.001;
+            const lngOffset = (Math.random() - 0.5) * 0.001;
+            
+            // 마커 생성 - 연성대학교 주변에 분산 배치, 텍스트만 표시
+            const marker = new naver.maps.Marker({
+                position: new naver.maps.LatLng(yeonsung.lat() + latOffset, yeonsung.lng() + lngOffset),
+                map: naverMap,
+                title: building.name,
+                visible: true,
+                icon: {
+                    content: `<div style="color: #666666; font-size: 13px;">${building.name}</div>`,
+                    anchor: new naver.maps.Point(building.name.length * 3, 10)
+                }
+            });
+            
+            // 정보창 내용
+            const contentString = `
+                <div class="map-info-window">
+                    <div class="map-info-title">${building.name}</div>
+                    <div class="map-info-desc">${building.description}</div>
+                </div>
+            `;
+            
+            // 정보창 생성
+            const infoWindow = new naver.maps.InfoWindow({
+                content: contentString,
+                maxWidth: 200,
+                backgroundColor: "white",
+                borderColor: "#ddd",
+                borderWidth: 1,
+                anchorSize: new naver.maps.Size(10, 10),
+                pixelOffset: new naver.maps.Point(0, -10)
+            });
+            
+            // 마커 클릭 이벤트
+            naver.maps.Event.addListener(marker, 'click', function() {
+                // 다른 모든 정보창 닫기
+                infoWindows.forEach(window => window.close());
+                
+                // 현재 정보창 열기
+                infoWindow.open(naverMap, marker);
+                
+                // 지도 중심 유지 (이동하지 않음)
+                // naverMap.setCenter 호출 제거
+            });
+            
+            // 배열에 추가
+            mapMarkers.push(marker);
+            infoWindows.push(infoWindow);
+        });
+        
+        // 편의시설 데이터에 대한 마커도 연성대학교 주변에 배치
+        facilityData.forEach(facility => {
+            // 각 시설마다 관련 건물의 마커와 가까운 위치에 배치
+            let facilityPosition;
+            
+            // 관련 건물에 따라 위치 조정
+            switch(facility.relatedBuilding) {
+                case '학생복지센터':
+                    facilityPosition = new naver.maps.LatLng(
+                        yeonsung.lat() + 0.0004, 
+                        yeonsung.lng() - 0.0007
+                    );
+                    break;
+                case '문화1관':
+                    facilityPosition = new naver.maps.LatLng(
+                        yeonsung.lat() - 0.0008, 
+                        yeonsung.lng() - 0.0004
+                    );
+                    break;
+                default:
+                    // 관련 건물이 없거나 매칭되지 않는 경우 랜덤 위치
+                    facilityPosition = new naver.maps.LatLng(
+                        yeonsung.lat() + (Math.random() - 0.5) * 0.0008,
+                        yeonsung.lng() + (Math.random() - 0.5) * 0.0008
+                    );
+            }
+            
+            // 마커 생성 - 텍스트만 표시되는 형태로 수정
+            const marker = new naver.maps.Marker({
+                position: facilityPosition,
+                map: naverMap,
+                title: facility.name,
+                visible: true,
+                icon: {
+                    content: `<div style="color: #666666; font-size: 13px;">${facility.name}</div>`,
+                    anchor: new naver.maps.Point(facility.name.length * 3, 10)
+                }
+            });
+            
+            // 정보창 내용
+            const contentString = `
+                <div class="map-info-window">
+                    <div class="map-info-title">${facility.name}</div>
+                    <div class="map-info-desc">${facility.description}</div>
+                </div>
+            `;
+            
+            // 정보창 생성
+            const infoWindow = new naver.maps.InfoWindow({
+                content: contentString,
+                maxWidth: 200,
+                backgroundColor: "white",
+                borderColor: "#ddd",
+                borderWidth: 1,
+                anchorSize: new naver.maps.Size(10, 10),
+                pixelOffset: new naver.maps.Point(0, -10)
+            });
+            
+            // 마커 클릭 이벤트
+            naver.maps.Event.addListener(marker, 'click', function() {
+                // 다른 모든 정보창 닫기
+                infoWindows.forEach(window => window.close());
+                
+                // 현재 정보창 열기
+                infoWindow.open(naverMap, marker);
+            });
+            
+            // 배열에 추가
+            mapMarkers.push(marker);
+            infoWindows.push(infoWindow);
+        });
+        
+        // 지도 리사이즈 이벤트
+        window.addEventListener('resize', function() {
+            if (naverMap) {
+                naverMap.refresh();
+            }
+        });
+        
+        // 페이지 전환 시 지도 리사이즈
+        document.querySelectorAll('.tab-item').forEach(item => {
+            item.addEventListener('click', function() {
+                setTimeout(function() {
+                    if (naverMap) {
+                        naverMap.refresh();
+                    }
+                }, 100);
+            });
+        });
+        
+        console.log('네이버 지도가 성공적으로 초기화되었습니다. 마커 수: ' + mapMarkers.length);
+    } catch (error) {
+        console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
+    }
+}
        
        // 건물 시설 검색 기능 - 대소문자 구분 없이 검색
        function searchFacilities(query) {
