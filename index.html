@@ -1679,75 +1679,128 @@ function initNaverMap() {
         mapMarkers = [];
         infoWindows = [];
         
-        // 메인 마커 추가 (연성대학교 위치)
+        // 메인 마커 추가 (연성대학교 위치) - 파란색 원형 마커
         const mainMarker = new naver.maps.Marker({
             position: yeonsung,
             map: naverMap,
             title: '연성대학교',
             zIndex: 100,
             icon: {
-                content: `<div style="background-color: #2196F3; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">연성대학교</div>`,
+                content: `<div style="background-color: #4E8AF4; color: white; padding: 8px 18px; border-radius: 25px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">연성대학교</div>`,
                 anchor: new naver.maps.Point(50, 15)
             }
         });
         mapMarkers.push(mainMarker);
         
-        // 학생복지센터 마커 추가 (상단 배치)
-        const studentCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() + 0.0005, yeonsung.lng() - 0.0001),
-            map: naverMap,
-            title: '학생복지센터',
-            zIndex: 99,
-            icon: {
-                content: `<div style="background-color: #ffffff; color: #000000; padding: 5px 10px; border-radius: 10px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 1px solid #ddd;">학생복지센터</div>`,
-                anchor: new naver.maps.Point(50, 15)
-            }
-        });
-        mapMarkers.push(studentCenter);
-        
-        // 산학협력관 마커 추가 (우측 배치)
+        // 산학협력관 마커 추가 (메인 마커 바로 옆에 배치) - 진한 빨간색 마커
         const industryCoopCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() + 0.0001, yeonsung.lng() + 0.0008),
+            position: new naver.maps.LatLng(yeonsung.lat(), yeonsung.lng() + 0.0002),
             map: naverMap,
             title: '산학협력관',
             zIndex: 99,
             icon: {
-                content: `<div style="background-color: #a52a2a; color: white; padding: 5px 10px; border-radius: 10px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">산학협력관</div>`,
-                anchor: new naver.maps.Point(45, 15)
+                content: `<div style="background-color: #BF2A2C; color: white; padding: 8px 18px; border-radius: 25px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">산학협력관</div>`,
+                anchor: new naver.maps.Point(50, 15)
             }
         });
         mapMarkers.push(industryCoopCenter);
         
-        // 식품과학관 마커 추가 (좌측 배치)
+        // 식품과학관 마커 추가 (좌측 상단)
         const foodScienceCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0002, yeonsung.lng() - 0.0006),
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0005, yeonsung.lng() - 0.0010),
             map: naverMap,
             title: '식품과학관',
-            zIndex: 99,
+            zIndex: 98,
             icon: {
-                content: `<div style="background-color: #f4f4f4; color: #000000; padding: 5px 10px; border-radius: 10px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 1px solid #ddd;">식품과학관</div>`,
-                anchor: new naver.maps.Point(45, 15)
+                content: `<div style="color: #666; font-size: 13px;">식품과학관</div>`,
+                anchor: new naver.maps.Point(35, 10)
             }
         });
         mapMarkers.push(foodScienceCenter);
         
-        // 문화1관 마커 추가 (우하단 배치)
+        // 장의교육센터 마커 추가 (오른쪽)
+        const educationCenter = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0001, yeonsung.lng() + 0.0015),
+            map: naverMap,
+            title: '장의교육센터',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">장의교육센터</div>`,
+                anchor: new naver.maps.Point(40, 10)
+            }
+        });
+        mapMarkers.push(educationCenter);
+        
+        // 안양서초등학교 마커 추가 (오른쪽 상단)
+        const elementarySchool = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0005, yeonsung.lng() + 0.0012),
+            map: naverMap,
+            title: '안양서초등학교',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">안양서초등학교</div>`,
+                anchor: new naver.maps.Point(45, 10)
+            }
+        });
+        mapMarkers.push(elementarySchool);
+        
+        // 문화1관 마커 추가 (하단)
         const cultureBldg = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() - 0.0006, yeonsung.lng() + 0.0004),
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0012, yeonsung.lng() - 0.0002),
             map: naverMap,
             title: '문화1관',
-            zIndex: 99,
+            zIndex: 98,
             icon: {
-                content: `<div style="background-color: #f4f4f4; color: #000000; padding: 5px 10px; border-radius: 10px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 1px solid #ddd;">문화1관</div>`,
-                anchor: new naver.maps.Point(35, 15)
+                content: `<div style="color: #666; font-size: 13px;">문화1관</div>`,
+                anchor: new naver.maps.Point(30, 10)
             }
         });
         mapMarkers.push(cultureBldg);
         
+        // 안양외국어고등학교 마커 추가 (오른쪽 하단)
+        const foreignLanguageSchool = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0013, yeonsung.lng() + 0.0018),
+            map: naverMap,
+            title: '안양외국어고등학교',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">안양외국어고등학교</div>`,
+                anchor: new naver.maps.Point(55, 10)
+            }
+        });
+        mapMarkers.push(foreignLanguageSchool);
+        
+        // 안양예술고등학교 마커 추가 (오른쪽 하단)
+        const artsSchool = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() - 0.0010, yeonsung.lng() + 0.0025),
+            map: naverMap,
+            title: '안양예술고등학교',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #666; font-size: 13px;">안양예술고등학교</div>`,
+                anchor: new naver.maps.Point(50, 10)
+            }
+        });
+        mapMarkers.push(artsSchool);
+        
+        // 파리바게트 마커 추가 (오른쪽 상단)
+        const bakery = new naver.maps.Marker({
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0001, yeonsung.lng() + 0.0030),
+            map: naverMap,
+            title: '파리바게트',
+            zIndex: 98,
+            icon: {
+                content: `<div style="color: #C87137; font-size: 13px;">파리바게트</div>`,
+                anchor: new naver.maps.Point(40, 10)
+            }
+        });
+        mapMarkers.push(bakery);
+        
         // 건물 데이터를 기반으로 나머지 마커 생성
         buildingData.forEach(building => {
-            // 이미 추가된 마커는 건너뛰기
-            if (['학생복지센터', '산학협력관', '식품과학관', '문화1관'].includes(building.name)) {
+            // 이미 수동으로 추가된 마커는 건너뛰기
+            if (['산학협력관', '식품과학관', '문화1관', '안양서초등학교', '안양외국어고등학교', 
+                '안양예술고등학교', '파리바게트', '장의교육센터'].includes(building.name)) {
                 return;
             }
             
@@ -1755,15 +1808,15 @@ function initNaverMap() {
             const latOffset = (Math.random() - 0.5) * 0.001;
             const lngOffset = (Math.random() - 0.5) * 0.001;
             
-            // 마커 생성 - 연성대학교 주변에 분산 배치
+            // 마커 생성 - 연성대학교 주변에 분산 배치, 텍스트만 표시
             const marker = new naver.maps.Marker({
                 position: new naver.maps.LatLng(yeonsung.lat() + latOffset, yeonsung.lng() + lngOffset),
                 map: naverMap,
                 title: building.name,
                 visible: true,
                 icon: {
-                    content: `<div style="background-color: #f4f4f4; color: #000000; padding: 5px 10px; border-radius: 10px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 1px solid #ddd;">${building.name}</div>`,
-                    anchor: new naver.maps.Point(building.name.length * 5, 15)
+                    content: `<div style="color: #666666; font-size: 13px;">${building.name}</div>`,
+                    anchor: new naver.maps.Point(building.name.length * 3, 10)
                 }
             });
             
@@ -1812,14 +1865,14 @@ function initNaverMap() {
             switch(facility.relatedBuilding) {
                 case '학생복지센터':
                     facilityPosition = new naver.maps.LatLng(
-                        yeonsung.lat() + 0.0005, 
-                        yeonsung.lng() - 0.0001
+                        yeonsung.lat() + 0.0004, 
+                        yeonsung.lng() - 0.0007
                     );
                     break;
                 case '문화1관':
                     facilityPosition = new naver.maps.LatLng(
-                        yeonsung.lat() - 0.0006, 
-                        yeonsung.lng() + 0.0004
+                        yeonsung.lat() - 0.0008, 
+                        yeonsung.lng() - 0.0004
                     );
                     break;
                 default:
@@ -1830,15 +1883,15 @@ function initNaverMap() {
                     );
             }
             
-            // 마커 생성
+            // 마커 생성 - 텍스트만 표시되는 형태로 수정
             const marker = new naver.maps.Marker({
                 position: facilityPosition,
                 map: naverMap,
                 title: facility.name,
-                visible: true, // 기본적으로 표시되도록 변경
+                visible: true,
                 icon: {
-                    content: `<div style="background-color: #4CAF50; color: white; padding: 5px 10px; border-radius: 10px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">${facility.name}</div>`,
-                    anchor: new naver.maps.Point(facility.name.length * 4, 15)
+                    content: `<div style="color: #666666; font-size: 13px;">${facility.name}</div>`,
+                    anchor: new naver.maps.Point(facility.name.length * 3, 10)
                 }
             });
             
