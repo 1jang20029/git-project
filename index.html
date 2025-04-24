@@ -1693,9 +1693,9 @@ function initNaverMap() {
         });
         mapMarkers.push(mainMarker);
         
-        // 식품과학관 마커
+        // 식품과학관 마커 - 이미지에 정확히 표시된 위치
         const foodScienceCenter = new naver.maps.Marker({
-            position: new naver.maps.LatLng(yeonsung.lat() + 0.0008, yeonsung.lng() - 0.0005),
+            position: new naver.maps.LatLng(yeonsung.lat() + 0.0010, yeonsung.lng() + 0.0020),
             map: naverMap,
             title: '식품과학관',
             zIndex: 98,
