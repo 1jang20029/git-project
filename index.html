@@ -785,6 +785,305 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* 건물 내부 강의실 길찾기 관련 스타일 */
+        .building-interior {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: white;
+            z-index: 2000;
+            overflow-y: auto;
+            flex-direction: column;
+        }
+        
+        .interior-header {
+            background-color: #c62917;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .interior-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .close-interior {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .floor-tabs {
+            display: flex;
+            overflow-x: auto;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            padding: 8px 16px;
+            position: sticky;
+            top: 52px;
+            z-index: 5;
+        }
+        
+        .floor-tab {
+            padding: 8px 16px;
+            margin-right: 8px;
+            border-radius: 16px;
+            background-color: white;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .floor-tab.active {
+            background-color: #c62917;
+            color: white;
+            border-color: #c62917;
+        }
+        
+        .interior-content {
+            padding: 16px;
+            flex: 1;
+        }
+        
+        .floor-map {
+            width: 100%;
+            min-height: 300px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .floor-map svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .classroom-list {
+            list-style: none;
+        }
+        
+        .classroom-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .classroom-info {
+            flex: 1;
+        }
+        
+        .classroom-number {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .classroom-detail {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .classroom-action {
+            display: flex;
+            align-items: center;
+        }
+        
+        .classroom-button {
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            font-size: 14px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .classroom-button.highlight {
+            background-color: #c62917;
+            color: white;
+        }
+        
+        /* 길찾기 모달 */
+        .navigation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .navigation-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .navigation-header {
+            background-color: #c62917;
+            color: white;
+            padding: 16px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .navigation-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .navigation-subtitle {
+            font-size: 14px;
+            margin-top: 4px;
+            opacity: 0.9;
+        }
+        
+        .navigation-body {
+            padding: 16px;
+        }
+        
+        .navigation-steps {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+        
+        .navigation-step {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+        }
+        
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background-color: #c62917;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .step-description {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .navigation-footer {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .navigation-button {
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .navigation-button.cancel {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .navigation-button.start {
+            background-color: #c62917;
+            color: white;
+        }
+        
+        /* 검색 인터페이스 */
+        .classroom-search {
+            margin-bottom: 16px;
+        }
+        
+        .classroom-search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        /* 강의실 강조 표시 */
+        .highlight-room {
+            fill: #c62917;
+            stroke: #900;
+            stroke-width: 2;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* 경로 표시 스타일 */
+        .path-highlight {
+            stroke: #c62917;
+            stroke-width: 3;
+            stroke-dasharray: 5;
+            animation: dash 1s linear infinite;
+        }
+        
+        @keyframes dash {
+            to { stroke-dashoffset: -10; }
+        }
+        
+        /* 현재 위치 표시 스타일 */
+        .current-location {
+            fill: #4285F4;
+            stroke: #0056C8;
+            stroke-width: 2;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+        
+        /* 도착 위치 표시 스타일 */
+        .destination {
+            fill: #c62917;
+            stroke: #900;
+            stroke-width: 2;
+        }
     </style>
 </head>
 <body>
@@ -792,30 +1091,30 @@
         <header>
             <div class="logo" onclick="goToHome()">연성대학교</div>
             <div class="header-icons">
-                <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
-                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
-                <div class="profile-dropdown-container" style="display: none;">
-                    <div class="header-profile-image" onclick="toggleProfileDropdown()">
-                        <!-- 여기에 프로필 이미지가 들어갑니다 -->
-                        <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
-                    </div>
-                    <div class="profile-dropdown">
-                        <div class="dropdown-profile-info">
-                            <div class="dropdown-profile-name">사용자</div>
-                            <div class="dropdown-profile-detail">학과 | 학년</div>
-                            <div class="dropdown-profile-detail">학번: 0000000000</div>
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="goToPage('profile-edit')">
-                            <span class="dropdown-icon">✏️</span>
-                            <span>프로필 수정</span>
-                        </div>
-                        <div class="dropdown-item" onclick="logout()">
-                            <span class="dropdown-icon">🚪</span>
-                            <span>로그아웃</span>
-                        </div>
-                    </div>
-                </div>
+               <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
+<a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
+<div class="profile-dropdown-container" style="display: none;">
+    <div class="header-profile-image" onclick="toggleProfileDropdown()">
+        <!-- 여기에 프로필 이미지가 들어갑니다 -->
+        <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
+    </div>
+    <div class="profile-dropdown">
+        <div class="dropdown-profile-info">
+            <div class="dropdown-profile-name">사용자</div>
+            <div class="dropdown-profile-detail">학과 | 학년</div>
+            <div class="dropdown-profile-detail">학번: 0000000000</div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" onclick="goToPage('profile-edit')">
+            <span class="dropdown-icon">✏️</span>
+            <span>프로필 수정</span>
+        </div>
+        <div class="dropdown-item" onclick="logout()">
+            <span class="dropdown-icon">🚪</span>
+            <span>로그아웃</span>
+        </div>
+    </div>
+</div>
             </div>
         </header>
         
@@ -919,10 +1218,6 @@
                         <div class="lecture-header">
                             <div class="lecture-title">웹 프로그래밍 실습</div>
                             <div class="lecture-rating">4.8</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">김민수 교수님</span>
-                            <span>컴퓨터정보학과</span>
                         </div>
                         <div class="lecture-info">
                             <span class="lecture-professor">김민수 교수님</span>
@@ -1278,132 +1573,490 @@
                <span>알림</span>
            </div>
        </div>
-   </div>
-   
-   <script>
-       // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
-       const buildingData = [
-           {
-               id: '공학1관',
-               name: '공학1관',
-               description: '공학계열 강의실, 실험실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39632767479923, lng: 126.90699348692698 }
-           },
-           {
-               id: '자연과학관',
-               name: '자연과학관',
-               description: '반려동물보건학과, 반려동물산업과',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.39669466288283, lng: 126.90676716508685 }
-           },
-           {
-               id: '식품과학관',
-               name: '식품과학관',
-               description: '식품영양학과, 조리실습실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39714809720343, lng: 126.90762208499473 }
-           },
-           {
-               id: '도의관',
-               name: '도의관',
-               description: '교양 수업, 강당',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39679932128769, lng: 126.90809683728425 }
-           },
-           {
-               id: '공학2관',
-               name: '공학2관',
-               description: '공학계열 실습실, 연구실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.396789747114205, lng: 126.90737406929797 }
-           },
-           {
-               id: '문화1관',
-               name: '문화1관',
-               description: '인문사회계열 강의실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.39576992475254, lng: 126.90812350405056 }
-           },
-           {
-               id: '연곡문화센터',
-               name: '연곡문화센터',
-               description: '기숙사, 컨벤션홀, 평생교육원',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.398046192024914, lng: 126.90966512810492 }
-           },
-           {
-               id: '창조관',
-               name: '창조관',
-               description: '학과 사무실, 강의실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39730791148064, lng: 126.91039726900274 }
-           },
-           {
-               id: '운동장',
-               name: '운동장',
-               description: '체육활동, 행사장',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39673944839101, lng: 126.90932224700094 }
-           },
-           {
-               id: '농구장',
-               name: '농구장',
-               description: '체육활동',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39667684947615, lng: 126.90994063692402 }
-           },
-           {
-               id: '학생복지센터',
-               name: '학생복지센터',
-               description: '학생지원 시설',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.3962916630711, lng: 126.90994109780426 }
-           },
-           {
-               id: '창의교육센터',
-               name: '창의교육센터',
-               description: '항공서비스과 항공실습실, 카페',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.39737971014044, lng: 126.91002449732869 }
-           },
-           {
-               id: '문화2관',
-               name: '문화2관',
-               description: ' 문화콘텐츠계열 강의실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.396035307891026, lng: 126.90758674745014 }
-           },
-           {
-               id: '대학본관',
-               name: '대학본관',
-               description: '유통물류학과, 총장실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.397467068076345, lng: 126.90938066144557 }
-           },
-           {
-               id: '학술정보관',
-               name: '학술정보관',
-               description: '독서실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.39637467129301, lng: 126.906603807587 }
+    </div>
+
+    <!-- 건물 내부 강의실 뷰 -->
+    <div id="building-interior" class="building-interior">
+        <div class="interior-header">
+            <div class="interior-title">공학1관</div>
+            <div class="close-interior" onclick="closeInterior()">×</div>
+        </div>
+        
+        <div class="floor-tabs">
+            <div class="floor-tab" onclick="showFloor('B1')">지하 1층</div>
+            <div class="floor-tab active" onclick="showFloor('1F')">1층</div>
+            <div class="floor-tab" onclick="showFloor('2F')">2층</div>
+            <div class="floor-tab" onclick="showFloor('3F')">3층</div>
+            <div class="floor-tab" onclick="showFloor('4F')">4층</div>
+        </div>
+        
+        <div class="interior-content">
+            <div class="classroom-search">
+                <input type="text" class="classroom-search-input" placeholder="강의실 검색 (예: 101호, 컴퓨터실)" oninput="searchClassrooms(this.value)">
+            </div>
+            
+            <div class="floor-map" id="floor-map-container">
+                <!-- SVG 맵이 동적으로 로드됩니다 -->
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>강의실 목록</span>
+                </div>
+                
+                <ul class="classroom-list" id="classroom-list">
+                    <!-- 강의실 목록이 동적으로 생성됩니다 -->
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 길찾기 모달 -->
+    <div id="navigation-modal" class="navigation-modal">
+        <div class="navigation-content">
+            <div class="navigation-header">
+                <div class="navigation-title">길찾기</div>
+                <div class="navigation-subtitle">현재 위치에서 101호까지</div>
+            </div>
+            
+            <div class="navigation-body">
+                <ul class="navigation-steps" id="navigation-steps">
+                    <li class="navigation-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">입구에서 시작</div>
+                            <div class="step-description">건물 정문으로 들어가세요.</div>
+                        </div>
+                    </li>
+                    <li class="navigation-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">로비에서 왼쪽 복도로 이동</div>
+                            <div class="step-description">입구에서 약 15m 직진 후 왼쪽 복도로 이동하세요.</div>
+                        </div>
+                    </li>
+                    <li class="navigation-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">복도 끝까지 이동</div>
+                            <div class="step-description">복도를 따라 약 20m 이동하면 목적지가 오른쪽에 있습니다.</div>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="navigation-footer">
+                    <div class="navigation-button cancel" onclick="closeNavigationModal()">취소</div>
+                    <div class="navigation-button start" onclick="startNavigation()">길찾기 시작</div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <script>
+                       // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
+                       const buildingData = [
+                           {
+                               id: '공학1관',
+                               name: '공학1관',
+                               description: '공학계열 강의실, 실험실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.39632767479923, lng: 126.90699348692698 }
+                           },
+                           {
+                               id: '자연과학관',
+                               name: '자연과학관',
+                               description: '반려동물보건학과, 반려동물산업과',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat:  37.39669466288283, lng: 126.90676716508685 }
+                           },
+                           {
+                               id: '식품과학관',
+                               name: '식품과학관',
+                               description: '식품영양학과, 조리실습실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.39714809720343, lng: 126.90762208499473 }
+                           },
+                           {
+                               id: '도의관',
+                               name: '도의관',
+                               description: '교양 수업, 강당',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.39679932128769, lng: 126.90809683728425 }
+                           },
+                           {
+                               id: '공학2관',
+                               name: '공학2관',
+                               description: '공학계열 실습실, 연구실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.396789747114205, lng: 126.90737406929797 }
+                           },
+                           {
+                               id: '문화1관',
+                               name: '문화1관',
+                               description: '인문사회계열 강의실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat:  37.39576992475254, lng: 126.90812350405056 }
+                           },
+                           {
+                               id: '연곡문화센터',
+                               name: '연곡문화센터',
+                               description: '기숙사, 컨벤션홀, 평생교육원',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.398046192024914, lng: 126.90966512810492 }
+                           },
+                           {
+                               id: '창조관',
+                               name: '창조관',
+                               description: '학과 사무실, 강의실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.39730791148064, lng: 126.91039726900274 }
+                           },
+                           {
+                               id: '운동장',
+                               name: '운동장',
+                               description: '체육활동, 행사장',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.39673944839101, lng: 126.90932224700094 }
+                           },
+                           {
+                               id: '농구장',
+                               name: '농구장',
+                               description: '체육활동',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat: 37.39667684947615, lng: 126.90994063692402 }
+                           },
+                           {
+                               id: '학생복지센터',
+                               name: '학생복지센터',
+                               description: '학생지원 시설',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat:  37.3962916630711, lng: 126.90994109780426 }
+                           },
+                           {
+                               id: '창의교육센터',
+                               name: '창의교육센터',
+                               description: '항공서비스과 항공실습실, 카페',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat:  37.39737971014044, lng: 126.91002449732869 }
+                           },
+                           {
+                               id: '문화2관',
+                               name: '문화2관',
+                               description: ' 문화콘텐츠계열 강의실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat:  37.396035307891026, lng: 126.90758674745014 }
+                           },
+                           {
+                               id: '대학본관',
+                               name: '대학본관',
+                               description: '유통물류학과, 총장실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat:  37.397467068076345, lng: 126.90938066144557 }
+                           },
+                           {
+                               id: '학술정보관',
+                               name: '학술정보관',
+                               description: '독서실',
+                               image: '/api/placeholder/80/60',
+                               type: 'building',
+                               position: { lat:  37.39637467129301, lng: 126.906603807587 }
+                           }
+                       ];
+                
+                       // 강의실 데이터 추가 (건물별, 층별 구성)
+                       const classroomData = {
+                           '공학1관': {
+                               '1F': [
+                                   { id: '101', name: '101호', type: '강의실', capacity: 40, facilities: '빔프로젝터, 전자칠판' },
+                                   { id: '102', name: '102호', type: '강의실', capacity: 30, facilities: '빔프로젝터' },
+                                   { id: '103', name: '103호', type: '실습실', capacity: 20, facilities: '컴퓨터 20대, 빔프로젝터' },
+                                   { id: '104', name: '104호', type: '세미나실', capacity: 15, facilities: '회의 테이블, 화이트보드' },
+                                   { id: '105', name: '교수연구실1', type: '연구실', capacity: 4, facilities: '사무 기기' }
+                               ],
+                               '2F': [
+                                   { id: '201', name: '201호', type: '강의실', capacity: 60, facilities: '빔프로젝터, 음향시설' },
+                                   { id: '202', name: '202호', type: '강의실', capacity: 60, facilities: '빔프로젝터, 음향시설' },
+                                   { id: '203', name: '203호', type: '실습실', capacity: 30, facilities: '컴퓨터 30대, 프린터' },
+                                   { id: '204', name: '204호', type: '세미나실', capacity: 20, facilities: '회의 테이블, 화이트보드' },
+                                   { id: '205', name: '교수연구실2', type: '연구실', capacity: 4, facilities: '사무 기기' }
+                               ],
+                               '3F': [
+                                   { id: '301', name: '301호', type: '강의실', capacity: 100, facilities: '빔프로젝터, 음향시설, 조명' },
+                                   { id: '302', name: '302호', type: '강의실', capacity: 80, facilities: '빔프로젝터, 음향시설' },
+                                   { id: '303', name: '303호', type: '실습실', capacity: 40, facilities: '컴퓨터 40대, 서버 장비' },
+                                   { id: '304', name: '304호', type: '학과사무실', capacity: 10, facilities: '사무 기기, 상담 공간' }
+                               ],
+                               '4F': [
+                                   { id: '401', name: '401호', type: '강의실', capacity: 80, facilities: '빔프로젝터, 음향시설' },
+                                   { id: '402', name: '402호', type: '강의실', capacity: 60, facilities: '빔프로젝터, 음향시설' },
+                                   { id: '403', name: '403호', type: '실험실', capacity: 30, facilities: '실험 장비, 안전 장치' },
+                                   { id: '404', name: '교수연구실3', type: '연구실', capacity: 5, facilities: '사무 기기, 회의 테이블' }
+                               ],
+                               'B1': [
+                                   { id: 'B101', name: 'B101호', type: '기자재실', capacity: 0, facilities: '장비 보관' },
+                                   { id: 'B102', name: 'B102호', type: '서버실', capacity: 0, facilities: '서버, 네트워크 장비' },
+                                   { id: 'B103', name: 'B103호', type: '휴게실', capacity: 20, facilities: '테이블, 의자, 자판기' }
+                               ]
+                           },
+                           '공학2관': {
+                               '1F': [
+                                   { id: '101', name: '101호', type: '강의실', capacity: 50, facilities: '빔프로젝터, 전자칠판' },
+                                   { id: '102', name: '102호', type: '실습실', capacity: 40, facilities: '컴퓨터 40대, 빔프로젝터' },
+                                   { id: '103', name: '학과사무실', type: '사무실', capacity: 8, facilities: '사무 기기, 상담 공간' }
+                               ],
+                               '2F': [
+                                   { id: '201', name: '201호', type: '강의실', capacity: 60, facilities: '빔프로젝터, 음향시설' },
+                                   { id: '202', name: '202호', type: '강의실', capacity: 60, facilities: '빔프로젝터, 음향시설' },
+                                   { id: '203', name: '세미나실', type: '세미나실', capacity: 30, facilities: '회의 테이블, 화이트보드' }
+                               ]
+                           },
+                           '자연과학관': {
+                               '1F': [
+                                   { id: '101', name: '101호', type: '강의실', capacity: 40, facilities: '빔프로젝터' },
+                                   { id: '102', name: '102호', type: '실험실', capacity: 30, facilities: '실험 장비, 안전 장치' },
+                                   { id: '103', name: '동물 실습실', type: '실습실', capacity: 20, facilities: '동물 케이지, 의료 장비' }
+                               ]
+                           }
+                       };
+                
+                       // 층별 맵 데이터 (SVG 패스)
+                       const floorMapData = {
+                           '공학1관': {
+                               '1F': `
+                                   <svg viewBox="0 0 1000 600">
+                                       <!-- 건물 외벽 -->
+                                       <rect x="100" y="100" width="800" height="400" fill="#f0f0f0" stroke="#333" stroke-width="3"/>
+                                       
+                                       <!-- 중앙 복도 -->
+                                       <rect x="100" y="250" width="800" height="100" fill="#e0e0e0" stroke="#333" stroke-width="1"/>
+                                       
+                                       <!-- 입구 -->
+                                       <rect x="499" y="500" width="2" height="30" fill="none" stroke="#333" stroke-width="1"/>
+                                       <path d="M450,500 L550,500 L550,450 L450,450 Z" fill="#d0d0d0" stroke="#333" stroke-width="2"/>
+                                       <text x="500" y="485" text-anchor="middle" font-size="12">입구</text>
+                                       
+                                       <!-- 강의실 101 -->
+                                       <rect id="room-101" class="room" x="100" y="100" width="150" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="175" y="175" text-anchor="middle" font-size="14" font-weight="bold">101호</text>
+                                       
+                                       <!-- 강의실 102 -->
+                                       <rect id="room-102" class="room" x="250" y="100" width="150" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="325" y="175" text-anchor="middle" font-size="14" font-weight="bold">102호</text>
+                                       
+                                       <!-- 강의실 103 -->
+                                       <rect id="room-103" class="room" x="400" y="100" width="200" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="500" y="175" text-anchor="middle" font-size="14" font-weight="bold">103호</text>
+                                       
+                                       <!-- 강의실 104 -->
+                                       <rect id="room-104" class="room" x="600" y="100" width="150" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="675" y="175" text-anchor="middle" font-size="14" font-weight="bold">104호</text>
+                                       
+                                       <!-- 강의실 105 -->
+                                       <rect id="room-105" class="room" x="750" y="100" width="150" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="825" y="175" text-anchor="middle" font-size="14" font-weight="bold">105호</text>
+                                       
+                                       <!-- 아래쪽 강의실 -->
+                                       <rect id="room-stairs" class="room" x="100" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="175" y="425" text-anchor="middle" font-size="14" font-weight="bold">계단</text>
+                                       
+                                       <rect id="room-elevator" class="room" x="250" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="325" y="425" text-anchor="middle" font-size="14" font-weight="bold">엘리베이터</text>
+                                       
+                                       <rect id="room-restroom" class="room" x="400" y="350" width="200" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="500" y="425" text-anchor="middle" font-size="14" font-weight="bold">화장실</text>
+                                       
+                                       <rect id="room-lounge" class="room" x="600" y="350" width="300" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="750" y="425" text-anchor="middle" font-size="14" font-weight="bold">휴게 공간</text>
+                                       
+                                       <!-- 현재 위치 표시 (초기에는 입구에) -->
+                                       <circle id="current-location-marker" cx="500" cy="480" r="10" class="current-location"/>
+                                   </svg>
+                               `,
+                               '2F': `
+                                   <svg viewBox="0 0 1000 600">
+                                       <!-- 건물 외벽 -->
+                                       <rect x="100" y="100" width="800" height="400" fill="#f0f0f0" stroke="#333" stroke-width="3"/>
+                                       
+                                       <!-- 중앙 복도 -->
+                                       <rect x="100" y="250" width="800" height="100" fill="#e0e0e0" stroke="#333" stroke-width="1"/>
+                                       
+                                       <!-- 계단 -->
+                                       <rect x="100" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="175" y="425" text-anchor="middle" font-size="14" font-weight="bold">계단</text>
+                                       
+                                       <!-- 강의실 201 -->
+                                       <rect id="room-201" class="room" x="100" y="100" width="200" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="200" y="175" text-anchor="middle" font-size="14" font-weight="bold">201호</text>
+                                       
+                                       <!-- 강의실 202 -->
+                                       <rect id="room-202" class="room" x="300" y="100" width="200" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="400" y="175" text-anchor="middle" font-size="14" font-weight="bold">202호</text>
+                                       
+                                       <!-- 강의실 203 -->
+                                       <rect id="room-203" class="room" x="500" y="100" width="200" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="600" y="175" text-anchor="middle" font-size="14" font-weight="bold">203호</text>
+                                       
+                                       <!-- 강의실 204 -->
+                                       <rect id="room-204" class="room" x="700" y="100" width="200" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="800" y="175" text-anchor="middle" font-size="14" font-weight="bold">204호</text>
+                                       
+                                       <!-- 아래쪽 강의실 -->
+                                       <rect id="room-elevator-2f" class="room" x="250" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="325" y="425" text-anchor="middle" font-size="14" font-weight="bold">엘리베이터</text>
+                                       
+                                       <rect id="room-restroom-2f" class="room" x="400" y="350" width="200" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="500" y="425" text-anchor="middle" font-size="14" font-weight="bold">화장실</text>
+                                       
+                                       <rect id="room-205" class="room" x="600" y="350" width="300" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="750" y="425" text-anchor="middle" font-size="14" font-weight="bold">205호</text>
+                                   </svg>
+                               `,
+                               '3F': `
+                                   <svg viewBox="0 0 1000 600">
+                                       <!-- 건물 외벽 -->
+                                       <rect x="100" y="100" width="800" height="400" fill="#f0f0f0" stroke="#333" stroke-width="3"/>
+                                       
+                                       <!-- 중앙 복도 -->
+                                       <rect x="100" y="250" width="800" height="100" fill="#e0e0e0" stroke="#333" stroke-width="1"/>
+                                       
+                                       <!-- 계단 -->
+                                       <rect x="100" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="175" y="425" text-anchor="middle" font-size="14" font-weight="bold">계단</text>
+                                       
+                                       <!-- 강의실 301 -->
+                                       <rect id="room-301" class="room" x="100" y="100" width="300" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="250" y="175" text-anchor="middle" font-size="14" font-weight="bold">301호</text>
+                                       
+                                       <!-- 강의실 302 -->
+                                       <rect id="room-302" class="room" x="400" y="100" width="250" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="525" y="175" text-anchor="middle" font-size="14" font-weight="bold">302호</text>
+                                       
+                                       <!-- 강의실 303 -->
+                                       <rect id="room-303" class="room" x="650" y="100" width="250" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="775" y="175" text-anchor="middle" font-size="14" font-weight="bold">303호</text>
+                                       
+                                       <!-- 아래쪽 강의실 -->
+                                       <rect id="room-elevator-3f" class="room" x="250" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="325" y="425" text-anchor="middle" font-size="14" font-weight="bold">엘리베이터</text>
+                                       
+                                       <rect id="room-restroom-3f" class="room" x="400" y="350" width="200" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="500" y="425" text-anchor="middle" font-size="14" font-weight="bold">화장실</text>
+                                       
+                                       <rect id="room-304" class="room" x="600" y="350" width="300" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="750" y="425" text-anchor="middle" font-size="14" font-weight="bold">304호</text>
+                                   </svg>
+                               `,
+                               '4F': `
+                                   <svg viewBox="0 0 1000 600">
+                                       <!-- 건물 외벽 -->
+                                       <rect x="100" y="100" width="800" height="400" fill="#f0f0f0" stroke="#333" stroke-width="3"/>
+                                       
+                                       <!-- 중앙 복도 -->
+                                       <rect x="100" y="250" width="800" height="100" fill="#e0e0e0" stroke="#333" stroke-width="1"/>
+                                       
+                                       <!-- 계단 -->
+                                       <rect x="100" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="175" y="425" text-anchor="middle" font-size="14" font-weight="bold">계단</text>
+                                       
+                                       <!-- 강의실 401 -->
+                                       <rect id="room-401" class="room" x="100" y="100" width="250" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="225" y="175" text-anchor="middle" font-size="14" font-weight="bold">401호</text>
+                                       
+                                       <!-- 강의실 402 -->
+                                       <rect id="room-402" class="room" x="350" y="100" width="250" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="475" y="175" text-anchor="middle" font-size="14" font-weight="bold">402호</text>
+                                       
+                                       <!-- 강의실 403 -->
+                                       <rect id="room-403" class="room" x="600" y="100" width="300" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="750" y="175" text-anchor="middle" font-size="14" font-weight="bold">403호</text>
+                                       
+                                       <!-- 아래쪽 강의실 -->
+                                       <rect id="room-elevator-4f" class="room" x="250" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="325" y="425" text-anchor="middle" font-size="14" font-weight="bold">엘리베이터</text>
+                                       
+                                       <rect id="room-restroom-4f" class="room" x="400" y="350" width="200" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="500" y="425" text-anchor="middle" font-size="14" font-weight="bold">화장실</text>
+                                       
+                                       <rect id="room-404" class="room" x="600" y="350" width="300" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="750" y="425" text-anchor="middle" font-size="14" font-weight="bold">404호</text>
+                                   </svg>
+                               `,
+                               'B1': `
+                                   <svg viewBox="0 0 1000 600">
+                                       <!-- 건물 외벽 -->
+                                       <rect x="100" y="100" width="800" height="400" fill="#f0f0f0" stroke="#333" stroke-width="3"/>
+                                       
+                                       <!-- 중앙 복도 -->
+                                       <rect x="100" y="250" width="800" height="100" fill="#e0e0e0" stroke="#333" stroke-width="1"/>
+                                       
+                                       <!-- 계단 -->
+                                       <rect x="100" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="175" y="425" text-anchor="middle" font-size="14" font-weight="bold">계단</text>
+                                       
+                                       <!-- 강의실 B101 -->
+                                       <rect id="room-B101" class="room" x="100" y="100" width="300" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="250" y="175" text-anchor="middle" font-size="14" font-weight="bold">B101호</text>
+                                       
+                                       <!-- 강의실 B102 -->
+                                       <rect id="room-B102" class="room" x="400" y="100" width="500" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="650" y="175" text-anchor="middle" font-size="14" font-weight="bold">B102호</text>
+                                       
+                                       <!-- 아래쪽 강의실 -->
+                                       <rect id="room-elevator-b1" class="room" x="250" y="350" width="150" height="150" fill="#ccc" stroke="#333" stroke-width="1"/>
+                                       <text x="325" y="425" text-anchor="middle" font-size="14" font-weight="bold">엘리베이터</text>
+                                       
+                                       <rect id="room-B103" class="room" x="400" y="350" width="500" height="150" fill="#fff" stroke="#333" stroke-width="1"/>
+                                       <text x="650" y="425" text-anchor="middle" font-size="14" font-weight="bold">B103호</text>
+                                   </svg>
+                               `
+                           }
+                       };
+                
+                       // 경로 데이터 (강의실 간 이동 경로)
+                       const pathData = {
+                           '공학1관': {
+                               '1F': {
+                                   '입구-101': [
+                                       { x1: 500, y1: 480, x2: 500, y2: 300 },
+                                       { x1: 500, y1: 300, x2: 175, y2: 300 },
+                                       { x1: 175, y1: 300, x2: 175, y2: 250 }
+                                   ],
+                                   '입구-102': [
+                                       { x1: 500, y1: 480, x2: 500, y2: 300 },
+                                       { x1: 500, y1: 300, x2: 325, y2: 300 },
+                                       { x1: 325, y1: 300, x2: 325, y2: 250 }
+                                   ],
+                                   '입구-103': [
+                                   { x1: 500, y1: 480, x2: 500, y2: 300 },
+                       { x1: 500, y1: 300, x2: 500, y2: 250 }
+                   ],
+                   '입구-104': [
+                       { x1: 500, y1: 480, x2: 500, y2: 300 },
+                       { x1: 500, y1: 300, x2: 675, y2: 300 },
+                       { x1: 675, y1: 300, x2: 675, y2: 250 }
+                   ],
+                   '입구-105': [
+                       { x1: 500, y1: 480, x2: 500, y2: 300 },
+                       { x1: 500, y1: 300, x2: 825, y2: 300 },
+                       { x1: 825, y1: 300, x2: 825, y2: 250 }
+                   ]
+               }
            }
-       ];
+       };
 
        // 편의시설 데이터 정의
        const facilityData = [
@@ -1453,6 +2106,13 @@
        // 페이지네이션 변수
        let currentPage = 1;
        const buildingsPerPage = 5;
+       
+       // 건물 내부 관련 변수
+       let currentBuildingId = '';
+       let currentFloor = '1F';
+       let currentClassroomId = '';
+       let isNavigating = false;
+       let currentPath = null;
        
        // 페이지 로드시 실행될 함수
        document.addEventListener('DOMContentLoaded', function() {
@@ -1519,6 +2179,10 @@
                        <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
                            <span>길찾기</span>
                            <span>🧭</span>
+                       </div>
+                       <div class="building-nav-button" onclick="showBuildingInterior('${building.id}', event)" style="margin-left: 5px; background-color: #e8f4fc;">
+                           <span>내부</span>
+                           <span>🔍</span>
                        </div>
                    </div>
                `;
@@ -1688,6 +2352,11 @@
                        <div class="map-info-window">
                            <div class="map-info-title">${building.name}</div>
                            <div class="map-info-desc">${building.description}</div>
+                           <div style="margin-top: 8px;">
+                               <a href="#" onclick="showBuildingInterior('${building.id}'); return false;" style="color: #0066cc; text-decoration: none; font-size: 12px; font-weight: bold;">
+                                   내부 강의실 보기
+                               </a>
+                           </div>
                        </div>
                    `;
                    
@@ -1891,6 +2560,11 @@
                                <span>길찾기</span>
                                <span>🧭</span>
                            </div>
+                           ${facility.type === 'building' ? `
+                           <div class="building-nav-button" onclick="showBuildingInterior('${facility.id}', event)" style="margin-left: 5px; background-color: #e8f4fc;">
+                               <span>내부</span>
+                               <span>🔍</span>
+                           </div>` : ''}
                        </div>
                    `;
                    
@@ -2133,6 +2807,454 @@
            const dropdown = document.querySelector('.profile-dropdown');
            dropdown.classList.toggle('active');
        }
-   </script>
+
+       // ====== 건물 내부 강의실 길찾기 관련 함수 ======
+
+       // 건물 내부 보기 함수
+       function showBuildingInterior(buildingId, event) {
+           // 이벤트 버블링 방지
+           if (event) {
+               event.stopPropagation();
+           }
+
+           // 해당 건물이 내부 맵 데이터를 가지고 있는지 확인
+           if (floorMapData[buildingId]) {
+               // 현재 건물 ID 저장
+               currentBuildingId = buildingId;
+               currentFloor = '1F'; // 기본 1층으로 설정
+               
+               // 건물 이름 표시
+               const building = buildingData.find(b => b.id === buildingId);
+               document.querySelector('.interior-title').textContent = building.name;
+               
+               // 탭 초기화 및 1층 활성화
+               const floorTabs = document.querySelector('.floor-tabs');
+               floorTabs.innerHTML = '';
+               
+               // 해당 건물의 층 데이터 가져오기
+               const floors = Object.keys(classroomData[buildingId] || {});
+               
+               if (floors.length > 0) {
+                   // 층별 탭 생성
+                   floors.forEach(floor => {
+                       const tabElement = document.createElement('div');
+                       tabElement.className = 'floor-tab';
+                       if (floor === '1F') tabElement.classList.add('active');
+                       
+                       // 층 이름 포맷팅
+                       let floorName = floor;
+                       if (floor === '1F') floorName = '1층';
+                       else if (floor === '2F') floorName = '2층';
+                       else if (floor === '3F') floorName = '3층';
+                       else if (floor === '4F') floorName = '4층';
+                       else if (floor === 'B1') floorName = '지하 1층';
+                       
+                       tabElement.textContent = floorName;
+                       tabElement.onclick = function() { showFloor(floor); };
+                       floorTabs.appendChild(tabElement);
+                   });
+                   
+                   // 1층 데이터 로드
+                   showFloor('1F');
+               } else {
+                   // 층 데이터가 없으면 메시지 표시
+                   document.getElementById('classroom-list').innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">이 건물의 내부 정보가 없습니다.</div>';
+                   document.getElementById('floor-map-container').innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">층별 맵 정보가 없습니다.</div>';
+               }
+               
+               // 내부 뷰 표시
+               document.getElementById('building-interior').style.display = 'flex';
+           } else {
+               alert('이 건물의 내부 정보가 아직 등록되지 않았습니다.');
+           }
+       }
+       
+       // 내부 뷰 닫기
+       function closeInterior() {
+           document.getElementById('building-interior').style.display = 'none';
+           // 내비게이션 중이면 해제
+           if (isNavigating) {
+               stopNavigation();
+           }
+       }
+       
+       // 층 전환 함수
+       function showFloor(floor) {
+           // 이미 선택된 층이면 무시
+           if (currentFloor === floor) return;
+           
+           // 현재 층 저장
+           currentFloor = floor;
+           
+           // 탭 활성화 상태 변경
+           document.querySelectorAll('.floor-tab').forEach(tab => {
+               tab.classList.remove('active');
+               // 텍스트 내용에 숫자가, currentFloor에 숫자가 있으면 비교해서 활성화
+               if ((floor === 'B1' && tab.textContent.includes('지하 1층')) ||
+                   (floor === '1F' && tab.textContent.includes('1층')) ||
+                   (floor === '2F' && tab.textContent.includes('2층')) ||
+                   (floor === '3F' && tab.textContent.includes('3층')) ||
+                   (floor === '4F' && tab.textContent.includes('4층'))) {
+                   tab.classList.add('active');
+               }
+           });
+           
+           // 층별 맵 로드
+           loadFloorMap(currentBuildingId, floor);
+           
+           // 강의실 목록 로드
+           loadClassroomList(currentBuildingId, floor);
+           
+           // 내비게이션 중이면 중지
+           if (isNavigating) {
+               stopNavigation();
+           }
+       }
+       
+       // 층별 맵 로드 함수
+       function loadFloorMap(buildingId, floor) {
+           const mapContainer = document.getElementById('floor-map-container');
+           if (!mapContainer) return;
+           
+           // 맵 데이터 확인
+           if (floorMapData[buildingId] && floorMapData[buildingId][floor]) {
+               mapContainer.innerHTML = floorMapData[buildingId][floor];
+               
+               // 강의실 요소에 클릭 이벤트 추가
+               const roomElements = mapContainer.querySelectorAll('.room');
+               roomElements.forEach(room => {
+                   room.addEventListener('click', function() {
+                       const roomId = this.id.replace('room-', '');
+                       highlightClassroom(roomId);
+                   });
+               });
+           } else {
+               mapContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">이 층의 맵 정보가 없습니다.</div>';
+           }
+       }
+       
+       // 강의실 목록 로드 함수
+       function loadClassroomList(buildingId, floor) {
+           const listContainer = document.getElementById('classroom-list');
+           if (!listContainer) return;
+           
+           // 목록 초기화
+           listContainer.innerHTML = '';
+           
+           // 데이터 확인
+           if (classroomData[buildingId] && classroomData[buildingId][floor]) {
+               // 강의실 목록 생성
+               classroomData[buildingId][floor].forEach(room => {
+                   const listItem = document.createElement('li');
+                   listItem.className = 'classroom-item';
+                   listItem.setAttribute('data-room-id', room.id);
+                   listItem.onclick = function() {
+                       highlightClassroom(room.id);
+                   };
+                   
+                   listItem.innerHTML = `
+                       <div class="classroom-info">
+                           <div class="classroom-number">${room.name}</div>
+                           <div class="classroom-detail">${room.type} | 수용인원: ${room.capacity}명</div>
+                           <div class="classroom-detail">시설: ${room.facilities}</div>
+                       </div>
+                       <div class="classroom-action">
+                           <div class="classroom-button highlight" onclick="navigateToClassroom('${room.id}', event)">길찾기</div>
+                       </div>
+                   `;
+                   
+                   listContainer.appendChild(listItem);
+               });
+           } else {
+               listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">이 층의 강의실 정보가 없습니다.</div>';
+           }
+       }
+       
+       // 강의실 검색 함수
+       function searchClassrooms(query) {
+           // 검색어가 비어있으면 현재 층의 모든 강의실 표시
+           if (!query.trim()) {
+               loadClassroomList(currentBuildingId, currentFloor);
+               
+               // SVG에서 강조 표시 제거
+               const highlightedRooms = document.querySelectorAll('.highlight-room');
+               highlightedRooms.forEach(room => {
+                   room.classList.remove('highlight-room');
+               });
+               
+               return;
+           }
+           
+           // 검색어를 포함하는 강의실만 필터링 (대소문자 구분 없이)
+           const lowercaseQuery = query.toLowerCase();
+           const listContainer = document.getElementById('classroom-list');
+           
+           // 모든 층의 강의실 대상으로 검색
+           let results = [];
+           Object.keys(classroomData[currentBuildingId] || {}).forEach(floor => {
+               const floorClassrooms = classroomData[currentBuildingId][floor] || [];
+               
+               const filtered = floorClassrooms.filter(room => 
+                   room.name.toLowerCase().includes(lowercaseQuery) || 
+                   room.type.toLowerCase().includes(lowercaseQuery) ||
+                   room.facilities.toLowerCase().includes(lowercaseQuery)
+               );
+               
+               filtered.forEach(room => {
+                   room.floor = floor; // 층 정보 추가
+                   results.push(room);
+               });
+           });
+           
+           // 목록 초기화
+           listContainer.innerHTML = '';
+           
+           if (results.length > 0) {
+               // 검색 결과가 있으면 표시
+               results.forEach(room => {
+                   const listItem = document.createElement('li');
+                   listItem.className = 'classroom-item';
+                   listItem.setAttribute('data-room-id', room.id);
+                   listItem.setAttribute('data-floor', room.floor);
+                   listItem.onclick = function() {
+                       // 다른 층이면 해당 층으로 전환
+                       if (room.floor !== currentFloor) {
+                           showFloor(room.floor);
+                       }
+                       
+                       // 약간 지연 후 강의실 강조 표시 (층 전환 애니메이션 고려)
+                       setTimeout(() => {
+                           highlightClassroom(room.id);
+                       }, 300);
+                   };
+                   
+                   // 층 이름 포맷팅
+                   let floorName = room.floor;
+                   if (room.floor === '1F') floorName = '1층';
+                   else if (room.floor === '2F') floorName = '2층';
+                   else if (room.floor === '3F') floorName = '3층';
+                   else if (room.floor === '4F') floorName = '4층';
+                   else if (room.floor === 'B1') floorName = '지하 1층';
+                   
+                   listItem.innerHTML = `
+                       <div class="classroom-info">
+                           <div class="classroom-number">${room.name} <span style="color: #666; font-size: 12px;">(${floorName})</span></div>
+                           <div class="classroom-detail">${room.type} | 수용인원: ${room.capacity}명</div>
+                           <div class="classroom-detail">시설: ${room.facilities}</div>
+                       </div>
+                       <div class="classroom-action">
+                           <div class="classroom-button highlight" onclick="navigateToClassroom('${room.id}', event, '${room.floor}')">길찾기</div>
+                       </div>
+                   `;
+                   
+                   listContainer.appendChild(listItem);
+               });
+           } else {
+               // 검색 결과가 없으면 메시지 표시
+               listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">검색 결과가 없습니다.</div>';
+           }
+       }
+       
+       // 강의실 하이라이트 함수
+       function highlightClassroom(roomId) {
+           // SVG에서 강조 표시 제거
+           const highlightedRooms = document.querySelectorAll('.highlight-room');
+           highlightedRooms.forEach(room => {
+               room.classList.remove('highlight-room');
+           });
+           
+           // 해당 강의실 요소 찾기
+           const roomElement = document.getElementById(`room-${roomId}`);
+           if (roomElement) {
+               // 강조 표시 클래스 추가
+               roomElement.classList.add('highlight-room');
+               
+               // 뷰포트로 스크롤
+               roomElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+           }
+           
+           // 강의실 목록에서도 하이라이트
+           const listItems = document.querySelectorAll('.classroom-item');
+           listItems.forEach(item => {
+               item.style.backgroundColor = '';
+               if (item.getAttribute('data-room-id') === roomId) {
+                   item.style.backgroundColor = '#f8f1f1';
+               }
+           });
+       }
+       
+       // 강의실 길찾기 함수
+       function navigateToClassroom(roomId, event, floorOverride) {
+           // 이벤트 버블링 방지
+           if (event) {
+               event.stopPropagation();
+           }
+           
+           // 다른 층이면 해당 층으로 전환
+           const targetFloor = floorOverride || currentFloor;
+           if (targetFloor !== currentFloor) {
+               showFloor(targetFloor);
+               
+               // 약간의 지연 후에 내비게이션 시작 (층 전환 애니메이션 고려)
+               setTimeout(() => {
+                   startClassroomNavigation(roomId);
+               }, 300);
+           } else {
+               startClassroomNavigation(roomId);
+           }
+       }
+       
+       // 강의실 내비게이션 시작
+       function startClassroomNavigation(roomId) {
+           // 현재 강의실 ID 저장
+           currentClassroomId = roomId;
+           
+           // 길찾기 모달 내용 업데이트
+           const modalTitle = document.querySelector('.navigation-subtitle');
+           const roomData = classroomData[currentBuildingId][currentFloor].find(r => r.id === roomId);
+           
+           if (roomData) {
+               modalTitle.textContent = `현재 위치에서 ${roomData.name}까지`;
+               
+               // 길찾기 경로 생성
+               const pathKey = `입구-${roomId}`;
+               const buildingPathData = pathData[currentBuildingId]?.[currentFloor];
+               
+               if (buildingPathData && buildingPathData[pathKey]) {
+                   // 경로 데이터 있음
+                   showNavigationModal();
+               } else {
+                   // 경로 데이터 없음 - 기본 안내 메시지 사용
+                   showNavigationModal();
+               }
+           }
+       }
+       
+       // 내비게이션 모달 표시
+       function showNavigationModal() {
+           const modal = document.getElementById('navigation-modal');
+           modal.style.display = 'flex';
+       }
+       
+       // 내비게이션 모달 닫기
+       function closeNavigationModal() {
+           const modal = document.getElementById('navigation-modal');
+           modal.style.display = 'none';
+       }
+       
+       // 내비게이션 시작 함수
+       function startNavigation() {
+           // 내비게이션 모달 닫기
+           closeNavigationModal();
+           
+           // 내비게이션 상태 설정
+           isNavigating = true;
+           
+           // 대상 강의실 하이라이트
+           highlightClassroom(currentClassroomId);
+           
+           // 내비게이션 경로 표시
+           showNavigationPath();
+       }
+       
+       // 내비게이션 경로 표시 함수
+       function showNavigationPath() {
+           // SVG 캔버스 가져오기
+           const mapContainer = document.getElementById('floor-map-container');
+           const svg = mapContainer.querySelector('svg');
+           
+           if (!svg) return;
+           
+           // 기존 경로 제거
+           const existingPaths = svg.querySelectorAll('.path-highlight');
+           existingPaths.forEach(path => {
+               path.remove();
+           });
+           
+           // 현재 위치 마커 가져오기
+           let currentMarker = svg.getElementById('current-location-marker');
+           
+           // 경로 데이터 가져오기
+           const pathKey = `입구-${currentClassroomId}`;
+           const buildingPathData = pathData[currentBuildingId]?.[currentFloor];
+           
+           if (buildingPathData && buildingPathData[pathKey]) {
+               // 경로 그리기
+               const segments = buildingPathData[pathKey];
+               
+               segments.forEach((segment, index) => {
+                   // 경로 라인 생성
+                   const path = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                   path.setAttribute('x1', segment.x1);
+                   path.setAttribute('y1', segment.y1);
+                   path.setAttribute('x2', segment.x2);
+                   path.setAttribute('y2', segment.y2);
+                   path.classList.add('path-highlight');
+                   
+                   // SVG에 추가
+                   svg.appendChild(path);
+                   
+                   // 마지막 세그먼트의 끝점이 목적지
+                   if (index === segments.length - 1) {
+                       // 목적지 마커 생성 (도착점)
+                       const destination = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                       destination.setAttribute('cx', segment.x2);
+                       destination.setAttribute('cy', segment.y2);
+                       destination.setAttribute('r', 10);
+                       destination.classList.add('destination');
+                       svg.appendChild(destination);
+                   }
+               });
+               
+               // 현재 위치 마커가 없으면 생성
+               if (!currentMarker) {
+                   currentMarker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                   currentMarker.setAttribute('id', 'current-location-marker');
+                   currentMarker.setAttribute('r', 10);
+                   currentMarker.classList.add('current-location');
+                   svg.appendChild(currentMarker);
+               }
+               
+               // 현재 위치 마커 시작점에 위치
+               currentMarker.setAttribute('cx', segments[0].x1);
+               currentMarker.setAttribute('cy', segments[0].y1);
+               
+               // 현재 경로 저장
+               currentPath = segments;
+           }
+       }
+       
+       // 내비게이션 중지 함수
+       function stopNavigation() {
+           // 내비게이션 상태 해제
+           isNavigating = false;
+           currentPath = null;
+           
+           // SVG 캔버스 가져오기
+           const mapContainer = document.getElementById('floor-map-container');
+           if (!mapContainer) return;
+           
+           const svg = mapContainer.querySelector('svg');
+           if (!svg) return;
+           
+           // 경로 제거
+           const paths = svg.querySelectorAll('.path-highlight');
+           paths.forEach(path => {
+               path.remove();
+           });
+           
+           // 도착점 제거
+           const destination = svg.querySelector('.destination');
+           if (destination) {
+               destination.remove();
+           }
+           
+           // 강의실 하이라이트 제거
+           const highlightedRooms = document.querySelectorAll('.highlight-room');
+           highlightedRooms.forEach(room => {
+               room.classList.remove('highlight-room');
+           });
+       }
+    </script>
 </body>
 </html>
