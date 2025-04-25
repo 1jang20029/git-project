@@ -1708,7 +1708,94 @@
                 
                 // 지도 생성
                 naverMap = new naver.maps.Map('naverMap', mapOptions);
-                
+
+                // 마커와 정보창 생성
+                buildingData.forEach(building => {
+                    // 마커 생성
+                    const marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                        map: naverMap,
+                        title: building.name
+                    });
+                    mapMarkers.push(marker);
+
+                    // 정보창 내용 생성
+                    const contentString = `
+                        <div class="map-info-window">
+                            <div class="map-info-title">${building.name}</div>
+                            <div class="map-info-desc">${building.description}</div>
+                        </div>
+                    `;
+
+                    // 정보창 생성
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: contentString,
+                        maxWidth: 250,
+                        backgroundColor: "#fff",
+                        borderColor: "#ddd",
+                        borderWidth: 1,
+                        anchorSize: { width: 12, height: 12 },
+                        pixelOffset: new naver.maps.Point(10, -10)
+                    });
+
+                    // 마커 클릭 이벤트
+                    naver.maps.Event.addListener(marker, "click", function() {
+                        // 이미 열려있는 모든 정보창 닫기
+                        infoWindows.forEach(window => window.close());
+                        
+                        // 현재 마커의 정보창 열기
+                        infoWindow.open(naverMap, marker);
+                    });
+
+                    infoWindows.push(infoWindow);
+                });
+
+                // 편의시설 마커 추가
+                facilityData.forEach(facility => {
+                    // 마커 생성
+                    const marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(facility.position.lat, facility.position.lng),
+                        map: naverMap,
+                        title: facility.name,
+                        icon: {
+                            content: `<div style="background-color: #4CAF50; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center;">${facility.icon || '🏠'}</div>`,
+                            size: new naver.maps.Size(30, 30),
+                            anchor: new naver.maps.Point(15, 15)
+                        }
+                    });
+                    mapMarkers.push(marker);
+
+                    // 정보창 내용 생성
+                    const contentString = `
+                        <div class="map-info-window">
+                            <div class="map-info-title">${facility.name}</div>
+                            <div class="map-info-desc">${facility.description}</div>
+                        </div>
+                    `;
+
+                    // 정보창 생성
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: contentString,
+                        maxWidth: 250,
+                        backgroundColor: "#fff",
+                        borderColor: "#ddd",
+                        borderWidth: 1,
+                        anchorSize: { width: 12, height: 12 },
+                        pixelOffset: new naver.maps.Point(10, -10)
+                    });
+
+                    // 마커 클릭 이벤트
+                    naver.maps.Event.addListener(marker, "click", function() {
+                        // 이미 열려있는 모든 정보창 닫기
+                        infoWindows.forEach(window => window.close());
+                        
+                        // 현재 마커의 정보창 열기
+                        infoWindow.open(naverMap, marker);
+                    });
+
+                    infoWindows.push(infoWindow);
+                });
+                                
                 // 지도가 완전히 로드된 후 리사이즈 트리거
                 naver.maps.Event.once(naverMap, 'init_stylemap', function() {
                     console.log('지도 스타일맵 초기화 완료');
