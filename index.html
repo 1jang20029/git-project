@@ -785,263 +785,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-
-        /* 건물 내부 정보 페이지 스타일 */
-        .building-detail-container {
-            padding: 16px;
-        }
-
-        .building-header {
-            margin-bottom: 20px;
-        }
-
-        .building-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .building-subtitle {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 16px;
-        }
-
-        .building-image-large {
-            width: 100%;
-            height: 200px;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .building-image-large img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* 층별 선택 메뉴 */
-        .floor-selector {
-            display: flex;
-            overflow-x: auto;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .floor-button {
-            flex-shrink: 0;
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            margin-right: 8px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .floor-button:hover {
-            background-color: #f0f0f0;
-        }
-
-        .floor-button.active {
-            background-color: #c62917;
-            color: white;
-            border-color: #c62917;
-        }
-
-        /* 실내 지도 컨테이너 */
-        .floor-map-container {
-            position: relative;
-            width: 100%;
-            height: 350px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-        }
-
-        .floor-map {
-            width: 100%;
-            height: 100%;
-            background-color: #fff;
-        }
-
-        .classroom-marker {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background-color: #c62917;
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            cursor: pointer;
-            z-index: 10;
-            transform: translate(-50%, -50%);
-        }
-
-        .classroom-marker.path {
-            background-color: #2196F3;
-        }
-
-        .classroom-marker.start {
-            background-color: #4CAF50;
-        }
-
-        .classroom-marker.end {
-            background-color: #FF5722;
-        }
-
-        /* 길 표시 선 */
-        .path-line {
-            position: absolute;
-            background-color: #2196F3;
-            z-index: 5;
-            opacity: 0.7;
-        }
-
-        /* 강의실 목록 */
-        .classroom-list {
-            list-style: none;
-            margin-bottom: 20px;
-        }
-
-        .classroom-item {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .classroom-info {
-            flex: 1;
-        }
-
-        .classroom-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .classroom-desc {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .classroom-button {
-            padding: 6px 12px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-left: 8px;
-        }
-
-        .classroom-button:hover {
-            background-color: #e0e0e0;
-        }
-
-        .navigation-controls {
-            padding: 16px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .navigation-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .navigation-form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-label {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .form-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            background-color: white;
-        }
-
-        .navigation-button {
-            padding: 10px 16px;
-            background-color: #c62917;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .navigation-button:hover {
-            background-color: #b32213;
-        }
-
-        .navigation-instructions {
-            margin-top: 20px;
-            padding: 16px;
-            background-color: #f0f0f0;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .instruction-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .instruction-list {
-            list-style: decimal;
-            padding-left: 20px;
-        }
-
-        .instruction-item {
-            margin-bottom: 8px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .back-button {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #333;
-            text-decoration: none;
-            margin-bottom: 16px;
-        }
-
-        .back-button:hover {
-            background-color: #e0e0e0;
-        }
     </style>
 </head>
 <body>
@@ -1181,6 +924,10 @@
                             <span class="lecture-professor">김민수 교수님</span>
                             <span>컴퓨터정보학과</span>
                         </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">김민수 교수님</span>
+                            <span>컴퓨터정보학과</span>
+                        </div>
                         <div class="rating-stars">★★★★★</div>
                         <div class="lecture-reviews">
                             "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
@@ -1298,75 +1045,217 @@
            <div class="content-pad"></div>
        </div>
        
-       <!-- 건물 상세 페이지 (실내 지도) -->
-       <div id="building-detail-tab" class="tab-content">
-           <a href="#" class="back-button" onclick="switchTab('facility')">← 뒤로가기</a>
+       <!-- 커뮤니티 탭 -->
+       <div id="community-tab" class="tab-content">
+           <div class="search-bar">
+               <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
+           </div>
            
-           <div class="building-detail-container">
-               <div class="building-header">
-                   <div class="building-title" id="building-detail-title">건물명</div>
-                   <div class="building-subtitle" id="building-detail-subtitle">건물 설명</div>
-               </div>
-               
-               <div class="building-image-large">
-                   <img id="building-detail-image" src="/api/placeholder/400/200" alt="건물 이미지">
-               </div>
-               
+           <div class="content-section">
                <div class="section-title">
-                   <span>실내 지도</span>
+                   <span>강의평가</span>
                </div>
                
-               <div class="floor-selector" id="floor-selector">
-                   <!-- 층 선택 버튼들이 JavaScript로 동적 생성됩니다 -->
+               <div class="category-filter">
+                   <div class="category-tag active" onclick="filterLectures('all')">전체</div>
+                   <div class="category-tag" onclick="filterLectures('general')">교양</div>
+                   <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
+                   <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
                </div>
-               
-               <div class="floor-map-container">
-                   <div class="floor-map" id="floor-map">
-                       <!-- 실내 지도와 강의실 마커가 JavaScript로 동적 생성됩니다 -->
-                   </div>
-               </div>
-               
-               <div class="navigation-controls">
-                   <div class="navigation-title">강의실 길찾기</div>
-                   <div class="navigation-form">
-                       <div class="form-group">
-                           <label class="form-label" for="start-point">출발지</label>
-                           <select class="form-select" id="start-point">
-                               <option value="entrance">건물 입구</option>
-                               <!-- 다른 출발지 옵션은 JavaScript로 동적 생성됩니다 -->
-                           </select>
+               <ul class="lecture-list">
+                   <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
+                       <div class="lecture-header">
+                           <div class="lecture-title">웹 프로그래밍 실습</div>
+                           <div class="lecture-rating">4.8</div>
                        </div>
-                       <div class="form-group">
-                           <label class="form-label" for="end-point">도착지</label>
-                           <select class="form-select" id="end-point">
-                               <option value="">선택하세요</option>
-                               <!-- 도착지 옵션은 JavaScript로 동적 생성됩니다 -->
-                           </select>
+                       <div class="lecture-info">
+                           <span class="lecture-professor">김민수 교수님</span>
+                           <span>컴퓨터정보학과</span>
                        </div>
-                       <button class="navigation-button" onclick="findPath()">길찾기</button>
-                   </div>
-               </div>
-               
-               <div class="navigation-instructions" id="navigation-instructions">
-                   <div class="instruction-title">길찾기 안내</div>
-                   <ul class="instruction-list" id="instruction-list">
-                       <!-- 길찾기 안내 항목들이 JavaScript로 동적 생성됩니다 -->
-                   </ul>
-               </div>
-               
-               <div class="section-title">
-                   <span>강의실 목록</span>
-               </div>
-               
-               <ul class="classroom-list" id="classroom-list">
-                   <!-- 강의실 목록 항목들이 JavaScript로 동적 생성됩니다 -->
+                       <div class="rating-stars">★★★★★</div>
+                       <div class="lecture-reviews">
+                           "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                       </div>
+                   </li>
+                   <li class="lecture-item" onclick="viewLectureDetail('english')">
+                       <div class="lecture-header">
+                           <div class="lecture-title">영어회화</div>
+                           <div class="lecture-rating">4.3</div>
+                       </div>
+                       <div class="lecture-info">
+                           <span class="lecture-professor">John Smith 교수님</span>
+                           <span>교양과정</span>
+                       </div>
+                       <div class="rating-stars">★★★★☆</div>
+                       <div class="lecture-reviews">
+                           "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
+                       </div>
+                   </li>
+                   <li class="lecture-item" onclick="viewLectureDetail('statistics')">
+                       <div class="lecture-header">
+                           <div class="lecture-title">경영통계학</div>
+                           <div class="lecture-rating">3.7</div>
+                       </div>
+                       <div class="lecture-info">
+                           <span class="lecture-professor">박성호 교수님</span>
+                           <span>경영학과</span>
+                       </div>
+                       <div class="rating-stars">★★★☆☆</div>
+                       <div class="lecture-reviews">
+                           "내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."
+                       </div>
+                   </li>
                </ul>
            </div>
            
            <div class="content-pad"></div>
        </div>
        
-       <!-- 하단 탭 메뉴 생략 (기존 코드와 동일) -->
+       <!-- 내 정보 탭 -->
+       <div id="profile-tab" class="tab-content">
+           <div class="profile-section">
+               <div class="profile-image">👨‍🎓</div>
+               <div class="profile-info">
+                   <div class="profile-name">조희정</div>
+                   <div class="profile-detail">경영학과 | 3학년</div>
+                   <div class="profile-detail">학번: 2021100215</div>
+               </div>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>내 정보 관리</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                       <div class="menu-title">내 시간표</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                       <div class="menu-title">내 수강 강의</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                       <div class="menu-title">즐겨찾는 강의실</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                       <div class="menu-title">개인정보 수정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <!-- 회원 탈퇴 메뉴 추가 -->
+                   <li class="menu-item" onclick="deleteAccount()">
+                       <div class="menu-title delete-account">회원 탈퇴</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>학적 정보</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('grades')">
+                       <div class="menu-title">성적 조회</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
+                       <div class="menu-title">수강 신청 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
+                       <div class="menu-title">장학금 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('tuition')">
+                       <div class="menu-title">등록금 납부 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>앱 설정</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
+                       <div class="menu-title">알림 설정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
+                       <div class="menu-title">위젯 및 메뉴 설정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="resetAllSettings()">
+                       <div class="menu-title">모든 설정 초기화</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('app-info')">
+                       <div class="menu-title">앱 정보</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="logout()">
+                       <div class="menu-title">로그아웃</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 알림 탭 -->
+       <div id="alert-tab" class="tab-content">
+           <div class="content-section">
+               <div class="section-title">
+                   <span>알림</span>
+               </div>
+               
+               <ul class="alert-list">
+                   <li class="alert-item" onclick="viewNotification('emergency')">
+                       <div class="alert-icon">📢</div>
+                       <div class="alert-info">
+                           <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
+                           <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
+                           <div class="alert-time">10분 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('classroom')">
+                       <div class="alert-icon">🏫</div>
+                       <div class="alert-info">
+                           <div class="alert-title">강의실 알림</div>
+                           <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
+                           <div class="alert-time">30분 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('assignment')">
+                       <div class="alert-icon">📝</div>
+                       <div class="alert-info">
+                           <div class="alert-title">과제 알림</div>
+                           <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
+                           <div class="alert-time">1시간 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('library')">
+                       <div class="alert-icon">📚</div>
+                       <div class="alert-info">
+                           <div class="alert-title">도서관 알림</div>
+                           <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
+                           <div class="alert-time">3시간 전</div>
+                       </div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 하단 탭 메뉴 -->
        <div class="tab-menu">
            <div class="tab-item active" onclick="switchTab('home')">
                <span class="tab-icon">🏠</span>
@@ -1400,12 +1289,7 @@
                description: '공학계열 강의실, 실험실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39632767479923, lng: 126.90699348692698 },
-               floors: [1, 2, 3, 4, 5],  // 건물 층수
-               entrances: [
-                   { id: 'main', name: '정문', floor: 1, position: { x: 100, y: 350 } },
-                   { id: 'side', name: '측면 입구', floor: 1, position: { x: 250, y: 350 } }
-               ]
+               position: { lat: 37.39632767479923, lng: 126.90699348692698 }
            },
            {
                id: '자연과학관',
@@ -1413,11 +1297,7 @@
                description: '반려동물보건학과, 반려동물산업과',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39669466288283, lng: 126.90676716508685 },
-               floors: [1, 2, 3, 4],
-               entrances: [
-                   { id: 'main', name: '정문', floor: 1, position: { x: 100, y: 350 } }
-               ]
+               position: { lat:  37.39669466288283, lng: 126.90676716508685 }
            },
            {
                id: '식품과학관',
@@ -1425,11 +1305,7 @@
                description: '식품영양학과, 조리실습실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39714809720343, lng: 126.90762208499473 },
-               floors: [1, 2, 3, 4],
-               entrances: [
-                   { id: 'main', name: '정문', floor: 1, position: { x: 100, y: 350 } }
-               ]
+               position: { lat: 37.39714809720343, lng: 126.90762208499473 }
            },
            {
                id: '도의관',
@@ -1437,11 +1313,7 @@
                description: '교양 수업, 강당',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39679932128769, lng: 126.90809683728425 },
-               floors: [1, 2, 3],
-               entrances: [
-                   { id: 'main', name: '정문', floor: 1, position: { x: 100, y: 350 } }
-               ]
+               position: { lat: 37.39679932128769, lng: 126.90809683728425 }
            },
            {
                id: '공학2관',
@@ -1449,96 +1321,129 @@
                description: '공학계열 실습실, 연구실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.396789747114205, lng: 126.90737406929797 },
-               floors: [1, 2, 3, 4, 5],
-               entrances: [
-                   { id: 'main', name: '정문', floor: 1, position: { x: 100, y: 350 } },
-                   { id: 'side', name: '측면 입구', floor: 1, position: { x: 250, y: 350 } }
-               ]
+               position: { lat: 37.396789747114205, lng: 126.90737406929797 }
            },
-           // 다른 건물들... (생략)
+           {
+               id: '문화1관',
+               name: '문화1관',
+               description: '인문사회계열 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.39576992475254, lng: 126.90812350405056 }
+           },
+           {
+               id: '연곡문화센터',
+               name: '연곡문화센터',
+               description: '기숙사, 컨벤션홀, 평생교육원',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.398046192024914, lng: 126.90966512810492 }
+           },
+           {
+               id: '창조관',
+               name: '창조관',
+               description: '학과 사무실, 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39730791148064, lng: 126.91039726900274 }
+           },
+           {
+               id: '운동장',
+               name: '운동장',
+               description: '체육활동, 행사장',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39673944839101, lng: 126.90932224700094 }
+           },
+           {
+               id: '농구장',
+               name: '농구장',
+               description: '체육활동',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39667684947615, lng: 126.90994063692402 }
+           },
+           {
+               id: '학생복지센터',
+               name: '학생복지센터',
+               description: '학생지원 시설',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.3962916630711, lng: 126.90994109780426 }
+           },
+           {
+               id: '창의교육센터',
+               name: '창의교육센터',
+               description: '항공서비스과 항공실습실, 카페',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.39737971014044, lng: 126.91002449732869 }
+           },
+           {
+               id: '문화2관',
+               name: '문화2관',
+               description: ' 문화콘텐츠계열 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.396035307891026, lng: 126.90758674745014 }
+           },
+           {
+               id: '대학본관',
+               name: '대학본관',
+               description: '유통물류학과, 총장실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.397467068076345, lng: 126.90938066144557 }
+           },
+           {
+               id: '학술정보관',
+               name: '학술정보관',
+               description: '독서실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.39637467129301, lng: 126.906603807587 }
+           }
        ];
 
-       // 강의실 데이터 - 건물별 강의실 정보
-       const classroomData = {
-           '공학1관': {
-               '1': [  // 1층
-                   { id: 'E1-101', name: '101호', type: '강의실', capacity: 40, position: { x: 100, y: 100 } },
-                   { id: 'E1-102', name: '102호', type: '강의실', capacity: 40, position: { x: 200, y: 100 } },
-                   { id: 'E1-103', name: '103호', type: '실험실', capacity: 30, position: { x: 300, y: 100 } },
-                   { id: 'E1-104', name: '104호', type: '강의실', capacity: 60, position: { x: 100, y: 200 } },
-                   { id: 'E1-105', name: '105호', type: '실습실', capacity: 30, position: { x: 200, y: 200 } },
-                   { id: 'E1-106', name: '학생회실', type: '사무실', capacity: 20, position: { x: 300, y: 200 } }
-               ],
-               '2': [  // 2층
-                   { id: 'E1-201', name: '201호', type: '강의실', capacity: 40, position: { x: 100, y: 100 } },
-                   { id: 'E1-202', name: '202호', type: '강의실', capacity: 40, position: { x: 200, y: 100 } },
-                   { id: 'E1-203', name: '203호', type: '실험실', capacity: 30, position: { x: 300, y: 100 } },
-                   { id: 'E1-204', name: '204호', type: '강의실', capacity: 60, position: { x: 100, y: 200 } },
-                   { id: 'E1-205', name: '205호', type: '강의실', capacity: 60, position: { x: 200, y: 200 } },
-                   { id: 'E1-206', name: '컴퓨터실', type: '실습실', capacity: 40, position: { x: 300, y: 200 } }
-               ],
-               '3': [  // 3층
-                   { id: 'E1-301', name: '301호', type: '강의실', capacity: 40, position: { x: 100, y: 100 } },
-                   { id: 'E1-302', name: '302호', type: '강의실', capacity: 40, position: { x: 200, y: 100 } },
-                   { id: 'E1-303', name: '303호', type: '실험실', capacity: 30, position: { x: 300, y: 100 } },
-                   { id: 'E1-304', name: '304호', type: '강의실', capacity: 60, position: { x: 100, y: 200 } },
-                   { id: 'E1-305', name: '305호', type: '교수연구실', capacity: 4, position: { x: 200, y: 200 } },
-                   { id: 'E1-306', name: '306호', type: '교수연구실', capacity: 4, position: { x: 300, y: 200 } }
-               ],
-               '4': [  // 4층
-                   { id: 'E1-401', name: '401호', type: '강의실', capacity: 40, position: { x: 100, y: 100 } },
-                   { id: 'E1-402', name: '402호', type: '강의실', capacity: 40, position: { x: 200, y: 100 } },
-                   { id: 'E1-403', name: '403호', type: '실험실', capacity: 30, position: { x: 300, y: 100 } },
-                   { id: 'E1-404', name: '404호', type: '세미나실', capacity: 20, position: { x: 100, y: 200 } },
-                   { id: 'E1-405', name: '405호', type: '교수연구실', capacity: 4, position: { x: 200, y: 200 } },
-                   { id: 'E1-406', name: '406호', type: '교수연구실', capacity: 4, position: { x: 300, y: 200 } }
-               ],
-               '5': [  // 5층
-                   { id: 'E1-501', name: '501호', type: '세미나실', capacity: 30, position: { x: 100, y: 100 } },
-                   { id: 'E1-502', name: '502호', type: '강의실', capacity: 40, position: { x: 200, y: 100 } },
-                   { id: 'E1-503', name: '503호', type: '전산실', capacity: 60, position: { x: 300, y: 100 } },
-                   { id: 'E1-504', name: '504호', type: '회의실', capacity: 16, position: { x: 100, y: 200 } },
-                   { id: 'E1-505', name: '505호', type: '교수연구실', capacity: 4, position: { x: 200, y: 200 } },
-                   { id: 'E1-506', name: '506호', type: '교수연구실', capacity: 4, position: { x: 300, y: 200 } }
-               ]
+       // 편의시설 데이터 정의
+       const facilityData = [
+           {
+               id: 'cafeteria',
+               name: '학생식당',
+               description: '학생복지센터 2층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.3962916630711, lng: 126.90994109780426 },
+               relatedBuilding: '학생복지센터'
            },
-           '자연과학관': {
-               '1': [
-                   // 자연과학관 1층 강의실들...
-                   { id: 'S1-101', name: '101호', type: '강의실', capacity: 40, position: { x: 100, y: 100 } },
-                   { id: 'S1-102', name: '102호', type: '실험실', capacity: 30, position: { x: 200, y: 100 } },
-                   { id: 'S1-103', name: '103호', type: '동물실습실', capacity: 30, position: { x: 300, y: 100 } }
-               ],
-               // 다른 층 데이터...
+           {
+               id: 'cafe',
+               name: '카페 연성',
+               description: '문화1관 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.39576992475254, lng: 126.90812350405056 },
+               relatedBuilding: '문화1관'
            },
-           // 다른 건물의 강의실 데이터...
-       };
-
-       // 경로 데이터 - 각 건물 내 연결 지점 정보
-       const pathData = {
-           '공학1관': {
-               '1': [  // 1층 경로 점
-                   { id: 'e1', name: '동쪽 계단', type: 'stairs', position: { x: 350, y: 150 }, connections: ['e2'] },
-                   { id: 'w1', name: '서쪽 계단', type: 'stairs', position: { x: 50, y: 150 }, connections: ['w2'] },
-                   { id: 'c1', name: '중앙 복도', type: 'corridor', position: { x: 200, y: 150 }, connections: ['e1', 'w1'] },
-                   { id: 'main', name: '정문', type: 'entrance', position: { x: 100, y: 350 }, connections: ['c1'] },
-                   { id: 'side', name: '측면 입구', type: 'entrance', position: { x: 250, y: 350 }, connections: ['c1'] }
-               ],
-               '2': [  // 2층 경로 점
-                   { id: 'e2', name: '동쪽 계단', type: 'stairs', position: { x: 350, y: 150 }, connections: ['e1', 'e3'] },
-                   { id: 'w2', name: '서쪽 계단', type: 'stairs', position: { x: 50, y: 150 }, connections: ['w1', 'w3'] },
-                   { id: 'c2', name: '중앙 복도', type: 'corridor', position: { x: 200, y: 150 }, connections: ['e2', 'w2'] }
-               ],
-               // 다른 층 경로...
+           {
+               id: 'convenience',
+               name: 'CU 편의점',
+               description: '학생복지센터 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.3962916630711, lng: 126.90994109780426 },
+               relatedBuilding: '학생복지센터'
            },
-           // 다른 건물 경로...
-       };
-
-       // 현재 활성화된 건물 ID와 층
-       let currentBuildingId = null;
-       let currentFloor = null;
-       let currentPathPoints = [];
+           {
+               id: 'atm',
+               name: 'ATM',
+               description: '학생복지센터 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.3962916630711, lng: 126.90994109780426 },
+               relatedBuilding: '학생복지센터'
+           }
+       ];
        
        // 네이버 지도 관련 변수
        let naverMap;
@@ -1611,9 +1516,9 @@
                            <div class="building-name">${building.name}</div>
                            <div class="building-description">${building.description}</div>
                        </div>
-                       <div class="building-nav-button" onclick="viewIndoorMap('${building.id}', event)">
-                           <span>내부지도</span>
-                           <span>🔎</span>
+                       <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
+                           <span>길찾기</span>
+                           <span>🧭</span>
                        </div>
                    </div>
                `;
@@ -1682,7 +1587,7 @@
            paginationContainer.appendChild(nextButton);
        }
        
-       // 네이버 지도 초기화
+       // 네이버 지도 초기화 - 개선된 버전
        function initNaverMap() {
            console.log('네이버 지도 초기화 시작...');
            
@@ -1778,14 +1683,11 @@
                        }
                    });
                    
-                   // 정보창 내용 (실내 지도 보기 버튼 추가)
+                   // 정보창 내용
                    const contentString = `
                        <div class="map-info-window">
                            <div class="map-info-title">${building.name}</div>
                            <div class="map-info-desc">${building.description}</div>
-                           <div style="margin-top: 8px;">
-                               <button onclick="viewIndoorMap('${building.id}')" style="padding: 4px 8px; background-color: #c62917; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">내부 지도 보기</button>
-                           </div>
                        </div>
                    `;
                    
@@ -1831,12 +1733,30 @@
                });
                
                console.log('네이버 지도가 성공적으로 초기화되었습니다.');
+               
+               // 시설 탭이 표시될 때 지도 새로고침
+               const facilityTab = document.getElementById('facility-tab');
+               if (facilityTab) {
+                   const observer = new MutationObserver(function(mutations) {
+                       mutations.forEach(function(mutation) {
+                           if (mutation.attributeName === 'class' && 
+                               facilityTab.classList.contains('active')) {
+                               setTimeout(function() {
+                                   window.dispatchEvent(new Event('resize'));
+                                   naverMap.refresh();
+                               }, 300);
+                           }
+                       });
+                   });
+                   
+                   observer.observe(facilityTab, { attributes: true });
+               }
            } catch (error) {
                console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
            }
        }
        
-       // 탭 전환 함수 (실내 지도 탭 추가)
+       // 탭 전환 함수 - 시설 탭으로 전환 시 지도 갱신
        function switchTab(tabName) {
            // 모든 탭 콘텐츠 숨기기
            document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1887,444 +1807,6 @@
            }
        }
        
-       // 내부 지도 보기 함수
-       function viewIndoorMap(buildingId, event) {
-           // 이벤트 버블링 방지
-           if (event) {
-               event.stopPropagation();
-           }
-           
-           // 해당 건물의 데이터 찾기
-           const building = buildingData.find(b => b.id === buildingId);
-           
-           if (!building) {
-               alert('건물 정보를 찾을 수 없습니다.');
-               return;
-           }
-           
-           // 현재 건물 ID 저장
-           currentBuildingId = buildingId;
-           
-           // 건물 상세 정보 업데이트
-           document.getElementById('building-detail-title').textContent = building.name;
-           document.getElementById('building-detail-subtitle').textContent = building.description;
-           document.getElementById('building-detail-image').src = building.image;
-           
-           // 층 선택 버튼 초기화
-           const floorSelector = document.getElementById('floor-selector');
-           floorSelector.innerHTML = '';
-           
-           // 층 선택 버튼 생성
-           for (const floor of building.floors) {
-               const floorButton = document.createElement('div');
-               floorButton.className = 'floor-button';
-               floorButton.textContent = `${floor}층`;
-               floorButton.onclick = () => loadFloorMap(buildingId, floor);
-               floorSelector.appendChild(floorButton);
-           }
-           
-           // 건물 내부 지도 탭으로 전환
-           document.querySelectorAll('.tab-content').forEach(tab => {
-               tab.classList.remove('active');
-           });
-           document.getElementById('building-detail-tab').classList.add('active');
-           
-           // 첫 번째 층 로드
-           loadFloorMap(buildingId, building.floors[0]);
-       }
-       
-       // 층별 지도 로드 함수
-       function loadFloorMap(buildingId, floor) {
-           // 현재 층 저장
-           currentFloor = floor;
-           
-           // 층 버튼 활성화 상태 업데이트
-           const floorButtons = document.querySelectorAll('.floor-button');
-           floorButtons.forEach(button => {
-               button.classList.remove('active');
-               if (button.textContent === `${floor}층`) {
-                   button.classList.add('active');
-               }
-           });
-           
-           // 층별 강의실 데이터 가져오기
-           const floorClassrooms = classroomData[buildingId] ? classroomData[buildingId][floor] || [] : [];
-           
-           // 강의실 경로 정보 가져오기
-           const floorPaths = pathData[buildingId] ? pathData[buildingId][floor] || [] : [];
-           
-           // 강의실 목록 업데이트
-           updateClassroomList(floorClassrooms);
-           
-           // 층별 지도 그리기
-           drawFloorMap(buildingId, floor, floorClassrooms, floorPaths);
-           
-           // 출발지 및 도착지 선택 업데이트
-           updateNavigationSelectors(buildingId, floor, floorClassrooms, floorPaths);
-           
-           // 경로 안내 초기화
-           document.getElementById('navigation-instructions').style.display = 'none';
-       }
-       
-       // 강의실 목록 업데이트 함수
-       function updateClassroomList(classrooms) {
-           const classroomList = document.getElementById('classroom-list');
-           classroomList.innerHTML = '';
-           
-           if (!classrooms || classrooms.length === 0) {
-               classroomList.innerHTML = '<div style="padding: 16px; text-align: center; color: #888;">해당 층에 강의실 정보가 없습니다.</div>';
-               return;
-           }
-           
-           // 강의실 항목 생성
-           classrooms.forEach(classroom => {
-               const classroomItem = document.createElement('li');
-               classroomItem.className = 'classroom-item';
-               classroomItem.innerHTML = `
-                   <div class="classroom-info">
-                       <div class="classroom-name">${classroom.name} (${classroom.id})</div>
-                       <div class="classroom-desc">${classroom.type} | 수용인원: ${classroom.capacity}명</div>
-                   </div>
-                   <div class="classroom-button" onclick="findPathToClassroom('${classroom.id}')">길찾기</div>
-               `;
-               classroomList.appendChild(classroomItem);
-           });
-       }
-       
-       // 층별 지도 그리기 함수
-       function drawFloorMap(buildingId, floor, classrooms, paths) {
-           const floorMap = document.getElementById('floor-map');
-           floorMap.innerHTML = '';
-           
-           // 실내 지도 배경 이미지 (SVG 또는 이미지)
-           floorMap.style.backgroundImage = `url('/api/placeholder/500/350?text=${buildingId} ${floor}층')`;
-           floorMap.style.backgroundSize = 'cover';
-           floorMap.style.backgroundPosition = 'center';
-           
-           // 기존 경로 선 및 마커 초기화
-           clearPathLines();
-           
-           // 강의실 마커 생성
-           if (classrooms && classrooms.length > 0) {
-               classrooms.forEach(classroom => {
-                   const marker = document.createElement('div');
-                   marker.className = 'classroom-marker';
-                   marker.textContent = classroom.name.replace(/[^0-9]/g, ''); // 숫자만 표시
-                   marker.style.left = `${classroom.position.x}px`;
-                   marker.style.top = `${classroom.position.y}px`;
-                   marker.setAttribute('data-id', classroom.id);
-                   marker.setAttribute('data-name', classroom.name);
-                   marker.setAttribute('data-type', classroom.type);
-                   
-                   // 마커 클릭 이벤트
-                   marker.addEventListener('click', function() {
-                       const roomId = this.getAttribute('data-id');
-                       const roomName = this.getAttribute('data-name');
-                       alert(`${roomName} (${roomId})\n타입: ${this.getAttribute('data-type')}`);
-                   });
-                   
-                   floorMap.appendChild(marker);
-               });
-           }
-           
-           // 경로 정보 마커 생성
-           if (paths && paths.length > 0) {
-               paths.forEach(path => {
-                   if (path.type === 'entrance' || path.type === 'stairs' || path.type === 'elevator') {
-                       const marker = document.createElement('div');
-                       marker.className = 'classroom-marker';
-                       marker.classList.add(path.type);
-                       
-                       // 경로 지점 아이콘 설정
-                       if (path.type === 'entrance') {
-                           marker.textContent = '🚪';
-                       } else if (path.type === 'stairs') {
-                           marker.textContent = '🔄';
-                       } else if (path.type === 'elevator') {
-                           marker.textContent = '🔼';
-                       }
-                       
-                       marker.style.left = `${path.position.x}px`;
-                       marker.style.top = `${path.position.y}px`;
-                       marker.setAttribute('data-id', path.id);
-                       marker.setAttribute('data-name', path.name);
-                       marker.setAttribute('data-type', path.type);
-                       
-                       floorMap.appendChild(marker);
-                   }
-               });
-           }
-       }
-       
-       // 길찾기 선택기 업데이트 함수
-       function updateNavigationSelectors(buildingId, floor, classrooms, paths) {
-           const startPointSelect = document.getElementById('start-point');
-           const endPointSelect = document.getElementById('end-point');
-           
-           // 선택기 초기화
-           startPointSelect.innerHTML = '';
-           endPointSelect.innerHTML = '<option value="">선택하세요</option>';
-           
-           // 출발지 옵션 (입구 및 계단)
-           if (paths && paths.length > 0) {
-               paths.forEach(path => {
-                   if (path.type === 'entrance' || path.type === 'stairs' || path.type === 'elevator') {
-                       const option = document.createElement('option');
-                       option.value = path.id;
-                       option.textContent = path.name;
-                       startPointSelect.appendChild(option);
-                   }
-               });
-           }
-           
-           // 도착지 옵션 (강의실)
-           if (classrooms && classrooms.length > 0) {
-               classrooms.forEach(classroom => {
-                   const option = document.createElement('option');
-                   option.value = classroom.id;
-                   option.textContent = `${classroom.name} (${classroom.type})`;
-                   endPointSelect.appendChild(option);
-               });
-           }
-       }
-       
-       // 특정 강의실로 길찾기 함수
-       function findPathToClassroom(classroomId) {
-           const endPointSelect = document.getElementById('end-point');
-           endPointSelect.value = classroomId;
-           
-           // 길찾기 실행
-           findPath();
-       }
-       
-       // 길찾기 실행 함수
-       function findPath() {
-           const startPointSelect = document.getElementById('start-point');
-           const endPointSelect = document.getElementById('end-point');
-           
-           const startId = startPointSelect.value;
-           const endId = endPointSelect.value;
-           
-           if (!startId || !endId) {
-               alert('출발지와 도착지를 모두 선택해주세요.');
-               return;
-           }
-           
-           // 경로 계산
-           const path = calculatePath(currentBuildingId, currentFloor, startId, endId);
-           
-           if (!path) {
-               alert('경로를 찾을 수 없습니다.');
-               return;
-           }
-           
-           // 경로 표시
-           displayPath(path);
-           
-           // 경로 안내 표시
-           displayPathInstructions(path);
-       }
-       
-       // 경로 계산 함수 (실제 길찾기 알고리즘 구현)
-       function calculatePath(buildingId, floor, startId, endId) {
-           // 해당 건물, 층의 경로 및 강의실 데이터 가져오기
-           const floorPaths = pathData[buildingId] ? pathData[buildingId][floor] || [] : [];
-           const floorClassrooms = classroomData[buildingId] ? classroomData[buildingId][floor] || [] : [];
-           
-           if (!floorPaths.length || !floorClassrooms.length) {
-               return null;
-           }
-           
-           // 시작점 찾기
-           const startNode = floorPaths.find(p => p.id === startId);
-           
-           // 도착 강의실 찾기
-           const endRoom = floorClassrooms.find(c => c.id === endId);
-           
-           if (!startNode || !endRoom) {
-               return null;
-           }
-           
-           // 간단한 경로 계산 (실제 앱에서는 더 복잡한 길찾기 알고리즘 구현)
-           // 여기서는 단순화를 위해 기본 경로만 생성
-           
-           // 가장 가까운 복도 노드 찾기
-           let nearestCorridorId = null;
-           let minDistance = Infinity;
-           
-           floorPaths.forEach(p => {
-               if (p.type === 'corridor') {
-                   // 복도 노드와 강의실 간의 거리 계산
-                   const distance = calculateDistance(p.position, endRoom.position);
-                   if (distance < minDistance) {
-                       minDistance = distance;
-                       nearestCorridorId = p.id;
-                   }
-               }
-           });
-           
-           // 복도 노드 찾기
-           const corridorNode = floorPaths.find(p => p.id === nearestCorridorId);
-           
-           if (!corridorNode) {
-               return null;
-           }
-           
-           // 시작점 -> 복도 -> 강의실 경로 생성
-           return {
-               points: [
-                   { id: startId, position: startNode.position, name: startNode.name, type: 'start' },
-                   { id: corridorNode.id, position: corridorNode.position, name: corridorNode.name, type: 'path' },
-                   { id: endId, position: endRoom.position, name: endRoom.name, type: 'end' }
-               ],
-               distance: calculateDistance(startNode.position, corridorNode.position) + 
-                        calculateDistance(corridorNode.position, endRoom.position)
-           };
-       }
-       
-       // 두 지점 간 거리 계산 (유클리드 거리)
-       function calculateDistance(pos1, pos2) {
-           const dx = pos1.x - pos2.x;
-           const dy = pos1.y - pos2.y;
-           return Math.sqrt(dx * dx + dy * dy);
-       }
-       
-       // 경로 표시 함수
-       function displayPath(path) {
-           // 기존 경로 표시 제거
-           clearPathLines();
-           
-           if (!path || !path.points || path.points.length < 2) {
-               return;
-           }
-           
-           const floorMap = document.getElementById('floor-map');
-           
-           // 경로 선 그리기
-           for (let i = 0; i < path.points.length - 1; i++) {
-               const start = path.points[i];
-               const end = path.points[i + 1];
-               
-               drawPathLine(floorMap, start.position, end.position);
-           }
-           
-           // 경로 포인트 마커 생성
-           currentPathPoints = [];
-           
-           path.points.forEach((point, index) => {
-               // 첫 번째와 마지막 지점 제외 (이미 표시되어 있음)
-               if (index > 0 && index < path.points.length - 1) {
-                   const marker = document.createElement('div');
-                   marker.className = 'classroom-marker path';
-                   marker.textContent = index.toString();
-                   marker.style.left = `${point.position.x}px`;
-                   marker.style.top = `${point.position.y}px`;
-                   floorMap.appendChild(marker);
-                   
-                   currentPathPoints.push(marker);
-               }
-           });
-           
-           // 시작점과 종료점에 특별 마커 추가
-           const startPoint = path.points[0];
-           const startMarker = document.createElement('div');
-           startMarker.className = 'classroom-marker start';
-           startMarker.textContent = 'S';
-           startMarker.style.left = `${startPoint.position.x}px`;
-           startMarker.style.top = `${startPoint.position.y}px`;
-           floorMap.appendChild(startMarker);
-           
-           const endPoint = path.points[path.points.length - 1];
-           const endMarker = document.createElement('div');
-           endMarker.className = 'classroom-marker end';
-           endMarker.textContent = 'E';
-           endMarker.style.left = `${endPoint.position.x}px`;
-           endMarker.style.top = `${endPoint.position.y}px`;
-           floorMap.appendChild(endMarker);
-           
-           currentPathPoints.push(startMarker, endMarker);
-       }
-       
-       // 경로 선 그리기 함수
-       function drawPathLine(container, start, end) {
-           const line = document.createElement('div');
-           line.className = 'path-line';
-           
-           // 선의 길이 계산
-           const length = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
-           
-           // 선의 각도 계산
-           const angle = Math.atan2(end.y - start.y, end.x - start.x) * (180 / Math.PI);
-           
-           // 선의 스타일 설정
-           line.style.width = `${length}px`;
-           line.style.height = '4px'; // 두께
-           line.style.position = 'absolute';
-           line.style.left = `${start.x}px`;
-           line.style.top = `${start.y}px`;
-           line.style.transformOrigin = '0 0';
-           line.style.transform = `rotate(${angle}deg)`;
-           
-           container.appendChild(line);
-           currentPathPoints.push(line);
-       }
-       
-       // 경로 선 및 마커 제거 함수
-       function clearPathLines() {
-           if (currentPathPoints && currentPathPoints.length > 0) {
-               currentPathPoints.forEach(point => {
-                   if (point.parentNode) {
-                       point.parentNode.removeChild(point);
-                   }
-               });
-           }
-           currentPathPoints = [];
-       }
-       
-       // 경로 안내 표시 함수
-       function displayPathInstructions(path) {
-           const instructionsList = document.getElementById('instruction-list');
-           const instructionsContainer = document.getElementById('navigation-instructions');
-           
-           // 안내 초기화
-           instructionsList.innerHTML = '';
-           
-           if (!path || !path.points || path.points.length < 2) {
-               instructionsContainer.style.display = 'none';
-               return;
-           }
-           
-           // 경로 안내 항목 생성
-           for (let i = 0; i < path.points.length - 1; i++) {
-               const start = path.points[i];
-               const end = path.points[i + 1];
-               
-               const distance = Math.round(calculateDistance(start.position, end.position) / 10); // 픽셀을 미터로 환산 (임의)
-               
-               const instruction = document.createElement('li');
-               instruction.className = 'instruction-item';
-               
-               if (i === 0) {
-                   // 첫 번째 구간 안내
-                   instruction.textContent = `${start.name}에서 ${end.name}까지 직진하세요. (약 ${distance}m)`;
-               } else {
-                   // 중간 구간 안내
-                   instruction.textContent = `${start.name}에서 ${end.name}까지 이동하세요. (약 ${distance}m)`;
-               }
-               
-               instructionsList.appendChild(instruction);
-           }
-           
-           // 마지막 안내 (도착)
-           const lastInstruction = document.createElement('li');
-           lastInstruction.className = 'instruction-item';
-           lastInstruction.textContent = `${path.points[path.points.length - 1].name}에 도착했습니다.`;
-           instructionsList.appendChild(lastInstruction);
-           
-           // 안내 표시
-           instructionsContainer.style.display = 'block';
-       }
-       
        // 지도 줌인
        function zoomIn() {
            if (naverMap) {
@@ -2372,50 +1854,25 @@
            // 모든 시설 데이터 (건물 + 편의시설)
            const allFacilities = [...buildingData, ...facilityData];
            
-           // 강의실 검색을 위한 전체 강의실 목록 생성
-           let allClassrooms = [];
-           for (const buildingId in classroomData) {
-               for (const floor in classroomData[buildingId]) {
-                   classroomData[buildingId][floor].forEach(classroom => {
-                       allClassrooms.push({
-                           id: classroom.id,
-                           name: classroom.name,
-                           type: classroom.type,
-                           buildingId: buildingId,
-                           floor: floor,
-                           description: `${buildingId} ${floor}층 - ${classroom.type}`
-                       });
-                   });
-               }
-           }
-           
-           // 건물, 편의시설, 강의실 검색
            const filteredFacilities = allFacilities.filter(facility => 
                facility.name.toLowerCase().includes(lowercaseQuery) || 
                facility.description.toLowerCase().includes(lowercaseQuery)
            );
            
-           const filteredClassrooms = allClassrooms.filter(classroom => 
-               classroom.id.toLowerCase().includes(lowercaseQuery) || 
-               classroom.name.toLowerCase().includes(lowercaseQuery) || 
-               classroom.description.toLowerCase().includes(lowercaseQuery)
-           );
-           
            // 검색 결과 업데이트
            searchResults.innerHTML = '';
            
-           if (filteredFacilities.length > 0 || filteredClassrooms.length > 0) {
+           if (filteredFacilities.length > 0) {
                // 검색 결과가 있으면 표시
                const resultsList = document.createElement('ul');
                resultsList.className = 'building-list';
                
-               // 건물 및 편의시설 결과
                filteredFacilities.forEach(facility => {
                    const listItem = document.createElement('li');
                    listItem.className = 'building-item';
                    listItem.onclick = function() { 
                        if (facility.type === 'building') {
-                           viewIndoorMap(facility.id);
+                           showBuildingDetail(facility.id);
                        } else {
                            showFacilityDetail(facility.id);
                        }
@@ -2440,33 +1897,6 @@
                    resultsList.appendChild(listItem);
                });
                
-               // 강의실 결과
-               filteredClassrooms.forEach(classroom => {
-                   const listItem = document.createElement('li');
-                   listItem.className = 'building-item';
-                   listItem.onclick = function() { 
-                       navigateToClassroom(classroom.buildingId, classroom.floor, classroom.id);
-                   };
-                   
-                   listItem.innerHTML = `
-                       <div class="building-image">
-                           <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; font-size: 24px;">🚪</div>
-                       </div>
-                       <div class="building-info-container">
-                           <div class="building-info">
-                               <div class="building-name">${classroom.name} (${classroom.id})</div>
-                               <div class="building-description">${classroom.description}</div>
-                           </div>
-                           <div class="building-nav-button" onclick="navigateToClassroom('${classroom.buildingId}', '${classroom.floor}', '${classroom.id}', event)">
-                               <span>길찾기</span>
-                               <span>🧭</span>
-                           </div>
-                       </div>
-                   `;
-                   
-                   resultsList.appendChild(listItem);
-               });
-               
                searchResults.appendChild(resultsList);
                searchResults.style.display = 'block';
                noResults.style.display = 'none';
@@ -2479,37 +1909,144 @@
            }
        }
        
-       // 강의실로 길찾기 함수
-       function navigateToClassroom(buildingId, floor, classroomId, event) {
+       // 시설로 길찾기 (건물 또는 편의시설)
+       function navigateToFacility(facilityId, facilityType, event) {
            // 이벤트 버블링 방지
            if (event) {
                event.stopPropagation();
            }
            
-           // 건물 내부 지도 보기로 이동
-           viewIndoorMap(buildingId);
-           
-           // 층 선택
-           loadFloorMap(buildingId, parseInt(floor));
-           
-           // 강의실 길찾기 설정
-           setTimeout(() => {
-               const endPointSelect = document.getElementById('end-point');
-               if (endPointSelect) {
-                   endPointSelect.value = classroomId;
-                   findPath();
+           if (facilityType === 'building') {
+               // 건물 길찾기
+               navigateToBuilding(facilityId, event);
+           } else {
+               // 편의시설 길찾기
+               const facility = facilityData.find(f => f.id === facilityId);
+               
+               if (facility) {
+                   alert(`${facility.name}으로 길찾기를 시작합니다.`);
+                   
+                   // 지도를 표시하고 해당 시설로 이동
+                   switchTab('facility');
+                   
+                   // 지도가 초기화되었는지 확인
+                   if (naverMap) {
+                       // 시설 위치로 지도 중심 이동
+                       const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
+                       naverMap.setCenter(position);
+                       naverMap.setZoom(18); // 더 가깝게 줌인
+                       
+                       // 마커 찾기 (시설의 경우 관련 건물 마커 사용)
+                       if (facility.relatedBuilding) {
+                           const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === facility.relatedBuilding);
+                           
+                           if (markerIndex !== -1) {
+                               // 다른 모든 정보창 닫기
+                               infoWindows.forEach(window => window.close());
+                               
+                               // 해당 마커의 정보창 열기
+                               infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                           }
+                       }
+                   } else {
+                       // 지도가 초기화되지 않았으면 알림
+                       alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                   }
                }
-           }, 500);
+           }
+       }
+       
+       // 길찾기 기능
+       function navigateToBuilding(buildingId, event) {
+           // 이벤트 버블링 방지
+           if (event) {
+               event.stopPropagation();
+           }
+           
+           // 해당 건물의 데이터 찾기
+           const building = buildingData.find(b => b.id === buildingId);
+           
+           if (building) {
+               alert(`${building.name}으로 길찾기를 시작합니다.`);
+               
+               // 지도를 표시하고 해당 건물로 이동
+               switchTab('facility');
+               
+               // 지도가 초기화되었는지 확인
+               if (naverMap) {
+                   // 건물 위치로 지도 중심 이동
+                   const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                   naverMap.setCenter(position);
+                   naverMap.setZoom(18); // 더 가깝게 줌인
+                   
+                   // 마커 찾기
+                   const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                   
+                   if (markerIndex !== -1) {
+                       // 다른 모든 정보창 닫기
+                       infoWindows.forEach(window => window.close());
+                       
+                       // 해당 마커의 정보창 열기
+                       infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                   }
+               } else {
+                   // 지도가 초기화되지 않았으면 알림
+                   alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+               }
+           }
        }
        
        // 건물 상세 보기
        function showBuildingDetail(buildingId) {
-           viewIndoorMap(buildingId);
+           // 해당 건물의 데이터 찾기
+           const building = buildingData.find(b => b.id === buildingId);
+           
+           if (building) {
+               alert(`${building.name} 상세 정보를 확인합니다.`);
+               
+               // 지도를 표시하고 해당 건물로 이동
+               switchTab('facility');
+               
+               // 지도가 초기화되었는지 확인
+               if (naverMap) {
+                   // 건물 위치로 지도 중심 이동
+                   const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                   naverMap.setCenter(position);
+                   naverMap.setZoom(18); // 더 가깝게 줌인
+                   
+                   // 마커 찾기
+                   const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                   
+                   if (markerIndex !== -1) {
+                       // 다른 모든 정보창 닫기
+                       infoWindows.forEach(window => window.close());
+                       
+                       // 해당 마커의 정보창 열기
+                       infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                   }
+               }
+           }
        }
        
        // 편의 시설 상세 보기
        function showFacilityDetail(facilityId) {
            alert(`${facilityId} 시설 상세 정보를 확인합니다.`);
+       }
+       
+       // 메인 홈으로 이동
+       function goToHome() {
+           switchTab('home');
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+       }
+       
+       // 검색 키 입력 처리
+       function handleSearchKeyPress(event) {
+           if (event.key === 'Enter') {
+               const searchTerm = event.target.value.trim();
+               if (searchTerm) {
+                   alert(`'${searchTerm}'에 대한 검색을 시작합니다.`);
+               }
+           }
        }
        
        // 공지사항 필터링
@@ -2545,43 +2082,6 @@
            });
        }
        
-       // 메인 홈으로 이동
-       function goToHome() {
-           switchTab('home');
-           window.scrollTo({ top: 0, behavior: 'smooth' });
-       }
-       
-       // 시설로 길찾기 (건물 또는 편의시설)
-       function navigateToFacility(facilityId, facilityType, event) {
-           // 이벤트 버블링 방지
-           if (event) {
-               event.stopPropagation();
-           }
-           
-           if (facilityType === 'building') {
-               // 건물 길찾기
-               viewIndoorMap(facilityId);
-           } else {
-               // 편의시설 길찾기
-               const facility = facilityData.find(f => f.id === facilityId);
-               
-               if (facility) {
-                   alert(`${facility.name}으로 길찾기를 시작합니다.`);
-                   
-                   // 지도를 표시하고 해당 시설로 이동
-                   switchTab('facility');
-                   
-                   // 지도가 초기화되었는지 확인
-                   if (naverMap) {
-                       // 시설 위치로 지도 중심 이동
-                       const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
-                       naverMap.setCenter(position);
-                       naverMap.setZoom(18); // 더 가깝게 줌인
-                   }
-               }
-           }
-       }
-       
        // 공지사항 상세 페이지로 이동
        function goToNoticeDetail(noticeId) {
            alert(`공지사항 ID: ${noticeId} 상세 페이지로 이동합니다.`);
@@ -2595,16 +2095,6 @@
        // 알림 상세 보기
        function viewNotification(notificationId) {
            alert(`${notificationId} 알림 상세 내용을 확인합니다.`);
-       }
-       
-       // 검색 키 입력 처리
-       function handleSearchKeyPress(event) {
-           if (event.key === 'Enter') {
-               const searchTerm = event.target.value.trim();
-               if (searchTerm) {
-                   alert(`'${searchTerm}'에 대한 검색을 시작합니다.`);
-               }
-           }
        }
        
        // 페이지 이동 함수
