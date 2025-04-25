@@ -62,6 +62,7 @@
         
         .profile-dropdown-container {
             position: relative;
+            display: none; /* 기본적으로 숨김 처리 (로그인 시 표시) */
         }
         
         .header-profile-image {
@@ -785,6 +786,144 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
+        /* 로그인 페이지 스타일 */
+        .login-page {
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .login-form {
+            background-color: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c62917;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .input-field:focus {
+            border-color: #c62917;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(198, 41, 23, 0.1);
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .remember-checkbox {
+            margin-right: 8px;
+        }
+        
+        .remember-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .login-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #c62917;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        
+        .login-submit:hover {
+            background-color: #b52616;
+        }
+        
+        .login-links {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .login-link {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .login-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* 비로그인 시 내 정보 탭 */
+        .not-logged-in {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .not-logged-in-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+        
+        .not-logged-in-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .login-button-large {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #c62917;
+            color: white;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .login-button-large:hover {
+            background-color: #b52616;
+        }
     </style>
 </head>
 <body>
@@ -792,18 +931,18 @@
         <header>
             <div class="logo" onclick="goToHome()">연성대학교</div>
             <div class="header-icons">
-                <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
-                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
-                <div class="profile-dropdown-container" style="display: none;">
+                <!-- 로그인 상태에 따라 버튼 표시 -->
+                <a href="#" class="login-button" id="headerLoginButton" onclick="goToPage('login')">로그인</a>
+                <div class="profile-dropdown-container" id="profileContainer" style="display: none;">
                     <div class="header-profile-image" onclick="toggleProfileDropdown()">
                         <!-- 여기에 프로필 이미지가 들어갑니다 -->
-                        <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
+                        <img id="headerProfileImg" src="/api/placeholder/32/32" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
                     </div>
                     <div class="profile-dropdown">
                         <div class="dropdown-profile-info">
-                            <div class="dropdown-profile-name">사용자</div>
-                            <div class="dropdown-profile-detail">학과 | 학년</div>
-                            <div class="dropdown-profile-detail">학번: 0000000000</div>
+                            <div class="dropdown-profile-name" id="dropdownProfileName">사용자</div>
+                            <div class="dropdown-profile-detail" id="dropdownProfileDept">학과 | 학년</div>
+                            <div class="dropdown-profile-detail" id="dropdownProfileId">학번: 0000000000</div>
                         </div>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="goToPage('profile-edit')">
@@ -919,10 +1058,6 @@
                         <div class="lecture-header">
                             <div class="lecture-title">웹 프로그래밍 실습</div>
                             <div class="lecture-rating">4.8</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">김민수 교수님</span>
-                            <span>컴퓨터정보학과</span>
                         </div>
                         <div class="lecture-info">
                             <span class="lecture-professor">김민수 교수님</span>
@@ -1111,99 +1246,111 @@
            <div class="content-pad"></div>
        </div>
        
-       <!-- 내 정보 탭 -->
+       <!-- 내 정보 탭 - 로그인 여부에 따라 다르게 표시 -->
        <div id="profile-tab" class="tab-content">
-           <div class="profile-section">
-               <div class="profile-image">👨‍🎓</div>
-               <div class="profile-info">
-                   <div class="profile-name">조희정</div>
-                   <div class="profile-detail">경영학과 | 3학년</div>
-                   <div class="profile-detail">학번: 2021100215</div>
-               </div>
+           <!-- 로그인하지 않은 경우 표시될 내용 -->
+           <div id="not-logged-in-content" class="not-logged-in">
+               <div class="not-logged-in-icon">👤</div>
+               <div class="not-logged-in-text">로그인이 필요한 서비스입니다</div>
+               <a href="#" class="login-button-large" onclick="goToPage('login')">로그인하기</a>
            </div>
-           
-           <div class="content-section">
-               <div class="section-title">
-                   <span>내 정보 관리</span>
+
+           <!-- 로그인한 경우 표시될 내용 -->
+           <div id="logged-in-content" style="display: none;">
+               <div class="profile-section">
+                   <div class="profile-image">
+                       <img id="profileImg" src="/api/placeholder/60/60" alt="프로필">
+                   </div>
+                   <div class="profile-info">
+                       <div class="profile-name" id="profileName">사용자</div>
+                       <div class="profile-detail" id="profileDept">학과 | 학년</div>
+                       <div class="profile-detail" id="profileId">학번: 0000000000</div>
+                   </div>
                </div>
                
-               <ul class="menu-list">
-                   <li class="menu-item" onclick="navigateToProfilePage('timetable')">
-                       <div class="menu-title">내 시간표</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
-                       <div class="menu-title">내 수강 강의</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
-                       <div class="menu-title">즐겨찾는 강의실</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
-                       <div class="menu-title">개인정보 수정</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <!-- 회원 탈퇴 메뉴 추가 -->
-                   <li class="menu-item" onclick="deleteAccount()">
-                       <div class="menu-title delete-account">회원 탈퇴</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-               </ul>
-           </div>
-           
-           <div class="content-section">
-               <div class="section-title">
-                   <span>학적 정보</span>
+               <div class="content-section">
+                   <div class="section-title">
+                       <span>내 정보 관리</span>
+                   </div>
+                   
+                   <ul class="menu-list">
+                       <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                           <div class="menu-title">내 시간표</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                           <div class="menu-title">내 수강 강의</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                           <div class="menu-title">즐겨찾는 강의실</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                           <div class="menu-title">개인정보 수정</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <!-- 회원 탈퇴 메뉴 추가 -->
+                       <li class="menu-item" onclick="deleteAccount()">
+                           <div class="menu-title delete-account">회원 탈퇴</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                   </ul>
                </div>
                
-               <ul class="menu-list">
-                   <li class="menu-item" onclick="navigateToProfilePage('grades')">
-                       <div class="menu-title">성적 조회</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
-                       <div class="menu-title">수강 신청 내역</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
-                       <div class="menu-title">장학금 내역</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('tuition')">
-                       <div class="menu-title">등록금 납부 내역</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-               </ul>
-           </div>
-           
-           <div class="content-section">
-               <div class="section-title">
-                   <span>앱 설정</span>
+               <div class="content-section">
+                   <div class="section-title">
+                       <span>학적 정보</span>
+                   </div>
+                   
+                   <ul class="menu-list">
+                       <li class="menu-item" onclick="navigateToProfilePage('grades')">
+                           <div class="menu-title">성적 조회</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
+                           <div class="menu-title">수강 신청 내역</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
+                           <div class="menu-title">장학금 내역</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('tuition')">
+                           <div class="menu-title">등록금 납부 내역</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                   </ul>
                </div>
                
-               <ul class="menu-list">
-                   <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
-                       <div class="menu-title">알림 설정</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
-                       <div class="menu-title">위젯 및 메뉴 설정</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="resetAllSettings()">
-                       <div class="menu-title">모든 설정 초기화</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="navigateToProfilePage('app-info')">
-                       <div class="menu-title">앱 정보</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-                   <li class="menu-item" onclick="logout()">
-                       <div class="menu-title">로그아웃</div>
-                       <div class="menu-arrow">›</div>
-                   </li>
-               </ul>
+               <div class="content-section">
+                   <div class="section-title">
+                       <span>앱 설정</span>
+                   </div>
+                   
+                   <ul class="menu-list">
+                       <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
+                           <div class="menu-title">알림 설정</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
+                           <div class="menu-title">위젯 및 메뉴 설정</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="resetAllSettings()">
+                           <div class="menu-title">모든 설정 초기화</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="navigateToProfilePage('app-info')">
+                           <div class="menu-title">앱 정보</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                       <li class="menu-item" onclick="logout()">
+                           <div class="menu-title">로그아웃</div>
+                           <div class="menu-arrow">›</div>
+                       </li>
+                   </ul>
+               </div>
            </div>
            
            <div class="content-pad"></div>
@@ -1255,6 +1402,43 @@
            <div class="content-pad"></div>
        </div>
        
+       <!-- 로그인 페이지 -->
+       <div id="login-page" class="tab-content">
+           <div class="login-page">
+               <div class="login-form">
+                   <div class="login-header">
+                       <div class="login-title">연성대학교</div>
+                       <div class="login-subtitle">학생 포털 로그인</div>
+                   </div>
+                   
+                   <div class="input-group">
+                       <label class="input-label">학번</label>
+                       <input type="text" id="loginId" class="input-field" placeholder="학번을 입력하세요">
+                   </div>
+                   
+                   <div class="input-group">
+                       <label class="input-label">비밀번호</label>
+                       <input type="password" id="loginPassword" class="input-field" placeholder="비밀번호를 입력하세요">
+                   </div>
+                   
+                   <div class="remember-me">
+                       <input type="checkbox" id="rememberMe" class="remember-checkbox">
+                       <label for="rememberMe" class="remember-text">학번 저장</label>
+                   </div>
+                   
+                   <button class="login-submit" onclick="performLogin()">로그인</button>
+                   
+                   <div class="login-links">
+                       <a href="#" class="login-link" onclick="goToPage('find-id')">학번 찾기</a>
+                       <a href="#" class="login-link" onclick="goToPage('find-password')">비밀번호 찾기</a>
+                       <a href="#" class="login-link" onclick="goToPage('register')">회원가입</a>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
        <!-- 하단 탭 메뉴 -->
        <div class="tab-menu">
            <div class="tab-item active" onclick="switchTab('home')">
@@ -1281,6 +1465,146 @@
    </div>
    
    <script>
+       // 로그인 상태 관리
+       let isLoggedIn = false;
+       let userData = null;
+       
+       // 페이지 로드 시 실행
+       document.addEventListener('DOMContentLoaded', function() {
+           // 로그인 상태 확인
+           checkLoginStatus();
+           
+           // 시설 탭 초기화
+           initFacilityTab();
+           
+           // 네이버 지도 초기화 - 약간 지연시켜 실행
+           setTimeout(initNaverMap, 500);
+           
+           // 탭 전환 시 지도 갱신을 위한 이벤트 리스너
+           document.querySelectorAll('.tab-item').forEach(item => {
+               item.addEventListener('click', function() {
+                   const tabId = this.textContent.trim().toLowerCase();
+                   if (tabId.includes('시설')) {
+                       setTimeout(function() {
+                           if (naverMap) {
+                               window.dispatchEvent(new Event('resize'));
+                               naverMap.refresh();
+                           }
+                       }, 300);
+                   }
+               });
+           });
+       });
+       
+       // 로그인 상태 확인 함수
+       function checkLoginStatus() {
+           // 로컬 스토리지에서 로그인 정보 확인
+           const storedUser = localStorage.getItem('yeonsung_user');
+           
+           if (storedUser) {
+               try {
+                   userData = JSON.parse(storedUser);
+                   isLoggedIn = true;
+                   updateUIForLoggedInUser(userData);
+               } catch (e) {
+                   console.error('저장된 사용자 데이터를 파싱하는 중 오류 발생:', e);
+                   // 잘못된 데이터인 경우 삭제
+                   localStorage.removeItem('yeonsung_user');
+                   isLoggedIn = false;
+                   updateUIForLoggedOutUser();
+               }
+           } else {
+               isLoggedIn = false;
+               updateUIForLoggedOutUser();
+           }
+       }
+       
+       // 로그인한 사용자에 맞게 UI 업데이트
+       function updateUIForLoggedInUser(user) {
+           // 헤더 업데이트
+           document.getElementById('headerLoginButton').style.display = 'none';
+           document.getElementById('profileContainer').style.display = 'block';
+           
+           // 드롭다운 메뉴 업데이트
+           document.getElementById('dropdownProfileName').textContent = user.name;
+           document.getElementById('dropdownProfileDept').textContent = `${user.department} | ${user.year}학년`;
+           document.getElementById('dropdownProfileId').textContent = `학번: ${user.studentId}`;
+           
+           // 프로필 탭 업데이트
+           document.getElementById('not-logged-in-content').style.display = 'none';
+           document.getElementById('logged-in-content').style.display = 'block';
+           
+           document.getElementById('profileName').textContent = user.name;
+           document.getElementById('profileDept').textContent = `${user.department} | ${user.year}학년`;
+           document.getElementById('profileId').textContent = `학번: ${user.studentId}`;
+       }
+       
+       // 로그아웃한 상태의 UI 업데이트
+       function updateUIForLoggedOutUser() {
+           // 헤더 업데이트
+           document.getElementById('headerLoginButton').style.display = 'block';
+           document.getElementById('profileContainer').style.display = 'none';
+           
+           // 프로필 탭 업데이트
+           document.getElementById('not-logged-in-content').style.display = 'block';
+           document.getElementById('logged-in-content').style.display = 'none';
+       }
+       
+       // 로그인 실행 함수
+       function performLogin() {
+           const id = document.getElementById('loginId').value;
+           const password = document.getElementById('loginPassword').value;
+           
+           if (!id || !password) {
+               alert('학번과 비밀번호를 모두 입력해주세요.');
+               return;
+           }
+           
+           // 테스트용 로그인 (실제로는 서버 통신이 필요)
+           if (id === '2021100215' && password === 'test1234') {
+               // 로그인 성공
+               const user = {
+                   studentId: '2021100215',
+                   name: '조희정',
+                   department: '경영학과',
+                   year: '3'
+               };
+               
+               // 로컬 스토리지에 저장
+               localStorage.setItem('yeonsung_user', JSON.stringify(user));
+               
+               // 로그인 상태 및 UI 업데이트
+               isLoggedIn = true;
+               userData = user;
+               updateUIForLoggedInUser(user);
+               
+               // 홈 화면으로 이동
+               switchTab('home');
+               
+               alert('로그인에 성공했습니다.');
+           } else {
+               alert('학번 또는 비밀번호가 올바르지 않습니다.');
+           }
+       }
+       
+       // 로그아웃 함수
+       function logout() {
+           if (confirm('로그아웃 하시겠습니까?')) {
+               // 로컬 스토리지에서 사용자 정보 삭제
+               localStorage.removeItem('yeonsung_user');
+               
+               // 로그인 상태 및 UI 업데이트
+               isLoggedIn = false;
+               userData = null;
+               updateUIForLoggedOutUser();
+               
+               // 홈 화면으로 이동
+               switchTab('home');
+               
+               alert('로그아웃 되었습니다.');
+           }
+       }
+       
        // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
        const buildingData = [
            {
@@ -1453,30 +1777,6 @@
        // 페이지네이션 변수
        let currentPage = 1;
        const buildingsPerPage = 5;
-       
-       // 페이지 로드시 실행될 함수
-       document.addEventListener('DOMContentLoaded', function() {
-           // 시설 탭 초기화
-           initFacilityTab();
-           
-           // 네이버 지도 초기화 - 약간 지연시켜 실행
-           setTimeout(initNaverMap, 500);
-           
-           // 탭 전환 시 지도 갱신을 위한 이벤트 리스너
-           document.querySelectorAll('.tab-item').forEach(item => {
-               item.addEventListener('click', function() {
-                   const tabId = this.textContent.trim().toLowerCase();
-                   if (tabId.includes('시설')) {
-                       setTimeout(function() {
-                           if (naverMap) {
-                               window.dispatchEvent(new Event('resize'));
-                               naverMap.refresh();
-                           }
-                       }, 300);
-                   }
-               });
-           });
-       });
        
        // 시설 탭 초기화 함수
        function initFacilityTab() {
@@ -1756,14 +2056,24 @@
            }
        }
        
-       // 탭 전환 함수 - 시설 탭으로 전환 시 지도 갱신
+       // 탭 전환 함수 - 수정
        function switchTab(tabName) {
-           // 모든 탭 콘텐츠 숨기기
-           document.querySelectorAll('.tab-content').forEach(tab => {
-               tab.classList.remove('active');
-           });
+           // 특수 페이지 처리
+           if (tabName === 'login') {
+               // 로그인 페이지로 이동
+               hideAllTabs();
+               document.getElementById('login-page').classList.add('active');
+               
+               // 탭 메뉴 비활성화
+               document.querySelectorAll('.tab-item').forEach(item => {
+                   item.classList.remove('active');
+               });
+               
+               return;
+           }
            
-           // 선택한 탭 콘텐츠 표시
+           // 일반 탭으로 전환
+           hideAllTabs();
            document.getElementById(`${tabName}-tab`).classList.add('active');
            
            // 탭 메뉴 활성화 상태 변경
@@ -1804,6 +2114,23 @@
                        naverMap.refresh();
                    }, 300);
                }
+           }
+       }
+       
+       // 모든 탭 숨기기
+       function hideAllTabs() {
+           document.querySelectorAll('.tab-content').forEach(tab => {
+               tab.classList.remove('active');
+           });
+       }
+       
+       // 페이지 이동 함수
+       function goToPage(pageName) {
+           if (pageName === 'login') {
+               // 로그인 페이지로 이동
+               switchTab('login');
+           } else {
+               alert(`${pageName} 페이지로 이동합니다.`);
            }
        }
        
@@ -2097,32 +2424,43 @@
            alert(`${notificationId} 알림 상세 내용을 확인합니다.`);
        }
        
-       // 페이지 이동 함수
-       function goToPage(pageName) {
-           alert(`${pageName} 페이지로 이동합니다.`);
-       }
-       
        // 프로필 페이지 이동 함수
        function navigateToProfilePage(pageName) {
-           alert(`내 정보 > ${pageName} 페이지로 이동합니다.`);
-       }
-       
-       // 로그아웃 함수
-       function logout() {
-           if (confirm('로그아웃 하시겠습니까?')) {
-               alert('로그아웃 되었습니다.');
+           // 로그인 상태 확인
+           if (!isLoggedIn) {
+               alert('로그인이 필요한 서비스입니다.');
+               goToPage('login');
+               return;
            }
+           
+           alert(`내 정보 > ${pageName} 페이지로 이동합니다.`);
        }
        
        // 회원 탈퇴 함수
        function deleteAccount() {
+           // 로그인 상태 확인
+           if (!isLoggedIn) {
+               alert('로그인이 필요한 서비스입니다.');
+               goToPage('login');
+               return;
+           }
+           
            if (confirm('정말 회원 탈퇴하시겠습니까? 모든 계정 정보가 삭제됩니다.')) {
+               // 회원 탈퇴 처리 - 여기서는 로그아웃만 진행
+               logout();
                alert('회원 탈퇴가 완료되었습니다.');
            }
        }
        
        // 모든 설정 초기화 함수
        function resetAllSettings() {
+           // 로그인 상태 확인
+           if (!isLoggedIn) {
+               alert('로그인이 필요한 서비스입니다.');
+               goToPage('login');
+               return;
+           }
+           
            if (confirm('모든 설정을 초기화하시겠습니까? 설정된 위젯, 메뉴, 개인화 옵션이 모두 기본값으로 돌아갑니다.')) {
                alert('모든 설정이 초기화되었습니다. 앱을 다시 시작합니다.');
            }
