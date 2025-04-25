@@ -398,12 +398,19 @@
         /* 지도 컨테이너 스타일 수정 */
         .campus-map {
             height: 350px; /* 높이 증가 */
-            width: 100%;
+            width: 100% !important; /* 너비 강제 지정 */
             position: relative;
             border-radius: 8px;
             overflow: hidden;
             margin: 16px 0;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: block; /* 항상 표시되도록 */
+        }
+        
+        /* 네이버 지도 컨테이너 스타일 */
+        #naverMap {
+            width: 100% !important;
+            height: 100% !important;
         }
         
         /* 지도 마커 정보창 스타일 */
@@ -917,6 +924,10 @@
                             <span class="lecture-professor">김민수 교수님</span>
                             <span>컴퓨터정보학과</span>
                         </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">김민수 교수님</span>
+                            <span>컴퓨터정보학과</span>
+                        </div>
                         <div class="rating-stars">★★★★★</div>
                         <div class="lecture-reviews">
                             "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
@@ -961,8 +972,8 @@
            <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
            <div id="original-content">
                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
-               <div class="campus-map" id="naverMap">
-                   <!-- 지도가 이곳에 로드됩니다 -->
+               <div class="campus-map">
+                   <div id="naverMap"></div>
                    <div class="map-control-buttons">
                        <div class="map-button" onclick="zoomIn()">🔍+</div>
                        <div class="map-button" onclick="zoomOut()">🔍-</div>
@@ -1100,7 +1111,149 @@
            <div class="content-pad"></div>
        </div>
        
-       <!-- 내 정보 탭과 알림 탭 생략 (이미 위에서 제공됨) -->
+       <!-- 내 정보 탭 -->
+       <div id="profile-tab" class="tab-content">
+           <div class="profile-section">
+               <div class="profile-image">👨‍🎓</div>
+               <div class="profile-info">
+                   <div class="profile-name">조희정</div>
+                   <div class="profile-detail">경영학과 | 3학년</div>
+                   <div class="profile-detail">학번: 2021100215</div>
+               </div>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>내 정보 관리</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                       <div class="menu-title">내 시간표</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                       <div class="menu-title">내 수강 강의</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                       <div class="menu-title">즐겨찾는 강의실</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                       <div class="menu-title">개인정보 수정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <!-- 회원 탈퇴 메뉴 추가 -->
+                   <li class="menu-item" onclick="deleteAccount()">
+                       <div class="menu-title delete-account">회원 탈퇴</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>학적 정보</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('grades')">
+                       <div class="menu-title">성적 조회</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
+                       <div class="menu-title">수강 신청 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
+                       <div class="menu-title">장학금 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('tuition')">
+                       <div class="menu-title">등록금 납부 내역</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-section">
+               <div class="section-title">
+                   <span>앱 설정</span>
+               </div>
+               
+               <ul class="menu-list">
+                   <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
+                       <div class="menu-title">알림 설정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
+                       <div class="menu-title">위젯 및 메뉴 설정</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="resetAllSettings()">
+                       <div class="menu-title">모든 설정 초기화</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="navigateToProfilePage('app-info')">
+                       <div class="menu-title">앱 정보</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+                   <li class="menu-item" onclick="logout()">
+                       <div class="menu-title">로그아웃</div>
+                       <div class="menu-arrow">›</div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+       
+       <!-- 알림 탭 -->
+       <div id="alert-tab" class="tab-content">
+           <div class="content-section">
+               <div class="section-title">
+                   <span>알림</span>
+               </div>
+               
+               <ul class="alert-list">
+                   <li class="alert-item" onclick="viewNotification('emergency')">
+                       <div class="alert-icon">📢</div>
+                       <div class="alert-info">
+                           <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
+                           <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
+                           <div class="alert-time">10분 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('classroom')">
+                       <div class="alert-icon">🏫</div>
+                       <div class="alert-info">
+                           <div class="alert-title">강의실 알림</div>
+                           <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
+                           <div class="alert-time">30분 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('assignment')">
+                       <div class="alert-icon">📝</div>
+                       <div class="alert-info">
+                           <div class="alert-title">과제 알림</div>
+                           <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
+                           <div class="alert-time">1시간 전</div>
+                       </div>
+                   </li>
+                   <li class="alert-item" onclick="viewNotification('library')">
+                       <div class="alert-icon">📚</div>
+                       <div class="alert-info">
+                           <div class="alert-title">도서관 알림</div>
+                           <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
+                           <div class="alert-time">3시간 전</div>
+                       </div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
        
        <!-- 하단 탭 메뉴 -->
        <div class="tab-menu">
@@ -1309,13 +1462,19 @@
            // 네이버 지도 초기화 - 약간 지연시켜 실행
            setTimeout(initNaverMap, 500);
            
-           // 클릭 이벤트 리스너 추가
-           document.getElementById('facility-tab').querySelector('.tab-item').addEventListener('click', function() {
-               setTimeout(function() {
-                   if (naverMap) {
-                       naverMap.refresh();
+           // 탭 전환 시 지도 갱신을 위한 이벤트 리스너
+           document.querySelectorAll('.tab-item').forEach(item => {
+               item.addEventListener('click', function() {
+                   const tabId = this.textContent.trim().toLowerCase();
+                   if (tabId.includes('시설')) {
+                       setTimeout(function() {
+                           if (naverMap) {
+                               window.dispatchEvent(new Event('resize'));
+                               naverMap.refresh();
+                           }
+                       }, 300);
                    }
-               }, 100);
+               });
            });
        });
        
@@ -1448,6 +1607,10 @@
                    return;
                }
                
+               // 컨테이너 스타일 명시적 설정
+               mapContainer.style.width = '100%';
+               mapContainer.style.height = '100%';
+               
                console.log('네이버 지도 컨테이너 확인됨');
                
                // 연성대학교 위치 (실제 좌표로 설정)
@@ -1462,13 +1625,23 @@
                    zoomControl: true,
                    zoomControlOptions: {
                        position: naver.maps.Position.TOP_RIGHT
-                   }
+                   },
+                   scaleControl: true,
+                   logoControl: true,
+                   mapDataControl: true
                };
                
                console.log('지도 옵션 설정 완료');
                
                // 지도 생성
                naverMap = new naver.maps.Map('naverMap', mapOptions);
+               
+               // 지도가 완전히 로드된 후 리사이즈 트리거
+               naver.maps.Event.once(naverMap, 'init_stylemap', function() {
+                   console.log('지도 스타일맵 초기화 완료');
+                   window.dispatchEvent(new Event('resize'));
+                   naverMap.refresh();
+               });
                
                console.log('네이버 지도 객체 생성 완료');
                
@@ -1548,14 +1721,36 @@
                
                console.log('건물 마커 추가 완료. 마커 수: ' + mapMarkers.length);
                
-               // 지도 리사이즈 이벤트
+               // 지도 리사이즈 이벤트 - 디바운스 적용
+               let resizeTimer;
                window.addEventListener('resize', function() {
-                   if (naverMap) {
-                       naverMap.refresh();
-                   }
+                   clearTimeout(resizeTimer);
+                   resizeTimer = setTimeout(function() {
+                       if (naverMap) {
+                           naverMap.refresh();
+                       }
+                   }, 200);
                });
                
                console.log('네이버 지도가 성공적으로 초기화되었습니다.');
+               
+               // 시설 탭이 표시될 때 지도 새로고침
+               const facilityTab = document.getElementById('facility-tab');
+               if (facilityTab) {
+                   const observer = new MutationObserver(function(mutations) {
+                       mutations.forEach(function(mutation) {
+                           if (mutation.attributeName === 'class' && 
+                               facilityTab.classList.contains('active')) {
+                               setTimeout(function() {
+                                   window.dispatchEvent(new Event('resize'));
+                                   naverMap.refresh();
+                               }, 300);
+                           }
+                       });
+                   });
+                   
+                   observer.observe(facilityTab, { attributes: true });
+               }
            } catch (error) {
                console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
            }
@@ -1579,22 +1774,41 @@
            // 현재 선택된 탭 버튼 활성화
            const tabItems = document.querySelectorAll('.tab-item');
            for (let i = 0; i < tabItems.length; i++) {
-               if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+               if (tabItems[i].textContent.trim().toLowerCase().includes(tabName)) {
                    tabItems[i].classList.add('active');
                    break;
                }
            }
            
            // 시설 탭으로 전환 시 지도 갱신
-           if (tabName === 'facility' && naverMap) {
-               setTimeout(() => {
+           if (tabName === 'facility') {
+               // 첫 페이지 로드
+               currentPage = 1;
+               loadBuildingsByPage(currentPage);
+               updatePaginationControls();
+               
+               // 지도 갱신을 위한 다중 시도
+               if (naverMap) {
+                   // 즉시 한 번
                    naverMap.refresh();
-               }, 100);
+                   
+                   // 약간 지연 후 다시 시도
+                   setTimeout(() => {
+                       window.dispatchEvent(new Event('resize'));
+                       naverMap.refresh();
+                   }, 100);
+                   
+                   // 300ms 후 다시 시도 (탭 전환 애니메이션 완료 후)
+                   setTimeout(() => {
+                       window.dispatchEvent(new Event('resize'));
+                       naverMap.refresh();
+                   }, 300);
+               }
            }
        }
        
-      // 지도 줌인
-      function zoomIn() {
+       // 지도 줌인
+       function zoomIn() {
            if (naverMap) {
                const currentZoom = naverMap.getZoom();
                naverMap.setZoom(currentZoom + 1);
@@ -1784,29 +1998,32 @@
        
        // 건물 상세 보기
        function showBuildingDetail(buildingId) {
-           alert(`${buildingId} 상세 페이지로 이동합니다.`);
-           
            // 해당 건물의 데이터 찾기
            const building = buildingData.find(b => b.id === buildingId);
            
-           if (building && naverMap) {
+           if (building) {
+               alert(`${building.name} 상세 정보를 확인합니다.`);
+               
                // 지도를 표시하고 해당 건물로 이동
                switchTab('facility');
                
-               // 건물 위치로 지도 중심 이동
-               const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-               naverMap.setCenter(position);
-               naverMap.setZoom(18); // 더 가깝게 줌인
-               
-               // 마커 찾기
-               const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
-               
-               if (markerIndex !== -1) {
-                   // 다른 모든 정보창 닫기
-                   infoWindows.forEach(window => window.close());
+               // 지도가 초기화되었는지 확인
+               if (naverMap) {
+                   // 건물 위치로 지도 중심 이동
+                   const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                   naverMap.setCenter(position);
+                   naverMap.setZoom(18); // 더 가깝게 줌인
                    
-                   // 해당 마커의 정보창 열기
-                   infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                   // 마커 찾기
+                   const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                   
+                   if (markerIndex !== -1) {
+                       // 다른 모든 정보창 닫기
+                       infoWindows.forEach(window => window.close());
+                       
+                       // 해당 마커의 정보창 열기
+                       infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                   }
                }
            }
        }
@@ -1814,7 +2031,6 @@
        // 편의 시설 상세 보기
        function showFacilityDetail(facilityId) {
            alert(`${facilityId} 시설 상세 정보를 확인합니다.`);
-           // 실제 구현은 생략
        }
        
        // 메인 홈으로 이동
@@ -1884,6 +2100,38 @@
        // 페이지 이동 함수
        function goToPage(pageName) {
            alert(`${pageName} 페이지로 이동합니다.`);
+       }
+       
+       // 프로필 페이지 이동 함수
+       function navigateToProfilePage(pageName) {
+           alert(`내 정보 > ${pageName} 페이지로 이동합니다.`);
+       }
+       
+       // 로그아웃 함수
+       function logout() {
+           if (confirm('로그아웃 하시겠습니까?')) {
+               alert('로그아웃 되었습니다.');
+           }
+       }
+       
+       // 회원 탈퇴 함수
+       function deleteAccount() {
+           if (confirm('정말 회원 탈퇴하시겠습니까? 모든 계정 정보가 삭제됩니다.')) {
+               alert('회원 탈퇴가 완료되었습니다.');
+           }
+       }
+       
+       // 모든 설정 초기화 함수
+       function resetAllSettings() {
+           if (confirm('모든 설정을 초기화하시겠습니까? 설정된 위젯, 메뉴, 개인화 옵션이 모두 기본값으로 돌아갑니다.')) {
+               alert('모든 설정이 초기화되었습니다. 앱을 다시 시작합니다.');
+           }
+       }
+       
+       // 프로필 드롭다운 토글 함수
+       function toggleProfileDropdown() {
+           const dropdown = document.querySelector('.profile-dropdown');
+           dropdown.classList.toggle('active');
        }
    </script>
 </body>
