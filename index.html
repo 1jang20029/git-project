@@ -411,8 +411,8 @@
             max-height: 100%;
         }
         
-        /* 지도 마커 정보창 스타일 */
-        .map-info-window {
+         /* 지도 마커 정보창 스타일 */
+         .map-info-window {
             padding: 8px 12px;
             background: white;
             border-radius: 4px;
@@ -1690,6 +1690,19 @@
                     window.dispatchEvent(new Event('resize'));
                     naverMap.refresh();
                 });
+
+                // 메인 마커 추가 (연성대학교 위치)
+               const mainMarker = new naver.maps.Marker({
+                   position: yeonsung,
+                   map: naverMap,
+                   title: '연성대학교',
+                   zIndex: 100,
+                   icon: {
+                       content: `<div style="background-color: #2196F3; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">연성대학교</div>`,
+                       anchor: new naver.maps.Point(50, 15)
+                   }
+               });
+               mapMarkers.push(mainMarker);
         
                 // 마커 생성 로직은 그대로 유지...
         
