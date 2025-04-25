@@ -1665,33 +1665,43 @@
        function initNaverMap() {
            // 네이버 지도 라이브러리가 로드되었는지 확인
            if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-               console.log('네이버 지도 API가 로드되지 않았습니다.');
-               return;
-           }
-           
-           try {
-               // 지도 컨테이너 존재 확인
-               const mapContainer = document.getElementById('naverMap');
-               if (!mapContainer) {
-                   console.log('지도 컨테이너가 존재하지 않습니다.');
-                   return;
-               }
+            console.error('네이버 지도 API가 로드되지 않았습니다. 다시 시도합니다.');
+            setTimeout(initNaverMap, 1000);
+            return;
+        }
+                        
+        try {
+        // 지도 컨테이너 존재 확인
+        const mapContainer = document.getElementById('naverMap');
+        if (!mapContainer) {
+            console.error('지도 컨테이너가 존재하지 않습니다.');
+            return;
+        }
+
+         // 컨테이너 스타일 명시적 설정
+         mapContainer.style.width = '100%';
+        mapContainer.style.height = '350px';
+        
+        console.log('네이버 지도 컨테이너 확인됨')
+        
+        // 연성대학교 위치 (실제 좌표로 설정)
+        const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
                
-               // 연성대학교 위치 (실제 좌표로 설정)
-               const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-               
-               // 지도 옵션
-               const mapOptions = {
-                   center: yeonsung,
-                   zoom: 16,
-                   minZoom: 14,
-                   maxZoom: 19,
-                   zoomControl: false,
-                   mapTypeControl: false,
-                   scaleControl: false,
-                   logoControl: false,
-                   mapDataControl: false
-               };
+        // 지도 옵션
+        const mapOptions = {
+            center: yeonsung,
+            zoom: 16,
+            minZoom: 14,
+            maxZoom: 19,
+            zoomControl: true,
+            zoomControlOptions: {
+                position: naver.maps.Position.TOP_RIGHT
+            },
+            scaleControl: true,
+            logoControl: true,
+            mapDataControl: true
+        };
+        console.log('지도 옵션 설정 완료');
                
                // 지도 생성
                naverMap = new naver.maps.Map('naverMap', mapOptions);
