@@ -1661,110 +1661,123 @@
            });
        });
        
-       // 네이버 지도 초기화 함수 수정
-        function initNaverMap() {
-            console.log('네이버 지도 초기화 시작...');
-            
-            // 네이버 지도 라이브러리가 로드되었는지 확인
-            if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-                console.error('네이버 지도 API가 로드되지 않았습니다. 다시 시도합니다.');
-                setTimeout(initNaverMap, 1000);
-                return;
-            }
-            
-            try {
-                // 지도 컨테이너 존재 확인
-                const mapContainer = document.getElementById('naverMap');
-                if (!mapContainer) {
-                    console.error('지도 컨테이너가 존재하지 않습니다.');
-                    return;
-                }
-                
-                // 컨테이너 스타일 명시적 설정
-                mapContainer.style.width = '100%';
-                mapContainer.style.height = '350px';
-                
-                console.log('네이버 지도 컨테이너 확인됨');
-                
-                // 연성대학교 위치 (실제 좌표로 설정)
-                const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-                
-                // 지도 옵션
-                const mapOptions = {
-                    center: yeonsung,
-                    zoom: 16,
-                    minZoom: 14,
-                    maxZoom: 19,
-                    zoomControl: true,
-                    zoomControlOptions: {
-                        position: naver.maps.Position.TOP_RIGHT
-                    },
-                    scaleControl: true,
-                    logoControl: true,
-                    mapDataControl: true
-                };
-                
-                console.log('지도 옵션 설정 완료');
-                
-                // 지도 생성
-                naverMap = new naver.maps.Map('naverMap', mapOptions);
-                
-                // 지도가 완전히 로드된 후 리사이즈 트리거
-                naver.maps.Event.once(naverMap, 'init_stylemap', function() {
-                    console.log('지도 스타일맵 초기화 완료');
-                    window.dispatchEvent(new Event('resize'));
-                    naverMap.refresh();
-                });
-                
-                // 마커 생성 로직은 그대로 유지...
-                
-                // 지도 리사이즈 이벤트 - 디바운스 적용
-                let resizeTimer;
-                window.addEventListener('resize', function() {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(function() {
-                        if (naverMap) {
-                            naverMap.refresh();
-                        }
-                    }, 200);
-                });
-                
-                // 탭 전환 시 지도 갱신
-                document.querySelectorAll('.tab-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        setTimeout(function() {
-                            if (naverMap) {
-                                window.dispatchEvent(new Event('resize'));
-                                naverMap.refresh();
-                            }
-                        }, 300);
-                    });
-                });
-                
-                // 시설 탭이 활성화될 때 추가 갱신
-                const facilityTabObserver = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.target.classList.contains('active') && 
-                            mutation.target.id === 'facility-tab') {
-                            setTimeout(function() {
-                                window.dispatchEvent(new Event('resize'));
-                                naverMap.refresh();
-                            }, 300);
-                        }
-                    });
-                });
-                
-                const facilityTab = document.getElementById('facility-tab');
-                if (facilityTab) {
-                    facilityTabObserver.observe(facilityTab, { attributes: true });
-                }
-                
-                console.log('네이버 지도가 성공적으로 초기화되었습니다.');
-            } catch (error) {
-                console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
-            }
+       function initNaverMap() {
+    console.log('네이버 지도 초기화 시작...');
+    
+    // 네이버 지도 라이브러리가 로드되었는지 확인
+    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+        console.error('네이버 지도 API가 로드되지 않았습니다. 다시 시도합니다.');
+        setTimeout(initNaverMap, 1000);
+        return;
+    }
+    
+    try {
+        // 지도 컨테이너 존재 확인
+        const mapContainer = document.getElementById('naverMap');
+        if (!mapContainer) {
+            console.error('지도 컨테이너가 존재하지 않습니다.');
+            return;
         }
+        
+        // 컨테이너 스타일 명시적 설정
+        mapContainer.style.width = '100%';
+        mapContainer.style.height = '350px';
+        
+        console.log('네이버 지도 컨테이너 확인됨');
+        
+        // 연성대학교 위치 (실제 좌표로 설정)
+        const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+        
+        // 지도 옵션
+        const mapOptions = {
+            center: yeonsung,
+            zoom: 16,
+            minZoom: 14,
+            maxZoom: 19,
+            zoomControl: true,
+            zoomControlOptions: {
+                position: naver.maps.Position.TOP_RIGHT
+            },
+            scaleControl: true,
+            logoControl: true,
+            mapDataControl: true
+        };
+        
+        console.log('지도 옵션 설정 완료');
+        
+        // 지도 생성
+        naverMap = new naver.maps.Map('naverMap', mapOptions);
+        
+        // 마커 이미지 커스터마이징 (건물을 나타내는 아이콘)
+        const markerIcon = {
+            content: '<div style="background-color: #c62917; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>',
+            size: new naver.maps.Size(22, 22),
+            anchor: new naver.maps.Point(11, 11)
+        };
+        
+        // 건물 마커 생성
+        buildingData.forEach(function(building) {
+            // 마커 생성
+            const marker = new naver.maps.Marker({
+                map: naverMap,
+                position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                icon: markerIcon,
+                title: building.name
+            });
+            mapMarkers.push(marker);
             
+            // 정보창 내용 생성
+            const contentString = `
+                <div class="map-info-window">
+                    <div class="map-info-title">${building.name}</div>
+                    <div class="map-info-desc">${building.description}</div>
+                </div>
+            `;
+            
+            // 정보창 생성
+            const infoWindow = new naver.maps.InfoWindow({
+                content: contentString,
+                maxWidth: 250,
+                backgroundColor: "white",
+                borderColor: "#c62917",
+                borderWidth: 2,
+                pixelOffset: new naver.maps.Point(10, -10)
+            });
+            infoWindows.push(infoWindow);
+            
+            // 마커 클릭 이벤트 추가
+            naver.maps.Event.addListener(marker, 'click', function() {
+                // 다른 모든 정보창 닫기
+                infoWindows.forEach(window => window.close());
+                
+                // 클릭된 마커의 정보창 열기
+                infoWindow.open(naverMap, marker);
+            });
+        });
+        
+        // 지도가 완전히 로드된 후 리사이즈 트리거
+        naver.maps.Event.once(naverMap, 'init_stylemap', function() {
+            console.log('지도 스타일맵 초기화 완료');
+            window.dispatchEvent(new Event('resize'));
+            naverMap.refresh();
+        });
+        
+        // 지도 리사이즈 이벤트 - 디바운스 적용
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (naverMap) {
+                    naverMap.refresh();
+                }
+            }, 200);
+        });
+        
+        console.log('네이버 지도가 성공적으로 초기화되었습니다.');
+    } catch (error) {
+        console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
+    }
+}
        // 길찾기 기능
        function navigateToBuilding(buildingId, event) {
            // 이벤트 버블링 방지
