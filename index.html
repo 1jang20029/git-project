@@ -1722,6 +1722,12 @@
                    }
                });
                mapMarkers.push(mainMarker);
+               // 지도가 완전히 로드된 후 리사이즈 트리거
+        naver.maps.Event.once(naverMap, 'init_stylemap', function() {
+            console.log('지도 스타일맵 초기화 완료');
+            window.dispatchEvent(new Event('resize'));
+            naverMap.refresh();
+        });
                
                // 건물 데이터를 기반으로 마커 생성
                buildingData.forEach(building => {
