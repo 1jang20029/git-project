@@ -1637,72 +1637,72 @@
         });
         
         // 네이버 지도 초기화 함수 수정
-function initNaverMap() {
-    console.log('네이버 지도 초기화 시작...');
+        function initNaverMap() {
+            console.log('네이버 지도 초기화 시작...');
     
-    // 네이버 지도 라이브러리가 로드되었는지 확인
-    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-        console.error('네이버 지도 API가 로드되지 않았습니다. 다시 시도합니다.');
-        setTimeout(initNaverMap, 1000);
-        return;
-    }
+            // 네이버 지도 라이브러리가 로드되었는지 확인
+            if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+                console.error('네이버 지도 API가 로드되지 않았습니다. 다시 시도합니다.');
+                setTimeout(initNaverMap, 1000);
+                return;
+            }
     
-    try {
-        // 지도 컨테이너 존재 확인
-        const mapContainer = document.getElementById('naverMap');
-        if (!mapContainer) {
-            console.error('지도 컨테이너가 존재하지 않습니다.');
-            return;
-        }
-        
-        // 컨테이너 스타일 명시적 설정
-        mapContainer.style.width = '100%';
-        mapContainer.style.height = '350px';
-        
-        console.log('네이버 지도 컨테이너 확인됨');
-        
-        // 연성대학교 위치 (실제 좌표로 설정)
-        const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-        
-        // 지도 옵션
-        const mapOptions = {
-            center: yeonsung,
-            zoom: 16,
-            minZoom: 14,
-            maxZoom: 19,
-            zoomControl: true,
-            zoomControlOptions: {
-                position: naver.maps.Position.TOP_RIGHT
-            },
-            scaleControl: true,
-            logoControl: true,
-            mapDataControl: true
-        };
-        
-        console.log('지도 옵션 설정 완료');
-        
-        // 지도 생성
-        naverMap = new naver.maps.Map('naverMap', mapOptions);
-        
-        // 지도가 완전히 로드된 후 리사이즈 트리거
-        naver.maps.Event.once(naverMap, 'init_stylemap', function() {
-            console.log('지도 스타일맵 초기화 완료');
-            window.dispatchEvent(new Event('resize'));
-            naverMap.refresh();
-        });
-        
-        // 마커 생성 로직은 그대로 유지...
-        
-        // 지도 리사이즈 이벤트 - 디바운스 적용
-        let resizeTimer;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                if (naverMap) {
-                    naverMap.refresh();
+            try {
+            // 지도 컨테이너 존재 확인
+                const mapContainer = document.getElementById('naverMap');
+                if (!mapContainer) {
+                    console.error('지도 컨테이너가 존재하지 않습니다.');
+                    return;
                 }
-            }, 200);
-        });
+        
+                // 컨테이너 스타일 명시적 설정
+                mapContainer.style.width = '100%';
+                mapContainer.style.height = '350px';
+        
+                console.log('네이버 지도 컨테이너 확인됨');
+        
+                // 연성대학교 위치 (실제 좌표로 설정)
+                const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+        
+                // 지도 옵션
+                const mapOptions = {
+                    center: yeonsung,
+                    zoom: 16,
+                    minZoom: 14,
+                    maxZoom: 19,
+                    zoomControl: true,
+                    zoomControlOptions: {
+                        position: naver.maps.Position.TOP_RIGHT
+                    },
+                    scaleControl: true,
+                    logoControl: true,
+                    mapDataControl: true
+                };
+        
+                console.log('지도 옵션 설정 완료');
+        
+                // 지도 생성
+                naverMap = new naver.maps.Map('naverMap', mapOptions);
+        
+                // 지도가 완전히 로드된 후 리사이즈 트리거
+            naver.maps.Event.once(naverMap, 'init_stylemap', function() {
+                    console.log('지도 스타일맵 초기화 완료');
+                    window.dispatchEvent(new Event('resize'));
+                    naverMap.refresh();
+                });
+        
+                // 마커 생성 로직은 그대로 유지...
+        
+                // 지도 리사이즈 이벤트 - 디바운스 적용
+                let resizeTimer;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(function() {
+                    if (naverMap) {
+                        naverMap.refresh();
+                    }
+                }, 200);
+            });
         
         // 탭 전환 시 지도 갱신
         document.querySelectorAll('.tab-item').forEach(item => {
