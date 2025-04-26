@@ -1869,10 +1869,23 @@ function navigateToBuilding(buildingId, event) {
         // 시설 탭으로 전환
         switchTab('facility');
         
-        // 약간의 지연 후 지도 표시 (탭 전환 완료 후)
+        // 충분한 지연 후 지도 표시 (탭 전환 완료 후)
         setTimeout(() => {
+            // 지도 컨테이너를 먼저 확인하고 크기 설정
+            const mapContainer = document.getElementById('naverMap');
+            if (mapContainer) {
+                mapContainer.style.width = '100%';
+                mapContainer.style.height = '350px';
+            }
+            
             // 지도가 초기화되었는지 확인
             if (naverMap) {
+                // 강제로 지도 크기 재계산
+                window.dispatchEvent(new Event('resize'));
+                
+                // 지도 갱신
+                naverMap.refresh();
+                
                 // 건물 위치로 지도 중심 이동
                 const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
                 naverMap.setCenter(position);
@@ -1890,13 +1903,16 @@ function navigateToBuilding(buildingId, event) {
                     infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
                 }
                 
-                // 지도 갱신
-                naverMap.refresh();
+                // 약간의 지연 후 다시 한번 지도 갱신
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                    naverMap.refresh();
+                }, 300);
             } else {
                 // 지도가 초기화되지 않았으면 알림
                 alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
             }
-        }, 500); // 500ms 지연으로 탭 전환 완료 확인
+        }, 800); // 지연 시간을 늘려 탭 전환이 완전히 완료되도록 함
     }
 }
        
