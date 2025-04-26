@@ -1851,45 +1851,54 @@
             }
         }
             
-       // 길찾기 기능
-       function navigateToBuilding(buildingId, event) {
-           // 이벤트 버블링 방지
-           if (event) {
-               event.stopPropagation();
-           }
-           
-           // 해당 건물의 데이터 찾기
-           const building = buildingData.find(b => b.id === buildingId);
-           
-           if (building) {
-               alert(`${building.name}으로 길찾기를 시작합니다.`);
-               
-               // 지도를 표시하고 해당 건물로 이동
-               switchTab('facility');
-               
-               // 지도가 초기화되었는지 확인
-               if (naverMap) {
-                   // 건물 위치로 지도 중심 이동
-                   const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-                   naverMap.setCenter(position);
-                   naverMap.setZoom(18); // 더 가깝게 줌인
-                   
-                   // 마커 찾기
-                   const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
-                   
-                   if (markerIndex !== -1) {
-                       // 다른 모든 정보창 닫기
-                       infoWindows.forEach(window => window.close());
-                       
-                       // 해당 마커의 정보창 열기
-                       infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
-                   }
-               } else {
-                   // 지도가 초기화되지 않았으면 알림
-                   alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-               }
-           }
-       }
+      // 길찾기 기능
+function navigateToBuilding(buildingId, event) {
+    // 이벤트 버블링 방지 (중요)
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    // 해당 건물의 데이터 찾기
+    const building = buildingData.find(b => b.id === buildingId);
+    
+    if (building) {
+        // 알림 표시
+        alert(`${building.name}으로 길찾기를 시작합니다.`);
+        
+        // 시설 탭으로 전환
+        switchTab('facility');
+        
+        // 약간의 지연 후 지도 표시 (탭 전환 완료 후)
+        setTimeout(() => {
+            // 지도가 초기화되었는지 확인
+            if (naverMap) {
+                // 건물 위치로 지도 중심 이동
+                const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                naverMap.setCenter(position);
+                naverMap.setZoom(18); // 더 가깝게 줌인
+                
+                // 마커 찾기
+                const markerIndex = mapMarkers.findIndex(marker => 
+                    marker.getTitle() === building.name);
+                
+                if (markerIndex !== -1) {
+                    // 다른 모든 정보창 닫기
+                    infoWindows.forEach(window => window.close());
+                    
+                    // 해당 마커의 정보창 열기
+                    infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                }
+                
+                // 지도 갱신
+                naverMap.refresh();
+            } else {
+                // 지도가 초기화되지 않았으면 알림
+                alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+            }
+        }, 500); // 500ms 지연으로 탭 전환 완료 확인
+    }
+}
        
        // 지도 줌인
        function zoomIn() {
