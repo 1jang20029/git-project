@@ -1568,7 +1568,6 @@
                        paginationContainer.appendChild(ellipsis);
                    }
                }
-               
                // 페이지 번호 표시
                for (let i = startPage; i <= endPage; i++) {
                    const pageButton = document.createElement('button');
@@ -1998,6 +1997,161 @@
                });
            });
        }
+        
+       // 시설 검색 함수 개선
+       function searchFacilities(query) {
+           // 검색어가 없으면 원래 내용 표시하고 결과 숨기기
+           if (!query || query.trim() === '') {
+               document.getElementById('original-content').style.display = 'block';
+               document.getElementById('search-results').style.display = 'none';
+               document.getElementById('no-results').style.display = 'none';
+               return;
+           }
+           
+           // 검색어를 소문자로 변환 (영어 대소문자 구분 없애기)
+           const searchTerm = query.trim().toLowerCase();
+           
+           // 건물 및 편의시설 데이터 합치기
+           const allFacilities = [...buildingData, ...facilityData];
+           
+           // 검색어와 일치하는 시설 찾기
+           const results = allFacilities.filter(facility => {
+               // 이름, 설명에서 검색어 포함 여부 확인 (대소문자 구분 없이)
+               const nameMatch = facility.name.toLowerCase().includes(searchTerm);
+               const descMatch = facility.description.toLowerCase().includes(searchTerm);
+               
+               return nameMatch || descMatch;
+           });
+           
+           // 검색 결과 컨테이너
+           const searchResultsContainer = document.getElementById('search-results');
+           searchResultsContainer.innerHTML = '';
+           
+           // 검색 결과가 있으면 표시
+           if (results.length > 0) {
+               // 원래 내용 숨기고 검색 결과 표시
+               document.getElementById('original-content').style.display = 'none';
+               searchResultsContainer.style.display = 'block';
+               document.getElementById('no-results').style.display = 'none';
+               
+               // 결과 목록 생성 - 간단한 목록 형태로 표시
+               const resultsList = document.createElement('ul');
+               resultsList.className = 'building-list';
+               
+               results.forEach(item => {
+                   const resultItem = document.createElement('li');
+                   resultItem.className = 'building-item';
+                   resultItem.onclick = function() {
+                       showBuildingDetail(item.id);
+                   };
+                   
+                   resultItem.innerHTML = `
+                       <div class="building-image">
+                           <img src="${item.image}" alt="${item.name}">
+                       </div>
+                       <div class="building-info-container">
+                           <div class="building-info">
+                               <div class="building-name">${item.name}</div>
+                               <div class="building-description">${item.description}</div>
+                           </div>
+                           <div class="building-nav-button" onclick="navigateToBuilding('${item.id}', event)">
+                               <span>길찾기</span>
+                               <span>🧭</span>
+                           </div>
+                       </div>
+                   `;
+                   
+                   resultsList.appendChild(resultItem);
+               });
+               
+               searchResultsContainer.appendChild(resultsList);
+           } else {
+               // 검색 결과가 없으면 안내 메시지 표시
+               document.getElementById('original-content').style.display = 'none';
+               searchResultsContainer.style.display = 'none';
+               document.getElementById('no-results').style.display = 'block';
+           }
+       }
+
+       // 검색 입력 이벤트 리스너 추가
+       document.addEventListener('DOMContentLoaded', function() {
+           const facilitySearchInput = document.getElementById('facility-search-input');
+           if (facilitySearchInput) {
+               // input 이벤트로 변경하여 실시간 검색 구현 (keypress 대신)
+               facilitySearchInput.addEventListener('input', function(event) {
+                   searchFacilities(this.value);
+               });
+           }
+           
+           // 메인 검색창에도 실시간 검색 이벤트 추가
+           const mainSearchInput = document.querySelector('.search-bar .search-input');
+           if (mainSearchInput) {
+               mainSearchInput.addEventListener('input', function(event) {
+                   // 실시간 검색 결과를 표시할 컨테이너가 없다면 생성
+                   let searchResults = document.querySelector('.search-results');
+                   if (!searchResults) {
+                       searchResults = document.createElement('div');
+                       searchResults.className = 'search-results';
+                       mainSearchInput.parentNode.insertAdjacentElement('afterend', searchResults);
+                   }
+                   
+                   // 검색어가 없으면 결과 숨기기
+                   if (!this.value.trim()) {
+                       searchResults.style.display = 'none';
+                       return;
+                   }
+                   
+                   // 검색어를 소문자로 변환
+                   const searchTerm = this.value.trim().toLowerCase();
+                   
+                   // 건물 및 편의시설 데이터 합치기
+                   const allItems = [...buildingData, ...facilityData];
+                   
+                   // 검색어와 일치하는 항목 찾기
+                   const results = allItems.filter(item => {
+                       return item.name.toLowerCase().includes(searchTerm) || 
+                              item.description.toLowerCase().includes(searchTerm);
+                   }).slice(0, 5); // 최대 5개 결과만 표시
+                   
+                   // 검색 결과 표시
+                   searchResults.innerHTML = '';
+                   
+                   if (results.length > 0) {
+                       const resultsList = document.createElement('ul');
+                       resultsList.className = 'building-list';
+                       
+                       results.forEach(item => {
+                           const resultItem = document.createElement('li');
+                           resultItem.className = 'building-item';
+                           resultItem.onclick = function() {
+                               showBuildingDetail(item.id);
+                           };
+                           
+                           resultItem.innerHTML = `
+                               <div class="building-image">
+                                   <img src="${item.image}" alt="${item.name}">
+                               </div>
+                               <div class="building-info-container">
+                                   <div class="building-info">
+                                       <div class="building-name">${item.name}</div>
+                                       <div class="building-description">${item.description}</div>
+                                   </div>
+                               </div>
+                           `;
+                           
+                           resultsList.appendChild(resultItem);
+                       });
+                       
+                       searchResults.appendChild(resultsList);
+                       searchResults.style.display = 'block';
+                   } else {
+                       searchResults.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
+                       searchResults.style.display = 'block';
+                   }
+               });
+           }
+       });
+       
        // 탭 전환 함수 - 시설 탭으로 전환 시 페이지네이션 초기화 추가
        function switchTab(tabName) {
            // 모든 탭 콘텐츠 숨기기
@@ -2098,7 +2252,7 @@
    
        // 선택된 카테고리 활성화
        communityTab.querySelectorAll('.category-tag').forEach(tag => {
-           if (tag.textContent.toLowerCase().includes(category) || 
+        if (tag.textContent.toLowerCase().includes(category) || 
                (category === 'all' && tag.textContent === '전체')) {
                tag.classList.add('active');
            }
