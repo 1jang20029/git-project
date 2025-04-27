@@ -2260,8 +2260,8 @@ function deleteAccount() {
         window.location.href = 'login.html';
     }
 }
-// 검색 기능 개선 - 한글, 영어, 한영 오타 대응
-function searchFacilities(query) {
+    // 검색 기능 개선 - 한글, 영어, 한영 오타 대응
+    function searchFacilities(query) {
     // 검색어가 없으면 원래 콘텐츠 표시
     if (!query.trim()) {
         document.getElementById('original-content').style.display = 'block';
@@ -2441,7 +2441,6 @@ function searchFacilities(query) {
         originalContent.style.display = 'none';
     }
 }
-
 // 검색 입력 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('facility-search-input');
