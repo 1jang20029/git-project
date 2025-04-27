@@ -1,1440 +1,2897 @@
-// 네비게이션 관련 함수 추가
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연성대학교 캠퍼스 가이드</title>
+    <!-- 네이버 지도 API 스크립트 추가 -->
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            padding-bottom: 60px; /* 하단 탭 메뉴 영역만큼 패딩 추가 */
+            position: relative;
+        }
+        
+        header {
+            background-color: #c62917;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .login-button {
+            padding: 6px 12px;
+            background-color: white;
+            color: #c62917;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .profile-dropdown-container {
+            position: relative;
+        }
+        
+        .header-profile-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            width: 220px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .profile-dropdown.active {
+            display: block;
+        }
+        
+        .dropdown-profile-info {
+            padding: 16px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-profile-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .dropdown-profile-detail {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .dropdown-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .search-bar {
+            padding: 12px 16px;
+            background-color: #f9f9f9;
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        /* 검색 결과 스타일 */
+        .search-results {
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 0 16px;
+            overflow: hidden;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .no-results {
+            padding: 16px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .notification-banner {
+            background-color: #ffebee;
+            padding: 12px 16px;
+            border-bottom: 1px solid #ffcdd2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .urgent-icon {
+            color: #c62917;
+            font-weight: bold;
+        }
+        
+        .notification-text {
+            font-size: 14px;
+            flex: 1;
+        }
+        
+        .shortcut-menu {
+            display: flex;
+            padding: 16px;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .shortcut-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+            cursor: pointer;
+        }
+        
+        .shortcut-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+        
+        .shortcut-text {
+            font-size: 12px;
+            text-align: center;
+            color: #555;
+        }
+        
+        .content-section {
+            padding: 16px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .see-all {
+            font-size: 13px;
+            color: #888;
+            text-decoration: none;
+        }
+        
+        .notice-list {
+            list-style: none;
+        }
+        
+        .notice-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        
+        .notice-category {
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+        }
+        
+        .notice-date {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .notice-title {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+        
+        .notice-summary {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .facility-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .facility-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .facility-image {
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .facility-info {
+            padding: 10px;
+        }
+        
+        .facility-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .facility-location {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .lecture-list {
+            list-style: none;
+        }
+        
+        .lecture-item {
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        
+        .lecture-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .lecture-title {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        
+        .lecture-rating {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .lecture-info {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .lecture-professor {
+            color: #333;
+        }
+        
+        .lecture-reviews {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 하단 탭 메뉴 수정 - 항상 표시되도록 */
+        .tab-menu {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            border-top: 1px solid #ddd;
+            z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 추가 */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* 약간의 그림자 추가 */
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 12px;
+            color: #888;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: #c62917;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        
+        /* 지도 컨테이너 스타일 수정 */
+        .campus-map {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 16px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        
+        .campus-map img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        /* 지도 마커 정보창 스타일 */
+        .map-info-window {
+            padding: 8px 12px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            font-size: 13px;
+            max-width: 200px;
+        }
+        
+        .map-info-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .map-info-desc {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        /* 지도 버튼 스타일 */
+        .map-control-buttons {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .map-button {
+            padding: 8px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .content-pad {
+            padding-bottom: 60px; /* 하단 탭 메뉴 높이만큼 여백 */
+        }
 
-// 길찾기 모달 HTML 
-const navigationModalHTML = `
-<div id="navigation-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>길찾기</h3>
-            <span class="close-button" onclick="closeNavigationModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div class="navigation-options">
-                <div class="nav-option-group">
-                    <label>찾는 장소 유형</label>
-                    <div class="option-buttons">
-                        <button id="building-option" class="option-button active" onclick="setNavigationType('building')">건물</button>
-                        <button id="classroom-option" class="option-button" onclick="setNavigationType('classroom')">강의실</button>
+        /* 탭 콘텐츠 */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 건물 및 교실 목록 */
+        .building-list {
+            list-style: none;
+        }
+        
+        /* 건물 목록 항목 재디자인 */
+        .building-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .building-image {
+            width: 80px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 12px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .building-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .building-info-container {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .building-info {
+            flex: 1;
+        }
+        
+        .building-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .building-description {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .building-nav-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .building-nav-button:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .building-nav-button span:first-child {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        
+        .building-nav-button span:last-child {
+            font-size: 18px;
+        }
+        
+        /* 강의 평가 스타일 */
+        .rating-stars {
+            color: #ffb400;
+            letter-spacing: 2px;
+        }
+        
+        /* 카테고리 필터 */
+        .category-filter {
+            display: flex;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .category-tag {
+            flex-shrink: 0;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            margin-right: 8px;
+            font-size: 13px;
+            color: #555;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .category-tag.active {
+            background-color: #c62917;
+            color: white;
+            border-color: #c62917;
+        }
+        
+        /* 알림 리스트 */
+        .alert-list {
+            list-style: none;
+        }
+        
+        .alert-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            cursor: pointer;
+        }
+        
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .alert-info {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        
+        .alert-message {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .alert-time {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .alert-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background-color: #c62917;
+            color: white;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        /* 내 정보 탭 */
+        .profile-section {
+            padding: 24px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .profile-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background-color: #f0f0f0;
+            margin-right: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            overflow: hidden;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .profile-detail {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .menu-list {
+            list-style: none;
+        }
+        
+        .menu-item {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .menu-title {
+            font-size: 15px;
+        }
+        
+        .menu-arrow {
+            color: #ccc;
+        }
+
+        /* 공지사항 상세 */
+        .notice-detail {
+            padding: 20px 16px;
+        }
+        
+        .notice-detail-header {
+            margin-bottom: 16px;
+        }
+        
+        .notice-detail-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .notice-detail-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .notice-detail-content {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* 로딩 인디케이터 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        /* 헤더 프로필 이미지 스타일 */
+        .header-profile-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-left: 8px;
+        }
+        
+        /* 프로필 이미지 스타일 */
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        
+        /* 회원 탈퇴 버튼 스타일 */
+        .delete-account {
+            color: #e53935;
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            padding: 16px 0;
+            gap: 10px;
+        }
+        
+        .pagination-button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .pagination-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .pagination-button.active {
+            background-color: #c62917;
+            border-color: #c62917;
+            color: white;
+        }
+        
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo" onclick="goToHome()">연성대학교</div>
+            <div class="header-icons">
+                <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
+                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
+                <div class="profile-dropdown-container" style="display: none;">
+                    <div class="header-profile-image" onclick="toggleProfileDropdown()">
+                        <!-- 여기에 프로필 이미지가 들어갑니다 -->
+                        <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
                     </div>
-                </div>
-                
-                <!-- 건물 선택 드롭다운 -->
-                <div id="building-selection" class="nav-input-group">
-                    <label for="building-select">건물 선택</label>
-                    <select id="building-select" class="nav-select">
-                        <option value="">건물을 선택하세요</option>
-                        <!-- 건물 옵션들은 자바스크립트로 동적 추가 -->
-                    </select>
-                </div>
-                
-                <!-- 강의실 입력 폼 (기본적으로 숨김) -->
-                <div id="classroom-input" class="nav-input-group" style="display: none;">
-                    <label for="classroom-number">강의실 번호</label>
-                    <input type="text" id="classroom-number" class="nav-input" placeholder="예: 3-101">
-                    <div class="helper-text">건물-호수 형식으로 입력하세요 (예: 공학1관-101)</div>
-                    
-                    <!-- 자주 찾는 강의실 버튼들 -->
-                    <div class="quick-classroom-buttons">
-                        <div class="helper-text">자주 찾는 강의실:</div>
-                        <div class="quick-buttons">
-                            <button class="quick-button" onclick="setClassroom('공학1관-101')">공학1관-101</button>
-                            <button class="quick-button" onclick="setClassroom('문화1관-203')">문화1관-203</button>
-                            <button class="quick-button" onclick="setClassroom('도의관-301')">도의관-301</button>
+                    <div class="profile-dropdown">
+                        <div class="dropdown-profile-info">
+                            <div class="dropdown-profile-name">사용자</div>
+                            <div class="dropdown-profile-detail">학과 | 학년</div>
+                            <div class="dropdown-profile-detail">학번: 0000000000</div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="goToPage('profile-edit')">
+                            <span class="dropdown-icon">✏️</span>
+                            <span>프로필 수정</span>
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <span class="dropdown-icon">🚪</span>
+                            <span>로그아웃</span>
                         </div>
                     </div>
                 </div>
-                
-                <!-- 출발지 선택 (현재 위치 또는 다른 건물) -->
-                <div class="nav-input-group">
-                    <label for="start-point">출발지</label>
-                    <select id="start-point" class="nav-select">
-                        <option value="current">현재 위치</option>
-                        <!-- 출발지 옵션들은 자바스크립트로 동적 추가 -->
-                    </select>
+            </div>
+        </header>
+        
+        <!-- 홈 탭 -->
+        <div id="home-tab" class="tab-content active">
+            <!-- 긴급 알림 배너 -->
+            <div class="notification-banner" onclick="viewNotification('emergency')">
+                <span class="urgent-icon">📢</span>
+                <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
+            </div>
+            
+            <!-- 검색 바 -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
+            </div>
+            
+            <!-- 바로가기 메뉴 -->
+            <div class="shortcut-menu">
+                <div class="shortcut-item" onclick="switchTab('facility')">
+                    <div class="shortcut-icon">🏫</div>
+                    <div class="shortcut-text">강의실</div>
+                </div>
+                <div class="shortcut-item" onclick="switchTab('community')">
+                    <div class="shortcut-icon">📝</div>
+                    <div class="shortcut-text">강의평가</div>
+                </div>
+                <div class="shortcut-item" onclick="goToPage('shuttle')">
+                    <div class="shortcut-icon">🚌</div>
+                    <div class="shortcut-text">셔틀버스</div>
+                </div>
+                <div class="shortcut-item" onclick="goToPage('cafeteria')">
+                    <div class="shortcut-icon">🍽️</div>
+                    <div class="shortcut-text">학식</div>
+                </div>
+                <div class="shortcut-item" onclick="goToPage('academic-calendar')">
+                    <div class="shortcut-icon">📅</div>
+                    <div class="shortcut-text">학사일정</div>
+                </div>
+            </div>
+            
+            <!-- 공지사항 섹션 -->
+            <div class="content-section">
+                <div class="section-title">
+                    <span>주요 공지사항</span>
+                    <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
                 </div>
                 
-                <!-- 이동 방식 선택 -->
-                <div class="nav-input-group">
-                    <label>이동 방식</label>
-                    <div class="option-buttons">
-                        <button class="option-button active" onclick="setTransportMode('walking')">도보</button>
-                        <button class="option-button" onclick="setTransportMode('shuttle')">셔틀버스</button>
+                <div class="category-filter">
+                    <div class="category-tag active" onclick="filterNotices('all')">전체</div>
+                    <div class="category-tag" onclick="filterNotices('academic')">학사</div>
+                    <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
+                    <div class="category-tag" onclick="filterNotices('job')">취업</div>
+                    <div class="category-tag" onclick="filterNotices('event')">행사</div>
+                    <div class="category-tag" onclick="filterNotices('department')">학과</div>
+                </div>
+                
+                <ul class="notice-list">
+                    <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
+                    <li class="notice-item" onclick="goToNoticeDetail('notice1')">
+                        <div class="notice-header">
+                            <span class="notice-category">학사</span>
+                            <span class="notice-date">2025.04.08</span>
+                        </div>
+                        <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+                        <div class="notice-summary">
+                            4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
+                        </div>
+                    </li>
+                    <li class="notice-item" onclick="goToNoticeDetail('notice2')">
+                        <div class="notice-header">
+                            <span class="notice-category">장학</span>
+                            <span class="notice-date">2025.04.07</span>
+                        </div>
+                        <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
+                        <div class="notice-summary">
+                            국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
+                        </div>
+                    </li>
+                    <li class="notice-item" onclick="goToNoticeDetail('notice3')">
+                        <div class="notice-header">
+                            <span class="notice-category">취업</span>
+                            <span class="notice-date">2025.04.06</span>
+                        </div>
+                        <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
+                        <div class="notice-summary">
+                            4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 강의평가 섹션 -->
+            <div class="content-section">
+                <div class="section-title">
+                    <span>인기 강의평가</span>
+                    <a href="#" class="see-all" onclick="switchTab('community')">전체보기</a>
+                </div>
+                
+                <ul class="lecture-list">
+                    <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">웹 프로그래밍 실습</div>
+                            <div class="lecture-rating">4.8</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">김민수 교수님</span>
+                            <span>컴퓨터정보학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★★</div>
+                        <div class="lecture-reviews">
+                            "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                        </div>
+                    </li>
+                    <li class="lecture-item" onclick="viewLectureDetail('marketing')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">마케팅 원론</div>
+                            <div class="lecture-rating">4.5</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">이지영 교수님</span>
+                            <span>경영학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★☆</div>
+                        <div class="lecture-reviews">
+                            "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 시설 탭 -->
+        <div id="facility-tab" class="tab-content">
+            <div class="search-bar">
+                <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
+            </div>
+            
+            <!-- 검색 결과를 표시할 컨테이너 추가 -->
+            <div id="search-results" class="search-results" style="display: none;">
+                <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+            </div>
+            
+            <!-- 검색 결과가 없을 때 표시될 내용 -->
+            <div id="no-results" class="no-results" style="display: none;">
+                검색 결과가 없습니다.
+            </div>
+            
+            <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
+            <div id="original-content">
+                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
+                <div class="campus-map" id="naverMap">
+                    <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도">
+                    <div class="map-control-buttons">
+                        <div class="map-button" onclick="zoomIn()">🔍+</div>
+                        <div class="map-button" onclick="zoomOut()">🔍-</div>
+                        <div class="map-button" onclick="resetMapView()">🏠</div>
                     </div>
                 </div>
                 
-                <!-- 시작 버튼 -->
-                <button id="start-navigation-btn" class="start-navigation" onclick="startNavigation()">길찾기 시작</button>
-            </div>
-        </div>
-    </div>
-</div>
-`;
-
-// 네비게이션 안내 화면 HTML
-const navigationGuideHTML = `
-<div id="navigation-guide" class="navigation-container">
-    <div class="navigation-header">
-        <button class="back-button" onclick="cancelNavigation()">
-            <span>&larr;</span> 뒤로
-        </button>
-        <h3 id="navigation-title">길찾기</h3>
-        <button class="close-button" onclick="cancelNavigation()">
-            <span>&times;</span>
-        </button>
-    </div>
-    
-    <div class="navigation-map" id="navigation-map">
-        <!-- 네이버 지도가 여기에 표시됩니다 -->
-    </div>
-    
-    <div class="navigation-info">
-        <div class="destination-info">
-            <div class="dest-icon">🏫</div>
-            <div class="dest-details">
-                <div id="dest-name" class="dest-name">목적지 이름</div>
-                <div id="dest-desc" class="dest-desc">목적지 정보</div>
-            </div>
-        </div>
-        
-        <div class="route-info">
-            <div class="route-summary">
-                <div class="route-distance">
-                    <span class="info-label">총 거리</span>
-                    <span id="total-distance" class="info-value">0m</span>
-                </div>
-                <div class="route-time">
-                    <span class="info-label">예상 소요시간</span>
-                    <span id="total-time" class="info-value">0분</span>
-                </div>
-            </div>
-            
-            <div class="direction-steps" id="direction-steps">
-                <!-- 방향 안내 단계가 여기에 표시됩니다 -->
-            </div>
-        </div>
-    </div>
-</div>
-`;
-
-// 네비게이션 CSS 스타일
-const navigationCSS = `
-/* 모달 스타일 */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    animation: fadeIn 0.3s;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    max-width: 500px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    animation: slideIn 0.3s;
-}
-
-@keyframes slideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.modal-header {
-    padding: 16px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
-}
-
-.close-button {
-    color: #aaa;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-button:hover {
-    color: #555;
-}
-
-.modal-body {
-    padding: 16px;
-}
-
-/* 네비게이션 옵션 스타일 */
-.navigation-options {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.nav-option-group, .nav-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.option-buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.option-button {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f5f5f5;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.option-button.active {
-    background-color: #c62917;
-    color: white;
-    border-color: #c62917;
-}
-
-.nav-select, .nav-input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.helper-text {
-    font-size: 12px;
-    color: #777;
-    margin-top: 4px;
-}
-
-.quick-classroom-buttons {
-    margin-top: 12px;
-}
-
-.quick-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 4px;
-}
-
-.quick-button {
-    padding: 6px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.quick-button:hover {
-    background-color: #f0f0f0;
-}
-
-.start-navigation {
-    margin-top: 16px;
-    padding: 12px;
-    background-color: #c62917;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.start-navigation:hover {
-    background-color: #b52515;
-}
-
-/* 네비게이션 안내 화면 스타일 */
-.navigation-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    z-index: 2500;
-    display: flex;
-    flex-direction: column;
-}
-
-.navigation-header {
-    padding: 12px 16px;
-    background-color: #c62917;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-}
-
-.navigation-header h3 {
-    margin: 0;
-}
-
-.back-button, .navigation-header .close-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-.navigation-map {
-    height: 40%;
-    min-height: 250px;
-    width: 100%;
-    background-color: #f0f0f0;
-}
-
-.navigation-info {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.destination-info {
-    display: flex;
-    gap: 12px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #eee;
-}
-
-.dest-icon {
-    width: 40px;
-    height: 40px;
-    background-color: #f0f0f0;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-}
-
-.dest-details {
-    flex: 1;
-}
-
-.dest-name {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 4px;
-}
-
-.dest-desc {
-    font-size: 14px;
-    color: #666;
-}
-
-.route-info {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.route-summary {
-    display: flex;
-    justify-content: space-around;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 12px;
-}
-
-.info-label {
-    display: block;
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 4px;
-}
-
-.info-value {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
-
-.direction-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.direction-step {
-    display: flex;
-    gap: 12px;
-    padding: 12px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-}
-
-.step-icon {
-    width: 30px;
-    height: 30px;
-    background-color: #f0f0f0;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-}
-
-.step-details {
-    flex: 1;
-}
-
-.step-instruction {
-    font-size: 15px;
-    margin-bottom: 4px;
-}
-
-.step-distance {
-    font-size: 13px;
-    color: #666;
-}
-`;
-
-// 네비게이션 상태 및 변수들
-let navigationActive = false;
-let currentNavigationType = 'building'; // 'building' 또는 'classroom'
-let selectedBuildingId = '';
-let inputClassroomNumber = '';
-let selectedStartPoint = 'current';
-let transportMode = 'walking'; // 'walking' 또는 'shuttle'
-let navigationMapObject = null;
-let navigationPath = null;
-let navigationMarkers = [];
-
-// 페이지 로드 시 네비게이션 모달 및 스타일 추가
-document.addEventListener('DOMContentLoaded', function() {
-    // 스타일 추가
-    const styleElement = document.createElement('style');
-    styleElement.textContent = navigationCSS;
-    document.head.appendChild(styleElement);
-    
-    // 모달 추가
-    const modalContainer = document.createElement('div');
-    modalContainer.innerHTML = navigationModalHTML;
-    document.body.appendChild(modalContainer);
-    
-    // 네비게이션 가이드 추가 (숨겨진 상태)
-    const guideContainer = document.createElement('div');
-    guideContainer.innerHTML = navigationGuideHTML;
-    guideContainer.style.display = 'none';
-    document.body.appendChild(guideContainer);
-    
-    // 건물 드롭다운 옵션 채우기
-    populateBuildingOptions();
-    populateStartPointOptions();
-});
-
-// 길찾기 모달 열기 함수
-function openNavigationModal(buildingId = '') {
-    const modal = document.getElementById('navigation-modal');
-    if (!modal) return;
-    
-    // 특정 건물이 전달되었다면 해당 건물 선택
-    if (buildingId) {
-        selectedBuildingId = buildingId;
-        const buildingSelect = document.getElementById('building-select');
-        if (buildingSelect) {
-            buildingSelect.value = buildingId;
-        }
-    }
-    
-    modal.style.display = 'block';
-}
-
-// 길찾기 모달 닫기 함수
-function closeNavigationModal() {
-    const modal = document.getElementById('navigation-modal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// 네비게이션 타입 설정 (건물 또는 강의실)
-function setNavigationType(type) {
-    currentNavigationType = type;
-    
-    // 버튼 활성화 상태 변경
-    const buildingBtn = document.getElementById('building-option');
-    const classroomBtn = document.getElementById('classroom-option');
-    
-    if (buildingBtn && classroomBtn) {
-        if (type === 'building') {
-            buildingBtn.classList.add('active');
-            classroomBtn.classList.remove('active');
-            document.getElementById('building-selection').style.display = 'flex';
-            document.getElementById('classroom-input').style.display = 'none';
-        } else {
-            buildingBtn.classList.remove('active');
-            classroomBtn.classList.add('active');
-            document.getElementById('building-selection').style.display = 'none';
-            document.getElementById('classroom-input').style.display = 'flex';
-        }
-    }
-}
-
-// 건물 선택 드롭다운 옵션 채우기
-function populateBuildingOptions() {
-    const buildingSelect = document.getElementById('building-select');
-    if (!buildingSelect) return;
-    
-    // 기존 옵션 초기화 (첫 번째 옵션은 유지)
-    while (buildingSelect.options.length > 1) {
-        buildingSelect.remove(1);
-    }
-    
-    // 건물 데이터에서 옵션 추가
-    buildingData.forEach(building => {
-        const option = document.createElement('option');
-        option.value = building.id;
-        option.textContent = building.name;
-        buildingSelect.appendChild(option);
-    });
-    
-    // 건물 선택 이벤트 리스너
-    buildingSelect.addEventListener('change', function() {
-        selectedBuildingId = this.value;
-    });
-}
-
-// 출발지 옵션 채우기
-function populateStartPointOptions() {
-    const startPointSelect = document.getElementById('start-point');
-    if (!startPointSelect) return;
-    
-    // 기존 옵션 초기화 (첫 번째 옵션은 유지)
-    while (startPointSelect.options.length > 1) {
-        startPointSelect.remove(1);
-    }
-    
-    // 건물 데이터에서 옵션 추가
-    buildingData.forEach(building => {
-        const option = document.createElement('option');
-        option.value = building.id;
-        option.textContent = building.name;
-        startPointSelect.appendChild(option);
-    });
-    
-    // 출발지 선택 이벤트 리스너
-    startPointSelect.addEventListener('change', function() {
-        selectedStartPoint = this.value;
-    });
-}
-
-// 자주 찾는 강의실 버튼 클릭 시 강의실 번호 설정
-function setClassroom(classroomNumber) {
-    const classroomInput = document.getElementById('classroom-number');
-    if (classroomInput) {
-        classroomInput.value = classroomNumber;
-        inputClassroomNumber = classroomNumber;
-    }
-}
-
-// 이동 방식 설정 (도보 또는 셔틀버스)
-function setTransportMode(mode) {
-    transportMode = mode;
-    
-    // 버튼 활성화 상태 변경
-    const modeButtons = document.querySelectorAll('.nav-input-group:nth-child(4) .option-button');
-    modeButtons.forEach(button => {
-        if ((mode === 'walking' && button.textContent === '도보') || 
-            (mode === 'shuttle' && button.textContent === '셔틀버스')) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
-        }
-    });
-}
-
-// 길찾기 시작하기
-function startNavigation() {
-    let destinationName = '';
-    let destinationDesc = '';
-    let destinationCoords = null;
-    
-    // 네비게이션 유형에 따라 목적지 정보 설정
-    if (currentNavigationType === 'building') {
-        // 건물 선택 확인
-        if (!selectedBuildingId) {
-            alert('건물을 선택해주세요.');
-            return;
-        }
-        
-        // 선택된 건물 정보 가져오기
-        const selectedBuilding = buildingData.find(b => b.id === selectedBuildingId);
-        if (!selectedBuilding) {
-            alert('선택한 건물 정보를 찾을 수 없습니다.');
-            return;
-        }
-        
-        destinationName = selectedBuilding.name;
-        destinationDesc = selectedBuilding.description;
-        destinationCoords = selectedBuilding.position;
-    } else {
-        // 강의실 입력 확인
-        const classroomInput = document.getElementById('classroom-number');
-        inputClassroomNumber = classroomInput ? classroomInput.value.trim() : '';
-        
-        if (!inputClassroomNumber) {
-            alert('강의실 번호를 입력해주세요.');
-            return;
-        }
-        
-        // 강의실 형식 분석 (건물-호수)
-        const parts = inputClassroomNumber.split('-');
-        if (parts.length !== 2) {
-            alert('강의실 번호를 건물-호수 형식으로 입력해주세요. (예: 공학1관-101)');
-            return;
-        }
-        
-        const buildingName = parts[0];
-        const roomNumber = parts[1];
-        
-        // 건물 정보 가져오기
-        const relatedBuilding = buildingData.find(b => 
-            b.name === buildingName || b.id === buildingName
-        );
-        
-        if (!relatedBuilding) {
-            alert(`'${buildingName}' 건물 정보를 찾을 수 없습니다.`);
-            return;
-        }
-        
-        destinationName = `${buildingName} ${roomNumber}호`;
-        destinationDesc = `${relatedBuilding.description} ${roomNumber}호`;
-        destinationCoords = relatedBuilding.position;
-    }
-    
-    // 출발지 선택 확인
-    let startCoords = null;
-    
-    if (selectedStartPoint === 'current') {
-        // 현재 위치 (임의로 캠퍼스 입구 좌표 설정)
-        startCoords = { lat: 37.39576992475254, lng: 126.90812350405056 }; // 캠퍼스 입구(문화1관) 좌표로 가정
-    } else {
-        // 선택된 건물 좌표
-        const startBuilding = buildingData.find(b => b.id === selectedStartPoint);
-        if (!startBuilding) {
-            alert('선택한 출발지 정보를 찾을 수 없습니다.');
-            return;
-        }
-        startCoords = startBuilding.position;
-    }
-    
-    // 모달 닫기
-    closeNavigationModal();
-    
-    // 네비게이션 화면 표시
-    showNavigationGuide(startCoords, destinationCoords, destinationName, destinationDesc);
-}
-
-// 네비게이션 안내 화면 표시 및 설정
-function showNavigationGuide(startCoords, destCoords, destName, destDesc) {
-    // 네비게이션 컨테이너 표시
-    const navGuide = document.querySelector('#navigation-guide');
-    if (navGuide) {
-        navGuide.style.display = 'flex';
-    }
-    
-    // 목적지 정보 설정
-    document.getElementById('dest-name').textContent = destName;
-    document.getElementById('dest-desc').textContent = destDesc;
-    
-    // 경로 정보는 개발 중으로 표시
-    document.getElementById('total-distance').textContent = '500m';
-    document.getElementById('total-time').textContent = '7분';
-    
-    // 안내 단계 생성
-    createNavigationSteps(startCoords, destCoords);
-    
-    // 네비게이션 맵 초기화
-    initNavigationMap(startCoords, destCoords);
-    
-    // 네비게이션 상태 활성화
-    navigationActive = true;
-}
-
-// 네비게이션 안내 단계 생성
-function createNavigationSteps(startCoords, destCoords) {
-    const stepsContainer = document.getElementById('direction-steps');
-    if (!stepsContainer) return;
-    
-    // 기존 단계 초기화
-    stepsContainer.innerHTML = '';
-    
-    // 샘플 단계 데이터 (실제로는 경로 계산 API 결과를 사용해야 함)
-    const steps = [
-        { instruction: '출발지에서 오른쪽으로 50m 이동', icon: '➡️', distance: '50m' },
-        { instruction: '공학관 방향으로 직진', icon: '⬆️', distance: '100m' },
-        { instruction: '횡단보도를 건너 왼쪽으로 이동', icon: '⬅️', distance: '80m' },
-        { instruction: '학생복지센터 앞에서 오른쪽으로 이동', icon: '➡️', distance: '120m' },
-        { instruction: '목적지에 도착했습니다', icon: '🏁', distance: '' }
-    ];
-    
-    // 단계 요소 생성
-    steps.forEach(step => {
-        const stepElement = document.createElement('div');
-        stepElement.className = 'direction-step';
-        
-        stepElement.innerHTML = `
-            <div class="step-icon">${step.icon}</div>
-            <div class="step-details">
-                <div class="step-instruction">${step.instruction}</div>
-                ${step.distance ? `<div class="step-distance">${step.distance}</div>` : ''}
-            </div>
-        `;
-        
-        stepsContainer.appendChild(stepElement);
-    });
-}
-
-// 네비게이션 맵 초기화
-function initNavigationMap(startCoords, destCoords) {
-    // 네이버 지도 API 로드 확인
-    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-        console.error('네이버 지도 API가 로드되지 않았습니다.');
-        return;
-    }
-    
-    // 지도 컨테이너
-    const mapContainer = document.getElementById('navigation-map');
-    if (!mapContainer) return;
-    
-    // 지도 생성
-    navigationMapObject = new naver.maps.Map(mapContainer, {
-        center: new naver.maps.LatLng(destCoords.lat, destCoords.lng),
-        zoom: 17,
-        zoomControl: true,
-        zoomControlOptions: {
-            position: naver.maps.Position.TOP_RIGHT
-        }
-    });
-    
-    // 출발지 마커 생성
-    const startMarker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-        map: navigationMapObject,
-        icon: {
-            content: '<div style="background-color: #2196F3; width: 15px; height: 15px; border-radius: 50%;"></div>',
-            size: new naver.maps.Size(15, 15),
-            anchor: new naver.maps.Point(7.5, 7.5)
-        }
-    });
-    navigationMarkers.push(startMarker);
-    
-    // 목적지 마커 생성
-    const destMarker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(destCoords.lat, destCoords.lng),
-        map: navigationMapObject,
-        icon: {
-            content: '<div style="background-color: #c62917; width: 20px; height: 20px; border-radius: 50%;"></div>',
-            size: new naver.maps.Size(20, 20),
-            anchor: new naver.maps.Point(10, 10)
-        }
-    });
-    navigationMarkers.push(destMarker);
-    
-    // 경로 라인 그리기 (임의의 경로)
-    createRoutePath(startCoords, destCoords);
-    
-    // 경로가 모두 보이도록 지도 영역 조정
-    const bounds = new naver.maps.LatLngBounds(
-        new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-        new naver.maps.LatLng(destCoords.lat, destCoords.lng)
-    );
-    navigationMapObject.fitBounds(bounds, {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50
-    });
-}
-
-// 경로 라인 생성 (실제로는 경로 API 결과를 사용해야 함)
-function createRoutePath(startCoords, destCoords) {
-    // 임의의 중간 지점 생성 (실제로는 경로 API 응답에서 받아야 함)
-    const midPoint1 = {
-        lat: (startCoords.lat * 0.7 + destCoords.lat * 0.3),
-        lng: (startCoords.lng * 0.7 + destCoords.lng * 0.3)
-    };
-    
-    const midPoint2 = {
-        lat: (startCoords.lat * 0.3 + destCoords.lat * 0.7),
-        lng: (startCoords.lng * 0.3 + destCoords.lng * 0.7)
-    };
-    
-    // 경로 좌표 배열
-    const pathCoords = [
-        new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-        new naver.maps.LatLng(midPoint1.lat, midPoint1.lng),
-        new naver.maps.LatLng(midPoint2.lat, midPoint2.lng),
-        new naver.maps.LatLng(destCoords.lat, destCoords.lng)
-    ];
-    
-    // 경로 라인 생성
-    navigationPath = new naver.maps.Polyline({
-        path: pathCoords,
-        strokeColor: '#c62917',
-        strokeWeight: 5,
-        strokeOpacity: 0.8,
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round',
-        map: navigationMapObject
-    });
-}
-
-// 네비게이션 취소 및 종료
-function cancelNavigation() {
-    // 네비게이션 화면 숨김
-    const navGuide = document.querySelector('#navigation-guide');
-    if (navGuide) {
-        navGuide.style.display = 'none';
-    }
-    
-    // 지도 및 마커, 경로 초기화
-    if (navigationMapObject) {
-        // 마커 제거
-        navigationMarkers.forEach(marker => marker.setMap(null));
-        navigationMarkers = [];
-        
-        // 경로 제거
-        if (navigationPath) {
-            navigationPath.setMap(null);
-            navigationPath = null;
-        }
-        
-        navigationMapObject = null;
-    }
-    
-    // 네비게이션 상태 비활성화
-    navigationActive = false;
-}
-
-// 네비게이션 안내 단계 생성
-function createNavigationSteps(startCoords, destCoords) {
-    const stepsContainer = document.getElementById('direction-steps');
-    if (!stepsContainer) return;
-    
-    // 기존 단계 초기화
-    stepsContainer.innerHTML = '';
-    
-    // 샘플 단계 데이터 (실제로는 경로 계산 API 결과를 사용해야 함)
-    const steps = [
-        { instruction: '출발지에서 오른쪽으로 50m 이동', icon: '➡️', distance: '50m' },
-        { instruction: '공학관 방향으로 직진', icon: '⬆️', distance: '100m' },
-        { instruction: '횡단보도를 건너 왼쪽으로 이동', icon: '⬅️', distance: '80m' },
-        { instruction: '학생복지센터 앞에서 오른쪽으로 이동', icon: '➡️', distance: '120m' },
-        { instruction: '목적지에 도착했습니다', icon: '🏁', distance: '' }
-    ];
-    
-    // 단계 요소 생성
-    steps.forEach(step => {
-        const stepElement = document.createElement('div');
-        stepElement.className = 'direction-step';
-        
-        stepElement.innerHTML = `
-            <div class="step-icon">${step.icon}</div>
-            <div class="step-details">
-                <div class="step-instruction">${step.instruction}</div>
-                ${step.distance ? `<div class="step-distance">${step.distance}</div>` : ''}
-            </div>
-        `;
-        
-        stepsContainer.appendChild(stepElement);
-    });
-}
-
-// 네비게이션 맵 초기화
-function initNavigationMap(startCoords, destCoords) {
-    // 네이버 지도 API 로드 확인
-    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-        console.error('네이버 지도 API가 로드되지 않았습니다.');
-        return;
-    }
-    
-    // 지도 컨테이너
-    const mapContainer = document.getElementById('navigation-map');
-    if (!mapContainer) return;
-    
-    // 지도 생성
-    navigationMapObject = new naver.maps.Map(mapContainer, {
-        center: new naver.maps.LatLng(destCoords.lat, destCoords.lng),
-        zoom: 17,
-        zoomControl: true,
-        zoomControlOptions: {
-            position: naver.maps.Position.TOP_RIGHT
-        }
-    });
-    
-    // 출발지 마커 생성
-    const startMarker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-        map: navigationMapObject,
-        icon: {
-            content: '<div style="background-color: #2196F3; width: 15px; height: 15px; border-radius: 50%;"></div>',
-            size: new naver.maps.Size(15, 15),
-            anchor: new naver.maps.Point(7.5, 7.5)
-        }
-    });
-    navigationMarkers.push(startMarker);
-    
-    // 목적지 마커 생성
-    const destMarker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(destCoords.lat, destCoords.lng),
-        map: navigationMapObject,
-        icon: {
-            content: '<div style="background-color: #c62917; width: 20px; height: 20px; border-radius: 50%;"></div>',
-            size: new naver.maps.Size(20, 20),
-            anchor: new naver.maps.Point(10, 10)
-        }
-    });
-    navigationMarkers.push(destMarker);
-    
-    // 경로 라인 그리기 (임의의 경로)
-    createRoutePath(startCoords, destCoords);
-    
-    // 경로가 모두 보이도록 지도 영역 조정
-    const bounds = new naver.maps.LatLngBounds(
-        new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-        new naver.maps.LatLng(destCoords.lat, destCoords.lng)
-    );
-    navigationMapObject.fitBounds(bounds, {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50
-    });
-}
-
-// 네비게이션 안내 화면 표시 및 설정
-function showNavigationGuide(startCoords, destCoords, destName, destDesc) {
-    // 네비게이션 컨테이너 표시
-    const navGuide = document.querySelector('#navigation-guide');
-    if (navGuide) {
-        navGuide.style.display = 'flex';
-    }
-    
-    // 목적지 정보 설정
-    document.getElementById('dest-name').textContent = destName;
-    document.getElementById('dest-desc').textContent = destDesc;
-    
-    // 경로 정보 설정
-    // 실제 거리 계산 (직선 거리는 임의로 계산, 실제로는 경로 API에서 정확한 값 필요)
-    const distance = calculateDistance(startCoords, destCoords);
-    const distanceText = distance < 1000 ? `${Math.round(distance)}m` : `${(distance / 1000).toFixed(1)}km`;
-    
-    // 걷는 속도를 분당 80m로 가정
-    const timeInMinutes = Math.ceil(distance / 80);
-    const timeText = `${timeInMinutes}분`;
-    
-    document.getElementById('total-distance').textContent = distanceText;
-    document.getElementById('total-time').textContent = timeText;
-    
-    // 안내 단계 생성
-    createNavigationSteps(startCoords, destCoords);
-    
-    // 네비게이션 맵 초기화
-    initNavigationMap(startCoords, destCoords);
-    
-    // 네비게이션 상태 활성화
-    navigationActive = true;
-}
-
-// 두 지점 간의 거리 계산 (미터 단위)
-function calculateDistance(point1, point2) {
-    // 지구 반경 (미터)
-    const R = 6371000;
-    
-    // 위도, 경도를 라디안으로 변환
-    const lat1 = point1.lat * Math.PI / 180;
-    const lat2 = point2.lat * Math.PI / 180;
-    const dLat = (point2.lat - point1.lat) * Math.PI / 180;
-    const dLon = (point2.lng - point1.lng) * Math.PI / 180;
-    
-    // Haversine 공식 적용
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1) * Math.cos(lat2) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    const distance = R * c;
-    
-    return distance;
-}
-
-// 건물 길찾기 버튼 클릭 처리 함수 수정 - 이벤트 버블링 방지 및 새 기능 연결
-function navigateToBuilding(buildingId, event) {
-    // 이벤트 버블링 중단
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    
-    // 길찾기 모달 열기
-    openNavigationModal(buildingId);
-}
-
-// 길찾기 시작 기능
-function startNavigation() {
-    let destinationName = '';
-    let destinationDesc = '';
-    let destinationCoords = null;
-    
-    // 네비게이션 유형에 따라 목적지 정보 설정
-    if (currentNavigationType === 'building') {
-        // 건물 선택 확인
-        if (!selectedBuildingId) {
-            alert('건물을 선택해주세요.');
-            return;
-        }
-        
-        // 선택된 건물 정보 가져오기
-        const selectedBuilding = buildingData.find(b => b.id === selectedBuildingId);
-        if (!selectedBuilding) {
-            alert('선택한 건물 정보를 찾을 수 없습니다.');
-            return;
-        }
-        
-        destinationName = selectedBuilding.name;
-        destinationDesc = selectedBuilding.description;
-        destinationCoords = selectedBuilding.position;
-    } else {
-        // 강의실 입력 확인
-        const classroomInput = document.getElementById('classroom-number');
-        inputClassroomNumber = classroomInput ? classroomInput.value.trim() : '';
-        
-        if (!inputClassroomNumber) {
-            alert('강의실 번호를 입력해주세요.');
-            return;
-        }
-        
-        // 강의실 형식 분석 (건물-호수)
-        const parts = inputClassroomNumber.split('-');
-        if (parts.length !== 2) {
-            alert('강의실 번호를 건물-호수 형식으로 입력해주세요. (예: 공학1관-101)');
-            return;
-        }
-        
-        const buildingName = parts[0];
-        const roomNumber = parts[1];
-        
-        // 건물 정보 가져오기
-        const relatedBuilding = buildingData.find(b => 
-            b.name === buildingName || b.id === buildingName
-        );
-        
-        if (!relatedBuilding) {
-            alert(`'${buildingName}' 건물 정보를 찾을 수 없습니다.`);
-            return;
-        }
-        
-        destinationName = `${buildingName} ${roomNumber}호`;
-        destinationDesc = `${relatedBuilding.description} ${roomNumber}호`;
-        destinationCoords = relatedBuilding.position;
-    }
-    
-    // 출발지 선택 확인
-    let startCoords = null;
-    
-    if (selectedStartPoint === 'current') {
-        // 현재 위치 (임의로 캠퍼스 입구 좌표 설정)
-        startCoords = { lat: 37.39576992475254, lng: 126.90812350405056 }; // 캠퍼스 입구(문화1관) 좌표로 가정
-    } else {
-        // 선택된 건물 좌표
-        const startBuilding = buildingData.find(b => b.id === selectedStartPoint);
-        if (!startBuilding) {
-            alert('선택한 출발지 정보를 찾을 수 없습니다.');
-            return;
-        }
-        startCoords = startBuilding.position;
-    }
-    
-    // 모달 닫기
-    closeNavigationModal();
-    
-    // 네비게이션 화면 표시
-    showNavigationGuide(startCoords, destinationCoords, destinationName, destinationDesc);
-}
-
-// 네비게이션 안내 화면 표시 및 설정
-function showNavigationGuide(startCoords, destCoords, destName, destDesc) {
-    // 네비게이션 컨테이너 표시
-    const navGuide = document.querySelector('#navigation-guide');
-    if (navGuide) {
-        navGuide.style.display = 'flex';
-    }
-    
-    // 목적지 정보 설정
-    document.getElementById('dest-name').textContent = destName;
-    document.getElementById('dest-desc').textContent = destDesc;
-    
-    // 경로 정보 설정
-    // 실제 거리 계산 (직선 거리는 임의로 계산, 실제로는 경로 API에서 정확한 값 필요)
-    const distance = calculateDistance(startCoords, destCoords);
-    const distanceText = distance < 1000 ? `${Math.round(distance)}m` : `${(distance / 1000).toFixed(1)}km`;
-    
-    // 걷는 속도를 분당 80m로 가정
-    const timeInMinutes = Math.ceil(distance / 80);
-    const timeText = `${timeInMinutes}분`;
-    
-    document.getElementById('total-distance').textContent = distanceText;
-    document.getElementById('total-time').textContent = timeText;
-    
-    // 안내 단계 생성
-    createNavigationSteps(startCoords, destCoords);
-    
-    // 네비게이션 맵 초기화
-    initNavigationMap(startCoords, destCoords);
-    
-    // 네비게이션 상태 활성화
-    navigationActive = true;
-}
-
-// 두 지점 간의 거리 계산 (미터 단위)
-function calculateDistance(point1, point2) {
-    // 지구 반경 (미터)
-    const R = 6371000;
-    
-    // 위도, 경도를 라디안으로 변환
-    const lat1 = point1.lat * Math.PI / 180;
-    const lat2 = point2.lat * Math.PI / 180;
-    const dLat = (point2.lat - point1.lat) * Math.PI / 180;
-    const dLon = (point2.lng - point1.lng) * Math.PI / 180;
-    
-    // Haversine 공식 적용
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1) * Math.cos(lat2) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    const distance = R * c;
-    
-    return distance;
-}
-
-// 네비게이션 안내 단계 생성
-function createNavigationSteps(startCoords, destCoords) {
-    const stepsContainer = document.getElementById('direction-steps');
-    if (!stepsContainer) return;
-    
-    // 기존 단계 초기화
-    stepsContainer.innerHTML = '';
-    
-    // 샘플 단계 데이터 (실제로는 경로 계산 API 결과를 사용해야 함)
-    const steps = [
-        { instruction: '출발지에서 오른쪽으로 50m 이동', icon: '➡️', distance: '50m' },
-        { instruction: '공학관 방향으로 직진', icon: '⬆️', distance: '100m' },
-        { instruction: '횡단보도를 건너 왼쪽으로 이동', icon: '⬅️', distance: '80m' },
-        { instruction: '학생복지센터 앞에서 오른쪽으로 이동', icon: '➡️', distance: '120m' },
-        { instruction: '목적지에 도착했습니다', icon: '🏁', distance: '' }
-    ];
-    
-    // 단계 요소 생성
-    steps.forEach(step => {
-        const stepElement = document.createElement('div');
-        stepElement.className = 'direction-step';
-        
-        stepElement.innerHTML = `
-            <div class="step-icon">${step.icon}</div>
-            <div class="step-details">
-                <div class="step-instruction">${step.instruction}</div>
-                ${step.distance ? `<div class="step-distance">${step.distance}</div>` : ''}
-            </div>
-        `;
-        
-        stepsContainer.appendChild(stepElement);
-    });
-}
-
-// 네비게이션 맵 초기화
-function initNavigationMap(startCoords, destCoords) {
-    // 네이버 지도 API 로드 확인
-    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-        console.error('네이버 지도 API가 로드되지 않았습니다.');
-        return;
-    }
-    
-    // 지도 컨테이너
-    const mapContainer = document.getElementById('navigation-map');
-    if (!mapContainer) return;
-    
-    // 지도 생성
-    navigationMapObject = new naver.maps.Map(mapContainer, {
-        center: new naver.maps.LatLng(destCoords.lat, destCoords.lng),
-        zoom: 17,
-        zoomControl: true,
-        zoomControlOptions: {
-            position: naver.maps.Position.TOP_RIGHT
-        }
-    });
-    
-    // 출발지 마커 생성
-    const startMarker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-        map: navigationMapObject,
-        icon: {
-            content: '<div style="background-color: #2196F3; width: 15px; height: 15px; border-radius: 50%;"></div>',
-            size: new naver.maps.Size(15, 15),
-            anchor: new naver.maps.Point(7.5, 7.5)
-        }
-    });
-    navigationMarkers.push(startMarker);
-    
-    // 목적지 마커 생성
-const destMarker = new naver.maps.Marker({
-    position: new naver.maps.LatLng(destCoords.lat, destCoords.lng),
-    map: navigationMapObject,
-    icon: {
-        content: '<div style="background-color: #c62917; width: 20px; height: 20px; border-radius: 50%;"></div>',
-        size: new naver.maps.Size(20, 20),
-        anchor: new naver.maps.Point(10, 10)
-    }
-});
-navigationMarkers.push(destMarker);
-
-// 경로 라인 그리기 (임의의 경로)
-createRoutePath(startCoords, destCoords);
-
-// 경로가 모두 보이도록 지도 영역 조정
-const bounds = new naver.maps.LatLngBounds(
-    new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-    new naver.maps.LatLng(destCoords.lat, destCoords.lng)
-);
-navigationMapObject.fitBounds(bounds, {
-    top: 50,
-    right: 50,
-    bottom: 50,
-    left: 50
-});
-}
-
-// 경로 라인 생성 (실제로는 경로 API 결과를 사용해야 함)
-function createRoutePath(startCoords, destCoords) {
-    // 임의의 중간 지점 생성 (실제로는 경로 API 응답에서 받아야 함)
-    const midPoint1 = {
-        lat: (startCoords.lat * 0.7 + destCoords.lat * 0.3),
-        lng: (startCoords.lng * 0.7 + destCoords.lng * 0.3)
-    };
-    
-    const midPoint2 = {
-        lat: (startCoords.lat * 0.3 + destCoords.lat * 0.7),
-        lng: (startCoords.lng * 0.3 + destCoords.lng * 0.7)
-    };
-    
-    // 경로 좌표 배열
-    const pathCoords = [
-        new naver.maps.LatLng(startCoords.lat, startCoords.lng),
-        new naver.maps.LatLng(midPoint1.lat, midPoint1.lng),
-        new naver.maps.LatLng(midPoint2.lat, midPoint2.lng),
-        new naver.maps.LatLng(destCoords.lat, destCoords.lng)
-    ];
-    
-    // 경로 라인 생성
-    navigationPath = new naver.maps.Polyline({
-        path: pathCoords,
-        strokeColor: '#c62917',
-        strokeWeight: 5,
-        strokeOpacity: 0.8,
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round',
-        map: navigationMapObject
-    });
-}
-
-// 네비게이션 취소 및 종료
-function cancelNavigation() {
-    // 네비게이션 화면 숨김
-    const navGuide = document.querySelector('#navigation-guide');
-    if (navGuide) {
-        navGuide.style.display = 'none';
-    }
-    
-    // 지도 및 마커, 경로 초기화
-    if (navigationMapObject) {
-        // 마커 제거
-        navigationMarkers.forEach(marker => marker.setMap(null));
-        navigationMarkers = [];
-        
-        // 경로 제거
-        if (navigationPath) {
-            navigationPath.setMap(null);
-            navigationPath = null;
-        }
-        
-        navigationMapObject = null;
-    }
-    
-    // 네비게이션 상태 비활성화
-    navigationActive = false;
-}
-
-// 건물 길찾기 버튼 클릭 처리 함수 수정 - 이벤트 버블링 방지 및 새 기능 연결
-function navigateToBuilding(buildingId, event) {
-    // 이벤트 버블링 중단
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    
-    // 길찾기 모달 열기
-    openNavigationModal(buildingId);
-}
-
-// 길찾기 버튼 설정 함수
-function setupBuildingNavButtons() {
-    // 모든 building-nav-button 요소 선택
-    const navButtons = document.querySelectorAll('.building-list .building-nav-button');
-    
-    navButtons.forEach(button => {
-        // 이미 이벤트가 설정되어 있는지 확인
-        if (button.dataset.navigationSet === 'true') return;
-        
-        // 기존 onclick 속성 제거
-        button.removeAttribute('onclick');
-        
-        // 새 이벤트 리스너 추가
-        button.addEventListener('click', function(event) {
-            // 이벤트 버블링 방지
-            event.preventDefault();
-            event.stopPropagation();
-            
-            // 부모 요소에서 건물 ID 찾기
-            const buildingItem = this.closest('.building-item');
-            if (!buildingItem) return;
-            
-            const buildingName = buildingItem.querySelector('.building-name').textContent;
-            // 건물 이름으로 건물 ID 찾기
-            const building = buildingData.find(b => b.name === buildingName);
-            
-            if (building) {
-                // 길찾기 모달 열기
-                openNavigationModal(building.id);
-            }
-        });
-        
-        // 설정 완료 표시
-        button.dataset.navigationSet = 'true';
-    });
-}
-
-// 편의시설 항목에도 길찾기 기능 추가
-function enhanceFacilityItems() {
-    const facilityItems = document.querySelectorAll('.facility-item');
-    
-    facilityItems.forEach(item => {
-        // 기존 레이아웃 유지하면서 길찾기 버튼 추가
-        const facilityName = item.querySelector('.facility-name').textContent;
-        
-        // 찾기 위한 ID 탐색
-        const facility = facilityData.find(f => f.name === facilityName);
-        
-        if (facility) {
-            // 이미 버튼이 있는지 확인
-            if (item.querySelector('.building-nav-button')) return;
-            
-            // 길찾기 버튼 추가
-            const navButton = document.createElement('div');
-            navButton.className = 'building-nav-button';
-            navButton.innerHTML = '<span>길찾기</span><span>🧭</span>';
-            
-            // 기존 정보 컨테이너에 flex 레이아웃 추가
-            const infoContainer = item.querySelector('.facility-info');
-            infoContainer.style.display = 'flex';
-            infoContainer.style.justifyContent = 'space-between';
-            infoContainer.style.alignItems = 'center';
-            
-            // 정보 래퍼 생성
-            const infoWrapper = document.createElement('div');
-            
-            // 기존 내용 이동
-            const name = infoContainer.querySelector('.facility-name');
-            const location = infoContainer.querySelector('.facility-location');
-            
-            // 정보 요소를 래퍼로 이동
-            if (name && location) {
-                infoWrapper.appendChild(name.cloneNode(true));
-                infoWrapper.appendChild(location.cloneNode(true));
-                
-                // 기존 내용 제거 후 새 구조 추가
-                infoContainer.innerHTML = '';
-                infoContainer.appendChild(infoWrapper);
-                infoContainer.appendChild(navButton);
-                
-                // 길찾기 버튼 클릭 이벤트
-                navButton.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
+                <div class="content-section">
+                    <div class="section-title">
+                        <span>주요 건물</span>
+                    </div>
                     
-                    // 관련 건물 ID로 길찾기 모달 열기
-                    openNavigationModal(facility.relatedBuilding);
-                });
-            }
-        }
-    });
-}
-
-// 페이지 초기화 시 통합 코드
-document.addEventListener('DOMContentLoaded', function() {
-    // 기존 페이지 초기화 후 네비게이션 기능 추가
-    setTimeout(function() {
-        // 길찾기 버튼 이벤트 핸들러 설정
-        setupBuildingNavButtons();
+                    <ul class="building-list">
+                        <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
+                    </ul>
+                    
+                    <!-- 페이지네이션 컨트롤 추가 -->
+                    <div id="pagination-controls" class="pagination-controls">
+                        <!-- 페이지 버튼들이 JavaScript로 동적 생성됩니다 -->
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <div class="section-title">
+                        <span>편의시설</span>
+                    </div>
+                    
+                    <div class="facility-list">
+                        <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
+                            <div class="facility-image">
+                                <img src="/api/placeholder/150/100" alt="학생식당">
+                            </div>
+                            <div class="facility-info">
+                                <div class="facility-name">학생식당</div>
+                                <div class="facility-location">학생복지센터 2층</div>
+                            </div>
+                        </div>
+                        <div class="facility-item" onclick="showFacilityDetail('cafe')">
+                            <div class="facility-image">
+                                <img src="/api/placeholder/150/100" alt="카페">
+                            </div>
+                            <div class="facility-info">
+                                <div class="facility-name">카페 연성</div>
+                                <div class="facility-location">문화1관 1층</div>
+                            </div>
+                        </div>
+                        <div class="facility-item" onclick="showFacilityDetail('convenience')">
+                            <div class="facility-image">
+                                <img src="/api/placeholder/150/100" alt="편의점">
+                            </div>
+                            <div class="facility-info">
+                                <div class="facility-name">CU 편의점</div>
+                                <div class="facility-location">학생복지센터 1층</div>
+                            </div>
+                        </div>
+                        <div class="facility-item" onclick="showFacilityDetail('atm')">
+                            <div class="facility-image">
+                                <img src="/api/placeholder/150/100" alt="ATM">
+                            </div>
+                            <div class="facility-info">
+                                <div class="facility-name">ATM</div>
+                                <div class="facility-location">학생복지센터 1층</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
         
-        // 편의시설 항목에 길찾기 버튼 추가
-        enhanceFacilityItems();
-    }, 1000);
-});
-
-// 탭 전환 시 내비게이션 버튼 재설정
-const originalSwitchTab = window.switchTab;
-window.switchTab = function(tabName) {
-    // 원래 함수 호출
-    originalSwitchTab(tabName);
+        <!-- 커뮤니티 탭 -->
+        <div id="community-tab" class="tab-content">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>강의평가</span>
+                </div>
+                
+                <div class="category-filter">
+                    <div class="category-tag active" onclick="filterLectures('all')">전체</div>
+                    <div class="category-tag" onclick="filterLectures('general')">교양</div>
+                    <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
+                    <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
+                </div>
+                <ul class="lecture-list">
+                    <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">웹 프로그래밍 실습</div>
+                            <div class="lecture-rating">4.8</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">김민수 교수님</span>
+                            <span>컴퓨터정보학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★★</div>
+                        <div class="lecture-reviews">
+                            "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                        </div>
+                    </li>
+                    <li class="lecture-item" onclick="viewLectureDetail('english')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">영어회화</div>
+                            <div class="lecture-rating">4.3</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">John Smith 교수님</span>
+                            <span>교양과정</span>
+                        </div>
+                        <div class="rating-stars">★★★★☆</div>
+                        <div class="lecture-reviews">
+                            "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
+                        </div>
+                    </li>
+                    <li class="lecture-item" onclick="viewLectureDetail('statistics')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">경영통계학</div>
+                            <div class="lecture-rating">3.7</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">박성호 교수님</span>
+                            <span>경영학과</span>
+                        </div>
+                        <div class="rating-stars">★★★☆☆</div>
+                        <div class="lecture-reviews">
+                            "내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 내 정보 탭 -->
+        <div id="profile-tab" class="tab-content">
+            <div class="profile-section">
+                <div class="profile-image">👨‍🎓</div>
+                <div class="profile-info">
+                    <div class="profile-name">조희정</div>
+                    <div class="profile-detail">경영학과 | 3학년</div>
+                    <div class="profile-detail">학번: 2021100215</div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>내 정보 관리</span>
+                </div>
+                
+                <ul class="menu-list">
+                    <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                        <div class="menu-title">내 시간표</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                        <div class="menu-title">내 수강 강의</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                        <div class="menu-title">즐겨찾는 강의실</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                        <div class="menu-title">개인정보 수정</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <!-- 회원 탈퇴 메뉴 추가 -->
+                    <li class="menu-item" onclick="deleteAccount()">
+                        <div class="menu-title delete-account">회원 탈퇴</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>학적 정보</span>
+                </div>
+                
+                <ul class="menu-list">
+                    <li class="menu-item" onclick="navigateToProfilePage('grades')">
+                        <div class="menu-title">성적 조회</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
+                        <div class="menu-title">수강 신청 내역</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
+                        <div class="menu-title">장학금 내역</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('tuition')">
+                        <div class="menu-title">등록금 납부 내역</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>앱 설정</span>
+                </div>
+                
+                <ul class="menu-list">
+                    <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
+                        <div class="menu-title">알림 설정</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
+                        <div class="menu-title">위젯 및 메뉴 설정</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="resetAllSettings()">
+                        <div class="menu-title">모든 설정 초기화</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('app-info')">
+                        <div class="menu-title">앱 정보</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="logout()">
+                        <div class="menu-title">로그아웃</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 알림 탭 -->
+        <div id="alert-tab" class="tab-content">
+            <div class="content-section">
+                <div class="section-title">
+                    <span>알림</span>
+                </div>
+                
+                <ul class="alert-list">
+                    <li class="alert-item" onclick="viewNotification('emergency')">
+                        <div class="alert-icon">📢</div>
+                        <div class="alert-info">
+                            <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
+                            <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
+                            <div class="alert-time">10분 전</div>
+                        </div>
+                    </li>
+                    <li class="alert-item" onclick="viewNotification('classroom')">
+                        <div class="alert-icon">🏫</div>
+                        <div class="alert-info">
+                            <div class="alert-title">강의실 알림</div>
+                            <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
+                            <div class="alert-time">30분 전</div>
+                        </div>
+                    </li>
+                    <li class="alert-item" onclick="viewNotification('assignment')">
+                        <div class="alert-icon">📝</div>
+                        <div class="alert-info">
+                            <div class="alert-title">과제 알림</div>
+                            <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
+                            <div class="alert-time">1시간 전</div>
+                        </div>
+                    </li>
+                    <li class="alert-item" onclick="viewNotification('library')">
+                        <div class="alert-icon">📚</div>
+                        <div class="alert-info">
+                            <div class="alert-title">도서관 알림</div>
+                            <div class="alert-message">대출하신 책 "디자인 씽킹의 이해"의 반납 기한이 이틀 남았습니다.</div>
+                            <div class="alert-time">3시간 전</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 하단 탭 메뉴 -->
+        <div class="tab-menu">
+            <div class="tab-item active" onclick="switchTab('home')">
+                <span class="tab-icon">🏠</span>
+                <span>홈</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('facility')">
+                <span class="tab-icon">🏫</span>
+                <span>시설</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('community')">
+                <span class="tab-icon">💬</span>
+                <span>커뮤니티</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('profile')">
+                <span class="tab-icon">👤</span>
+                <span>내 정보</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('alert')">
+                <span class="tab-icon">🔔</span>
+                <span>알림</span>
+            </div>
+        </div>
+    </div>
     
-    // 시설 탭으로 전환 시 내비게이션 버튼 재설정
-    if (tabName === 'facility') {
-        setTimeout(function() {
-            setupBuildingNavButtons();
-            enhanceFacilityItems();
-        }, 500);
-    }
-};
+    <script>
+       // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
+       const buildingData = [
+           {
+               id: '공학1관',
+               name: '공학1관',
+               description: '공학계열 강의실, 실험실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39632767479923, lng: 126.90699348692698 }
+           },
+           {
+               id: '자연과학관',
+               name: '자연과학관',
+               description: '반려동물보건학, 반려동물산업학',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.39669466288283, lng: 126.90676716508685 }
+           },
+           {
+               id: '식품과학관',
+               name: '식품과학관',
+               description: '식품영양학과, 조리실습실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39714809720343, lng: 126.90762208499473 }
+           },
+           {
+               id: '도의관',
+               name: '도의관',
+               description: '교양 수업, 강당',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39679932128769, lng: 126.90809683728425 }
+           },
+           {
+               id: '공학2관',
+               name: '공학2관',
+               description: '공학계열 실습실, 연구실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.396789747114205, lng: 126.90737406929797 }
+           },
+           {
+               id: '문화1관',
+               name: '문화1관',
+               description: '인문사회계열 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.39576992475254, lng: 126.90812350405056 }
+           },
+           {
+               id: '연곡문화센터',
+               name: '연곡문화센터',
+               description: '기숙사, 컨벤션홀, 평생교육원',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.398046192024914, lng: 126.90966512810492 }
+           },
+           {
+               id: '창조관',
+               name: '창조관',
+               description: '학과 사무실, 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39730791148064, lng: 126.91039726900274 }
+           },
+           {
+               id: '운동장',
+               name: '운동장',
+               description: '체육활동, 행사장',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39673944839101, lng: 126.90932224700094 }
+           },
+           {
+               id: '농구장',
+               name: '농구장',
+               description: '체육활동',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat: 37.39667684947615, lng: 126.90994063692402 }
+           },
+           {
+               id: '학생복지센터',
+               name: '학생복지센터',
+               description: '학생지원 시설',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.3962916630711, lng: 126.90994109780426 }
+           },
+           {
+               id: '창의교육센터',
+               name: '창의교육센터',
+               description: '항공서비스과 항공실습실, 카페',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.39737971014044, lng: 126.91002449732869 }
+           },
+           {
+               id: '문화2관',
+               name: '문화2관',
+               description: ' 문화콘텐츠계열 강의실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.396035307891026, lng: 126.90758674745014 }
+           },
+           {
+               id: '대학본관',
+               name: '대학본관',
+               description: '유통물류학과, 총장실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.397467068076345, lng: 126.90938066144557 }
+           },
+           {
+               id: '학술정보관',
+               name: '학술정보관',
+               description: '독서실',
+               image: '/api/placeholder/80/60',
+               type: 'building',
+               position: { lat:  37.39637467129301, lng: 126.906603807587 }
+           }
+       ];
 
-// 초기화 자동 실행
-setTimeout(function() {
-    console.log('길찾기 기능 초기화 중...');
-    setupBuildingNavButtons();
-    enhanceFacilityItems();
-}, 1500);
-</script>
+       // 편의시설 데이터 정의
+       const facilityData = [
+           {
+               id: 'cafeteria',
+               name: '학생식당',
+               description: '학생복지센터 2층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.377100, lng: 126.663600 },
+               relatedBuilding: '학생복지센터'
+           },
+           {
+               id: 'cafe',
+               name: '카페 연성',
+               description: '문화1관 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.378300, lng: 126.662700 },
+               relatedBuilding: '문화1관'
+           },
+           {
+               id: 'convenience',
+               name: 'CU 편의점',
+               description: '학생복지센터 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.377100, lng: 126.663700 },
+               relatedBuilding: '학생복지센터'
+           },
+           {
+               id: 'atm',
+               name: 'ATM',
+               description: '학생복지센터 1층',
+               image: '/api/placeholder/150/100',
+               type: 'facility',
+               position: { lat: 37.377100, lng: 126.663800 },
+               relatedBuilding: '학생복지센터'
+           },
+           
+       ];
+       // 네이버 지도 관련 변수
+       let naverMap;
+       let mapMarkers = [];
+       let infoWindows = [];
+       
+       // 페이지네이션 변수
+       let currentPage = 1;
+       const buildingsPerPage = 5;
+       
+       // 시설 탭 초기화 함수 (페이지네이션 포함)
+       function initFacilityTab() {
+           loadBuildingsByPage(currentPage);
+           updatePaginationControls();
+       }
+       
+       // 해당 페이지의 건물 목록 로드 함수
+       function loadBuildingsByPage(page) {
+           // 건물 목록 컨테이너
+           const buildingListElement = document.querySelector('#facility-tab .building-list');
+           if (!buildingListElement) return;
+           
+           // 목록 초기화
+           buildingListElement.innerHTML = '';
+           
+           // 페이지에 해당하는 건물 인덱스 계산
+           const startIndex = (page - 1) * buildingsPerPage;
+           const endIndex = Math.min(startIndex + buildingsPerPage, buildingData.length);
+           
+           // 페이지에 해당하는 건물 목록 생성
+           for (let i = startIndex; i < endIndex; i++) {
+               const building = buildingData[i];
+               
+               const listItem = document.createElement('li');
+               listItem.className = 'building-item';
+               listItem.onclick = function() { 
+                   showBuildingDetail(building.id);
+               };
+               
+               listItem.innerHTML = `
+                   <div class="building-image">
+                       <img src="${building.image}" alt="${building.name}">
+                   </div>
+                   <div class="building-info-container">
+                       <div class="building-info">
+                           <div class="building-name">${building.name}</div>
+                           <div class="building-description">${building.description}</div>
+                       </div>
+                       <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
+                           <span>길찾기</span>
+                           <span>🧭</span>
+                       </div>
+                   </div>
+               `;
+               
+               buildingListElement.appendChild(listItem);
+           }
+           
+           // 현재 페이지 저장
+           currentPage = page;
+       }
+       
+       // 페이지네이션 컨트롤 업데이트
+       function updatePaginationControls() {
+           // 총 페이지 수 계산
+           const totalPages = Math.ceil(buildingData.length / buildingsPerPage);
+           
+           // 페이지네이션 컨트롤 컨테이너
+           const paginationContainer = document.querySelector('#pagination-controls');
+           if (!paginationContainer) return;
+           
+           // 컨트롤 초기화
+           paginationContainer.innerHTML = '';
+           
+           // 이전 페이지 버튼
+           const prevButton = document.createElement('button');
+           prevButton.className = 'pagination-button';
+           prevButton.textContent = '이전';
+           prevButton.disabled = currentPage === 1;
+           prevButton.onclick = function() {
+               if (currentPage > 1) {
+                   loadBuildingsByPage(currentPage - 1);
+                   updatePaginationControls();
+               }
+           };
+           paginationContainer.appendChild(prevButton);
+           
+           // 페이지 번호 버튼
+           // 총 페이지 수가 5개 이하면 모든 페이지 표시
+           if (totalPages <= 5) {
+               for (let i = 1; i <= totalPages; i++) {
+                   const pageButton = document.createElement('button');
+                   pageButton.className = 'pagination-button';
+                   pageButton.textContent = i;
+                   
+                   if (i === currentPage) {
+                       pageButton.classList.add('active');
+                   }
+                   
+                   pageButton.onclick = function() {
+                       loadBuildingsByPage(i);
+                       updatePaginationControls();
+                   };
+                   
+                   paginationContainer.appendChild(pageButton);
+               }
+           } else {
+               // 페이지가 많은 경우, 현재 페이지 주변 페이지만 표시
+               let startPage = Math.max(1, currentPage - 2);
+               let endPage = Math.min(totalPages, startPage + 4);
+               
+               // 시작 페이지가 1보다 크면 첫 페이지와 ellipsis 표시
+               if (startPage > 1) {
+                   const firstButton = document.createElement('button');
+                   firstButton.className = 'pagination-button';
+                   firstButton.textContent = '1';
+                   firstButton.onclick = function() {
+                       loadBuildingsByPage(1);
+                       updatePaginationControls();
+                   };
+                   paginationContainer.appendChild(firstButton);
+                   
+                   if (startPage > 2) {
+                       const ellipsis = document.createElement('span');
+                       ellipsis.textContent = '...';
+                       ellipsis.style.padding = '0 5px';
+                       paginationContainer.appendChild(ellipsis);
+                   }
+               }
+               
+               // 페이지 번호 표시
+               for (let i = startPage; i <= endPage; i++) {
+                   const pageButton = document.createElement('button');
+                   pageButton.className = 'pagination-button';
+                   pageButton.textContent = i;
+                   
+                   if (i === currentPage) {
+                       pageButton.classList.add('active');
+                   }
+                   
+                   pageButton.onclick = function() {
+                       loadBuildingsByPage(i);
+                       updatePaginationControls();
+                   };
+                   
+                   paginationContainer.appendChild(pageButton);
+               }
+               
+               // 마지막 페이지가 totalPages보다 작으면 ellipsis와 마지막 페이지 표시
+               if (endPage < totalPages) {
+                   if (endPage < totalPages - 1) {
+                       const ellipsis = document.createElement('span');
+                       ellipsis.textContent = '...';
+                       ellipsis.style.padding = '0 5px';
+                       paginationContainer.appendChild(ellipsis);
+                   }
+                   
+                   const lastButton = document.createElement('button');
+                   lastButton.className = 'pagination-button';
+                   lastButton.textContent = totalPages;
+                   lastButton.onclick = function() {
+                       loadBuildingsByPage(totalPages);
+                       updatePaginationControls();
+                   };
+                   paginationContainer.appendChild(lastButton);
+               }
+           }
+           
+           // 다음 페이지 버튼
+           const nextButton = document.createElement('button');
+           nextButton.className = 'pagination-button';
+           nextButton.textContent = '다음';
+           nextButton.disabled = currentPage === totalPages;
+           nextButton.onclick = function() {
+               if (currentPage < totalPages) {
+                   loadBuildingsByPage(currentPage + 1);
+                   updatePaginationControls();
+               }
+           };
+           paginationContainer.appendChild(nextButton);
+       }
+       
+       // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
+       document.addEventListener('DOMContentLoaded', function() {
+           setTimeout(updateAllProfileImages, 100);
+           
+           // localStorage 변경 감지를 위한 이벤트 리스너
+           window.addEventListener('storage', function(event) {
+               // 프로필 관련 변경사항 감지
+               if (event.key === 'profileUpdated' || 
+                   event.key === 'profileImageUpdated' || 
+                   event.key.includes('_profileImage') || 
+                   event.key.includes('_customProfileImage')) {
+                   updateAllProfileImages();
+               }
+           });
+           
+           // 카테고리 필터 기능
+           initCategoryFilter();
+           
+           // 로그인 상태 체크 및 UI 업데이트
+           checkLoginStatus();
+           
+           // 저장된 위젯 설정 불러오기
+           loadWidgetSettings();
+           
+           // 시설 탭 초기화 (페이지네이션 포함)
+           initFacilityTab();
+           
+           // 네이버 지도 초기화
+           initNaverMap();
+           
+           // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+           window.addEventListener('pageshow', function(event) {
+               // bfcache에서 페이지가 복원된 경우에도 실행
+               if (event.persisted) {
+                   checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+                   updateAllProfileImages(); // 프로필 이미지도 다시 확인
+               }
+           });
+       });
+       
+       // 네이버 지도 초기화 함수 수정
+       function initNaverMap() {
+           console.log('네이버 지도 초기화 시작...');
+           
+           try {
+               // 네이버 지도 라이브러리가 로드되었는지 확인
+               if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+                   console.error('네이버 지도 API가 로드되지 않았습니다. 다시 시도합니다.');
+                   setTimeout(initNaverMap, 1000);
+                   return;
+               }
+               
+               // 지도 컨테이너 존재 확인 및 초기화
+               const mapContainer = document.getElementById('naverMap');
+               if (!mapContainer) {
+                   console.error('지도 컨테이너가 존재하지 않습니다.');
+                   return;
+               }
+               
+               // 기존 지도 객체가 있으면 삭제 (중요: 메모리 누수 방지)
+               if (naverMap) {
+                   // 기존 마커와 정보창 제거
+                   mapMarkers.forEach(marker => marker.setMap(null));
+                   mapMarkers = [];
+                   infoWindows = [];
+                   // 지도 객체 참조 제거
+                   naverMap = null;
+               }
+               
+               // 컨테이너 스타일 명시적 설정 (중요!)
+               mapContainer.style.width = '100%';
+               mapContainer.style.height = '350px';
+               mapContainer.style.position = 'relative';
+               mapContainer.style.overflow = 'hidden';
+               
+               // 연성대학교 위치 (실제 좌표로 설정)
+               const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+               
+               // 지도 옵션
+               const mapOptions = {
+                   center: yeonsung,
+                   zoom: 16,
+                   minZoom: 14,
+                   maxZoom: 19,
+                   zoomControl: true,
+                   zoomControlOptions: {
+                       position: naver.maps.Position.TOP_RIGHT
+                   },
+                   scaleControl: true,
+                   logoControl: true,
+                   mapDataControl: true
+               };
+               
+               // 지도 생성 (새로운 지도 인스턴스 생성)
+               naverMap = new naver.maps.Map(mapContainer, mapOptions);
+               
+               // 마커와 정보창 생성
+               buildingData.forEach(building => {
+                   // 마커 생성
+                   const marker = new naver.maps.Marker({
+                       position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                       map: naverMap,
+                       title: building.name
+                   });
+                   mapMarkers.push(marker);
+                   
+                   // 정보창 내용 생성
+                   const contentString = `
+                       <div class="map-info-window">
+                           <div class="map-info-title">${building.name}</div>
+                           <div class="map-info-desc">${building.description}</div>
+                       </div>
+                   `;
+                   
+                   // 정보창 생성
+                   const infoWindow = new naver.maps.InfoWindow({
+                       content: contentString,
+                       maxWidth: 250,
+                       backgroundColor: "#fff",
+                       borderColor: "#ddd",
+                       borderWidth: 1,
+                       anchorSize: { width: 12, height: 12 },
+                       pixelOffset: new naver.maps.Point(10, -10)
+                   });
+                   
+                   // 마커 클릭 이벤트
+                   naver.maps.Event.addListener(marker, "click", function() {
+                       // 이미 열려있는 모든 정보창 닫기
+                       infoWindows.forEach(window => window.close());
+                       
+                       // 현재 마커의 정보창 열기
+                       infoWindow.open(naverMap, marker);
+                   });
+                   
+                   infoWindows.push(infoWindow);
+               });
+               
+               // 편의시설 마커 추가
+               facilityData.forEach(facility => {
+                   // 마커 생성
+                   const marker = new naver.maps.Marker({
+                       position: new naver.maps.LatLng(facility.position.lat, facility.position.lng),
+                       map: naverMap,
+                       title: facility.name,
+                       icon: {
+                           content: `<div style="background-color: #4CAF50; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center;">${facility.icon || '🏠'}</div>`,
+                           size: new naver.maps.Size(30, 30),
+                           anchor: new naver.maps.Point(15, 15)
+                       }
+                   });
+                   mapMarkers.push(marker);
+                   
+                   // 정보창 내용 생성
+                   const contentString = `
+                       <div class="map-info-window">
+                           <div class="map-info-title">${facility.name}</div>
+                           <div class="map-info-desc">${facility.description}</div>
+                       </div>
+                   `;
+                   
+                   // 정보창 생성
+                   const infoWindow = new naver.maps.InfoWindow({
+                       content: contentString,
+                       maxWidth: 250,
+                       backgroundColor: "#fff",
+                       borderColor: "#ddd",
+                       borderWidth: 1,
+                       anchorSize: { width: 12, height: 12 },
+                       pixelOffset: new naver.maps.Point(10, -10)
+                   });
+                   
+                   // 마커 클릭 이벤트
+                   naver.maps.Event.addListener(marker, "click", function() {
+                       // 이미 열려있는 모든 정보창 닫기
+                       infoWindows.forEach(window => window.close());
+                       
+                       // 현재 마커의 정보창 열기
+                       infoWindow.open(naverMap, marker);
+                   });
+                   
+                   infoWindows.push(infoWindow);
+               });
+               
+               // 지도 리사이즈 이벤트 - 디바운스 적용
+               let resizeTimer;
+               window.addEventListener('resize', function() {
+                   clearTimeout(resizeTimer);
+                   resizeTimer = setTimeout(function() {
+                       if (naverMap) {
+                           naverMap.refresh();
+                       }
+                   }, 200);
+               });
+               
+               // 초기 리사이즈 발생시키기 (중요!)
+               window.dispatchEvent(new Event('resize'));
+               
+               console.log('네이버 지도가 성공적으로 초기화되었습니다.');
+           } catch (error) {
+               console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
+           }
+       }
+            
+       // 길찾기 기능
+       function navigateToBuilding(buildingId, event) {
+           // 매우 중요: 이벤트 버블링 중단
+           if (event) {
+               event.preventDefault();
+               event.stopPropagation();
+           }
+           
+           // 해당 건물의 데이터 찾기
+           const building = buildingData.find(b => b.id === buildingId);
+           
+           if (building) {
+               alert(`${building.name}으로 길찾기를 시작합니다.`);
+               
+               // 시설 탭으로 전환
+               switchTab('facility');
+               
+               // 지도를 다시 초기화 (가장 확실한 방법)
+               setTimeout(() => {
+                   // 지도 컨테이너 확인
+                   const mapContainer = document.getElementById('naverMap');
+                   if (mapContainer) {
+                       // 지도를 처음부터 다시 초기화
+                       initNaverMap();
+                       
+                       // 지도가 초기화된 후 건물 위치로 이동
+                       setTimeout(() => {
+                           if (naverMap) {
+                               // 건물 위치로 지도 중심 이동
+                               const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                               naverMap.setCenter(position);
+                               naverMap.setZoom(18); // 더 가깝게 줌인
+                               
+                               // 마커 찾기
+                               const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                               
+                               if (markerIndex !== -1) {
+                                   // 다른 모든 정보창 닫기
+                                   infoWindows.forEach(window => window.close());
+                                   
+                                   // 해당 마커의 정보창 열기
+                                   infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                               }
+                           }
+                       }, 500); // 지도 초기화 후 약간의 지연
+                   }
+               }, 500); // 탭 전환 후 지연
+           }
+       }
+       
+       // 지도 줌인
+       function zoomIn() {
+           if (naverMap) {
+               const currentZoom = naverMap.getZoom();
+               naverMap.setZoom(currentZoom + 1);
+           }
+       }
+       
+       // 지도 줌아웃
+       function zoomOut() {
+           if (naverMap) {
+               const currentZoom = naverMap.getZoom();
+               naverMap.setZoom(currentZoom - 1);
+           }
+       }
+       
+       // 지도 초기 뷰로 리셋
+       function resetMapView() {
+           if (naverMap) {
+               naverMap.setCenter(new naver.maps.LatLng(37.39661657434427, 126.90772437800818));
+               naverMap.setZoom(16);
+               
+               // 모든 정보창 닫기
+               infoWindows.forEach(window => window.close());
+           }
+       }
+   
+       // 프로필 이미지 전체 업데이트 함수 (모든 화면에서 일관되게 업데이트)
+       function updateAllProfileImages() {
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           if (!currentUser) return;
+           
+           const profileImageType = localStorage.getItem(`user_${currentUser}_profileImageType`) || 'emoji';
+           const profileImage = localStorage.getItem(`user_${currentUser}_profileImage`) || '👨‍🎓';
+           const customProfileImage = localStorage.getItem(`user_${currentUser}_customProfileImage`);
+           
+           // 1. 헤더 프로필 이미지 업데이트
+           const headerProfileImg = document.getElementById('headerProfileImg');
+           const headerProfileContainer = document.querySelector('.header-profile-image');
+           
+           if (headerProfileContainer) {
+               if (profileImageType === 'emoji') {
+                   headerProfileContainer.innerHTML = profileImage;
+               } else if (profileImageType === 'custom' && customProfileImage) {
+                   if (headerProfileImg) {
+                       headerProfileImg.src = customProfileImage;
+                   } else {
+                       headerProfileContainer.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
+                   }
+               } else if (profileImageType === 'image') {
+                   if (headerProfileImg) {
+                       headerProfileImg.src = profileImage;
+                   } else {
+                       headerProfileContainer.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
+                   }
+               } else {
+                   headerProfileContainer.innerHTML = '👤';
+               }
+           }
+           
+           // 2. 내 정보 탭의 프로필 이미지 업데이트 (중요!)
+           const profileTabImage = document.querySelector('#profile-tab .profile-image');
+           if (profileTabImage) {
+               if (profileImageType === 'emoji') {
+                   profileTabImage.innerHTML = profileImage;
+               } else if (profileImageType === 'custom' && customProfileImage) {
+                   profileTabImage.innerHTML = '';
+                   const img = document.createElement('img');
+                   img.src = customProfileImage;
+                   img.style.width = '100%';
+                   img.style.height = '100%';
+                   img.style.objectFit = 'cover';
+                   img.style.borderRadius = '50%';
+                   profileTabImage.appendChild(img);
+               } else if (profileImageType === 'image') {
+                   profileTabImage.innerHTML = '';
+                   const img = document.createElement('img');
+                   img.src = profileImage;
+                   img.style.width = '100%';
+                   img.style.height = '100%';
+                   img.style.objectFit = 'cover';
+                   img.style.borderRadius = '50%';
+                   profileTabImage.appendChild(img);
+               } else {
+                   profileTabImage.innerHTML = '👤';
+               }
+           }
+       }
+       // 카테고리 필터 초기화
+       function initCategoryFilter() {
+           const categoryTags = document.querySelectorAll('.category-tag');
+           categoryTags.forEach(tag => {
+               tag.addEventListener('click', function() {
+                   // 이미 선택된 태그 클릭 시 무시
+                   if (this.classList.contains('active')) return;
+                   // 현재 활성화된 태그 비활성화 - 이 부분에서 오류 발생 가능
+                   const activeTag = document.querySelector('.category-tag.active');
+                   if (activeTag) { // null 체크 추가
+                       activeTag.classList.remove('active');
+                   }
+                   // 클릭한 태그 활성화
+                   this.classList.add('active');
+               });
+           });
+       }
+       
+       // 탭 전환 함수 - 시설 탭으로 전환 시 페이지네이션 초기화 및 지도 갱신 개선
+       function switchTab(tabName) {
+           // 모든 탭 콘텐츠 숨기기
+           document.querySelectorAll('.tab-content').forEach(tab => {
+               tab.classList.remove('active');
+           });
+           
+           // 선택한 탭 콘텐츠 표시
+           document.getElementById(`${tabName}-tab`).classList.add('active');
+           
+           // 탭 메뉴 활성화 상태 변경
+           document.querySelectorAll('.tab-item').forEach(item => {
+               item.classList.remove('active');
+           });
+           
+           // 현재 선택된 탭 버튼 활성화
+           const tabItems = document.querySelectorAll('.tab-item');
+           for (let i = 0; i < tabItems.length; i++) {
+               if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+                   tabItems[i].classList.add('active');
+                   break;
+               }
+           }
+           
+           // 시설 탭으로 전환 시 건물 목록 페이지네이션 초기화 및 지도 갱신
+           if (tabName === 'facility') {
+               // 첫 페이지 로드
+               currentPage = 1;
+               loadBuildingsByPage(currentPage);
+               updatePaginationControls();
+               
+               // 지도 컨테이너 크기 설정 및 갱신
+               const mapContainer = document.getElementById('naverMap');
+               if (mapContainer) {
+                   mapContainer.style.width = '100%';
+                   mapContainer.style.height = '350px';
+               }
+               
+               // 여러 번의 갱신을 통해 지도가 제대로 표시되도록 함
+               setTimeout(() => {
+                   // 지도 다시 초기화
+                   initNaverMap();
+               }, 300);
+           }
+           
+           // 프로필 탭으로 전환 시 프로필 이미지 업데이트
+           if (tabName === 'profile') {
+               setTimeout(() => {
+                   updateAllProfileImages();
+               }, 100);
+           }
+       }
+       
+       // 시설 검색 함수 개선
+       function searchFacilities(query) {
+           // 검색어가 없으면 원래 내용 표시하고 결과 숨기기
+           if (!query || query.trim() === '') {
+               document.getElementById('original-content').style.display = 'block';
+               document.getElementById('search-results').style.display = 'none';
+               document.getElementById('no-results').style.display = 'none';
+               return;
+           }
+           
+           // 검색어를 소문자로 변환 (영어 대소문자 구분 없애기)
+           const searchTerm = query.trim().toLowerCase();
+           
+           // 건물 및 편의시설 데이터 합치기
+           const allFacilities = [...buildingData, ...facilityData];
+           
+           // 검색어와 일치하는 시설 찾기
+           const results = allFacilities.filter(facility => {
+               // 이름, 설명에서 검색어 포함 여부 확인 (대소문자 구분 없이)
+               const nameMatch = facility.name.toLowerCase().includes(searchTerm);
+               const descMatch = facility.description.toLowerCase().includes(searchTerm);
+               
+               return nameMatch || descMatch;
+           });
+           
+           // 검색 결과 컨테이너
+           const searchResultsContainer = document.getElementById('search-results');
+           searchResultsContainer.innerHTML = '';
+           
+           // 검색 결과가 있으면 표시
+           if (results.length > 0) {
+               // 원래 내용 숨기고 검색 결과 표시
+               document.getElementById('original-content').style.display = 'none';
+               searchResultsContainer.style.display = 'block';
+               document.getElementById('no-results').style.display = 'none';
+               
+               // 결과 목록 생성 - 간단한 목록 형태로 표시
+               const resultsList = document.createElement('ul');
+               resultsList.className = 'building-list';
+               
+               results.forEach(item => {
+                   const resultItem = document.createElement('li');
+                   resultItem.className = 'building-item';
+                   resultItem.onclick = function() {
+                       showBuildingDetail(item.id);
+                   };
+                   
+                   resultItem.innerHTML = `
+                       <div class="building-image">
+                           <img src="${item.image}" alt="${item.name}">
+                       </div>
+                       <div class="building-info-container">
+                           <div class="building-info">
+                               <div class="building-name">${item.name}</div>
+                               <div class="building-description">${item.description}</div>
+                           </div>
+                           <div class="building-nav-button" onclick="navigateToBuilding('${item.id}', event)">
+                               <span>길찾기</span>
+                               <span>🧭</span>
+                           </div>
+                       </div>
+                   `;
+                   
+                   resultsList.appendChild(resultItem);
+               });
+               
+               searchResultsContainer.appendChild(resultsList);
+           } else {
+               // 검색 결과가 없으면 안내 메시지 표시
+               document.getElementById('original-content').style.display = 'none';
+               searchResultsContainer.style.display = 'none';
+               document.getElementById('no-results').style.display = 'block';
+           }
+       }
+
+       // 검색 입력 이벤트 리스너 추가
+       document.addEventListener('DOMContentLoaded', function() {
+           const facilitySearchInput = document.getElementById('facility-search-input');
+           if (facilitySearchInput) {
+               // input 이벤트로 변경하여 실시간 검색 구현 (keypress 대신)
+               facilitySearchInput.addEventListener('input', function(event) {
+                   searchFacilities(this.value);
+               });
+           }
+           
+           // 메인 검색창에도 실시간 검색 이벤트 추가
+           const mainSearchInput = document.querySelector('.search-bar .search-input');
+           if (mainSearchInput) {
+               mainSearchInput.addEventListener('input', function(event) {
+                   // 실시간 검색 결과를 표시할 컨테이너가 없다면 생성
+                   let searchResults = document.querySelector('.search-results');
+                   if (!searchResults) {
+                       searchResults = document.createElement('div');
+                       searchResults.className = 'search-results';
+                       mainSearchInput.parentNode.insertAdjacentElement('afterend', searchResults);
+                   }
+                   
+                   // 검색어가 없으면 결과 숨기기
+                   if (!this.value.trim()) {
+                       searchResults.style.display = 'none';
+                       return;
+                   }
+                   
+                   // 검색어를 소문자로 변환
+                   const searchTerm = this.value.trim().toLowerCase();
+                   
+                   // 건물 및 편의시설 데이터 합치기
+                   const allItems = [...buildingData, ...facilityData];
+                   
+                   // 검색어와 일치하는 항목 찾기
+                   const results = allItems.filter(item => {
+                       return item.name.toLowerCase().includes(searchTerm) || 
+                              item.description.toLowerCase().includes(searchTerm);
+                   }).slice(0, 5); // 최대 5개 결과만 표시
+                   
+                   // 검색 결과 표시
+                   searchResults.innerHTML = '';
+                   
+                   if (results.length > 0) {
+                       const resultsList = document.createElement('ul');
+                       resultsList.className = 'building-list';
+                       
+                       results.forEach(item => {
+                           const resultItem = document.createElement('li');
+                           resultItem.className = 'building-item';
+                           resultItem.onclick = function() {
+                               showBuildingDetail(item.id);
+                           };
+                           
+                           resultItem.innerHTML = `
+                               <div class="building-image">
+                                   <img src="${item.image}" alt="${item.name}">
+                               </div>
+                               <div class="building-info-container">
+                                   <div class="building-info">
+                                       <div class="building-name">${item.name}</div>
+                                       <div class="building-description">${item.description}</div>
+                                   </div>
+                               </div>
+                           `;
+                           
+                           resultsList.appendChild(resultItem);
+                       });
+                       
+                       searchResults.appendChild(resultsList);
+                       searchResults.style.display = 'block';
+                   } else {
+                       searchResults.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
+                       searchResults.style.display = 'block';
+                   }
+               });
+           }
+       });
+       
+       // 메인 홈으로 이동
+       function goToHome() {
+           switchTab('home');
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+       }
+       
+       // 검색 열기
+       function openSearch() {
+           alert('검색 기능을 실행합니다.');
+           // 검색 입력창에 포커스
+           document.querySelector('.search-input').focus();
+       }
+       
+       // 검색 키 입력 처리
+       function handleSearchKeyPress(event) {
+           if (event.key === 'Enter') {
+               const searchTerm = event.target.value.trim();
+               if (searchTerm) {
+                   alert(`'${searchTerm}'에 대한 검색을 시작합니다.`);
+               }
+           }
+       }
+       
+       // 공지사항 필터링 - 알림 없이 필터링만 수행하도록 수정
+       function filterNotices(category) {
+           // alert(`${category} 카테고리의 공지사항을 필터링합니다.`); // 알림 제거
+   
+           // 카테고리 태그 활성화 상태 변경
+           document.querySelectorAll('.category-tag').forEach(tag => {
+           tag.classList.remove('active');
+       });
+   
+       // 선택된 카테고리 활성화
+       document.querySelectorAll('.category-tag').forEach(tag => {
+           if (tag.textContent.toLowerCase().includes(category) || 
+           (category === 'all' && tag.textContent === '전체')) {
+               tag.classList.add('active');
+           }
+       });
+   }
+
+   // 강의 필터링 - 알림 없이 필터링만 수행하도록 수정
+   function filterLectures(category) {
+       // alert(`${category} 카테고리의 강의를 필터링합니다.`); // 알림 제거
+   
+       // 카테고리 태그 활성화 상태 변경
+       const communityTab = document.getElementById('community-tab');
+       communityTab.querySelectorAll('.category-tag').forEach(tag => {
+           tag.classList.remove('active');
+       });
+   
+       // 선택된 카테고리 활성화
+       communityTab.querySelectorAll('.category-tag').forEach(tag => {
+           if (tag.textContent.toLowerCase().includes(category) || 
+               (category === 'all' && tag.textContent === '전체')) {
+               tag.classList.add('active');
+           }
+       });
+   }
+       
+       // 페이지 이동 함수
+       function goToPage(pageName) {
+           // 페이지 이름에 따라 분기 처리
+           switch(pageName) {
+               case 'login':
+                   alert('로그인 페이지로 이동합니다.');
+                   window.location.href = 'login.html';
+                   break;
+                   
+               case 'profile-edit':
+                   alert('프로필 수정 페이지로 이동합니다.');
+                   window.location.href = 'profile-edit.html';
+                   break;
+                   
+               case 'classroom':
+                   switchTab('facility');
+                   break;
+                   
+               case 'lecture-evaluation':
+                   switchTab('community');
+                   break;
+                   
+               case 'shuttle':
+                   alert('셔틀버스 시간표 페이지로 이동합니다.');
+                   break;
+                   
+               case 'cafeteria':
+                   alert('학식 메뉴 페이지로 이동합니다.');
+                   break;
+                   
+               case 'academic-calendar':
+                   alert('학사일정 페이지로 이동합니다.');
+                   break;
+                   
+               case 'library':
+                   alert('도서관 페이지로 이동합니다.');
+                   break;
+                   
+               case 'notices':
+                   alert('전체 공지사항 페이지로 이동합니다.');
+                   break;
+                   
+               default:
+                   alert(`${pageName} 페이지로 이동합니다.`);
+           }
+       }
+       
+       // 공지사항 상세 페이지로 이동 (알림 없이 바로 이동)
+       function goToNoticeDetail(noticeId) {
+           // 알림창 없이 직접 상세 페이지로 이동
+           window.location.href = `notice-detail.html?id=${noticeId}`;
+       }
+       
+       // 강의 상세 보기
+       function viewLectureDetail(lectureId) {
+           alert(`강의 ${lectureId} 상세 페이지로 이동합니다.`);
+           // window.location.href = `lecture-detail.html?id=${lectureId}`;
+       }
+       
+       // 알림 상세 보기
+       function viewNotification(notificationId) {
+           alert(`${notificationId} 알림 상세 내용을 확인합니다.`);
+       }
+       
+       // 건물 상세 보기
+       function showBuildingDetail(buildingId) {
+           alert(`${buildingId} 상세 페이지로 이동합니다.`);
+           
+           // 해당 건물의 데이터 찾기
+           const building = buildingData.find(b => b.id === buildingId);
+           
+           if (building) {
+               // 지도를 표시하고 해당 건물로 이동
+               switchTab('facility');
+               
+               // 충분한 지연 후 지도 처리
+               setTimeout(() => {
+                   // 지도 컨테이너 크기 설정
+                   const mapContainer = document.getElementById('naverMap');
+                   if (mapContainer) {
+                       mapContainer.style.width = '100%';
+                       mapContainer.style.height = '350px';
+                   }
+                   
+                   // 지도를 처음부터 다시 초기화
+                   initNaverMap();
+                   
+                   // 지도가 초기화된 후 건물 위치로 이동
+                   setTimeout(() => {
+                       if (naverMap) {
+                           // 건물 위치로 지도 중심 이동
+                           const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                           naverMap.setCenter(position);
+                           naverMap.setZoom(18); // 더 가깝게 줌인
+                           
+                           // 마커 찾기
+                           const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                           
+                           if (markerIndex !== -1) {
+                               // 다른 모든 정보창 닫기
+                               infoWindows.forEach(window => window.close());
+                               
+                               // 해당 마커의 정보창 열기
+                               infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                           }
+                       }
+                   }, 500); // 지도 초기화 후 약간의 지연
+               }, 500); // 탭 전환 후 지연
+           }
+       }
+       
+       // 편의 시설 상세 보기
+       function showFacilityDetail(facilityId) {
+           alert(`${facilityId} 시설 상세 정보를 확인합니다.`);
+           // window.location.href = `facility-detail.html?id=${facilityId}`;
+       }
+       
+       // 로그아웃 기능
+       function logout() {
+           if (confirm('로그아웃 하시겠습니까?')) {
+               // 현재 로그인 사용자 정보 삭제
+               localStorage.removeItem('currentLoggedInUser');
+               // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
+               const loginButton = document.querySelector('.login-button');
+               const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+               
+               // 로그인 버튼 표시, 프로필 드롭다운 숨김
+               if (loginButton) loginButton.style.display = 'block';
+               if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+      
+               // 프로필 드롭다운이 열려있다면 닫기
+               const dropdown = document.querySelector('.profile-dropdown');
+               if (dropdown) dropdown.classList.remove('active');
+               // 홈 탭으로 전환
+               switchTab('home');
+      
+               alert('로그아웃 되었습니다.');
+           }
+       }
+
+       // 회원 탈퇴 함수
+       function deleteAccount() {
+           // 현재 로그인된 사용자 확인
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           if (!currentUser) {
+               alert('로그인이 필요한 서비스입니다.');
+               return;
+           }
+           
+           // 삭제 확인
+           if (confirm('정말 회원 탈퇴하시겠습니까? 모든 계정 정보가 삭제됩니다.')) {
+               // 사용자 관련 정보 삭제
+               localStorage.removeItem(`user_${currentUser}_registered`);
+               localStorage.removeItem(`user_${currentUser}_first_login`);
+               localStorage.removeItem(`user_${currentUser}_name`);
+               localStorage.removeItem(`user_${currentUser}_department`);
+               localStorage.removeItem(`user_${currentUser}_grade`);
+               localStorage.removeItem(`user_${currentUser}_email`);
+               localStorage.removeItem(`user_${currentUser}_phone`);
+               localStorage.removeItem(`user_${currentUser}_password`);
+               localStorage.removeItem(`user_${currentUser}_profileImageType`);
+               localStorage.removeItem(`user_${currentUser}_profileImage`);
+               localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+               
+               // 현재 로그인 상태 제거
+               localStorage.removeItem('currentLoggedInUser');
+               
+               alert('회원 탈퇴가 완료되었습니다.');
+               
+               // 로그인 페이지로 이동
+               window.location.href = 'login.html';
+           }
+       }
+       
+       // 모든 설정 초기화 함수
+       function resetAllSettings() {
+           // 현재 로그인 상태 확인
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           if (!currentUser) {
+               alert('로그인이 필요한 서비스입니다.');
+               return;
+           }
+           
+           if (confirm('모든 설정을 초기화하시겠습니까? 설정된 위젯, 메뉴, 개인화 옵션이 모두 기본값으로 돌아갑니다.')) {
+               // 사용자 설정 초기화
+               localStorage.removeItem(`user_${currentUser}_setup_completed`);
+               localStorage.removeItem(`user_${currentUser}_profileImageType`);
+               localStorage.removeItem(`user_${currentUser}_profileImage`);
+               localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+               
+               // 위젯 설정 초기화
+               const defaultWidgets = [
+                   {
+                       name: '강의실 찾기',
+                       icon: '🏫',
+                       description: '빈 강의실 정보 확인'
+                   },
+                   {
+                       name: '학사일정',
+                       icon: '📅',
+                       description: '주요 일정 및 행사'
+                   },
+                   {
+                       name: '학식 메뉴',
+                       icon: '🍽️',
+                       description: '오늘의 식단 정보'
+                   }
+               ];
+               localStorage.setItem('selectedWidgets', JSON.stringify(defaultWidgets));
+               
+               // 메뉴 설정 초기화
+               const defaultMenus = [
+                   {
+                       name: '홈',
+                       icon: '🏠',
+                       order: 0
+                   },
+                   {
+                       name: '시설',
+                       icon: '🏫',
+                       order: 1
+                   },
+                   {
+                       name: '커뮤니티',
+                       icon: '💬',
+                       order: 2
+                   },
+                   {
+                       name: '내 정보',
+                       icon: '👤',
+                       order: 3
+                   },
+                   {
+                       name: '알림',
+                       icon: '🔔',
+                       order: 4
+                   }
+               ];
+               localStorage.setItem('activeMenus', JSON.stringify(defaultMenus));
+               
+               // 앱 재시작 (페이지 리로드)
+               alert('모든 설정이 초기화되었습니다. 앱을 다시 시작합니다.');
+               window.location.reload();
+           }
+       }
+       
+       // 프로필 드롭다운 토글 함수
+       function toggleProfileDropdown() {
+           const dropdown = document.querySelector('.profile-dropdown');
+           dropdown.classList.toggle('active');
+           
+           // 드롭다운 외부 클릭 시 닫기 이벤트 추가
+           if (dropdown.classList.contains('active')) {
+               setTimeout(() => {
+                   document.addEventListener('click', closeProfileDropdown);
+               }, 0);
+           }
+       }
+   
+       // 드롭다운 닫기 함수
+       function closeProfileDropdown(event) {
+           const dropdown = document.querySelector('.profile-dropdown');
+           const profileIcon = document.querySelector('.header-profile-image');
+           
+           if (!dropdown.contains(event.target) && event.target !== profileIcon) {
+               dropdown.classList.remove('active');
+               document.removeEventListener('click', closeProfileDropdown);
+           }
+       }
+   
+       // 로그인 상태 확인 및 UI 업데이트
+       function checkLoginStatus() {
+           // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           
+           // 로그인 버튼과 프로필 드롭다운 컨테이너
+           const loginButton = document.querySelector('.login-button');
+           const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+           
+           if (currentUser) {
+               // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
+               if (loginButton) loginButton.style.display = 'none';
+               if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
+               
+               // 드롭다운 내 프로필 정보 업데이트
+               updateDropdownProfileInfo(currentUser);
+               
+               // 프로필 탭의 정보도 업데이트
+               updateProfileInfo(currentUser);
+           } else {
+               // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
+               if (loginButton) loginButton.style.display = 'block';
+               if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+           }
+       }
+   
+       // 드롭다운 프로필 정보 업데이트
+       function updateDropdownProfileInfo(studentId) {
+           const dropdown = document.querySelector('.profile-dropdown');
+           if (!dropdown) return;
+           
+           const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+           const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+           const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+           
+           // 이름 업데이트
+           const nameElement = dropdown.querySelector('.dropdown-profile-name');
+           if (nameElement) nameElement.textContent = name;
+           
+           // 학과 및 학년 정보 업데이트
+           const detailElement = dropdown.querySelector('.dropdown-profile-detail');
+           if (detailElement && department) {
+               let departmentText = '';
+               
+               switch(department) {
+                   case 'computerScience':
+                       departmentText = '컴퓨터정보학과';
+                       break;
+                   case 'business':
+                       departmentText = '경영학과';
+                       break;
+                   case 'nursing':
+                       departmentText = '간호학과';
+                       break;
+                   case 'engineering':
+                       departmentText = '공학계열';
+                       break;
+                   case 'arts':
+                       departmentText = '예술계열';
+                       break;
+                   default:
+                       departmentText = department;
+               }
+               
+               detailElement.textContent = `${departmentText} | ${grade}학년`;
+           }
+           
+           // 학번 업데이트
+           const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
+           if (studentIdElement) {
+               studentIdElement.textContent = `학번: ${studentId}`;
+           }
+       }
+   
+       // 프로필 정보 업데이트
+       function updateProfileInfo(studentId) {
+           const profileTab = document.getElementById('profile-tab');
+           
+           if (profileTab) {
+               const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+               const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+               const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+               
+               // 프로필 이름 업데이트
+               const profileName = profileTab.querySelector('.profile-name');
+               if (profileName) {
+                   profileName.textContent = name;
+               }
+               
+               // 학과 및 학년 정보 업데이트
+               const profileDetail = profileTab.querySelector('.profile-detail');
+               if (profileDetail && department) {
+                   let departmentText = '';
+                   
+                   switch(department) {
+                       case 'computerScience':
+                           departmentText = '컴퓨터정보학과';
+                           break;
+                       case 'business':
+                           departmentText = '경영학과';
+                           break;
+                       case 'nursing':
+                           departmentText = '간호학과';
+                           break;
+                       case 'engineering':
+                           departmentText = '공학계열';
+                           break;
+                       case 'arts':
+                           departmentText = '예술계열';
+                           break;
+                       default:
+                           departmentText = department;
+                   }
+                   
+                   profileDetail.textContent = `${departmentText} | ${grade}학년`;
+               }
+               
+               // 학번 업데이트
+               const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
+               if (profileStudentId) {
+                   profileStudentId.textContent = `학번: ${studentId}`;
+               }
+           }
+       }
+       
+       function navigateToProfilePage(pageName) {
+           // 현재 로그인 상태 확인
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+       
+           if (!currentUser) {
+               alert('로그인이 필요한 서비스입니다.');
+               goToPage('login');
+               return;
+           }
+       
+           // 페이지 이름에 따라 분기 처리
+           switch(pageName) {
+               case 'timetable':
+                   alert('내 시간표 페이지로 이동합니다.');
+                   window.location.href = 'timetable.html';
+                   break;
+           
+               case 'my-courses':
+                   alert('내 수강 강의 페이지로 이동합니다.');
+                   // window.location.href = 'my-courses.html';
+                   break;
+
+               case 'favorite-classrooms':
+                   alert('즐겨찾는 강의실 페이지로 이동합니다.');
+                   // window.location.href = 'favorite-classrooms.html';
+                   break;
+
+               case 'profile-edit':
+                   alert('개인정보 수정 페이지로 이동합니다.');
+                   window.location.href = 'profile-edit.html';
+                   break;
+
+               case 'grades':
+                   alert('성적 조회 페이지로 이동합니다.');
+                   // window.location.href = 'grades.html';
+                   break;
+           
+               case 'course-registration':
+                   alert('수강 신청 내역 페이지로 이동합니다.');
+                   // window.location.href = 'course-registration.html';
+                   break;
+               
+               case 'scholarships':
+                   alert('장학금 내역 페이지로 이동합니다.');
+                   // window.location.href = 'scholarships.html';
+                   break;
+
+               case 'tuition':
+                   alert('등록금 납부 내역 페이지로 이동합니다.');
+                   // window.location.href = 'tuition.html';
+                   break;
+
+               case 'notification-settings':
+                   alert('알림 설정 페이지로 이동합니다.');
+                   // window.location.href = 'notification-settings.html';
+                   break;
+
+               case 'widget-settings':
+                   alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+                   window.location.href = 'widget-settings.html';
+                   break;
+
+               case 'app-info':
+                   alert('앱 정보 페이지로 이동합니다.');
+                   window.location.href = 'app-info.html';
+                   break;
+               default:
+                   alert('준비 중인 기능입니다.');
+           }
+       }
+       
+       // 저장된 위젯 설정 불러오기
+       function loadWidgetSettings() {
+           // 로컬 스토리지에서 위젯 설정 가져오기
+           const widgetsData = localStorage.getItem('selectedWidgets');
+           
+           if (widgetsData) {
+               const selectedWidgets = JSON.parse(widgetsData);
+               
+               // 바로가기 메뉴 컨테이너
+               const shortcutMenu = document.querySelector('.shortcut-menu');
+               
+               if (shortcutMenu && selectedWidgets.length > 0) {
+                   // 기존 메뉴 아이템 제거
+                   shortcutMenu.innerHTML = '';
+                   
+                   // 선택된 위젯 추가 (최대 5개)
+                   const maxWidgets = Math.min(selectedWidgets.length, 5);
+                   
+                   for (let i = 0; i < maxWidgets; i++) {
+                       const widget = selectedWidgets[i];
+                       
+                       const shortcutItem = document.createElement('div');
+                       shortcutItem.className = 'shortcut-item';
+                       
+                       const shortcutIcon = document.createElement('div');
+                       shortcutIcon.className = 'shortcut-icon';
+                       shortcutIcon.textContent = widget.icon;
+                       
+                       const shortcutText = document.createElement('div');
+                       shortcutText.className = 'shortcut-text';
+                       shortcutText.textContent = widget.name;
+                       
+                       shortcutItem.appendChild(shortcutIcon);
+                       shortcutItem.appendChild(shortcutText);
+                       shortcutMenu.appendChild(shortcutItem);
+                       
+                       // 위젯 클릭 이벤트 추가
+                       shortcutItem.addEventListener('click', function() {
+                           handleWidgetClick(widget.name);
+                       });
+                   }
+               }
+           }
+           
+           // 하단 탭 메뉴 설정 불러오기
+           loadTabMenuSettings();
+       }
+   
+       // 하단 탭 메뉴 설정 불러오기
+       function loadTabMenuSettings() {
+           const menuData = localStorage.getItem('activeMenus');
+           
+           if (menuData) {
+               const activeMenus = JSON.parse(menuData);
+               
+               // 하단 탭 메뉴 컨테이너
+               const tabMenu = document.querySelector('.tab-menu');
+               
+               if (tabMenu && activeMenus.length > 0) {
+                   // 기본 순서 정의 (홈 - 시설 - 커뮤니티 - 내정보 - 알림)
+                   const defaultOrder = [
+                       { name: '홈', icon: '🏠', order: 0 },
+                       { name: '시설', icon: '🏫', order: 1 },
+                       { name: '커뮤니티', icon: '💬', order: 2 },
+                       { name: '내 정보', icon: '👤', order: 3 },
+                       { name: '알림', icon: '🔔', order: 4 }
+                   ];
+                   
+                   // 기존 메뉴 아이템 제거
+                   tabMenu.innerHTML = '';
+                   
+                   // 활성화된 메뉴 추가
+                   defaultOrder.forEach((menu, index) => {
+                       const tabItem = document.createElement('div');
+                       tabItem.className = 'tab-item';
+                       if (index === 0) {
+                           tabItem.classList.add('active');
+                       }
+                       
+                       // 탭 이름에 따라 ID 설정
+                       let tabId;
+                       switch (menu.name) {
+                           case '홈':
+                               tabId = 'home';
+                               break;
+                           case '시설':
+                               tabId = 'facility';
+                               break;
+                           case '커뮤니티':
+                               tabId = 'community';
+                               break;
+                           case '알림':
+                               tabId = 'alert';
+                               break;
+                           case '내 정보':
+                               tabId = 'profile';
+                               break;
+                           case '학식':
+                               tabId = 'cafeteria';
+                               break;
+                           case '셔틀버스':
+                               tabId = 'shuttle';
+                               break;
+                           case '강의평가':
+                               tabId = 'lecture';
+                               break;
+                           default:
+                               tabId = menu.name.toLowerCase();
+                       }
+                       
+                       tabItem.onclick = function() {
+                           switchTab(tabId);
+                       };
+                       
+                       const tabIcon = document.createElement('span');
+                       tabIcon.className = 'tab-icon';
+                       tabIcon.textContent = menu.icon;
+                       
+                       const tabText = document.createElement('span');
+                       tabText.textContent = menu.name;
+                       
+                       tabItem.appendChild(tabIcon);
+                       tabItem.appendChild(tabText);
+                       tabMenu.appendChild(tabItem);
+                   });
+                   
+                   // 메뉴 설정 업데이트
+                   localStorage.setItem('activeMenus', JSON.stringify(defaultOrder));
+               }
+           } else {
+               // 기본값으로 설정
+               const defaultMenus = [
+                   { name: '홈', icon: '🏠', order: 0 },
+                   { name: '시설', icon: '🏫', order: 1 },
+                   { name: '커뮤니티', icon: '💬', order: 2 },
+                   { name: '내 정보', icon: '👤', order: 3 },
+                   { name: '알림', icon: '🔔', order: 4 }
+               ];
+               localStorage.setItem('activeMenus', JSON.stringify(defaultMenus));
+           }
+       }
+   
+       // 위젯 클릭 처리
+       function handleWidgetClick(widgetName) {
+           // 위젯 이름에 따른 기능 처리
+           switch (widgetName) {
+               case '강의실 찾기':
+               case '강의실':
+                   switchTab('facility');
+                   break;
+               case '강의평가':
+                   switchTab('community');
+                   break;
+               case '셔틀버스':
+                   goToPage('shuttle');
+                   break;
+               case '학식 메뉴':
+               case '학식':
+                   goToPage('cafeteria');
+                   break;
+               case '학사일정':
+                   goToPage('academic-calendar');
+                   break;
+               case '도서관':
+                   goToPage('library');
+                   break;
+               case '내 시간표':
+                   navigateToProfilePage('timetable');
+                   break;
+               case '공지사항':
+                   // 공지사항 섹션으로 스크롤
+                   const noticeSection = document.querySelector('.notice-list');
+                   if (noticeSection) {
+                       noticeSection.scrollIntoView({ behavior: 'smooth' });
+                   }
+                   break;
+               default:
+                   alert(`${widgetName} 기능은 준비 중입니다.`);
+           }
+       }
+   </script>
 </body>
 </html>
