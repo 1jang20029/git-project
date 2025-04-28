@@ -158,6 +158,8 @@
             overflow: hidden;
             position: relative;
             z-index: 100;
+            max-height: 60vh;
+            overflow-y: auto;
         }
         
         .no-results {
@@ -783,6 +785,124 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
+        /* 검색 결과 스타일 개선 */
+        .search-results {
+            background-color: white;
+            border: 1px solid #eee;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 0 16px;
+            max-height: 60vh;
+            overflow-y: auto;
+            position: absolute;
+            width: calc(100% - 32px);
+            z-index: 200;
+        }
+        
+        .search-results .building-item {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-results .building-item:last-child {
+            border-bottom: none;
+        }
+        
+        .no-results {
+            padding: 16px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            background-color: white;
+            border: 1px solid #eee;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 0 16px;
+            position: absolute;
+            z-index: 100;
+            width: calc(100% - 32px);
+        }
+        
+        .search-highlight {
+            background-color: rgba(198, 41, 23, 0.1);
+            font-weight: bold;
+            color: #c62917;
+        }
+        
+        /* 검색바 컨테이너 스타일 */
+        .search-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #c62917;
+            box-shadow: 0 0 0 2px rgba(198, 41, 23, 0.2);
+        }
+        
+        .search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+            display: none;
+            transition: color 0.2s ease;
+        }
+        
+        .search-clear:hover {
+            color: #c62917;
+        }
+        
+        /* 검색 결과 항목 호버 효과 */
+        .search-results .building-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* 빠른 검색 버튼 스타일 */
+        .quick-search-buttons {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 12px;
+        }
+        
+        .quick-search-buttons .category-tag {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            color: #555;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 6px 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-search-buttons .category-tag:hover {
+            background-color: #e5e5e5;
+        }
+        
+        .quick-search-buttons .category-tag.active {
+            background-color: #c62917;
+            border-color: #c62917;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -949,8 +1069,26 @@
         
         <!-- 시설 탭 -->
         <div id="facility-tab" class="tab-content">
+            <!-- 검색 바 - 새로운 구조로 변경 -->
             <div class="search-bar">
-                <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
+                <div class="search-container">
+                    <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
+                    <button class="search-clear" onclick="clearSearch()">✕</button>
+                </div>
+            </div>
+            
+            <!-- 빠른 검색 버튼 영역 -->
+            <div class="quick-search-buttons">
+                <div class="section-title" style="margin-top: 12px; margin-left: 16px; margin-right: 16px;">
+                    <span>빠른 검색</span>
+                </div>
+                <div style="display: flex; overflow-x: auto; padding: 0 16px 12px 16px; gap: 8px;">
+                    <button class="category-tag" onclick="quickSearch('강의실')">강의실</button>
+                    <button class="category-tag" onclick="quickSearch('학생')">학생시설</button>
+                    <button class="category-tag" onclick="quickSearch('식당')">식당/카페</button>
+                    <button class="category-tag" onclick="quickSearch('도서관')">도서관</button>
+                    <button class="category-tag" onclick="quickSearch('공학')">공학계열</button>
+                </div>
             </div>
             
             <!-- 검색 결과를 표시할 컨테이너 추가 -->
@@ -1651,6 +1789,9 @@
            // 네이버 지도 초기화
            initNaverMap();
            
+           // 검색 기능 초기화
+           initSearchFunctionality();
+           
            // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
            window.addEventListener('pageshow', function(event) {
                // bfcache에서 페이지가 복원된 경우에도 실행
@@ -2136,7 +2277,7 @@
                    break;
                    
                case 'academic-calendar':
-                   alert('학사일정 페이지로 이동합니다.');
+               alert('학사일정 페이지로 이동합니다.');
                    break;
                    
                case 'library':
@@ -2734,6 +2875,201 @@
                    alert(`${widgetName} 기능은 준비 중입니다.`);
            }
        }
-   </script>
+
+       // 시설 검색 기능
+       function searchFacilities(query) {
+           // 검색어가 비어있으면 원래 컨텐츠 표시
+           if (!query.trim()) {
+               document.getElementById('search-results').style.display = 'none';
+               document.getElementById('no-results').style.display = 'none';
+               document.getElementById('original-content').style.display = 'block';
+               return;
+           }
+           
+           query = query.toLowerCase().trim();
+           
+           // 건물 및 편의시설 데이터 통합 검색
+           const allFacilities = [...buildingData, ...facilityData];
+           
+           // 검색 결과와 관련성 점수 계산
+           const scoredResults = allFacilities.map(item => {
+               let score = 0;
+               
+               // 이름 매칭 - 가장 높은 점수
+               if (item.name.toLowerCase() === query) {
+                   score += 100; // 정확한 일치
+               } else if (item.name.toLowerCase().startsWith(query)) {
+                   score += 75; // 시작 부분 일치
+               } else if (item.name.toLowerCase().includes(query)) {
+                   score += 50; // 부분 일치
+               }
+               
+               // 설명 매칭
+               if (item.description.toLowerCase().includes(query)) {
+                   score += 25;
+               }
+               
+               // 빌딩 ID/관련 건물 매칭
+               if (item.id.toLowerCase().includes(query)) {
+                   score += 40;
+               }
+               
+               // 관련 건물 매칭 (편의시설의 경우)
+               if (item.relatedBuilding && item.relatedBuilding.toLowerCase().includes(query)) {
+                   score += 35;
+               }
+               
+               return { item, score };
+           }).filter(result => result.score > 0); // 점수가 0보다 큰 결과만 포함
+           
+           // 점수에 따라 결과 정렬
+           scoredResults.sort((a, b) => b.score - a.score);
+           
+           // 검색 결과 추출
+           const results = scoredResults.map(result => result.item);
+           
+           // 검색 결과 컨테이너
+           const searchResultsContainer = document.getElementById('search-results');
+           searchResultsContainer.innerHTML = '';
+           
+           // 결과 표시
+           if (results.length > 0) {
+               // 검색 결과 표시
+               results.forEach(item => {
+                   const resultItem = document.createElement('div');
+                   resultItem.className = 'building-item';
+                   resultItem.onclick = function() {
+                       if (item.type === 'building') {
+                           showBuildingDetail(item.id);
+                       } else {
+                           showFacilityDetail(item.id);
+                       }
+                   };
+                   
+                   // 검색어 하이라이트 처리
+                   const highlightedName = highlightText(item.name, query);
+                   const highlightedDescription = highlightText(item.description, query);
+                   
+                   resultItem.innerHTML = `
+                       <div class="building-image">
+                           <img src="${item.image}" alt="${item.name}">
+                       </div>
+                       <div class="building-info-container">
+                           <div class="building-info">
+                               <div class="building-name">${highlightedName}</div>
+                               <div class="building-description">${highlightedDescription}</div>
+                           </div>
+                           <div class="building-nav-button" onclick="navigateToBuilding('${item.id}', event)">
+                               <span>길찾기</span>
+                               <span>🧭</span>
+                           </div>
+                       </div>
+                   `;
+                   
+                   searchResultsContainer.appendChild(resultItem);
+               });
+               
+               // 검색 결과 표시, 원래 컨텐츠 숨기기
+               searchResultsContainer.style.display = 'block';
+               document.getElementById('no-results').style.display = 'none';
+               document.getElementById('original-content').style.display = 'none';
+           } else {
+               // 검색 결과 없음 표시
+               searchResultsContainer.style.display = 'none';
+               document.getElementById('no-results').style.display = 'block';
+               document.getElementById('original-content').style.display = 'none';
+           }
+           
+           // 클리어 버튼 표시 여부 업데이트
+           updateClearButton();
+       }
+
+       // 검색어 하이라이트 처리 함수
+       function highlightText(text, query) {
+           if (!query || query.trim() === '') return text;
+           
+           const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+           // 검색어 하이라이트 처리 함수
+       function highlightText(text, query) {
+           if (!query || query.trim() === '') return text;
+           
+           const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+           return text.replace(regex, '<span class="search-highlight">$1</span>');
+       }
+
+       // 클리어 버튼 업데이트 함수
+       function updateClearButton() {
+           const searchInput = document.getElementById('facility-search-input');
+           const clearButton = document.querySelector('.search-clear');
+           
+           if (searchInput && clearButton) {
+               if (searchInput.value.trim() !== '') {
+                   clearButton.style.display = 'block';
+               } else {
+                   clearButton.style.display = 'none';
+               }
+           }
+       }
+
+       // 검색 초기화 함수
+       function clearSearch() {
+           const searchInput = document.getElementById('facility-search-input');
+           if (searchInput) {
+               searchInput.value = '';
+               searchFacilities('');
+               updateClearButton();
+           }
+       }
+
+       // 빠른 검색 실행 함수
+       function quickSearch(keyword) {
+           const searchInput = document.getElementById('facility-search-input');
+           if (searchInput) {
+               searchInput.value = keyword;
+               searchFacilities(keyword);
+               updateClearButton();
+           }
+       }
+
+       // 검색 기능 초기화
+       function initSearchFunctionality() {
+           const searchInput = document.getElementById('facility-search-input');
+           if (searchInput) {
+               // Enter 키 처리
+               searchInput.addEventListener('keypress', function(event) {
+                   if (event.key === 'Enter') {
+                       searchFacilities(this.value);
+                   }
+               });
+               
+               // 포커스 아웃 시 검색 실행
+               searchInput.addEventListener('blur', function() {
+                   searchFacilities(this.value);
+               });
+               
+               // 검색창이 비워졌을 때 원래 내용 표시
+               searchInput.addEventListener('input', function() {
+                   if (this.value.trim() === '') {
+                       document.getElementById('search-results').style.display = 'none';
+                       document.getElementById('no-results').style.display = 'none';
+                       document.getElementById('original-content').style.display = 'block';
+                   }
+                   updateClearButton();
+               });
+           }
+
+           // 빠른 검색 버튼 활성화 코드
+           const quickSearchButtons = document.querySelectorAll('.quick-search-buttons .category-tag');
+           quickSearchButtons.forEach(button => {
+               button.addEventListener('click', function() {
+                   // 다른 모든 버튼 비활성화
+                   quickSearchButtons.forEach(btn => btn.classList.remove('active'));
+                   // 클릭한 버튼 활성화
+                   this.classList.add('active');
+               });
+           });
+       }
+    }
+    </script>
 </body>
 </html>
