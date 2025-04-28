@@ -2876,114 +2876,213 @@
            }
        }
 
-       // 시설 검색 기능
-       function searchFacilities(query) {
-           // 검색어가 비어있으면 원래 컨텐츠 표시
-           if (!query.trim()) {
-               document.getElementById('search-results').style.display = 'none';
-               document.getElementById('no-results').style.display = 'none';
-               document.getElementById('original-content').style.display = 'block';
-               return;
-           }
-           
-           query = query.toLowerCase().trim();
-           
-           // 건물 및 편의시설 데이터 통합 검색
-           const allFacilities = [...buildingData, ...facilityData];
-           
-           // 검색 결과와 관련성 점수 계산
-           const scoredResults = allFacilities.map(item => {
-               let score = 0;
-               
-               // 이름 매칭 - 가장 높은 점수
-               if (item.name.toLowerCase() === query) {
-                   score += 100; // 정확한 일치
-               } else if (item.name.toLowerCase().startsWith(query)) {
-                   score += 75; // 시작 부분 일치
-               } else if (item.name.toLowerCase().includes(query)) {
-                   score += 50; // 부분 일치
-               }
-               
-               // 설명 매칭
-               if (item.description.toLowerCase().includes(query)) {
-                   score += 25;
-               }
-               
-               // 빌딩 ID/관련 건물 매칭
-               if (item.id.toLowerCase().includes(query)) {
-                   score += 40;
-               }
-               
-               // 관련 건물 매칭 (편의시설의 경우)
-               if (item.relatedBuilding && item.relatedBuilding.toLowerCase().includes(query)) {
-                   score += 35;
-               }
-               
-               return { item, score };
-           }).filter(result => result.score > 0); // 점수가 0보다 큰 결과만 포함
-           
-           // 점수에 따라 결과 정렬
-           scoredResults.sort((a, b) => b.score - a.score);
-           
-           // 검색 결과 추출
-           const results = scoredResults.map(result => result.item);
-           
-           // 검색 결과 컨테이너
-           const searchResultsContainer = document.getElementById('search-results');
-           searchResultsContainer.innerHTML = '';
-           
-           // 결과 표시
-           if (results.length > 0) {
-               // 검색 결과 표시
-               results.forEach(item => {
-                   const resultItem = document.createElement('div');
-                   resultItem.className = 'building-item';
-                   resultItem.onclick = function() {
-                       if (item.type === 'building') {
-                           showBuildingDetail(item.id);
-                       } else {
-                           showFacilityDetail(item.id);
-                       }
-                   };
-                   
-                   // 검색어 하이라이트 처리
-                   const highlightedName = highlightText(item.name, query);
-                   const highlightedDescription = highlightText(item.description, query);
-                   
-                   resultItem.innerHTML = `
-                       <div class="building-image">
-                           <img src="${item.image}" alt="${item.name}">
-                       </div>
-                       <div class="building-info-container">
-                           <div class="building-info">
-                               <div class="building-name">${highlightedName}</div>
-                               <div class="building-description">${highlightedDescription}</div>
-                           </div>
-                           <div class="building-nav-button" onclick="navigateToBuilding('${item.id}', event)">
-                               <span>길찾기</span>
-                               <span>🧭</span>
-                           </div>
-                       </div>
-                   `;
-                   
-                   searchResultsContainer.appendChild(resultItem);
-               });
-               
-               // 검색 결과 표시, 원래 컨텐츠 숨기기
-               searchResultsContainer.style.display = 'block';
-               document.getElementById('no-results').style.display = 'none';
-               document.getElementById('original-content').style.display = 'none';
-           } else {
-               // 검색 결과 없음 표시
-               searchResultsContainer.style.display = 'none';
-               document.getElementById('no-results').style.display = 'block';
-               document.getElementById('original-content').style.display = 'none';
-           }
-           
-           // 클리어 버튼 표시 여부 업데이트
-           updateClearButton();
-       }
+      // "undefined" 문제 해결을 위한 searchFacilities 함수 수정
+        function searchFacilities(query) {
+            // 검색어가 비어있으면 원래 컨텐츠 표시
+            if (!query.trim()) {
+                document.getElementById('search-results').style.display = 'none';
+                document.getElementById('no-results').style.display = 'none';
+                document.getElementById('original-content').style.display = 'block';
+                return;
+            }
+            
+            query = query.toLowerCase().trim();
+            
+            // 건물 및 편의시설 데이터 통합 검색
+            const allFacilities = [...buildingData, ...facilityData];
+            
+            // 검색 결과와 관련성 점수 계산
+            const scoredResults = allFacilities.map(item => {
+                let score = 0;
+                
+                // 이름 매칭 - 가장 높은 점수
+                if (item.name && item.name.toLowerCase() === query) {
+                    score += 100; // 정확한 일치
+                } else if (item.name && item.name.toLowerCase().startsWith(query)) {
+                    score += 75; // 시작 부분 일치
+                } else if (item.name && item.name.toLowerCase().includes(query)) {
+                    score += 50; // 부분 일치
+                }
+                
+                // 설명 매칭
+                if (item.description && item.description.toLowerCase().includes(query)) {
+                    score += 25;
+                }
+                
+                // 빌딩 ID/관련 건물 매칭
+                if (item.id && item.id.toLowerCase().includes(query)) {
+                    score += 40;
+                }
+                
+                // 관련 건물 매칭 (편의시설의 경우)
+                if (item.relatedBuilding && item.relatedBuilding.toLowerCase().includes(query)) {
+                    score += 35;
+                }
+                
+                return { item, score };
+            }).filter(result => result.score > 0); // 점수가 0보다 큰 결과만 포함
+            
+            // 점수에 따라 결과 정렬
+            scoredResults.sort((a, b) => b.score - a.score);
+            
+            // 검색 결과 추출
+            const results = scoredResults.map(result => result.item);
+            
+            // 검색 결과 컨테이너
+            const searchResultsContainer = document.getElementById('search-results');
+            searchResultsContainer.innerHTML = '';
+            
+            // 결과 표시
+            if (results.length > 0) {
+                // 검색 결과 표시
+                results.forEach(item => {
+                    // undefined 체크와 기본값 설정
+                    const itemName = item.name || '';
+                    const itemDesc = item.description || '';
+                    const itemId = item.id || '';
+                    const itemImage = item.image || '/api/placeholder/80/60';
+                    
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'building-item';
+                    resultItem.onclick = function() {
+                        if (item.type === 'building') {
+                            showBuildingDetail(itemId);
+                        } else {
+                            showFacilityDetail(itemId);
+                        }
+                    };
+                    
+                    // 검색어 하이라이트 처리
+                    const highlightedName = highlightText(itemName, query);
+                    const highlightedDescription = highlightText(itemDesc, query);
+                    
+                    resultItem.innerHTML = `
+                        <div class="building-image">
+                            <img src="${itemImage}" alt="${itemName}">
+                        </div>
+                        <div class="building-info-container">
+                            <div class="building-info">
+                                <div class="building-name">${highlightedName}</div>
+                                <div class="building-description">${highlightedDescription}</div>
+                            </div>
+                            <div class="building-nav-button" onclick="navigateToBuilding('${itemId}', event)">
+                                <span>길찾기</span>
+                                <span>🧭</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    searchResultsContainer.appendChild(resultItem);
+                });
+                
+                // 검색 결과 표시, 원래 컨텐츠 숨기기
+                searchResultsContainer.style.display = 'block';
+                document.getElementById('no-results').style.display = 'none';
+                document.getElementById('original-content').style.display = 'none';
+            } else {
+                // 검색 결과 없음 표시
+                searchResultsContainer.style.display = 'none';
+                document.getElementById('no-results').style.display = 'block';
+                document.getElementById('original-content').style.display = 'none';
+            }
+            
+            // 클리어 버튼 표시 여부 업데이트
+            updateClearButton();
+        }
 
+// 길찾기 함수 수정 - 실시간 검색 결과에서도 정상 작동하도록
+function navigateToBuilding(buildingId, event) {
+    // 이벤트 버블링 방지
+    if (event) {
+        event.stopPropagation();
+    }
+    
+    // 해당 건물의 데이터 찾기
+    const building = buildingData.find(b => b.id === buildingId);
+    
+    if (!building) {
+        // 편의시설 데이터에서도 검색
+        const facility = facilityData.find(f => f.id === buildingId);
+        if (facility) {
+            alert(`${facility.name}으로 길찾기를 시작합니다.`);
+            
+            // 지도를 표시하고 해당 시설로 이동
+            switchTab('facility');
+            
+            // 관련 건물이 있으면 해당 건물로 이동
+            if (facility.relatedBuilding) {
+                const relatedBuilding = buildingData.find(b => b.id === facility.relatedBuilding);
+                if (relatedBuilding && naverMap) {
+                    setTimeout(() => {
+                        const position = new naver.maps.LatLng(relatedBuilding.position.lat, relatedBuilding.position.lng);
+                        naverMap.setCenter(position);
+                        naverMap.setZoom(18);
+                        
+                        // 마커 찾기 및 정보창 열기
+                        const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === relatedBuilding.name);
+                        if (markerIndex !== -1) {
+                            infoWindows.forEach(window => window.close());
+                            infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                        }
+                    }, 300);
+                }
+            } else if (naverMap) {
+                // 시설 자체의 위치를 사용
+                setTimeout(() => {
+                    const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
+                    naverMap.setCenter(position);
+                    naverMap.setZoom(18);
+                    
+                    // 시설 마커는 다르게 처리될 수 있으므로 확인 필요
+                    const markerIndex = mapMarkers.findIndex(marker => 
+                        marker.getTitle && marker.getTitle() === facility.name);
+                    if (markerIndex !== -1) {
+                        infoWindows.forEach(window => window.close());
+                        infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                    }
+                }, 300);
+            }
+        } else {
+            alert('해당 건물 또는 시설 정보를 찾을 수 없습니다.');
+        }
+        return;
+    }
+    
+    // 건물이 있는 경우 처리
+    alert(`${building.name}으로 길찾기를 시작합니다.`);
+    
+    // 지도를 표시하고 해당 건물로 이동
+    switchTab('facility');
+    
+    // 지도가 초기화되었는지 확인
+    if (naverMap) {
+        // UI 업데이트를 위한 시간 지연
+        setTimeout(() => {
+            // 건물 위치로 지도 중심 이동
+            const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+            naverMap.setCenter(position);
+            naverMap.setZoom(18); // 더 가깝게 줌인
+            
+            // 마커 찾기
+            const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+            
+            if (markerIndex !== -1) {
+                // 다른 모든 정보창 닫기
+                infoWindows.forEach(window => window.close());
+                
+                // 해당 마커의 정보창 열기
+                infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+            }
+            
+            // 지도 갱신을 위한 이벤트 트리거
+            window.dispatchEvent(new Event('resize'));
+            naverMap.refresh();
+        }, 300);
+    } else {
+        // 지도가 초기화되지 않았으면 알림
+        alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+    }
+}
        // 검색어 하이라이트 처리 함수
        function highlightText(text, query) {
            if (!query || query.trim() === '') return text;
