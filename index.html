@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연성대학교 캠퍼스 가이드</title>
     <!-- 네이버 지도 API 스크립트 추가 -->
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=geocoder,direction"></script>
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9"></script>
     
     <style>
         * {
@@ -903,273 +903,7 @@
             border-color: #c62917;
             color: white;
         }
-        
-        /* 길찾기 관련 새로운 스타일 */
-        .navigation-header {
-            padding: 12px 16px;
-            background-color: #f5f5f5;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .navigation-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .navigation-close {
-            color: #888;
-            font-size: 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .navigation-panel {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: white;
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-        }
-        
-        .navigation-panel.active {
-            display: flex;
-        }
-        
-        .navigation-map {
-            flex: 1;
-            width: 100%;
-        }
-        
-        .navigation-info {
-            padding: 16px;
-            background-color: white;
-            border-top: 1px solid #eee;
-            max-height: 40vh;
-            overflow-y: auto;
-        }
-        
-        .navigation-details {
-            margin-bottom: 16px;
-        }
-        
-        .navigation-from, .navigation-to {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .navigation-from-icon, .navigation-to-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 8px;
-            font-size: 14px;
-        }
-        
-        .navigation-from-icon {
-            background-color: #4CAF50;
-            color: white;
-        }
-        
-        .navigation-to-icon {
-            background-color: #F44336;
-            color: white;
-        }
-        
-        .navigation-dest-text {
-            font-size: 14px;
-            color: #333;
-        }
-        
-        .navigation-distance {
-            font-size: 12px;
-            color: #666;
-            margin-left: 8px;
-        }
-        
-        .navigation-steps {
-            list-style: none;
-        }
-        
-        .navigation-step {
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-            display: flex;
-        }
-        
-        .navigation-step:last-child {
-            border-bottom: none;
-        }
-        
-        .navigation-step-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 12px;
-            font-size: 14px;
-        }
-        
-        .navigation-step-info {
-            flex: 1;
-        }
-        
-        .navigation-step-text {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 4px;
-        }
-        
-        .navigation-step-detail {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .navigation-controls {
-            display: flex;
-            justify-content: space-between;
-            padding: 16px;
-            border-top: 1px solid #eee;
-        }
-        
-        .navigation-button {
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .navigation-start {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-        }
-        
-        .navigation-cancel {
-            background-color: #f5f5f5;
-            color: #666;
-            border: 1px solid #ddd;
-        }
-        
-        /* 사용자 위치 마커 스타일 */
-        .user-location-marker {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #4285F4;
-            border: 3px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        
-        /* 경로 표시 스타일 */
-        .route-path {
-            stroke: #4285F4;
-            stroke-width: 4;
-            stroke-linecap: round;
-            stroke-opacity: 0.8;
-        }
-        
-        /* 실내 경로 안내 스타일 */
-        .indoor-navigation-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 768px;
-            margin: 0 auto;
-            background-color: white;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-            z-index: 1500;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-        
-        .indoor-navigation-panel.active {
-            transform: translateY(0);
-        }
-        
-        .indoor-navigation-header {
-            padding: 16px;
-            border-bottom: 1px solid #eee;
-            position: relative;
-        }
-        
-        .indoor-navigation-handle {
-            position: absolute;
-            width: 40px;
-            height: 4px;
-            border-radius: 2px;
-            background-color: #ddd;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .indoor-navigation-title {
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-        }
-        
-        .indoor-navigation-list {
-            list-style: none;
-        }
-        
-        .indoor-navigation-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-        }
-        
-        .indoor-navigation-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 12px;
-            font-size: 16px;
-        }
-        
-        .indoor-navigation-info {
-            flex: 1;
-        }
-        
-        .indoor-navigation-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .indoor-navigation-description {
-            font-size: 12px;
-            color: #666;
-        }
-        
+
         /* GPS 버튼 스타일 */
         .gps-button {
             position: absolute;
@@ -1187,139 +921,18 @@
             z-index: 100;
             cursor: pointer;
         }
-        
-        /* 경로 거리 및 시간 정보 스타일 */
-        .route-info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            padding: 12px;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .route-info-time, .route-info-distance {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .route-info-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .route-info-label {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        /* 건물 내부 시설 검색 패널 */
-        .indoor-facility-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 768px;
-            margin: 0 auto;
-            background-color: white;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-            z-index: 1500;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-        
-        .indoor-facility-panel.active {
-            transform: translateY(0);
-        }
-        
-        .indoor-facility-header {
-            padding: 16px;
-            border-bottom: 1px solid #eee;
-            position: relative;
-        }
-        
-        .indoor-facility-handle {
-            position: absolute;
-            width: 40px;
-            height: 4px;
-            border-radius: 2px;
-            background-color: #ddd;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .indoor-facility-title {
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-        }
-        
-        .indoor-facility-search {
-            padding: 12px 16px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .indoor-facility-search-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        .indoor-facility-list {
-            list-style: none;
-        }
-        
-        .indoor-facility-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .indoor-facility-icon {
-            width: 32px;
-            height: 32px;
+
+        /* 사용자 위치 마커 스타일 */
+        .user-location-marker {
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 12px;
-            font-size: 16px;
-        }
-        
-        .indoor-facility-info {
-            flex: 1;
-        }
-        
-        .indoor-facility-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .indoor-facility-location {
-            font-size: 12px;
-            color: #666;
-        }
-    </style>
-</head>
+            background-color: #4285F4;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }   
+        </style>
+    </head>
 <body>
     <div class="container">
         <header>
@@ -1526,8 +1139,6 @@
                         <div class="map-button" onclick="zoomOut()">🔍-</div>
                         <div class="map-button" onclick="resetMapView()">🏠</div>
                     </div>
-                    <!-- GPS 버튼 추가 -->
-                    <div class="gps-button" onclick="trackUserLocation()">📍</div>
                 </div>
                 
                 <div class="content-section">
@@ -1827,80 +1438,6 @@
                 <span>알림</span>
             </div>
         </div>
-        
-        <!-- 길찾기 모드 패널 -->
-        <div id="navigation-panel" class="navigation-panel">
-            <div class="navigation-header">
-                <div class="navigation-title">길찾기</div>
-                <button class="navigation-close" onclick="closeNavigation()">×</button>
-            </div>
-            
-            <div id="navigation-map" class="navigation-map"></div>
-            
-            <div class="route-info" id="route-info" style="display: none;">
-                <div class="route-info-time">
-                    <div class="route-info-value" id="route-time">5분</div>
-                    <div class="route-info-label">소요시간</div>
-                </div>
-                <div class="route-info-distance">
-                    <div class="route-info-value" id="route-distance">300m</div>
-                    <div class="route-info-label">거리</div>
-                </div>
-            </div>
-            
-            <div class="navigation-info">
-                <div class="navigation-details">
-                    <div class="navigation-from">
-                        <div class="navigation-from-icon">A</div>
-                        <div class="navigation-dest-text" id="nav-from-text">현재 위치</div>
-                    </div>
-                    <div class="navigation-to">
-                        <div class="navigation-to-icon">B</div>
-                        <div class="navigation-dest-text" id="nav-to-text">목적지</div>
-                        <div class="navigation-distance" id="nav-distance"></div>
-                    </div>
-                </div>
-                
-                <ul class="navigation-steps" id="navigation-steps">
-                    <!-- 길찾기 단계가 여기에 동적으로 추가됩니다 -->
-                </ul>
-                
-                <div class="navigation-controls">
-                    <button class="navigation-button navigation-cancel" onclick="closeNavigation()">취소</button>
-                    <button class="navigation-button navigation-start" onclick="startRealTimeNavigation()">실시간 안내 시작</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 건물 내부 시설 검색 패널 -->
-        <div id="indoor-facility-panel" class="indoor-facility-panel">
-            <div class="indoor-facility-header">
-                <div class="indoor-facility-handle"></div>
-                <div class="indoor-facility-title">시설 선택</div>
-                <button class="navigation-close" onclick="closeIndoorFacilityPanel()" style="position: absolute; right: 10px; top: 10px;">×</button>
-            </div>
-            
-            <div class="indoor-facility-search">
-                <input type="text" class="indoor-facility-search-input" placeholder="검색할 시설명을 입력하세요" id="indoor-search-input" oninput="filterIndoorFacilities(this.value)">
-            </div>
-            
-            <ul class="indoor-facility-list" id="indoor-facility-list">
-                <!-- 이 부분은 건물에 따라 동적으로 내용이 변경됩니다 -->
-            </ul>
-        </div>
-        
-        <!-- 실내 경로 안내 패널 -->
-        <div id="indoor-navigation-panel" class="indoor-navigation-panel">
-            <div class="indoor-navigation-header">
-                <div class="indoor-navigation-handle"></div>
-                <div class="indoor-navigation-title">실내 경로 안내</div>
-                <button class="navigation-close" onclick="closeIndoorNavigation()" style="position: absolute; right: 10px; top: 10px;">×</button>
-            </div>
-            
-            <ul class="indoor-navigation-list" id="indoor-navigation-list">
-                <!-- 실내 경로 안내가 여기에 동적으로 추가됩니다 -->
-            </ul>
-        </div>
     </div>
     
     <script>
@@ -1912,17 +1449,7 @@
                description: '공학계열 강의실, 실험실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39632767479923, lng: 126.90699348692698 },
-               floors: 4,
-               facilities: [
-                   { id: '공학1관-101', name: '101호 강의실', floor: 1, description: '컴퓨터정보학과 강의실', type: 'classroom' },
-                   { id: '공학1관-102', name: '102호 실습실', floor: 1, description: '전자공학과 실습실', type: 'lab' },
-                   { id: '공학1관-103', name: '103호 세미나실', floor: 1, description: '소형 세미나실', type: 'seminar' },
-                   { id: '공학1관-201', name: '201호 강의실', floor: 2, description: '대형 강의실', type: 'classroom' },
-                   { id: '공학1관-202', name: '202호 실습실', floor: 2, description: '프로그래밍 실습실', type: 'lab' },
-                   { id: '공학1관-교수연구실', name: '교수 연구실', floor: 3, description: '공학계열 교수 연구실', type: 'office' },
-                   { id: '공학1관-학과사무실', name: '학과 사무실', floor: 1, description: '공학계열 학과 사무실', type: 'office' }
-               ]
+               position: { lat: 37.39632767479923, lng: 126.90699348692698 }
            },
            {
                id: '자연과학관',
@@ -1930,15 +1457,7 @@
                description: '반려동물보건학, 반려동물산업학',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat:  37.39669466288283, lng: 126.90676716508685 },
-               floors: 3,
-               facilities: [
-                   { id: '자연과학관-101', name: '101호 강의실', floor: 1, description: '반려동물 강의실', type: 'classroom' },
-                   { id: '자연과학관-102', name: '102호 실습실', floor: 1, description: '동물 실습실', type: 'lab' },
-                   { id: '자연과학관-201', name: '201호 강의실', floor: 2, description: '생물학 강의실', type: 'classroom' },
-                   { id: '자연과학관-202', name: '202호 실험실', floor: 2, description: '생물학 실험실', type: 'lab' },
-                   { id: '자연과학관-301', name: '301호 연구실', floor: 3, description: '교수 연구실', type: 'office' }
-               ]
+               position: { lat:  37.39669466288283, lng: 126.90676716508685 }
            },
            {
                id: '식품과학관',
@@ -1946,14 +1465,7 @@
                description: '식품영양학과, 조리실습실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39714809720343, lng: 126.90762208499473 },
-               floors: 3,
-               facilities: [
-                   { id: '식품과학관-101', name: '101호 조리실습실', floor: 1, description: '한식 조리실습실', type: 'lab' },
-                   { id: '식품과학관-102', name: '102호 조리실습실', floor: 1, description: '양식 조리실습실', type: 'lab' },
-                   { id: '식품과학관-201', name: '201호 식품분석실', floor: 2, description: '식품영양 분석실', type: 'lab' },
-                   { id: '식품과학관-301', name: '301호 강의실', floor: 3, description: '식품영양학과 강의실', type: 'classroom' }
-               ]
+               position: { lat: 37.39714809720343, lng: 126.90762208499473 }
            },
            {
                id: '도의관',
@@ -1961,13 +1473,7 @@
                description: '교양 수업, 강당',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39679932128769, lng: 126.90809683728425 },
-               floors: 2,
-               facilities: [
-                   { id: '도의관-101', name: '101호 강의실', floor: 1, description: '교양 강의실', type: 'classroom' },
-                   { id: '도의관-102', name: '102호 대강당', floor: 1, description: '대형 강당', type: 'auditorium' },
-                   { id: '도의관-201', name: '201호 강의실', floor: 2, description: '교양 강의실', type: 'classroom' }
-               ]
+               position: { lat: 37.39679932128769, lng: 126.90809683728425 }
            },
            {
                id: '공학2관',
@@ -1975,14 +1481,7 @@
                description: '공학계열 실습실, 연구실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.396789747114205, lng: 126.90737406929797 },
-               floors: 3,
-               facilities: [
-                   { id: '공학2관-101', name: '101호 실습실', floor: 1, description: '전기전자 실습실', type: 'lab' },
-                   { id: '공학2관-102', name: '102호 CAD실', floor: 1, description: 'CAD 실습실', type: 'lab' },
-                   { id: '공학2관-201', name: '201호 강의실', floor: 2, description: '공학 강의실', type: 'classroom' },
-                   { id: '공학2관-301', name: '301호 연구실', floor: 3, description: '교수 연구실', type: 'office' }
-               ]
+               position: { lat: 37.396789747114205, lng: 126.90737406929797 }
            },
            {
                id: '문화1관',
@@ -1990,15 +1489,7 @@
                description: '인문사회계열 강의실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat:  37.39576992475254, lng: 126.90812350405056 },
-               floors: 4,
-               facilities: [
-                   { id: '문화1관-101', name: '101호 강의실', floor: 1, description: '인문학 강의실', type: 'classroom' },
-                   { id: '문화1관-카페', name: '카페 연성', floor: 1, description: '카페', type: 'cafe' },
-                   { id: '문화1관-201', name: '201호 강의실', floor: 2, description: '사회과학 강의실', type: 'classroom' },
-                   { id: '문화1관-301', name: '301호 세미나실', floor: 3, description: '인문사회 세미나실', type: 'seminar' },
-                   { id: '문화1관-401', name: '401호 연구실', floor: 4, description: '교수 연구실', type: 'office' }
-               ]
+               position: { lat:  37.39576992475254, lng: 126.90812350405056 }
            },
            {
                id: '연곡문화센터',
@@ -2006,15 +1497,7 @@
                description: '기숙사, 컨벤션홀, 평생교육원',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.398046192024914, lng: 126.90966512810492 },
-               floors: 5,
-               facilities: [
-                   { id: '연곡문화센터-기숙사', name: '남학생 기숙사', floor: 2, description: '남학생 기숙사 시설', type: 'dormitory' },
-                   { id: '연곡문화센터-기숙사2', name: '여학생 기숙사', floor: 3, description: '여학생 기숙사 시설', type: 'dormitory' },
-                   { id: '연곡문화센터-컨벤션홀', name: '컨벤션홀', floor: 1, description: '대형 컨벤션 행사장', type: 'hall' },
-                   { id: '연곡문화센터-평생교육원', name: '평생교육원', floor: 4, description: '평생교육원 사무실', type: 'office' },
-                   { id: '연곡문화센터-강의실', name: '평생교육 강의실', floor: 5, description: '평생교육 강의실', type: 'classroom' }
-               ]
+               position: { lat: 37.398046192024914, lng: 126.90966512810492 }
            },
            {
                id: '창조관',
@@ -2022,22 +1505,14 @@
                description: '학과 사무실, 강의실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat: 37.39730791148064, lng: 126.91039726900274 },
-               floors: 4,
-               facilities: [
-                   { id: '창조관-101', name: '101호 강의실', floor: 1, description: '일반 강의실', type: 'classroom' },
-                   { id: '창조관-102', name: '102호 학과사무실', floor: 1, description: '학과 사무실', type: 'office' },
-                   { id: '창조관-201', name: '201호 강의실', floor: 2, description: '일반 강의실', type: 'classroom' },
-                   { id: '창조관-301', name: '301호 컴퓨터실', floor: 3, description: '컴퓨터 실습실', type: 'lab' },
-                   { id: '창조관-401', name: '401호 세미나실', floor: 4, description: '세미나실', type: 'seminar' }
-               ]
+               position: { lat: 37.39730791148064, lng: 126.91039726900274 }
            },
            {
                id: '운동장',
                name: '운동장',
                description: '체육활동, 행사장',
                image: '/api/placeholder/80/60',
-               type: 'ground',
+               type: 'building',
                position: { lat: 37.39673944839101, lng: 126.90932224700094 }
            },
            {
@@ -2045,7 +1520,7 @@
                name: '농구장',
                description: '체육활동',
                image: '/api/placeholder/80/60',
-               type: 'ground',
+               type: 'building',
                position: { lat: 37.39667684947615, lng: 126.90994063692402 }
            },
            {
@@ -2054,14 +1529,7 @@
                description: '학생지원 시설',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat:  37.3962916630711, lng: 126.90994109780426 },
-               floors: 3,
-               facilities: [
-                   { id: '학생복지센터-편의점', name: 'CU 편의점', floor: 1, description: '편의점', type: 'store' },
-                   { id: '학생복지센터-ATM', name: 'ATM', floor: 1, description: '현금인출기', type: 'atm' },
-                   { id: '학생복지센터-식당', name: '학생식당', floor: 2, description: '학생 식당', type: 'cafeteria' },
-                   { id: '학생복지센터-동아리실', name: '동아리실', floor: 3, description: '학생 동아리 공간', type: 'club' }
-               ]
+               position: { lat:  37.3962916630711, lng: 126.90994109780426 }
            },
            {
                id: '창의교육센터',
@@ -2069,14 +1537,7 @@
                description: '항공서비스과 항공실습실, 카페',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat:  37.39737971014044, lng: 126.91002449732869 },
-               floors: 3,
-               facilities: [
-                   { id: '창의교육센터-101', name: '101호 항공실습실', floor: 1, description: '항공서비스과 실습실', type: 'lab' },
-                   { id: '창의교육센터-카페', name: '카페', floor: 1, description: '카페', type: 'cafe' },
-                   { id: '창의교육센터-201', name: '201호 강의실', floor: 2, description: '항공서비스과 강의실', type: 'classroom' },
-                   { id: '창의교육센터-301', name: '301호 컴퓨터실', floor: 3, description: '컴퓨터 실습실', type: 'lab' }
-               ]
+               position: { lat:  37.39737971014044, lng: 126.91002449732869 }
            },
            {
                id: '문화2관',
@@ -2084,14 +1545,7 @@
                description: ' 문화콘텐츠계열 강의실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat:  37.396035307891026, lng: 126.90758674745014 },
-               floors: 3,
-               facilities: [
-                   { id: '문화2관-101', name: '101호 강의실', floor: 1, description: '문화콘텐츠 강의실', type: 'classroom' },
-                   { id: '문화2관-102', name: '102호 디자인실', floor: 1, description: '디자인 실습실', type: 'lab' },
-                   { id: '문화2관-201', name: '201호 영상제작실', floor: 2, description: '영상제작 실습실', type: 'lab' },
-                   { id: '문화2관-301', name: '301호 세미나실', floor: 3, description: '세미나실', type: 'seminar' }
-               ]
+               position: { lat:  37.396035307891026, lng: 126.90758674745014 }
            },
            {
                id: '대학본관',
@@ -2099,15 +1553,7 @@
                description: '유통물류학과, 총장실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat:  37.397467068076345, lng: 126.90938066144557 },
-               floors: 4,
-               facilities: [
-                   { id: '대학본관-총장실', name: '총장실', floor: 4, description: '총장실', type: 'office' },
-                   { id: '대학본관-행정실', name: '행정실', floor: 1, description: '대학 행정실', type: 'office' },
-                   { id: '대학본관-학사지원과', name: '학사지원과', floor: 2, description: '학사 행정 지원', type: 'office' },
-                   { id: '대학본관-101', name: '101호 강의실', floor: 1, description: '유통물류학과 강의실', type: 'classroom' },
-                   { id: '대학본관-201', name: '201호 강의실', floor: 2, description: '일반 강의실', type: 'classroom' }
-               ]
+               position: { lat:  37.397467068076345, lng: 126.90938066144557 }
            },
            {
                id: '학술정보관',
@@ -2115,14 +1561,7 @@
                description: '독서실',
                image: '/api/placeholder/80/60',
                type: 'building',
-               position: { lat:  37.39637467129301, lng: 126.906603807587 },
-               floors: 3,
-               facilities: [
-                   { id: '학술정보관-열람실', name: '1열람실', floor: 1, description: '학생 열람실', type: 'library' },
-                   { id: '학술정보관-자료실', name: '자료실', floor: 2, description: '도서 자료실', type: 'library' },
-                   { id: '학술정보관-그룹스터디룸', name: '그룹스터디룸', floor: 3, description: '그룹 스터디 공간', type: 'seminar' },
-                   { id: '학술정보관-멀티미디어실', name: '멀티미디어실', floor: 2, description: '멀티미디어 학습실', type: 'lab' }
-               ]
+               position: { lat:  37.39637467129301, lng: 126.906603807587 }
            }
        ];
 
@@ -2134,9 +1573,8 @@
                description: '학생복지센터 2층',
                image: '/api/placeholder/150/100',
                type: 'facility',
-               position: { lat: 37.3962916630711, lng: 126.90994109780426 },
-               relatedBuilding: '학생복지센터',
-               floor: 2
+               position: { lat: 37.377100, lng: 126.663600 },
+               relatedBuilding: '학생복지센터'
            },
            {
                id: 'cafe',
@@ -2144,9 +1582,8 @@
                description: '문화1관 1층',
                image: '/api/placeholder/150/100',
                type: 'facility',
-               position: { lat: 37.39576992475254, lng: 126.90812350405056 },
-               relatedBuilding: '문화1관',
-               floor: 1
+               position: { lat: 37.378300, lng: 126.662700 },
+               relatedBuilding: '문화1관'
            },
            {
                id: 'convenience',
@@ -2154,9 +1591,8 @@
                description: '학생복지센터 1층',
                image: '/api/placeholder/150/100',
                type: 'facility',
-               position: { lat: 37.3962916630711, lng: 126.90994109780426 },
-               relatedBuilding: '학생복지센터',
-               floor: 1
+               position: { lat: 37.377100, lng: 126.663700 },
+               relatedBuilding: '학생복지센터'
            },
            {
                id: 'atm',
@@ -2164,25 +1600,22 @@
                description: '학생복지센터 1층',
                image: '/api/placeholder/150/100',
                type: 'facility',
-               position: { lat: 37.3962916630711, lng: 126.90994109780426 },
-               relatedBuilding: '학생복지센터',
-               floor: 1
-           }
+               position: { lat: 37.377100, lng: 126.663800 },
+               relatedBuilding: '학생복지센터'
+           },
+           
        ];
        
        // 네이버 지도 관련 변수
-       let naverMap;
-       let navigationMap;
-       let mapMarkers = [];
-       let infoWindows = [];
-       let userMarker = null;
-       let userLocationCircle = null;
-       let userLocationWatchId = null;
-       let userLocation = null;
-       let isTrackingUser = false;
-       let routePath = null;
-       let selectedBuilding = null;
-       let selectedFacility = null;
+        let naverMap;
+        let mapMarkers = [];
+        let infoWindows = [];
+        let userMarker = null;
+        let userLocationCircle = null;
+        let userLocationWatchId = null;
+        let userLocation = null;
+        let isTrackingUser = false;
+       
        
        // 페이지네이션 변수
        let currentPage = 1;
@@ -2203,8 +1636,8 @@
            // 목록 초기화
            buildingListElement.innerHTML = '';
            
-              // 페이지에 해당하는 건물 인덱스 계산
-              const startIndex = (page - 1) * buildingsPerPage;
+           // 페이지에 해당하는 건물 인덱스 계산
+           const startIndex = (page - 1) * buildingsPerPage;
            const endIndex = Math.min(startIndex + buildingsPerPage, buildingData.length);
            
            // 페이지에 해당하는 건물 목록 생성
@@ -2393,12 +1826,6 @@
            // 검색 기능 초기화
            initSearchFunctionality();
            
-           // 길찾기 패널 초기화
-           initNavigationPanel();
-           
-           // 실내 시설 패널 초기화
-           initIndoorFacilityPanel();
-           
            // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
            window.addEventListener('pageshow', function(event) {
                // bfcache에서 페이지가 복원된 경우에도 실행
@@ -2408,16 +1835,6 @@
                }
            });
        });
-       
-       // 길찾기 패널 초기화
-       function initNavigationPanel() {
-           // 네비게이션 맵 초기화는 패널이 열릴 때 수행됩니다.
-       }
-       
-       // 실내 시설 패널 초기화
-       function initIndoorFacilityPanel() {
-           // 패널이 열릴 때 해당 건물의 시설 정보를 동적으로 로드합니다.
-       }
        
        // 네이버 지도 초기화 함수 수정
         function initNaverMap() {
@@ -2473,12 +1890,7 @@
                     const marker = new naver.maps.Marker({
                         position: new naver.maps.LatLng(building.position.lat, building.position.lng),
                         map: naverMap,
-                        title: building.name,
-                        icon: {
-                            content: `<div style="background-color: ${building.type === 'ground' ? '#4CAF50' : '#3F51B5'}; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; font-size: 12px;">${building.type === 'ground' ? '🏟️' : '🏢'}</div>`,
-                            size: new naver.maps.Size(20, 20),
-                            anchor: new naver.maps.Point(10, 10)
-                        }
+                        title: building.name
                     });
                     mapMarkers.push(marker);
 
@@ -2508,9 +1920,6 @@
                         
                         // 현재 마커의 정보창 열기
                         infoWindow.open(naverMap, marker);
-                        
-                        // 선택된 건물 저장
-                        selectedBuilding = building;
                     });
 
                     infoWindows.push(infoWindow);
@@ -2524,9 +1933,9 @@
                         map: naverMap,
                         title: facility.name,
                         icon: {
-                            content: `<div style="background-color: #FF5722; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; font-size: 12px;">🏪</div>`,
-                            size: new naver.maps.Size(20, 20),
-                            anchor: new naver.maps.Point(10, 10)
+                            content: `<div style="background-color: #4CAF50; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center;">${facility.icon || '🏠'}</div>`,
+                            size: new naver.maps.Size(30, 30),
+                            anchor: new naver.maps.Point(15, 15)
                         }
                     });
                     mapMarkers.push(marker);
@@ -2557,9 +1966,6 @@
                         
                         // 현재 마커의 정보창 열기
                         infoWindow.open(naverMap, marker);
-                        
-                        // 선택된 시설 저장
-                        selectedFacility = facility;
                     });
 
                     infoWindows.push(infoWindow);
@@ -2571,6 +1977,8 @@
                     window.dispatchEvent(new Event('resize'));
                     naverMap.refresh();
                 });
+                
+                // 마커 생성 로직은 그대로 유지...
                 
                 // 지도 리사이즈 이벤트 - 디바운스 적용
                 let resizeTimer;
@@ -2618,8 +2026,135 @@
                 console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
             }
         }
-        
-        // 사용자 위치 추적 시작
+            
+        // 길찾기 기능
+        // 길찾기 함수 수정 - 실시간 검색 결과에서도 정상 작동하도록
+        function navigateToBuilding(buildingId, event) {
+            // 이벤트 버블링 방지
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            // 해당 건물의 데이터 찾기
+            const building = buildingData.find(b => b.id === buildingId);
+            
+            if (!building) {
+                // 편의시설 데이터에서도 검색
+                const facility = facilityData.find(f => f.id === buildingId);
+                if (facility) {
+                    alert(`${facility.name}으로 길찾기를 시작합니다.`);
+                    
+                    // 지도를 표시하고 해당 시설로 이동
+                    switchTab('facility');
+                    
+                    // 검색 내용 초기화하고 원래 컨텐츠 표시
+                    clearSearch();
+                    
+                    // 관련 건물이 있으면 해당 건물로 이동
+                    if (facility.relatedBuilding) {
+                        const relatedBuilding = buildingData.find(b => b.id === facility.relatedBuilding);
+                        if (relatedBuilding && naverMap) {
+                            setTimeout(() => {
+                                const position = new naver.maps.LatLng(relatedBuilding.position.lat, relatedBuilding.position.lng);
+                                naverMap.setCenter(position);
+                                naverMap.setZoom(18);
+                                
+                                // 마커 찾기 및 정보창 열기
+                                const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === relatedBuilding.name);
+                                if (markerIndex !== -1) {
+                                    infoWindows.forEach(window => window.close());
+                                    infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                                }
+                            }, 300);
+                        }
+                    } else if (naverMap) {
+                        // 시설 자체의 위치를 사용
+                        setTimeout(() => {
+                            const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
+                            naverMap.setCenter(position);
+                            naverMap.setZoom(18);
+                            
+                            // 시설 마커는 다르게 처리될 수 있으므로 확인 필요
+                            const markerIndex = mapMarkers.findIndex(marker => 
+                                marker.getTitle && marker.getTitle() === facility.name);
+                            if (markerIndex !== -1) {
+                                infoWindows.forEach(window => window.close());
+                                infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                            }
+                        }, 300);
+                    }
+                } else {
+                    alert('해당 건물 또는 시설 정보를 찾을 수 없습니다.');
+                }
+                return;
+            }
+            
+            // 건물이 있는 경우 처리
+            alert(`${building.name}으로 길찾기를 시작합니다.`);
+            
+            // 지도를 표시하고 해당 건물로 이동
+            switchTab('facility');
+            
+            // 검색 내용 초기화하고 원래 컨텐츠 표시
+            clearSearch();
+            
+            // 지도가 초기화되었는지 확인
+            if (naverMap) {
+                // UI 업데이트를 위한 시간 지연
+                setTimeout(() => {
+                    // 건물 위치로 지도 중심 이동
+                    const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                    naverMap.setCenter(position);
+                    naverMap.setZoom(18); // 더 가깝게 줌인
+                    
+                    // 마커 찾기
+                    const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                    
+                    if (markerIndex !== -1) {
+                        // 다른 모든 정보창 닫기
+                        infoWindows.forEach(window => window.close());
+                        
+                        // 해당 마커의 정보창 열기
+                        infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                    }
+                    
+                    // 지도 갱신을 위한 이벤트 트리거
+                    window.dispatchEvent(new Event('resize'));
+                    naverMap.refresh();
+                }, 300);
+            } else {
+                // 지도가 초기화되지 않았으면 알림
+                alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+            }
+        }
+            // 지도 줌인
+            function zoomIn() {
+                if (naverMap) {
+                    const currentZoom = naverMap.getZoom();
+                    naverMap.setZoom(currentZoom + 1);
+                }
+            }
+            
+            // 지도 줌아웃
+            function zoomOut() {
+                if (naverMap) {
+                    const currentZoom = naverMap.getZoom();
+                    naverMap.setZoom(currentZoom - 1);
+                }
+            }
+            
+            // 지도 초기 뷰로 리셋
+            function resetMapView() {
+                if (naverMap) {
+                    naverMap.setCenter(new naver.maps.LatLng(37.39661657434427, 126.90772437800818));
+                    naverMap.setZoom(16);
+                    
+                    // 모든 정보창 닫기
+                    infoWindows.forEach(window => window.close());
+                }
+            }
+            
+       // 사용자 위치 추적 시작
         function trackUserLocation() {
             if (isTrackingUser) {
                 // 이미 추적 중이면 추적 중지
@@ -2709,7 +2244,7 @@
                 }
             }
         }
-        
+
         // 사용자 위치 마커 업데이트
         function updateUserMarker(position) {
             const userPos = new naver.maps.LatLng(position.lat, position.lng);
@@ -2744,7 +2279,7 @@
                 userLocationCircle.setCenter(userPos);
             }
         }
-        
+
         // 지속적인 위치 추적 시작
         function startContinuousTracking() {
             // 이미 추적 중인 경우 종료
@@ -2770,11 +2305,6 @@
                     if (userLocationCircle) {
                         userLocationCircle.setRadius(position.coords.accuracy);
                     }
-                    
-                    // 경로 안내 중이라면 현재 위치와 경로 비교하여 다시 계산이 필요한지 확인
-                    if (document.getElementById('navigation-panel').classList.contains('active')) {
-                        checkRouteDeviation();
-                    }
                 },
                 // 오류 콜백
                 function(error) {
@@ -2784,7 +2314,7 @@
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
-        
+
         // 사용자 위치 추적 중지
         function stopUserTracking() {
             // 위치 추적 중지
@@ -2814,1376 +2344,935 @@
             isTrackingUser = false;
         }
         
-        // 경로 이탈 확인
-        function checkRouteDeviation() {
-            // 경로가 있고, 사용자 위치가 있을 때
-            if (routePath && userLocation) {
-                // 경로 이탈 확인 로직 구현...
-                // 필요시 경로 재계산 및 업데이트
-            }
-        }
-        
-        // 길찾기 시작
-        function navigateToBuilding(buildingId, event) {
-            // 이벤트 버블링 방지
-            if (event) {
-                event.stopPropagation();
-            }
+       // 프로필 이미지 전체 업데이트 함수 (모든 화면에서 일관되게 업데이트)
+       function updateAllProfileImages() {
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           if (!currentUser) return;
+           
+           const profileImageType = localStorage.getItem(`user_${currentUser}_profileImageType`) || 'emoji';
+           const profileImage = localStorage.getItem(`user_${currentUser}_profileImage`) || '👨‍🎓';
+           const customProfileImage = localStorage.getItem(`user_${currentUser}_customProfileImage`);
+           
+           // 1. 헤더 프로필 이미지 업데이트
+           const headerProfileImg = document.getElementById('headerProfileImg');
+           const headerProfileContainer = document.querySelector('.header-profile-image');
+           
+           if (headerProfileContainer) {
+               if (profileImageType === 'emoji') {
+                   headerProfileContainer.innerHTML = profileImage;
+               } else if (profileImageType === 'custom' && customProfileImage) {
+                   if (headerProfileImg) {
+                       headerProfileImg.src = customProfileImage;
+                   } else {
+                       headerProfileContainer.innerHTML = `<img src="${customProfileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
+                   }
+               } else if (profileImageType === 'image') {
+                   if (headerProfileImg) {
+                       headerProfileImg.src = profileImage;
+                   } else {
+                       headerProfileContainer.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
+                   }
+               } else {
+                   headerProfileContainer.innerHTML = '👤';
+               }
+           }
+           
+           // 2. 내 정보 탭의 프로필 이미지 업데이트 (중요!)
+           const profileTabImage = document.querySelector('#profile-tab .profile-image');
+           if (profileTabImage) {
+               if (profileImageType === 'emoji') {
+                   profileTabImage.innerHTML = profileImage;
+               } else if (profileImageType === 'custom' && customProfileImage) {
+                   profileTabImage.innerHTML = '';
+                   const img = document.createElement('img');
+                   img.src = customProfileImage;
+                   img.style.width = '100%';
+                   img.style.height = '100%';
+                   img.style.objectFit = 'cover';
+                   img.style.borderRadius = '50%';
+                   profileTabImage.appendChild(img);
+               } else if (profileImageType === 'image') {
+                   profileTabImage.innerHTML = '';
+                   const img = document.createElement('img');
+                   img.src = profileImage;
+                   img.style.width = '100%';
+                   img.style.height = '100%';
+                   img.style.objectFit = 'cover';
+                   img.style.borderRadius = '50%';
+                   profileTabImage.appendChild(img);
+               } else {
+                   profileTabImage.innerHTML = '👤';
+               }
+           }
+       }
+       
+       // 카테고리 필터 초기화
+       function initCategoryFilter() {
+           const categoryTags = document.querySelectorAll('.category-tag');
+           categoryTags.forEach(tag => {
+               tag.addEventListener('click', function() {
+                   // 이미 선택된 태그 클릭 시 무시
+                   if (this.classList.contains('active')) return;
+                   // 현재 활성화된 태그 비활성화 - 이 부분에서 오류 발생 가능
+                   const activeTag = document.querySelector('.category-tag.active');
+                   if (activeTag) { // null 체크 추가
+                       activeTag.classList.remove('active');
+                   }
+                   // 클릭한 태그 활성화
+                   this.classList.add('active');
+               });
+           });
+       }
+       // 탭 전환 함수 - 시설 탭으로 전환 시 페이지네이션 초기화 추가
+       function switchTab(tabName) {
+           // 모든 탭 콘텐츠 숨기기
+           document.querySelectorAll('.tab-content').forEach(tab => {
+               tab.classList.remove('active');
+           });
+           
+           // 선택한 탭 콘텐츠 표시
+           document.getElementById(`${tabName}-tab`).classList.add('active');
+           
+           // 탭 메뉴 활성화 상태 변경
+           document.querySelectorAll('.tab-item').forEach(item => {
+               item.classList.remove('active');
+           });
+           
+           // 현재 선택된 탭 버튼 활성화
+           const tabItems = document.querySelectorAll('.tab-item');
+           for (let i = 0; i < tabItems.length; i++) {
+               if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+                   tabItems[i].classList.add('active');
+                   break;
+               }
+           }
+           
+           // 시설 탭으로 전환 시 건물 목록 페이지네이션 초기화 및 지도 갱신
+           if (tabName === 'facility') {
+               // 첫 페이지 로드
+               currentPage = 1;
+               loadBuildingsByPage(currentPage);
+               updatePaginationControls();
+               
+               // 지도가 초기화되었는지 확인 후 갱신
+               setTimeout(() => {
+                   if (naverMap) {
+                       naverMap.refresh();
+                   }
+               }, 100);
+           }
+           
+           // 프로필 탭으로 전환 시 프로필 이미지 업데이트
+           if (tabName === 'profile') {
+               setTimeout(() => {
+                   updateAllProfileImages();
+               }, 100);
+           }
+       }
+       
+       // 메인 홈으로 이동
+       function goToHome() {
+           switchTab('home');
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+       }
+       
+       // 검색 열기
+       function openSearch() {
+           alert('검색 기능을 실행합니다.');
+           // 검색 입력창에 포커스
+           document.querySelector('.search-input').focus();
+       }
+       
+       // 검색 키 입력 처리
+       function handleSearchKeyPress(event) {
+           if (event.key === 'Enter') {
+               const searchTerm = event.target.value.trim();
+               if (searchTerm) {
+                   alert(`'${searchTerm}'에 대한 검색을 시작합니다.`);
+               }
+           }
+       }
+       
+       // 공지사항 필터링 - 알림 없이 필터링만 수행하도록 수정
+       function filterNotices(category) {
+           // alert(`${category} 카테고리의 공지사항을 필터링합니다.`); // 알림 제거
+   
+           // 카테고리 태그 활성화 상태 변경
+           document.querySelectorAll('.category-tag').forEach(tag => {
+           tag.classList.remove('active');
+       });
+   
+       // 선택된 카테고리 활성화
+       document.querySelectorAll('.category-tag').forEach(tag => {
+           if (tag.textContent.toLowerCase().includes(category) || 
+           (category === 'all' && tag.textContent === '전체')) {
+               tag.classList.add('active');
+           }
+       });
+   }
+
+   // 강의 필터링 - 알림 없이 필터링만 수행하도록 수정
+   function filterLectures(category) {
+       // alert(`${category} 카테고리의 강의를 필터링합니다.`); // 알림 제거
+   
+       // 카테고리 태그 활성화 상태 변경
+       const communityTab = document.getElementById('community-tab');
+       communityTab.querySelectorAll('.category-tag').forEach(tag => {
+           tag.classList.remove('active');
+       });
+   
+       // 선택된 카테고리 활성화
+       communityTab.querySelectorAll('.category-tag').forEach(tag => {
+           if (tag.textContent.toLowerCase().includes(category) || 
+               (category === 'all' && tag.textContent === '전체')) {
+               tag.classList.add('active');
+           }
+       });
+   }
+       
+       // 페이지 이동 함수
+       function goToPage(pageName) {
+           // 페이지 이름에 따라 분기 처리
+           switch(pageName) {
+               case 'login':
+                   alert('로그인 페이지로 이동합니다.');
+                   window.location.href = 'login.html';
+                   break;
+                   
+               case 'profile-edit':
+                   alert('프로필 수정 페이지로 이동합니다.');
+                   window.location.href = 'profile-edit.html';
+                   break;
+                   
+               case 'classroom':
+                   switchTab('facility');
+                   break;
+                   
+               case 'lecture-evaluation':
+                   switchTab('community');
+                   break;
+                   
+               case 'shuttle':
+                   alert('셔틀버스 시간표 페이지로 이동합니다.');
+                   break;
+                   
+               case 'cafeteria':
+                   alert('학식 메뉴 페이지로 이동합니다.');
+                   break;
+                   
+               case 'academic-calendar':
+               alert('학사일정 페이지로 이동합니다.');
+                   break;
+                   
+               case 'library':
+                   alert('도서관 페이지로 이동합니다.');
+                   break;
+                   
+               case 'notices':
+                   alert('전체 공지사항 페이지로 이동합니다.');
+                   break;
+                   
+               default:
+                   alert(`${pageName} 페이지로 이동합니다.`);
+           }
+       }
+       
+       // 공지사항 상세 페이지로 이동 (알림 없이 바로 이동)
+       function goToNoticeDetail(noticeId) {
+           // 알림창 없이 직접 상세 페이지로 이동
+           window.location.href = `notice-detail.html?id=${noticeId}`;
+       }
+       
+       // 강의 상세 보기
+       function viewLectureDetail(lectureId) {
+           alert(`강의 ${lectureId} 상세 페이지로 이동합니다.`);
+           // window.location.href = `lecture-detail.html?id=${lectureId}`;
+       }
+       
+       // 알림 상세 보기
+       function viewNotification(notificationId) {
+           alert(`${notificationId} 알림 상세 내용을 확인합니다.`);
+       }
+       
+       // 건물 상세 보기
+        // 건물 상세 보기 함수 수정
+        function showBuildingDetail(buildingId) {
+            alert(`${buildingId} 상세 페이지로 이동합니다.`);
             
-            // 사용자 위치 확인
-            if (!userLocation) {
-                const confirmTracking = confirm('길찾기를 시작하려면 현재 위치 추적이 필요합니다. 위치 추적을 시작할까요?');
-                if (confirmTracking) {
-                    // 위치 추적 시작 후 길찾기
-                    trackUserLocation();
-                    setTimeout(() => {
-                        if (userLocation) {
-                            startNavigation(buildingId);
-                        } else {
-                            alert('위치 정보를 가져오는 중입니다. 잠시 후 다시 시도해주세요.');
-                        }
-                    }, 2000);
-                }
-                return;
-            }
+            // 해당 건물의 데이터 찾기
+            const building = buildingData.find(b => b.id === buildingId);
             
-            // 위치 정보가 있으면 바로 길찾기 시작
-            startNavigation(buildingId);
-        }
-        
-        // 길찾기 실행
-        function startNavigation(targetId) {
-            // 해당 건물 정보 찾기
-            let target = buildingData.find(b => b.id === targetId);
-            let targetType = 'building';
-            
-            // 건물이 없으면 편의시설에서 검색
-            if (!target) {
-                target = facilityData.find(f => f.id === targetId);
-                targetType = 'facility';
-                
-                if (!target) {
-                    // 건물 내부 시설 검색
-                    for (const building of buildingData) {
-                        if (building.facilities) {
-                            const facility = building.facilities.find(f => f.id === targetId);
-                            if (facility) {
-                                // 건물 내부 시설인 경우
-                                openIndoorFacilityNavigation(building.id, facility.id);
-                                return;
-                            }
-                        }
-                    }
-                    
-                    alert('해당 건물 또는 시설 정보를 찾을 수 없습니다.');
-                    return;
-                }
-            }
-            
-            // 대상이 운동장이나 농구장 같은 ground 타입이고 자세한 길찾기가 필요없는 경우
-            if (target.type === 'ground') {
-                alert(`${target.name}으로 이동합니다.`);
-                
-                // 지도를 표시하고 해당 위치로 이동
+            if (building && naverMap) {
+                // 지도를 표시하고 해당 건물로 이동
                 switchTab('facility');
                 
-                if (naverMap) {
-                    setTimeout(() => {
-                        const position = new naver.maps.LatLng(target.position.lat, target.position.lng);
-                        naverMap.setCenter(position);
-                        naverMap.setZoom(18);
-                        
-                        // 마커 찾기 및 정보창 열기
-                        const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === target.name);
-                        if (markerIndex !== -1) {
-                            infoWindows.forEach(window => window.close());
-                            infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
-                        }
-                    }, 300);
-                }
-                return;
-            }
-            
-            // 길찾기 패널 열기
-            openNavigationPanel(target, targetType);
-        }
-        
-        // 길찾기 패널 열기
-        function openNavigationPanel(target, targetType) {
-            // 선택된 대상 저장
-            if (targetType === 'building') {
-                selectedBuilding = target;
-                selectedFacility = null;
-            } else {
-                selectedFacility = target;
+                // 검색 초기화
+                clearSearch();
                 
-                // 시설이 건물 내부에 있는 경우 관련 건물 정보도 가져오기
-                if (target.relatedBuilding) {
-                    selectedBuilding = buildingData.find(b => b.id === target.relatedBuilding);
-                } else {
-                    selectedBuilding = null;
-                }
-            }
-            
-            // 네비게이션 맵 초기화
-initNavigationMap();
-
-// 패널 열기
-document.getElementById('navigation-panel').classList.add('active');
-
-// 길찾기 정보 업데이트
-updateNavigationInfo(target);
-
-// 경로 계산
-calculateRoute(userLocation, target.position);
-}
-
-// 네비게이션 맵 초기화
-function initNavigationMap() {
-    // 네비게이션 맵 컨테이너
-    const mapContainer = document.getElementById('navigation-map');
-    if (!mapContainer) return;
-    
-    // 이미 초기화되어 있다면 초기화
-    if (navigationMap) {
-        navigationMap = null;
-    }
-    
-    // 연성대학교 위치
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    
-    // 지도 옵션
-    const mapOptions = {
-        center: yeonsung,
-        zoom: 17,
-        minZoom: 14,
-        maxZoom: 19,
-        zoomControl: true,
-        zoomControlOptions: {
-            position: naver.maps.Position.TOP_RIGHT
-        },
-        scaleControl: true,
-        logoControl: true,
-        mapDataControl: true
-    };
-    
-    // 지도 생성
-    navigationMap = new naver.maps.Map(mapContainer, mapOptions);
-}
-
-// 길찾기 정보 업데이트
-function updateNavigationInfo(target) {
-    // 대상 정보 표시
-    document.getElementById('nav-from-text').textContent = '현재 위치';
-    document.getElementById('nav-to-text').textContent = target.name;
-    
-    // 건물 거리 표시 (직선 거리)
-    if (userLocation) {
-        const userPos = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
-        const targetPos = new naver.maps.LatLng(target.position.lat, target.position.lng);
-        
-        // 직선 거리 계산 (미터 단위)
-        const distance = Math.round(userPos.distanceTo(targetPos));
-        
-        // 거리 표시
-        if (distance < 1000) {
-            document.getElementById('nav-distance').textContent = `약 ${distance}m`;
-        } else {
-            document.getElementById('nav-distance').textContent = `약 ${(distance / 1000).toFixed(1)}km`;
-        }
-    }
-}
-
-// 경로 계산
-function calculateRoute(from, to) {
-    // 경로 정보를 저장할 컨테이너
-    const stepsContainer = document.getElementById('navigation-steps');
-    if (!stepsContainer) return;
-    
-    // 기존 경로 정보 초기화
-    stepsContainer.innerHTML = '';
-    
-    // 경로 정보 로딩 표시
-    stepsContainer.innerHTML = '<div style="text-align: center; padding: 20px;">경로를 계산하고 있습니다...</div>';
-    
-    // 길찾기 정보 컨테이너
-    const routeInfo = document.getElementById('route-info');
-    if (routeInfo) {
-        routeInfo.style.display = 'none';
-    }
-    
-    // 출발지와 목적지 좌표
-    const start = new naver.maps.LatLng(from.lat, from.lng);
-    const end = new naver.maps.LatLng(to.lat, to.lng);
-    
-    try {
-        // 네이버 지도 Direction API 사용
-        const directions = new naver.maps.Direction({
-            map: navigationMap,
-            start: start,
-            goal: end
-        });
-        
-        // 경로 요청
-        directions.route({
-            callback: function(status, response) {
-                if (status === 'OK') {
-                    // 응답에서 경로 정보 추출
-                    const path = response.route.path;
-                    const distance = response.route.distance;
-                    const duration = response.route.duration;
+                // 건물 위치로 지도 중심 이동
+                const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                naverMap.setCenter(position);
+                naverMap.setZoom(18); // 더 가깝게 줌인
+                
+                // 마커 찾기
+                const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                
+                if (markerIndex !== -1) {
+                    // 다른 모든 정보창 닫기
+                    infoWindows.forEach(window => window.close());
                     
-                    // 경로 그리기
-                    drawRoutePath(path);
-                    
-                    // 거리 및 시간 정보 표시
-                    updateRouteInfo(distance, duration);
-                    
-                    // 경로 단계별 안내 생성
-                    generateRouteSteps(response.route);
-                } else {
-                    // API 호출 실패 시 직선 경로로 대체
-                    console.error('경로 계산 실패:', status);
-                    fallbackDirectRoute(start, end);
-                }
-            }
-        });
-    } catch (error) {
-        console.error('경로 계산 중 오류:', error);
-        // 직선 경로로 대체
-        fallbackDirectRoute(start, end);
-    }
-}
-
-// API 실패 시 직선 경로로 대체
-function fallbackDirectRoute(start, end) {
-    // 경로 정보를 저장할 컨테이너
-    const stepsContainer = document.getElementById('navigation-steps');
-    if (!stepsContainer) return;
-    
-    // 직선 거리 계산
-    const distance = Math.round(start.distanceTo(end));
-    
-    // 도보 속도 기준 소요 시간 계산 (초 단위, 4km/h 가정)
-    const duration = Math.round(distance / (4000 / 3600));
-    
-    // 직선 경로 그리기
-    drawDirectLine(start, end);
-    
-    // 거리 및 시간 정보 표시
-    updateRouteInfo(distance, duration);
-    
-    // 경로 안내 생성 (간단한 버전)
-    stepsContainer.innerHTML = '';
-    
-    // 1. 출발
-    const startItem = document.createElement('li');
-    startItem.className = 'navigation-step';
-    startItem.innerHTML = `
-        <div class="navigation-step-icon">1</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text">현재 위치에서 출발</div>
-            <div class="navigation-step-detail">출발점</div>
-        </div>
-    `;
-    stepsContainer.appendChild(startItem);
-    
-    // 2. 이동
-    const midItem = document.createElement('li');
-    midItem.className = 'navigation-step';
-    midItem.innerHTML = `
-        <div class="navigation-step-icon">2</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text">학교 내 경로를 따라 이동</div>
-            <div class="navigation-step-detail">약 ${distance < 1000 ? `${distance}m` : `${(distance / 1000).toFixed(1)}km`} 이동</div>
-        </div>
-    `;
-    stepsContainer.appendChild(midItem);
-    
-    // 3. 도착
-    const endItem = document.createElement('li');
-    endItem.className = 'navigation-step';
-    endItem.innerHTML = `
-        <div class="navigation-step-icon">3</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text">${selectedBuilding ? selectedBuilding.name : '목적지'}에 도착</div>
-            <div class="navigation-step-detail">목적지</div>
-        </div>
-    `;
-    stepsContainer.appendChild(endItem);
-    
-    // 목적지가 건물 내부 시설이면 안내 추가
-    if (selectedFacility && selectedBuilding) {
-        const indoorItem = document.createElement('li');
-        indoorItem.className = 'navigation-step';
-        indoorItem.innerHTML = `
-            <div class="navigation-step-icon">4</div>
-            <div class="navigation-step-info">
-                <div class="navigation-step-text">건물 내 ${selectedFacility.name}로 이동</div>
-                <div class="navigation-step-detail">
-                    <button onclick="showIndoorNavigation()" style="padding: 6px 10px; background-color: #4285F4; color: white; border: none; border-radius: 4px; margin-top: 8px;">
-                        건물 내 길찾기
-                    </button>
-                </div>
-            </div>
-        `;
-        stepsContainer.appendChild(indoorItem);
-    }
-}
-
-// 경로 정보 업데이트
-function updateRouteInfo(distance, duration) {
-    const routeInfo = document.getElementById('route-info');
-    if (!routeInfo) return;
-    
-    // 거리 표시
-    let distanceText = '';
-    if (distance < 1000) {
-        distanceText = `${distance}m`;
-    } else {
-        distanceText = `${(distance / 1000).toFixed(1)}km`;
-    }
-    
-    // 시간 표시
-    let durationText = '';
-    if (duration < 60) {
-        durationText = `${duration}초`;
-    } else if (duration < 3600) {
-        durationText = `${Math.floor(duration / 60)}분`;
-    } else {
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-        durationText = `${hours}시간 ${minutes}분`;
-    }
-    
-    document.getElementById('route-distance').textContent = distanceText;
-    document.getElementById('route-time').textContent = durationText;
-    routeInfo.style.display = 'flex';
-}
-
-// 직선 경로 그리기
-function drawDirectLine(start, end) {
-    // 기존 경로가 있으면 삭제
-    if (routePath) {
-        routePath.setMap(null);
-    }
-    
-    // 직선 경로 그리기
-    routePath = new naver.maps.Polyline({
-        map: navigationMap,
-        path: [start, end],
-        strokeColor: '#4285F4',
-        strokeWeight: 5,
-        strokeOpacity: 0.8,
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round'
-    });
-    
-    // 출발지와 도착지 마커 추가
-    const userNavMarker = new naver.maps.Marker({
-        position: start,
-        map: navigationMap,
-        icon: {
-            content: '<div style="background-color: #4CAF50; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold;">A</div>',
-            size: new naver.maps.Size(24, 24),
-            anchor: new naver.maps.Point(12, 12)
-        },
-        zIndex: 101
-    });
-    
-    const destNavMarker = new naver.maps.Marker({
-        position: end,
-        map: navigationMap,
-        icon: {
-            content: '<div style="background-color: #F44336; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold;">B</div>',
-            size: new naver.maps.Size(24, 24),
-            anchor: new naver.maps.Point(12, 12)
-        },
-        zIndex: 101
-    });
-    
-    // 지도 영역 조정
-    const bounds = new naver.maps.LatLngBounds([start, end]);
-    navigationMap.fitBounds(bounds, {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50
-    });
-}
-
-// 경로 그리기
-function drawRoutePath(path) {
-    // 기존 경로가 있으면 삭제
-    if (routePath) {
-        routePath.setMap(null);
-    }
-    
-    // 새 경로 그리기
-    routePath = new naver.maps.Polyline({
-        map: navigationMap,
-        path: path,
-        strokeColor: '#4285F4',
-        strokeWeight: 5,
-        strokeOpacity: 0.8,
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round'
-    });
-    
-    // 출발지와 도착지 마커 추가
-    const userPos = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
-    const userNavMarker = new naver.maps.Marker({
-        position: userPos,
-        map: navigationMap,
-        icon: {
-            content: '<div style="background-color: #4CAF50; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold;">A</div>',
-            size: new naver.maps.Size(24, 24),
-            anchor: new naver.maps.Point(12, 12)
-        },
-        zIndex: 101
-    });
-    
-    // 목적지 마커
-    const destPos = new naver.maps.LatLng(
-        selectedBuilding ? selectedBuilding.position.lat : selectedFacility.position.lat,
-        selectedBuilding ? selectedBuilding.position.lng : selectedFacility.position.lng
-    );
-    const destNavMarker = new naver.maps.Marker({
-        position: destPos,
-        map: navigationMap,
-        icon: {
-            content: '<div style="background-color: #F44336; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold;">B</div>',
-            size: new naver.maps.Size(24, 24),
-            anchor: new naver.maps.Point(12, 12)
-        },
-        zIndex: 101
-    });
-    
-    // 지도 영역 조정
-    adjustMapToFitRoute();
-}
-
-// 경로 상세 단계 생성
-function generateRouteSteps(route) {
-    const stepsContainer = document.getElementById('navigation-steps');
-    if (!stepsContainer) return;
-    
-    stepsContainer.innerHTML = '';
-    
-    // 1. 출발
-    const startItem = document.createElement('li');
-    startItem.className = 'navigation-step';
-    startItem.innerHTML = `
-        <div class="navigation-step-icon">1</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text">현재 위치에서 출발</div>
-            <div class="navigation-step-detail">출발점</div>
-        </div>
-    `;
-    stepsContainer.appendChild(startItem);
-    
-    // 2. 중간 경로
-    // Note: 실제 API 응답에 따라 이 부분은 여러 단계로 분할될 수 있음
-    // 여기서는 간단한 예시로 작성
-    const midItem = document.createElement('li');
-    midItem.className = 'navigation-step';
-    midItem.innerHTML = `
-        <div class="navigation-step-icon">2</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text">학교 내 경로를 따라 이동</div>
-            <div class="navigation-step-detail">약 ${route.distance < 1000 ? `${route.distance}m` : `${(route.distance / 1000).toFixed(1)}km`} 이동</div>
-        </div>
-    `;
-    stepsContainer.appendChild(midItem);
-    
-    // 3. 도착
-    const endItem = document.createElement('li');
-    endItem.className = 'navigation-step';
-    endItem.innerHTML = `
-        <div class="navigation-step-icon">3</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text">${selectedBuilding ? selectedBuilding.name : '목적지'}에 도착</div>
-            <div class="navigation-step-detail">목적지</div>
-        </div>
-    `;
-    stepsContainer.appendChild(endItem);
-    
-    // 목적지가 건물 내부 시설이면 안내 추가
-    if (selectedFacility && selectedBuilding) {
-        const indoorItem = document.createElement('li');
-        indoorItem.className = 'navigation-step';
-        indoorItem.innerHTML = `
-            <div class="navigation-step-icon">4</div>
-            <div class="navigation-step-info">
-                <div class="navigation-step-text">건물 내 ${selectedFacility.name}로 이동</div>
-                <div class="navigation-step-detail">
-                    <button onclick="showIndoorNavigation()" style="padding: 6px 10px; background-color: #4285F4; color: white; border: none; border-radius: 4px; margin-top: 8px;">
-                        건물 내 길찾기
-                    </button>
-                </div>
-            </div>
-        `;
-        stepsContainer.appendChild(indoorItem);
-    }
-}
-
-// 지도를 경로에 맞게 조정
-function adjustMapToFitRoute() {
-    if (routePath && navigationMap) {
-        const bounds = routePath.getBounds();
-        if (bounds) {
-            navigationMap.fitBounds(bounds, {
-                top: 50,
-                right: 50,
-                bottom: 50,
-                left: 50
-            });
-        }
-    }
-}
-
-// 길찾기 패널 닫기
-function closeNavigation() {
-    document.getElementById('navigation-panel').classList.remove('active');
-    
-    // 경로 제거
-    if (routePath) {
-        routePath.setMap(null);
-        routePath = null;
-    }
-}
-
-// 실시간 안내 시작
-function startRealTimeNavigation() {
-    // 사용자 위치가 없으면 추적 시작
-    if (!userLocation) {
-        alert('실시간 안내를 시작하기 전에 위치 추적이 필요합니다.');
-        trackUserLocation();
-        return;
-    }
-    
-    alert('실시간 길안내를 시작합니다. 파란색 점은 현재 위치를 나타냅니다.');
-    
-    // 지도를 사용자 위치 중심으로 이동
-    if (navigationMap && userLocation) {
-        const userPos = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
-        navigationMap.setCenter(userPos);
-        navigationMap.setZoom(18);
-    }
-}
-
-// 건물 내부 시설 패널 열기
-function openIndoorFacilityPanel(buildingId) {
-    // 선택된 건물 정보 가져오기
-    const building = buildingData.find(b => b.id === buildingId);
-    if (!building || !building.facilities || building.facilities.length === 0) {
-        alert('이 건물에 대한 내부 시설 정보가 없습니다.');
-        return;
-    }
-    
-    // 패널 제목 설정
-    document.querySelector('.indoor-facility-title').textContent = `${building.name} 내부 시설`;
-    
-    // 시설 목록 생성
-    const facilityList = document.getElementById('indoor-facility-list');
-    facilityList.innerHTML = '';
-    
-    // 시설 정보를 층별로 정렬
-    const facilities = [...building.facilities].sort((a, b) => a.floor - b.floor);
-    
-    facilities.forEach(facility => {
-        const facilityItem = document.createElement('li');
-        facilityItem.className = 'indoor-facility-item';
-        facilityItem.onclick = function() {
-            navigateToIndoorFacility(building.id, facility.id);
-        };
-        
-        // 시설 타입에 따른 아이콘 설정
-        let facilityIcon = '🏢';
-        switch(facility.type) {
-            case 'classroom': facilityIcon = '📚'; break;
-            case 'lab': facilityIcon = '🔬'; break;
-            case 'office': facilityIcon = '🖥️'; break;
-            case 'seminar': facilityIcon = '👥'; break;
-            case 'cafeteria': facilityIcon = '🍽️'; break;
-            case 'store': facilityIcon = '🏪'; break;
-            case 'cafe': facilityIcon = '☕'; break;
-            case 'library': facilityIcon = '📖'; break;
-            case 'atm': facilityIcon = '💰'; break;
-            case 'auditorium': facilityIcon = '🎭'; break;
-        }
-        
-        facilityItem.innerHTML = `
-            <div class="indoor-facility-icon">${facilityIcon}</div>
-            <div class="indoor-facility-info">
-                <div class="indoor-facility-name">${facility.name}</div>
-                <div class="indoor-facility-location">${facility.floor}층 | ${facility.description}</div>
-            </div>
-        `;
-        
-        facilityList.appendChild(facilityItem);
-    });
-    
-    // 패널 열기
-    document.getElementById('indoor-facility-panel').classList.add('active');
-}
-
-// 실내 시설 검색 필터링
-function filterIndoorFacilities(query) {
-    query = query.toLowerCase().trim();
-    
-    const facilityItems = document.querySelectorAll('.indoor-facility-item');
-    
-    facilityItems.forEach(item => {
-        const facilityName = item.querySelector('.indoor-facility-name').textContent.toLowerCase();
-        const facilityDesc = item.querySelector('.indoor-facility-location').textContent.toLowerCase();
-        
-        if (facilityName.includes(query) || facilityDesc.includes(query)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-// 실내 시설 패널 닫기
-function closeIndoorFacilityPanel() {
-    document.getElementById('indoor-facility-panel').classList.remove('active');
-}
-
-// 건물 내부 시설로 길찾기
-function navigateToIndoorFacility(buildingId, facilityId) {
-    // 선택된 건물 정보 가져오기
-    const building = buildingData.find(b => b.id === buildingId);
-    if (!building) {
-        alert('건물 정보를 찾을 수 없습니다.');
-        return;
-    }
-    
-    // 선택된 시설 정보 가져오기
-    const facility = building.facilities.find(f => f.id === facilityId);
-    if (!facility) {
-        alert('시설 정보를 찾을 수 없습니다.');
-        return;
-    }
-    
-    // 패널 닫기
-    closeIndoorFacilityPanel();
-    
-    // 건물 내부 경로 안내 시작
-    openIndoorFacilityNavigation(buildingId, facilityId);
-}
-
-// 건물 내부 경로 안내 패널 열기
-function openIndoorFacilityNavigation(buildingId, facilityId) {
-    // 선택된 건물 정보 가져오기
-    const building = buildingData.find(b => b.id === buildingId);
-    if (!building) {
-        alert('건물 정보를 찾을 수 없습니다.');
-        return;
-    }
-    
-    // 선택된 시설 정보 가져오기
-    const facility = building.facilities.find(f => f.id === facilityId);
-    if (!facility) {
-        alert('시설 정보를 찾을 수 없습니다.');
-        return;
-    }
-    
-    // 패널 제목 설정
-    document.querySelector('.indoor-navigation-title').textContent = `${building.name} 내부 경로 안내`;
-    
-    // 내부 경로 안내 생성
-    const navigationList = document.getElementById('indoor-navigation-list');
-    navigationList.innerHTML = '';
-    
-    // 1. 건물 입구 안내
-    const entranceItem = document.createElement('li');
-    entranceItem.className = 'indoor-navigation-item';
-    entranceItem.innerHTML = `
-        <div class="indoor-navigation-icon">1</div>
-        <div class="indoor-navigation-info">
-            <div class="indoor-navigation-name">${building.name} 정문으로 입장</div>
-            <div class="indoor-navigation-description">건물 1층 입구</div>
-        </div>
-    `;
-    navigationList.appendChild(entranceItem);
-    
-    // 2. 층 이동 안내 (1층이 아닌 경우)
-    if (facility.floor > 1) {
-        const floorItem = document.createElement('li');
-        floorItem.className = 'indoor-navigation-item';
-        floorItem.innerHTML = `
-            <div class="indoor-navigation-icon">2</div>
-            <div class="indoor-navigation-info">
-                <div class="indoor-navigation-name">엘리베이터 또는 계단으로 ${facility.floor}층으로 이동</div>
-                <div class="indoor-navigation-description">1층 → ${facility.floor}층</div>
-            </div>
-        `;
-        navigationList.appendChild(floorItem);
-        
-        // 3. 시설 안내
-        const facilityItem = document.createElement('li');
-        facilityItem.className = 'indoor-navigation-item';
-        facilityItem.innerHTML = `
-            <div class="indoor-navigation-icon">3</div>
-            <div class="indoor-navigation-info">
-                <div class="indoor-navigation-name">${facility.floor}층에서 ${facility.name} 찾기</div>
-                <div class="indoor-navigation-description">${facility.description}</div>
-            </div>
-        `;
-        navigationList.appendChild(facilityItem);
-    } else {
-        // 1층인 경우 바로 시설 안내
-        const facilityItem = document.createElement('li');
-        facilityItem.className = 'indoor-navigation-item';
-        facilityItem.innerHTML = `
-            <div class="indoor-navigation-icon">2</div>
-            <div class="indoor-navigation-info">
-                <div class="indoor-navigation-name">1층에서 ${facility.name} 찾기</div>
-                <div class="indoor-navigation-description">${facility.description}</div>
-            </div>
-        `;
-        navigationList.appendChild(facilityItem);
-    }
-    
-    // 패널 열기
-    document.getElementById('indoor-navigation-panel').classList.add('active');
-    
-    // 건물까지 길찾기가 필요한지 확인
-    if (!document.getElementById('navigation-panel').classList.contains('active')) {
-        // 사용자 위치 확인
-        if (!userLocation) {
-            const confirmTracking = confirm('길찾기를 시작하려면 현재 위치 추적이 필요합니다. 위치 추적을 시작할까요?');
-            if (confirmTracking) {
-                // 위치 추적 시작 후 길찾기
-                trackUserLocation();
-                setTimeout(() => {
-                    if (userLocation) {
-                        // 건물까지 길찾기 시작
-                        startNavigation(buildingId);
-                    } else {
-                        alert('위치 정보를 가져오는 중입니다. 잠시 후 다시 시도해주세요.');
-                    }
-                }, 2000);
-            }
-        } else {
-            // 건물까지 길찾기 시작
-            startNavigation(buildingId);
-        }
-    }
-}
-
-// 내부 길찾기 패널 수동 열기 (길찾기 패널의 버튼에서 호출)
-function showIndoorNavigation() {
-    if (selectedBuilding && selectedFacility) {
-        openIndoorFacilityNavigation(selectedBuilding.id, selectedFacility.id);
-    } else if (selectedBuilding) {
-        // 건물 내부 시설 선택 패널 열기
-        openIndoorFacilityPanel(selectedBuilding.id);
-    } else {
-        alert('건물 정보가 없습니다.');
-    }
-}
-
-// 내부 길찾기 패널 닫기
-function closeIndoorNavigation() {
-    document.getElementById('indoor-navigation-panel').classList.remove('active');
-}
-
-// 사용자 위치 추적 및 GPS 관련 기능
-// 사용자 위치 추적 시작
-function trackUserLocation() {
-    if (isTrackingUser) {
-        // 이미 추적 중이면 추적 중지
-        stopUserTracking();
-        return;
-    }
-    
-    if (!naverMap) {
-        alert('지도가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
-        return;
-    }
-    
-    // GPS 버튼 스타일 변경
-    const gpsButton = document.querySelector('.gps-button');
-    if (gpsButton) {
-        gpsButton.style.backgroundColor = '#4285F4';
-        gpsButton.style.color = 'white';
-    }
-    
-    // 위치 권한 요청
-    if (navigator.geolocation) {
-        // 현재 위치 가져오기
-        navigator.geolocation.getCurrentPosition(
-            // 성공 콜백
-            function(position) {
-                const userPos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                
-                userLocation = userPos;
-                
-                // 사용자 위치 마커 생성/업데이트
-                updateUserMarker(userPos);
-                
-                // 사용자 위치로 지도 이동
-                naverMap.setCenter(new naver.maps.LatLng(userPos.lat, userPos.lng));
-                naverMap.setZoom(18);
-                
-                // 지속적인 위치 추적 시작
-                startContinuousTracking();
-                
-                // 추적 상태 업데이트
-                isTrackingUser = true;
-                
-                // 길찾기 보드가 열려있는 경우 경로 재계산
-                if (document.getElementById('navigation-panel').classList.contains('active') && selectedBuilding) {
-                    calculateRoute(userPos, selectedBuilding.position);
-                }
-            },
-            // 오류 콜백
-            function(error) {
-                let errorMessage = '';
-                
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMessage = '위치 접근 권한이 거부되었습니다. 설정에서 위치 권한을 허용해주세요.';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMessage = '현재 위치 정보를 사용할 수 없습니다.';
-                        break;
-                    case error.TIMEOUT:
-                        errorMessage = '위치 정보 요청 시간이 초과되었습니다.';
-                        break;
-                    case error.UNKNOWN_ERROR:
-                        errorMessage = '알 수 없는 오류가 발생했습니다.';
-                        break;
-                }
-                
-                alert(`위치 추적 오류: ${errorMessage}`);
-                
-                // GPS 버튼 원래 스타일로 복귀
-                if (gpsButton) {
-                    gpsButton.style.backgroundColor = 'white';
-                    gpsButton.style.color = 'black';
-                }
-                
-                isTrackingUser = false;
-            },
-            // 옵션
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
-    } else {
-        alert('이 브라우저에서는 위치 추적 기능을 지원하지 않습니다.');
-        
-        // GPS 버튼 원래 스타일로 복귀
-        if (gpsButton) {
-            gpsButton.style.backgroundColor = 'white';
-            gpsButton.style.color = 'black';
-        }
-    }
-}
-
-// 사용자 위치 마커 업데이트
-function updateUserMarker(position) {
-    const userPos = new naver.maps.LatLng(position.lat, position.lng);
-    
-    // 사용자 위치 마커가 없으면 생성
-    if (!userMarker) {
-        userMarker = new naver.maps.Marker({
-            position: userPos,
-            map: naverMap,
-            icon: {
-                content: '<div class="user-location-marker"></div>',
-                size: new naver.maps.Size(20, 20),
-                anchor: new naver.maps.Point(10, 10)
-            },
-            zIndex: 1000
-        });
-        
-        // 정확도 범위 원 생성
-        userLocationCircle = new naver.maps.Circle({
-            map: naverMap,
-            center: userPos,
-            radius: 10, // 기본 반경 10m
-            strokeColor: '#4285F4',
-            strokeOpacity: 0.5,
-            strokeWeight: 2,
-            fillColor: '#4285F4',
-            fillOpacity: 0.2
-        });
-    } else {
-        // 마커 위치 업데이트
-        userMarker.setPosition(userPos);
-        if (userLocationCircle) {
-            userLocationCircle.setCenter(userPos);
-        }
-    }
-}
-
-// 지속적인 위치 추적 시작
-function startContinuousTracking() {
-    // 이미 추적 중인 경우 종료
-    if (userLocationWatchId !== null) {
-        navigator.geolocation.clearWatch(userLocationWatchId);
-    }
-    
-    // 위치 추적 시작
-    userLocationWatchId = navigator.geolocation.watchPosition(
-        // 성공 콜백
-        function(position) {
-            const userPos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            
-            userLocation = userPos;
-            
-            // 사용자 위치 마커 업데이트
-            updateUserMarker(userPos);
-            
-            // 정확도 범위 업데이트
-            if (userLocationCircle) {
-                userLocationCircle.setRadius(position.coords.accuracy);
-            }
-            
-            // 실시간 내비게이션 모드가 활성화되어 있으면 지도 중심 이동
-            if (isRealTimeNavigationActive && navigationMap) {
-                navigationMap.setCenter(new naver.maps.LatLng(userPos.lat, userPos.lng));
-            }
-            
-            // 경로 안내 중이라면 경로 이탈 확인
-            if (document.getElementById('navigation-panel').classList.contains('active') && routePath) {
-                checkRouteDeviation(userPos);
-            }
-        },
-        // 오류 콜백
-        function(error) {
-            console.error('위치 추적 중 오류:', error);
-        },
-        // 옵션
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-}
-
-// 사용자 위치 추적 중지
-function stopUserTracking() {
-    // 위치 추적 중지
-    if (userLocationWatchId !== null) {
-        navigator.geolocation.clearWatch(userLocationWatchId);
-        userLocationWatchId = null;
-    }
-    
-    // 마커 및 정확도 원 제거
-    if (userMarker) {
-        userMarker.setMap(null);
-        userMarker = null;
-    }
-    
-    if (userLocationCircle) {
-        userLocationCircle.setMap(null);
-        userLocationCircle = null;
-    }
-    
-    // GPS 버튼 원래 스타일로 복귀
-    const gpsButton = document.querySelector('.gps-button');
-    if (gpsButton) {
-        gpsButton.style.backgroundColor = 'white';
-        gpsButton.style.color = 'black';
-    }
-    
-    // 실시간 내비게이션 모드 비활성화
-    isRealTimeNavigationActive = false;
-    
-    // 위치 정보 초기화
-    userLocation = null;
-    isTrackingUser = false;
-}
-
-// 경로 이탈 확인
-function checkRouteDeviation(currentPos) {
-    if (!routePath || !selectedBuilding) return;
-    
-    // 경로와 현재 위치 사이의 최소 거리 계산
-    const pathPoints = routePath.getPath();
-    if (!pathPoints || pathPoints.length === 0) return;
-    
-    const userLatLng = new naver.maps.LatLng(currentPos.lat, currentPos.lng);
-    
-    // 목적지까지 남은 거리 계산
-    const destPos = new naver.maps.LatLng(
-        selectedBuilding.position.lat,
-        selectedBuilding.position.lng
-    );
-    const distanceToDest = userLatLng.distanceTo(destPos);
-    
-    // 목적지 도착 확인 (10m 이내)
-    if (distanceToDest < 10) {
-        if (!isDestinationReachedNotified) {
-            alert('목적지에 도착했습니다!');
-            isDestinationReachedNotified = true;
-            
-            // 내부 시설이 있는 경우 내부 길찾기 패널 표시
-            if (selectedFacility && selectedBuilding) {
-                showIndoorNavigation();
-            }
-        }
-        return;
-    }
-    
-    // 경로 이탈 확인 (경로에서 50m 이상 떨어진 경우)
-    let minDistance = Infinity;
-    for (let i = 0; i < pathPoints.length; i++) {
-        const distance = userLatLng.distanceTo(pathPoints[i]);
-        minDistance = Math.min(minDistance, distance);
-    }
-    
-    // 경로 이탈 시 경로 재계산
-    if (minDistance > 50 && !isRouteRecalculating) {
-        isRouteRecalculating = true;
-        
-        // 경로 재계산 알림
-        const confirmRecalculate = confirm('현재 경로에서 벗어났습니다. 경로를 다시 계산할까요?');
-        if (confirmRecalculate) {
-            calculateRoute(currentPos, selectedBuilding.position);
-        }
-        
-        // 재계산 플래그 초기화 (중복 알림 방지)
-        setTimeout(() => {
-            isRouteRecalculating = false;
-        }, 10000); // 10초 동안 재계산 방지
-    }
-}
-
-// 실시간 내비게이션 관련 변수
-let isRealTimeNavigationActive = false;
-let isRouteRecalculating = false;
-let isDestinationReachedNotified = false;
-
-// 건물별 특수 경로 및 접근점 정보 (출입구 위치)
-const buildingEntryPoints = {
-    '공학1관': { lat: 37.39636767479923, lng: 126.90707348692698 },
-    '자연과학관': { lat: 37.39672466288283, lng: 126.90684716508685 },
-    '학생복지센터': { lat: 37.3963016630711, lng: 126.91000109780426 },
-    '문화1관': { lat: 37.39580992475254, lng: 126.90819350405056 }
-    // 나머지 건물들에 대한 출입구 정보 추가 가능
-};
-
-// 건물까지의 경로와 건물 출입구 연결
-function connectPathToEntryPoint(path, buildingId) {
-    if (!path || path.length === 0 || !buildingEntryPoints[buildingId]) return path;
-    
-    // 마지막 지점과 건물 출입구 연결
-    const entryPoint = buildingEntryPoints[buildingId];
-    const entryLatLng = new naver.maps.LatLng(entryPoint.lat, entryPoint.lng);
-    
-    // 원래 경로의 마지막 지점 제거 후 출입구 추가
-    const newPath = [...path];
-    newPath.pop(); // 마지막 지점 제거
-    newPath.push(entryLatLng); // 출입구 추가
-    
-    return newPath;
-}
-
-// 시설 타입에 따른 아이콘 가져오기 
-function getFacilityIcon(type) {
-    switch(type) {
-        case 'classroom': return '📚';
-        case 'lab': return '🔬';
-        case 'office': return '🖥️';
-        case 'seminar': return '👥';
-        case 'cafeteria': return '🍽️';
-        case 'store': return '🏪';
-        case 'cafe': return '☕';
-        case 'library': return '📖';
-        case 'atm': return '💰';
-        case 'auditorium': return '🎭';
-        case 'dormitory': return '🏠';
-        case 'hall': return '🏛️';
-        case 'club': return '👥';
-        default: return '🏢';
-    }
-}
-
-// 건물 내부 시설까지의 상세 안내 생성
-function generateIndoorDirections(building, facility) {
-    const directions = [];
-    
-    // 1. 건물 입구 안내
-    directions.push({
-        step: 1,
-        text: `${building.name} 정문으로 입장하세요`,
-        detail: '건물 1층 입구'
-    });
-    
-    // 2. 층 안내
-    if (facility.floor > 1) {
-        // 엘리베이터가 있는지 확인
-        const hasElevator = building.facilities.some(f => f.type === 'elevator');
-        
-        directions.push({
-            step: 2,
-            text: `${hasElevator ? '엘리베이터 또는 계단' : '계단'}으로 ${facility.floor}층으로 이동하세요`,
-            detail: `1층 → ${facility.floor}층`
-        });
-        
-        // 3. 시설 찾기 안내
-        directions.push({
-            step: 3,
-            text: `${facility.floor}층에서 ${facility.name}을(를) 찾으세요`,
-            detail: facility.description
-        });
-    } else {
-        // 1층인 경우 바로 시설 찾기
-        directions.push({
-            step: 2,
-            text: `1층에서 ${facility.name}을(를) 찾으세요`,
-            detail: facility.description
-        });
-    }
-    
-    return directions;
-}
-
-// 시설 검색 함수
-function searchAllFacilities(query) {
-    query = query.toLowerCase().trim();
-    if (!query) return [];
-    
-    const results = [];
-    
-    // 모든 건물의 시설 검색
-    buildingData.forEach(building => {
-        if (!building.facilities) return;
-        
-        building.facilities.forEach(facility => {
-            if (facility.name.toLowerCase().includes(query) || 
-                facility.description.toLowerCase().includes(query) || 
-                facility.type.toLowerCase().includes(query)) {
-                
-                results.push({
-                    building: building,
-                    facility: facility
-                });
-            }
-        });
-    });
-    
-    return results;
-}
-
-// 전체 검색 함수 (건물 및 시설 통합 검색)
-function searchCampus(query) {
-    query = query.toLowerCase().trim();
-    if (!query) return { buildings: [], facilities: [] };
-    
-    // 건물 검색
-    const buildings = buildingData.filter(building => 
-        building.name.toLowerCase().includes(query) || 
-        building.description.toLowerCase().includes(query) ||
-        building.id.toLowerCase().includes(query)
-    );
-    
-    // 시설 검색
-    const facilityResults = searchAllFacilities(query);
-    
-    return {
-        buildings: buildings,
-        facilities: facilityResults
-    };
-}
-
-// 실시간 내비게이션 모드 토글
-function toggleRealTimeNavigation() {
-    if (!userLocation) {
-        alert('실시간 내비게이션을 시작하려면 현재 위치 추적이 필요합니다.');
-        trackUserLocation();
-        return;
-    }
-    
-    isRealTimeNavigationActive = !isRealTimeNavigationActive;
-    
-    const navButton = document.querySelector('.navigation-start');
-    if (navButton) {
-        if (isRealTimeNavigationActive) {
-            navButton.textContent = '실시간 안내 중지';
-            navButton.style.backgroundColor = '#FF5722';
-            
-            // 지도를 사용자 위치 중심으로 이동
-            if (navigationMap && userLocation) {
-                const userPos = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
-                navigationMap.setCenter(userPos);
-                navigationMap.setZoom(18);
-            }
-            
-            // 도착 알림 초기화
-            isDestinationReachedNotified = false;
-        } else {
-            navButton.textContent = '실시간 안내 시작';
-            navButton.style.backgroundColor = '#4CAF50';
-        }
-    }
-}
-
-// 실시간 내비게이션 시작 (기존 함수를 이 함수로 대체)
-function startRealTimeNavigation() {
-    toggleRealTimeNavigation();
-}
-
-// 실내 내비게이션 표시 함수 (기존 함수를 보완)
-function showIndoorNavigation() {
-    if (selectedBuilding && selectedFacility) {
-        openIndoorFacilityNavigation(selectedBuilding.id, selectedFacility.id);
-    } else if (selectedBuilding) {
-        // 건물 내부 시설 선택 패널 열기
-        openIndoorFacilityPanel(selectedBuilding.id);
-    } else {
-        alert('건물 정보가 없습니다.');
-    }
-}
-
-// 지도 줌인
-function zoomIn() {
-    if (naverMap) {
-        const currentZoom = naverMap.getZoom();
-        naverMap.setZoom(currentZoom + 1);
-    }
-}
-
-// 지도 줌아웃
-function zoomOut() {
-    if (naverMap) {
-        const currentZoom = naverMap.getZoom();
-        naverMap.setZoom(currentZoom - 1);
-    }
-}
-
-// 지도 초기 뷰로 리셋
-function resetMapView() {
-    if (naverMap) {
-        naverMap.setCenter(new naver.maps.LatLng(37.39661657434427, 126.90772437800818));
-        naverMap.setZoom(16);
-        
-        // 모든 정보창 닫기
-        infoWindows.forEach(window => window.close());
-    }
-}
-
-// 검색 결과에서 특정 건물이나 시설 길찾기 시작
-function startNavigationFromSearch(type, id) {
-    closeSearch(); // 검색창 닫기
-    
-    if (type === 'building') {
-        navigateToBuilding(id, null);
-    } else if (type === 'facility') {
-        // 시설 ID로 건물 찾기
-        for (const building of buildingData) {
-            if (building.facilities) {
-                const facility = building.facilities.find(f => f.id === id);
-                if (facility) {
-                    // 먼저 건물까지 안내 후 실내 길찾기
-                    selectedFacility = facility;
-                    navigateToBuilding(building.id, null);
-                    return;
+                    // 해당 마커의 정보창 열기
+                    infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
                 }
             }
         }
-    }
-}
+            
+       // 편의 시설 상세 보기
+       function showFacilityDetail(facilityId) {
+           alert(`${facilityId} 시설 상세 정보를 확인합니다.`);
+           // window.location.href = `facility-detail.html?id=${facilityId}`;
+       }
+       
+       // 로그아웃 기능
+       function logout() {
+           if (confirm('로그아웃 하시겠습니까?')) {
+               // 현재 로그인 사용자 정보 삭제
+               localStorage.removeItem('currentLoggedInUser');
+               // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
+               const loginButton = document.querySelector('.login-button');
+               const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+               
+               // 로그인 버튼 표시, 프로필 드롭다운 숨김
+               if (loginButton) loginButton.style.display = 'block';
+               if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+      
+               // 프로필 드롭다운이 열려있다면 닫기
+               const dropdown = document.querySelector('.profile-dropdown');
+               if (dropdown) dropdown.classList.remove('active');
+               // 홈 탭으로 전환
+               switchTab('home');
+      
+               alert('로그아웃 되었습니다.');
+           }
+       }
 
-// 검색 기능 초기화 및 개선
-function initSearchFunctionality() {
-    const searchInput = document.getElementById('facility-search-input');
-    if (searchInput) {
-        // Enter 키 처리
-        searchInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                searchFacilities(this.value);
-            }
-        });
-        
-        // 포커스 아웃 시 검색 실행
-        searchInput.addEventListener('blur', function() {
-            searchFacilities(this.value);
-        });
-        
-        // 검색창이 비워졌을 때 원래 내용 표시
-        searchInput.addEventListener('input', function() {
-            if (this.value.trim() === '') {
-                document.getElementById('search-results').style.display = 'none';
-                document.getElementById('no-results').style.display = 'none';
-                document.getElementById('original-content').style.display = 'block';
-            }
-            updateClearButton();
-        });
-    }
+       // 회원 탈퇴 함수
+       function deleteAccount() {
+           // 현재 로그인된 사용자 확인
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           if (!currentUser) {
+               alert('로그인이 필요한 서비스입니다.');
+               return;
+           }
+           
+           // 삭제 확인
+           if (confirm('정말 회원 탈퇴하시겠습니까? 모든 계정 정보가 삭제됩니다.')) {
+               // 사용자 관련 정보 삭제
+               localStorage.removeItem(`user_${currentUser}_registered`);
+               localStorage.removeItem(`user_${currentUser}_first_login`);
+               localStorage.removeItem(`user_${currentUser}_name`);
+               localStorage.removeItem(`user_${currentUser}_department`);
+               localStorage.removeItem(`user_${currentUser}_grade`);
+               localStorage.removeItem(`user_${currentUser}_email`);
+               localStorage.removeItem(`user_${currentUser}_phone`);
+               localStorage.removeItem(`user_${currentUser}_password`);
+               localStorage.removeItem(`user_${currentUser}_profileImageType`);
+               localStorage.removeItem(`user_${currentUser}_profileImage`);
+               localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+               
+               // 현재 로그인 상태 제거
+               localStorage.removeItem('currentLoggedInUser');
+               
+               alert('회원 탈퇴가 완료되었습니다.');
+               
+               // 로그인 페이지로 이동
+               window.location.href = 'login.html';
+           }
+       }
+       
+       // 모든 설정 초기화 함수
+       function resetAllSettings() {
+           // 현재 로그인 상태 확인
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           if (!currentUser) {
+               alert('로그인이 필요한 서비스입니다.');
+               return;
+           }
+           
+           if (confirm('모든 설정을 초기화하시겠습니까? 설정된 위젯, 메뉴, 개인화 옵션이 모두 기본값으로 돌아갑니다.')) {
+               // 사용자 설정 초기화
+               localStorage.removeItem(`user_${currentUser}_setup_completed`);
+               localStorage.removeItem(`user_${currentUser}_profileImageType`);
+               localStorage.removeItem(`user_${currentUser}_profileImage`);
+               localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+               
+               // 위젯 설정 초기화
+               const defaultWidgets = [
+                   {
+                       name: '강의실 찾기',
+                       icon: '🏫',
+                       description: '빈 강의실 정보 확인'
+                   },
+                   {
+                       name: '학사일정',
+                       icon: '📅',
+                       description: '주요 일정 및 행사'
+                   },
+                   {
+                       name: '학식 메뉴',
+                       icon: '🍽️',
+                       description: '오늘의 식단 정보'
+                   }
+               ];
+               localStorage.setItem('selectedWidgets', JSON.stringify(defaultWidgets));
+               
+               // 메뉴 설정 초기화
+               const defaultMenus = [
+                   {
+                       name: '홈',
+                       icon: '🏠',
+                       order: 0
+                   },
+                   {
+                       name: '시설',
+                       icon: '🏫',
+                       order: 1
+                   },
+                   {
+                       name: '커뮤니티',
+                       icon: '💬',
+                       order: 2
+                   },
+                   {
+                       name: '내 정보',
+                       icon: '👤',
+                       order: 3
+                   },
+                   {
+                       name: '알림',
+                       icon: '🔔',
+                       order: 4
+                   }
+               ];
+               localStorage.setItem('activeMenus', JSON.stringify(defaultMenus));
+               
+               // 앱 재시작 (페이지 리로드)
+               alert('모든 설정이 초기화되었습니다. 앱을 다시 시작합니다.');
+               window.location.reload();
+           }
+       }
+       
+       // 프로필 드롭다운 토글 함수
+       function toggleProfileDropdown() {
+           const dropdown = document.querySelector('.profile-dropdown');
+           dropdown.classList.toggle('active');
+           
+           // 드롭다운 외부 클릭 시 닫기 이벤트 추가
+           if (dropdown.classList.contains('active')) {
+               setTimeout(() => {
+                   document.addEventListener('click', closeProfileDropdown);
+               }, 0);
+           }
+       }
+   
+       // 드롭다운 닫기 함수
+       function closeProfileDropdown(event) {
+           const dropdown = document.querySelector('.profile-dropdown');
+           const profileIcon = document.querySelector('.header-profile-image');
+           
+           if (!dropdown.contains(event.target) && event.target !== profileIcon) {
+               dropdown.classList.remove('active');
+               document.removeEventListener('click', closeProfileDropdown);
+           }
+       }
+   
+       // 로그인 상태 확인 및 UI 업데이트
+       function checkLoginStatus() {
+           // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+           
+           // 로그인 버튼과 프로필 드롭다운 컨테이너
+           const loginButton = document.querySelector('.login-button');
+           const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+           
+           if (currentUser) {
+               // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
+               if (loginButton) loginButton.style.display = 'none';
+               if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
+               
+               // 드롭다운 내 프로필 정보 업데이트
+               updateDropdownProfileInfo(currentUser);
+               
+               // 프로필 탭의 정보도 업데이트
+               updateProfileInfo(currentUser);
+           } else {
+               // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
+               if (loginButton) loginButton.style.display = 'block';
+               if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+           }
+       }
+   
+       // 드롭다운 프로필 정보 업데이트
+       function updateDropdownProfileInfo(studentId) {
+           const dropdown = document.querySelector('.profile-dropdown');
+           if (!dropdown) return;
+           
+           const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+           const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+           const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+           
+           // 이름 업데이트
+           const nameElement = dropdown.querySelector('.dropdown-profile-name');
+           if (nameElement) nameElement.textContent = name;
+           
+           // 학과 및 학년 정보 업데이트
+           const detailElement = dropdown.querySelector('.dropdown-profile-detail');
+           if (detailElement && department) {
+               let departmentText = '';
+               
+               switch(department) {
+                   case 'computerScience':
+                       departmentText = '컴퓨터정보학과';
+                       break;
+                   case 'business':
+                       departmentText = '경영학과';
+                       break;
+                   case 'nursing':
+                       departmentText = '간호학과';
+                       break;
+                   case 'engineering':
+                       departmentText = '공학계열';
+                       break;
+                   case 'arts':
+                       departmentText = '예술계열';
+                       break;
+                   default:
+                       departmentText = department;
+               }
+               
+               detailElement.textContent = `${departmentText} | ${grade}학년`;
+           }
+           
+           // 학번 업데이트
+           const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
+           if (studentIdElement) {
+               studentIdElement.textContent = `학번: ${studentId}`;
+           }
+       }
+   
+       // 프로필 정보 업데이트
+       function updateProfileInfo(studentId) {
+           const profileTab = document.getElementById('profile-tab');
+           
+           if (profileTab) {
+               const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+               const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+               const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+               
+               // 프로필 이름 업데이트
+               const profileName = profileTab.querySelector('.profile-name');
+               if (profileName) {
+                   profileName.textContent = name;
+               }
+               
+               // 학과 및 학년 정보 업데이트
+               const profileDetail = profileTab.querySelector('.profile-detail');
+               if (profileDetail && department) {
+                   let departmentText = '';
+                   
+                   switch(department) {
+                       case 'computerScience':
+                           departmentText = '컴퓨터정보학과';
+                           break;
+                       case 'business':
+                           departmentText = '경영학과';
+                           break;
+                       case 'nursing':
+                           departmentText = '간호학과';
+                           break;
+                       case 'engineering':
+                           departmentText = '공학계열';
+                           break;
+                       case 'arts':
+                           departmentText = '예술계열';
+                           break;
+                       default:
+                           departmentText = department;
+                   }
+                   
+                   profileDetail.textContent = `${departmentText} | ${grade}학년`;
+               }
+               
+               // 학번 업데이트
+               const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
+               if (profileStudentId) {
+                   profileStudentId.textContent = `학번: ${studentId}`;
+               }
+           }
+       }
+       
+       function navigateToProfilePage(pageName) {
+           // 현재 로그인 상태 확인
+           const currentUser = localStorage.getItem('currentLoggedInUser');
+       
+           if (!currentUser) {
+               alert('로그인이 필요한 서비스입니다.');
+               goToPage('login');
+               return;
+           }
+       
+           // 페이지 이름에 따라 분기 처리
+           switch(pageName) {
+               case 'timetable':
+                   alert('내 시간표 페이지로 이동합니다.');
+                   window.location.href = 'timetable.html';
+                   break;
+           
+               case 'my-courses':
+                   alert('내 수강 강의 페이지로 이동합니다.');
+                   // window.location.href = 'my-courses.html';
+                   break;
 
-    // 빠른 검색 버튼 활성화 코드
-    const quickSearchButtons = document.querySelectorAll('.quick-search-buttons .category-tag');
-    quickSearchButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // 다른 모든 버튼 비활성화
-            quickSearchButtons.forEach(btn => btn.classList.remove('active'));
-            // 클릭한 버튼 활성화
-            this.classList.add('active');
-        });
-    });
-}
+               case 'favorite-classrooms':
+                   alert('즐겨찾는 강의실 페이지로 이동합니다.');
+                   // window.location.href = 'favorite-classrooms.html';
+                   break;
 
-// 검색 함수 개선 - 건물 및 시설 통합 검색
+               case 'profile-edit':
+                   alert('개인정보 수정 페이지로 이동합니다.');
+                   window.location.href = 'profile-edit.html';
+                   break;
+
+               case 'grades':
+                   alert('성적 조회 페이지로 이동합니다.');
+                   // window.location.href = 'grades.html';
+                   break;
+           
+               case 'course-registration':
+                   alert('수강 신청 내역 페이지로 이동합니다.');
+                   // window.location.href = 'course-registration.html';
+                   break;
+               
+               case 'scholarships':
+                   alert('장학금 내역 페이지로 이동합니다.');
+                   // window.location.href = 'scholarships.html';
+                   break;
+
+               case 'tuition':
+                   alert('등록금 납부 내역 페이지로 이동합니다.');
+                   // window.location.href = 'tuition.html';
+                   break;
+
+               case 'notification-settings':
+                   alert('알림 설정 페이지로 이동합니다.');
+                   // window.location.href = 'notification-settings.html';
+                   break;
+
+               case 'widget-settings':
+                   alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+                   window.location.href = 'widget-settings.html';
+                   break;
+
+               case 'app-info':
+                   alert('앱 정보 페이지로 이동합니다.');
+                   window.location.href = 'app-info.html';
+                   break;
+               default:
+                   alert('준비 중인 기능입니다.');
+           }
+       }
+       
+       // 저장된 위젯 설정 불러오기
+       function loadWidgetSettings() {
+           // 로컬 스토리지에서 위젯 설정 가져오기
+           const widgetsData = localStorage.getItem('selectedWidgets');
+           
+           if (widgetsData) {
+               const selectedWidgets = JSON.parse(widgetsData);
+               
+               // 바로가기 메뉴 컨테이너
+               const shortcutMenu = document.querySelector('.shortcut-menu');
+               
+               if (shortcutMenu && selectedWidgets.length > 0) {
+                   // 기존 메뉴 아이템 제거
+                   shortcutMenu.innerHTML = '';
+                   
+                   // 선택된 위젯 추가 (최대 5개)
+                   const maxWidgets = Math.min(selectedWidgets.length, 5);
+                   
+                   for (let i = 0; i < maxWidgets; i++) {
+                       const widget = selectedWidgets[i];
+                       
+                       const shortcutItem = document.createElement('div');
+                       shortcutItem.className = 'shortcut-item';
+                       
+                       const shortcutIcon = document.createElement('div');
+                       shortcutIcon.className = 'shortcut-icon';
+                       shortcutIcon.textContent = widget.icon;
+                       
+                       const shortcutText = document.createElement('div');
+                       shortcutText.className = 'shortcut-text';
+                       shortcutText.textContent = widget.name;
+                       
+                       shortcutItem.appendChild(shortcutIcon);
+                       shortcutItem.appendChild(shortcutText);
+                       shortcutMenu.appendChild(shortcutItem);
+                       
+                       // 위젯 클릭 이벤트 추가
+                       shortcutItem.addEventListener('click', function() {
+                           handleWidgetClick(widget.name);
+                       });
+                   }
+               }
+           }
+           
+           // 하단 탭 메뉴 설정 불러오기
+           loadTabMenuSettings();
+       }
+   
+       // 하단 탭 메뉴 설정 불러오기
+       function loadTabMenuSettings() {
+           const menuData = localStorage.getItem('activeMenus');
+           
+           if (menuData) {
+               const activeMenus = JSON.parse(menuData);
+               
+               // 하단 탭 메뉴 컨테이너
+               const tabMenu = document.querySelector('.tab-menu');
+               
+               if (tabMenu && activeMenus.length > 0) {
+                   // 기본 순서 정의 (홈 - 시설 - 커뮤니티 - 내정보 - 알림)
+                   const defaultOrder = [
+                       { name: '홈', icon: '🏠', order: 0 },
+                       { name: '시설', icon: '🏫', order: 1 },
+                       { name: '커뮤니티', icon: '💬', order: 2 },
+                       { name: '내 정보', icon: '👤', order: 3 },
+                       { name: '알림', icon: '🔔', order: 4 }
+                   ];
+                   
+                   // 기존 메뉴 아이템 제거
+                   tabMenu.innerHTML = '';
+                   
+                   // 활성화된 메뉴 추가
+                   defaultOrder.forEach((menu, index) => {
+                       const tabItem = document.createElement('div');
+                       tabItem.className = 'tab-item';
+                       if (index === 0) {
+                           tabItem.classList.add('active');
+                       }
+                       
+                       // 탭 이름에 따라 ID 설정
+                       let tabId;
+                       switch (menu.name) {
+                           case '홈':
+                               tabId = 'home';
+                               break;
+                           case '시설':
+                               tabId = 'facility';
+                               break;
+                           case '커뮤니티':
+                               tabId = 'community';
+                               break;
+                           case '알림':
+                               tabId = 'alert';
+                               break;
+                           case '내 정보':
+                               tabId = 'profile';
+                               break;
+                           case '학식':
+                               tabId = 'cafeteria';
+                               break;
+                           case '셔틀버스':
+                               tabId = 'shuttle';
+                               break;
+                           case '강의평가':
+                               tabId = 'lecture';
+                               break;
+                           default:
+                               tabId = menu.name.toLowerCase();
+                       }
+                       
+                       tabItem.onclick = function() {
+                           switchTab(tabId);
+                       };
+                       
+                       const tabIcon = document.createElement('span');
+                       tabIcon.className = 'tab-icon';
+                       tabIcon.textContent = menu.icon;
+                       
+                       const tabText = document.createElement('span');
+                       tabText.textContent = menu.name;
+                       
+                       tabItem.appendChild(tabIcon);
+                       tabItem.appendChild(tabText);
+                       tabMenu.appendChild(tabItem);
+                   });
+                   
+                   // 메뉴 설정 업데이트
+                   localStorage.setItem('activeMenus', JSON.stringify(defaultOrder));
+               }
+           } else {
+               // 기본값으로 설정
+               const defaultMenus = [
+                   { name: '홈', icon: '🏠', order: 0 },
+                   { name: '시설', icon: '🏫', order: 1 },
+                   { name: '커뮤니티', icon: '💬', order: 2 },
+                   { name: '내 정보', icon: '👤', order: 3 },
+                   { name: '알림', icon: '🔔', order: 4 }
+               ];
+               localStorage.setItem('activeMenus', JSON.stringify(defaultMenus));
+           }
+       }
+   
+       // 위젯 클릭 처리
+       function handleWidgetClick(widgetName) {
+           // 위젯 이름에 따른 기능 처리
+           switch (widgetName) {
+               case '강의실 찾기':
+               case '강의실':
+                   switchTab('facility');
+                   break;
+               case '강의평가':
+                   switchTab('community');
+                   break;
+               case '셔틀버스':
+                   goToPage('shuttle');
+                   break;
+               case '학식 메뉴':
+               case '학식':
+                   goToPage('cafeteria');
+                   break;
+               case '학사일정':
+                   goToPage('academic-calendar');
+                   break;
+               case '도서관':
+                   goToPage('library');
+                   break;
+               case '내 시간표':
+                   navigateToProfilePage('timetable');
+                   break;
+               case '공지사항':
+                   // 공지사항 섹션으로 스크롤
+                   const noticeSection = document.querySelector('.notice-list');
+                   if (noticeSection) {
+                       noticeSection.scrollIntoView({ behavior: 'smooth' });
+                   }
+                   break;
+               default:
+                   alert(`${widgetName} 기능은 준비 중입니다.`);
+           }
+       }
+
+      // "undefined" 문제 해결을 위한 searchFacilities 함수 수정
+ // 검색 기능 수정 - "undefined" 문제 해결 및 검색 결과 UI 개선
 function searchFacilities(query) {
     // 검색어가 비어있으면 원래 컨텐츠 표시
     if (!query || !query.trim()) {
         document.getElementById('search-results').style.display = 'none';
         document.getElementById('no-results').style.display = 'none';
         document.getElementById('original-content').style.display = 'block';
+        
+        // 지도 컨테이너가 전체적으로 표시되도록 추가
+        const mapContainer = document.getElementById('naverMap');
+        if (mapContainer) {
+            mapContainer.style.width = '100%';
+            mapContainer.style.height = '350px';
+        }
+        
+        // 지도 갱신
+        if (naverMap) {
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+                naverMap.refresh();
+            }, 100);
+        }
         return;
     }
     
     query = query.toLowerCase().trim();
     
-    // 통합 검색 실행
-    const searchResult = searchCampus(query);
-    const allResults = [...searchResult.buildings];
+    // 건물 및 편의시설 데이터 통합 검색
+    const allFacilities = [...buildingData, ...facilityData];
     
-    // 시설 검색 결과를 건물과 함께 표시
-    searchResult.facilities.forEach(item => {
-        // 중복 건물 체크 (이미 건물 검색 결과에 있는지 확인)
-        if (!allResults.some(res => res.id === item.building.id)) {
-            allResults.push(item.building);
+    // 검색 결과와 관련성 점수 계산
+    const scoredResults = allFacilities.map(item => {
+        let score = 0;
+        const name = item.name || '';
+        const description = item.description || '';
+        const id = item.id || '';
+        const relatedBuilding = item.relatedBuilding || '';
+        
+        // 이름 매칭 - 가장 높은 점수
+        if (name.toLowerCase() === query) {
+            score += 100; // 정확한 일치
+        } else if (name.toLowerCase().startsWith(query)) {
+            score += 75; // 시작 부분 일치
+        } else if (name.toLowerCase().includes(query)) {
+            score += 50; // 부분 일치
         }
-    });
+        
+        // 설명 매칭
+        if (description.toLowerCase().includes(query)) {
+            score += 25;
+        }
+        
+        // 빌딩 ID/관련 건물 매칭
+        if (id.toLowerCase().includes(query)) {
+            score += 40;
+        }
+        
+        // 관련 건물 매칭 (편의시설의 경우)
+        if (relatedBuilding.toLowerCase().includes(query)) {
+            score += 35;
+        }
+        
+        return { item, score };
+    }).filter(result => result.score > 0); // 점수가 0보다 큰 결과만 포함
+    
+    // 점수에 따라 결과 정렬
+    scoredResults.sort((a, b) => b.score - a.score);
+    
+    // 검색 결과 추출
+    const results = scoredResults.map(result => result.item);
     
     // 검색 결과 컨테이너
     const searchResultsContainer = document.getElementById('search-results');
     searchResultsContainer.innerHTML = '';
     
     // 결과 표시
-    if (allResults.length > 0) {
+    if (results.length > 0) {
         // 검색 결과 표시
-        allResults.forEach(building => {
+        results.forEach(item => {
+            // 명시적으로 변수 정의 (undefined 방지)
+            const itemName = item.name || '';
+            const itemDesc = item.description || '';
+            const itemId = item.id || '';
+            const itemImage = item.image || '/api/placeholder/80/60';
+            
             const resultItem = document.createElement('div');
             resultItem.className = 'building-item';
-            resultItem.onclick = function() { 
-                showBuildingDetail(building.id);
+            resultItem.onclick = function() {
+                if (item.type === 'building') {
+                    showBuildingDetail(itemId);
+                } else {
+                    showFacilityDetail(itemId);
+                }
             };
             
             // 검색어 하이라이트 처리
-            const highlightedName = highlightText(building.name, query);
-            const highlightedDescription = highlightText(building.description, query);
+            const highlightedName = highlightText(itemName, query);
+            const highlightedDescription = highlightText(itemDesc, query);
             
             resultItem.innerHTML = `
                 <div class="building-image">
-                    <img src="${building.image}" alt="${building.name}">
+                    <img src="${itemImage}" alt="${itemName}">
                 </div>
                 <div class="building-info-container">
                     <div class="building-info">
                         <div class="building-name">${highlightedName}</div>
                         <div class="building-description">${highlightedDescription}</div>
                     </div>
-                    <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
+                    <div class="building-nav-button" onclick="navigateToBuilding('${itemId}', event)">
                         <span>길찾기</span>
                         <span>🧭</span>
                     </div>
@@ -4191,45 +3280,6 @@ function searchFacilities(query) {
             `;
             
             searchResultsContainer.appendChild(resultItem);
-            
-            // 해당 건물의 시설 중 검색어와 일치하는 것이 있으면 하위에 표시
-            const matchingFacilities = searchResult.facilities.filter(item => 
-                item.building.id === building.id
-            );
-            
-            if (matchingFacilities.length > 0) {
-                matchingFacilities.forEach(item => {
-                    const facilityItem = document.createElement('div');
-                    facilityItem.className = 'building-item';
-                    facilityItem.style.paddingLeft = '24px';
-                    facilityItem.style.backgroundColor = '#f8f8f8';
-                    facilityItem.onclick = function() {
-                        navigateToIndoorFacility(building.id, item.facility.id);
-                    };
-                    
-                    // 검색어 하이라이트 처리
-                    const highlightedFacilityName = highlightText(item.facility.name, query);
-                    const highlightedFacilityDesc = highlightText(item.facility.description, query);
-                    
-                    facilityItem.innerHTML = `
-                        <div class="building-image" style="width: 40px; height: 40px;">
-                            <div style="font-size: 20px;">${getFacilityIcon(item.facility.type)}</div>
-                        </div>
-                        <div class="building-info-container">
-                            <div class="building-info">
-                                <div class="building-name" style="font-size: 14px;">${highlightedFacilityName}</div>
-                                <div class="building-description" style="font-size: 12px;">${item.facility.floor}층 | ${highlightedFacilityDesc}</div>
-                            </div>
-                            <div class="building-nav-button" onclick="startNavigationFromSearch('facility', '${item.facility.id}')">
-                                <span>길찾기</span>
-                                <span>🧭</span>
-                            </div>
-                        </div>
-                    `;
-                    
-                    searchResultsContainer.appendChild(facilityItem);
-                });
-            }
         });
         
         // 검색 결과 표시, 원래 컨텐츠 숨기기
@@ -4246,982 +3296,204 @@ function searchFacilities(query) {
     // 클리어 버튼 표시 여부 업데이트
     updateClearButton();
 }
-
-// 검색어 하이라이트 처리 함수
-function highlightText(text, query) {
-    if (!text || !query || query.trim() === '') return text;
+        // 길찾기 함수 수정 - 실시간 검색 결과에서도 정상 작동하도록
+        function navigateToBuilding(buildingId, event) {
+        // 이벤트 버블링 방지
+        if (event) {
+            event.stopPropagation();
+        }
+        
+        // 해당 건물의 데이터 찾기
+        const building = buildingData.find(b => b.id === buildingId);
+        
+        if (!building) {
+            // 편의시설 데이터에서도 검색
+            const facility = facilityData.find(f => f.id === buildingId);
+            if (facility) {
+                alert(`${facility.name}으로 길찾기를 시작합니다.`);
+                
+                // 지도를 표시하고 해당 시설로 이동
+                switchTab('facility');
+                
+                // 관련 건물이 있으면 해당 건물로 이동
+                if (facility.relatedBuilding) {
+                    const relatedBuilding = buildingData.find(b => b.id === facility.relatedBuilding);
+                    if (relatedBuilding && naverMap) {
+                        setTimeout(() => {
+                            const position = new naver.maps.LatLng(relatedBuilding.position.lat, relatedBuilding.position.lng);
+                            naverMap.setCenter(position);
+                            naverMap.setZoom(18);
+                            
+                            // 마커 찾기 및 정보창 열기
+                            const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === relatedBuilding.name);
+                            if (markerIndex !== -1) {
+                                infoWindows.forEach(window => window.close());
+                                infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                            }
+                        }, 300);
+                    }
+                } else if (naverMap) {
+                    // 시설 자체의 위치를 사용
+                    setTimeout(() => {
+                        const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
+                        naverMap.setCenter(position);
+                        naverMap.setZoom(18);
+                        
+                        // 시설 마커는 다르게 처리될 수 있으므로 확인 필요
+                        const markerIndex = mapMarkers.findIndex(marker => 
+                            marker.getTitle && marker.getTitle() === facility.name);
+                        if (markerIndex !== -1) {
+                            infoWindows.forEach(window => window.close());
+                            infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+                        }
+                    }, 300);
+                }
+            } else {
+                alert('해당 건물 또는 시설 정보를 찾을 수 없습니다.');
+            }
+            return;
+        }
     
-    const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
-    return text.replace(regex, '<span class="search-highlight">$1</span>');
+    // 건물이 있는 경우 처리
+    alert(`${building.name}으로 길찾기를 시작합니다.`);
+    
+    // 지도를 표시하고 해당 건물로 이동
+    switchTab('facility');
+    
+    // 지도가 초기화되었는지 확인
+    if (naverMap) {
+        // UI 업데이트를 위한 시간 지연
+        setTimeout(() => {
+            // 건물 위치로 지도 중심 이동
+            const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+            naverMap.setCenter(position);
+            naverMap.setZoom(18); // 더 가깝게 줌인
+            
+            // 마커 찾기
+            const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+            
+            if (markerIndex !== -1) {
+                // 다른 모든 정보창 닫기
+                infoWindows.forEach(window => window.close());
+                
+                // 해당 마커의 정보창 열기
+                infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+            }
+            
+            // 지도 갱신을 위한 이벤트 트리거
+            window.dispatchEvent(new Event('resize'));
+            naverMap.refresh();
+        }, 300);
+    } else {
+        // 지도가 초기화되지 않았으면 알림
+        alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+    }
 }
+       // 검색어 하이라이트 처리 함수
+        function highlightText(text, query) {
+            if (!text || !query || query.trim() === '') return text;
+            
+            const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<span class="search-highlight">$1</span>');
+        }
 
-// 검색 결과 닫기
-function closeSearch() {
+       // 클리어 버튼 업데이트 함수
+       function updateClearButton() {
+           const searchInput = document.getElementById('facility-search-input');
+           const clearButton = document.querySelector('.search-clear');
+           
+           if (searchInput && clearButton) {
+               if (searchInput.value.trim() !== '') {
+                   clearButton.style.display = 'block';
+               } else {
+                   clearButton.style.display = 'none';
+               }
+           }
+       }
+
+       // 검색 초기화 함수
+ // 검색 초기화 함수 수정
+function clearSearch() {
     const searchInput = document.getElementById('facility-search-input');
     if (searchInput) {
         searchInput.value = '';
-    }
-    
-    document.getElementById('search-results').style.display = 'none';
-    document.getElementById('no-results').style.display = 'none';
-    document.getElementById('original-content').style.display = 'block';
-    
-    // 클리어 버튼 숨기기
-    const clearButton = document.querySelector('.search-clear');
-    if (clearButton) {
-        clearButton.style.display = 'none';
-    }
-}
-
-// 클리어 버튼 업데이트
-function updateClearButton() {
-    const searchInput = document.getElementById('facility-search-input');
-    const clearButton = document.querySelector('.search-clear');
-    
-    if (searchInput && clearButton) {
-        if (searchInput.value.trim() !== '') {
-            clearButton.style.display = 'block';
-        } else {
+        
+        // 검색 결과 숨기기, 원래 컨텐츠 표시
+        document.getElementById('search-results').style.display = 'none';
+        document.getElementById('no-results').style.display = 'none';
+        document.getElementById('original-content').style.display = 'block';
+        
+        // 클리어 버튼 숨기기
+        const clearButton = document.querySelector('.search-clear');
+        if (clearButton) {
             clearButton.style.display = 'none';
         }
-    }
-}
-
-// 빠른 검색 실행
-function quickSearch(keyword) {
-    const searchInput = document.getElementById('facility-search-input');
-    if (searchInput) {
-        searchInput.value = keyword;
-        searchFacilities(keyword);
-    }
-}
-
-// 초기 로딩시 실행할 함수들
-document.addEventListener('DOMContentLoaded', function() {
-    // 기존 초기화 함수 호출
-    
-    // 길찾기 관련 초기화
-    initNavigationPanel();
-    initIndoorFacilityPanel();
-    
-    // 사용자 위치 공유 권한 안내
-    // 첫 방문 시에만 표시
-    if (!localStorage.getItem('locationPermissionNotified')) {
-        setTimeout(() => {
-            const useLocation = confirm('연성대학교 캠퍼스 가이드에서 정확한 길찾기를 위해 위치 정보를 사용합니다. 위치 정보 공유를 허용하시겠습니까?');
-            if (useLocation) {
-                trackUserLocation();
-            }
-            localStorage.setItem('locationPermissionNotified', 'true');
-        }, 1000);
-    }
-});
-
-// 페이지 이동 금지 (SPA로 동작하도록)
-window.onbeforeunload = function() {
-    // 경로 안내 중이면 페이지 이탈 방지
-    if (document.getElementById('navigation-panel').classList.contains('active')) {
-        return "현재 길찾기가 진행 중입니다. 페이지를 나가시겠습니까?";
-    }
-};
-
-// 시스템 다크 모드 감지 및 적용
-function detectDarkMode() {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark-mode');
-        updateMapStyle('dark');
-    }
-    
-    // 다크 모드 변경 감지
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (e.matches) {
-            document.body.classList.add('dark-mode');
-            updateMapStyle('dark');
-        } else {
-            document.body.classList.remove('dark-mode');
-            updateMapStyle('normal');
+        
+        // 지도 컨테이너 전체화면으로 표시
+        const mapContainer = document.getElementById('naverMap');
+        if (mapContainer) {
+            mapContainer.style.width = '100%';
+            mapContainer.style.height = '350px';
         }
-    });
-}
-
-// 지도 스타일 업데이트
-function updateMapStyle(mode) {
-    if (!naverMap) return;
-    
-    if (mode === 'dark') {
-        naverMap.setOptions({
-            mapTypeId: naver.maps.MapTypeId.TERRAIN
-        });
-    } else {
-        naverMap.setOptions({
-            mapTypeId: naver.maps.MapTypeId.NORMAL
-        });
-    }
-}
-
-// 접근성 개선
-function enhanceAccessibility() {
-    // 키보드 내비게이션 지원
-    document.querySelectorAll('.building-item, .building-nav-button, .tab-item, .map-button, .gps-button').forEach(item => {
-        item.setAttribute('tabindex', '0');
         
-        item.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.click();
-            }
-        });
-    });
-    
-    // 스크린 리더 지원
-    document.querySelectorAll('.building-nav-button').forEach(btn => {
-        btn.setAttribute('aria-label', `${btn.closest('.building-item').querySelector('.building-name').textContent}으로 길찾기`);
-    });
-    
-    document.querySelector('.gps-button').setAttribute('aria-label', '내 위치 추적');
-}
-
-// 저전력 모드 감지 및 대응
-function handleLowPowerMode() {
-    // 배터리 API 지원 여부 확인
-    if ('getBattery' in navigator) {
-        navigator.getBattery().then(battery => {
-            // 배터리 레벨이 낮은 경우 (20% 미만)
-            if (battery.level < 0.2) {
-                // GPS 업데이트 간격 늘리기
-                gpsUpdateInterval = 5000; // 5초마다 업데이트
-                
-                // 사용자에게 알림
-                if (!localStorage.getItem('lowBatteryNotified')) {
-                    alert('배터리가 부족합니다. 배터리 절약을 위해 GPS 업데이트 빈도가 줄어듭니다.');
-                    localStorage.setItem('lowBatteryNotified', 'true');
-                }
-            }
-            
-            // 배터리 상태 변화 감지
-            battery.addEventListener('levelchange', () => {
-                if (battery.level < 0.2) {
-                    gpsUpdateInterval = 5000;
-                } else {
-                    gpsUpdateInterval = 1000; // 기본값으로 복원
-                }
-            });
-        });
-    }
-}
-
-// 지진, 화재 등 비상상황 대피 경로 안내
-function showEmergencyRoute() {
-    // 현재 건물 찾기
-    let currentBuilding = null;
-    
-    if (userLocation) {
-        const userPos = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
-        
-        // 가장 가까운 건물 찾기
-        let closestDistance = Infinity;
-        
-        buildingData.forEach(building => {
-            const buildingPos = new naver.maps.LatLng(building.position.lat, building.position.lng);
-            const distance = userPos.distanceTo(buildingPos);
-            
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                currentBuilding = building;
-            }
-        });
-        
-        // 건물 내부에 있는지 확인 (30m 이내)
-        if (closestDistance < 30) {
-            // 가장 가까운 비상구로 안내
-            const emergencyExits = [
-                { name: '비상구 1', lat: currentBuilding.position.lat + 0.0001, lng: currentBuilding.position.lng + 0.0001 },
-                { name: '비상구 2', lat: currentBuilding.position.lat - 0.0001, lng: currentBuilding.position.lng - 0.0001 }
-            ];
-            
-            let closestExit = emergencyExits[0];
-            let minExitDistance = Infinity;
-            
-            emergencyExits.forEach(exit => {
-                const exitPos = new naver.maps.LatLng(exit.lat, exit.lng);
-                const distance = userPos.distanceTo(exitPos);
-                
-                if (distance < minExitDistance) {
-                    minExitDistance = distance;
-                    closestExit = exit;
-                }
-            });
-            
-            alert(`비상 상황입니다! 가장 가까운 비상구(${closestExit.name})로 대피하세요.`);
-            
-            // 비상구까지 경로 표시
-            const destination = { 
-                lat: closestExit.lat, 
-                lng: closestExit.lng,
-                name: `${currentBuilding.name} - ${closestExit.name}`
-            };
-            
-            calculateEmergencyRoute(userLocation, destination);
-        } else {
-            // 건물 외부에 있는 경우 가장 가까운 집합 장소로 안내
-            const assemblyPoints = [
-                { name: '1번 집합장소', lat: 37.39673944839101, lng: 126.90932224700094 }, // 운동장
-                { name: '2번 집합장소', lat: 37.39667684947615, lng: 126.90994063692402 }  // 농구장
-            ];
-            
-            let closestPoint = assemblyPoints[0];
-            let minPointDistance = Infinity;
-            
-            assemblyPoints.forEach(point => {
-                const pointPos = new naver.maps.LatLng(point.lat, point.lng);
-                const distance = userPos.distanceTo(pointPos);
-                
-                if (distance < minPointDistance) {
-                    minPointDistance = distance;
-                    closestPoint = point;
-                }
-            });
-            
-            alert(`비상 상황입니다! 가장 가까운 집합장소(${closestPoint.name})로 대피하세요.`);
-            
-            // 집합장소까지 경로 표시
-            const destination = { 
-                lat: closestPoint.lat, 
-                lng: closestPoint.lng,
-                name: closestPoint.name
-            };
-            
-            calculateEmergencyRoute(userLocation, destination);
-        }
-    } else {
-        alert('비상 대피 경로를 안내하려면 위치 정보가 필요합니다.');
-        trackUserLocation();
-    }
-}
-
-// 비상 경로 계산 및 표시 (빨간색으로 강조)
-function calculateEmergencyRoute(from, to) {
-    // 네비게이션 패널 열기
-    document.getElementById('navigation-panel').classList.add('active');
-    
-    // 패널 스타일 변경 (비상 모드)
-    document.getElementById('navigation-panel').style.backgroundColor = '#fff8f8';
-    document.querySelector('.navigation-header').style.backgroundColor = '#ffebee';
-    document.querySelector('.navigation-title').textContent = '⚠️ 비상 대피 경로';
-    
-    // 지도 초기화
-    initNavigationMap();
-    
-    // 출발지와 목적지
-    const start = new naver.maps.LatLng(from.lat, from.lng);
-    const end = new naver.maps.LatLng(to.lat, to.lng);
-    
-    // 직선 경로로 표시 (비상시에는 최단 경로 우선)
-    drawEmergencyRoute(start, end);
-    
-    // 경로 정보 업데이트
-    const distance = Math.round(start.distanceTo(end));
-    document.getElementById('nav-from-text').textContent = '현재 위치';
-    document.getElementById('nav-to-text').textContent = to.name;
-    document.getElementById('nav-distance').textContent = `약 ${distance}m`;
-    
-    // 경로 상세 안내
-    const stepsContainer = document.getElementById('navigation-steps');
-    stepsContainer.innerHTML = '';
-    
-    const emergencyItem = document.createElement('li');
-    emergencyItem.className = 'navigation-step';
-    emergencyItem.style.backgroundColor = '#ffebee';
-    emergencyItem.style.borderRadius = '8px';
-    emergencyItem.style.marginBottom = '8px';
-    emergencyItem.innerHTML = `
-        <div class="navigation-step-icon" style="background-color: #f44336; color: white;">⚠️</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text" style="color: #d32f2f; font-weight: bold;">비상 상황입니다! 침착하게 대피하세요.</div>
-            <div class="navigation-step-detail">안내에 따라 신속히 이동하세요.</div>
-        </div>
-    `;
-    stepsContainer.appendChild(emergencyItem);
-    
-    const routeItem = document.createElement('li');
-    routeItem.className = 'navigation-step';
-    routeItem.innerHTML = `
-        <div class="navigation-step-icon">1</div>
-        <div class="navigation-step-info">
-            <div class="navigation-step-text">최단 경로로 ${to.name}까지 이동하세요</div>
-            <div class="navigation-step-detail">약 ${distance}m, 도보 ${Math.ceil(distance / 80)}분 소요</div>
-        </div>
-    `;
-    stepsContainer.appendChild(routeItem);
-    
-    // 내비게이션 버튼 변경
-    const navButton = document.querySelector('.navigation-start');
-    navButton.textContent = '실시간 대피 안내 시작';
-    navButton.style.backgroundColor = '#f44336';
-    
-    // 정보 패널 표시
-    const routeInfo = document.getElementById('route-info');
-    document.getElementById('route-distance').textContent = `${distance}m`;
-    document.getElementById('route-time').textContent = `${Math.ceil(distance / 80)}분`;
-    routeInfo.style.display = 'flex';
-}
-
-// 비상 경로 그리기 (빨간색 점선)
-function drawEmergencyRoute(start, end) {
-    // 기존 경로 제거
-    if (routePath) {
-        routePath.setMap(null);
-    }
-    
-    // 비상 경로 그리기
-    routePath = new naver.maps.Polyline({
-        map: navigationMap,
-        path: [start, end],
-        strokeColor: '#f44336',
-        strokeWeight: 6,
-        strokeOpacity: 0.8,
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round',
-        strokeDasharray: [8, 4]
-    });
-    
-    // 출발지와 도착지 마커
-    new naver.maps.Marker({
-        position: start,
-        map: navigationMap,
-        icon: {
-            content: '<div style="background-color: #4CAF50; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold;">A</div>',
-            size: new naver.maps.Size(24, 24),
-            anchor: new naver.maps.Point(12, 12)
-        },
-        zIndex: 101
-    });
-    
-    new naver.maps.Marker({
-        position: end,
-        map: navigationMap,
-        icon: {
-            content: '<div style="background-color: #f44336; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold;">B</div>',
-            size: new naver.maps.Size(24, 24),
-            anchor: new naver.maps.Point(12, 12)
-        },
-        zIndex: 101
-    });
-    
-    // 지도 영역 조정
-    const bounds = new naver.maps.LatLngBounds([start, end]);
-    navigationMap.fitBounds(bounds, {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50
-    });
-}
-
-// 앱 초기화 시 접근성 및 다크 모드 설정
-document.addEventListener('DOMContentLoaded', function() {
-    // 기존 초기화 함수 호출
-    setTimeout(() => {
-        detectDarkMode();
-        enhanceAccessibility();
-        handleLowPowerMode();
-    }, 1000);
-});
-
-// 영어/한글 언어 전환 지원
-function switchLanguage(lang) {
-    localStorage.setItem('preferredLanguage', lang);
-    
-    const translations = {
-        'ko': {
-            navButtonStart: '실시간 안내 시작',
-            navButtonStop: '실시간 안내 중지',
-            currentLocation: '현재 위치',
-            destination: '목적지',
-            arrival: '목적지에 도착했습니다!',
-            routeDeviation: '현재 경로에서 벗어났습니다. 경로를 다시 계산할까요?',
-            locationPermission: '연성대학교 캠퍼스 가이드에서 정확한 길찾기를 위해 위치 정보를 사용합니다. 위치 정보 공유를 허용하시겠습니까?',
-            entrance: '정문으로 입장',
-            floor: '층',
-            indoor: '건물 내 길찾기',
-            search: '검색할 시설명을 입력하세요',
-            noResults: '검색 결과가 없습니다.'
-        },
-        'en': {
-            navButtonStart: 'Start Navigation',
-            navButtonStop: 'Stop Navigation',
-            currentLocation: 'Current Location',
-            destination: 'Destination',
-            arrival: 'You have arrived at your destination!',
-            routeDeviation: 'You have deviated from the route. Recalculate?',
-            locationPermission: 'Yeonsung University Campus Guide uses your location for accurate navigation. Allow location sharing?',
-            entrance: 'Enter through main entrance',
-            floor: 'Floor',
-            indoor: 'Indoor Navigation',
-            search: 'Search facilities',
-            noResults: 'No results found.'
-        }
-    };
-    
-    // 언어에 따라 UI 텍스트 업데이트
-    const currentLang = translations[lang] || translations['ko'];
-    
-    // 내비게이션 버튼
-    const navButton = document.querySelector('.navigation-start');
-    if (navButton) {
-        navButton.textContent = isRealTimeNavigationActive ? 
-            currentLang.navButtonStop : currentLang.navButtonStart;
-    }
-    
-    // 출발/도착 정보
-    document.getElementById('nav-from-text').textContent = currentLang.currentLocation;
-    
-    // 검색창 placeholder
-    document.querySelector('.indoor-facility-search-input').placeholder = currentLang.search;
-    
-    // 검색 결과 없음 메시지
-    document.querySelector('#no-results').textContent = currentLang.noResults;
-}
-
-// 캠퍼스 지도 오프라인 지원
-function enableOfflineSupport() {
-    // 서비스 워커 등록
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => {
-                console.log('ServiceWorker 등록 성공:', registration.scope);
-            })
-            .catch(error => {
-                console.log('ServiceWorker 등록 실패:', error);
-            });
-    }
-    
-    // 오프라인 지도 데이터 캐싱
-    if ('caches' in window) {
-        // 필수 지도 타일 캐싱
-        const mapTilesToCache = [
-            // 대략적인 캠퍼스 영역의 지도 타일 URL
-            'https://map.pstatic.net/nrb/styles/basic/1/16/55848/25543.png',
-            'https://map.pstatic.net/nrb/styles/basic/1/16/55848/25544.png',
-            'https://map.pstatic.net/nrb/styles/basic/1/16/55849/25543.png',
-            'https://map.pstatic.net/nrb/styles/basic/1/16/55849/25544.png'
-        ];
-        
-        caches.open('map-tiles-cache').then(cache => {
-            return cache.addAll(mapTilesToCache);
-        });
-        
-        // 건물 데이터 캐싱
-        caches.open('campus-data-cache').then(cache => {
-            const buildingDataBlob = new Blob([JSON.stringify(buildingData)], 
-                {type: 'application/json'});
-            
-            cache.put('/api/buildings.json', new Response(buildingDataBlob));
-        });
-    }
-}
-
-// 추가적인 접근성 기능
-function setupVoiceNavigation() {
-    if ('webkitSpeechRecognition' in window) {
-        const recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.lang = 'ko-KR';
-        
-        // 음성 인식 결과 처리
-        recognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript.toLowerCase();
-            
-            // "길찾기" 명령 인식
-            if (transcript.includes('길찾기') || transcript.includes('안내')) {
-                // 건물 이름 인식
-                buildingData.forEach(building => {
-                    if (transcript.includes(building.name.toLowerCase())) {
-                        navigateToBuilding(building.id, null);
-                        return;
-                    }
-                });
-            }
-            
-            // "내 위치" 명령 인식
-            if (transcript.includes('내 위치') || transcript.includes('현재 위치')) {
-                trackUserLocation();
-            }
-            
-            // "취소" 명령 인식
-            if (transcript.includes('취소') || transcript.includes('종료')) {
-                closeNavigation();
-            }
-        };
-        
-        // 음성 인식 버튼
-        const voiceButton = document.createElement('div');
-        voiceButton.className = 'voice-button';
-        voiceButton.style.cssText = `
-            position: absolute;
-            bottom: 130px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            z-index: 100;
-            cursor: pointer;
-        `;
-        voiceButton.innerHTML = '🎤';
-        voiceButton.setAttribute('aria-label', '음성 명령');
-        
-        // 음성 인식 시작
-        voiceButton.addEventListener('click', function() {
-            recognition.start();
-            this.style.backgroundColor = '#e0f7fa';
-            
-            // 사용자에게 음성 인식 상태 알림
-            const tooltip = document.createElement('div');
-            tooltip.className = 'voice-tooltip';
-            tooltip.style.cssText = `
-                position: absolute;
-                bottom: 180px;
-                right: 10px;
-                padding: 8px 12px;
-                background-color: rgba(0,0,0,0.7);
-                color: white;
-                border-radius: 4px;
-                font-size: 12px;
-                z-index: 100;
-            `;
-            tooltip.textContent = '음성으로 명령하세요. 예: "공학관 길찾기"';
-            document.body.appendChild(tooltip);
-            
-            // 5초 후 툴팁 제거
+        // 지도 갱신
+        if (naverMap) {
             setTimeout(() => {
-                document.body.removeChild(tooltip);
-            }, 5000);
-        });
-        
-        // 음성 인식 종료
-        recognition.onend = function() {
-            voiceButton.style.backgroundColor = 'white';
-        };
-        
-        // 버튼을 지도 컨테이너에 추가
-        setTimeout(() => {
-            const mapContainer = document.getElementById('naverMap');
-            if (mapContainer) {
-                mapContainer.appendChild(voiceButton);
-            }
-        }, 2000);
-    }
-}
-
-// 앱 로드 완료 후 추가 기능 초기화
-window.addEventListener('load', function() {
-    // 오프라인 지원 기능 활성화
-    enableOfflineSupport();
-    
-    // 음성 인식 내비게이션 설정
-    setupVoiceNavigation();
-    
-    // 사용자 선호 언어 설정
-    const userLang = localStorage.getItem('preferredLanguage') || 
-                     (navigator.language || navigator.userLanguage).substring(0, 2);
-    
-    if (userLang === 'en') {
-        switchLanguage('en');
-    }
-});
-
-// 웹 앱 매니페스트 동적 생성
-function createWebAppManifest() {
-    const manifestData = {
-        "name": "연성대학교 캠퍼스 가이드",
-        "short_name": "연성캠퍼스",
-        "start_url": "/",
-        "display": "standalone",
-        "background_color": "#ffffff",
-        "theme_color": "#c62917",
-        "orientation": "portrait",
-        "icons": [
-            {
-                "src": "/icons/icon-192x192.png",
-                "sizes": "192x192",
-                "type": "image/png"
-            },
-            {
-                "src": "/icons/icon-512x512.png",
-                "sizes": "512x512",
-                "type": "image/png"
-            }
-        ]
-    };
-    
-    const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(manifestBlob);
-    
-    const manifestLink = document.createElement('link');
-    manifestLink.rel = 'manifest';
-    manifestLink.href = manifestURL;
-    document.head.appendChild(manifestLink);
-    
-    // 아이콘 생성 (동적으로 파비콘 생성)
-    if (!document.querySelector('link[rel="icon"]')) {
-        const faviconLink = document.createElement('link');
-        faviconLink.rel = 'icon';
-        faviconLink.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="90" font-size="90">🏫</text></svg>';
-        document.head.appendChild(faviconLink);
-    }
-}
-
-// 서비스 워커 코드 동적 생성
-function generateServiceWorker() {
-    const swCode = `
-        // 캐시 이름 설정
-        const CACHE_NAME = 'yeonsung-campus-guide-v1';
-        
-        // 캐싱할 파일 목록
-        const urlsToCache = [
-            '/',
-            '/index.html',
-            '/styles.css',
-            '/app.js',
-            '/images/buildings/',
-            '/api/buildings.json'
-        ];
-        
-        // 서비스 워커 설치 이벤트
-        self.addEventListener('install', event => {
-            event.waitUntil(
-                caches.open(CACHE_NAME)
-                    .then(cache => {
-                        return cache.addAll(urlsToCache);
-                    })
-            );
-        });
-        
-        // 네트워크 요청 가로채기
-        self.addEventListener('fetch', event => {
-            event.respondWith(
-                caches.match(event.request)
-                    .then(response => {
-                        // 캐시에서 찾으면 반환
-                        if (response) {
-                            return response;
-                        }
-                        
-                        // 캐시에 없으면 네트워크로 요청
-                        return fetch(event.request)
-                            .then(netResponse => {
-                                // 중요: 응답을 복제해야 함 (스트림은 한 번만 사용 가능)
-                                const clonedResponse = netResponse.clone();
-                                
-                                // 유효한 응답인지 확인
-                                if (!netResponse || netResponse.status !== 200 || netResponse.type !== 'basic') {
-                                    return netResponse;
-                                }
-                                
-                                // 응답을 캐시에 저장
-                                caches.open(CACHE_NAME)
-                                    .then(cache => {
-                                        cache.put(event.request, clonedResponse);
-                                    });
-                                
-                                return netResponse;
-                            })
-                            .catch(() => {
-                                // 네트워크 요청 실패 시, 오프라인 페이지 반환
-                                if (event.request.mode === 'navigate') {
-                                    return caches.match('/offline.html');
-                                }
-                                
-                                // 이미지 요청 실패 시 기본 이미지 반환
-                                if (event.request.destination === 'image') {
-                                    return caches.match('/images/default-offline.png');
-                                }
-                                
-                                return new Response('네트워크 연결이 없습니다.');
-                            });
-                    })
-            );
-        });
-        
-        // 캐시 정리
-        self.addEventListener('activate', event => {
-            const cacheWhitelist = [CACHE_NAME];
-            
-            event.waitUntil(
-                caches.keys().then(cacheNames => {
-                    return Promise.all(
-                        cacheNames.map(cacheName => {
-                            if (cacheWhitelist.indexOf(cacheName) === -1) {
-                                return caches.delete(cacheName);
-                            }
-                        })
-                    );
-                })
-            );
-        });
-    `;
-    
-    // Blob으로 서비스 워커 파일 생성
-    const swBlob = new Blob([swCode], {type: 'text/javascript'});
-    const swURL = URL.createObjectURL(swBlob);
-    
-    // 서비스 워커 등록
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(swURL)
-            .then(registration => {
-                console.log('ServiceWorker 등록 성공:', registration.scope);
-            })
-            .catch(error => {
-                console.log('ServiceWorker 등록 실패:', error);
-            });
-    }
-}
-
-// 웹 앱 초기화 및 최적화
-document.addEventListener('DOMContentLoaded', function() {
-    // 웹 앱 매니페스트 생성
-    createWebAppManifest();
-    
-    // 서비스 워커 생성 및 등록
-    setTimeout(() => {
-        generateServiceWorker();
-    }, 2000);
-    
-    // 이미지 레이지 로딩 적용
-    document.querySelectorAll('img').forEach(img => {
-        img.loading = 'lazy';
-    });
-    
-    // 앱 설치 배너 설정
-    let deferredPrompt;
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // 설치 프롬프트 표시 방지 (사용자 정의 UI 사용)
-        e.preventDefault();
-        
-        // 이벤트 저장
-        deferredPrompt = e;
-        
-        // 앱 설치 버튼 표시
-        const installButton = document.createElement('button');
-        installButton.className = 'install-button';
-        installButton.textContent = '앱 설치하기';
-        installButton.style.cssText = `
-            position: fixed;
-            bottom: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #c62917;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 16px;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            z-index: 1000;
-        `;
-        
-        // 설치 버튼 클릭 이벤트
-        installButton.addEventListener('click', async () => {
-            // 프롬프트 표시
-            deferredPrompt.prompt();
-            
-            // 사용자 응답 대기
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            // 설치 결과 확인
-            if (outcome === 'accepted') {
-                console.log('앱이 설치되었습니다.');
-            } else {
-                console.log('앱 설치가 거부되었습니다.');
-            }
-            
-            // 이벤트 초기화
-            deferredPrompt = null;
-            
-            // 버튼 제거
-            document.body.removeChild(installButton);
-        });
-        
-        // 5초 후 자동 제거
-        setTimeout(() => {
-            if (document.body.contains(installButton)) {
-                document.body.removeChild(installButton);
-            }
-        }, 10000);
-        
-        // 버튼 추가
-        document.body.appendChild(installButton);
-    });
-});
-
-// 실시간 푸시 알림 설정
-function setupPushNotifications() {
-    if ('Notification' in window && 'PushManager' in window) {
-        // 알림 권한 요청
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                subscribeUserToPush();
-            }
-        });
-    }
-}
-
-// 푸시 알림 구독
-async function subscribeUserToPush() {
-    try {
-        const registration = await navigator.serviceWorker.ready;
-        
-        // 구독 옵션 설정
-        const subscribeOptions = {
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-                'YOUR_PUBLIC_VAPID_KEY'
-            )
-        };
-        
-        // 구독 요청
-        const subscription = await registration.pushManager.subscribe(subscribeOptions);
-        
-        // 구독 정보 서버에 전송 (실제 구현에서는 서버 엔드포인트 필요)
-        console.log('푸시 알림 구독 성공:', JSON.stringify(subscription));
-    } catch (error) {
-        console.error('푸시 알림 구독 실패:', error);
-    }
-}
-
-// Base64 문자열을 Uint8Array로 변환
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-        .replace(/\-/g, '+')
-        .replace(/_/g, '/');
-    
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    
-    return outputArray;
-}
-
-// 앱 성능 모니터링
-function monitorAppPerformance() {
-    if ('performance' in window && 'PerformanceObserver' in window) {
-        // Largest Contentful Paint 모니터링
-        const lcpObserver = new PerformanceObserver(entryList => {
-            const entries = entryList.getEntries();
-            const lastEntry = entries[entries.length - 1];
-            
-            console.log('Largest Contentful Paint:', lastEntry.startTime);
-            
-            // 성능 저하 시 사용자에게 알림
-            if (lastEntry.startTime > 5000) {
-                console.warn('페이지 로딩이 느립니다. 네트워크 연결을 확인하세요.');
-            }
-        });
-        
-        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
-        
-        // 첫 입력 지연 모니터링
-        const fidObserver = new PerformanceObserver(entryList => {
-            const entries = entryList.getEntries();
-            
-            entries.forEach(entry => {
-                console.log('First Input Delay:', entry.processingStart - entry.startTime);
-            });
-        });
-        
-        fidObserver.observe({ type: 'first-input', buffered: true });
-    }
-}
-
-// 앱 시작 시 네트워크 상태 확인
-function checkNetworkStatus() {
-    const updateNetworkStatus = () => {
-        const isOnline = navigator.onLine;
-        
-        // 오프라인 상태 처리
-        if (!isOnline) {
-            // 오프라인 모드 알림
-            const offlineAlert = document.createElement('div');
-            offlineAlert.className = 'offline-alert';
-            offlineAlert.textContent = '오프라인 모드: 일부 기능이 제한될 수 있습니다';
-            offlineAlert.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background-color: #f44336;
-                color: white;
-                text-align: center;
-                padding: 8px;
-                z-index: 2000;
-                font-size: 14px;
-            `;
-            
-            document.body.appendChild(offlineAlert);
-            
-            // GPS 실시간 업데이트 비활성화
-            gpsUpdateInterval = 10000; // 10초마다 업데이트로 변경
-        } else {
-            // 오프라인 알림 제거
-            const offlineAlert = document.querySelector('.offline-alert');
-            if (offlineAlert) {
-                document.body.removeChild(offlineAlert);
-            }
-            
-            // GPS 업데이트 간격 정상화
-            gpsUpdateInterval = 1000;
+                window.dispatchEvent(new Event('resize'));
+                naverMap.refresh();
+            }, 100);
         }
-    };
-    
-    // 초기 상태 확인
-    updateNetworkStatus();
-    
-    // 네트워크 상태 변경 감지
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
+    }
 }
+       // 빠른 검색 실행 함수
+       function quickSearch(keyword) {
+           const searchInput = document.getElementById('facility-search-input');
+           if (searchInput) {
+               searchInput.value = keyword;
+               searchFacilities(keyword);
+               updateClearButton();
+           }
+       }
 
-// 앱 초기화 최종 완료
-window.addEventListener('load', function() {
-    // 성능 모니터링 시작
-    monitorAppPerformance();
+       // 검색 기능 초기화
+       function initSearchFunctionality() {
+           const searchInput = document.getElementById('facility-search-input');
+           if (searchInput) {
+               // Enter 키 처리
+               searchInput.addEventListener('keypress', function(event) {
+                   if (event.key === 'Enter') {
+                       searchFacilities(this.value);
+                   }
+               });
+               
+               // 포커스 아웃 시 검색 실행
+               searchInput.addEventListener('blur', function() {
+                   searchFacilities(this.value);
+               });
+               
+               // 검색창이 비워졌을 때 원래 내용 표시
+               searchInput.addEventListener('input', function() {
+                   if (this.value.trim() === '') {
+                       document.getElementById('search-results').style.display = 'none';
+                       document.getElementById('no-results').style.display = 'none';
+                       document.getElementById('original-content').style.display = 'block';
+                   }
+                   updateClearButton();
+               });
+           }
+
+           // 빠른 검색 버튼 활성화 코드
+           const quickSearchButtons = document.querySelectorAll('.quick-search-buttons .category-tag');
+           quickSearchButtons.forEach(button => {
+               button.addEventListener('click', function() {
+                   // 다른 모든 버튼 비활성화
+                   quickSearchButtons.forEach(btn => btn.classList.remove('active'));
+                   // 클릭한 버튼 활성화
+                   this.classList.add('active');
+               });
+           });
+       }
     
-    // 네트워크 상태 확인
-    checkNetworkStatus();
-    
-    // 푸시 알림 설정 (사용자 동의 후)
-    setTimeout(() => {
-        const enablePush = confirm('캠퍼스 주요 공지 및 행사 알림을 받으시겠습니까?');
-        if (enablePush) {
-            setupPushNotifications();
-        }
-    }, 5000);
-    
-    console.log('연성대학교 캠퍼스 가이드 앱이 성공적으로 로드되었습니다!');
-});
     </script>
-    
-      <!-- 오프라인 페이지 템플릿 -->
-      <template id="offline-template">
-        <div class="offline-page">
-            <div class="offline-icon">📶</div>
-            <h2>오프라인 상태입니다</h2>
-            <p>인터넷 연결이 복구되면 자동으로 다시 연결됩니다.</p>
-            <p>기본적인 건물 정보와 지도는 오프라인에서도 사용할 수 있습니다.</p>
-            <button onclick="window.location.reload()">새로고침</button>
-        </div>
-    </template>
-    
 </body>
 </html>
