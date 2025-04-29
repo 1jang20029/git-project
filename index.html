@@ -2139,7 +2139,7 @@
                 alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
             }
         }
-        // 경로 표시 함수
+       // 경로 표시 함수 - 아래의 drawRoute 함수를 이 코드로 완전히 교체해주세요
         function drawRoute(from, to) {
             if (!naverMap) return;
             
@@ -2152,55 +2152,89 @@
             const start = new naver.maps.LatLng(from.lat, from.lng);
             const end = new naver.maps.LatLng(to.lat, to.lng);
             
-            // 직선 경로 그리기
-            routePolyline = new naver.maps.Polyline({
+            // 네이버 Directions 서비스 사용
+            const directions = new naver.maps.Service.Direction({
                 map: naverMap,
-                path: [start, end],
-                strokeColor: '#4285F4',
-                strokeWeight: 5,
-                strokeOpacity: 0.8,
-                strokeLineCap: 'round',
-                strokeLineJoin: 'round'
+                start: start,
+                goal: end,
+                option: {
+                    travelMode: 'WALKING',  // 도보 경로 안내
+                    coordType: 'latlng',
+                    vehicleType: 0,
+                    outputCoordsType: 'latlng'
+                }
             });
             
-            // 지도 뷰 영역 조정
-            const bounds = new naver.maps.LatLngBounds([start, end]);
-            naverMap.fitBounds(bounds, {
-                top: 100,
-                right: 100,
-                bottom: 100,
-                left: 100
-            });
-            
-            // 경로 정보 표시
-            setTimeout(() => {
-                // 직선 거리 계산 (미터 단위)
-                const distance = Math.round(start.distanceTo(end));
-                
-                // 거리 표시 (1km 이상이면 km 단위로)
-                let distanceText;
-                if (distance >= 1000) {
-                    distanceText = (distance / 1000).toFixed(1) + 'km';
-                } else {
-                    distanceText = distance + 'm';
-                }
-                
-                // 시간 계산 (걷는 속도 4km/h 가정)
-                const timeMinutes = Math.round(distance / (4000 / 60));
-                let timeText;
-                if (timeMinutes >= 60) {
-                    const hours = Math.floor(timeMinutes / 60);
-                    const mins = timeMinutes % 60;
-                    timeText = `${hours}시간 ${mins}분`;
-                } else {
-                    timeText = `${timeMinutes}분`;
-                }
-                
-                alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
-            }, 1000);
+                // 경로 요청
+                directions.route({
+                    // 성공 콜백
+                    success: function(response) {
+                        const route = response.route;
+                        if (!route || !route.trafast || !route.trafast[0]) {
+                            // 경로를 찾을 수 없는 경우 직선 경로로 대체
+                            fallbackToDirectLine(start, end);
+                            return;
+                        }
+                        
+                        // 경로의 좌표 배열
+                        const path = route.trafast[0].path;
+                        
+                        // 폴리라인 생성
+                        routePolyline = new naver.maps.Polyline({
+                            map: naverMap,
+                            path: path,
+                            strokeColor: '#4285F4',
+                            strokeWeight: 5,
+                            strokeOpacity: 0.8,
+                            strokeLineCap: 'round',
+                            strokeLineJoin: 'round'
+                        });
+                        
+                        // 지도 뷰 영역 조정
+                        const bounds = new naver.maps.LatLngBounds(path);
+                        naverMap.fitBounds(bounds, {
+                            top: 100,
+                            right: 100,
+                            bottom: 100,
+                            left: 100
+                        });
+                        
+                        // 거리 및 시간 계산
+                        const distance = route.trafast[0].distance;
+                        const duration = route.trafast[0].duration;
+                        
+                        // 거리 표시 (1km 이상이면 km 단위로)
+                        let distanceText;
+                        if (distance >= 1000) {
+                            distanceText = (distance / 1000).toFixed(1) + 'km';
+                        } else {
+                            distanceText = distance + 'm';
+                        }
+                        
+                        // 시간 계산 (초 단위를 분 단위로 변환)
+                        const timeMinutes = Math.round(duration / 60);
+                        let timeText;
+                        if (timeMinutes >= 60) {
+                            const hours = Math.floor(timeMinutes / 60);
+                            const mins = timeMinutes % 60;
+                            timeText = `${hours}시간 ${mins}분`;
+                        } else {
+                            timeText = `${timeMinutes}분`;
+                        }
+                        
+                        alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
+                    },
+                    // 실패 콜백
+                    fail: function(error) {
+                        console.error('경로 검색 실패:', error);
+                        // 실패 시 직선 경로로 대체
+                        fallbackToDirectLine(start, end);
+                    }
+                });
+
         }
             
-       // 지도 줌인
+        // 지도 줌인
        function zoomIn() {
            if (naverMap) {
                const currentZoom = naverMap.getZoom();
