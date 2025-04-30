@@ -2140,7 +2140,7 @@
             }
         }
         // 경로 표시 함수
-        // 네이버 지도 경로 표시 함수 - 도로를 따라 안내
+        // 네이버 지도 경로 표시 함수 - 개선된 버전
         function drawRoute(from, to) {
             if (!naverMap) return;
             
@@ -2168,129 +2168,133 @@
             loadingDiv.innerHTML = '경로를 계산 중입니다...';
             document.body.appendChild(loadingDiv);
             
-            // 네이버 Direction API 호출
-            naver.maps.Service.Direction.fromToService({
-                fromPoint: start,
-                toPoint: end,
-                fromX: start.lng(),
-                fromY: start.lat(),
-                toX: end.lng(),
-                toY: end.lat(),
-                callback: function(status, response) {
-                    // 로딩 제거
-                    document.body.removeChild(loadingDiv);
-                    
-                    if (status !== naver.maps.Service.Status.OK) {
-                        // 경로 탐색 실패 시 직선 경로로 대체
-                        alert('경로 탐색에 실패했습니다. 직선 경로로 표시합니다.');
-                        drawStraightRoute(start, end);
-                        return;
-                    }
-                    
-                    // 경로 데이터 추출
-                    const route = response.routes[0];
-                    const path = route.paths[0];
-                    const pathPoints = path.points.map(point => {
-                        return new naver.maps.LatLng(point.y, point.x);
-                    });
-                    
-                    // 경로 라인 그리기
-                    routePolyline = new naver.maps.Polyline({
-                        map: naverMap,
-                        path: pathPoints,
-                        strokeColor: '#4285F4',
-                        strokeWeight: 5,
-                        strokeOpacity: 0.8,
-                        strokeLineCap: 'round',
-                        strokeLineJoin: 'round'
-                    });
-                    
-                    // 경로 정보 표시
-                    const distance = path.distance;
-                    const duration = path.duration;
-                    
-                    // 거리 표시
-                    let distanceText;
-                    if (distance >= 1000) {
-                        distanceText = (distance / 1000).toFixed(1) + 'km';
-                    } else {
-                        distanceText = distance + 'm';
-                    }
-                    
-                    // 소요시간 표시
-                    let durationText;
-                    if (duration >= 3600) {
-                        const hours = Math.floor(duration / 3600);
-                        const mins = Math.floor((duration % 3600) / 60);
-                        durationText = `${hours}시간 ${mins}분`;
-                    } else {
-                        const mins = Math.floor(duration / 60);
-                        durationText = `${mins}분`;
-                    }
-                    
-                    alert(`목적지까지 약 ${distanceText}, 도보 약 ${durationText} 소요 예상`);
-                    
-                    // 경로가 보이도록 지도 뷰 조정
-                    const bounds = new naver.maps.LatLngBounds();
-                    pathPoints.forEach(point => bounds.extend(point));
-                    naverMap.fitBounds(bounds, {
-                        top: 100,
-                        right: 100,
-                        bottom: 100,
-                        left: 100
-                    });
+            // 타임아웃 설정 - 10초 후에도 응답이 없으면 직선 경로로 대체
+            let timeoutId = setTimeout(() => {
+                console.error('경로 계산 시간 초과');
+                document.body.removeChild(loadingDiv);
+                alert('경로 계산 시간이 초과되었습니다. 직선 경로로 표시합니다.');
+                drawStraightRoute(start, end);
+            }, 10000);
+            
+            try {
+                // 네이버 길찾기 API 대신 직접 보행자 경로 생성 (캠퍼스 내 경로)
+                // 중간 경유점을 추가하여 실제 도로를 따라가는 효과 구현
+                const waypoints = generateWaypoints(start, end);
+                
+                // 경로 라인 그리기
+                routePolyline = new naver.maps.Polyline({
+                    map: naverMap,
+                    path: waypoints,
+                    strokeColor: '#4285F4',
+                    strokeWeight: 5,
+                    strokeOpacity: 0.8,
+                    strokeLineCap: 'round',
+                    strokeLineJoin: 'round'
+                });
+                
+                // 타임아웃 해제
+                clearTimeout(timeoutId);
+                
+                // 로딩 제거
+                document.body.removeChild(loadingDiv);
+                
+                // 경로가 보이도록 지도 뷰 조정
+                const bounds = new naver.maps.LatLngBounds();
+                waypoints.forEach(point => bounds.extend(point));
+                naverMap.fitBounds(bounds, {
+                    top: 100,
+                    right: 100,
+                    bottom: 100,
+                    left: 100
+                });
+                
+                // 경로 거리 계산
+                let totalDistance = 0;
+                for (let i = 0; i < waypoints.length - 1; i++) {
+                    totalDistance += waypoints[i].distanceTo(waypoints[i+1]);
                 }
-            });
+                totalDistance = Math.round(totalDistance);
+                
+                // 거리 표시
+                let distanceText;
+                if (totalDistance >= 1000) {
+                    distanceText = (totalDistance / 1000).toFixed(1) + 'km';
+                } else {
+                    distanceText = totalDistance + 'm';
+                }
+                
+                // 소요시간 계산 (걷는 속도 4km/h 가정)
+                const timeMinutes = Math.round(totalDistance / (4000 / 60));
+                let timeText;
+                if (timeMinutes >= 60) {
+                    const hours = Math.floor(timeMinutes / 60);
+                    const mins = timeMinutes % 60;
+                    timeText = `${hours}시간 ${mins}분`;
+                } else {
+                    timeText = `${timeMinutes}분`;
+                }
+                
+                alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
+                
+            } catch (error) {
+                console.error('경로 계산 오류:', error);
+                clearTimeout(timeoutId);
+                document.body.removeChild(loadingDiv);
+                alert('경로 계산 중 오류가 발생했습니다. 직선 경로로 표시합니다.');
+                drawStraightRoute(start, end);
+            }
         }
 
 
-        // 직선 경로 그리기 (API 실패 시 대체용)
-        function drawStraightRoute(start, end) {
-            // 직선 경로 그리기
-            routePolyline = new naver.maps.Polyline({
-                map: naverMap,
-                path: [start, end],
-                strokeColor: '#4285F4',
-                strokeWeight: 5,
-                strokeOpacity: 0.8,
-                strokeLineCap: 'round',
-                strokeLineJoin: 'round'
-            });
-            
-            // 지도 뷰 영역 조정
-            const bounds = new naver.maps.LatLngBounds([start, end]);
-            naverMap.fitBounds(bounds, {
-                top: 100,
-                right: 100,
-                bottom: 100,
-                left: 100
-            });
-            
-            // 경로 정보 표시
-            // 직선 거리 계산 (미터 단위)
-            const distance = Math.round(start.distanceTo(end));
-            
-            // 거리 표시 (1km 이상이면 km 단위로)
-            let distanceText;
-            if (distance >= 1000) {
-                distanceText = (distance / 1000).toFixed(1) + 'km';
-            } else {
-                distanceText = distance + 'm';
-            }
-            
-            // 시간 계산 (걷는 속도 4km/h 가정)
-            const timeMinutes = Math.round(distance / (4000 / 60));
-            let timeText;
-            if (timeMinutes >= 60) {
-                const hours = Math.floor(timeMinutes / 60);
-                const mins = timeMinutes % 60;
-                timeText = `${hours}시간 ${mins}분`;
-            } else {
-                timeText = `${timeMinutes}분`;
-            }
-            
-            alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
+
+       // 직선 경로 그리기 (API 실패 시 대체용)
+    function drawStraightRoute(start, end) {
+        // 직선 경로 그리기
+        routePolyline = new naver.maps.Polyline({
+            map: naverMap,
+            path: [start, end],
+            strokeColor: '#4285F4',
+            strokeWeight: 5,
+            strokeOpacity: 0.8,
+            strokeLineCap: 'round',
+            strokeLineJoin: 'round'
+        });
+        
+        // 지도 뷰 영역 조정
+        const bounds = new naver.maps.LatLngBounds([start, end]);
+        naverMap.fitBounds(bounds, {
+            top: 100,
+            right: 100,
+            bottom: 100,
+            left: 100
+        });
+        
+        // 경로 정보 표시
+        // 직선 거리 계산 (미터 단위)
+        const distance = Math.round(start.distanceTo(end));
+        
+        // 거리 표시 (1km 이상이면 km 단위로)
+        let distanceText;
+        if (distance >= 1000) {
+            distanceText = (distance / 1000).toFixed(1) + 'km';
+        } else {
+            distanceText = distance + 'm';
         }
+        
+        // 시간 계산 (걷는 속도 4km/h 가정)
+        const timeMinutes = Math.round(distance / (4000 / 60));
+        let timeText;
+        if (timeMinutes >= 60) {
+            const hours = Math.floor(timeMinutes / 60);
+            const mins = timeMinutes % 60;
+            timeText = `${hours}시간 ${mins}분`;
+        } else {
+            timeText = `${timeMinutes}분`;
+        }
+        
+        alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
+    }
+
 
 
        // 지도 줌인
