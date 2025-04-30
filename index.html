@@ -2140,7 +2140,6 @@
             }
         }
         // 경로 표시 함수
-        // 네이버 지도 경로 표시 함수 - 개선된 버전
         function drawRoute(from, to) {
             if (!naverMap) return;
             
@@ -2153,102 +2152,6 @@
             const start = new naver.maps.LatLng(from.lat, from.lng);
             const end = new naver.maps.LatLng(to.lat, to.lng);
             
-            // 로딩 표시 추가
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'route-loading';
-            loadingDiv.style.position = 'absolute';
-            loadingDiv.style.top = '50%';
-            loadingDiv.style.left = '50%';
-            loadingDiv.style.transform = 'translate(-50%, -50%)';
-            loadingDiv.style.background = 'rgba(255, 255, 255, 0.8)';
-            loadingDiv.style.padding = '10px 20px';
-            loadingDiv.style.borderRadius = '5px';
-            loadingDiv.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-            loadingDiv.style.zIndex = '1000';
-            loadingDiv.innerHTML = '경로를 계산 중입니다...';
-            document.body.appendChild(loadingDiv);
-            
-            // 타임아웃 설정 - 10초 후에도 응답이 없으면 직선 경로로 대체
-            let timeoutId = setTimeout(() => {
-                console.error('경로 계산 시간 초과');
-                document.body.removeChild(loadingDiv);
-                alert('경로 계산 시간이 초과되었습니다. 직선 경로로 표시합니다.');
-                drawStraightRoute(start, end);
-            }, 10000);
-            
-            try {
-                // 네이버 길찾기 API 대신 직접 보행자 경로 생성 (캠퍼스 내 경로)
-                // 중간 경유점을 추가하여 실제 도로를 따라가는 효과 구현
-                const waypoints = generateWaypoints(start, end);
-                
-                // 경로 라인 그리기
-                routePolyline = new naver.maps.Polyline({
-                    map: naverMap,
-                    path: waypoints,
-                    strokeColor: '#4285F4',
-                    strokeWeight: 5,
-                    strokeOpacity: 0.8,
-                    strokeLineCap: 'round',
-                    strokeLineJoin: 'round'
-                });
-                
-                // 타임아웃 해제
-                clearTimeout(timeoutId);
-                
-                // 로딩 제거
-                document.body.removeChild(loadingDiv);
-                
-                // 경로가 보이도록 지도 뷰 조정
-                const bounds = new naver.maps.LatLngBounds();
-                waypoints.forEach(point => bounds.extend(point));
-                naverMap.fitBounds(bounds, {
-                    top: 100,
-                    right: 100,
-                    bottom: 100,
-                    left: 100
-                });
-                
-                // 경로 거리 계산
-                let totalDistance = 0;
-                for (let i = 0; i < waypoints.length - 1; i++) {
-                    totalDistance += waypoints[i].distanceTo(waypoints[i+1]);
-                }
-                totalDistance = Math.round(totalDistance);
-                
-                // 거리 표시
-                let distanceText;
-                if (totalDistance >= 1000) {
-                    distanceText = (totalDistance / 1000).toFixed(1) + 'km';
-                } else {
-                    distanceText = totalDistance + 'm';
-                }
-                
-                // 소요시간 계산 (걷는 속도 4km/h 가정)
-                const timeMinutes = Math.round(totalDistance / (4000 / 60));
-                let timeText;
-                if (timeMinutes >= 60) {
-                    const hours = Math.floor(timeMinutes / 60);
-                    const mins = timeMinutes % 60;
-                    timeText = `${hours}시간 ${mins}분`;
-                } else {
-                    timeText = `${timeMinutes}분`;
-                }
-                
-                alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
-                
-            } catch (error) {
-                console.error('경로 계산 오류:', error);
-                clearTimeout(timeoutId);
-                document.body.removeChild(loadingDiv);
-                alert('경로 계산 중 오류가 발생했습니다. 직선 경로로 표시합니다.');
-                drawStraightRoute(start, end);
-            }
-        }
-
-
-
-        // 직선 경로 그리기 (API 실패 시 대체용)
-        function drawStraightRoute(start, end) {
             // 직선 경로 그리기
             routePolyline = new naver.maps.Polyline({
                 map: naverMap,
@@ -2270,89 +2173,33 @@
             });
             
             // 경로 정보 표시
-            // 직선 거리 계산 (미터 단위)
-            const distance = Math.round(start.distanceTo(end));
-            
-            // 거리 표시 (1km 이상이면 km 단위로)
-            let distanceText;
-            if (distance >= 1000) {
-                distanceText = (distance / 1000).toFixed(1) + 'km';
-            } else {
-                distanceText = distance + 'm';
-            }
-            
-            // 시간 계산 (걷는 속도 4km/h 가정)
-            const timeMinutes = Math.round(distance / (4000 / 60));
-            let timeText;
-            if (timeMinutes >= 60) {
-                const hours = Math.floor(timeMinutes / 60);
-                const mins = timeMinutes % 60;
-                timeText = `${hours}시간 ${mins}분`;
-            } else {
-                timeText = `${timeMinutes}분`;
-            }
-            
-            alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
-        }
-
-
-        // 시작점과 끝점 사이에 중간 경유점 생성하여 직선이 아닌 도로 경로처럼 보이게 함
-        function generateWaypoints(start, end) {
-            // 두 점 사이의 거리 계산
-            const distance = start.distanceTo(end);
-            
-            // 거리가 짧으면 직선 경로 사용
-            if (distance < 100) {
-                return [start, end];
-            }
-            
-            // 캠퍼스 중심 좌표 (연성대학교 중심 좌표로 설정)
-            const campusCenter = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-            
-            // 시작점에서 끝점으로 가는 방향 벡터 계산
-            const dx = end.x() - start.x();
-            const dy = end.y() - start.y();
-            
-            // 경유점 수 결정 (거리에 비례)
-            const numPoints = Math.min(Math.max(2, Math.floor(distance / 100)), 10);
-            
-            // 경유점 생성
-            const waypoints = [start];
-            
-            for (let i = 1; i < numPoints; i++) {
-                // 기본 경유점 (직선 경로 상의 점)
-                const ratio = i / numPoints;
-                const baseX = start.x() + dx * ratio;
-                const baseY = start.y() + dy * ratio;
+            setTimeout(() => {
+                // 직선 거리 계산 (미터 단위)
+                const distance = Math.round(start.distanceTo(end));
                 
-                // 도로를 따라가는 느낌을 주기 위해 약간의 랜덤 오프셋 추가
-                // 캠퍼스 중심 방향으로 약간 휘어지도록 함
-                const offset = Math.sin(ratio * Math.PI) * 0.0001;
-                const dirToCampus = {
-                    x: campusCenter.x() - baseX,
-                    y: campusCenter.y() - baseY
-                };
-                
-                // 방향 정규화
-                const length = Math.sqrt(dirToCampus.x * dirToCampus.x + dirToCampus.y * dirToCampus.y);
-                if (length > 0) {
-                    dirToCampus.x /= length;
-                    dirToCampus.y /= length;
+                // 거리 표시 (1km 이상이면 km 단위로)
+                let distanceText;
+                if (distance >= 1000) {
+                    distanceText = (distance / 1000).toFixed(1) + 'km';
+                } else {
+                    distanceText = distance + 'm';
                 }
                 
-                // 경유점 좌표 계산
-                const waypointX = baseX + dirToCampus.x * offset;
-                const waypointY = baseY + dirToCampus.y * offset;
+                // 시간 계산 (걷는 속도 4km/h 가정)
+                const timeMinutes = Math.round(distance / (4000 / 60));
+                let timeText;
+                if (timeMinutes >= 60) {
+                    const hours = Math.floor(timeMinutes / 60);
+                    const mins = timeMinutes % 60;
+                    timeText = `${hours}시간 ${mins}분`;
+                } else {
+                    timeText = `${timeMinutes}분`;
+                }
                 
-                waypoints.push(new naver.maps.LatLng(waypointY, waypointX));
-            }
-            
-            waypoints.push(end);
-            return waypoints;
+                alert(`목적지까지 약 ${distanceText}, 도보 약 ${timeText} 소요 예상`);
+            }, 1000);
         }
-
-
-
+            
        // 지도 줌인
        function zoomIn() {
            if (naverMap) {
