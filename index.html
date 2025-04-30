@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연성대학교 캠퍼스 가이드</title>
     <!-- 네이버 지도 API 스크립트 추가 - Direction 서브모듈 포함 -->
-    // <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=geocoder,drawing,visualization,panorama,direction"></script>
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction"></script>
     
     <style>
         * {
@@ -1696,16 +1696,11 @@
        let currentPage = 1;
        const buildingsPerPage = 5;
        
-       // 시설 탭 초기화 시 Direction API 로드 확인
-        function initFacilityTab() {
-            loadBuildingsByPage(currentPage);
-            updatePaginationControls();
-            
-            // Direction API 로드 확인
-            if (!isDirectionAPILoaded()) {
-                loadDirectionAPI();
-            }
-        }
+       // 시설 탭 초기화 함수 (페이지네이션 포함)
+       function initFacilityTab() {
+           loadBuildingsByPage(currentPage);
+           updatePaginationControls();
+       }
        
        // 해당 페이지의 건물 목록 로드 함수
        function loadBuildingsByPage(page) {
@@ -2118,269 +2113,200 @@
             }
         }
 
-        // Direction API 동적 로드 함수
-        function loadDirectionAPI() {
-            if (isDirectionAPILoaded()) {
-                console.log('Direction API가 이미 로드되어 있습니다.');
-                return; // 이미 로드됨
-            }
-            
-            console.log('Direction API 동적 로드 시도...');
-            
-            // submodules에 direction 추가한 스크립트 로드
-            const script = document.createElement('script');
-            script.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=geocoder,drawing,visualization,panorama,direction';
-            script.async = true;
-            
-            script.onload = function() {
-                console.log('Direction API 로드 완료');
-                
-                // API 로드 후 지도 새로고침 
-                if (naverMap) {
-                    setTimeout(() => {
-                        window.dispatchEvent(new Event('resize'));
-                        naverMap.refresh();
-                    }, 500);
-                }
-            };
-            
-            script.onerror = function() {
-                console.error('Direction API 로드 실패');
-            };
-            
-            // 기존 스크립트 제거
-            const existingScript = document.querySelector('script[src*="openapi.map.naver.com"]');
-            if (existingScript) {
-                existingScript.parentNode.removeChild(existingScript);
-            }
-            
-            // 새 스크립트 추가
-            document.head.appendChild(script);
-        }
-            
+       // Direction API 스크립트 동적 로드 함수
+       function loadDirectionAPI() {
+           if (window.naver && window.naver.maps && window.naver.maps.Direction) {
+               console.log('Direction API가 이미 로드되어 있습니다.');
+               return; // 이미 로드되어 있으면 중복 로드 방지
+           }
+           
+           // Direction API 스크립트 엘리먼트 생성
+           const script = document.createElement('script');
+           script.type = 'text/javascript';
+           script.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction';
+           script.async = true;
+           script.defer = true;
+           
+           script.onload = function() {
+               console.log('Direction API 로드 완료');
+           };
+           
+           script.onerror = function() {
+               console.error('Direction API 로드 실패');
+               alert('길 안내 기능을 로드하는 데 문제가 발생했습니다. 직선 경로로 안내합니다.');
+           };
+           
+           // 헤드에 스크립트 추가
+           document.head.appendChild(script);
+       }
 
-        // Direction API 로드 여부 확인 함수
-        function isDirectionAPILoaded() {
-            return window.naver && window.naver.maps && window.naver.maps.Direction;
-        }
+       // Direction API 로드 여부를 확인하는 함수
+       function isDirectionAPILoaded() {
+           return window.naver && window.naver.maps && window.naver.maps.Direction;
+       }
             
-        // 경로 표시 함수 - 네이버 Direction 5 API 활용
-        function drawRoute(from, to) {
-            if (!naverMap) return;
-            
-            // 로딩 표시 보이기
-            const routeLoading = document.getElementById('routeLoading');
-            if (routeLoading) {
-                routeLoading.style.display = 'block';
-            }
-            
-            // 기존 경로 제거
-            if (routePolyline) {
-                routePolyline.setMap(null);
-                routePolyline = null;
-            }
-            
-            // 출발지와 도착지 좌표
-            const start = new naver.maps.LatLng(from.lat, from.lng);
-            const end = new naver.maps.LatLng(to.lat, to.lng);
-            
-            // 목적지 정보 가져오기
-            const building = buildingData.find(b => 
-                Math.abs(b.position.lat - to.lat) < 0.0001 && 
-                Math.abs(b.position.lng - to.lng) < 0.0001);
-            const buildingName = building ? building.name : '목적지';
-            
-            // 네이버 Direction API 사용 시도
-            try {
-                // 1. 웨이포인트 방식으로 경로 요청 (CORS 이슈로 인해 프록시 서버 활용 필요)
-                // 실제로는 CORS 문제로 작동하지 않을 수 있으므로, 대체 방법도 준비합니다
-                
-                // 2. 네이버 Direction 객체를 사용한 경로 계산 시도
-                if (window.naver && window.naver.maps && window.naver.maps.Direction) {
-                    console.log("네이버 Direction API 사용 시도");
-                    
-                    const direction = new naver.maps.Direction();
-                    direction.setMap(naverMap);
-                    
-                    // Direction 옵션 설정
-                    const directionOptions = {
-                        start: start,
-                        goal: end,
-                        waypoints: [],
-                        option: {
-                            travel_mode: naver.maps.Direction.TravelMode.WALKING, // 도보 모드
-                            car_type: naver.maps.Direction.CarType.NORMAL,        // 일반 차량
-                            optimize: true                                         // 경로 최적화
-                        }
-                    };
-                    
-                    // 경로 계산 실행
-                    direction.setOptions(directionOptions);
-                    
-                    // 완료 이벤트 리스너 등록
-                    naver.maps.Event.addListener(direction, 'route', function(result) {
-                        // 로딩 표시 숨기기
-                        if (routeLoading) {
-                            routeLoading.style.display = 'none';
-                        }
-                        
-                        console.log("경로 계산 결과:", result);
-                        
-                        if (result.routes && result.routes.length > 0) {
-                            // 첫 번째 경로 사용
-                            const route = result.routes[0];
-                            
-                            // 경로 정보 표시
-                            const distance = route.distance;
-                            const duration = route.duration;
-                            
-                            // 경로 정보 표시
-                            updateRouteInfo(buildingName, distance, duration);
-                        } else {
-                            console.error("계산된 경로가 없습니다. 직선 경로로 대체합니다.");
-                            createStraightRoute(start, end, buildingName);
-                        }
-                    });
-                    
-                    // 오류 이벤트 리스너 등록
-                    naver.maps.Event.addListener(direction, 'error', function(error) {
-                        console.error("Direction API 오류:", error);
-                        
-                        // 로딩 표시 숨기기
-                        if (routeLoading) {
-                            routeLoading.style.display = 'none';
-                        }
-                        
-                        // 오류 발생 시 직선 경로로 대체
-                        createStraightRoute(start, end, buildingName);
-                    });
-                    
-                    // 경로 생성
-                    direction.route();
-                } else {
-                    console.error("Direction API를 사용할 수 없습니다. 직선 경로로 대체합니다.");
-                    createStraightRoute(start, end, buildingName);
-                }
-            } catch (error) {
-                console.error("경로 계산 중 오류 발생:", error);
-                
-                // 로딩 표시 숨기기
-                if (routeLoading) {
-                    routeLoading.style.display = 'none';
-                }
-                
-                // 오류 발생 시 직선 경로로 대체
-                createStraightRoute(start, end, buildingName);
-            }
-        }
-
-        // 직선 경로 생성 함수
-        function createStraightRoute(start, end, buildingName) {
-            // 직선 경로 생성
-            routePolyline = new naver.maps.Polyline({
-                map: naverMap,
-                path: [start, end],
-                strokeColor: '#FF4500',
-                strokeWeight: 5,
-                strokeOpacity: 0.8,
-                strokeLineCap: 'round',
-                strokeDasharray: [8, 4] // 점선으로 표시
-            });
-            
-            // 지도 뷰 영역 조정 (출발지와 도착지가 모두 보이도록)
-            const bounds = new naver.maps.LatLngBounds([start, end]);
-            naverMap.fitBounds(bounds, {
-                top: 100,
-                right: 100,
-                bottom: 100,
-                left: 100
-            });
-            
-            // 직선 거리 계산 (미터 단위)
-            const distance = Math.round(start.distanceTo(end));
-            
-            // 걷는 속도를 4km/h로 가정하고 시간 계산 (초 단위)
-            const duration = Math.round(distance / (4000 / 3600));
-            
-            // 경로 정보 업데이트
-            updateRouteInfo(buildingName, distance, duration, true);
-        }
-
-
-        // 경로 정보 업데이트 함수
-        function updateRouteInfo(buildingName, distance, duration, isStraight = false) {
-            const routeInfoBox = document.getElementById('routeInfoBox');
-            const routeDestination = document.getElementById('routeDestination');
-            const routeDistance = document.getElementById('routeDistance');
-            const routeDuration = document.getElementById('routeDuration');
-            
-            if (routeInfoBox && routeDestination && routeDistance && routeDuration) {
-                // 목적지 정보 설정
-                routeDestination.textContent = buildingName;
-                
-                // 거리 정보 설정 (미터 또는 킬로미터)
-                let distanceText;
-                if (distance >= 1000) {
-                    distanceText = (distance / 1000).toFixed(1) + 'km';
-                } else {
-                    distanceText = distance + 'm';
-                }
-                routeDistance.textContent = distanceText;
-                
-                // 시간 정보 설정 (분 또는 시간+분)
-                let durationText;
-                if (isStraight) {
-                    // 직선 경로일 경우 (초 -> 분 변환)
-                    const minutes = Math.round(duration / 60);
-                    if (minutes >= 60) {
-                        const hours = Math.floor(minutes / 60);
-                        const mins = minutes % 60;
-                        durationText = `${hours}시간 ${mins}분 (직선 거리 기준)`;
-                    } else {
-                        durationText = `${minutes}분 (직선 거리 기준)`;
-                    }
-                } else {
-                    // 도로 경로일 경우 (초 -> 분 변환)
-                    const minutes = Math.round(duration / 60);
-                    if (minutes >= 60) {
-                        const hours = Math.floor(minutes / 60);
-                        const mins = minutes % 60;
-                        durationText = `${hours}시간 ${mins}분`;
-                    } else {
-                        durationText = `${minutes}분`;
-                    }
-                }
-                routeDuration.textContent = durationText;
-                
-                // 경로 정보 표시
-                routeInfoBox.style.display = 'block';
-            } else {
-                // UI 요소가 없는 경우 알림으로 대체
-                let message = `${buildingName}까지 `;
-                
-                if (distance >= 1000) {
-                    message += `거리: ${(distance / 1000).toFixed(1)}km\n`;
-                } else {
-                    message += `거리: ${distance}m\n`;
-                }
-                
-                // 시간 정보 (초 -> 분 변환)
-                const minutes = Math.round(duration / 60);
-                if (minutes >= 60) {
-                    const hours = Math.floor(minutes / 60);
-                    const mins = minutes % 60;
-                    message += `예상 소요시간: ${hours}시간 ${mins}분`;
-                } else {
-                    message += `예상 소요시간: ${minutes}분`;
-                }
-                
-                if (isStraight) {
-                    message += ' (직선 거리 기준)\n실제 경로와 다를 수 있습니다.';
-                }
-                
-                alert(message);
-            }
-        }
+       // 경로 표시 함수 - 네이버 Direction 5 API 활용
+       function drawRoute(from, to) {
+           if (!naverMap) return;
+           
+           // 로딩 표시 보이기
+           const routeLoading = document.getElementById('routeLoading');
+           if (routeLoading) {
+               routeLoading.style.display = 'block';
+           }
+           
+           // 기존 경로 제거
+           if (routePolyline) {
+               routePolyline.setMap(null);
+           }
+           
+           // 출발지와 도착지 좌표
+           const start = new naver.maps.LatLng(from.lat, from.lng);
+           const end = new naver.maps.LatLng(to.lat, to.lng);
+           
+           // Direction API가 로드되었는지 확인
+           if (!isDirectionAPILoaded()) {
+               console.log('Direction API가 로드되지 않았습니다. 직선 경로로 대체합니다.');
+               // 로딩 표시 숨기기
+               if (routeLoading) {
+                   routeLoading.style.display = 'none';
+               }
+               drawStraightRoute(start, end);
+               return;
+           }
+           
+           try {
+               // Direction 객체 생성
+               const direction = new naver.maps.Direction();
+               
+               // Direction 옵션 설정
+               direction.setOptions({
+                   map: naverMap,
+                   // 출발지와 도착지 설정
+                   start: start,
+                   goal: end,
+                   // 경로 유형 (도보 경로)
+                   option: {
+                       goal_select: 0,
+                       car_type: 0,
+                       travel_mode: 3, // 3 = 도보
+                       avoid: [0],
+                       search_option: 0
+                   }
+               });
+               
+               // Direction 실행 시 이벤트 리스너 등록
+               naver.maps.Event.addListener(direction, 'complete', function(result) {
+                   // 로딩 표시 숨기기
+                   if (routeLoading) {
+                       routeLoading.style.display = 'none';
+                   }
+                   
+                   if (result.route && result.route.paths && result.route.paths.length > 0) {
+                       // 첫 번째 경로 사용
+                       const path = result.route.paths[0];
+                       
+                       // 경로 시각화
+                       if (path.path && path.path.length > 0) {
+                           // 기존 경로 삭제
+                           if (routePolyline) {
+                               routePolyline.setMap(null);
+                           }
+                           
+                           // 경로 좌표 배열 생성
+                           const pathCoords = path.path.map(p => new naver.maps.LatLng(p[1], p[0]));
+                           
+                           // 경로 라인 생성
+                           routePolyline = new naver.maps.Polyline({
+                               map: naverMap,
+                               path: pathCoords,
+                               strokeColor: '#4285F4',
+                               strokeWeight: 5,
+                               strokeOpacity: 0.8,
+                               strokeLineCap: 'round',
+                               strokeLineJoin: 'round'
+                           });
+                           
+                           // 지도 뷰 영역 조정
+                           const bounds = new naver.maps.LatLngBounds(pathCoords);
+                           naverMap.fitBounds(bounds, {
+                               top: 100,
+                               right: 100,
+                               bottom: 100,
+                               left: 100
+                           });
+                           
+                           // 목적지 정보 가져오기
+                           const building = buildingData.find(b => 
+                               b.position.lat === to.lat && b.position.lng === to.lng);
+                           const buildingName = building ? building.name : '목적지';
+                           
+                           // 경로 정보 업데이트
+                           const routeInfoBox = document.getElementById('routeInfoBox');
+                           const routeDestination = document.getElementById('routeDestination');
+                           const routeDistance = document.getElementById('routeDistance');
+                           const routeDuration = document.getElementById('routeDuration');
+                           
+                           if (routeInfoBox && routeDestination && routeDistance && routeDuration) {
+                               // 목적지 정보 설정
+                               routeDestination.textContent = buildingName;
+                               
+                               // 거리 정보 설정
+                               const distance = path.distance;
+                               if (distance >= 1000) {
+                                   routeDistance.textContent = (distance / 1000).toFixed(1) + 'km';
+                               } else {
+                                   routeDistance.textContent = distance + 'm';
+                               }
+                               
+                               // 시간 정보 설정
+                               const duration = path.duration;
+                               if (duration >= 3600) {
+                                   const hours = Math.floor(duration / 3600);
+                                   const mins = Math.floor((duration % 3600) / 60);
+                                   routeDuration.textContent = `${hours}시간 ${mins}분`;
+                               } else {
+                                   const mins = Math.floor(duration / 60);
+                                   routeDuration.textContent = `${mins}분`;
+                               }
+                               
+                               // 경로 정보 표시
+                               routeInfoBox.style.display = 'block';
+                           }
+                       } else {
+                           console.error('경로의 상세 좌표를 찾을 수 없습니다.');
+                           drawStraightRoute(start, end);
+                       }
+                   } else {
+                       console.error('경로 결과를 찾을 수 없습니다.');
+                       drawStraightRoute(start, end);
+                   }
+               });
+               
+               // Direction 오류 발생 시 이벤트 리스너 등록
+               naver.maps.Event.addListener(direction, 'error', function(error) {
+                   console.error("Direction API 오류:", error);
+                   
+                   // 로딩 표시 숨기기
+                   if (routeLoading) {
+                       routeLoading.style.display = 'none';
+                   }
+                   
+                   alert('경로 검색 중 오류가 발생했습니다. 직선 경로로 안내합니다.');
+                   drawStraightRoute(start, end);
+               });
+           } catch (error) {
+               console.error('Direction API 사용 중 오류 발생:', error);
+               
+               // 로딩 표시 숨기기
+               if (routeLoading) {
+                   routeLoading.style.display = 'none';
+               }
+               
+               alert('길찾기 기능 사용 중 오류가 발생했습니다. 직선 경로로 안내합니다.');
+               drawStraightRoute(start, end);
+           }
+       }
 
        // 직선 경로 표시 함수 (대체 방법)
        function drawStraightRoute(start, end) {
@@ -2472,18 +2398,17 @@
 
        // 경로 정보 박스 닫기
        function closeRouteInfo() {
-            const routeInfoBox = document.getElementById('routeInfoBox');
-            if (routeInfoBox) {
-                routeInfoBox.style.display = 'none';
-            }
-            
-            // 경로 제거
-            if (routePolyline) {
-                routePolyline.setMap(null);
-                routePolyline = null;
-            }
-        }
-
+           const routeInfoBox = document.getElementById('routeInfoBox');
+           if (routeInfoBox) {
+               routeInfoBox.style.display = 'none';
+           }
+           
+           // 경로 제거
+           if (routePolyline) {
+               routePolyline.setMap(null);
+               routePolyline = null;
+           }
+       }
             
        // 길찾기 함수 - GPS 위치 정보 활용
        function navigateToBuilding(buildingId, event) {
