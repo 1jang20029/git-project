@@ -1904,10 +1904,23 @@
             paginationContainer.appendChild(nextButton);
         }
         
-        // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
+
+
         document.addEventListener('DOMContentLoaded', function() {
-            // 기존 코드
+            setTimeout(updateAllProfileImages, 100);
             
+            // localStorage 변경 감지를 위한 이벤트 리스너
+            window.addEventListener('storage', function(event) {
+                // 프로필 관련 변경사항 감지
+                if (event.key === 'profileUpdated' || 
+                    event.key === 'profileImageUpdated' || 
+                    event.key.includes('_profileImage') || 
+                    event.key.includes('_customProfileImage')) {
+                    updateAllProfileImages();
+                }
+            });
+
+
             // Direction API 미리 로드해두기
             setTimeout(() => {
                 if (typeof naver !== 'undefined' && naver.maps) {
@@ -2834,8 +2847,6 @@
             // 편의시설 데이터에서도 검색
             const facility = facilityData.find(f => f.id === buildingId);
             if (facility) {
-                alert(`${facility.name}으로 길찾기를 시작합니다.`);
-                
                 // 지도를 표시하고 해당 시설로 이동
                 switchTab('facility');
                 
@@ -2850,8 +2861,21 @@
                         lng: facility.position.lng
                     };
                     
-                    // 이 부분에서 길찾기 실행 (길찾기 버튼 클릭 시에만)
-                    calculateAndDrawRoute(userLocation, destination);
+                    // "경로를 계산하는 중..." 메시지 표시
+                    const routeLoading = document.getElementById('routeLoading');
+                    if (routeLoading) {
+                        routeLoading.style.display = 'flex';
+                    }
+                    
+                    // 지연 시간 후 경로 계산 및 표시 (실제 도로를 따라가도록 수정됨)
+                    setTimeout(() => {
+                        // 사용자 위치와 목적지 좌표를 naver.maps.LatLng 형식으로 변환
+                        const start = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
+                        const end = new naver.maps.LatLng(destination.lat, destination.lng);
+                        
+                        // 경로 계산 및 표시 (도로를 따라가는 경로)
+                        calculateAndDrawRoute(start, end);
+                    }, 1500); // 1.5초 후 경로 계산 실행
                 } else {
                     // 위치 정보가 없으면 관련 건물로만 이동
                     if (facility.relatedBuilding) {
@@ -2868,17 +2892,30 @@
                                     infoWindows.forEach(window => window.close());
                                     infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
                                 }
+                                
+                                // 로딩 메시지 숨기기 (위치 정보가 없는 경우)
+                                const routeLoading = document.getElementById('routeLoading');
+                                if (routeLoading) {
+                                    routeLoading.style.display = 'none';
+                                }
                             }, 300);
                         }
                     } else if (naverMap) {
-                        // 시설 자체의 위치를 사용
+                        // 시설 자체의 위치로 이동
                         setTimeout(() => {
                             const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
                             naverMap.setCenter(position);
                             naverMap.setZoom(18);
+                            
+                            // 로딩 메시지 숨기기 (위치 정보가 없는 경우)
+                            const routeLoading = document.getElementById('routeLoading');
+                            if (routeLoading) {
+                                routeLoading.style.display = 'none';
+                            }
                         }, 300);
                     }
                 }
+                return;
             } else {
                 alert('해당 건물 또는 시설 정보를 찾을 수 없습니다.');
             }
@@ -2886,13 +2923,21 @@
         }
         
         // 건물이 있는 경우 처리
-        alert(`${building.name}으로 길찾기를 시작합니다.`);
-        
         // 지도를 표시하고 해당 건물로 이동
         switchTab('facility');
         
         // 검색 내용 초기화하고 원래 컨텐츠 표시
         clearSearch();
+        
+        // 로딩 메시지 표시 - 추가된 부분
+        const routeLoading = document.getElementById('routeLoading');
+        if (routeLoading) {
+            routeLoading.style.display = 'flex';
+            const loadingText = routeLoading.querySelector('.route-loading-text');
+            if (loadingText) {
+                loadingText.textContent = `${building.name}까지 경로를 계산하는 중...`;
+            }
+        }
         
         // 사용자 위치 확인 및 경로 표시
         if (getUserLocation()) {
@@ -2902,8 +2947,15 @@
                 lng: building.position.lng
             };
             
-            // 길찾기 버튼 클릭 시에만 경로 계산 및 표시
-            calculateAndDrawRoute(userLocation, destination);
+            // 지연 시간 후 경로 계산 및 표시 (실제 도로를 따라가도록 수정됨)
+            setTimeout(() => {
+                // 사용자 위치와 목적지 좌표를 naver.maps.LatLng 형식으로 변환
+                const start = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
+                const end = new naver.maps.LatLng(destination.lat, destination.lng);
+                
+                // 경로 계산 및 표시 (도로를 따라가는 경로)
+                calculateAndDrawRoute(start, end);
+            }, 1500); // 1.5초 후 경로 계산 실행
         } else {
             // 위치 정보가 없으면 건물 위치로만 이동
             if (naverMap) {
@@ -2922,13 +2974,22 @@
                     // 지도 갱신
                     window.dispatchEvent(new Event('resize'));
                     naverMap.refresh();
+                    
+                    // 로딩 메시지 숨기기 (위치 정보가 없는 경우)
+                    if (routeLoading) {
+                        routeLoading.style.display = 'none';
+                    }
                 }, 300);
             } else {
                 alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                
+                // 로딩 메시지 숨기기
+                if (routeLoading) {
+                    routeLoading.style.display = 'none';
+                }
             }
         }
     }
-
 
         
     
