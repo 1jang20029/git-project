@@ -1920,26 +1920,19 @@
             paginationContainer.appendChild(nextButton);
         }
         
-        // 페이지 로드 시 초기화 이벤트에 로딩 메시지 숨기기 추가
+        // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
         document.addEventListener('DOMContentLoaded', function() {
-            // 로딩 메시지 숨기기
-            const routeLoading = document.getElementById('routeLoading');
-            if (routeLoading) {
-                routeLoading.style.display = 'none';
-            }
-            
-            // 경로 정보 박스 숨기기
-            const routeInfoBox = document.getElementById('routeInfoBox');
-            if (routeInfoBox) {
-                routeInfoBox.style.display = 'none';
-            }
-            
-            // 기존 초기화 코드
             setTimeout(updateAllProfileImages, 100);
             
             // localStorage 변경 감지를 위한 이벤트 리스너
             window.addEventListener('storage', function(event) {
-                // 기존 코드
+                // 프로필 관련 변경사항 감지
+                if (event.key === 'profileUpdated' || 
+                    event.key === 'profileImageUpdated' || 
+                    event.key.includes('_profileImage') || 
+                    event.key.includes('_customProfileImage')) {
+                    updateAllProfileImages();
+                }
             });
             
             // 카테고리 필터 기능
@@ -1960,10 +1953,15 @@
             // 검색 기능 초기화
             initSearchFunctionality();
             
-            // 추가 이벤트 리스너
+            // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+            window.addEventListener('pageshow', function(event) {
+                // bfcache에서 페이지가 복원된 경우에도 실행
+                if (event.persisted) {
+                    checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+                    updateAllProfileImages(); // 프로필 이미지도 다시 확인
+                }
+            });
         });
-
-        
         
         // 네이버 지도 초기화 함수 수정
         function initNaverMap() {
@@ -2834,21 +2832,10 @@
             
             // 경로 정보 숨기기 및 경로 제거
             closeRouteInfo();
-            
-            // 로딩 메시지 숨기기
-            const routeLoading = document.getElementById('routeLoading');
-            if (routeLoading) {
-                routeLoading.style.display = 'none';
-            }
         }
     }
-
-
-
     
-    
-    
-        // 사용자 위치 추적 시작
+    // 사용자 위치 추적 시작
     function trackUserLocation() {
         if (isTrackingUser) {
             // 이미 추적 중이면 추적 중지
@@ -3412,7 +3399,6 @@
         }
     }
         
-    
     // 메인 홈으로 이동
     function goToHome() {
         switchTab('home');
