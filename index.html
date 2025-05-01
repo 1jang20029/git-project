@@ -2810,9 +2810,7 @@ function calculateAndDrawRoute(start, end) {
             // 편의시설 데이터에서도 검색
             const facility = facilityData.find(f => f.id === buildingId);
             if (facility) {
-                alert(`${facility.name}으로 길찾기를 시작합니다.`);
-                
-                // 지도를 표시하고 해당 시설로 이동
+                // alert 제거하고 지도 탭으로 전환
                 switchTab('facility');
                 
                 // 검색 내용 초기화하고 원래 컨텐츠 표시
@@ -2826,8 +2824,16 @@ function calculateAndDrawRoute(start, end) {
                         lng: facility.position.lng
                     };
                     
-                    // 이 부분에서 길찾기 실행 (길찾기 버튼 클릭 시에만)
-                    calculateAndDrawRoute(userLocation, destination);
+                    // "경로를 계산하는 중..." 메시지 표시
+                    const routeLoading = document.getElementById('routeLoading');
+                    if (routeLoading) {
+                        routeLoading.style.display = 'flex';
+                    }
+                    
+                    // 길찾기 버튼 클릭 시 지연 시간 후 경로 계산 및 표시
+                    setTimeout(() => {
+                        calculateAndDrawRoute(userLocation, destination);
+                    }, 2500); // 2.5초 후 경로 계산 실행
                 } else {
                     // 위치 정보가 없으면 관련 건물로만 이동
                     if (facility.relatedBuilding) {
@@ -2861,9 +2867,7 @@ function calculateAndDrawRoute(start, end) {
             return;
         }
         
-        // 건물이 있는 경우 처리
-        alert(`${building.name}으로 길찾기를 시작합니다.`);
-        
+        // 건물이 있는 경우 처리 - alert 삭제
         // 지도를 표시하고 해당 건물로 이동
         switchTab('facility');
         
@@ -2878,8 +2882,16 @@ function calculateAndDrawRoute(start, end) {
                 lng: building.position.lng
             };
             
-            // 길찾기 버튼 클릭 시에만 경로 계산 및 표시
-            calculateAndDrawRoute(userLocation, destination);
+            // "경로를 계산하는 중..." 메시지 표시
+            const routeLoading = document.getElementById('routeLoading');
+            if (routeLoading) {
+                routeLoading.style.display = 'flex';
+            }
+            
+            // 길찾기 버튼 클릭 시 지연 시간 후 경로 계산 및 표시
+            setTimeout(() => {
+                calculateAndDrawRoute(userLocation, destination);
+            }, 2500); // 2.5초 후 경로 계산 실행
         } else {
             // 위치 정보가 없으면 건물 위치로만 이동
             if (naverMap) {
@@ -2904,7 +2916,6 @@ function calculateAndDrawRoute(start, end) {
             }
         }
     }
-
 
         
     
