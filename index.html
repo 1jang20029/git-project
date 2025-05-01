@@ -3089,26 +3089,35 @@ function getBuildingName(position) {
         const start = new naver.maps.LatLng(from.lat, from.lng);
         const end = new naver.maps.LatLng(to.lat, to.lng);
         
-        // 중간 지점 생성 (도로를 따라가는 효과 시뮬레이션)
-        const waypointsCount = 3; // 중간 지점 개수
-        const waypoints = [];
+        // 주요 도로 교차점 좌표 (캠퍼스 내 주요 도로 노드)
+        const roadNodes = [
+            { lat: 37.39662, lng: 126.90773 }, // 중앙 노드
+            { lat: 37.39632, lng: 126.90699 }, // 공학1관 근처 도로
+            { lat: 37.39669, lng: 126.90677 }, // 자연과학관 근처 도로
+            { lat: 37.39715, lng: 126.90762 }, // 식품과학관 근처 도로
+            { lat: 37.39680, lng: 126.90810 }, // 도의관 근처 도로
+            { lat: 37.39679, lng: 126.90737 }, // 공학2관 근처 도로
+            { lat: 37.39577, lng: 126.90812 }, // 문화1관 근처 도로
+            { lat: 37.39805, lng: 126.90967 }, // 연곡문화센터 근처 도로
+            { lat: 37.39731, lng: 126.91040 }, // 창조관 근처 도로
+            { lat: 37.39674, lng: 126.90932 }, // 운동장 근처 도로
+            { lat: 37.39668, lng: 126.90994 }, // 농구장 근처 도로
+            { lat: 37.39629, lng: 126.90994 }, // 학생복지센터 근처 도로
+            { lat: 37.39738, lng: 126.91002 }, // 창의교육센터 근처 도로
+            { lat: 37.39604, lng: 126.90759 }, // 문화2관 근처 도로
+            { lat: 37.39747, lng: 126.90938 }, // 대학본관 근처 도로
+            { lat: 37.39637, lng: 126.90660 }, // 학술정보관 근처 도로
+            
+            // 추가 도로 노드 (간선도로)
+            { lat: 37.39650, lng: 126.90750 }, // 중앙 도로 1
+            { lat: 37.39670, lng: 126.90850 }, // 중앙 도로 2
+            { lat: 37.39700, lng: 126.90900 }, // 중앙 도로 3
+            { lat: 37.39600, lng: 126.90880 }, // 외곽 도로 1
+            { lat: 37.39620, lng: 126.90920 }  // 외곽 도로 2
+        ];
         
-        for (let i = 1; i <= waypointsCount; i++) {
-            const ratio = i / (waypointsCount + 1);
-            
-            // 기본 중간 지점
-            const midLat = from.lat + (to.lat - from.lat) * ratio;
-            const midLng = from.lng + (to.lng - from.lng) * ratio;
-            
-            // 도로 효과를 위한 약간의 편차 추가 (최대 50m)
-            const latOffset = (Math.random() - 0.5) * 0.001;
-            const lngOffset = (Math.random() - 0.5) * 0.001;
-            
-            waypoints.push(new naver.maps.LatLng(midLat + latOffset, midLng + lngOffset));
-        }
-        
-        // 최종 경로 포인트 (출발지 + 중간지점들 + 도착지)
-        const routePoints = [start, ...waypoints, end];
+        // 출발지에서 목적지까지의 최적 경로 찾기
+        const routePoints = findOptimalRoute(start, end, roadNodes);
         
         // 경로선 그리기
         routePolyline = new naver.maps.Polyline({
@@ -3130,7 +3139,7 @@ function getBuildingName(position) {
             left: 40
         });
         
-        // 직선 거리 계산 (미터 단위)
+        // 경로 거리 계산
         let distance = 0;
         for (let i = 1; i < routePoints.length; i++) {
             distance += routePoints[i-1].distanceTo(routePoints[i]);
@@ -3177,8 +3186,51 @@ function getBuildingName(position) {
             routeInfoBox.style.display = 'block';
         }
     }
-                
-    
+
+    // 점과 선 사이의 거리 계산 함수
+    function calculateDistanceToLine(point, lineStart, lineEnd) {
+        const x = point.lat;
+        const y = point.lng;
+        const x1 = lineStart.y;
+        const y1 = lineStart.x;
+        const x2 = lineEnd.y;
+        const y2 = lineEnd.x;
+        
+        const A = x - x1;
+        const B = y - y1;
+        const C = x2 - x1;
+        const D = y2 - y1;
+        
+        const dot = A * C + B * D;
+        const len_sq = C * C + D * D;
+        
+        // 선분 위의 최근접점 매개변수
+        let param = -1;
+        if (len_sq !== 0) {
+            param = dot / len_sq;
+        }
+        
+        let xx, yy;
+        
+        // 선분 밖의 점은 양 끝점 중 가까운 쪽으로 설정
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        } else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        } else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
+        }
+        
+        const dx = x - xx;
+        const dy = y - yy;
+        
+        // 거리 계산 (여기서는 대략적인 값만 필요하므로 제곱근은 생략)
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+            
     // 지도 초기 뷰로 리셋
     function resetMapView() {
         if (naverMap) {
@@ -3192,6 +3244,74 @@ function getBuildingName(position) {
             closeRouteInfo();
         }
     }
+
+
+    // 최적 경로 찾기 함수
+    function findOptimalRoute(start, end, roadNodes) {
+        // 시작점과 끝점
+        const routePoints = [start];
+        
+        // 시작점과 끝점 사이에 있는 도로 노드 중 경로에 포함할 노드 선택
+        const direction = {
+            lat: end.y - start.y,
+            lng: end.x - start.x
+        };
+        
+        // 방향에 따른 도로 노드 선택 (진행 방향에 있는 노드 선택)
+        const potentialNodes = roadNodes
+            .map(node => ({
+                node: new naver.maps.LatLng(node.lat, node.lng),
+                distance: calculateDistanceToLine(node, start, end)
+            }))
+            .filter(item => {
+                // 시작점과 끝점 사이에 있는 노드만 필터링
+                const nodeLat = item.node.y;
+                const nodeLng = item.node.x;
+                
+                const isInLatRange = (direction.lat >= 0) 
+                    ? (nodeLat >= start.y && nodeLat <= end.y)
+                    : (nodeLat <= start.y && nodeLat >= end.y);
+                    
+                const isInLngRange = (direction.lng >= 0)
+                    ? (nodeLng >= start.x && nodeLng <= end.x)
+                    : (nodeLng <= start.x && nodeLng >= end.x);
+                    
+                // 경로 라인에서 일정 거리 이내에 있는 노드만 선택
+                return (isInLatRange || isInLngRange) && item.distance < 0.003; // 약 300m 이내
+            })
+            .sort((a, b) => {
+                // 시작점에서의 거리를 기준으로 정렬
+                return a.node.distanceTo(start) - b.node.distanceTo(start);
+            });
+        
+        // 도로 노드 수에 따라 다르게 처리
+        if (potentialNodes.length <= 1) {
+            // 노드가 없거나 하나뿐이면 직선 경로에 약간의 곡선 추가
+            const midLat = (start.y + end.y) / 2;
+            const midLng = (start.x + end.x) / 2;
+            
+            // 직선 경로에 수직인 방향으로 약간 이동
+            const perpDist = 0.0005; // 약 50m
+            const deltaLat = -(end.x - start.x) * perpDist;
+            const deltaLng = (end.y - start.y) * perpDist;
+            
+            routePoints.push(new naver.maps.LatLng(midLat + deltaLat, midLng + deltaLng));
+        } else {
+            // 경로에 추가할 노드 수 제한 (너무 많으면 경로가 이상해짐)
+            const maxNodes = Math.min(potentialNodes.length, 3);
+            
+            // 선택된 노드 경로에 추가
+            for (let i = 0; i < maxNodes; i++) {
+                routePoints.push(potentialNodes[i].node);
+            }
+        }
+        
+        // 목적지 추가
+        routePoints.push(end);
+        
+        return routePoints;
+    }
+
     
     // 사용자 위치 추적 시작
     function trackUserLocation() {
