@@ -2803,59 +2803,54 @@ function calculateAndDrawRoute(start, end) {
         const destination = buildingData.find(b => b.id === buildingId);
         if (!destination || !naverMap || !userLocation) return;
 
-        // 로딩 표시
-        document.getElementById('routeLoading').style.display = 'flex';
+        // 1. 경로 로딩 박스 표시
+        const loadingBox = document.getElementById('routeLoading');
+        loadingBox.style.display = 'flex';
 
-        // 기존 경로 제거
+        // 기존 경로 삭제
         if (routePolyline) {
             routePolyline.setMap(null);
             routePolyline = null;
         }
 
-        if (navDirectionInstance) {
-            navDirectionInstance = null;
-        }
+        // 네이버 Directions API 사용
+        const start = new naver.maps.LatLng(userLocation.lat, userLocation.lng);
+        const goal = new naver.maps.LatLng(destination.position.lat, destination.position.lng);
 
-        // Directions API 호출
-        navDirectionInstance = new naver.maps.DirectionsService();
+        const directions = new naver.maps.DirectionsService();
 
-        navDirectionInstance.route({
-            start: new naver.maps.LatLng(userLocation.lat, userLocation.lng),
-            goal: new naver.maps.LatLng(destination.position.lat, destination.position.lng),
+        directions.route({
+            start: start,
+            goal: goal,
             option: 0
         }, function(status, response) {
-            // 로딩 숨기기
-            document.getElementById('routeLoading').style.display = 'none';
+            // 2. 로딩 박스 숨기기
+            loadingBox.style.display = 'none';
 
             if (status !== naver.maps.DirectionsStatus.OK) {
-                alert('경로를 계산할 수 없습니다.');
+                alert('경로 계산 실패');
                 return;
             }
 
-            const route = response.route[0];
-            const path = [];
+            // 3. 경로 그리기
+            const path = response.route[0].traoptimal[0].path.map(p => new naver.maps.LatLng(p[1], p[0]));
 
-            route.traoptimal[0].path.forEach(point => {
-                path.push(new naver.maps.LatLng(point[1], point[0]));
-            });
-
-            // 폴리라인 그리기
             routePolyline = new naver.maps.Polyline({
+                map: naverMap,
                 path: path,
                 strokeColor: '#2DB400',
                 strokeWeight: 5,
-                strokeOpacity: 0.8,
-                map: naverMap
+                strokeOpacity: 0.9
             });
 
-            // 지도에 경로 정보 박스도 표시
-            document.getElementById('routeInfoBox').style.display = 'block';
+            // 4. 경로 정보 박스 표시
+            const infoBox = document.getElementById('routeInfoBox');
+            infoBox.style.display = 'block';
             document.getElementById('routeDestination').innerText = destination.name;
-            document.getElementById('routeDistance').innerText = route.summary.distance.text;
-            document.getElementById('routeDuration').innerText = route.summary.duration.text;
+            document.getElementById('routeDistance').innerText = response.route[0].summary.distance.text;
+            document.getElementById('routeDuration').innerText = response.route[0].summary.duration.text;
         });
     }
-
 
         
     
