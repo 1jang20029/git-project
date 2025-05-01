@@ -943,14 +943,12 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 1000;
             display: none;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
         }
         
         .route-loading-text {
             font-size: 14px;
             color: #333;
+            margin-left: 8px;
         }
         
         /* 경로 정보 박스 */
@@ -1736,23 +1734,9 @@
         
         // 시설 탭 초기화 함수 (페이지네이션 포함)
         function initFacilityTab() {
-            // 로딩 메시지가 표시되어 있다면 숨기기
-            const routeLoading = document.getElementById('routeLoading');
-            if (routeLoading) {
-                routeLoading.style.display = 'none';
-            }
-            
-            // 경로 정보 박스 숨기기
-            const routeInfoBox = document.getElementById('routeInfoBox');
-            if (routeInfoBox) {
-                routeInfoBox.style.display = 'none';
-            }
-            
-            // 기존 페이지네이션 로드 코드
             loadBuildingsByPage(currentPage);
             updatePaginationControls();
         }
-
         
         // 해당 페이지의 건물 목록 로드 함수
         function loadBuildingsByPage(page) {
@@ -1920,50 +1904,48 @@
             paginationContainer.appendChild(nextButton);
         }
         
-        // 페이지 로드 시 초기화 이벤트에 로딩 메시지 숨기기 추가
+        // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
         document.addEventListener('DOMContentLoaded', function() {
-        // 로딩 메시지 숨기기
-        const routeLoading = document.getElementById('routeLoading');
-        if (routeLoading) {
-            routeLoading.style.display = 'none';
-        }
-        
-        // 경로 정보 박스 숨기기
-        const routeInfoBox = document.getElementById('routeInfoBox');
-        if (routeInfoBox) {
-            routeInfoBox.style.display = 'none';
-        }
-        
-        // 기존 초기화 코드
-        setTimeout(updateAllProfileImages, 100);
-        
-        // localStorage 변경 감지를 위한 이벤트 리스너
-        window.addEventListener('storage', function(event) {
-            // 기존 코드
+            setTimeout(updateAllProfileImages, 100);
+            
+            // localStorage 변경 감지를 위한 이벤트 리스너
+            window.addEventListener('storage', function(event) {
+                // 프로필 관련 변경사항 감지
+                if (event.key === 'profileUpdated' || 
+                    event.key === 'profileImageUpdated' || 
+                    event.key.includes('_profileImage') || 
+                    event.key.includes('_customProfileImage')) {
+                    updateAllProfileImages();
+                }
+            });
+            
+            // 카테고리 필터 기능
+            initCategoryFilter();
+            
+            // 로그인 상태 체크 및 UI 업데이트
+            checkLoginStatus();
+            
+            // 저장된 위젯 설정 불러오기
+            loadWidgetSettings();
+            
+            // 시설 탭 초기화 (페이지네이션 포함)
+            initFacilityTab();
+            
+            // 네이버 지도 초기화
+            initNaverMap();
+            
+            // 검색 기능 초기화
+            initSearchFunctionality();
+            
+            // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+            window.addEventListener('pageshow', function(event) {
+                // bfcache에서 페이지가 복원된 경우에도 실행
+                if (event.persisted) {
+                    checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+                    updateAllProfileImages(); // 프로필 이미지도 다시 확인
+                }
+            });
         });
-        
-        // 카테고리 필터 기능
-        initCategoryFilter();
-        
-        // 로그인 상태 체크 및 UI 업데이트
-        checkLoginStatus();
-        
-        // 저장된 위젯 설정 불러오기
-        loadWidgetSettings();
-        
-        // 시설 탭 초기화 (페이지네이션 포함)
-        initFacilityTab();
-        
-        // 네이버 지도 초기화
-        initNaverMap();
-        
-        // 검색 기능 초기화
-        initSearchFunctionality();
-        
-        // 추가 이벤트 리스너
-    });
-
-        
         
         // 네이버 지도 초기화 함수 수정
         function initNaverMap() {
@@ -2012,29 +1994,162 @@
                 
                 // 지도 생성
                 naverMap = new naver.maps.Map('naverMap', mapOptions);
-
-                // 로딩 메시지가 표시되어 있다면 숨기기
-                const routeLoading = document.getElementById('routeLoading');
-                if (routeLoading) {
-                    routeLoading.style.display = 'none';
-                }
+    
+                // 마커와 정보창 생성
+                buildingData.forEach(building => {
+                    // 마커 생성
+                    const marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                        map: naverMap,
+                        title: building.name
+                    });
+                    mapMarkers.push(marker);
+    
+                    // 정보창 내용 생성
+                    const contentString = `
+                        <div class="map-info-window">
+                            <div class="map-info-title">${building.name}</div>
+                            <div class="map-info-desc">${building.description}</div>
+                        </div>
+                    `;
+    
+                    // 정보창 생성
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: contentString,
+                        maxWidth: 250,
+                        backgroundColor: "#fff",
+                        borderColor: "#ddd",
+                        borderWidth: 1,
+                        anchorSize: { width: 12, height: 12 },
+                        pixelOffset: new naver.maps.Point(10, -10)
+                    });
+    
+                    // 마커 클릭 이벤트
+                    naver.maps.Event.addListener(marker, "click", function() {
+                        // 이미 열려있는 모든 정보창 닫기
+                        infoWindows.forEach(window => window.close());
+                        
+                        // 현재 마커의 정보창 열기
+                        infoWindow.open(naverMap, marker);
+                    });
+    
+                    infoWindows.push(infoWindow);
+                });
+    
+                // GPS 버튼 추가
+                const gpsButton = document.createElement('div');
+                gpsButton.className = 'gps-button';
+                gpsButton.innerHTML = '📍';
+                gpsButton.onclick = trackUserLocation;
+                mapContainer.appendChild(gpsButton);
+    
+                // 편의시설 마커 추가
+                facilityData.forEach(facility => {
+                    // 마커 생성
+                    const marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(facility.position.lat, facility.position.lng),
+                        map: naverMap,
+                        title: facility.name,
+                        icon: {
+                            content: `<div style="background-color: #4CAF50; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center;">${facility.icon || '🏠'}</div>`,
+                            size: new naver.maps.Size(30, 30),
+                            anchor: new naver.maps.Point(15, 15)
+                        }
+                    });
+                    mapMarkers.push(marker);
+    
+                    // 정보창 내용 생성
+                    const contentString = `
+                        <div class="map-info-window">
+                            <div class="map-info-title">${facility.name}</div>
+                            <div class="map-info-desc">${facility.description}</div>
+                        </div>
+                    `;
+    
+                    // 정보창 생성
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: contentString,
+                        maxWidth: 250,
+                        backgroundColor: "#fff",
+                        borderColor: "#ddd",
+                        borderWidth: 1,
+                        anchorSize: { width: 12, height: 12 },
+                        pixelOffset: new naver.maps.Point(10, -10)
+                    });
+    
+                    // 마커 클릭 이벤트
+                    naver.maps.Event.addListener(marker, "click", function() {
+                        // 이미 열려있는 모든 정보창 닫기
+                        infoWindows.forEach(window => window.close());
+                        
+                        // 현재 마커의 정보창 열기
+                        infoWindow.open(naverMap, marker);
+                    });
+    
+                    infoWindows.push(infoWindow);
+                });
+                                
+                // 지도가 완전히 로드된 후 리사이즈 트리거
+                naver.maps.Event.once(naverMap, 'init_stylemap', function() {
+                    console.log('지도 스타일맵 초기화 완료');
+                    window.dispatchEvent(new Event('resize'));
+                    naverMap.refresh();
+                });
                 
-                // 경로 정보 박스 숨기기
-                const routeInfoBox = document.getElementById('routeInfoBox');
-                if (routeInfoBox) {
-                    routeInfoBox.style.display = 'none';
-                }
+                // 지도 리사이즈 이벤트 - 디바운스 적용
+                let resizeTimer;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(function() {
+                        if (naverMap) {
+                            naverMap.refresh();
+                        }
+                    }, 200);
+                });
                 
-                // 나머지 지도 초기화 코드...
-                // (이전 코드와 동일)
+                // 탭 전환 시 지도 갱신
+                document.querySelectorAll('.tab-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        setTimeout(function() {
+                            if (naverMap) {
+                                window.dispatchEvent(new Event('resize'));
+                                naverMap.refresh();
+                            }
+                        }, 300);
+                    });
+                });
+                
+                // 시설 탭이 활성화될 때 추가 갱신
+                const facilityTabObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.target.classList.contains('active') && 
+                            mutation.target.id === 'facility-tab') {
+                            setTimeout(function() {
+                                window.dispatchEvent(new Event('resize'));
+                                naverMap.refresh();
+                            }, 300);
+                        }
+                    });
+                });
+                
+                const facilityTab = document.getElementById('facility-tab');
+                if (facilityTab) {
+                    facilityTabObserver.observe(facilityTab, { attributes: true });
+                }
                 
                 console.log('네이버 지도가 성공적으로 초기화되었습니다.');
                 
+                // Direction API 사용 확인 (submodules=direction 옵션을 통해 로드되었는지 확인)
+                if (typeof naver.maps.Direction !== 'undefined') {
+                    console.log('Direction API가 정상적으로 로드되었습니다.');
+                } else {
+                    console.log('Direction API를 로드합니다...');
+                    loadDirectionAPI();
+                }
             } catch (error) {
                 console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
             }
         }
-
         
         // Direction API 스크립트 동적 로드 함수 개선
         function loadDirectionAPI() {
@@ -2165,68 +2280,77 @@
     }
     
     // 경로 계산 및 표시 함수 (Direction API 사용)
-    function calculateAndDrawRoute(start, end) {
-        try {
-            console.log('경로 계산 시작:', start, end);
-            
-            // 기존 Direction 인스턴스가 있으면 제거
-            if (navDirectionInstance) {
-                try {
-                    navDirectionInstance.setMap(null);
-                } catch (e) {
-                    console.log('기존 Direction 제거 중 오류:', e);
-                }
-                navDirectionInstance = null;
-            }
-            
-            // 경로 폴리라인 제거
-            if (routePolyline) {
-                routePolyline.setMap(null);
-                routePolyline = null;
-            }
-                
-            // 새 Direction 객체 생성
-            navDirectionInstance = new naver.maps.Direction({
-                map: naverMap,
-                // 출발지와 도착지 설정
-                start: start,
-                goal: end,
-                // 경로 유형 (도보 경로)
-                option: {
-                    goal_select: 0,
-                    car_type: 0,
-                    travel_mode: 3, // 3 = 도보
-                    avoid: [0],
-                    search_option: 0
-                },
-                // 콜백 함수 등록
-                onSuccess: function(result) {
-                    // 성공 시 로딩 메시지 숨기기는 handleDirectionSuccess에서 처리
-                    handleDirectionSuccess(result, start, end);
-                },
-                onFailure: function(error) {
-                    // 실패 시 로딩 메시지 숨기기는 handleDirectionFailure에서 처리
-                    handleDirectionFailure(error, start, end);
-                }
-            });
-        } catch (error) {
-            console.error('Direction API 사용 중 예외 발생:', error);
-            
-            // 로딩 메시지 숨기기
-            hideRouteLoadingMessage();
-            
-            // 직선 경로로 대체
-            drawStraightRoute(start, end);
-        }
-    }
+function calculateAndDrawRoute(start, end) {
+    try {
+        console.log('경로 계산 시작:', start, end);
         
-    
+        // 로딩 표시 보이기
+        const routeLoading = document.getElementById('routeLoading');
+        if (routeLoading) {
+            routeLoading.style.display = 'flex';
+        }
+        
+        // 기존 Direction 인스턴스가 있으면 제거
+        if (navDirectionInstance) {
+            try {
+                navDirectionInstance.setMap(null);
+            } catch (e) {
+                console.log('기존 Direction 제거 중 오류:', e);
+            }
+            navDirectionInstance = null;
+        }
+        
+        // 경로 폴리라인 제거
+        if (routePolyline) {
+            routePolyline.setMap(null);
+            routePolyline = null;
+        }
+            
+        // 새 Direction 객체 생성
+        navDirectionInstance = new naver.maps.Direction({
+            map: naverMap,
+            // 출발지와 도착지 설정
+            start: start,
+            goal: end,
+            // 경로 유형 (도보 경로)
+            option: {
+                goal_select: 0,
+                car_type: 0,
+                travel_mode: 3, // 3 = 도보
+                avoid: [0],
+                search_option: 0
+            },
+            // 콜백 함수 등록
+            onSuccess: function(result) {
+                handleDirectionSuccess(result, start, end);
+            },
+            onFailure: function(error) {
+                handleDirectionFailure(error, start, end);
+            }
+        });
+    } catch (error) {
+        console.error('Direction API 사용 중 예외 발생:', error);
+        
+        // 로딩 표시 숨기기
+        const routeLoading = document.getElementById('routeLoading');
+        if (routeLoading) {
+            routeLoading.style.display = 'none';
+        }
+        
+        // 직선 경로로 대체
+        drawStraightRoute(start, end);
+    }
+}
+
     // Direction 성공 콜백 처리
     function handleDirectionSuccess(result, start, end) {
         console.log('Direction 계산 완료:', result);
         
-        // 로딩 메시지 숨기기
-        hideRouteLoadingMessage();
+        // 로딩 표시 숨기기
+        const routeLoading = document.getElementById('routeLoading');
+        if (routeLoading) {
+            routeLoading.style.display = 'none';
+        }
         
         if (!result.route || !result.route.paths || result.route.paths.length === 0) {
             console.error('Direction 결과에 경로 정보가 없습니다');
@@ -2327,15 +2451,20 @@
         
 
     // Direction 성공 콜백 처리
-    function handleDirectionFailure(error, start, end) {
-        console.error('Direction API 오류:', error);
+    function handleDirectionSuccess(result, start, end) {
+        console.log('Direction 계산 완료:', result);
         
-        // 로딩 메시지 숨기기
-        hideRouteLoadingMessage();
+        // 로딩 표시 숨기기
+        const routeLoading = document.getElementById('routeLoading');
+        if (routeLoading) {
+            routeLoading.style.display = 'none';
+        }
         
-        // 직선 경로로 대체
-        drawStraightRoute(start, end);
-    }
+        if (!result.route || !result.route.paths || result.route.paths.length === 0) {
+            console.error('Direction 결과에 경로 정보가 없습니다');
+            drawStraightRoute(start, end);
+            return;
+        }
         
         // 첫 번째 경로 사용
         const path = result.route.paths[0];
@@ -2412,7 +2541,7 @@
             console.error('경로 좌표 데이터가 없습니다');
             drawStraightRoute(start, end);
         }
-    
+    }
 
     // Direction 실패 콜백 처리
     function handleDirectionFailure(error, start, end) {
@@ -2681,14 +2810,13 @@
             // 편의시설 데이터에서도 검색
             const facility = facilityData.find(f => f.id === buildingId);
             if (facility) {
+                alert(`${facility.name}으로 길찾기를 시작합니다.`);
+                
                 // 지도를 표시하고 해당 시설로 이동
                 switchTab('facility');
                 
                 // 검색 내용 초기화하고 원래 컨텐츠 표시
                 clearSearch();
-                
-                // 로딩 메시지 표시 - 이 부분이 중요!
-                showRouteLoadingMessage(facility.name);
                 
                 // 사용자 위치가 있는지 확인
                 if (getUserLocation()) {
@@ -2698,10 +2826,8 @@
                         lng: facility.position.lng
                     };
                     
-                    // 지연 시간 후 경로 계산 및 표시
-                    setTimeout(() => {
-                        calculateAndDrawRoute(userLocation, destination);
-                    }, 2500); // 2.5초 후 경로 계산 실행
+                    // 이 부분에서 길찾기 실행 (길찾기 버튼 클릭 시에만)
+                    calculateAndDrawRoute(userLocation, destination);
                 } else {
                     // 위치 정보가 없으면 관련 건물로만 이동
                     if (facility.relatedBuilding) {
@@ -2718,9 +2844,6 @@
                                     infoWindows.forEach(window => window.close());
                                     infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
                                 }
-                                
-                                // 로딩 메시지 숨기기
-                                hideRouteLoadingMessage();
                             }, 300);
                         }
                     } else if (naverMap) {
@@ -2729,9 +2852,6 @@
                             const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
                             naverMap.setCenter(position);
                             naverMap.setZoom(18);
-                            
-                            // 로딩 메시지 숨기기
-                            hideRouteLoadingMessage();
                         }, 300);
                     }
                 }
@@ -2742,14 +2862,13 @@
         }
         
         // 건물이 있는 경우 처리
+        alert(`${building.name}으로 길찾기를 시작합니다.`);
+        
         // 지도를 표시하고 해당 건물로 이동
         switchTab('facility');
         
         // 검색 내용 초기화하고 원래 컨텐츠 표시
         clearSearch();
-        
-        // 로딩 메시지 표시 - 이 부분이 중요!
-        showRouteLoadingMessage(building.name);
         
         // 사용자 위치 확인 및 경로 표시
         if (getUserLocation()) {
@@ -2759,10 +2878,8 @@
                 lng: building.position.lng
             };
             
-            // 지연 시간 후 경로 계산 및 표시
-            setTimeout(() => {
-                calculateAndDrawRoute(userLocation, destination);
-            }, 2500); // 2.5초 후 경로 계산 실행
+            // 길찾기 버튼 클릭 시에만 경로 계산 및 표시
+            calculateAndDrawRoute(userLocation, destination);
         } else {
             // 위치 정보가 없으면 건물 위치로만 이동
             if (naverMap) {
@@ -2781,47 +2898,15 @@
                     // 지도 갱신
                     window.dispatchEvent(new Event('resize'));
                     naverMap.refresh();
-                    
-                    // 로딩 메시지 숨기기
-                    hideRouteLoadingMessage();
                 }, 300);
             } else {
                 alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-                
-                // 로딩 메시지 숨기기
-                hideRouteLoadingMessage();
             }
         }
     }
 
-    // 로딩 메시지 표시/숨기기 함수
-    function showRouteLoadingMessage(destinationName) {
-        // 로딩 애니메이션 컨테이너 가져오기
-        const routeLoading = document.getElementById('routeLoading');
-        if (routeLoading) {
-            // 메시지 텍스트 설정 (선택적)
-            const loadingText = routeLoading.querySelector('.route-loading-text');
-            if (loadingText) {
-                loadingText.textContent = `${destinationName}까지 경로를 계산하는 중...`;
-            }
-            
-            // 로딩 애니메이션 표시
-            routeLoading.style.display = 'flex';
-            
-            // 스피너 애니메이션 시작 (CSS 애니메이션이 있는 경우 필요 없음)
-            const spinner = routeLoading.querySelector('.route-loading-spinner');
-            if (spinner) {
-                spinner.style.animation = 'spin 1s ease-in-out infinite';
-            }
-        }
-    }
 
-    
-
-
-
-
-            
+        
     
     // 지도 초기 뷰로 리셋
     function resetMapView() {
@@ -2834,21 +2919,10 @@
             
             // 경로 정보 숨기기 및 경로 제거
             closeRouteInfo();
-            
-            // 로딩 메시지 숨기기
-            const routeLoading = document.getElementById('routeLoading');
-            if (routeLoading) {
-                routeLoading.style.display = 'none';
-            }
         }
     }
-
-
-
     
-    
-    
-        // 사용자 위치 추적 시작
+    // 사용자 위치 추적 시작
     function trackUserLocation() {
         if (isTrackingUser) {
             // 이미 추적 중이면 추적 중지
@@ -2992,7 +3066,6 @@
             }
         }
     }
-
 
     // 사용자 위치 마커 업데이트
     function updateUserMarker(position, accuracy) {
@@ -3372,25 +3445,8 @@
             }
         }
         
-        // 시설 탭으로 전환 시
+        // 시설 탭으로 전환 시 건물 목록 페이지네이션 초기화 및 지도 갱신
         if (tabName === 'facility') {
-            // 로딩 메시지 및 경로 정보 초기화
-            const routeLoading = document.getElementById('routeLoading');
-            if (routeLoading) {
-                routeLoading.style.display = 'none';
-            }
-            
-            const routeInfoBox = document.getElementById('routeInfoBox');
-            if (routeInfoBox) {
-                routeInfoBox.style.display = 'none';
-            }
-            
-            // 경로 폴리라인 제거
-            if (routePolyline) {
-                routePolyline.setMap(null);
-                routePolyline = null;
-            }
-            
             // 첫 페이지 로드
             currentPage = 1;
             loadBuildingsByPage(currentPage);
@@ -3411,7 +3467,6 @@
             }, 100);
         }
     }
-        
     
     // 메인 홈으로 이동
     function goToHome() {
