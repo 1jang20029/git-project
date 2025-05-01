@@ -2798,111 +2798,62 @@ function calculateAndDrawRoute(start, end) {
         
     // 길찾기 함수 - GPS 위치 정보 활용
     function navigateToBuilding(buildingId, event) {
-        // 이벤트 버블링 방지
-        if (event) {
-            event.stopPropagation();
+        if (event) event.stopPropagation();
+
+        const destination = buildingData.find(b => b.id === buildingId);
+        if (!destination || !naverMap || !userLocation) return;
+
+        // 로딩 표시
+        document.getElementById('routeLoading').style.display = 'flex';
+
+        // 기존 경로 제거
+        if (routePolyline) {
+            routePolyline.setMap(null);
+            routePolyline = null;
         }
-        
-        // 해당 건물의 데이터 찾기
-        const building = buildingData.find(b => b.id === buildingId);
-        
-        if (!building) {
-            // 편의시설 데이터에서도 검색
-            const facility = facilityData.find(f => f.id === buildingId);
-            if (facility) {
-                alert(`${facility.name}으로 길찾기를 시작합니다.`);
-                
-                // 지도를 표시하고 해당 시설로 이동
-                switchTab('facility');
-                
-                // 검색 내용 초기화하고 원래 컨텐츠 표시
-                clearSearch();
-                
-                // 사용자 위치가 있는지 확인
-                if (getUserLocation()) {
-                    // 경로 표시 (사용자 위치 -> 시설)
-                    const destination = {
-                        lat: facility.position.lat, 
-                        lng: facility.position.lng
-                    };
-                    
-                    // 이 부분에서 길찾기 실행 (길찾기 버튼 클릭 시에만)
-                    calculateAndDrawRoute(userLocation, destination);
-                } else {
-                    // 위치 정보가 없으면 관련 건물로만 이동
-                    if (facility.relatedBuilding) {
-                        const relatedBuilding = buildingData.find(b => b.id === facility.relatedBuilding);
-                        if (relatedBuilding && naverMap) {
-                            setTimeout(() => {
-                                const position = new naver.maps.LatLng(relatedBuilding.position.lat, relatedBuilding.position.lng);
-                                naverMap.setCenter(position);
-                                naverMap.setZoom(18);
-                                
-                                // 마커 찾기 및 정보창 열기
-                                const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === relatedBuilding.name);
-                                if (markerIndex !== -1) {
-                                    infoWindows.forEach(window => window.close());
-                                    infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
-                                }
-                            }, 300);
-                        }
-                    } else if (naverMap) {
-                        // 시설 자체의 위치를 사용
-                        setTimeout(() => {
-                            const position = new naver.maps.LatLng(facility.position.lat, facility.position.lng);
-                            naverMap.setCenter(position);
-                            naverMap.setZoom(18);
-                        }, 300);
-                    }
-                }
-            } else {
-                alert('해당 건물 또는 시설 정보를 찾을 수 없습니다.');
+
+        if (navDirectionInstance) {
+            navDirectionInstance = null;
+        }
+
+        // Directions API 호출
+        navDirectionInstance = new naver.maps.DirectionsService();
+
+        navDirectionInstance.route({
+            start: new naver.maps.LatLng(userLocation.lat, userLocation.lng),
+            goal: new naver.maps.LatLng(destination.position.lat, destination.position.lng),
+            option: 0
+        }, function(status, response) {
+            // 로딩 숨기기
+            document.getElementById('routeLoading').style.display = 'none';
+
+            if (status !== naver.maps.DirectionsStatus.OK) {
+                alert('경로를 계산할 수 없습니다.');
+                return;
             }
-            return;
-        }
-        
-        // 건물이 있는 경우 처리
-        alert(`${building.name}으로 길찾기를 시작합니다.`);
-        
-        // 지도를 표시하고 해당 건물로 이동
-        switchTab('facility');
-        
-        // 검색 내용 초기화하고 원래 컨텐츠 표시
-        clearSearch();
-        
-        // 사용자 위치 확인 및 경로 표시
-        if (getUserLocation()) {
-            // 경로 표시 (사용자 위치 -> 건물)
-            const destination = {
-                lat: building.position.lat, 
-                lng: building.position.lng
-            };
-            
-            // 길찾기 버튼 클릭 시에만 경로 계산 및 표시
-            calculateAndDrawRoute(userLocation, destination);
-        } else {
-            // 위치 정보가 없으면 건물 위치로만 이동
-            if (naverMap) {
-                setTimeout(() => {
-                    const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-                    naverMap.setCenter(position);
-                    naverMap.setZoom(18);
-                    
-                    // 마커 찾기 및 정보창 열기
-                    const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
-                    if (markerIndex !== -1) {
-                        infoWindows.forEach(window => window.close());
-                        infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
-                    }
-                    
-                    // 지도 갱신
-                    window.dispatchEvent(new Event('resize'));
-                    naverMap.refresh();
-                }, 300);
-            } else {
-                alert('지도를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-            }
-        }
+
+            const route = response.route[0];
+            const path = [];
+
+            route.traoptimal[0].path.forEach(point => {
+                path.push(new naver.maps.LatLng(point[1], point[0]));
+            });
+
+            // 폴리라인 그리기
+            routePolyline = new naver.maps.Polyline({
+                path: path,
+                strokeColor: '#2DB400',
+                strokeWeight: 5,
+                strokeOpacity: 0.8,
+                map: naverMap
+            });
+
+            // 지도에 경로 정보 박스도 표시
+            document.getElementById('routeInfoBox').style.display = 'block';
+            document.getElementById('routeDestination').innerText = destination.name;
+            document.getElementById('routeDistance').innerText = route.summary.distance.text;
+            document.getElementById('routeDuration').innerText = route.summary.duration.text;
+        });
     }
 
 
