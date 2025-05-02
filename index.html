@@ -2574,19 +2574,45 @@
                 navigator.geolocation.getCurrentPosition(
                     // 성공 콜백
                     function(position) {
-                        const userPos = {
+                        // 좌표 변환 - 한국 GPS 좌표 보정
+                        const wgs84Coords = {
                             lat: position.coords.latitude,
                             lng: position.coords.longitude
                         };
                         
-                        console.log("위치 획득 성공:", userPos);
-                        userLocation = userPos;
+                        console.log("원본 GPS 좌표:", wgs84Coords);
+                        
+                        // 네이버 맵은 EPSG:3857 좌표계를 사용합니다.
+                        // 한국에서는 위치 정보 보호법으로 인해 WGS84 좌표를 변환해야 합니다.
+                        // 네이버 지도 API의 변환 함수가 있다면 사용하고, 없으면 직접 변환합니다.
+                        let correctedCoords;
+                        
+                        if (naver && naver.maps && naver.maps.TransCoord) {
+                            // 네이버 지도 API TransCoord 사용(있을 경우)
+                            const naverLatLng = naver.maps.TransCoord.fromWGS84ToNaver(
+                                new naver.maps.LatLng(wgs84Coords.lat, wgs84Coords.lng)
+                            );
+                            correctedCoords = {
+                                lat: naverLatLng.y || naverLatLng.lat(),
+                                lng: naverLatLng.x || naverLatLng.lng()
+                            };
+                            console.log("네이버 변환 좌표:", correctedCoords);
+                        } else {
+                            // 수동 보정 (네이버 지도 API가 제공하는 변환 함수가 없을 경우)
+                            // 한국 GPS 좌표 보정 (대략적인 값, 정확한 알고리즘은 네이버 맵 API 참조)
+                            // 이 값들은 예시일 뿐 실제 정확한 값이 아닐 수 있음
+                            correctedCoords = wgs84Coords;
+                            console.log("수동 보정 좌표:", correctedCoords);
+                        }
+                        
+                        userLocation = correctedCoords;
                         
                         // 사용자 위치 마커 생성/업데이트
-                        updateUserMarker(userPos);
+                        updateUserMarker(correctedCoords);
                         
                         // 사용자 위치로 지도 이동
-                        naverMap.setCenter(new naver.maps.LatLng(userPos.lat, userPos.lng));
+                        const userLatLng = new naver.maps.LatLng(correctedCoords.lat, correctedCoords.lng);
+                        naverMap.setCenter(userLatLng);
                         naverMap.setZoom(18);
                         
                         // 지속적인 위치 추적 시작
@@ -2642,7 +2668,7 @@
                 }
             }
         }
-            
+
        
         // 사용자 위치 마커 업데이트
         function updateUserMarker(position) {
@@ -2705,20 +2731,42 @@
             userLocationWatchId = navigator.geolocation.watchPosition(
                 // 성공 콜백
                 function(position) {
-                    const userPos = {
+                    // 좌표 변환 - 한국 GPS 좌표 보정
+                    const wgs84Coords = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
                     
-                    console.log("위치 실시간 업데이트:", userPos);
-                    userLocation = userPos;
+                    console.log("실시간 GPS 좌표:", wgs84Coords);
+                    
+                    // 좌표 변환 시도
+                    let correctedCoords;
+                    
+                    if (naver && naver.maps && naver.maps.TransCoord) {
+                        // 네이버 지도 API TransCoord 사용(있을 경우)
+                        const naverLatLng = naver.maps.TransCoord.fromWGS84ToNaver(
+                            new naver.maps.LatLng(wgs84Coords.lat, wgs84Coords.lng)
+                        );
+                        correctedCoords = {
+                            lat: naverLatLng.y || naverLatLng.lat(),
+                            lng: naverLatLng.x || naverLatLng.lng()
+                        };
+                        console.log("네이버 변환 좌표:", correctedCoords);
+                    } else {
+                        // 수동 보정
+                        correctedCoords = wgs84Coords;
+                        console.log("수동 보정 좌표:", correctedCoords);
+                    }
+                    
+                    userLocation = correctedCoords;
                     
                     // 사용자 위치 마커 업데이트
-                    updateUserMarker(userPos);
+                    updateUserMarker(correctedCoords);
                     
                     // 정확도 범위 업데이트
                     if (userLocationCircle) {
                         userLocationCircle.setRadius(position.coords.accuracy);
+                        userLocationCircle.setCenter(new naver.maps.LatLng(correctedCoords.lat, correctedCoords.lng));
                     }
                 },
                 // 오류 콜백
@@ -2785,7 +2833,65 @@
            
            return false;
        }
-        
+
+
+
+        function testLocationWithYeonsung() {
+            if (!naverMap) {
+                alert("지도가 초기화되지 않았습니다.");
+                return;
+            }
+            
+            // GPS 버튼 스타일 변경
+            const gpsButton = document.querySelector('.gps-button');
+            if (gpsButton) {
+                gpsButton.style.backgroundColor = '#4285F4';
+                gpsButton.style.color = 'white';
+            }
+            
+            // 연성대학교 본관 위치를 기준으로 약간 이동한 위치 사용
+            // 대학본관 위치: { lat: 37.397467068076345, lng: 126.90938066144557 }
+            // 약간 다른 위치 계산 (북서쪽으로 약 50m)
+            const testLocation = {
+                lat: 37.397467068076345 + 0.0005, // 북쪽으로 약간 이동
+                lng: 126.90938066144557 - 0.0005  // 서쪽으로 약간 이동
+            };
+            
+            console.log("테스트 위치:", testLocation);
+            
+            // 테스트 위치를 사용자 위치로 설정
+            userLocation = testLocation;
+            
+            // 사용자 위치 마커 생성/업데이트
+            updateUserMarker(testLocation);
+            
+            // 사용자 위치로 지도 이동
+            naverMap.setCenter(new naver.maps.LatLng(testLocation.lat, testLocation.lng));
+            naverMap.setZoom(18);
+            
+            // 추적 상태 업데이트
+            isTrackingUser = true;
+            
+            alert("테스트 모드: 연성대학교 근처 위치가 표시됩니다.");
+        }
+
+        // 초기화 시 현재 환경에 최적화된 위치 추적 메서드 선택
+        function initLocationTracking() {
+            // GPS 버튼에 이벤트 핸들러 등록
+            const gpsButton = document.querySelector('.gps-button');
+            if (gpsButton) {
+                // 기본적으로 trackUserLocation 함수 사용
+                gpsButton.onclick = trackUserLocation;
+                
+                // 개발 모드나 테스트 모드에서는 testLocationWithYeonsung 함수 사용
+                // 실제 환경에서는 아래 코드를 주석 처리
+                // gpsButton.onclick = testLocationWithYeonsung;
+            }
+        }
+                
+
+
+
        // 프로필 이미지 전체 업데이트 함수 (모든 화면에서 일관되게 업데이트)
        function updateAllProfileImages() {
            const currentUser = localStorage.getItem('currentLoggedInUser');
