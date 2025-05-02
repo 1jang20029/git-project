@@ -2308,94 +2308,114 @@
            }
        }
 
-       // 직선 경로 표시 함수 (대체 방법)
        function drawStraightRoute(start, end) {
-           // 직선 경로 그리기
-           routePolyline = new naver.maps.Polyline({
-               map: naverMap,
-               path: [start, end],
-               strokeColor: '#FF4500', // 다른 색상 사용하여 구분
-               strokeWeight: 5,
-               strokeOpacity: 0.8,
-               strokeLineCap: 'round',
-               strokeLineJoin: 'round',
-               strokeDasharray: [8, 4] // 점선으로 표시하여 실제 경로가 아님을 구분
-           });
-           
-           // 지도 뷰 영역 조정
-           const bounds = new naver.maps.LatLngBounds([start, end]);
-           naverMap.fitBounds(bounds, {
-               top: 100,
-               right: 100,
-               bottom: 100,
-               left: 100
-           });
-           
-           // 직선 거리 계산 (미터 단위)
-           const distance = Math.round(start.distanceTo(end));
-           
-           // 목적지 정보 가져오기
-           const building = buildingData.find(b => 
-               Math.abs(b.position.lat - end.y) < 0.0001 && 
-               Math.abs(b.position.lng - end.x) < 0.0001);
-           const buildingName = building ? building.name : '목적지';
-           
-           // 경로 정보 업데이트
-           const routeInfoBox = document.getElementById('routeInfoBox');
-           const routeDestination = document.getElementById('routeDestination');
-           const routeDistance = document.getElementById('routeDistance');
-           const routeDuration = document.getElementById('routeDuration');
-           
-           if (routeInfoBox && routeDestination && routeDistance && routeDuration) {
-               // 목적지 정보 설정
-               routeDestination.textContent = buildingName;
-               
-               // 거리 정보 설정
-               let distanceText;
-               if (distance >= 1000) {
-                   distanceText = (distance / 1000).toFixed(1) + 'km';
-               } else {
-                   distanceText = distance + 'm';
-               }
-               routeDistance.textContent = distanceText;
-               
-               // 시간 계산 (걷는 속도 4km/h 가정)
-               const timeMinutes = Math.round(distance / (4000 / 60));
-               let timeText;
-               if (timeMinutes >= 60) {
-                   const hours = Math.floor(timeMinutes / 60);
-                   const mins = timeMinutes % 60;
-                   timeText = `${hours}시간 ${mins}분`;
-               } else {
-                   timeText = `${timeMinutes}분`;
-               }
-               routeDuration.textContent = timeText + ' (직선 거리 기준)';
-               
-               // 경로 정보 표시
-               routeInfoBox.style.display = 'block';
-           } else {
-               // 경로 정보 UI가 없는 경우 알림으로 대체
-               if (distance >= 1000) {
-                   distanceText = (distance / 1000).toFixed(1) + 'km';
-               } else {
-                   distanceText = distance + 'm';
-               }
-               
-               // 시간 계산 (걷는 속도 4km/h 가정)
-               const timeMinutes = Math.round(distance / (4000 / 60));
-               let timeText;
-               if (timeMinutes >= 60) {
-                   const hours = Math.floor(timeMinutes / 60);
-                   const mins = timeMinutes % 60;
-                   timeText = `${hours}시간 ${mins}분`;
-               } else {
-                   timeText = `${timeMinutes}분`;
-               }
-               
-               alert(`${buildingName}까지 직선 거리: ${distanceText}\n도보 예상 소요시간: ${timeText}\n(실제 경로와 다를 수 있습니다)`);
-           }
-       }
+            // 직선 경로 그리기
+            routePolyline = new naver.maps.Polyline({
+                map: naverMap,
+                path: [start, end],
+                strokeColor: '#FF4500', // 다른 색상 사용하여 구분
+                strokeWeight: 5,
+                strokeOpacity: 0.8,
+                strokeLineCap: 'round',
+                strokeLineJoin: 'round',
+                strokeDasharray: [8, 4] // 점선으로 표시하여 실제 경로가 아님을 구분
+            });
+            // 지도 뷰 영역 조정
+            const bounds = new naver.maps.LatLngBounds([start, end]);
+            naverMap.fitBounds(bounds, {
+                top: 100,
+                right: 100,
+                bottom: 100,
+                left: 100
+        });
+       
 
+
+        // 직선 거리 계산 (미터 단위) - distanceTo 대신 직접 계산
+        // 하버사인 공식을 사용한 두 지점 사이의 거리 계산
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000; // 지구 반지름 (미터)
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
+        }
+        
+    
+    
+        const distance = Math.round(calculateDistance(start.y || start.lat(), start.x || start.lng(), end.y || end.lat(), end.x || end.lng()));
+        
+        // 목적지 정보 가져오기
+        const building = buildingData.find(b => 
+            Math.abs(b.position.lat - (end.y || end.lat())) < 0.0001 && 
+            Math.abs(b.position.lng - (end.x || end.lng())) < 0.0001);
+        const buildingName = building ? building.name : '목적지';
+        
+        // 경로 정보 업데이트
+        const routeInfoBox = document.getElementById('routeInfoBox');
+        const routeDestination = document.getElementById('routeDestination');
+        const routeDistance = document.getElementById('routeDistance');
+        const routeDuration = document.getElementById('routeDuration');
+        
+        if (routeInfoBox && routeDestination && routeDistance && routeDuration) {
+            // 목적지 정보 설정
+            routeDestination.textContent = buildingName;
+            
+            // 거리 정보 설정
+            let distanceText;
+            if (distance >= 1000) {
+                distanceText = (distance / 1000).toFixed(1) + 'km';
+            } else {
+                distanceText = distance + 'm';
+            }
+            routeDistance.textContent = distanceText;
+            
+            // 시간 계산 (걷는 속도 4km/h 가정)
+            const timeMinutes = Math.round(distance / (4000 / 60));
+            let timeText;
+            if (timeMinutes >= 60) {
+                const hours = Math.floor(timeMinutes / 60);
+                const mins = timeMinutes % 60;
+                timeText = `${hours}시간 ${mins}분`;
+            } else {
+                timeText = `${timeMinutes}분`;
+            }
+            routeDuration.textContent = timeText + ' (직선 거리 기준)';
+            
+            // 경로 정보 표시
+            routeInfoBox.style.display = 'block';
+        } else {
+            // 경로 정보 UI가 없는 경우 알림으로 대체
+            let distanceText;
+            if (distance >= 1000) {
+                distanceText = (distance / 1000).toFixed(1) + 'km';
+            } else {
+                distanceText = distance + 'm';
+            }
+            
+            // 시간 계산 (걷는 속도 4km/h 가정)
+            const timeMinutes = Math.round(distance / (4000 / 60));
+            let timeText;
+            if (timeMinutes >= 60) {
+                const hours = Math.floor(timeMinutes / 60);
+                const mins = timeMinutes % 60;
+                timeText = `${hours}시간 ${mins}분`;
+            } else {
+                timeText = `${timeMinutes}분`;
+            }
+            
+            alert(`${buildingName}까지 직선 거리: ${distanceText}\n도보 예상 소요시간: ${timeText}\n(실제 경로와 다를 수 있습니다)`);
+        }
+    }
+       
+       
        // 경로 정보 박스 닫기
        function closeRouteInfo() {
            const routeInfoBox = document.getElementById('routeInfoBox');
