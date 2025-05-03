@@ -1189,7 +1189,7 @@
                 <div id="original-content">
                     <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
                     <div class="campus-map" id="naverMap">
-                        <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도">
+                        <img src="이미지/campus-map.jpg" alt="연성대학교 캠퍼스 지도">
                         <div class="map-control-buttons">
                             <div class="map-button" onclick="zoomIn()">🔍+</div>
                             <div class="map-button" onclick="zoomOut()">🔍-</div>
@@ -1239,7 +1239,7 @@
                         <div class="facility-list">
                             <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
                                 <div class="facility-image">
-                                    <img src="/api/placeholder/150/100" alt="학생식당">
+                                    <img src="이미지/연성대_식당.jpg" alt="학생식당">
                                 </div>
                                 <div class="facility-info">
                                     <div class="facility-name">학생식당</div>
@@ -1248,7 +1248,7 @@
                             </div>
                             <div class="facility-item" onclick="showFacilityDetail('cafe')">
                                 <div class="facility-image">
-                                    <img src="/api/placeholder/150/100" alt="카페">
+                                    <img src="이미지/카페.png" alt="카페">
                                 </div>
                                 <div class="facility-info">
                                     <div class="facility-name">카페 연성</div>
@@ -1257,7 +1257,7 @@
                             </div>
                             <div class="facility-item" onclick="showFacilityDetail('convenience')">
                                 <div class="facility-image">
-                                    <img src="/api/placeholder/150/100" alt="편의점">
+                                    <img src="이미지/emart24(편의점).png" alt="편의점">
                                 </div>
                                 <div class="facility-info">
                                     <div class="facility-name">CU 편의점</div>
@@ -1266,7 +1266,7 @@
                             </div>
                             <div class="facility-item" onclick="showFacilityDetail('atm')">
                                 <div class="facility-image">
-                                    <img src="/api/placeholder/150/100" alt="ATM">
+                                    <img src="이미지/atm.jpg" alt="ATM">
                                 </div>
                                 <div class="facility-info">
                                     <div class="facility-name">ATM</div>
@@ -1517,137 +1517,136 @@
         
         <script>
            // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
-        const buildingData = [
-            {
-                id: '공학1관',
-                name: '공학1관',
-                description: '공학계열 강의실, 실험실',
-                image: './이미지/공학1관.png', // placeholder에서 실제 이미지 경로로 변경
-                type: 'building',
-                position: { lat: 37.39632767479923, lng: 126.90699348692698 }
-            },
-            {
-                id: '자연과학관',
-                name: '자연과학관',
-                description: '반려동물보건학, 반려동물산업학',
-                image: './이미지/자연과학관.png', // 실제 이미지 파일이 있다면 경로 변경
-                type: 'building',
-                position: { lat: 37.39669466288283, lng: 126.90676716508685 }
-            },
-            {
-                id: '식품과학관',
-                name: '식품과학관',
-                description: '식품영양학과, 조리실습실',
-                image: './이미지/식품과학관.png', // 이미지 파일이 존재한다고 가정
-                type: 'building',
-                position: { lat: 37.39714809720343, lng: 126.90762208499473 }
-            },
-            {
-                id: '도의관',
-                name: '도의관',
-                description: '교양 수업, 강당',
-                image: './이미지/도의관.png', // 이미지 파일이 존재한다고 가정
-                type: 'building',
-                position: { lat: 37.39679932128769, lng: 126.90809683728425 }
-            },
-            {
-                id: '공학2관',
-                name: '공학2관',
-                description: '공학계열 실습실, 연구실',
-                image: './이미지/공학2관.png', // 이미지 파일이 존재한다고 가정
-                type: 'building',
-                position: { lat: 37.396789747114205, lng: 126.90737406929797 }
-            },
-            {
-                id: '문화1관',
-                name: '문화1관',
-                description: '인문사회계열 강의실',
-                image: './이미지/문화1관.png', // 스크린샷에서 확인된 파일
-                type: 'building',
-                position: { lat: 37.39576992475254, lng: 126.90812350405056 }
-            },
-            {
-                id: '연곡문화센터',
-                name: '연곡문화센터',
-                description: '기숙사, 컨벤션홀, 평생교육원',
-                image: './이미지/연곡문화센터.png', // 스크린샷에서 확인된 파일
-                type: 'building',
-                position: { lat: 37.398046192024914, lng: 126.90966512810492 }
-            },
-            {
-                id: '창조관',
-                name: '창조관',
-                description: '학과 사무실, 강의실',
-                image: './이미지/창조관.png', // 이미지 파일이 존재한다고 가정
-                type: 'building',
-                position: { lat: 37.39730791148064, lng: 126.91039726900274 }
-            },
-            {
-                id: '운동장',
-                name: '운동장',
-                description: '체육활동, 행사장',
-                image: './이미지/운동장.jpg', // 스크린샷에서 확인된 파일
-                type: 'building',
-                position: { lat: 37.39673944839101, lng: 126.90932224700094 }
-            },
-            {
-                id: '농구장',
-                name: '농구장',
-                description: '체육활동',
-                image: './이미지/농구장.jpg', // 이미지 파일이 존재한다고 가정
-                type: 'building',
-                position: { lat: 37.39667684947615, lng: 126.90994063692402 }
-            },
-            {
-                id: '학생복지센터',
-                name: '학생복지센터',
-                description: '학생지원 시설',
-                image: './이미지/학생복지센터.jpg', // 스크린샷에서 확인된 파일
-                type: 'building',
-                position: { lat: 37.3962916630711, lng: 126.90994109780426 }
-            },
-            {
-                id: '창의교육센터',
-                name: '창의교육센터',
-                description: '항공서비스과 항공실습실, 카페',
-                image: './이미지/창의교육센터.png', // 이미지 파일이 존재한다고 가정
-                type: 'building',
-                position: { lat: 37.39737971014044, lng: 126.91002449732869 }
-            },
-            {
-                id: '문화2관',
-                name: '문화2관',
-                description: '문화콘텐츠계열 강의실',
-                image: './이미지/문화2관.png', // 스크린샷에서 확인된 파일
-                type: 'building',
-                position: { lat: 37.396035307891026, lng: 126.90758674745014 }
-            },
-            {
-                id: '대학본관',
-                name: '대학본관',
-                description: '유통물류학과, 총장실',
-                image: './이미지/대학본관.png', // 스크린샷에서 확인된 파일
-                type: 'building',
-                position: { lat: 37.397467068076345, lng: 126.90938066144557 }
-            },
-            {
-                id: '학술정보관',
-                name: '학술정보관',
-                description: '독서실',
-                image: './이미지/학술정보관.png', // 이미지 파일이 존재한다고 가정
-                type: 'building',
-                position: { lat: 37.39637467129301, lng: 126.906603807587 }
-            }
-        ];
-            
+           const buildingData = [
+               {
+                   id: '공학1관',
+                   name: '공학1관',
+                   description: '공학계열 강의실, 실험실',
+                   image: '이미지/공학1관.png',
+                   type: 'building',
+                   position: { lat: 37.39632767479923, lng: 126.90699348692698 }
+               },
+               {
+                   id: '자연과학관',
+                   name: '자연과학관',
+                   description: '반려동물보건학, 반려동물산업학',
+                   image: '이미지/자연과학관.png',
+                   type: 'building',
+                   position: { lat:  37.39669466288283, lng: 126.90676716508685 }
+               },
+               {
+                   id: '식품과학관',
+                   name: '식품과학관',
+                   description: '식품영양학과, 조리실습실',
+                   image: '이미지/식품과학관.png',
+                   type: 'building',
+                   position: { lat: 37.39714809720343, lng: 126.90762208499473 }
+               },
+               {
+                   id: '도의관',
+                   name: '도의관',
+                   description: '교양 수업, 강당',
+                   image: '이미지/도의관.png',
+                   type: 'building',
+                   position: { lat: 37.39679932128769, lng: 126.90809683728425 }
+               },
+               {
+                   id: '공학2관',
+                   name: '공학2관',
+                   description: '공학계열 실습실, 연구실',
+                   image: '이미지/공학2관.png',
+                   type: 'building',
+                   position: { lat: 37.396789747114205, lng: 126.90737406929797 }
+               },
+               {
+                   id: '문화1관',
+                   name: '문화1관',
+                   description: '인문사회계열 강의실',
+                   image: '이미지/문화1관.png',
+                   type: 'building',
+                   position: { lat:  37.39576992475254, lng: 126.90812350405056 }
+               },
+               {
+                   id: '연곡문화센터',
+                   name: '연곡문화센터',
+                   description: '기숙사, 컨벤션홀, 평생교육원',
+                   image: '이미지/연곡문화센터.png',
+                   type: 'building',
+                   position: { lat: 37.398046192024914, lng: 126.90966512810492 }
+               },
+               {
+                   id: '창조관',
+                   name: '창조관',
+                   description: '학과 사무실, 강의실',
+                   image: '이미지/창조관.png',
+                   type: 'building',
+                   position: { lat: 37.39730791148064, lng: 126.91039726900274 }
+               },
+               {
+                   id: '운동장',
+                   name: '운동장',
+                   description: '체육활동, 행사장',
+                   image: '이미지/운동장.jpg',
+                   type: 'building',
+                   position: { lat: 37.39673944839101, lng: 126.90932224700094 }
+               },
+               {
+                   id: '농구장',
+                   name: '농구장',
+                   description: '체육활동',
+                   image: '이미지/농구장.jpg',
+                   type: 'building',
+                   position: { lat: 37.39667684947615, lng: 126.90994063692402 }
+               },
+               {
+                   id: '학생복지센터',
+                   name: '학생복지센터',
+                   description: '학생지원 시설',
+                   image: '이미지/학생복지센터.jpg',
+                   type: 'building',
+                   position: { lat:  37.3962916630711, lng: 126.90994109780426 }
+               },
+               {
+                   id: '창의교육센터',
+                   name: '창의교육센터',
+                   description: '항공서비스과 항공실습실, 카페',
+                   image: '이미지/창의교육센터.png',
+                   type: 'building',
+                   position: { lat:  37.39737971014044, lng: 126.91002449732869 }
+               },
+               {
+                   id: '문화2관',
+                   name: '문화2관',
+                   description: '문화콘텐츠계열 강의실',
+                   image: '이미지/문화2관.png',
+                   type: 'building',
+                   position: { lat:  37.396035307891026, lng: 126.90758674745014 }
+               },
+               {
+                   id: '대학본관',
+                   name: '대학본관',
+                   description: '유통물류학과, 총장실',
+                   image: '이미지/대학본관.png',
+                   type: 'building',
+                   position: { lat:  37.397467068076345, lng: 126.90938066144557 }
+               },
+               {
+                   id: '학술정보관',
+                   name: '학술정보관',
+                   description: '독서실',
+                   image: '이미지/학술정보관.png',
+                   type: 'building',
+                   position: { lat:  37.39637467129301, lng: 126.906603807587 }
+               }
+           ];
 
-        // 편의시설 데이터 정의
-        const facilityData = [
+       // 편의시설 데이터 정의
+       const facilityData = [
            {
                id: 'cafeteria',
                name: '학생식당',
                description: '학생복지센터 2층',
-               image: '/api/placeholder/150/100',
+               image: '이미지/연성대_식당.jpg',
                type: 'facility',
                position: { lat: 37.377100, lng: 126.663600 },
                relatedBuilding: '학생복지센터'
@@ -1656,7 +1655,7 @@
                id: 'cafe',
                name: '카페 연성',
                description: '문화1관 1층',
-               image: '/api/placeholder/150/100',
+               image: '이미지/카페.png',
                type: 'facility',
                position: { lat: 37.378300, lng: 126.662700 },
                relatedBuilding: '문화1관'
@@ -1665,7 +1664,7 @@
                id: 'convenience',
                name: 'CU 편의점',
                description: '학생복지센터 1층',
-               image: '/api/placeholder/150/100',
+               image: '이미지/emart24(편의점).png',
                type: 'facility',
                position: { lat: 37.377100, lng: 126.663700 },
                relatedBuilding: '학생복지센터'
@@ -1674,12 +1673,11 @@
                id: 'atm',
                name: 'ATM',
                description: '학생복지센터 1층',
-               image: '/api/placeholder/150/100',
+               image: '이미지/atm.jpg',
                type: 'facility',
                position: { lat: 37.377100, lng: 126.663800 },
                relatedBuilding: '학생복지센터'
-           },
-           
+           }
        ];
        
         // 네이버 지도 관련 변수
@@ -2279,7 +2277,7 @@
                            drawStraightRoute(start, end);
                        }
                    } else {
-                       console.error('경로 결과를 찾을 수 없습니다.');
+                    console.error('경로 결과를 찾을 수 없습니다.');
                        drawStraightRoute(start, end);
                    }
                });
@@ -3048,36 +3046,36 @@
    
            // 카테고리 태그 활성화 상태 변경
            document.querySelectorAll('.category-tag').forEach(tag => {
-           tag.classList.remove('active');
-       });
+               tag.classList.remove('active');
+           });
    
-       // 선택된 카테고리 활성화
-       document.querySelectorAll('.category-tag').forEach(tag => {
-           if (tag.textContent.toLowerCase().includes(category) || 
-           (category === 'all' && tag.textContent === '전체')) {
-               tag.classList.add('active');
-           }
-       });
-   }
+           // 선택된 카테고리 활성화
+           document.querySelectorAll('.category-tag').forEach(tag => {
+               if (tag.textContent.toLowerCase().includes(category) || 
+                   (category === 'all' && tag.textContent === '전체')) {
+                   tag.classList.add('active');
+               }
+           });
+       }
 
-   // 강의 필터링 - 알림 없이 필터링만 수행하도록 수정
-   function filterLectures(category) {
-       // alert(`${category} 카테고리의 강의를 필터링합니다.`); // 알림 제거
+       // 강의 필터링 - 알림 없이 필터링만 수행하도록 수정
+       function filterLectures(category) {
+           // alert(`${category} 카테고리의 강의를 필터링합니다.`); // 알림 제거
    
-       // 카테고리 태그 활성화 상태 변경
-       const communityTab = document.getElementById('community-tab');
-       communityTab.querySelectorAll('.category-tag').forEach(tag => {
-           tag.classList.remove('active');
-       });
+           // 카테고리 태그 활성화 상태 변경
+           const communityTab = document.getElementById('community-tab');
+           communityTab.querySelectorAll('.category-tag').forEach(tag => {
+               tag.classList.remove('active');
+           });
    
-       // 선택된 카테고리 활성화
-       communityTab.querySelectorAll('.category-tag').forEach(tag => {
-           if (tag.textContent.toLowerCase().includes(category) || 
-               (category === 'all' && tag.textContent === '전체')) {
-               tag.classList.add('active');
-           }
-       });
-   }
+           // 선택된 카테고리 활성화
+           communityTab.querySelectorAll('.category-tag').forEach(tag => {
+               if (tag.textContent.toLowerCase().includes(category) || 
+                   (category === 'all' && tag.textContent === '전체')) {
+                   tag.classList.add('active');
+               }
+           });
+       }
        
        // 페이지 이동 함수
        function goToPage(pageName) {
@@ -3110,7 +3108,7 @@
                    break;
                    
                case 'academic-calendar':
-               alert('학사일정 페이지로 이동합니다.');
+                   alert('학사일정 페이지로 이동합니다.');
                    break;
                    
                case 'library':
@@ -3144,37 +3142,36 @@
        }
        
        // 건물 상세 보기
-        // 건물 상세 보기 함수 수정
-        function showBuildingDetail(buildingId) {
-            alert(`${buildingId} 상세 페이지로 이동합니다.`);
-            
-            // 해당 건물의 데이터 찾기
-            const building = buildingData.find(b => b.id === buildingId);
-            
-            if (building && naverMap) {
-                // 지도를 표시하고 해당 건물로 이동
-                switchTab('facility');
-                
-                // 검색 초기화
-                clearSearch();
-                
-                // 건물 위치로 지도 중심 이동
-                const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-                naverMap.setCenter(position);
-                naverMap.setZoom(18); // 더 가깝게 줌인
-                
-                // 마커 찾기
-                const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
-                
-                if (markerIndex !== -1) {
-                    // 다른 모든 정보창 닫기
-                    infoWindows.forEach(window => window.close());
-                    
-                    // 해당 마커의 정보창 열기
-                    infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
-                }
-            }
-        }
+       function showBuildingDetail(buildingId) {
+           alert(`${buildingId} 상세 페이지로 이동합니다.`);
+           
+           // 해당 건물의 데이터 찾기
+           const building = buildingData.find(b => b.id === buildingId);
+           
+           if (building && naverMap) {
+               // 지도를 표시하고 해당 건물로 이동
+               switchTab('facility');
+               
+               // 검색 초기화
+               clearSearch();
+               
+               // 건물 위치로 지도 중심 이동
+               const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+               naverMap.setCenter(position);
+               naverMap.setZoom(18); // 더 가깝게 줌인
+               
+               // 마커 찾기
+               const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+               
+               if (markerIndex !== -1) {
+                   // 다른 모든 정보창 닫기
+                   infoWindows.forEach(window => window.close());
+                   
+                   // 해당 마커의 정보창 열기
+                   infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
+               }
+           }
+       }
             
        // 편의 시설 상세 보기
        function showFacilityDetail(facilityId) {
@@ -3660,7 +3657,7 @@
                    // 메뉴 설정 업데이트
                    localStorage.setItem('activeMenus', JSON.stringify(defaultOrder));
                }
-           } else {
+            } else {
                // 기본값으로 설정
                const defaultMenus = [
                    { name: '홈', icon: '🏠', order: 0 },
@@ -3712,139 +3709,138 @@
            }
        }
 
-         // "undefined" 문제 해결을 위한 searchFacilities 함수 수정
-        // 검색 기능 수정 - "undefined" 문제 해결 및 검색 결과 UI 개선
-        function searchFacilities(query) {
-            // 검색어가 비어있으면 원래 컨텐츠 표시
-            if (!query || !query.trim()) {
-                document.getElementById('search-results').style.display = 'none';
-                document.getElementById('no-results').style.display = 'none';
-                document.getElementById('original-content').style.display = 'block';
-                
-                // 지도 컨테이너가 전체적으로 표시되도록 추가
-                const mapContainer = document.getElementById('naverMap');
-                if (mapContainer) {
-                    mapContainer.style.width = '100%';
-                    mapContainer.style.height = '350px';
-                }
-                
-                // 지도 갱신
-                if (naverMap) {
-                    setTimeout(() => {
-                        window.dispatchEvent(new Event('resize'));
-                        naverMap.refresh();
-                    }, 100);
-                }
-                return;
-            }
-            
-            query = query.toLowerCase().trim();
-            
-            // 건물 및 편의시설 데이터 통합 검색
-            const allFacilities = [...buildingData, ...facilityData];
-            
-            // 검색 결과와 관련성 점수 계산
-            const scoredResults = allFacilities.map(item => {
-                let score = 0;
-                const name = item.name || '';
-                const description = item.description || '';
-                const id = item.id || '';
-                const relatedBuilding = item.relatedBuilding || '';
-                
-                // 이름 매칭 - 가장 높은 점수
-                if (name.toLowerCase() === query) {
-                    score += 100; // 정확한 일치
-                } else if (name.toLowerCase().startsWith(query)) {
-                    score += 75; // 시작 부분 일치
-                } else if (name.toLowerCase().includes(query)) {
-                    score += 50; // 부분 일치
-                }
-                
-                // 설명 매칭
-                if (description.toLowerCase().includes(query)) {
-                    score += 25;
-                }
-                
-                // 빌딩 ID/관련 건물 매칭
-                if (id.toLowerCase().includes(query)) {
-                    score += 40;
-                }
-                
-                // 관련 건물 매칭 (편의시설의 경우)
-                if (relatedBuilding.toLowerCase().includes(query)) {
-                    score += 35;
-                }
-                
-                return { item, score };
-            }).filter(result => result.score > 0); // 점수가 0보다 큰 결과만 포함
-            
-            // 점수에 따라 결과 정렬
-            scoredResults.sort((a, b) => b.score - a.score);
-            
-            // 검색 결과 추출
-            const results = scoredResults.map(result => result.item);
-            
-            // 검색 결과 컨테이너
-            const searchResultsContainer = document.getElementById('search-results');
-            searchResultsContainer.innerHTML = '';
-            
-            // 결과 표시
-            if (results.length > 0) {
-                // 검색 결과 표시
-                results.forEach(item => {
-                    // 명시적으로 변수 정의 (undefined 방지)
-                    const itemName = item.name || '';
-                    const itemDesc = item.description || '';
-                    const itemId = item.id || '';
-                    const itemImage = item.image || '/api/placeholder/80/60';
-                    
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'building-item';
-                    resultItem.onclick = function() {
-                        if (item.type === 'building') {
-                            showBuildingDetail(itemId);
-                        } else {
-                            showFacilityDetail(itemId);
-                        }
-                    };
-                    
-                    // 검색어 하이라이트 처리
-                    const highlightedName = highlightText(itemName, query);
-                    const highlightedDescription = highlightText(itemDesc, query);
-                    
-                    resultItem.innerHTML = `
-                        <div class="building-image">
-                            <img src="${itemImage}" alt="${itemName}">
-                        </div>
-                        <div class="building-info-container">
-                            <div class="building-info">
-                                <div class="building-name">${highlightedName}</div>
-                                <div class="building-description">${highlightedDescription}</div>
-                            </div>
-                            <div class="building-nav-button" onclick="navigateToBuilding('${itemId}', event)">
-                                <span>길찾기</span>
-                                <span>🧭</span>
-                            </div>
-                        </div>
-                    `;
-                    
-                    searchResultsContainer.appendChild(resultItem);
-                });
-                
-                // 검색 결과 표시, 원래 컨텐츠 숨기기
-                searchResultsContainer.style.display = 'block';
-                document.getElementById('no-results').style.display = 'none';
-                document.getElementById('original-content').style.display = 'none';
-            } else {
-                // 검색 결과 없음 표시
-                searchResultsContainer.style.display = 'none';
-                document.getElementById('no-results').style.display = 'block';
-                document.getElementById('original-content').style.display = 'none';
-            }
-            
-            // 클리어 버튼 표시 여부 업데이트
-            updateClearButton();
-        }
+       // 검색 기능 수정 - "undefined" 문제 해결 및 검색 결과 UI 개선
+       function searchFacilities(query) {
+           // 검색어가 비어있으면 원래 컨텐츠 표시
+           if (!query || !query.trim()) {
+               document.getElementById('search-results').style.display = 'none';
+               document.getElementById('no-results').style.display = 'none';
+               document.getElementById('original-content').style.display = 'block';
+               
+               // 지도 컨테이너가 전체적으로 표시되도록 추가
+               const mapContainer = document.getElementById('naverMap');
+               if (mapContainer) {
+                   mapContainer.style.width = '100%';
+                   mapContainer.style.height = '350px';
+               }
+               
+               // 지도 갱신
+               if (naverMap) {
+                   setTimeout(() => {
+                       window.dispatchEvent(new Event('resize'));
+                       naverMap.refresh();
+                   }, 100);
+               }
+               return;
+           }
+           
+           query = query.toLowerCase().trim();
+           
+           // 건물 및 편의시설 데이터 통합 검색
+           const allFacilities = [...buildingData, ...facilityData];
+           
+           // 검색 결과와 관련성 점수 계산
+           const scoredResults = allFacilities.map(item => {
+               let score = 0;
+               const name = item.name || '';
+               const description = item.description || '';
+               const id = item.id || '';
+               const relatedBuilding = item.relatedBuilding || '';
+               
+               // 이름 매칭 - 가장 높은 점수
+               if (name.toLowerCase() === query) {
+                   score += 100; // 정확한 일치
+               } else if (name.toLowerCase().startsWith(query)) {
+                   score += 75; // 시작 부분 일치
+               } else if (name.toLowerCase().includes(query)) {
+                   score += 50; // 부분 일치
+               }
+               
+               // 설명 매칭
+               if (description.toLowerCase().includes(query)) {
+                   score += 25;
+               }
+               
+               // 빌딩 ID/관련 건물 매칭
+               if (id.toLowerCase().includes(query)) {
+                   score += 40;
+               }
+               
+               // 관련 건물 매칭 (편의시설의 경우)
+               if (relatedBuilding.toLowerCase().includes(query)) {
+                   score += 35;
+               }
+               
+               return { item, score };
+           }).filter(result => result.score > 0); // 점수가 0보다 큰 결과만 포함
+           
+           // 점수에 따라 결과 정렬
+           scoredResults.sort((a, b) => b.score - a.score);
+           
+           // 검색 결과 추출
+           const results = scoredResults.map(result => result.item);
+           
+           // 검색 결과 컨테이너
+           const searchResultsContainer = document.getElementById('search-results');
+           searchResultsContainer.innerHTML = '';
+           
+           // 결과 표시
+           if (results.length > 0) {
+               // 검색 결과 표시
+               results.forEach(item => {
+                   // 명시적으로 변수 정의 (undefined 방지)
+                   const itemName = item.name || '';
+                   const itemDesc = item.description || '';
+                   const itemId = item.id || '';
+                   const itemImage = item.image || '/api/placeholder/80/60';
+                   
+                   const resultItem = document.createElement('div');
+                   resultItem.className = 'building-item';
+                   resultItem.onclick = function() {
+                       if (item.type === 'building') {
+                           showBuildingDetail(itemId);
+                       } else {
+                           showFacilityDetail(itemId);
+                       }
+                   };
+                   
+                   // 검색어 하이라이트 처리
+                   const highlightedName = highlightText(itemName, query);
+                   const highlightedDescription = highlightText(itemDesc, query);
+                   
+                   resultItem.innerHTML = `
+                       <div class="building-image">
+                           <img src="${itemImage}" alt="${itemName}">
+                       </div>
+                       <div class="building-info-container">
+                           <div class="building-info">
+                               <div class="building-name">${highlightedName}</div>
+                               <div class="building-description">${highlightedDescription}</div>
+                           </div>
+                           <div class="building-nav-button" onclick="navigateToBuilding('${itemId}', event)">
+                               <span>길찾기</span>
+                               <span>🧭</span>
+                           </div>
+                       </div>
+                   `;
+                   
+                   searchResultsContainer.appendChild(resultItem);
+               });
+               
+               // 검색 결과 표시, 원래 컨텐츠 숨기기
+               searchResultsContainer.style.display = 'block';
+               document.getElementById('no-results').style.display = 'none';
+               document.getElementById('original-content').style.display = 'none';
+           } else {
+               // 검색 결과 없음 표시
+               searchResultsContainer.style.display = 'none';
+               document.getElementById('no-results').style.display = 'block';
+               document.getElementById('original-content').style.display = 'none';
+           }
+           
+           // 클리어 버튼 표시 여부 업데이트
+           updateClearButton();
+       }
                 
        // 검색어 하이라이트 처리 함수
        function highlightText(text, query) {
@@ -3868,7 +3864,6 @@
            }
        }
 
-       // 검색 초기화 함수
        // 검색 초기화 함수 수정
        function clearSearch() {
            const searchInput = document.getElementById('facility-search-input');
