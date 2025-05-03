@@ -2424,8 +2424,7 @@ function drawStraightRoute(start, end) {
                     return handleImageError(this);
                 };
             });
-            
-            // 동적으로 생성되는 이미지에 대한 오류 처리
+             // 동적으로 생성되는 이미지에 대한 오류 처리
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes) {
@@ -2446,7 +2445,7 @@ function drawStraightRoute(start, end) {
                     }
                 });
             });
-            
+
             // 전체 문서 변화 감시
             observer.observe(document.body, {
                 childList: true,
