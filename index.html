@@ -1517,131 +1517,132 @@
         
         <script>
            // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
-           const buildingData = [
-               {
-                   id: '공학1관',
-                   name: '공학1관',
-                   description: '공학계열 강의실, 실험실',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat: 37.39632767479923, lng: 126.90699348692698 }
-               },
-               {
-                   id: '자연과학관',
-                   name: '자연과학관',
-                   description: '반려동물보건학, 반려동물산업학',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat:  37.39669466288283, lng: 126.90676716508685 }
-               },
-               {
-                   id: '식품과학관',
-                   name: '식품과학관',
-                   description: '식품영양학과, 조리실습실',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat: 37.39714809720343, lng: 126.90762208499473 }
-               },
-               {
-                   id: '도의관',
-                   name: '도의관',
-                   description: '교양 수업, 강당',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat: 37.39679932128769, lng: 126.90809683728425 }
-               },
-               {
-                   id: '공학2관',
-                   name: '공학2관',
-                   description: '공학계열 실습실, 연구실',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat: 37.396789747114205, lng: 126.90737406929797 }
-               },
-               {
-                   id: '문화1관',
-                   name: '문화1관',
-                   description: '인문사회계열 강의실',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat:  37.39576992475254, lng: 126.90812350405056 }
-               },
-               {
-                   id: '연곡문화센터',
-                   name: '연곡문화센터',
-                   description: '기숙사, 컨벤션홀, 평생교육원',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat: 37.398046192024914, lng: 126.90966512810492 }
-               },
-               {
-                   id: '창조관',
-                   name: '창조관',
-                   description: '학과 사무실, 강의실',
-                   image: '/api/placeholder/80/60',
-                   type: 'building',
-                   position: { lat: 37.39730791148064, lng: 126.91039726900274 }
-               },
-               {
-                   id: '운동장',
-                   name: '운동장',
-                   description: '체육활동, 행사장',
-                   image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39673944839101, lng: 126.90932224700094 }
-           },
-           {
-               id: '농구장',
-               name: '농구장',
-               description: '체육활동',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat: 37.39667684947615, lng: 126.90994063692402 }
-           },
-           {
-               id: '학생복지센터',
-               name: '학생복지센터',
-               description: '학생지원 시설',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.3962916630711, lng: 126.90994109780426 }
-           },
-           {
-               id: '창의교육센터',
-               name: '창의교육센터',
-               description: '항공서비스과 항공실습실, 카페',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.39737971014044, lng: 126.91002449732869 }
-           },
-           {
-               id: '문화2관',
-               name: '문화2관',
-               description: ' 문화콘텐츠계열 강의실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.396035307891026, lng: 126.90758674745014 }
-           },
-           {
-               id: '대학본관',
-               name: '대학본관',
-               description: '유통물류학과, 총장실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.397467068076345, lng: 126.90938066144557 }
-           },
-           {
-               id: '학술정보관',
-               name: '학술정보관',
-               description: '독서실',
-               image: '/api/placeholder/80/60',
-               type: 'building',
-               position: { lat:  37.39637467129301, lng: 126.906603807587 }
-           }
-       ];
+        const buildingData = [
+            {
+                id: '공학1관',
+                name: '공학1관',
+                description: '공학계열 강의실, 실험실',
+                image: './이미지/공학1관.png', // placeholder에서 실제 이미지 경로로 변경
+                type: 'building',
+                position: { lat: 37.39632767479923, lng: 126.90699348692698 }
+            },
+            {
+                id: '자연과학관',
+                name: '자연과학관',
+                description: '반려동물보건학, 반려동물산업학',
+                image: './이미지/자연과학관.png', // 실제 이미지 파일이 있다면 경로 변경
+                type: 'building',
+                position: { lat: 37.39669466288283, lng: 126.90676716508685 }
+            },
+            {
+                id: '식품과학관',
+                name: '식품과학관',
+                description: '식품영양학과, 조리실습실',
+                image: './이미지/식품과학관.png', // 이미지 파일이 존재한다고 가정
+                type: 'building',
+                position: { lat: 37.39714809720343, lng: 126.90762208499473 }
+            },
+            {
+                id: '도의관',
+                name: '도의관',
+                description: '교양 수업, 강당',
+                image: './이미지/도의관.png', // 이미지 파일이 존재한다고 가정
+                type: 'building',
+                position: { lat: 37.39679932128769, lng: 126.90809683728425 }
+            },
+            {
+                id: '공학2관',
+                name: '공학2관',
+                description: '공학계열 실습실, 연구실',
+                image: './이미지/공학2관.png', // 이미지 파일이 존재한다고 가정
+                type: 'building',
+                position: { lat: 37.396789747114205, lng: 126.90737406929797 }
+            },
+            {
+                id: '문화1관',
+                name: '문화1관',
+                description: '인문사회계열 강의실',
+                image: './이미지/문화1관.png', // 스크린샷에서 확인된 파일
+                type: 'building',
+                position: { lat: 37.39576992475254, lng: 126.90812350405056 }
+            },
+            {
+                id: '연곡문화센터',
+                name: '연곡문화센터',
+                description: '기숙사, 컨벤션홀, 평생교육원',
+                image: './이미지/연곡문화센터.png', // 스크린샷에서 확인된 파일
+                type: 'building',
+                position: { lat: 37.398046192024914, lng: 126.90966512810492 }
+            },
+            {
+                id: '창조관',
+                name: '창조관',
+                description: '학과 사무실, 강의실',
+                image: './이미지/창조관.png', // 이미지 파일이 존재한다고 가정
+                type: 'building',
+                position: { lat: 37.39730791148064, lng: 126.91039726900274 }
+            },
+            {
+                id: '운동장',
+                name: '운동장',
+                description: '체육활동, 행사장',
+                image: './이미지/운동장.jpg', // 스크린샷에서 확인된 파일
+                type: 'building',
+                position: { lat: 37.39673944839101, lng: 126.90932224700094 }
+            },
+            {
+                id: '농구장',
+                name: '농구장',
+                description: '체육활동',
+                image: './이미지/농구장.jpg', // 이미지 파일이 존재한다고 가정
+                type: 'building',
+                position: { lat: 37.39667684947615, lng: 126.90994063692402 }
+            },
+            {
+                id: '학생복지센터',
+                name: '학생복지센터',
+                description: '학생지원 시설',
+                image: './이미지/학생복지센터.jpg', // 스크린샷에서 확인된 파일
+                type: 'building',
+                position: { lat: 37.3962916630711, lng: 126.90994109780426 }
+            },
+            {
+                id: '창의교육센터',
+                name: '창의교육센터',
+                description: '항공서비스과 항공실습실, 카페',
+                image: './이미지/창의교육센터.png', // 이미지 파일이 존재한다고 가정
+                type: 'building',
+                position: { lat: 37.39737971014044, lng: 126.91002449732869 }
+            },
+            {
+                id: '문화2관',
+                name: '문화2관',
+                description: '문화콘텐츠계열 강의실',
+                image: './이미지/문화2관.png', // 스크린샷에서 확인된 파일
+                type: 'building',
+                position: { lat: 37.396035307891026, lng: 126.90758674745014 }
+            },
+            {
+                id: '대학본관',
+                name: '대학본관',
+                description: '유통물류학과, 총장실',
+                image: './이미지/대학본관.png', // 스크린샷에서 확인된 파일
+                type: 'building',
+                position: { lat: 37.397467068076345, lng: 126.90938066144557 }
+            },
+            {
+                id: '학술정보관',
+                name: '학술정보관',
+                description: '독서실',
+                image: './이미지/학술정보관.png', // 이미지 파일이 존재한다고 가정
+                type: 'building',
+                position: { lat: 37.39637467129301, lng: 126.906603807587 }
+            }
+        ];
+            
 
-       // 편의시설 데이터 정의
-       const facilityData = [
+        // 편의시설 데이터 정의
+        const facilityData = [
            {
                id: 'cafeteria',
                name: '학생식당',
