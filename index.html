@@ -1695,59 +1695,159 @@
        // 페이지네이션 변수
        let currentPage = 1;
        const buildingsPerPage = 5;
-       
+
+
+
+
+
        // 시설 탭 초기화 함수 (페이지네이션 포함)
        function initFacilityTab() {
            loadBuildingsByPage(currentPage);
            updatePaginationControls();
        }
        
-       // 해당 페이지의 건물 목록 로드 함수
-       function loadBuildingsByPage(page) {
-           // 건물 목록 컨테이너
-           const buildingListElement = document.querySelector('#facility-tab .building-list');
-           if (!buildingListElement) return;
-           
-           // 목록 초기화
-           buildingListElement.innerHTML = '';
-           
-           // 페이지에 해당하는 건물 인덱스 계산
-           const startIndex = (page - 1) * buildingsPerPage;
-           const endIndex = Math.min(startIndex + buildingsPerPage, buildingData.length);
-           
-           // 페이지에 해당하는 건물 목록 생성
-           for (let i = startIndex; i < endIndex; i++) {
-               const building = buildingData[i];
-               
-               const listItem = document.createElement('li');
-               listItem.className = 'building-item';
-               listItem.onclick = function() { 
-                   showBuildingDetail(building.id);
-               };
-               
-               listItem.innerHTML = `
-                   <div class="building-image">
-                       <img src="${building.image}" alt="${building.name}">
-                   </div>
-                   <div class="building-info-container">
-                       <div class="building-info">
-                           <div class="building-name">${building.name}</div>
-                           <div class="building-description">${building.description}</div>
-                       </div>
-                       <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
-                           <span>길찾기</span>
-                           <span>🧭</span>
-                       </div>
-                   </div>
-               `;
-               
-               buildingListElement.appendChild(listItem);
-           }
-           
-           // 현재 페이지 저장
-           currentPage = page;
-       }
-       
+        // 해당 페이지의 건물 목록 로드 함수
+        function loadBuildingsByPage(page) {
+            // 건물 목록 컨테이너
+            const buildingListElement = document.querySelector('#facility-tab .building-list');
+            if (!buildingListElement) return;
+            
+            // 목록 초기화
+            buildingListElement.innerHTML = '';
+            
+            // 페이지에 해당하는 건물 인덱스 계산
+            const startIndex = (page - 1) * buildingsPerPage;
+            const endIndex = Math.min(startIndex + buildingsPerPage, buildingData.length);
+            
+            // 페이지에 해당하는 건물 목록 생성
+            for (let i = startIndex; i < endIndex; i++) {
+                const building = buildingData[i];
+                
+                // 이미지 URL 처리
+                let imageUrl = building.image;
+                if (imageUrl && imageUrl.includes('/api/placeholder/')) {
+                    const dimensions = imageUrl.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+                    if (dimensions && dimensions.length === 3) {
+                        const width = dimensions[1];
+                        const height = dimensions[2];
+                        imageUrl = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(building.name)}`;
+                    }
+                }
+                
+                const listItem = document.createElement('li');
+                listItem.className = 'building-item';
+                listItem.onclick = function() { 
+                    showBuildingDetail(building.id);
+                };
+                
+                listItem.innerHTML = `
+                    <div class="building-image">
+                        <img src="${imageUrl}" alt="${building.name}">
+                    </div>
+                    <div class="building-info-container">
+                        <div class="building-info">
+                            <div class="building-name">${building.name}</div>
+                            <div class="building-description">${building.description}</div>
+                        </div>
+                        <div class="building-nav-button" onclick="navigateToBuilding('${building.id}', event)">
+                            <span>길찾기</span>
+                            <span>🧭</span>
+                        </div>
+                    </div>
+                `;
+                
+                buildingListElement.appendChild(listItem);
+            }
+            
+            // 현재 페이지 저장
+            currentPage = page;
+        }
+            
+
+        // 모든 이미지 URL을 확인하고 수정하는 함수
+        function fixAllImageUrls() {
+            console.log('모든 이미지 URL 확인 및 수정 중...');
+            
+            // 문서 내 모든 이미지 태그 선택
+            document.querySelectorAll('img').forEach(img => {
+                const src = img.getAttribute('src');
+                
+                // placeholder URL 확인
+                if (src && src.includes('/api/placeholder/')) {
+                    const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+                    if (dimensions && dimensions.length === 3) {
+                        const width = dimensions[1];
+                        const height = dimensions[2];
+                        const altText = img.getAttribute('alt') || 'Image';
+                        
+                        // placehold.co 서비스로 대체
+                        const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
+                        console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
+                        img.src = newSrc;
+                    }
+                }
+            });
+            
+            console.log('모든 이미지 URL 수정 완료');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(updateAllProfileImages, 100);
+            
+            // 이미지 URL 수정 함수 실행
+            fixAllImageUrls();
+            
+            // localStorage 변경 감지를 위한 이벤트 리스너
+            window.addEventListener('storage', function(event) {
+                // 프로필 관련 변경사항 감지
+                if (event.key === 'profileUpdated' || 
+                    event.key === 'profileImageUpdated' || 
+                    event.key.includes('_profileImage') || 
+                    event.key.includes('_customProfileImage')) {
+                    updateAllProfileImages();
+                }
+            });
+            
+            // 카테고리 필터 기능
+            initCategoryFilter();
+            
+            // 로그인 상태 체크 및 UI 업데이트
+            checkLoginStatus();
+            
+            // 저장된 위젯 설정 불러오기
+            loadWidgetSettings();
+            
+            // 시설 탭 초기화 (페이지네이션 포함)
+            initFacilityTab();
+            
+            // 네이버 지도 초기화
+            initNaverMap();
+            
+            // 검색 기능 초기화
+            initSearchFunctionality();
+            
+            // 탭 전환 시에도 이미지 URL 수정 함수 실행
+            const originalSwitchTab = window.switchTab;
+            window.switchTab = function(tabName) {
+                originalSwitchTab(tabName);
+                setTimeout(fixAllImageUrls, 200);
+            };
+            
+            // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+            window.addEventListener('pageshow', function(event) {
+                // bfcache에서 페이지가 복원된 경우에도 실행
+                if (event.persisted) {
+                    checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+                    updateAllProfileImages(); // 프로필 이미지도 다시 확인
+                    fixAllImageUrls(); // 이미지 URL도 다시 확인
+                }
+            });
+        });
+
+
+
+
+
        // 페이지네이션 컨트롤 업데이트
        function updatePaginationControls() {
            // 총 페이지 수 계산
