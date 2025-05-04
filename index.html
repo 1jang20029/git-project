@@ -3358,17 +3358,19 @@
                     // 로그인 버튼 표시, 프로필 드롭다운 숨김
                     if (loginButton) loginButton.style.display = 'block';
                     if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
-           
+            
                     // 프로필 드롭다운이 열려있다면 닫기
                     const dropdown = document.querySelector('.profile-dropdown');
                     if (dropdown) dropdown.classList.remove('active');
                     // 홈 탭으로 전환
                     switchTab('home');
-           
+            
                     alert('로그아웃 되었습니다.');
                 }
             }
 
+            
+            
             // 회원 탈퇴 함수
             function deleteAccount() {
                 // 현재 로그인된 사용자 확인
