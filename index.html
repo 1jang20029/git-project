@@ -1870,46 +1870,75 @@
        
        // 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
        document.addEventListener('DOMContentLoaded', function() {
-           setTimeout(updateAllProfileImages, 100);
-           
-           // localStorage 변경 감지를 위한 이벤트 리스너
-           window.addEventListener('storage', function(event) {
-               // 프로필 관련 변경사항 감지
-               if (event.key === 'profileUpdated' || 
-                   event.key === 'profileImageUpdated' || 
-                   event.key.includes('_profileImage') || 
-                   event.key.includes('_customProfileImage')) {
-                   updateAllProfileImages();
-               }
-           });
-           
-           // 카테고리 필터 기능
-           initCategoryFilter();
-           
-           // 로그인 상태 체크 및 UI 업데이트
-           checkLoginStatus();
-           
-           // 저장된 위젯 설정 불러오기
-           loadWidgetSettings();
-           
-           // 시설 탭 초기화 (페이지네이션 포함)
-           initFacilityTab();
-           
-           // 네이버 지도 초기화
-           initNaverMap();
-           
-           // 검색 기능 초기화
-           initSearchFunctionality();
-           
-           // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
-           window.addEventListener('pageshow', function(event) {
-               // bfcache에서 페이지가 복원된 경우에도 실행
-               if (event.persisted) {
-                   checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
-                   updateAllProfileImages(); // 프로필 이미지도 다시 확인
-               }
-           });
-       });
+            // Placeholder 이미지 URL 문제 해결을 위한 코드
+            function fixPlaceholderImages() {
+                console.log('Placeholder 이미지 URL 수정 중...');
+                
+                // 모든 img 태그 중 placeholder를 사용하는 것 찾기
+                document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
+                    const src = img.getAttribute('src');
+                    const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+                    
+                    if (dimensions && dimensions.length === 3) {
+                        const width = dimensions[1];
+                        const height = dimensions[2];
+                        const altText = img.getAttribute('alt') || 'Image';
+                        
+                        // placehold.co 서비스로 대체
+                        const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
+                        console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
+                        img.src = newSrc;
+                    }
+                });
+                
+                console.log('Placeholder 이미지 URL 수정 완료');
+            }
+
+            // 즉시 실행하여 모든 이미지 URL 수정
+            fixPlaceholderImages();
+            
+            // 기존 초기화 코드 실행
+            setTimeout(updateAllProfileImages, 100);
+            
+            // localStorage 변경 감지를 위한 이벤트 리스너
+            window.addEventListener('storage', function(event) {
+                // 프로필 관련 변경사항 감지
+                if (event.key === 'profileUpdated' || 
+                    event.key === 'profileImageUpdated' || 
+                    event.key.includes('_profileImage') || 
+                    event.key.includes('_customProfileImage')) {
+                    updateAllProfileImages();
+                }
+            });
+            
+            // 카테고리 필터 기능
+            initCategoryFilter();
+            
+            // 로그인 상태 체크 및 UI 업데이트
+            checkLoginStatus();
+            
+            // 저장된 위젯 설정 불러오기
+            loadWidgetSettings();
+            
+            // 시설 탭 초기화 (페이지네이션 포함)
+            initFacilityTab();
+            
+            // 네이버 지도 초기화
+            initNaverMap();
+            
+            // 검색 기능 초기화
+            initSearchFunctionality();
+            
+            // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+            window.addEventListener('pageshow', function(event) {
+                // bfcache에서 페이지가 복원된 경우에도 실행
+                if (event.persisted) {
+                    checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+                    updateAllProfileImages(); // 프로필 이미지도 다시 확인
+                    fixPlaceholderImages(); // 이미지 URL도 다시 확인
+                }
+            });
+        });
        
        
         // 네이버 지도 초기화 함수
