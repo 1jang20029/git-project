@@ -120,6 +120,9 @@
         
         .verification-input {
             flex: 1;
+            height: 60px !important; /* 인증번호 입력란 높이 증가 */
+            font-size: 18px !important; /* 인증번호 입력란 글자 크기 증가 */
+            padding: 16px !important; /* 인증번호 입력란 패딩 증가 */
         }
         
         .timer {
@@ -151,6 +154,8 @@
         .button-secondary {
             background-color: #6c757d;
             min-width: 150px; /* 최소 너비 지정 */
+            height: 60px !important; /* 인증번호 전송 버튼 높이 증가 */
+            font-size: 16px !important; /* 인증번호 전송 버튼 글자 크기 증가 */
         }
         
         .result-container {
@@ -677,30 +682,30 @@
                     alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.');
                 });
         }
-        
         // 비밀번호 변경 (시뮬레이션)
         function resetUserPassword(userId, currentPw, newPw) {
-            return new Promise((resolve) => {
-                // 실제로는 서버 API를 호출하여 비밀번호 변경
-                let success = false;
-                
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && key.includes('_id') && localStorage.getItem(key) === userId) {
-                        const studentId = key.split('_')[1]; // 학번 추출
-                        const storedPw = localStorage.getItem(`user_${studentId}_pw`);
-                        
-                        if (storedPw === currentPw) {
-                            // 비밀번호 업데이트
-                            localStorage.setItem(`user_${studentId}_pw`, newPw);
-                            success = true;
-                            break;
+                return new Promise((resolve) => {
+                    // 실제로는 서버 API를 호출하여 비밀번호 변경
+                    let success = false;
+                    
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.includes('_id') && localStorage.getItem(key) === userId) {
+                            const studentId = key.split('_')[1]; // 학번 추출
+                            const storedPw = localStorage.getItem(`user_${studentId}_pw`);
+                            
+                            if (storedPw === currentPw) {
+                                // 비밀번호 업데이트
+                                localStorage.setItem(`user_${studentId}_pw`, newPw);
+                                success = true;
+                                break;
+                            }
                         }
                     }
-                }
-                resolve(success);
-            });
-        }
-    </script>
-</body>
+                    
+                    resolve(success);
+                });
+            }
+        </script>
+    </body>
 </html>
