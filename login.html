@@ -573,46 +573,31 @@
                     return;
                 }
                 
-                // 디버깅용 로그 - 저장된 정보 확인
-                console.log('저장된 상태:', safeStorage.getItem(`user_${studentId}_registered`));
-                console.log('저장된 비밀번호:', safeStorage.getItem(`user_${studentId}_password`));
-                
                 // 회원가입 여부 확인
-                const isRegistered = safeStorage.getItem(`user_${studentId}_registered`) === 'true';
+                const isRegistered = localStorage.getItem(`user_${studentId}_registered`) === 'true';
                 
                 if (!isRegistered) {
                     alert('등록되지 않은 학번입니다. 회원가입을 먼저 진행해주세요.');
                     return;
                 }
                 
-                // 비밀번호 검증 - 문자열로 저장/비교하는 것 확인
-                const storedPassword = safeStorage.getItem(`user_${studentId}_password`);
-                
-                if (storedPassword === null) {
-                    // 비밀번호가 저장되어 있지 않은 경우 처리
-                    console.error('저장된 비밀번호가 없습니다. 회원가입이 제대로 되지 않았습니다.');
-                    alert('회원정보에 문제가 있습니다. 다시 회원가입해주세요.');
-                    return;
-                }
+                // 비밀번호 검증
+                const storedPassword = localStorage.getItem(`user_${studentId}_password`);
                 
                 if (password !== storedPassword) {
-                    // 간단한 알림으로 변경
                     alert('아이디 또는 비밀번호가 일치하지 않습니다.');
-                    // 폼 초기화하지 않고 비밀번호만 비우기
-                    document.getElementById('password').value = '';
-                    document.getElementById('password').focus();
                     return;
                 }
                 
                 // 현재 로그인된 사용자 저장
-                safeStorage.setItem('currentLoggedInUser', studentId);
+                localStorage.setItem('currentLoggedInUser', studentId);
                 
                 // 최초 로그인 여부 확인
-                const isFirstLogin = safeStorage.getItem(`user_${studentId}_first_login`) === 'true';
+                const isFirstLogin = localStorage.getItem(`user_${studentId}_first_login`) === 'true';
                 
                 if (isFirstLogin) {
                     // 최초 로그인인 경우 위젯 설정 페이지로 이동
-                    safeStorage.setItem(`user_${studentId}_first_login`, 'false');
+                    localStorage.setItem(`user_${studentId}_first_login`, 'false');
                     alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
                     window.location.href = "widget-settings.html";
                 } else {
@@ -621,7 +606,6 @@
                     window.location.href = "index.html";
                 }
             }
-                        
 
 
         // URL 파라미터에서 새로 회원가입했는지 확인

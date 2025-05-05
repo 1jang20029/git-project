@@ -406,8 +406,6 @@
             
             // 유효성 검사 통과
             if (isValid) {
-                // 실제 구현 시 서버에 데이터 전송
-                
                 // 로컬 스토리지에 간단히 저장 (데모용)
                 localStorage.setItem(`user_${studentId}_registered`, 'true');
                 localStorage.setItem(`user_${studentId}_first_login`, 'true');
@@ -416,6 +414,8 @@
                 localStorage.setItem(`user_${studentId}_grade`, selectedGrade);
                 localStorage.setItem(`user_${studentId}_phone`, phone);
                 localStorage.setItem(`user_${studentId}_email`, email);
+                // 비밀번호 저장 (추가됨)
+                localStorage.setItem(`user_${studentId}_password`, password);
                 
                 alert('회원가입이 완료되었습니다!');
                 
@@ -423,6 +423,12 @@
                 window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
             }
         }
+
+
+
+        
+            
+    
     </script>
 </body>
 </html>
