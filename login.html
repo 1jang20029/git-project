@@ -848,21 +848,24 @@
                 
                 if (passwordToggle) {
                     passwordToggle.addEventListener('click', function() {
-                        // 비밀번호 필드 타입 전환
-                        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                        passwordField.setAttribute('type', type);
+                        // 현재 비밀번호 필드의 타입 확인
+                        const currentType = passwordField.type;
                         
-                        // 아이콘 변경
-                        if (type === 'text') {
-                            // 비밀번호 보임 상태 - 열린 눈
-                            passwordToggle.textContent = '👁️';
+                        if (currentType === 'password') {
+                            // 비밀번호를 표시하는 경우
+                            passwordField.type = 'text';
+                            // 열린 눈 아이콘으로 변경 (비밀번호 보임)
+                            passwordToggle.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/159/159604.png" alt="비밀번호 숨기기" class="toggle-icon">';
                         } else {
-                            // 비밀번호 숨김 상태 - 가려진 눈
-                            passwordToggle.textContent = '👁️‍🗨️';
+                            // 비밀번호를 숨기는 경우
+                            passwordField.type = 'password';
+                            // 가려진 눈 아이콘으로 변경 (비밀번호 숨김)
+                            passwordToggle.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/159/159078.png" alt="비밀번호 보기" class="toggle-icon">';
                         }
                     });
                 }
             });
+                    
         </script>
     </body>
 </html>
