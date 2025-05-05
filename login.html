@@ -393,6 +393,7 @@
                 width: 100%;
             }
 
+
             /* 비밀번호 토글 아이콘 스타일 */
             .password-toggle {
                 position: absolute;
@@ -400,13 +401,17 @@
                 top: 50%;
                 transform: translateY(-50%);
                 cursor: pointer;
-                font-size: 18px;
-                color: #888;
                 user-select: none;
             }
 
-            .password-toggle:hover {
-                color: #c62917;
+            .toggle-icon {
+                width: 20px;
+                height: 20px;
+                opacity: 0.6;
+            }
+
+            .toggle-icon:hover {
+                opacity: 1;
             }
 
             /* 눈 아이콘이 있는 경우 패딩 조정 */
@@ -442,7 +447,9 @@
                         <label class="form-label">비밀번호</label>
                         <div class="password-input-container">
                             <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
-                            <span class="password-toggle" id="passwordToggle">👁️‍🗨️</span>
+                            <span class="password-toggle" id="passwordToggle">
+                                <img src="https://cdn-icons-png.flaticon.com/512/565/565655.png" alt="비밀번호 보기" class="toggle-icon hide-password">
+                            </span>
                         </div>
                     </div>
                     
