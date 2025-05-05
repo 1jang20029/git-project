@@ -115,18 +115,21 @@
         .verification-group {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
         
         /* 수정된 부분: 인증번호 입력란 너비 증가 */
         .verification-input {
-            flex: 3;  /* 기존 1에서 3으로 변경 - 더 넓은 공간 할당 */
+            flex: 4;  /* 더 넓은 비율로 변경 (4:1) */
         }
         
         /* 수정된 부분: 인증번호 전송 버튼 너비 감소 */
         .button.button-secondary {
-            flex: 1;  /* 새로 추가 - 인증번호 전송 버튼에 상대적으로 작은 공간 할당 */
-            padding: 12px 8px;  /* 좌우 패딩 줄임 */
-            font-size: 13px;  /* 글자 크기 줄임 */
+            flex: 1;  /* 작은 공간 할당 */
+            min-width: 90px;  /* 최소 너비 설정 */
+            max-width: 110px;  /* 최대 너비 설정 */
+            padding: 10px 6px;  /* 패딩 더 줄임 */
+            font-size: 12px;  /* 글자 크기 더 줄임 */
             white-space: nowrap;  /* 텍스트 줄바꿈 방지 */
         }
         
