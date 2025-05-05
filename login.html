@@ -856,31 +856,29 @@
 
             // 비밀번호 표시/숨김 토글 기능
             document.addEventListener('DOMContentLoaded', function() {
-                const passwordField = document.getElementById('password');
-                const passwordToggle = document.getElementById('passwordToggle');
-                const eyeVisible = passwordToggle.querySelector('.eye-visible');
-                const eyeHidden = passwordToggle.querySelector('.eye-hidden');
+                // 비밀번호 필드와 토글 버튼 찾기
+                const passwordField = document.querySelector('input[type="password"]');
+                const passwordToggle = document.querySelector('.password-toggle, [id$="passwordToggle"]'); // 다양한 선택자로 시도
                 
-                if (passwordToggle) {
-                    passwordToggle.addEventListener('click', function() {
+                // 아이콘 요소가 이미 있기 때문에 기존 요소를 사용합니다
+                if (passwordField && passwordToggle) {
+                    passwordToggle.addEventListener('click', function(e) {
+                        e.preventDefault(); // 폼 제출 방지
+                        
                         // 현재 비밀번호 필드의 타입 확인
                         if (passwordField.type === 'password') {
                             // 비밀번호를 표시하는 경우
                             passwordField.type = 'text';
-                            // 가려진 눈 아이콘 표시, 보이는 눈 아이콘 숨김
-                            eyeVisible.style.display = 'none';
-                            eyeHidden.style.display = 'block';
                         } else {
                             // 비밀번호를 숨기는 경우
                             passwordField.type = 'password';
-                            // 보이는 눈 아이콘 표시, 가려진 눈 아이콘 숨김
-                            eyeVisible.style.display = 'block';
-                            eyeHidden.style.display = 'none';
                         }
                     });
                 }
             });
                     
+        
+        
         
         </script>
     </body>
