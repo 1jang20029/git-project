@@ -404,21 +404,13 @@
             }
 
             .eye-icon {
-                width: 20px;
-                height: 20px;
-                fill: #666;
+                width: 24px;
+                height: 24px;
+                opacity: 0.7;
             }
 
             .eye-icon:hover {
-                fill: #c62917;
-            }
-
-            .eye-closed path:last-child {
-                display: block;
-            }
-
-            .eye-open path:last-child {
-                display: none;
+                opacity: 1;
             }
 
             /* 눈 아이콘이 있는 경우 패딩 조정 */
@@ -455,11 +447,8 @@
                         <div class="password-input-container">
                             <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
                             <span class="password-toggle" id="passwordToggle">
-                                <svg class="eye-icon eye-closed" viewBox="0 0 24 24" width="24" height="24">
-                                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"/>
-                                    <path d="M12 6c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm0 10c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"/>
-                                    <path d="M3 3L21 21" stroke="black" stroke-width="2"/>
-                                </svg>
+                                <!-- 초기 상태: 눈 모양 아이콘 (비밀번호 숨김) -->
+                                <img src="https://cdn-icons-png.flaticon.com/512/709/709612.png" alt="비밀번호 보기" class="toggle-icon eye-icon">
                             </span>
                         </div>
                     </div>
@@ -859,24 +848,29 @@
                 
                 if (passwordToggle) {
                     passwordToggle.addEventListener('click', function() {
-                        // 현재 비밀번호 필드의 타입 확인
+                        // 현재 비밀번호 필드의 타입과 아이콘 상태 확인
                         const currentType = passwordField.type;
+                        const eyeIcon = passwordToggle.querySelector('.eye-icon');
                         
                         if (currentType === 'password') {
-                            // 비밀번호를 표시하는 경우
+                            // 비밀번호를 표시 상태로 변경
                             passwordField.type = 'text';
-                            // 열린 눈 아이콘으로 변경 (비밀번호 보임)
-                            passwordToggle.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/159/159604.png" alt="비밀번호 숨기기" class="toggle-icon">';
+                            // 눈에 금지 표시가 있는 아이콘으로 변경
+                            eyeIcon.src = 'https://cdn-icons-png.flaticon.com/512/2767/2767146.png';
+                            eyeIcon.alt = '비밀번호 숨기기';
                         } else {
-                            // 비밀번호를 숨기는 경우
+                            // 비밀번호를 숨김 상태로 변경
                             passwordField.type = 'password';
-                            // 가려진 눈 아이콘으로 변경 (비밀번호 숨김)
-                            passwordToggle.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/159/159078.png" alt="비밀번호 보기" class="toggle-icon">';
+                            // 원래 눈 모양 아이콘으로 변경
+                            eyeIcon.src = 'https://cdn-icons-png.flaticon.com/512/709/709612.png';
+                            eyeIcon.alt = '비밀번호 보기';
                         }
                     });
                 }
             });
                     
+        
+        
         </script>
     </body>
 </html>
