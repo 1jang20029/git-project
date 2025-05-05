@@ -537,6 +537,25 @@
             // 최초 로그인 상태를 true로 설정 (아직 로그인한 적 없음)
             safeStorage.setItem(`user_${studentId}_first_login`, 'true');
         }
+
+
+        // 회원가입 시 사용자 정보 저장 함수 (register.html 파일에 필요)
+        function registerUser(studentId, password, name, department, grade, email, phone) {
+            // 회원 정보 저장
+            safeStorage.setItem(`user_${studentId}_registered`, 'true');
+            safeStorage.setItem(`user_${studentId}_password`, password);
+            safeStorage.setItem(`user_${studentId}_name`, name);
+            safeStorage.setItem(`user_${studentId}_department`, department);
+            safeStorage.setItem(`user_${studentId}_grade`, grade);
+            safeStorage.setItem(`user_${studentId}_email`, email);
+            safeStorage.setItem(`user_${studentId}_phone`, phone);
+            
+            // 최초 로그인 상태를 true로 설정
+            safeStorage.setItem(`user_${studentId}_first_login`, 'true');
+            
+            // 회원가입 완료 후 로그인 페이지로 리디렉션
+            window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+        }
         
         // 뒤로가기 함수
         function goBack() {
@@ -562,7 +581,13 @@
                 return;
             }
             
-            // 비밀번호 검증은 실제 구현에서는 서버에서 처리
+            // 비밀번호 검증 추가
+            const storedPassword = safeStorage.getItem(`user_${studentId}_password`);
+            
+            if (password !== storedPassword) {
+                alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+                return;
+            }
             
             // 현재 로그인된 사용자 저장
             safeStorage.setItem('currentLoggedInUser', studentId);
@@ -581,6 +606,7 @@
                 window.location.href = "index.html";
             }
         }
+                
         
         // URL 파라미터에서 새로 회원가입했는지 확인
        function checkNewRegistration() {
