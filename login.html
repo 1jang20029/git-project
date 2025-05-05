@@ -393,32 +393,35 @@
                 width: 100%;
             }
 
-            /* 비밀번호 토글 버튼 스타일 */
+            /* 비밀번호 토글 스팬 스타일 */
             .password-toggle {
                 position: absolute;
-                right: 12px;
+                right: 10px;
                 top: 50%;
                 transform: translateY(-50%);
                 cursor: pointer;
-                background: none;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                padding: 0;
-                width: 36px;
-                height: 36px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                width: 30px;
+                height: 30px;
             }
 
-            .toggle-icon {
+            /* 눈 아이콘 스타일 */
+            .eye-icon {
                 width: 24px;
                 height: 24px;
+                stroke: #666;
+                stroke-width: 2;
+            }
+
+            .password-toggle:hover .eye-icon {
+                stroke: #000;
             }
 
             /* 눈 아이콘이 있는 경우 패딩 조정 */
             .password-input-container .form-input {
-                padding-right: 50px;
+                padding-right: 40px;
             }
         </style>
     </head>
@@ -449,9 +452,17 @@
                         <label class="form-label">비밀번호</label>
                         <div class="password-input-container">
                             <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
-                            <button type="button" class="password-toggle" id="passwordToggle">
-                                <img src="eye-open.png" alt="비밀번호 보기" class="toggle-icon" id="eyeIcon">
-                            </button>
+                            <span class="password-toggle" id="passwordToggle">
+                                <svg class="eye-icon eye-visible" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-icon eye-hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <line x1="3" y1="3" x2="21" y2="21"></line>
+                                </svg>
+                            </span>
                         </div>
                     </div>
                     
@@ -847,11 +858,8 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const passwordField = document.getElementById('password');
                 const passwordToggle = document.getElementById('passwordToggle');
-                const eyeIcon = document.getElementById('eyeIcon');
-                
-                // Base64로 인코딩된 이미지 데이터 URL
-                const eyeOpenIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzY2NiI+PHBhdGggZD0iTTEyIDQuNUM3IDQuNSAyLjczIDcuNjEgMSAxMmMxLjczIDQuMzkgNiA3LjUgMTEgNy41czkuMjctMy4xMSAxMS03LjVjLTEuNzMtNC4zOS02LTcuNS0xMS03LjV6TTEyIDE3Yy0yLjc2IDAtNS0yLjI0LTUtNXMyLjI0LTUgNS01IDUgMi4yNCA1IDUtMi4yNCA1LTUgNXptMC04Yy0xLjY2IDAtMyAxLjM0LTMgM3MxLjM0IDMgMyAzIDMtMS4zNCAzLTMtMS4zNC0zLTMtM3oiLz48L3N2Zz4=';
-                const eyeClosedIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzY2NiI+PHBhdGggZD0iTTEyIDdjMi43NiAwIDUgMi4yNCA1IDUgMCAuNjUtLjEzIDEuMjYtLjM2IDEuODNsMi45MiAyLjkyYzEuNTEtMS4yNiAyLjctMi44OSAzLjQzLTQuNzUtMS43My00LjM5LTYtNy41LTExLTcuNS0xLjQgMC0yLjc0LjI1LTMuOTguN2wyLjE2IDIuMTZjLjc0LS4yNyAxLjM1LS40IDItLjR6TTIgNC4yN2wyLjI4IDIuMjguNDYuNDZDMy4wOCA4LjMgMS43OCAxMC4wMiAxIDEyYzEuNzMgNC4zOSA2IDcuNSAxMSA3LjUgMS41NSAwIDMuMDMtLjMgNC4zOC0uODRsLjQyLjQyTDE5LjczIDIyIDIxIDIwLjczIDMuMjcgMyAyIDQuMjd6TTcuNTMgOS44bDEuNTUgMS41NWMtLjA1LjIxLS4wOC40My0uMDguNjUgMCAxLjY2IDEuMzQgMyAzIDMgLjIyIDAgLjQ0LS4wMy42NS0uMDhsMS41NSAxLjU1Yy0uNjcuMzMtMS40MS41My0yLjIuNTMtMi43NiAwLTUtMi4yNC01LTUgMC0uNzkuMi0xLjUzLjUzLTIuMnptNC4zMS0uNzhsMy4xNSAzLjE1LjAyLS4xNmMwLTEuNjYtMS4zNC0zLTMtM2wtLjE3LjAxeiIvPjwvc3ZnPg==';
+                const eyeVisible = passwordToggle.querySelector('.eye-visible');
+                const eyeHidden = passwordToggle.querySelector('.eye-hidden');
                 
                 if (passwordToggle) {
                     passwordToggle.addEventListener('click', function() {
@@ -859,15 +867,15 @@
                         if (passwordField.type === 'password') {
                             // 비밀번호를 표시하는 경우
                             passwordField.type = 'text';
-                            // 닫힌 눈 아이콘으로 변경
-                            eyeIcon.src = eyeClosedIcon;
-                            eyeIcon.alt = '비밀번호 숨기기';
+                            // 가려진 눈 아이콘 표시, 보이는 눈 아이콘 숨김
+                            eyeVisible.style.display = 'none';
+                            eyeHidden.style.display = 'block';
                         } else {
                             // 비밀번호를 숨기는 경우
                             passwordField.type = 'password';
-                            // 열린 눈 아이콘으로 변경
-                            eyeIcon.src = eyeOpenIcon;
-                            eyeIcon.alt = '비밀번호 보기';
+                            // 보이는 눈 아이콘 표시, 가려진 눈 아이콘 숨김
+                            eyeVisible.style.display = 'block';
+                            eyeHidden.style.display = 'none';
                         }
                     });
                 }
