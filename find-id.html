@@ -280,7 +280,8 @@
             document.getElementById('resultContainer').style.display = 'none';
         }
         
-        // 이메일로 아이디 찾기
+
+        // 이름과 학번으로 아이디 찾기 함수
         function findIdByEmail() {
             const name = document.getElementById('nameEmail').value;
             const studentId = document.getElementById('studentId').value;
@@ -291,26 +292,19 @@
                 return;
             }
             
-            // 로컬 스토리지에서 정보 확인
+            // 로컬 스토리지에서 해당 학번의 사용자 정보 확인
             const storedName = localStorage.getItem(`user_${studentId}_name`);
+            const storedEmail = localStorage.getItem(`user_${studentId}_email`);
             
             // 이름과 학번이 일치하는지 확인
             if (storedName && storedName === name) {
-                // 학번과 일치하는 이메일 검색
-                const storedEmail = localStorage.getItem(`user_${studentId}_email`);
-                
-                if (storedEmail) {
-                    // 학번 표시
-                    document.getElementById('foundStudentId').textContent = studentId;
-                    document.getElementById('resultContainer').style.display = 'block';
-                } else {
-                    alert('등록된 이메일 정보가 없습니다.');
-                }
+                // 학번(아이디) 표시
+                document.getElementById('foundStudentId').textContent = studentId;
+                document.getElementById('resultContainer').style.display = 'block';
             } else {
                 alert('입력하신 정보와 일치하는 계정을 찾을 수 없습니다.');
             }
         }
-                
         
         
         // 인증번호 전송
