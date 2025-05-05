@@ -18,7 +18,7 @@
         }
         
         .container {
-            max-width: 900px; /* 컨테이너 너비 증가 */
+            max-width: 768px;
             margin: 0 auto;
             background-color: white;
             min-height: 100vh;
@@ -46,7 +46,7 @@
         }
         
         .content-container {
-            padding: 30px; /* 패딩 증가 */
+            padding: 20px;
             flex: 1;
         }
         
@@ -61,10 +61,9 @@
         .tab {
             flex: 1;
             text-align: center;
-            padding: 15px; /* 패딩 증가 */
+            padding: 12px;
             cursor: pointer;
             background-color: #f8f8f8;
-            font-size: 16px; /* 글자 크기 증가 */
         }
         
         .tab.active {
@@ -81,86 +80,84 @@
         }
         
         .form-title {
-            font-size: 20px; /* 글자 크기 증가 */
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .form-description {
-            font-size: 15px; /* 글자 크기 증가 */
+            font-size: 14px;
             color: #666;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             line-height: 1.5;
         }
         
         .form-group {
-            margin-bottom: 25px; /* 여백 증가 */
+            margin-bottom: 16px;
         }
         
         .form-label {
             display: block;
-            font-size: 16px; /* 글자 크기 증가 */
-            margin-bottom: 10px;
+            font-size: 14px;
+            margin-bottom: 8px;
             color: #333;
         }
         
         .form-input {
             width: 100%;
-            padding: 14px; /* 패딩 증가 */
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 16px; /* 글자 크기 증가 */
-            height: 50px; /* 높이 명시적 지정 */
+            font-size: 14px;
         }
         
+        /* 수정된 부분: 인증번호 입력 그룹 스타일 */
         .verification-group {
             display: flex;
-            gap: 15px; /* 간격 증가 */
+            gap: 10px;
         }
         
+        /* 수정된 부분: 인증번호 입력란 너비 증가 */
         .verification-input {
-            flex: 1;
-            height: 60px !important; /* 인증번호 입력란 높이 증가 */
-            font-size: 18px !important; /* 인증번호 입력란 글자 크기 증가 */
-            padding: 16px !important; /* 인증번호 입력란 패딩 증가 */
+            flex: 3;  /* 기존 1에서 3으로 변경 - 더 넓은 공간 할당 */
+        }
+        
+        /* 수정된 부분: 인증번호 전송 버튼 너비 감소 */
+        .button.button-secondary {
+            flex: 1;  /* 새로 추가 - 인증번호 전송 버튼에 상대적으로 작은 공간 할당 */
+            padding: 12px 8px;  /* 좌우 패딩 줄임 */
+            font-size: 13px;  /* 글자 크기 줄임 */
+            white-space: nowrap;  /* 텍스트 줄바꿈 방지 */
         }
         
         .timer {
             color: #f44336;
-            font-size: 15px; /* 글자 크기 증가 */
-            margin-left: 8px;
+            font-size: 14px;
+            margin-left: 5px;
         }
         
         .verification-text {
-            font-size: 14px; /* 글자 크기 증가 */
+            font-size: 12px;
             color: #666;
-            margin-top: 8px;
+            margin-top: 5px;
         }
         
         .button {
             width: 100%;
-            padding: 15px; /* 패딩 증가 */
+            padding: 12px;
             background-color: #5e50f9;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 16px; /* 글자 크기 증가 */
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
-            height: 50px; /* 높이 명시적 지정 */
-        }
-        
-        .button-secondary {
-            background-color: #6c757d;
-            min-width: 150px; /* 최소 너비 지정 */
-            height: 60px !important; /* 인증번호 전송 버튼 높이 증가 */
-            font-size: 16px !important; /* 인증번호 전송 버튼 글자 크기 증가 */
         }
         
         .result-container {
-            margin-top: 30px;
-            padding: 25px;
+            margin-top: 20px;
+            padding: 20px;
             background-color: #f8f8f8;
             border-radius: 4px;
             border: 1px solid #ddd;
@@ -168,20 +165,19 @@
         }
         
         .result-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .result-info {
             background-color: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 4px;
             border: 1px solid #ddd;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: bold;
             text-align: center;
-            font-size: 18px; /* 글자 크기 증가 */
         }
     </style>
 </head>
@@ -682,30 +678,31 @@
                     alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.');
                 });
         }
+        
         // 비밀번호 변경 (시뮬레이션)
         function resetUserPassword(userId, currentPw, newPw) {
-                return new Promise((resolve) => {
-                    // 실제로는 서버 API를 호출하여 비밀번호 변경
-                    let success = false;
-                    
-                    for (let i = 0; i < localStorage.length; i++) {
-                        const key = localStorage.key(i);
-                        if (key && key.includes('_id') && localStorage.getItem(key) === userId) {
-                            const studentId = key.split('_')[1]; // 학번 추출
-                            const storedPw = localStorage.getItem(`user_${studentId}_pw`);
-                            
-                            if (storedPw === currentPw) {
-                                // 비밀번호 업데이트
-                                localStorage.setItem(`user_${studentId}_pw`, newPw);
-                                success = true;
-                                break;
-                            }
+            return new Promise((resolve) => {
+                // 실제로는 서버 API를 호출하여 비밀번호 변경
+                let success = false;
+                
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.includes('_id') && localStorage.getItem(key) === userId) {
+                        const studentId = key.split('_')[1]; // 학번 추출
+                        const storedPw = localStorage.getItem(`user_${studentId}_pw`);
+                        
+                        if (storedPw === currentPw) {
+                            // 비밀번호 업데이트
+                            localStorage.setItem(`user_${studentId}_pw`, newPw);
+                            success = true;
+                            break;
                         }
                     }
-                    
-                    resolve(success);
-                });
-            }
-        </script>
-    </body>
+                }
+                
+                resolve(success);
+            });
+        }
+    </script>
+</body>
 </html>
