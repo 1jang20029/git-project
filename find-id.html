@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>아이디 · 비밀번호 찾기 - 연성대학교</title>
+    <title>아이디 - 비밀번호 찾기 - 연성대학교</title>
     <style>
         * {
             margin: 0;
@@ -46,140 +46,132 @@
         }
         
         .content-container {
-            padding: 32px 24px;
+            padding: 20px;
             flex: 1;
+        }
+        
+        .tabs {
             display: flex;
-            flex-direction: column;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            overflow: hidden;
         }
         
-        .page-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-        }
-        
-        .page-description {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 32px;
-            line-height: 1.5;
-        }
-        
-        .method-toggle {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 24px;
-        }
-        
-        .method-tab {
+        .tab {
             flex: 1;
             text-align: center;
             padding: 12px;
-            font-size: 16px;
             cursor: pointer;
-            color: #666;
-            transition: all 0.2s ease;
+            background-color: #f8f8f8;
         }
         
-        .method-tab.active {
-            color: #c62917;
+        .tab.active {
+            background-color: #fff;
             font-weight: bold;
-            border-bottom: 2px solid #c62917;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .form-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .form-label {
             display: block;
             font-size: 14px;
-            color: #555;
             margin-bottom: 8px;
+            color: #333;
         }
         
         .form-input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 14px;
         }
         
-        .form-input:focus {
-            border-color: #c62917;
-            outline: none;
+        .verification-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .verification-input {
+            flex: 1;
+        }
+        
+        .timer {
+            color: #f44336;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+        
+        .verification-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
         
         .button {
             width: 100%;
-            padding: 14px;
-            background-color: #c62917;
+            padding: 12px;
+            background-color: #5e50f9;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 16px;
+            text-align: center;
         }
         
-        .method-content {
-            display: none;
-        }
-        
-        .method-content.active {
-            display: block;
+        .button-secondary {
+            background-color: #6c757d;
         }
         
         .result-container {
-            margin-top: 32px;
-            display: none;
+            margin-top: 20px;
             padding: 20px;
             background-color: #f8f8f8;
             border-radius: 4px;
             border: 1px solid #ddd;
+            display: none;
         }
         
         .result-title {
             font-size: 16px;
             font-weight: bold;
-            margin-bottom: 12px;
-            color: #c62917;
+            margin-bottom: 10px;
         }
         
-        .result-text {
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 16px;
-        }
-        
-        .student-id {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            background-color: #fff;
-            padding: 12px;
+        .result-info {
+            background-color: white;
+            padding: 15px;
             border-radius: 4px;
             border: 1px solid #ddd;
-            text-align: center;
-            margin: 12px 0;
-        }
-        
-        .back-to-login {
-            display: block;
-            text-align: center;
-            margin-top: 16px;
-            color: #c62917;
-            text-decoration: none;
+            margin-bottom: 15px;
             font-weight: bold;
-        }
-        
-        /* 버튼 비활성화 스타일 */
-        .button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+            text-align: center;
         }
     </style>
 </head>
@@ -187,253 +179,510 @@
     <div class="container">
         <header>
             <div class="back-button" onclick="goBack()">←</div>
-            <div class="header-title">아이디 찾기</div>
+            <div class="header-title">아이디 - 비밀번호 찾기</div>
         </header>
         
         <div class="content-container">
-            <h1 class="page-title">아이디 찾기</h1>
-            <p class="page-description">등록하신 이메일 또는 휴대폰 번호로 학번(아이디)을 찾을 수 있습니다.</p>
-            
-            <div class="method-toggle">
-                <div class="method-tab active" onclick="showMethod('email')">이름/이메일로 찾기</div>
-                <div class="method-tab" onclick="showMethod('phone')">휴대폰으로 찾기</div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('id-tab')">아이디 찾기</div>
+                <div class="tab" onclick="switchTab('pw-tab')">비밀번호 찾기</div>
             </div>
             
-            <!-- 이메일로 찾기 폼 -->
-            <div id="email-method" class="method-content active">
-                <form id="emailForm">
+            <!-- 아이디 찾기 탭 내용 -->
+            <div id="id-tab" class="tab-content active">
+                <h2 class="form-title">아이디 · 비밀번호 찾기</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="switchIdMethod('name-id')">이름/학번으로 찾기</div>
+                    <div class="tab" onclick="switchIdMethod('phone')">휴대폰으로 찾기</div>
+                </div>
+                
+                <!-- 이름/학번으로 찾기 -->
+                <div id="name-id-method" class="tab-content active">
                     <div class="form-group">
                         <label class="form-label">이름</label>
-                        <input type="text" class="form-input" id="nameEmail" placeholder="이름을 입력하세요">
+                        <input type="text" class="form-input" id="name-input" placeholder="이름을 입력하세요">
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">이메일</label>
-                        <input type="email" class="form-input" id="email" placeholder="가입 시 등록한 이메일을 입력하세요">
+                        <label class="form-label">학번</label>
+                        <input type="text" class="form-input" id="student-id-input" placeholder="학번을 입력하세요">
                     </div>
                     
-                    <button type="button" class="button" id="findIdByEmail" onclick="findIdByEmail()">아이디 찾기</button>
-                </form>
-            </div>
-            
-            <!-- 휴대폰으로 찾기 폼 -->
-            <div id="phone-method" class="method-content">
-                <form id="phoneForm">
+                    <button class="button" onclick="findIdByNameAndStudentId()">아이디 찾기</button>
+                </div>
+                
+                <!-- 휴대폰으로 찾기 -->
+                <div id="phone-method" class="tab-content">
                     <div class="form-group">
                         <label class="form-label">이름</label>
-                        <input type="text" class="form-input" id="namePhone" placeholder="이름을 입력하세요">
+                        <input type="text" class="form-input" id="name-phone-input" placeholder="이름을 입력하세요">
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">휴대폰 번호</label>
-                        <input type="tel" class="form-input" id="phone" placeholder="010-0000-0000">
+                        <input type="tel" class="form-input" id="phone-input" placeholder="휴대폰 번호 입력">
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">인증번호</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" class="form-input" id="verificationCode" placeholder="인증번호 6자리" style="flex: 1;">
-                            <button type="button" class="button" style="width: auto; margin-top: 0; padding: 12px 16px; font-size: 14px;" onclick="sendVerificationCode()">인증번호 전송</button>
+                        <div class="verification-group">
+                            <input type="text" class="form-input verification-input" id="verification-input" placeholder="인증번호 입력">
+                            <button class="button button-secondary" onclick="sendVerificationCode()">인증번호 전송</button>
                         </div>
+                        <div class="verification-text">인증번호 전송을 누르시면 인증번호가 전송됩니다. <span class="timer" id="id-timer"></span></div>
                     </div>
                     
-                    <button type="button" class="button" id="findIdByPhone" onclick="findIdByPhone()" disabled>아이디 찾기</button>
-                </form>
+                    <button class="button" onclick="findIdByPhone()">아이디 찾기</button>
+                </div>
+                
+                <!-- 아이디 찾기 결과 -->
+                <div id="id-result" class="result-container">
+                    <div class="result-title">가입한 아이디는 아래와 같습니다.</div>
+                    <div class="result-info" id="found-id"></div>
+                </div>
             </div>
             
-            <!-- 결과 컨테이너 -->
-            <div id="resultContainer" class="result-container">
-                <div class="result-title">아이디 찾기 결과</div>
-                <p class="result-text">입력하신 정보와 일치하는 학번(아이디)입니다:</p>
-                <div class="student-id" id="foundStudentId">20230001</div>
-                <p class="result-text">해당 학번으로 로그인하시거나, 비밀번호가 기억나지 않는 경우 비밀번호 찾기를 이용해주세요.</p>
-                <a href="login.html" class="back-to-login">로그인 화면으로 돌아가기</a>
+            <!-- 비밀번호 찾기 탭 내용 -->
+            <div id="pw-tab" class="tab-content">
+                <h2 class="form-title">새로운 비밀번호를 입력해주세요</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">아이디</label>
+                    <input type="text" class="form-input" id="id-input" placeholder="아이디를 입력하세요">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">현재 비밀번호</label>
+                    <input type="password" class="form-input" id="current-pw-input" placeholder="현재 비밀번호를 입력하세요">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">인증번호</label>
+                    <div class="verification-group">
+                        <input type="text" class="form-input verification-input" id="pw-verification-input" placeholder="인증번호 입력">
+                        <button class="button button-secondary" onclick="sendPwVerificationCode()">인증번호 전송</button>
+                    </div>
+                    <div class="verification-text">인증번호 전송을 누르시면 인증번호가 전송됩니다. <span class="timer" id="pw-timer"></span></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호 입력</label>
+                    <input type="password" class="form-input" id="new-pw-input" placeholder="영문, 숫자, 특수문자 8-20자">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호 재입력</label>
+                    <input type="password" class="form-input" id="new-pw-confirm-input" placeholder="영문, 숫자, 특수문자 8-20자">
+                </div>
+                
+                <button class="button" onclick="resetPassword()">로그인</button>
             </div>
         </div>
     </div>
-
+    
     <script>
-        // 뒤로가기 함수
+        // 뒤로가기
         function goBack() {
             window.location.href = "login.html";
         }
         
-        // 찾기 방법 변경
-        function showMethod(method) {
-            // 모든 탭 비활성화
-            document.querySelectorAll('.method-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // 모든 컨텐츠 숨기기
-            document.querySelectorAll('.method-content').forEach(content => {
-                content.classList.remove('active');
-            });
+        // 탭 전환 함수
+        function switchTab(tabId) {
+            // 모든 탭과 탭 내용 비활성화
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
             // 선택한 탭 활성화
-            document.querySelector(`.method-tab:nth-child(${method === 'email' ? 1 : 2})`).classList.add('active');
-            
-            // 선택한 컨텐츠 표시
-            document.getElementById(`${method}-method`).classList.add('active');
+            if (tabId === 'id-tab') {
+                document.querySelectorAll('.tabs > .tab')[0].classList.add('active');
+                document.getElementById('id-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tabs > .tab')[1].classList.add('active');
+                document.getElementById('pw-tab').classList.add('active');
+            }
             
             // 결과 컨테이너 숨기기
-            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('id-result').style.display = 'none';
         }
         
-        // 이메일로 아이디 찾기
-        function findIdByEmail() {
-            const name = document.getElementById('nameEmail').value;
-            const email = document.getElementById('email').value;
+        // 아이디 찾기 방법 전환
+        function switchIdMethod(methodId) {
+            // 이름/학번 또는 휴대폰 방식 탭 전환
+            const tabs = document.querySelectorAll('#id-tab .tabs .tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
             
-            // 입력 검증
-            if (!name || !email) {
-                alert('이름과 이메일을 모두 입력해주세요.');
+            if (methodId === 'name-id') {
+                tabs[0].classList.add('active');
+                document.getElementById('name-id-method').classList.add('active');
+                document.getElementById('phone-method').classList.remove('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('name-id-method').classList.remove('active');
+                document.getElementById('phone-method').classList.add('active');
+            }
+            
+            // 결과 컨테이너 숨기기
+            document.getElementById('id-result').style.display = 'none';
+        }
+        
+        // 이름과 학번으로 아이디 찾기
+        function findIdByNameAndStudentId() {
+            const name = document.getElementById('name-input').value;
+            const studentId = document.getElementById('student-id-input').value;
+            
+            if (!name || !studentId) {
+                alert('이름과 학번을 모두 입력해주세요.');
                 return;
             }
             
-            // 로컬 스토리지에서 모든 사용자 검색
-            let foundUser = null;
-            let foundStudentId = null;
-            
-            // 모든 로컬 스토리지 항목 검색
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                
-                // 사용자 이메일 키 패턴 확인 (user_STUDENTID_email)
-                if (key && key.includes('_email')) {
-                    const storedEmail = localStorage.getItem(key);
-                    const studentId = key.split('_')[1]; // 학번 추출
+            // API 호출 시뮬레이션 (실제로는 서버에 요청)
+            // 여기서는 fetch API를 사용해 서버와 통신하는 예시 코드
+            fetchUserIdByNameAndStudentId(name, studentId)
+                .then(userId => {
+                    if (userId) {
+                        // 아이디 찾기 성공
+                        document.getElementById('found-id').textContent = userId;
+                        document.getElementById('id-result').style.display = 'block';
+                    } else {
+                        // 아이디 찾기 실패
+                        alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('아이디 찾기 오류:', error);
+                    alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
+                });
+        }
+        
+        // 서버에서 이름과 학번으로 아이디 조회 (시뮬레이션)
+        function fetchUserIdByNameAndStudentId(name, studentId) {
+            // 실제로는 서버에 API 요청을 보냅니다.
+            // 여기서는 간단한 시뮬레이션으로 로컬 스토리지 사용
+            return new Promise((resolve, reject) => {
+                try {
+                    // 서버 API 호출 대신 로컬 스토리지에서 데이터 확인
+                    const storedName = localStorage.getItem(`user_${studentId}_name`);
                     
-                    // 이메일이 일치하는지 확인
-                    if (storedEmail && storedEmail.toLowerCase() === email.toLowerCase()) {
-                        // 이름도 일치하는지 확인
-                        const storedName = localStorage.getItem(`user_${studentId}_name`);
+                    if (storedName === name) {
+                        // 사용자 데이터베이스에서 아이디 조회
+                        const userId = localStorage.getItem(`user_${studentId}_id`) || studentId;
+                        resolve(userId);
+                    } else {
+                        resolve(null);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+        
+        // 휴대폰으로 아이디 찾기
+        function findIdByPhone() {
+            const name = document.getElementById('name-phone-input').value;
+            const phone = document.getElementById('phone-input').value;
+            const verificationCode = document.getElementById('verification-input').value;
+            
+            if (!name || !phone || !verificationCode) {
+                alert('모든 정보를 입력해주세요.');
+                return;
+            }
+            
+            // 인증번호 확인
+            verifyPhoneCode(verificationCode)
+                .then(isVerified => {
+                    if (!isVerified) {
+                        alert('인증번호가 일치하지 않습니다.');
+                        return;
+                    }
+                    
+                    // 휴대폰 번호로 아이디 조회
+                    return fetchUserIdByPhoneAndName(phone, name);
+                })
+                .then(userId => {
+                    if (userId) {
+                        // 아이디 찾기 성공
+                        document.getElementById('found-id').textContent = userId;
+                        document.getElementById('id-result').style.display = 'block';
                         
-                        if (storedName && storedName === name) {
-                            foundUser = studentId;
-                            foundStudentId = studentId;
-                            break;
+                        // 인증번호 세션 초기화
+                        sessionStorage.removeItem('verificationCode');
+                    } else {
+                        alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('아이디 찾기 오류:', error);
+                    alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
+                });
+        }
+        
+        // 인증번호 확인 (시뮬레이션)
+        function verifyPhoneCode(code) {
+            return new Promise((resolve) => {
+                const storedCode = sessionStorage.getItem('verificationCode');
+                resolve(code === storedCode);
+            });
+        }
+        
+        // 서버에서 휴대폰과 이름으로 아이디 조회 (시뮬레이션)
+        function fetchUserIdByPhoneAndName(phone, name) {
+            // 실제로는 서버에 API 요청을 보냅니다.
+            return new Promise((resolve, reject) => {
+                try {
+                    // 모든 사용자 중에서 휴대폰 번호와 이름이 일치하는 사용자 찾기
+                    let foundUserId = null;
+                    
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.includes('_phone')) {
+                            const storedPhone = localStorage.getItem(key);
+                            const studentId = key.split('_')[1]; // 학번 추출
+                            
+                            if (storedPhone === phone) {
+                                // 이름 확인
+                                const storedName = localStorage.getItem(`user_${studentId}_name`);
+                                if (storedName === name) {
+                                    // 아이디 가져오기
+                                    foundUserId = localStorage.getItem(`user_${studentId}_id`) || studentId;
+                                    break;
+                                }
+                            }
                         }
                     }
+                    
+                    resolve(foundUserId);
+                } catch (error) {
+                    reject(error);
                 }
-            }
-            
-            if (foundUser) {
-                // 학번 표시
-                document.getElementById('foundStudentId').textContent = foundStudentId;
-                document.getElementById('resultContainer').style.display = 'block';
-            } else {
-                alert('입력하신 정보와 일치하는 계정을 찾을 수 없습니다.');
-            }
+            });
         }
         
         // 인증번호 전송
         function sendVerificationCode() {
-            const name = document.getElementById('namePhone').value;
-            const phone = document.getElementById('phone').value;
+            const phone = document.getElementById('phone-input').value;
             
-            // 입력 검증
-            if (!name || !phone) {
-                alert('이름과 휴대폰 번호를 모두 입력해주세요.');
+            if (!phone) {
+                alert('휴대폰 번호를 입력해주세요.');
                 return;
             }
             
             // 휴대폰 번호 형식 검증 (간단한 형식 검사)
-            const phonePattern = /^010-\d{4}-\d{4}$/;
+            const phonePattern = /^01[016789]-\d{3,4}-\d{4}$/;
             if (!phonePattern.test(phone)) {
                 alert('올바른 휴대폰 번호 형식이 아닙니다. (예: 010-0000-0000)');
                 return;
             }
             
-            // 로컬 스토리지에서 사용자 검색
-            let userExists = false;
-            
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                
-                if (key && key.includes('_phone')) {
-                    const storedPhone = localStorage.getItem(key);
-                    const studentId = key.split('_')[1]; // 학번 추출
+            // 인증번호 발송 API 호출 (시뮬레이션)
+            sendVerificationSMS(phone)
+                .then(code => {
+                    alert(`인증번호가 발송되었습니다.`);
                     
-                    // 전화번호가 일치하는지 확인
-                    if (storedPhone && storedPhone === phone) {
-                        // 이름도 일치하는지 확인
-                        const storedName = localStorage.getItem(`user_${studentId}_name`);
+                    // 인증번호 타이머 시작 (3분)
+                    startTimer('id-timer', 180);
+                })
+                .catch(error => {
+                    console.error('인증번호 발송 오류:', error);
+                    alert('인증번호 발송 중 오류가 발생했습니다. 다시 시도해주세요.');
+                });
+        }
+        
+        // 인증번호 SMS 발송 (시뮬레이션)
+        function sendVerificationSMS(phone) {
+            return new Promise((resolve) => {
+                // 실제로는 서버 API를 호출하여 SMS 발송
+                // 여기서는 시뮬레이션으로 랜덤 코드 생성
+                const code = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                // 세션 스토리지에 코드 저장 (실제로는 서버에서 관리)
+                sessionStorage.setItem('verificationCode', code);
+                
+                // 개발 모드에서만 콘솔에 코드 출력
+                console.log('인증번호:', code);
+                
+                resolve(code);
+            });
+        }
+        
+        // 비밀번호 인증번호 전송
+        function sendPwVerificationCode() {
+            const userId = document.getElementById('id-input').value;
+            const currentPw = document.getElementById('current-pw-input').value;
+            
+            if (!userId || !currentPw) {
+                alert('아이디와 현재 비밀번호를 모두 입력해주세요.');
+                return;
+            }
+            
+            // 사용자 인증 API 호출 (시뮬레이션)
+            verifyUserCredentials(userId, currentPw)
+                .then(isVerified => {
+                    if (!isVerified) {
+                        alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+                        return;
+                    }
+                    
+                    // 인증번호 발송 API 호출 (시뮬레이션)
+                    return sendPwResetCode(userId);
+                })
+                .then(code => {
+                    if (code) {
+                        alert(`인증번호가 발송되었습니다.`);
                         
-                        if (storedName && storedName === name) {
-                            userExists = true;
+                        // 인증번호 타이머 시작 (3분)
+                        startTimer('pw-timer', 180);
+                    }
+                })
+                .catch(error => {
+                    console.error('인증번호 발송 오류:', error);
+                    alert('인증번호 발송 중 오류가 발생했습니다. 다시 시도해주세요.');
+                });
+        }
+        
+        // 사용자 인증 (시뮬레이션)
+        function verifyUserCredentials(userId, password) {
+            return new Promise((resolve) => {
+                // 실제로는 서버 API를 호출하여 사용자 인증
+                let isValid = false;
+                
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.includes('_id') && localStorage.getItem(key) === userId) {
+                        const studentId = key.split('_')[1]; // 학번 추출
+                        const storedPw = localStorage.getItem(`user_${studentId}_pw`);
+                        
+                        if (storedPw === password) {
+                            isValid = true;
                             break;
                         }
                     }
                 }
+                
+                resolve(isValid);
+            });
+        }
+        
+        // 비밀번호 재설정 인증번호 발송 (시뮬레이션)
+        function sendPwResetCode(userId) {
+            return new Promise((resolve) => {
+                // 실제로는 서버 API를 호출하여 이메일/SMS 발송
+                const code = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                // 세션 스토리지에 코드 저장 (실제로는 서버에서 관리)
+                sessionStorage.setItem('pwVerificationCode', code);
+                
+                // 개발 모드에서만 콘솔에 코드 출력
+                console.log('비밀번호 재설정 인증번호:', code);
+                
+                resolve(code);
+            });
+        }
+        
+        // 타이머 함수
+        function startTimer(elementId, seconds) {
+            const timerElement = document.getElementById(elementId);
+            let remainingTime = seconds;
+            
+            // 이전 타이머가 있으면 중지
+            if (window[`${elementId}Interval`]) {
+                clearInterval(window[`${elementId}Interval`]);
             }
             
-            if (!userExists) {
-                alert('입력하신 정보와 일치하는 사용자가 없습니다.');
+            window[`${elementId}Interval`] = setInterval(function() {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (--remainingTime < 0) {
+                    clearInterval(window[`${elementId}Interval`]);
+                    timerElement.textContent = "인증시간 만료";
+                    
+                    if (elementId === 'id-timer') {
+                        sessionStorage.removeItem('verificationCode');
+                    } else {
+                        sessionStorage.removeItem('pwVerificationCode');
+                    }
+                }
+            }, 1000);
+        }
+        
+        // 비밀번호 재설정
+        function resetPassword() {
+            const userId = document.getElementById('id-input').value;
+            const currentPw = document.getElementById('current-pw-input').value;
+            const verificationCode = document.getElementById('pw-verification-input').value;
+            const newPw = document.getElementById('new-pw-input').value;
+            const confirmNewPw = document.getElementById('new-pw-confirm-input').value;
+            
+            if (!userId || !currentPw || !verificationCode || !newPw || !confirmNewPw) {
+                alert('모든 항목을 입력해주세요.');
                 return;
             }
             
-            // 실제로는 SMS 발송 API 연동 필요
-            // 여기서는 임의의 6자리 인증번호 생성 및 저장
-            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-            sessionStorage.setItem('verificationCode', verificationCode);
-            
-            alert(`인증번호가 발송되었습니다: ${verificationCode}`);
-            
-            // 인증번호 확인 버튼 활성화
-            document.getElementById('findIdByPhone').disabled = false;
-        }
-        
-        // 휴대폰으로 아이디 찾기
-        function findIdByPhone() {
-            const name = document.getElementById('namePhone').value;
-            const phone = document.getElementById('phone').value;
-            const inputCode = document.getElementById('verificationCode').value;
-            const storedCode = sessionStorage.getItem('verificationCode');
-            
             // 인증번호 확인
-            if (!inputCode || inputCode !== storedCode) {
+            const storedCode = sessionStorage.getItem('pwVerificationCode');
+            if (verificationCode !== storedCode) {
                 alert('인증번호가 일치하지 않습니다.');
                 return;
             }
             
-            // 로컬 스토리지에서 모든 사용자 검색
-            let foundUser = null;
-            let foundStudentId = null;
+            // 새 비밀번호 확인
+            if (newPw !== confirmNewPw) {
+                alert('새 비밀번호와 확인이 일치하지 않습니다.');
+                return;
+            }
             
-            // 모든 로컬 스토리지 항목 검색
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
+            // 비밀번호 패턴 확인 (영문, 숫자, 특수문자 포함 8-20자)
+            const pwPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
+            if (!pwPattern.test(newPw)) {
+                alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8-20자로 입력해주세요.');
+                return;
+            }
+            
+            // 비밀번호 변경 API 호출 (시뮬레이션)
+            resetUserPassword(userId, currentPw, newPw)
+                .then(success => {
+                    if (success) {
+                        alert('비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인해주세요.');
+                        // 인증번호 세션 삭제
+                        sessionStorage.removeItem('pwVerificationCode');
+                        // 로그인 페이지로 이동
+                        window.location.href = 'login.html';
+                    } else {
+                        alert('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+                    }
+                })
+                .catch(error => {
+                    console.error('비밀번호 변경 오류:', error);
+                    alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.');
+                });
+        }
+        
+        // 비밀번호 변경 (시뮬레이션)
+        function resetUserPassword(userId, currentPw, newPw) {
+            return new Promise((resolve) => {
+                // 실제로는 서버 API를 호출하여 비밀번호 변경
+                let success = false;
                 
-                // 사용자 전화번호 키 패턴 확인 (user_STUDENTID_phone)
-                if (key && key.includes('_phone')) {
-                    const storedPhone = localStorage.getItem(key);
-                    const studentId = key.split('_')[1]; // 학번 추출
-                    
-                    // 전화번호가 일치하는지 확인
-                    if (storedPhone && storedPhone === phone) {
-                        // 이름도 일치하는지 확인
-                        const storedName = localStorage.getItem(`user_${studentId}_name`);
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.includes('_id') && localStorage.getItem(key) === userId) {
+                        const studentId = key.split('_')[1]; // 학번 추출
+                        const storedPw = localStorage.getItem(`user_${studentId}_pw`);
                         
-                        if (storedName && storedName === name) {
-                            foundUser = studentId;
-                            foundStudentId = studentId;
+                        if (storedPw === currentPw) {
+                            // 비밀번호 업데이트
+                            localStorage.setItem(`user_${studentId}_pw`, newPw);
+                            success = true;
                             break;
                         }
                     }
                 }
-            }
-            
-            if (foundUser) {
-                // 세션 스토리지에서 인증번호 제거
-                sessionStorage.removeItem('verificationCode');
                 
-                // 학번 표시
-                document.getElementById('foundStudentId').textContent = foundStudentId;
-                document.getElementById('resultContainer').style.display = 'block';
-            } else {
-                alert('입력하신 정보와 일치하는 계정을 찾을 수 없습니다.');
-            }
+                resolve(success);
+            });
         }
     </script>
 </body>
