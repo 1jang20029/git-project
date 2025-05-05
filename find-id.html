@@ -18,7 +18,7 @@
         }
         
         .container {
-            max-width: 768px;
+            max-width: 900px; /* 컨테이너 너비 증가 */
             margin: 0 auto;
             background-color: white;
             min-height: 100vh;
@@ -46,7 +46,7 @@
         }
         
         .content-container {
-            padding: 20px;
+            padding: 30px; /* 패딩 증가 */
             flex: 1;
         }
         
@@ -61,9 +61,10 @@
         .tab {
             flex: 1;
             text-align: center;
-            padding: 12px;
+            padding: 15px; /* 패딩 증가 */
             cursor: pointer;
             background-color: #f8f8f8;
+            font-size: 16px; /* 글자 크기 증가 */
         }
         
         .tab.active {
@@ -80,40 +81,41 @@
         }
         
         .form-title {
-            font-size: 18px;
+            font-size: 20px; /* 글자 크기 증가 */
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .form-description {
-            font-size: 14px;
+            font-size: 15px; /* 글자 크기 증가 */
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             line-height: 1.5;
         }
         
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 25px; /* 여백 증가 */
         }
         
         .form-label {
             display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
+            font-size: 16px; /* 글자 크기 증가 */
+            margin-bottom: 10px;
             color: #333;
         }
         
         .form-input {
             width: 100%;
-            padding: 10px;
+            padding: 14px; /* 패딩 증가 */
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 16px; /* 글자 크기 증가 */
+            height: 50px; /* 높이 명시적 지정 */
         }
         
         .verification-group {
             display: flex;
-            gap: 10px;
+            gap: 15px; /* 간격 증가 */
         }
         
         .verification-input {
@@ -122,36 +124,38 @@
         
         .timer {
             color: #f44336;
-            font-size: 14px;
-            margin-left: 5px;
+            font-size: 15px; /* 글자 크기 증가 */
+            margin-left: 8px;
         }
         
         .verification-text {
-            font-size: 12px;
+            font-size: 14px; /* 글자 크기 증가 */
             color: #666;
-            margin-top: 5px;
+            margin-top: 8px;
         }
         
         .button {
             width: 100%;
-            padding: 12px;
+            padding: 15px; /* 패딩 증가 */
             background-color: #5e50f9;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 16px; /* 글자 크기 증가 */
             font-weight: bold;
             cursor: pointer;
             text-align: center;
+            height: 50px; /* 높이 명시적 지정 */
         }
         
         .button-secondary {
             background-color: #6c757d;
+            min-width: 150px; /* 최소 너비 지정 */
         }
         
         .result-container {
-            margin-top: 20px;
-            padding: 20px;
+            margin-top: 30px;
+            padding: 25px;
             background-color: #f8f8f8;
             border-radius: 4px;
             border: 1px solid #ddd;
@@ -159,19 +163,20 @@
         }
         
         .result-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .result-info {
             background-color: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 4px;
             border: 1px solid #ddd;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-weight: bold;
             text-align: center;
+            font-size: 18px; /* 글자 크기 증가 */
         }
     </style>
 </head>
@@ -693,7 +698,6 @@
                         }
                     }
                 }
-                
                 resolve(success);
             });
         }
