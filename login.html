@@ -401,22 +401,17 @@
                 transform: translateY(-50%);
                 cursor: pointer;
                 background: none;
-                border: 1px solid #ddd;
+                border: 1px solid #ccc;
                 border-radius: 4px;
-                padding: 4px;
+                padding: 0;
+                width: 36px;
+                height: 36px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 36px;
-                height: 36px;
             }
 
-            .password-toggle:hover {
-                background-color: #f5f5f5;
-            }
-
-            /* 눈 아이콘 스타일 */
-            .eye-icon {
+            .toggle-icon {
                 width: 24px;
                 height: 24px;
             }
@@ -455,10 +450,7 @@
                         <div class="password-input-container">
                             <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
                             <button type="button" class="password-toggle" id="passwordToggle">
-                                <svg class="eye-icon" width="24" height="24" viewBox="0 0 24 24">
-                                    <path class="eye-open" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#666"/>
-                                    <path class="eye-closed" d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" fill="#666" style="display: none;"/>
-                                </svg>
+                                <img src="eye-open.png" alt="비밀번호 보기" class="toggle-icon" id="eyeIcon">
                             </button>
                         </div>
                     </div>
@@ -855,31 +847,32 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const passwordField = document.getElementById('password');
                 const passwordToggle = document.getElementById('passwordToggle');
+                const eyeIcon = document.getElementById('eyeIcon');
+                
+                // 아이콘 이미지 경로
+                const eyeOpenIcon = 'eye-open.png';
+                const eyeClosedIcon = 'eye-closed.png';
                 
                 if (passwordToggle) {
                     passwordToggle.addEventListener('click', function() {
-                        // 현재 비밀번호 필드의 타입과 아이콘 상태 확인
-                        const currentType = passwordField.type;
-                        const eyeIcon = passwordToggle.querySelector('.eye-icon');
-                        
-                        if (currentType === 'password') {
-                            // 비밀번호를 표시 상태로 변경
+                        // 현재 비밀번호 필드의 타입 확인
+                        if (passwordField.type === 'password') {
+                            // 비밀번호를 표시하는 경우
                             passwordField.type = 'text';
-                            // 눈에 금지 표시가 있는 아이콘으로 변경
-                            eyeIcon.src = 'https://cdn-icons-png.flaticon.com/512/2767/2767146.png';
+                            // 닫힌 눈 아이콘으로 변경
+                            eyeIcon.src = eyeClosedIcon;
                             eyeIcon.alt = '비밀번호 숨기기';
                         } else {
-                            // 비밀번호를 숨김 상태로 변경
+                            // 비밀번호를 숨기는 경우
                             passwordField.type = 'password';
-                            // 원래 눈 모양 아이콘으로 변경
-                            eyeIcon.src = 'https://cdn-icons-png.flaticon.com/512/709/709612.png';
+                            // 열린 눈 아이콘으로 변경
+                            eyeIcon.src = eyeOpenIcon;
                             eyeIcon.alt = '비밀번호 보기';
                         }
                     });
                 }
             });
                     
-        
         
         </script>
     </body>
