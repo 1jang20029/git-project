@@ -385,6 +385,34 @@
                 margin-bottom: 15px;
                 display: none;
             }
+
+
+            /* 비밀번호 입력 컨테이너 스타일 */
+            .password-input-container {
+                position: relative;
+                width: 100%;
+            }
+
+            /* 비밀번호 토글 아이콘 스타일 */
+            .password-toggle {
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                font-size: 18px;
+                color: #888;
+                user-select: none;
+            }
+
+            .password-toggle:hover {
+                color: #c62917;
+            }
+
+            /* 눈 아이콘이 있는 경우 패딩 조정 */
+            .password-input-container .form-input {
+                padding-right: 40px;
+            }
         </style>
     </head>
     <body>
@@ -412,7 +440,10 @@
                     
                     <div class="form-group">
                         <label class="form-label">비밀번호</label>
-                        <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
+                        <div class="password-input-container">
+                            <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
+                            <span class="password-toggle" id="passwordToggle">👁️‍🗨️</span>
+                        </div>
                     </div>
                     
                     <button type="button" class="login-button" onclick="login()">로그인</button>
@@ -801,6 +832,30 @@
             
             // 페이지 로드 시 실행
             document.addEventListener('DOMContentLoaded', checkNewRegistration);
+
+
+            // 비밀번호 표시/숨김 토글 기능
+            document.addEventListener('DOMContentLoaded', function() {
+                const passwordField = document.getElementById('password');
+                const passwordToggle = document.getElementById('passwordToggle');
+                
+                if (passwordToggle) {
+                    passwordToggle.addEventListener('click', function() {
+                        // 비밀번호 필드 타입 전환
+                        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                        passwordField.setAttribute('type', type);
+                        
+                        // 아이콘 변경
+                        if (type === 'text') {
+                            // 비밀번호 보임 상태 - 열린 눈
+                            passwordToggle.textContent = '👁️';
+                        } else {
+                            // 비밀번호 숨김 상태 - 가려진 눈
+                            passwordToggle.textContent = '👁️‍🗨️';
+                        }
+                    });
+                }
+            });
         </script>
     </body>
 </html>
