@@ -581,11 +581,26 @@
                     return;
                 }
                 
-                // 비밀번호 검증 추가
+                // 비밀번호 검증
                 const storedPassword = safeStorage.getItem(`user_${studentId}_password`);
                 
                 if (password !== storedPassword) {
-                    alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+                    // 대화상자 대신 페이지에 오류 메시지 표시
+                    const errorMsg = document.createElement('div');
+                    errorMsg.style.color = 'red';
+                    errorMsg.style.marginTop = '10px';
+                    errorMsg.style.fontSize = '14px';
+                    errorMsg.textContent = '아이디 또는 비밀번호가 일치하지 않습니다.';
+                    
+                    // 로그인 버튼 아래에 오류 메시지 삽입
+                    const loginButton = document.querySelector('.login-button');
+                    loginButton.parentNode.insertBefore(errorMsg, loginButton.nextSibling);
+                    
+                    // 3초 후 메시지 제거
+                    setTimeout(() => {
+                        errorMsg.remove();
+                    }, 3000);
+                    
                     return;
                 }
                 
@@ -606,8 +621,7 @@
                     window.location.href = "index.html";
                 }
             }
-                    
-            
+                        
             // URL 파라미터에서 새로 회원가입했는지 확인
         function checkNewRegistration() {
             // localStorage 사용 가능 여부 확인
