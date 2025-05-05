@@ -608,241 +608,199 @@
             }
 
 
-            // 로그아웃 기능 - 중복 알림 방지
-            function logout() {
-                // 이미 로그아웃 진행 중인지 확인하기 위한 플래그 설정
-                // 이 플래그가 없으면 여러 이벤트에서 함수가 중복 호출될 수 있음
-                if (window.isLoggingOut) return;
+        
+            // URL 파라미터에서 새로 회원가입했는지 확인
+            function checkNewRegistration() {
+                // localStorage 사용 가능 여부 확인
+                if (!isLocalStorageAvailable()) {
+                    document.getElementById('storage-notice').style.display = 'block';
+                }
+            
+                const urlParams = new URLSearchParams(window.location.search);
+                const newRegistration = urlParams.get('newRegistration');
+                const studentId = urlParams.get('studentId');
+            
+                if (newRegistration === 'true' && studentId) {
+                    // 새로 회원가입한 경우 회원가입 상태 저장
+                    saveRegistrationStatus(studentId);
                 
-                // 사용자 확인
-                const confirmLogout = confirm('로그아웃 하시겠습니까?');
+                    // 학번 자동 입력
+                    document.getElementById('studentId').value = studentId;
                 
-                if (confirmLogout) {
-                    // 로그아웃 진행 중 플래그 설정
-                    window.isLoggingOut = true;
-                    
-                    // 현재 로그인 사용자 정보 삭제
-                    localStorage.removeItem('currentLoggedInUser');
-                    
-                    // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
-                    const loginButton = document.querySelector('.login-button');
-                    const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
-                    
-                    // 로그인 버튼 표시, 프로필 드롭다운 숨김
-                    if (loginButton) loginButton.style.display = 'block';
-                    if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
-                    
-                    // 프로필 드롭다운이 열려있다면 닫기
-                    const dropdown = document.querySelector('.profile-dropdown');
-                    if (dropdown) dropdown.classList.remove('active');
-                    
-                    // 홈 탭으로 전환
-                    switchTab('home');
-                    
-                    // 로그아웃 완료 메시지를 한 번만 표시
-                    alert('로그아웃 되었습니다.');
-                    
-                    // 로그아웃이 완료된 후 플래그 제거 (다음 로그아웃을 위해)
-                    setTimeout(() => {
-                        window.isLoggingOut = false;
-                    }, 100);
+                    // 포커스를 비밀번호 필드로 이동
+                    document.getElementById('password').focus();
                 }
             }
-
-
         
-        // URL 파라미터에서 새로 회원가입했는지 확인
-        function checkNewRegistration() {
-            // localStorage 사용 가능 여부 확인
-            if (!isLocalStorageAvailable()) {
-                document.getElementById('storage-notice').style.display = 'block';
-            }
+            // 네이버 로그인 모달 열기
+            function naverLogin() {
+                // 네이버 로그인 API 사용 - 실제 네이버 로그인 페이지로 이동
+                const CLIENT_ID = '4s_r7FMu5Bfr3er3GXci'; // 이미지에서 보이는 클라이언트 ID
+                const REDIRECT_URI = 'https://ysu-guide.netlify.app/naver-callback.html';
+                const STATE = Math.random().toString(36).substr(2, 11);
             
-            const urlParams = new URLSearchParams(window.location.search);
-            const newRegistration = urlParams.get('newRegistration');
-            const studentId = urlParams.get('studentId');
+                // 상태 토큰 저장 (CSRF 방지)
+                safeStorage.setItem('naverOAuthState', STATE);
             
-            if (newRegistration === 'true' && studentId) {
-                // 새로 회원가입한 경우 회원가입 상태 저장
-                saveRegistrationStatus(studentId);
+                // 네이버 OAuth 2.0 인증 URL 생성
+                const authUrl = 'https://nid.naver.com/oauth2.0/authorize?' +
+                    'client_id=' + CLIENT_ID +
+                    '&response_type=code' +
+                    '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+                    '&state=' + STATE;
                 
-                // 학번 자동 입력
-                document.getElementById('studentId').value = studentId;
-                
-                // 포커스를 비밀번호 필드로 이동
-                document.getElementById('password').focus();
+                // 네이버 로그인 페이지로 이동
+                window.location.href = authUrl;
             }
-        }
         
-        // 네이버 로그인 모달 열기
-        function naverLogin() {
-            // 네이버 로그인 API 사용 - 실제 네이버 로그인 페이지로 이동
-            const CLIENT_ID = '4s_r7FMu5Bfr3er3GXci'; // 이미지에서 보이는 클라이언트 ID
-            const REDIRECT_URI = 'https://ysu-guide.netlify.app/naver-callback.html';
-            const STATE = Math.random().toString(36).substr(2, 11);
-            
-            // 상태 토큰 저장 (CSRF 방지)
-            safeStorage.setItem('naverOAuthState', STATE);
-            
-            // 네이버 OAuth 2.0 인증 URL 생성
-            const authUrl = 'https://nid.naver.com/oauth2.0/authorize?' +
-                'client_id=' + CLIENT_ID +
-                '&response_type=code' +
-                '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
-                '&state=' + STATE;
-            
-            // 네이버 로그인 페이지로 이동
-            window.location.href = authUrl;
-        }
+            // 모달 닫기
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
         
-        // 모달 닫기
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // 모달 이벤트 설정
-        function setupModalEvents() {
-            const modal = document.getElementById('naverLoginModal');
-            const modalContent = modal.querySelector('.modal-content');
-            
-            // 모달 외부 클릭 시 닫기 (단, 입력 중일 때는 예외)
-            window.onclick = function(event) {
-                if (event.target === modal) {
-                    // 아이디나 비밀번호 입력 중이 아닌 경우에만 모달 닫기
-                    const naverId = document.getElementById('naverId');
-                    const naverPw = document.getElementById('naverPw');
-                    
-                    if (document.activeElement !== naverId && document.activeElement !== naverPw) {
-                        modal.style.display = 'none';
+            // 모달 이벤트 설정
+            function setupModalEvents() {
+                const modal = document.getElementById('naverLoginModal');
+                const modalContent = modal.querySelector('.modal-content');
+                
+                // 모달 외부 클릭 시 닫기 (단, 입력 중일 때는 예외)
+                window.onclick = function(event) {
+                    if (event.target === modal) {
+                        // 아이디나 비밀번호 입력 중이 아닌 경우에만 모달 닫기
+                        const naverId = document.getElementById('naverId');
+                        const naverPw = document.getElementById('naverPw');
+                        
+                        if (document.activeElement !== naverId && document.activeElement !== naverPw) {
+                            modal.style.display = 'none';
+                        }
                     }
-                }
-            };
+                };
             
-            // 입력 필드에서 포커스가 나가도 모달이 유지되도록 설정
-            const inputFields = modal.querySelectorAll('input');
-            inputFields.forEach(input => {
-                input.addEventListener('blur', function(e) {
+                // 입력 필드에서 포커스가 나가도 모달이 유지되도록 설정
+                const inputFields = modal.querySelectorAll('input');
+                inputFields.forEach(input => {
+                    input.addEventListener('blur', function(e) {
+                        e.stopPropagation();
+                    });
+                });
+                
+                // 모달 내부 클릭 시 이벤트 버블링 방지
+                modalContent.addEventListener('click', function(e) {
                     e.stopPropagation();
                 });
-            });
-            
-            // 모달 내부 클릭 시 이벤트 버블링 방지
-            modalContent.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        }
-        
-        // 네이버 모달 로그인 처리
-        function processNaverLogin() {
-            const naverId = document.getElementById('naverId').value;
-            const naverPw = document.getElementById('naverPw').value;
-            const autoLogin = document.getElementById('autoLogin').checked;
-            
-            // 간단한 유효성 검사
-            if (!naverId || !naverPw) {
-                alert('네이버 아이디와 비밀번호를 모두 입력해주세요.');
-                return;
             }
             
-            try {
-                // 여기서는 임시로 처리 (실제로는 네이버 OAuth API를 사용)
-                // 네이버 로그인 성공 시 임시 학번 생성
-                const tempStudentId = 'naver_' + naverId;
+            // 네이버 모달 로그인 처리
+            function processNaverLogin() {
+                const naverId = document.getElementById('naverId').value;
+                const naverPw = document.getElementById('naverPw').value;
+                const autoLogin = document.getElementById('autoLogin').checked;
                 
-                // 사용자 정보 저장
-                safeStorage.setItem(`user_${tempStudentId}_registered`, 'true');
-                safeStorage.setItem(`user_${tempStudentId}_name`, '네이버 사용자');
-                safeStorage.setItem(`user_${tempStudentId}_department`, 'computerScience');
-                safeStorage.setItem(`user_${tempStudentId}_grade`, '1');
-                safeStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
-                safeStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
-                
-                // 자동 로그인 설정 저장
-                if (autoLogin) {
-                    safeStorage.setItem(`user_${tempStudentId}_autoLogin`, 'true');
+                // 간단한 유효성 검사
+                if (!naverId || !naverPw) {
+                    alert('네이버 아이디와 비밀번호를 모두 입력해주세요.');
+                    return;
                 }
                 
-                // 현재 로그인된 사용자 저장
-                safeStorage.setItem('currentLoggedInUser', tempStudentId);
-                
-                // 소셜 로그인 사용자 표시
-                safeStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
-                
-                // 최초 로그인 여부 확인 및 설정
-                const isFirstLogin = safeStorage.getItem(`user_${tempStudentId}_first_login`) !== 'false';
-                if (isFirstLogin) {
-                    safeStorage.setItem(`user_${tempStudentId}_first_login`, 'false');
+                try {
+                    // 여기서는 임시로 처리 (실제로는 네이버 OAuth API를 사용)
+                    // 네이버 로그인 성공 시 임시 학번 생성
+                    const tempStudentId = 'naver_' + naverId;
                     
-                    // 모달 닫기
-                    closeModal('naverLoginModal');
+                    // 사용자 정보 저장
+                    safeStorage.setItem(`user_${tempStudentId}_registered`, 'true');
+                    safeStorage.setItem(`user_${tempStudentId}_name`, '네이버 사용자');
+                    safeStorage.setItem(`user_${tempStudentId}_department`, 'computerScience');
+                    safeStorage.setItem(`user_${tempStudentId}_grade`, '1');
+                    safeStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
+                    safeStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
                     
-                    alert('네이버 계정으로 로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
-                    window.location.href = "widget-settings.html";
-                } else {
-                    // 모달 닫기
-                    closeModal('naverLoginModal');
+                    // 자동 로그인 설정 저장
+                    if (autoLogin) {
+                        safeStorage.setItem(`user_${tempStudentId}_autoLogin`, 'true');
+                    }
                     
-                    alert('네이버 계정으로 로그인이 완료되었습니다.');
-                    window.location.href = "index.html";
+                    // 현재 로그인된 사용자 저장
+                    safeStorage.setItem('currentLoggedInUser', tempStudentId);
+                    
+                    // 소셜 로그인 사용자 표시
+                    safeStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
+                    
+                    // 최초 로그인 여부 확인 및 설정
+                    const isFirstLogin = safeStorage.getItem(`user_${tempStudentId}_first_login`) !== 'false';
+                    if (isFirstLogin) {
+                        safeStorage.setItem(`user_${tempStudentId}_first_login`, 'false');
+                        
+                        // 모달 닫기
+                        closeModal('naverLoginModal');
+                        
+                        alert('네이버 계정으로 로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
+                        window.location.href = "widget-settings.html";
+                    } else {
+                        // 모달 닫기
+                        closeModal('naverLoginModal');
+                        
+                        alert('네이버 계정으로 로그인이 완료되었습니다.');
+                        window.location.href = "index.html";
+                    }
+                } catch (error) {
+                    console.error('네이버 로그인 처리 중 오류:', error);
+                    alert('네이버 로그인 처리 중 오류가 발생했습니다: ' + error.message);
                 }
-            } catch (error) {
-                console.error('네이버 로그인 처리 중 오류:', error);
-                alert('네이버 로그인 처리 중 오류가 발생했습니다: ' + error.message);
             }
-        }
-        
-        // 구글 로그인 처리 - 새 ID로 업데이트
-        function googleLogin() {
-            // 새로운 클라이언트 ID 사용
-            const CLIENT_ID = '682526101032-6fpr7h5u93gkf762m0rkoj5bo5hpgs2u.apps.googleusercontent.com';
             
-            // 리디렉션 URI - 이 부분은 변경하지 않음
-            const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
-            
-            // 권한 범위 유지
-            const SCOPE = 'email profile';
-            
-            // Google OAuth 2.0 인증 URL 생성
-            const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
-                'client_id=' + encodeURIComponent(CLIENT_ID) +
-                '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
-                '&response_type=code' +
-                '&scope=' + encodeURIComponent(SCOPE) +
-                '&prompt=select_account' +
-                '&access_type=offline';
-            
-            // 구글 로그인 페이지로 이동
-            window.location.href = authUrl;
-        }
-        
-        // 엔터 키로 로그인 처리
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                const modal = document.getElementById('naverLoginModal');
+            // 구글 로그인 처리 - 새 ID로 업데이트
+            function googleLogin() {
+                // 새로운 클라이언트 ID 사용
+                const CLIENT_ID = '682526101032-6fpr7h5u93gkf762m0rkoj5bo5hpgs2u.apps.googleusercontent.com';
                 
-                // 네이버 로그인 모달이 열려있고 입력 필드에 포커스가 있을 때
-                if (modal.style.display === 'block') {
-                    const naverId = document.getElementById('naverId');
-                    const naverPw = document.getElementById('naverPw');
+                // 리디렉션 URI - 이 부분은 변경하지 않음
+                const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
+                
+                // 권한 범위 유지
+                const SCOPE = 'email profile';
+                
+                // Google OAuth 2.0 인증 URL 생성
+                const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+                    'client_id=' + encodeURIComponent(CLIENT_ID) +
+                    '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+                    '&response_type=code' +
+                    '&scope=' + encodeURIComponent(SCOPE) +
+                    '&prompt=select_account' +
+                    '&access_type=offline';
+                
+                // 구글 로그인 페이지로 이동
+                window.location.href = authUrl;
+            }
+            
+            // 엔터 키로 로그인 처리
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    const modal = document.getElementById('naverLoginModal');
                     
-                    if (document.activeElement === naverId || document.activeElement === naverPw) {
-                        processNaverLogin();
+                    // 네이버 로그인 모달이 열려있고 입력 필드에 포커스가 있을 때
+                    if (modal.style.display === 'block') {
+                        const naverId = document.getElementById('naverId');
+                        const naverPw = document.getElementById('naverPw');
+                        
+                        if (document.activeElement === naverId || document.activeElement === naverPw) {
+                            processNaverLogin();
+                        }
+                    }
+                    // 일반 로그인 폼에서 엔터키를 눌렀을 때
+                    else {
+                        const studentId = document.getElementById('studentId');
+                        const password = document.getElementById('password');
+                        
+                        if (document.activeElement === studentId || document.activeElement === password) {
+                            login();
+                        }
                     }
                 }
-                // 일반 로그인 폼에서 엔터키를 눌렀을 때
-                else {
-                    const studentId = document.getElementById('studentId');
-                    const password = document.getElementById('password');
-                    
-                    if (document.activeElement === studentId || document.activeElement === password) {
-                        login();
-                    }
-                }
-            }
-        });
-        
-        // 페이지 로드 시 실행
-        document.addEventListener('DOMContentLoaded', checkNewRegistration);
+            });
+            
+            // 페이지 로드 시 실행
+            document.addEventListener('DOMContentLoaded', checkNewRegistration);
         </script>
     </body>
-    </html>
+</html>
