@@ -734,7 +734,7 @@
                         const key = localStorage.key(i);
                         if (key && key.includes('_phone')) {
                             const storedPhone = localStorage.getItem(key);
-                            const storedPhoneNoHyphen = storedPhone.replace(/-/g, '');
+                            const storedPhoneNoHyphen = storedPhone ? storedPhone.replace(/-/g, '') : '';
                             const studentId = key.split('_')[1]; // 학번 추출
                             
                             if (storedPhoneNoHyphen === phone) {
