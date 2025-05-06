@@ -677,18 +677,7 @@
                 window.location.href = "index.html";
             }
         }
-
-
-        // 페이지 로드 시 저장된 아이디 불러오기 함수
-        function loadSavedId() {
-            const savedId = localStorage.getItem('savedStudentId');
-            if (savedId) {
-                document.getElementById('studentId').value = savedId;
-                document.getElementById('saveId').checked = true;
-            }
-        }
-
-    
+        
         // URL 파라미터에서 새로 회원가입했는지 확인
         function checkNewRegistration() {
             // localStorage 사용 가능 여부 확인
@@ -881,7 +870,7 @@
         
         // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', function() {
-            // 기존 저장된 데이터 초기화 (로그아웃 후 새로 로그인하는 경우를 위해)
+            // 기존 입력 필드를 항상 초기화
             if (document.getElementById('studentId')) {
                 document.getElementById('studentId').value = '';
             }
@@ -890,9 +879,16 @@
             }
             
             checkNewRegistration();
-            loadSavedId(); // 저장된 아이디 불러오기 함수 호출
+            
+            // 아이디 저장이 체크된 경우에만 저장된 학번 불러오기
+            const savedId = localStorage.getItem('savedStudentId');
+            const saveIdCheckbox = document.getElementById('saveId');
+            
+            if (savedId && saveIdCheckbox) {
+                document.getElementById('studentId').value = savedId;
+                saveIdCheckbox.checked = true;
+            }
         });
-
 
         // 비밀번호 표시/숨김 토글 기능
         document.addEventListener('DOMContentLoaded', function() {
