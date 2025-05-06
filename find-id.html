@@ -541,40 +541,40 @@
         
         // 인증번호 전송 (실제 SMS API 호출)
         function sendVerificationCode() {
-            const name = document.getElementById('name-phone-input').value;
-            const phone = document.getElementById('phone-input').value;
-            
-            if (!name || !phone) {
-                alert('이름과 휴대폰 번호를 모두 입력해주세요.');
-                return;
-            }
-            
-            // 현재 로그인된 사용자와 입력 정보 일치 여부 확인
-            if (currentUser && currentUser.name !== name) {
-                alert('입력하신 이름이 현재 로그인된 회원의 이름과 일치하지 않습니다.');
-                document.getElementById('name-phone-input').focus();
-                return;
-            }
-            
-            if (currentUser && currentUser.phone !== phone) {
-                alert('입력하신 휴대폰 번호가 현재 로그인된 회원의 휴대폰 번호와 일치하지 않습니다.');
-                document.getElementById('phone-input').focus();
-                return;
-            }
-            
-            // 인증번호 생성 (6자리 난수)
-            const code = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            // 개발 테스트용 알림
-            console.log('테스트 모드 - 인증번호:', code);
-            alert(`개발 테스트 모드: 인증번호는 [${code}] 입니다.`);
-            
-            // 인증번호 저장
-            sessionStorage.setItem('verificationCode', code);
-            
-            // 인증번호 타이머 시작 (3분)
-            startTimer('id-timer', 180);
-        }
+    const name = document.getElementById('name-phone-input').value;
+    const phone = document.getElementById('phone-input').value;
+    
+    if (!name || !phone) {
+        alert('이름과 휴대폰 번호를 모두 입력해주세요.');
+        return;
+    }
+    
+    // 현재 로그인된 사용자와 입력 정보 일치 여부 확인
+    if (currentUser && currentUser.name !== name) {
+        alert('입력하신 이름이 현재 로그인된 회원의 이름과 일치하지 않습니다.');
+        document.getElementById('name-phone-input').focus();
+        return;
+    }
+    
+    if (currentUser && currentUser.phone !== phone) {
+        alert('입력하신 휴대폰 번호가 현재 로그인된 회원의 휴대폰 번호와 일치하지 않습니다.');
+        document.getElementById('phone-input').focus();
+        return;
+    }
+    
+    // 인증번호 생성 (6자리 난수)
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // 개발 테스트용 알림
+    console.log('테스트 모드 - 인증번호:', code);
+    alert(`개발 테스트 모드: 인증번호는 [${code}] 입니다.`);
+    
+    // 인증번호 저장
+    sessionStorage.setItem('verificationCode', code);
+    
+    // 인증번호 타이머 시작 (3분)
+    startTimer('id-timer', 180);
+}
 
 
         
