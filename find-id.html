@@ -300,7 +300,6 @@
             checkLoginStatus();
         });
 
-        // 사용자 로그인 상태 확인
         function checkLoginStatus() {
             // 세션 스토리지에서 로그인 정보 확인
             const loggedInUserId = sessionStorage.getItem('loggedInUserId');
@@ -333,6 +332,7 @@
                 console.log('로그인된 사용자가 없습니다.');
             }
         }
+        
         
         // 뒤로가기
         function goBack() {
@@ -551,10 +551,24 @@
         
         // 인증번호 전송 (실제 SMS API 호출)
         function sendVerificationCode() {
+            const name = document.getElementById('name-phone-input').value;
             const phone = document.getElementById('phone-input').value;
             
-            if (!phone) {
-                alert('휴대폰 번호를 입력해주세요.');
+            if (!name || !phone) {
+                alert('이름과 휴대폰 번호를 모두 입력해주세요.');
+                return;
+            }
+            
+            // 현재 로그인된 사용자와 입력 정보 일치 여부 확인
+            if (currentUser && currentUser.name !== name) {
+                alert('입력하신 이름이 현재 로그인된 회원의 이름과 일치하지 않습니다.');
+                document.getElementById('name-phone-input').focus();
+                return;
+            }
+            
+            if (currentUser && currentUser.phone !== phone) {
+                alert('입력하신 휴대폰 번호가 현재 로그인된 회원의 휴대폰 번호와 일치하지 않습니다.');
+                document.getElementById('phone-input').focus();
                 return;
             }
             
@@ -568,28 +582,21 @@
             // 인증번호 생성 (6자리 난수)
             const code = Math.floor(100000 + Math.random() * 900000).toString();
             
-            // 실제 SMS API 호출
-            sendSMS(phone, code)
-                .then(result => {
-                    if (result.success) {
-                        alert(`인증번호가 발송되었습니다.`);
-                        
-                        // 인증번호 저장 (실제 서비스에서는 서버에 저장하고 유효 시간 설정)
-                        sessionStorage.setItem('verificationCode', code);
-                        
-                        // 인증번호 타이머 시작 (3분)
-                        startTimer('id-timer', 180);
-                        
-                        console.log('발송된 인증번호:', code);
-                    } else {
-                        alert(`인증번호 발송에 실패했습니다: ${result.message}`);
-                    }
-                })
-                .catch(error => {
-                    console.error('SMS 발송 오류:', error);
-                    alert('인증번호 발송 중 오류가 발생했습니다. 다시 시도해주세요.');
-                });
+            // 실제 SMS API 호출 (여기서는 시뮬레이션)
+            // 실제 구현 시 여기에 실제 SMS API 호출 코드 추가
+            alert(`인증번호가 발송되었습니다.`);
+            
+            // 인증번호 저장 (실제 서비스에서는 서버에 저장하고 유효 시간 설정)
+            sessionStorage.setItem('verificationCode', code);
+            
+            // 인증번호 타이머 시작 (3분)
+            startTimer('id-timer', 180);
+            
+            // 개발 중에 테스트용으로 콘솔에 인증번호 출력
+            console.log('발송된 인증번호:', code);
         }
+        
+        
         
         // 실제 SMS API를 호출하는 함수
         function sendSMS(phoneNumber, message) {
