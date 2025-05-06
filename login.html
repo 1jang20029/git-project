@@ -554,8 +554,6 @@
                 console.error('localStorage를 사용할 수 없습니다:', e);
                 return false;
             }
-            
-            return false;
         }
         
         // 안전한 스토리지 객체
@@ -592,13 +590,40 @@
             }
         };
         
+        // 로그아웃 함수 - 로그아웃 버튼에 연결하세요
+        function logout() {
+            // 현재 로그인된 사용자 아이디 가져오기
+            const currentUser = safeStorage.getItem('currentLoggedInUser');
+            
+            // 아이디 저장 옵션 확인
+            const isSaveIdEnabled = document.getElementById('saveId').checked;
+            
+            // 아이디 저장이 활성화되어 있으면 현재 사용자 아이디 저장
+            if (isSaveIdEnabled && currentUser) {
+                safeStorage.setItem('savedStudentId', currentUser);
+                safeStorage.setItem('saveIdEnabled', 'true');
+            } else {
+                // 아이디 저장이 비활성화되어 있으면 저장된 아이디 삭제
+                safeStorage.removeItem('savedStudentId');
+                safeStorage.setItem('saveIdEnabled', 'false');
+            }
+            
+            // 로그인 상태 삭제
+            safeStorage.removeItem('currentLoggedInUser');
+            
+            // 로그아웃 메시지 표시
+            alert('로그아웃되었습니다.');
+            
+            // 로그인 페이지로 이동
+            window.location.href = "login.html";
+        }
+        
         // 로컬 스토리지에 회원가입 여부 저장
         function saveRegistrationStatus(studentId) {
             safeStorage.setItem(`user_${studentId}_registered`, 'true');
             // 최초 로그인 상태를 true로 설정 (아직 로그인한 적 없음)
             safeStorage.setItem(`user_${studentId}_first_login`, 'true');
         }
-
 
         // 회원가입 시 사용자 정보 저장 함수 (register.html 파일에 필요)
         function registerUser(studentId, password, name, department, grade, email, phone) {
@@ -635,7 +660,7 @@
             }
             
             // 회원가입 여부 확인
-            const isRegistered = localStorage.getItem(`user_${studentId}_registered`) === 'true';
+            const isRegistered = safeStorage.getItem(`user_${studentId}_registered`) === 'true';
             
             if (!isRegistered) {
                 alert('등록되지 않은 학번입니다. 회원가입을 먼저 진행해주세요.');
@@ -643,7 +668,7 @@
             }
             
             // 비밀번호 검증
-            const storedPassword = localStorage.getItem(`user_${studentId}_password`);
+            const storedPassword = safeStorage.getItem(`user_${studentId}_password`);
             
             if (password !== storedPassword) {
                 alert('아이디 또는 비밀번호가 일치하지 않습니다.');
@@ -652,23 +677,27 @@
             
             // 아이디 저장 옵션 처리
             const saveIdChecked = document.getElementById('saveId').checked;
+            
+            // 아이디 저장 옵션 상태 저장
+            safeStorage.setItem('saveIdEnabled', saveIdChecked ? 'true' : 'false');
+            
             if (saveIdChecked) {
                 // 아이디 저장
-                localStorage.setItem('savedStudentId', studentId);
+                safeStorage.setItem('savedStudentId', studentId);
             } else {
                 // 저장된 아이디 삭제
-                localStorage.removeItem('savedStudentId');
+                safeStorage.removeItem('savedStudentId');
             }
             
             // 현재 로그인된 사용자 저장
-            localStorage.setItem('currentLoggedInUser', studentId);
+            safeStorage.setItem('currentLoggedInUser', studentId);
             
             // 최초 로그인 여부 확인
-            const isFirstLogin = localStorage.getItem(`user_${studentId}_first_login`) === 'true';
+            const isFirstLogin = safeStorage.getItem(`user_${studentId}_first_login`) === 'true';
             
             if (isFirstLogin) {
                 // 최초 로그인인 경우 위젯 설정 페이지로 이동
-                localStorage.setItem(`user_${studentId}_first_login`, 'false');
+                safeStorage.setItem(`user_${studentId}_first_login`, 'false');
                 alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
                 window.location.href = "widget-settings.html";
             } else {
@@ -759,7 +788,7 @@
             });
         }
         
-        // 네이버 모달 로그인 처리
+        // 네이버 모달 로그인 처리 (이어서)
         function processNaverLogin() {
             const naverId = document.getElementById('naverId').value;
             const naverPw = document.getElementById('naverPw').value;
@@ -870,7 +899,7 @@
         
         // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', function() {
-            // 기존 입력 필드를 항상 초기화
+            // 항상 모든 입력 필드 초기화
             if (document.getElementById('studentId')) {
                 document.getElementById('studentId').value = '';
             }
@@ -880,13 +909,19 @@
             
             checkNewRegistration();
             
-            // 아이디 저장이 체크된 경우에만 저장된 학번 불러오기
-            const savedId = localStorage.getItem('savedStudentId');
+            // 아이디 저장 옵션 확인
+            const isSaveIdEnabled = safeStorage.getItem('saveIdEnabled') === 'true';
+            const savedId = safeStorage.getItem('savedStudentId');
             const saveIdCheckbox = document.getElementById('saveId');
             
-            if (savedId && saveIdCheckbox) {
-                document.getElementById('studentId').value = savedId;
-                saveIdCheckbox.checked = true;
+            if (saveIdCheckbox) {
+                // 체크박스 상태 설정
+                saveIdCheckbox.checked = isSaveIdEnabled;
+                
+                // 아이디 저장이 활성화되고 저장된 ID가 있는 경우에만 학번 필드에 채우기
+                if (isSaveIdEnabled && savedId) {
+                    document.getElementById('studentId').value = savedId;
+                }
             }
         });
 
@@ -905,9 +940,17 @@
                     if (passwordField.type === 'password') {
                         // 비밀번호를 표시하는 경우
                         passwordField.type = 'text';
+                        
+                        // 아이콘 변경 (열린 눈 숨기기, 닫힌 눈 표시)
+                        document.querySelector('.eye-visible').style.display = 'none';
+                        document.querySelector('.eye-hidden').style.display = 'block';
                     } else {
                         // 비밀번호를 숨기는 경우
                         passwordField.type = 'password';
+                        
+                        // 아이콘 변경 (열린 눈 표시, 닫힌 눈 숨기기)
+                        document.querySelector('.eye-visible').style.display = 'block';
+                        document.querySelector('.eye-hidden').style.display = 'none';
                     }
                 });
             }
