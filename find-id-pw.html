@@ -782,6 +782,10 @@
                     document.getElementById('verify-first-container').style.display = 'none';
                     document.getElementById('new-pw-container').style.display = 'block';
                     
+                    // 새 비밀번호 입력 필드 초기화 (추가된 부분)
+                    document.getElementById('new-pw-input').value = '';
+                    document.getElementById('new-pw-confirm-input').value = '';
+                    
                     // 인증된 사용자 ID 세션에 저장
                     sessionStorage.setItem('verifiedUserId', userId);
                 })
