@@ -467,10 +467,15 @@
                     </div>
                     
                     <button type="button" class="login-button" onclick="login()">로그인</button>
+
+                    <!-- 아이디 저장 체크박스 추가 -->
+                    <div class="auto-login" style="margin-top: 16px; margin-bottom: 8px;">
+                        <input type="checkbox" id="saveId">
+                        <label for="saveId">아이디 저장</label>
+                    </div>
                     
                     <div class="login-options">
-                        <a href="find-id.html">아이디 찾기</a>
-                        <a href="find-password.html">비밀번호 찾기</a>
+                        <a href="find-id-pw.html">아이디/비밀번호 찾기</a>
                     </div>
                 </form>
                 
@@ -640,6 +645,16 @@
                     return;
                 }
                 
+                // 아이디 저장 옵션 처리
+                const saveIdChecked = document.getElementById('saveId').checked;
+                if (saveIdChecked) {
+                    // 아이디 저장
+                    localStorage.setItem('savedStudentId', studentId);
+                } else {
+                    // 저장된 아이디 삭제
+                    localStorage.removeItem('savedStudentId');
+                }
+                
                 // 현재 로그인된 사용자 저장
                 localStorage.setItem('currentLoggedInUser', studentId);
                 
@@ -658,6 +673,15 @@
                 }
             }
 
+
+            // 페이지 로드 시 저장된 아이디 불러오기 함수
+            function loadSavedId() {
+                const savedId = localStorage.getItem('savedStudentId');
+                if (savedId) {
+                    document.getElementById('studentId').value = savedId;
+                    document.getElementById('saveId').checked = true;
+                }
+            }
 
         
             // URL 파라미터에서 새로 회원가입했는지 확인
@@ -851,7 +875,10 @@
             });
             
             // 페이지 로드 시 실행
-            document.addEventListener('DOMContentLoaded', checkNewRegistration);
+            document.addEventListener('DOMContentLoaded', function() {
+                checkNewRegistration();
+                loadSavedId(); // 저장된 아이디 불러오기 함수 호출
+            });
 
 
             // 비밀번호 표시/숨김 토글 기능
