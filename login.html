@@ -474,9 +474,9 @@
                         <label for="saveId">아이디 저장</label>
                     </div>
                     
-                    <!-- 오른쪽: 아이디찾기/비밀번호찾기 링크 -->
+                    <!-- 오른쪽: 아이디/비밀번호 찾기 링크 (하나로 통합) -->
                     <div>
-                        <a href="find-id.html">아이디찾기</a> | <a href="find-password.html">비밀번호찾기</a>
+                        <a href="find-id-pw.html">아이디/비밀번호 찾기</a>
                     </div>
                 </div>
                 
@@ -881,6 +881,14 @@
         
         // 페이지 로드 시 실행
         document.addEventListener('DOMContentLoaded', function() {
+            // 기존 저장된 데이터 초기화 (로그아웃 후 새로 로그인하는 경우를 위해)
+            if (document.getElementById('studentId')) {
+                document.getElementById('studentId').value = '';
+            }
+            if (document.getElementById('password')) {
+                document.getElementById('password').value = '';
+            }
+            
             checkNewRegistration();
             loadSavedId(); // 저장된 아이디 불러오기 함수 호출
         });
@@ -908,6 +916,6 @@
                 });
             }
         });
-    </script>
-</body>
+        </script>
+    </body>
 </html>
