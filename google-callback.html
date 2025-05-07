@@ -93,6 +93,29 @@
             margin-top: 20px;
             display: none;
         }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cancel-button {
+            background-color: #f1f3f4;
+            color: #444;
+            border: 1px solid #ddd;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .cancel-button:hover {
+            background-color: #e8eaed;
+        }
     </style>
 </head>
 <body>
@@ -101,7 +124,12 @@
         <h1 id="status-title">구글 로그인 처리 중</h1>
         <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
         <div class="spinner" id="loading-spinner"></div>
+        
         <button class="button" id="retry-button" onclick="goToLogin()">다시 시도하기</button>
+        
+        <div class="button-container">
+            <button class="cancel-button" onclick="goToLogin()">취소</button>
+        </div>
     </div>
 
     <script>
@@ -199,8 +227,17 @@
         // 페이지 로드 시 실행되는 함수
         window.onload = function() {
             try {
-                // 인증 코드 확인
+                // URL에서 취소 파라미터 확인
                 const urlParams = new URLSearchParams(window.location.search);
+                const cancel = urlParams.get('cancel');
+                
+                // 취소 버튼이 클릭된 경우
+                if (cancel === 'true') {
+                    goToLogin();
+                    return;
+                }
+                
+                // 인증 코드 확인
                 const authCode = urlParams.get('code');
                 const error = urlParams.get('error');
                 
@@ -238,6 +275,6 @@
                 updateStatus('오류 발생', '로그인 처리 중 오류가 발생했습니다.', true);
             }
         };
-    </script>
-</body>
+        </script>
+    </body>
 </html>
