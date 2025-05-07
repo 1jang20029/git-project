@@ -267,9 +267,7 @@
                     <span id="socialType">소셜 계정</span>으로 회원가입
                 </div>
                 <div class="social-text">
-                    <div><strong>이름:</strong> <span id="socialName">-</span></div>
-                    <div><strong>이메일:</strong> <span id="socialEmail">-</span></div>
-                    <p>아래 추가 정보를 입력하여 회원가입을 완료해 주세요.</p>
+                    <p>소셜 계정으로 간편하게 가입하세요. 학생 정보를 추가로 입력하여 캠퍼스 가이드 서비스를 이용하실 수 있습니다.</p>
                 </div>
             </div>
             
@@ -424,8 +422,6 @@
             if (socialType) {
                 // 소셜 로그인으로 온 경우, 세션 스토리지에서 정보 가져오기
                 const socialId = sessionStorage.getItem('temp_social_id');
-                const socialName = sessionStorage.getItem('temp_social_name');
-                const socialEmail = sessionStorage.getItem('temp_social_email');
                 
                 if (socialId) {
                     // 비밀번호 필드 숨기기
@@ -440,17 +436,7 @@
                     socialIconElem.textContent = socialType.charAt(0).toUpperCase();
                     socialIconElem.className = `social-icon ${socialType}-icon`;
                     
-                    // 소셜 계정 정보 표시
-                    document.getElementById('socialName').textContent = socialName || '-';
-                    document.getElementById('socialEmail').textContent = socialEmail || '-';
-                    
-                    // 이름 필드에 소셜 이름 미리 채우기
-                    document.getElementById('name').value = socialName || '';
-                    
-                    // 이메일 필드에 소셜 이메일 미리 채우기
-                    if (socialEmail) {
-                        document.getElementById('email').value = socialEmail;
-                    }
+                    // 이름과 이메일 필드는 자동 입력하지 않음 (사용자가 직접 입력)
                 }
             }
         });
