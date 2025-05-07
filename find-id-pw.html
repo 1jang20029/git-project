@@ -210,6 +210,10 @@
             color: #4CAF50;
         }
         
+        .validation-item.invalid {
+            color: #f44336;
+        }
+        
         .validation-icon {
             width: 18px;
             height: 18px;
@@ -224,7 +228,7 @@
         }
         
         .validation-icon.invalid {
-            color: #ccc;
+            color: #f44336;
         }
     </style>
 </head>
@@ -332,19 +336,19 @@
                         <!-- 비밀번호 유효성 검사 표시 영역 -->
                         <div class="password-validation" id="password-validation">
                             <div class="validation-item" id="length-validation">
-                                <span class="validation-icon invalid">✓</span>
+                                <span class="validation-icon">✓</span>
                                 <span>8자 이상</span>
                             </div>
                             <div class="validation-item" id="letter-validation">
-                                <span class="validation-icon invalid">✓</span>
+                                <span class="validation-icon">✓</span>
                                 <span>영문 대/소문자</span>
                             </div>
                             <div class="validation-item" id="number-validation">
-                                <span class="validation-icon invalid">✓</span>
+                                <span class="validation-icon">✓</span>
                                 <span>숫자</span>
                             </div>
                             <div class="validation-item" id="special-validation">
-                                <span class="validation-icon invalid">✓</span>
+                                <span class="validation-icon">✓</span>
                                 <span>특수문자</span>
                             </div>
                         </div>
@@ -356,7 +360,7 @@
                         <!-- 비밀번호 확인 일치 여부 표시 -->
                         <div class="password-validation" id="confirm-validation">
                             <div class="validation-item" id="match-validation">
-                                <span class="validation-icon invalid">✓</span>
+                                <span class="validation-icon">✓</span>
                                 <span>비밀번호 일치</span>
                             </div>
                         </div>
@@ -453,10 +457,13 @@
             
             if(isValid) {
                 element.classList.add('valid');
-                icon.classList.remove('invalid');
+                element.classList.remove('invalid');
                 icon.classList.add('valid');
-            } else {
+                icon.classList.remove('invalid');
+            } else if(element.classList.contains('valid') || element.textContent.trim() !== '') {
+                // 이미 valid 클래스가 있거나 텍스트가 있는 경우에만 invalid 클래스 추가
                 element.classList.remove('valid');
+                element.classList.add('invalid');
                 icon.classList.remove('valid');
                 icon.classList.add('invalid');
             }
@@ -932,10 +939,11 @@
             const validationItems = document.querySelectorAll('.validation-item');
             validationItems.forEach(item => {
                 item.classList.remove('valid');
+                item.classList.remove('invalid');
                 const icon = item.querySelector('.validation-icon');
                 if (icon) {
                     icon.classList.remove('valid');
-                    icon.classList.add('invalid');
+                    icon.classList.remove('invalid');
                 }
             });
         }
@@ -1006,6 +1014,6 @@
                 resolve({ success: true, message: '테스트 모드 SMS 발송' });
             });
         }
-        </script>
-    </body>
+    </script>
+</body>
 </html>
