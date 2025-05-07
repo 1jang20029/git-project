@@ -117,53 +117,42 @@
             background-color: white;
         }
         
-        .form-select option {
-            padding: 4px;
-            font-size: 13px;
-        }
-        
-        /* 드롭다운 메뉴의 높이 제한 및 스타일 */
+        /* 드롭다운 메뉴 높이 제한 */
         select.form-select {
-            height: 38px;  /* 기본 선택 상자 높이 */
+            height: 38px;
         }
         
-        select.form-select[size]:not([size="1"]), 
-        select.form-select[multiple] {
-            height: auto;
+        /* 옵션 스타일 */
+        .form-select option {
+            padding: 3px;
+            font-size: 12px;
         }
         
-        /* Firefox, Chrome, Edge 등 대부분의 브라우저에서 작동 */
+        /* 드롭다운 메뉴 크기 제한 - 여러 브라우저 지원 */
+        select.form-select optgroup,
         select.form-select option {
-            max-height: 300px;
+            max-height: 150px !important;
         }
         
-        /* 드롭다운 메뉴 크기 제한 (브라우저 지원이 다를 수 있음) */
-        @supports selector(::-webkit-scrollbar) {
-            select.form-select {
-                -webkit-appearance: none;
-                appearance: none;
-                background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 8px center;
-                background-size: 16px;
-                padding-right: 30px;
-            }
+        /* 스크롤 영역 크기 제한 */
+        select.form-select {
+            overflow-y: auto;
+            scrollbar-width: thin;
         }
         
-        /* Chrome, Safari용 드롭다운 메뉴 스타일 */
+        /* 아이폰/사파리에서 작동하도록 추가 */
         @media screen and (-webkit-min-device-pixel-ratio: 0) {
             select.form-select {
-                overflow: hidden;
-            }
-            
-            select.form-select:focus {
-                overflow: auto;
+                max-height: 250px;
             }
         }
         
-        /* 드롭다운 목록이 펼쳐질 때의 최대 높이 (일부 브라우저에서만 작동) */
-        select.form-select:focus option {
-            max-height: 250px !important;
+        /* 모바일 장치에서 더 작게 표시 */
+        @media (max-width: 768px) {
+            select.form-select {
+                font-size: 13px;
+                max-height: 200px;
+            }
         }
         
         .grade-dropdown {
