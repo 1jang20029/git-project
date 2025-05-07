@@ -200,6 +200,54 @@
         .check-item input[type="checkbox"] {
             margin-right: 8px;
         }
+        
+        .social-info {
+            background-color: #f0f8ff;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #d1e9ff;
+        }
+        
+        .social-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #0066cc;
+        }
+        
+        .social-text {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.5;
+        }
+        
+        .social-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            vertical-align: middle;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .kakao-icon {
+            background-color: #FEE500;
+            color: #3A1D1D;
+        }
+        
+        .google-icon {
+            background-color: #4285F4;
+        }
+        
+        .naver-icon {
+            background-color: #03C75A;
+        }
     </style>
 </head>
 <body>
@@ -211,6 +259,19 @@
         
         <div class="register-container">
             <div class="register-title">연성대학교 캠퍼스 가이드 회원가입</div>
+            
+            <!-- 소셜 로그인 정보 표시 영역 (소셜 로그인으로 온 경우에만 표시) -->
+            <div id="socialInfoBox" class="social-info" style="display: none;">
+                <div class="social-title">
+                    <span id="socialIcon" class="social-icon"></span>
+                    <span id="socialType">소셜 계정</span>으로 회원가입
+                </div>
+                <div class="social-text">
+                    <div><strong>이름:</strong> <span id="socialName">-</span></div>
+                    <div><strong>이메일:</strong> <span id="socialEmail">-</span></div>
+                    <p>아래 추가 정보를 입력하여 회원가입을 완료해 주세요.</p>
+                </div>
+            </div>
             
             <form id="registerForm">
                 <div class="form-group">
@@ -224,17 +285,20 @@
                     <input type="text" class="form-input" id="name" placeholder="이름을 입력하세요">
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">비밀번호</label>
-                    <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
-                    <div class="form-hint">영문, 숫자, 특수문자를 포함한 8자 이상</div>
-                    <div class="error-message" id="password-error">영문, 숫자, 특수문자를 포함한 8자 이상 입력해주세요</div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">비밀번호 확인</label>
-                    <input type="password" class="form-input" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요">
-                    <div class="error-message" id="confirmPassword-error">비밀번호가 일치하지 않습니다</div>
+                <!-- 일반 회원가입인 경우에만 비밀번호 필드 표시 -->
+                <div id="passwordFields">
+                    <div class="form-group">
+                        <label class="form-label">비밀번호</label>
+                        <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
+                        <div class="form-hint">영문, 숫자, 특수문자를 포함한 8자 이상</div>
+                        <div class="error-message" id="password-error">영문, 숫자, 특수문자를 포함한 8자 이상 입력해주세요</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">비밀번호 확인</label>
+                        <input type="password" class="form-input" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요">
+                        <div class="error-message" id="confirmPassword-error">비밀번호가 일치하지 않습니다</div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -352,7 +416,54 @@
                     dropdown.classList.remove('show');
                 }
             });
+            
+            // URL 파라미터 확인하여 소셜 로그인 여부 판단
+            const urlParams = new URLSearchParams(window.location.search);
+            const socialType = urlParams.get('social');
+            
+            if (socialType) {
+                // 소셜 로그인으로 온 경우, 세션 스토리지에서 정보 가져오기
+                const socialId = sessionStorage.getItem('temp_social_id');
+                const socialName = sessionStorage.getItem('temp_social_name');
+                const socialEmail = sessionStorage.getItem('temp_social_email');
+                
+                if (socialId) {
+                    // 비밀번호 필드 숨기기
+                    document.getElementById('passwordFields').style.display = 'none';
+                    
+                    // 소셜 정보 표시
+                    document.getElementById('socialInfoBox').style.display = 'block';
+                    document.getElementById('socialType').textContent = getSocialTypeName(socialType);
+                    
+                    // 소셜 아이콘 설정
+                    const socialIconElem = document.getElementById('socialIcon');
+                    socialIconElem.textContent = socialType.charAt(0).toUpperCase();
+                    socialIconElem.className = `social-icon ${socialType}-icon`;
+                    
+                    // 소셜 계정 정보 표시
+                    document.getElementById('socialName').textContent = socialName || '-';
+                    document.getElementById('socialEmail').textContent = socialEmail || '-';
+                    
+                    // 이름 필드에 소셜 이름 미리 채우기
+                    document.getElementById('name').value = socialName || '';
+                    
+                    // 이메일 필드에 소셜 이메일 미리 채우기
+                    if (socialEmail) {
+                        document.getElementById('email').value = socialEmail;
+                    }
+                }
+            }
         });
+        
+        // 소셜 타입명 변환 함수
+        function getSocialTypeName(type) {
+            switch(type) {
+                case 'kakao': return '카카오';
+                case 'google': return '구글';
+                case 'naver': return '네이버';
+                default: return '소셜';
+            }
+        }
         
         function goBack() {
             window.location.href = "login.html";
@@ -362,8 +473,6 @@
             // 입력값 가져오기
             const studentId = document.getElementById('studentId').value;
             const name = document.getElementById('name').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
             const department = document.getElementById('department').value;
             const selectedGrade = document.getElementById('selectedGrade').value;
             const phone = document.getElementById('phone').value;
@@ -371,30 +480,42 @@
             const agreeTerms = document.getElementById('agreeTerms').checked;
             const agreePrivacy = document.getElementById('agreePrivacy').checked;
             
+            // URL 파라미터에서 소셜 정보 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            const socialType = urlParams.get('social');
+            const isSocialLogin = socialType ? true : false;
+            
+            // 소셜 로그인이 아닌 경우에만 비밀번호 확인
+            let password = '';
+            if (!isSocialLogin) {
+                password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // 비밀번호 유효성 검사
+                if (!password) {
+                    document.getElementById('password-error').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('password-error').style.display = 'none';
+                }
+                
+                // 비밀번호 일치 검사
+                if (password !== confirmPassword) {
+                    document.getElementById('confirmPassword-error').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('confirmPassword-error').style.display = 'none';
+                }
+            }
+            
             // 간단한 유효성 검사
             let isValid = true;
             
             // 필수 필드 검사
-            if (!studentId || !name || !password || !confirmPassword || !department || !phone || !email) {
+            if (!studentId || !name || !department || !selectedGrade || !phone || !email) {
                 alert('모든 필수 항목을 입력해주세요.');
                 isValid = false;
                 return;
-            }
-            
-            // 학년 선택 검사
-            if (!selectedGrade) {
-                alert('학년을 선택해주세요.');
-                isValid = false;
-                return;
-            }
-            
-            // 비밀번호 일치 검사
-            if (password !== confirmPassword) {
-                document.getElementById('confirmPassword-error').style.display = 'block';
-                isValid = false;
-                return;
-            } else {
-                document.getElementById('confirmPassword-error').style.display = 'none';
             }
             
             // 약관 동의 검사
@@ -406,29 +527,55 @@
             
             // 유효성 검사 통과
             if (isValid) {
-                // 로컬 스토리지에 간단히 저장 (데모용)
-                localStorage.setItem(`user_${studentId}_registered`, 'true');
-                localStorage.setItem(`user_${studentId}_first_login`, 'true');
-                localStorage.setItem(`user_${studentId}_name`, name);
-                localStorage.setItem(`user_${studentId}_department`, department);
-                localStorage.setItem(`user_${studentId}_grade`, selectedGrade);
-                localStorage.setItem(`user_${studentId}_phone`, phone);
-                localStorage.setItem(`user_${studentId}_email`, email);
-                // 비밀번호 저장 (추가됨)
-                localStorage.setItem(`user_${studentId}_password`, password);
+                // 소셜 로그인 정보 가져오기
+                let userId = studentId;
+                
+                if (isSocialLogin) {
+                    const socialId = sessionStorage.getItem('temp_social_id');
+                    if (socialId) {
+                        userId = socialId;
+                    }
+                }
+                
+                // 로컬 스토리지에 저장
+                localStorage.setItem(`user_${userId}_registered`, 'true');
+                localStorage.setItem(`user_${userId}_first_login`, 'true');
+                localStorage.setItem(`user_${userId}_studentId`, studentId);
+                localStorage.setItem(`user_${userId}_name`, name);
+                localStorage.setItem(`user_${userId}_department`, department);
+                localStorage.setItem(`user_${userId}_grade`, selectedGrade);
+                localStorage.setItem(`user_${userId}_phone`, phone);
+                localStorage.setItem(`user_${userId}_email`, email);
+                
+                // 소셜 로그인이 아닌 경우에만 비밀번호 저장
+                if (!isSocialLogin) {
+                    localStorage.setItem(`user_${userId}_password`, password);
+                } else {
+                    // 소셜 로그인 타입 저장
+                    localStorage.setItem(`user_${userId}_socialType`, socialType);
+                }
                 
                 alert('회원가입이 완료되었습니다!');
                 
-                // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
-                window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+                // 소셜 로그인 세션 데이터 정리
+                if (isSocialLogin) {
+                    sessionStorage.removeItem('temp_social_id');
+                    sessionStorage.removeItem('temp_social_type');
+                    sessionStorage.removeItem('temp_social_name');
+                    sessionStorage.removeItem('temp_social_email');
+                    sessionStorage.removeItem('temp_social_profile_image');
+                    
+                    // 현재 로그인 사용자로 설정
+                    localStorage.setItem('currentLoggedInUser', userId);
+                    
+                    // 위젯 설정 페이지로 이동
+                    window.location.href = "widget-settings.html";
+                } else {
+                    // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
+                    window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+                }
             }
         }
-
-
-
-        
-            
-    
     </script>
 </body>
 </html>
