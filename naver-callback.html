@@ -110,6 +110,7 @@
         }
 
         .debug-info {
+            display: none; /* 디버그 정보 숨김 처리 */
             margin-top: 20px;
             background-color: #f0f8ff;
             padding: 15px;
@@ -179,6 +180,7 @@
             미리보기 환경에서는 로컬 저장소 사용이 제한됩니다. 실제 배포 환경에서 테스트해주세요.
         </div>
         
+        <!-- 디버그 정보 숨김 처리 -->
         <div id="debug-container" class="debug-info">
             <div class="debug-title">디버그 정보</div>
             <div class="error-message" id="debug-details"></div>
@@ -294,43 +296,17 @@
                     console.log('미리보기 환경에서는 localStorage를 사용할 수 없습니다. 메모리 저장소를 사용합니다.');
                 }
                 
-                // 전체 URL 출력 (디버깅용)
-                const fullUrl = window.location.href;
-                console.log('현재 URL:', fullUrl);
-                
                 // URL 파라미터에서 코드와 오류 정보 추출
                 const urlParams = new URLSearchParams(window.location.search);
                 const authCode = urlParams.get('code');
                 const error = urlParams.get('error');
                 const state = urlParams.get('state');
                 
-                // 디버그 정보 표시
-                const debugInfo = {
-                    url: fullUrl,
-                    search: window.location.search,
-                    hash: window.location.hash,
-                    code: authCode,
-                    error: error,
-                    state: state,
-                    localStorage: isLocalStorageAvailable() ? "사용 가능" : "사용 불가",
-                    allParams: {}
-                };
-                
-                // 모든 URL 매개변수 수집
-                for(const [key, value] of urlParams.entries()) {
-                    debugInfo.allParams[key] = value;
-                    console.log(`URL 매개변수: ${key} = ${value}`);
-                }
-                
-                // 디버그 정보 표시
-                document.getElementById('debug-details').textContent = JSON.stringify(debugInfo, null, 2);
-                
                 // 오류 파라미터가 있는 경우
                 if (error) {
                     showError({
                         error: error,
-                        message: '네이버 인증 서버에서 오류 응답이 반환되었습니다.',
-                        debug: debugInfo
+                        message: '네이버 인증 서버에서 오류 응답이 반환되었습니다.'
                     });
                     return;
                 }
@@ -346,8 +322,7 @@
                         processAuthCode(hashCode);
                     } else {
                         showError({
-                            message: '인증 코드를 찾을 수 없습니다. 로그인을 다시 시도해주세요.',
-                            debug: debugInfo
+                            message: '인증 코드를 찾을 수 없습니다. 로그인을 다시 시도해주세요.'
                         });
                     }
                     return;
@@ -368,11 +343,7 @@
         // 인증 코드 처리 함수
         function processAuthCode(code) {
             updateStatus('인증 코드 확인됨', '사용자 정보를 처리하고 있습니다...');
-            console.log('인증 코드 처리 시작:', code.substring(0, 10) + '...');
-            
-            // 임시 사용자 ID 생성 (실제로는 네이버 API로부터 받아와야 함)
-            const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-            const naverId = 'naver_' + randomId;
+            console.log('인증 코드 처리 시작');
             
             // 이미 가입된 네이버 사용자가 있는지 확인
             let existingNaverId = null;
@@ -388,7 +359,7 @@
                             if (localStorage.getItem(`user_${userId}_registered`) === 'true') {
                                 isRegistered = true;
                                 existingNaverId = userId;
-                                console.log('기존 네이버 사용자 찾음:', existingNaverId);
+                                console.log('기존 네이버 사용자 찾음');
                                 break;
                             }
                         }
@@ -398,39 +369,23 @@
                 console.error('사용자 검색 중 오류:', error);
             }
             
+            // 임시 사용자 ID 생성 (실제로는 네이버 API로부터 받아와야 함)
+            const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            const naverId = existingNaverId || ('naver_' + randomId);
+            
             // 이미 가입된 네이버 사용자가 있으면
             if (isRegistered && existingNaverId) {
-                updateStatus('로그인 중', '기존 계정으로 로그인합니다...');
-                console.log('기존 네이버 사용자 로그인:', existingNaverId);
-                
-                // 현재 로그인 사용자로 설정
-                safeStorage.setItem('currentLoggedInUser', existingNaverId);
-                
-                // 최초 로그인 여부 확인
-                const isFirstLogin = safeStorage.getItem(`user_${existingNaverId}_first_login`) !== 'false';
-                
-                if (isFirstLogin) {
-                    safeStorage.setItem(`user_${existingNaverId}_first_login`, 'false');
-                    updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
-                    
-                    // 위젯 설정 페이지로 이동
-                    setTimeout(function() {
-                        window.location.href = "widget-settings.html";
-                    }, 1500);
-                } else {
-                    updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
-                    
-                    // 메인 페이지로 이동
-                    setTimeout(function() {
-                        window.location.href = "index.html";
-                    }, 1500);
+                // 콜백 URL이 동의 페이지인지 확인
+                if (window.location.href.includes('naver-callback.html')) {
+                    // 동의 내역이 네이버에서 전달되었으므로 자동 로그인 처리
+                    completeLogin(existingNaverId);
                 }
             } else {
                 // 새 사용자 - 회원가입 페이지로 이동
                 updateStatus('새 사용자 확인됨', '회원가입 페이지로 이동합니다...');
                 
                 // 임시 데이터 저장 (세션 스토리지 사용)
-                sessionStorage.setItem('temp_social_id', naverId);
+                sessionStorage.setItem('temp_social_id', 'naver_' + randomId);
                 sessionStorage.setItem('temp_social_type', 'naver');
                 sessionStorage.setItem('temp_social_name', '네이버 사용자');
                 sessionStorage.setItem('temp_social_email', `user_${randomId}@naver.com`);
@@ -439,6 +394,32 @@
                 setTimeout(function() {
                     window.location.href = "register.html?social=naver";
                 }, 1500);
+            }
+        }
+        
+        // 로그인 완료 처리 함수
+        function completeLogin(userId) {
+            // 현재 로그인 사용자로 설정
+            safeStorage.setItem('currentLoggedInUser', userId);
+            
+            // 최초 로그인 여부 확인
+            const isFirstLogin = safeStorage.getItem(`user_${userId}_first_login`) !== 'false';
+            
+            if (isFirstLogin) {
+                safeStorage.setItem(`user_${userId}_first_login`, 'false');
+                updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
+                
+                // 위젯 설정 페이지로 이동
+                setTimeout(function() {
+                    window.location.href = "widget-settings.html";
+                }, 1000);
+            } else {
+                updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                
+                // 메인 페이지로 이동
+                setTimeout(function() {
+                    window.location.href = "index.html";
+                }, 1000);
             }
         }
         </script>
