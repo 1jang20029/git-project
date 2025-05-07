@@ -333,8 +333,9 @@
                     <div class="form-group">
                         <label class="form-label">새 비밀번호 입력</label>
                         <input type="password" class="form-input" id="new-pw-input" placeholder="영문, 숫자, 특수문자 8-20자">
-                        <!-- 비밀번호 유효성 검사 표시 영역 -->
+                        <!-- 비밀번호 유효성 검사 표시 영역 - 라벨 변경 -->
                         <div class="password-validation" id="password-validation">
+                            <h3 style="font-size: 14px; margin-bottom: 8px;">비밀번호 변경 조건</h3>
                             <div class="validation-item" id="length-validation">
                                 <span class="validation-icon">✓</span>
                                 <span>8자 이상</span>
@@ -417,6 +418,13 @@
         function validatePassword() {
             const password = document.getElementById('new-pw-input').value;
             
+            // 비밀번호가 비어있는지 확인
+            if(password.length === 0) {
+                // 빈 경우 모든 검증 상태를 초기화 (중립적 색상으로)
+                resetValidationStatus();
+                return;
+            }
+            
             // 길이 검사 (8자 이상)
             const lengthValid = password.length >= 8;
             updateValidationStatus('length-validation', lengthValid);
@@ -445,6 +453,17 @@
             const password = document.getElementById('new-pw-input').value;
             const confirmPassword = document.getElementById('new-pw-confirm-input').value;
             
+            // 비밀번호 확인이 비어있는지 확인
+            if(confirmPassword.length === 0) {
+                // 일치 검증 상태를 초기화 (중립적 색상으로)
+                document.getElementById('match-validation').classList.remove('valid');
+                document.getElementById('match-validation').classList.remove('invalid');
+                const icon = document.getElementById('match-validation').querySelector('.validation-icon');
+                icon.classList.remove('valid');
+                icon.classList.remove('invalid');
+                return;
+            }
+            
             // 일치 여부 검사
             const matchValid = password === confirmPassword && password.length > 0;
             updateValidationStatus('match-validation', matchValid);
@@ -460,8 +479,7 @@
                 element.classList.remove('invalid');
                 icon.classList.add('valid');
                 icon.classList.remove('invalid');
-            } else if(element.classList.contains('valid') || element.textContent.trim() !== '') {
-                // 이미 valid 클래스가 있거나 텍스트가 있는 경우에만 invalid 클래스 추가
+            } else {
                 element.classList.remove('valid');
                 element.classList.add('invalid');
                 icon.classList.remove('valid');
@@ -1014,6 +1032,6 @@
                 resolve({ success: true, message: '테스트 모드 SMS 발송' });
             });
         }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
