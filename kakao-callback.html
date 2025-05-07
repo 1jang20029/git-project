@@ -151,6 +151,37 @@
         function goToLogin() {
             window.location.href = "login.html";
         }
+        
+        // 사용자 처리 함수 (공통)
+        function processUserAfterLogin(userId, socialType, userData) {
+            // 회원가입 완료 여부 확인
+            const isRegistrationCompleted = localStorage.getItem(`user_${userId}_registration_completed`) === 'true';
+            
+            if (!isRegistrationCompleted) {
+                // 첫 로그인 또는 회원가입이 필요한 경우: 회원가입 페이지로 이동
+                updateStatus(`${socialType} 계정 확인 완료`, '회원가입을 완료해주세요...');
+                
+                // 소셜 로그인 정보를 세션 스토리지에 임시 저장 (회원가입 페이지에서 사용)
+                sessionStorage.setItem('socialLoginId', userId);
+                sessionStorage.setItem('socialType', socialType);
+                
+                // 회원가입 페이지로 이동
+                setTimeout(function() {
+                    window.location.href = "social-registration.html";
+                }, 1500);
+            } else {
+                // 이미 회원가입이 완료된 사용자: 자동 로그인 처리
+                updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                
+                // 현재 로그인 사용자 설정
+                localStorage.setItem('currentLoggedInUser', userId);
+                
+                // 메인 페이지로 이동
+                setTimeout(function() {
+                    window.location.href = "index.html";
+                }, 1500);
+            }
+        }
 
         // 페이지 로드 시 실행되는 함수
         window.onload = function() {
@@ -237,13 +268,12 @@
                     const kakaoAccount = userData.kakao_account || {};
                     const profile = kakaoAccount.profile || {};
                     
-                    // 로컬 스토리지에 사용자 정보 저장
+                    // 카카오 ID 생성 (kakao_ 접두사 + 고유 ID)
                     const kakaoId = 'kakao_' + userData.id;
                     
-                    localStorage.setItem(`user_${kakaoId}_registered`, 'true');
+                    // 기본 정보 저장 (회원가입 완료 여부 확인용)
                     localStorage.setItem(`user_${kakaoId}_name`, profile.nickname || '카카오 사용자');
-                    localStorage.setItem(`user_${kakaoId}_department`, 'defaultDepartment');
-                    localStorage.setItem(`user_${kakaoId}_grade`, '1');
+                    localStorage.setItem(`user_${kakaoId}_socialType`, 'kakao');
                     
                     // 이메일이 있으면 저장
                     if (kakaoAccount.email) {
@@ -255,31 +285,8 @@
                         localStorage.setItem(`user_${kakaoId}_profileImage`, profile.profile_image_url);
                     }
                     
-                    // 현재 로그인된 사용자 저장
-                    localStorage.setItem('currentLoggedInUser', kakaoId);
-                    
-                    // 소셜 로그인 사용자 표시
-                    localStorage.setItem(`user_${kakaoId}_socialType`, 'kakao');
-                    
-                    // 최초 로그인 여부 확인 및 설정
-                    const isFirstLogin = localStorage.getItem(`user_${kakaoId}_first_login`) !== 'false';
-                    
-                    if (isFirstLogin) {
-                        localStorage.setItem(`user_${kakaoId}_first_login`, 'false');
-                        updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
-                        
-                        // 최초 로그인 시 위젯 설정 페이지로 이동
-                        setTimeout(function() {
-                            window.location.href = "widget-settings.html";
-                        }, 1500);
-                    } else {
-                        updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
-                        
-                        // 기존 사용자는 메인 페이지로 이동
-                        setTimeout(function() {
-                            window.location.href = "index.html";
-                        }, 1500);
-                    }
+                    // 공통 사용자 처리 함수 호출
+                    processUserAfterLogin(kakaoId, 'kakao', userData);
                 })
                 .catch(error => {
                     console.error('카카오 로그인 처리 중 오류:', error);
