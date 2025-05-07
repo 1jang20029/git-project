@@ -236,17 +236,17 @@
             font-size: 14px;
         }
         
-        .naver-icon {
-            background-color: #03C75A;
+        .kakao-icon {
+            background-color: #FEE500;
+            color: #3A1D1D;
         }
         
         .google-icon {
             background-color: #4285F4;
         }
         
-        .kakao-icon {
-            background-color: #FEE500;
-            color: #3A1D1D;
+        .naver-icon {
+            background-color: #03C75A;
         }
     </style>
 </head>
@@ -260,7 +260,7 @@
         <div class="register-container">
             <div class="register-title">연성대학교 캠퍼스 가이드 회원가입</div>
             
-            <!-- 소셜 로그인 정보 표시 영역 -->
+            <!-- 소셜 로그인 정보 표시 영역 (소셜 로그인으로 온 경우에만 표시) -->
             <div id="socialInfoBox" class="social-info" style="display: none;">
                 <div class="social-title">
                     <span id="socialIcon" class="social-icon"></span>
@@ -381,9 +381,8 @@
     </div>
     
     <script>
-        // 페이지 로드 시 실행
+        // 학년 드롭다운 기능
         document.addEventListener('DOMContentLoaded', function() {
-            // 학년 드롭다운 기능
             const dropdownBtn = document.getElementById('gradeDropdownBtn');
             const dropdown = document.getElementById('gradeDropdown');
             const options = document.querySelectorAll('.grade-option');
@@ -418,116 +417,58 @@
                 }
             });
             
-            // 소셜 로그인 정보 처리
-            processSocialLoginInfo();
-        });
-        
-        // 소셜 로그인 정보 처리 함수
-        function processSocialLoginInfo() {
-            // URL 파라미터 확인
+            // URL 파라미터 확인하여 소셜 로그인 여부 판단
             const urlParams = new URLSearchParams(window.location.search);
             const socialType = urlParams.get('social');
             
-            // 소셜 로그인으로 왔는지 확인
             if (socialType) {
-                // 각 소셜 타입별 처리
-                if (socialType === 'naver') {
-                    handleNaverLogin();
-                } else if (socialType === 'google') {
-                    handleGoogleLogin();
-                } else if (socialType === 'kakao') {
-                    handleKakaoLogin();
+                // 소셜 로그인으로 온 경우, 세션 스토리지에서 정보 가져오기
+                const socialId = sessionStorage.getItem('temp_social_id');
+                const socialName = sessionStorage.getItem('temp_social_name');
+                const socialEmail = sessionStorage.getItem('temp_social_email');
+                
+                if (socialId) {
+                    // 비밀번호 필드 숨기기
+                    document.getElementById('passwordFields').style.display = 'none';
+                    
+                    // 소셜 정보 표시
+                    document.getElementById('socialInfoBox').style.display = 'block';
+                    document.getElementById('socialType').textContent = getSocialTypeName(socialType);
+                    
+                    // 소셜 아이콘 설정
+                    const socialIconElem = document.getElementById('socialIcon');
+                    socialIconElem.textContent = socialType.charAt(0).toUpperCase();
+                    socialIconElem.className = `social-icon ${socialType}-icon`;
+                    
+                    // 소셜 계정 정보 표시
+                    document.getElementById('socialName').textContent = socialName || '-';
+                    document.getElementById('socialEmail').textContent = socialEmail || '-';
+                    
+                    // 이름 필드에 소셜 이름 미리 채우기
+                    document.getElementById('name').value = socialName || '';
+                    
+                    // 이메일 필드에 소셜 이메일 미리 채우기
+                    if (socialEmail) {
+                        document.getElementById('email').value = socialEmail;
+                    }
                 }
+            }
+        });
+        
+        // 소셜 타입명 변환 함수
+        function getSocialTypeName(type) {
+            switch(type) {
+                case 'kakao': return '카카오';
+                case 'google': return '구글';
+                case 'naver': return '네이버';
+                default: return '소셜';
             }
         }
         
-        // 네이버 로그인 정보 처리
-        function handleNaverLogin() {
-            // 소셜 정보 표시 영역 보이기
-            document.getElementById('socialInfoBox').style.display = 'block';
-            
-            // 네이버 아이콘 및 타입 설정
-            document.getElementById('socialType').textContent = '네이버';
-            const socialIconElem = document.getElementById('socialIcon');
-            socialIconElem.textContent = 'N';
-            socialIconElem.className = 'social-icon naver-icon';
-            
-            // 세션 스토리지에서 네이버 정보 가져오기
-            const naverName = sessionStorage.getItem('temp_social_name') || '네이버 사용자';
-            const naverEmail = sessionStorage.getItem('temp_social_email') || 'naver_user@example.com';
-            
-            // 표시 영역에 네이버 정보 표시
-            document.getElementById('socialName').textContent = naverName;
-            document.getElementById('socialEmail').textContent = naverEmail;
-            
-            // 폼 필드에 네이버 정보 채우기
-            document.getElementById('name').value = naverName;
-            document.getElementById('email').value = naverEmail;
-            
-            // 비밀번호 필드 숨기기
-            document.getElementById('passwordFields').style.display = 'none';
-        }
-        
-        // 구글 로그인 정보 처리
-        function handleGoogleLogin() {
-            // 소셜 정보 표시 영역 보이기
-            document.getElementById('socialInfoBox').style.display = 'block';
-            
-            // 구글 아이콘 및 타입 설정
-            document.getElementById('socialType').textContent = '구글';
-            const socialIconElem = document.getElementById('socialIcon');
-            socialIconElem.textContent = 'G';
-            socialIconElem.className = 'social-icon google-icon';
-            
-            // 세션 스토리지에서 구글 정보 가져오기
-            const googleName = sessionStorage.getItem('temp_social_name') || '구글 사용자';
-            const googleEmail = sessionStorage.getItem('temp_social_email') || 'google_user@example.com';
-            
-            // 표시 영역에 구글 정보 표시
-            document.getElementById('socialName').textContent = googleName;
-            document.getElementById('socialEmail').textContent = googleEmail;
-            
-            // 폼 필드에 구글 정보 채우기
-            document.getElementById('name').value = googleName;
-            document.getElementById('email').value = googleEmail;
-            
-            // 비밀번호 필드 숨기기
-            document.getElementById('passwordFields').style.display = 'none';
-        }
-        
-        // 카카오 로그인 정보 처리
-        function handleKakaoLogin() {
-            // 소셜 정보 표시 영역 보이기
-            document.getElementById('socialInfoBox').style.display = 'block';
-            
-            // 카카오 아이콘 및 타입 설정
-            document.getElementById('socialType').textContent = '카카오';
-            const socialIconElem = document.getElementById('socialIcon');
-            socialIconElem.textContent = 'K';
-            socialIconElem.className = 'social-icon kakao-icon';
-            
-            // 세션 스토리지에서 카카오 정보 가져오기
-            const kakaoName = sessionStorage.getItem('temp_social_name') || '카카오 사용자';
-            const kakaoEmail = sessionStorage.getItem('temp_social_email') || 'kakao_user@example.com';
-            
-            // 표시 영역에 카카오 정보 표시
-            document.getElementById('socialName').textContent = kakaoName;
-            document.getElementById('socialEmail').textContent = kakaoEmail;
-            
-            // 폼 필드에 카카오 정보 채우기
-            document.getElementById('name').value = kakaoName;
-            document.getElementById('email').value = kakaoEmail;
-            
-            // 비밀번호 필드 숨기기
-            document.getElementById('passwordFields').style.display = 'none';
-        }
-        
-        // 뒤로 가기 버튼 클릭 처리
         function goBack() {
             window.location.href = "login.html";
         }
         
-        // 회원가입 버튼 클릭 처리
         function register() {
             // 입력값 가져오기
             const studentId = document.getElementById('studentId').value;
@@ -539,10 +480,33 @@
             const agreeTerms = document.getElementById('agreeTerms').checked;
             const agreePrivacy = document.getElementById('agreePrivacy').checked;
             
-            // URL 파라미터 확인
+            // URL 파라미터에서 소셜 정보 확인
             const urlParams = new URLSearchParams(window.location.search);
             const socialType = urlParams.get('social');
             const isSocialLogin = socialType ? true : false;
+            
+            // 소셜 로그인이 아닌 경우에만 비밀번호 확인
+            let password = '';
+            if (!isSocialLogin) {
+                password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // 비밀번호 유효성 검사
+                if (!password) {
+                    document.getElementById('password-error').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('password-error').style.display = 'none';
+                }
+                
+                // 비밀번호 일치 검사
+                if (password !== confirmPassword) {
+                    document.getElementById('confirmPassword-error').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('confirmPassword-error').style.display = 'none';
+                }
+            }
             
             // 간단한 유효성 검사
             let isValid = true;
@@ -552,30 +516,6 @@
                 alert('모든 필수 항목을 입력해주세요.');
                 isValid = false;
                 return;
-            }
-            
-            // 소셜 로그인이 아닌 경우에만 비밀번호 검사
-            if (!isSocialLogin) {
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                
-                // 비밀번호 입력 검사
-                if (!password) {
-                    document.getElementById('password-error').style.display = 'block';
-                    isValid = false;
-                    return;
-                } else {
-                    document.getElementById('password-error').style.display = 'none';
-                }
-                
-                // 비밀번호 일치 검사
-                if (password !== confirmPassword) {
-                    document.getElementById('confirmPassword-error').style.display = 'block';
-                    isValid = false;
-                    return;
-                } else {
-                    document.getElementById('confirmPassword-error').style.display = 'none';
-                }
             }
             
             // 약관 동의 검사
@@ -597,7 +537,7 @@
                     }
                 }
                 
-                // 로컬 스토리지에 사용자 정보 저장
+                // 로컬 스토리지에 저장
                 localStorage.setItem(`user_${userId}_registered`, 'true');
                 localStorage.setItem(`user_${userId}_first_login`, 'true');
                 localStorage.setItem(`user_${userId}_studentId`, studentId);
@@ -609,7 +549,6 @@
                 
                 // 소셜 로그인이 아닌 경우에만 비밀번호 저장
                 if (!isSocialLogin) {
-                    const password = document.getElementById('password').value;
                     localStorage.setItem(`user_${userId}_password`, password);
                 } else {
                     // 소셜 로그인 타입 저장
@@ -624,6 +563,7 @@
                     sessionStorage.removeItem('temp_social_type');
                     sessionStorage.removeItem('temp_social_name');
                     sessionStorage.removeItem('temp_social_email');
+                    sessionStorage.removeItem('temp_social_profile_image');
                     
                     // 현재 로그인 사용자로 설정
                     localStorage.setItem('currentLoggedInUser', userId);
