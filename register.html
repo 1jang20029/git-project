@@ -108,28 +108,13 @@
             margin-top: 16px;
         }
         
-        /* 드롭다운 메뉴의 크기 제한 */
-        select.form-select {
-            height: 38px; /* 기본 선택 상자 높이는 유지 */
-            width: 80%; /* 가로 길이 줄임 */
-            max-width: 300px; /* 최대 가로 길이 설정 */
-            margin: 0 auto; /* 중앙 정렬 */
-        }
-        
-        /* 드롭다운이 열렸을 때 나타나는 옵션 목록의 크기 제한 */
-        select.form-select optgroup,
-        select.form-select option {
-            max-height: 80px !important; /* 드롭다운 메뉴 최대 높이 */
-            width: 100%; /* 부모 요소의 너비에 맞춤 */
-        }
-        
-        /* 여러 브라우저에서 드롭다운 메뉴 크기 제한 */
-        @supports (overflow-y: auto) {
-            html select.form-select {
-                max-height: 80px;
-                width: 80%;
-                max-width: 300px;
-            }
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
         }
         
         .grade-dropdown {
@@ -381,12 +366,6 @@
                         <!-- 공통계열 -->
                         <option value="" disabled style="background-color: #f5f5f5; font-weight: bold;">공통계열</option>
                         <option value="자유전공학과">자유전공학과(신설)</option>
-                        
-                        <!-- 기업맞춤과정 -->
-                        <option value="" disabled style="background-color: #f5f5f5; font-weight: bold;">기업맞춤과정</option>
-                        <option value="호텔외식조리과_스마트F&B서비스전공">호텔외식조리과 스마트F&B서비스전공(P-TECH)</option>
-                        <option value="호텔외식조리과_스마트양식조리전공">호텔외식조리과 스마트양식조리전공(P-TECH)</option>
-                        <option value="주문식교육과정">주문식교육과정(LINC3.0)</option>
                     </select>
                 </div>
                 
