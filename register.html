@@ -260,7 +260,7 @@
         <div class="register-container">
             <div class="register-title">연성대학교 캠퍼스 가이드 회원가입</div>
             
-            <!-- 소셜 로그인 정보 표시 영역 (소셜 로그인으로 온 경우에만 표시) -->
+            <!-- 소셜 로그인 정보 표시 영역 -->
             <div id="socialInfoBox" class="social-info" style="display: none;">
                 <div class="social-title">
                     <span id="socialIcon" class="social-icon"></span>
@@ -418,45 +418,116 @@
                 }
             });
             
+            // 소셜 로그인 정보 처리
+            processSocialLoginInfo();
+        });
+        
+        // 소셜 로그인 정보 처리 함수
+        function processSocialLoginInfo() {
             // URL 파라미터 확인
             const urlParams = new URLSearchParams(window.location.search);
             const socialType = urlParams.get('social');
             
-            // 소셜 로그인 정보가 있는지 확인
+            // 소셜 로그인으로 왔는지 확인
             if (socialType) {
-                // 네이버 로그인 정보 처리
+                // 각 소셜 타입별 처리
                 if (socialType === 'naver') {
-                    // 네이버 로그인 정보 표시
-                    document.getElementById('socialInfoBox').style.display = 'block';
-                    document.getElementById('socialType').textContent = '네이버';
-                    
-                    // 네이버 아이콘 설정
-                    const socialIconElem = document.getElementById('socialIcon');
-                    socialIconElem.textContent = 'N';
-                    socialIconElem.className = 'social-icon naver-icon';
-                    
-                    // 세션 스토리지에서 네이버 정보 가져오기
-                    const naverName = sessionStorage.getItem('temp_social_name') || '네이버 사용자';
-                    const naverEmail = sessionStorage.getItem('temp_social_email') || 'naver_user@example.com';
-                    
-                    // 화면에 네이버 정보 표시
-                    document.getElementById('socialName').textContent = naverName;
-                    document.getElementById('socialEmail').textContent = naverEmail;
-                    
-                    // 이름과 이메일 필드에 네이버 정보 자동 입력
-                    document.getElementById('name').value = naverName;
-                    document.getElementById('email').value = naverEmail;
-                    
-                    // 비밀번호 필드 숨기기 (소셜 로그인은 비밀번호 불필요)
-                    document.getElementById('passwordFields').style.display = 'none';
+                    handleNaverLogin();
+                } else if (socialType === 'google') {
+                    handleGoogleLogin();
+                } else if (socialType === 'kakao') {
+                    handleKakaoLogin();
                 }
             }
-        });
+        }
         
+        // 네이버 로그인 정보 처리
+        function handleNaverLogin() {
+            // 소셜 정보 표시 영역 보이기
+            document.getElementById('socialInfoBox').style.display = 'block';
+            
+            // 네이버 아이콘 및 타입 설정
+            document.getElementById('socialType').textContent = '네이버';
+            const socialIconElem = document.getElementById('socialIcon');
+            socialIconElem.textContent = 'N';
+            socialIconElem.className = 'social-icon naver-icon';
+            
+            // 세션 스토리지에서 네이버 정보 가져오기
+            const naverName = sessionStorage.getItem('temp_social_name') || '네이버 사용자';
+            const naverEmail = sessionStorage.getItem('temp_social_email') || 'naver_user@example.com';
+            
+            // 표시 영역에 네이버 정보 표시
+            document.getElementById('socialName').textContent = naverName;
+            document.getElementById('socialEmail').textContent = naverEmail;
+            
+            // 폼 필드에 네이버 정보 채우기
+            document.getElementById('name').value = naverName;
+            document.getElementById('email').value = naverEmail;
+            
+            // 비밀번호 필드 숨기기
+            document.getElementById('passwordFields').style.display = 'none';
+        }
+        
+        // 구글 로그인 정보 처리
+        function handleGoogleLogin() {
+            // 소셜 정보 표시 영역 보이기
+            document.getElementById('socialInfoBox').style.display = 'block';
+            
+            // 구글 아이콘 및 타입 설정
+            document.getElementById('socialType').textContent = '구글';
+            const socialIconElem = document.getElementById('socialIcon');
+            socialIconElem.textContent = 'G';
+            socialIconElem.className = 'social-icon google-icon';
+            
+            // 세션 스토리지에서 구글 정보 가져오기
+            const googleName = sessionStorage.getItem('temp_social_name') || '구글 사용자';
+            const googleEmail = sessionStorage.getItem('temp_social_email') || 'google_user@example.com';
+            
+            // 표시 영역에 구글 정보 표시
+            document.getElementById('socialName').textContent = googleName;
+            document.getElementById('socialEmail').textContent = googleEmail;
+            
+            // 폼 필드에 구글 정보 채우기
+            document.getElementById('name').value = googleName;
+            document.getElementById('email').value = googleEmail;
+            
+            // 비밀번호 필드 숨기기
+            document.getElementById('passwordFields').style.display = 'none';
+        }
+        
+        // 카카오 로그인 정보 처리
+        function handleKakaoLogin() {
+            // 소셜 정보 표시 영역 보이기
+            document.getElementById('socialInfoBox').style.display = 'block';
+            
+            // 카카오 아이콘 및 타입 설정
+            document.getElementById('socialType').textContent = '카카오';
+            const socialIconElem = document.getElementById('socialIcon');
+            socialIconElem.textContent = 'K';
+            socialIconElem.className = 'social-icon kakao-icon';
+            
+            // 세션 스토리지에서 카카오 정보 가져오기
+            const kakaoName = sessionStorage.getItem('temp_social_name') || '카카오 사용자';
+            const kakaoEmail = sessionStorage.getItem('temp_social_email') || 'kakao_user@example.com';
+            
+            // 표시 영역에 카카오 정보 표시
+            document.getElementById('socialName').textContent = kakaoName;
+            document.getElementById('socialEmail').textContent = kakaoEmail;
+            
+            // 폼 필드에 카카오 정보 채우기
+            document.getElementById('name').value = kakaoName;
+            document.getElementById('email').value = kakaoEmail;
+            
+            // 비밀번호 필드 숨기기
+            document.getElementById('passwordFields').style.display = 'none';
+        }
+        
+        // 뒤로 가기 버튼 클릭 처리
         function goBack() {
             window.location.href = "login.html";
         }
         
+        // 회원가입 버튼 클릭 처리
         function register() {
             // 입력값 가져오기
             const studentId = document.getElementById('studentId').value;
@@ -483,12 +554,12 @@
                 return;
             }
             
-            // 소셜 로그인이 아닌 경우에만 비밀번호 확인
+            // 소셜 로그인이 아닌 경우에만 비밀번호 검사
             if (!isSocialLogin) {
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
                 
-                // 비밀번호 필드 검사
+                // 비밀번호 입력 검사
                 if (!password) {
                     document.getElementById('password-error').style.display = 'block';
                     isValid = false;
@@ -565,6 +636,6 @@
                 }
             }
         }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
