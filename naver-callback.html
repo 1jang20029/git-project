@@ -265,45 +265,22 @@
 
         // 오류 무시하고 진행
         function proceedAnyway() {
-            createDummyAccount();
-        }
-
-        // 더미 계정 생성 및 로그인 처리
-        function createDummyAccount() {
-            try {
-                // 임시 사용자 ID 생성
-                const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                const naverId = 'naver_' + randomId;
-                
-                // 사용자 정보 저장
-                safeStorage.setItem(`user_${naverId}_registered`, 'true');
-                safeStorage.setItem(`user_${naverId}_name`, '네이버 사용자');
-                safeStorage.setItem(`user_${naverId}_department`, 'computerScience');
-                safeStorage.setItem(`user_${naverId}_grade`, '1');
-                safeStorage.setItem(`user_${naverId}_email`, `user_${randomId}@naver.com`);
-                
-                // 소셜 로그인 유형 표시
-                safeStorage.setItem(`user_${naverId}_socialType`, 'naver');
-                
-                // 현재 로그인된 사용자로 설정
-                safeStorage.setItem('currentLoggedInUser', naverId);
-                
-                // 최초 로그인 상태 설정
-                safeStorage.setItem(`user_${naverId}_first_login`, 'false');
-                
-                updateStatus('더미 계정 생성 완료', '메인 페이지로 이동합니다...');
-                
-                // 리디렉션
-                setTimeout(function() {
-                    window.location.href = "index.html";
-                }, 1500);
-            } catch (error) {
-                console.error('더미 계정 생성 중 오류:', error);
-                showError({
-                    message: '더미 계정 생성 중 오류가 발생했습니다.',
-                    details: error.toString()
-                });
-            }
+            // 디버깅용: 새 사용자로 회원가입 페이지로 직접 이동
+            const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            const naverId = 'naver_' + randomId;
+            
+            // 임시 데이터 저장 (세션 스토리지 사용)
+            sessionStorage.setItem('temp_social_id', naverId);
+            sessionStorage.setItem('temp_social_type', 'naver');
+            sessionStorage.setItem('temp_social_name', '네이버 사용자');
+            sessionStorage.setItem('temp_social_email', `user_${randomId}@naver.com`);
+            
+            updateStatus('새로운 사용자', '회원가입 페이지로 이동합니다...');
+            
+            // 회원가입 페이지로 이동
+            setTimeout(function() {
+                window.location.href = "register.html?social=naver";
+            }, 1500);
         }
 
         // 페이지 로드 시 실행되는 함수
@@ -325,6 +302,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const authCode = urlParams.get('code');
                 const error = urlParams.get('error');
+                const state = urlParams.get('state');
                 
                 // 디버그 정보 표시
                 const debugInfo = {
@@ -333,6 +311,7 @@
                     hash: window.location.hash,
                     code: authCode,
                     error: error,
+                    state: state,
                     localStorage: isLocalStorageAvailable() ? "사용 가능" : "사용 불가",
                     allParams: {}
                 };
@@ -391,89 +370,77 @@
             updateStatus('인증 코드 확인됨', '사용자 정보를 처리하고 있습니다...');
             console.log('인증 코드 처리 시작:', code.substring(0, 10) + '...');
             
-            // 네이버 API 클라이언트 ID (실제 값은 보안상 이유로 변경 필요)
-            const CLIENT_ID = 'YOUR_NAVER_CLIENT_ID';
-            // 리디렉션 URI
-            const REDIRECT_URI = 'https://ysu-guide.netlify.app/naver-callback.html';
+            // 임시 사용자 ID 생성 (실제로는 네이버 API로부터 받아와야 함)
+            const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            const naverId = 'naver_' + randomId;
             
-            // 여기서는 서버로 코드를 보내지 않고 간단히 처리
-            // 실제 환경에서는 서버에서 처리해야 함
-            setTimeout(function() {
-                try {
-                    // 안전한 방식으로 임시 사용자 ID 생성
-                    const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                    const naverId = 'naver_' + randomId;
-                    
-                    // 이미 가입된 사용자인지 확인
-                    // 실제 구현에서는 서버에서 사용자 DB를 조회해야 함
-                    // 여기서는 데모용으로 로컬 스토리지를 확인
-                    
-                    // 우선 모든 로컬 스토리지 키를 검색하여 naver_ 접두사가 있는 사용자를 찾음
-                    let isRegistered = false;
-                    let existingNaverId = null;
-                    
-                    // 로컬 스토리지에서 기존 네이버 사용자 확인
-                    if (isLocalStorageAvailable()) {
-                        for (let i = 0; i < localStorage.length; i++) {
-                            const key = localStorage.key(i);
-                            if (key && key.includes('_registered') && key.includes('naver_')) {
-                                const userId = key.split('_registered')[0].replace('user_', '');
-                                if (localStorage.getItem(key) === 'true') {
-                                    isRegistered = true;
-                                    existingNaverId = userId;
-                                    break;
-                                }
+            // 이미 가입된 네이버 사용자가 있는지 확인
+            let existingNaverId = null;
+            let isRegistered = false;
+            
+            try {
+                if (isLocalStorageAvailable()) {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.includes('_socialType') && localStorage.getItem(key) === 'naver') {
+                            // 네이버 소셜 로그인 사용자 찾음
+                            const userId = key.replace('user_', '').replace('_socialType', '');
+                            if (localStorage.getItem(`user_${userId}_registered`) === 'true') {
+                                isRegistered = true;
+                                existingNaverId = userId;
+                                console.log('기존 네이버 사용자 찾음:', existingNaverId);
+                                break;
                             }
                         }
                     }
-                    
-                    if (isRegistered && existingNaverId) {
-                        // 이미 가입된 사용자는 로그인 처리
-                        safeStorage.setItem('currentLoggedInUser', existingNaverId);
-                        
-                        // 최초 로그인 여부 확인
-                        const isFirstLogin = safeStorage.getItem(`user_${existingNaverId}_first_login`) !== 'false';
-                        
-                        if (isFirstLogin) {
-                            safeStorage.setItem(`user_${existingNaverId}_first_login`, 'false');
-                            updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
-                            
-                            // 위젯 설정 페이지로 이동
-                            setTimeout(function() {
-                                window.location.href = "widget-settings.html";
-                            }, 1500);
-                        } else {
-                            updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
-                            
-                            // 메인 페이지로 이동
-                            setTimeout(function() {
-                                window.location.href = "index.html";
-                            }, 1500);
-                        }
-                    } else {
-                        // 처음 소셜 로그인하는 사용자는 회원가입 페이지로 이동
-                        // 임시 데이터 저장 (세션 스토리지 사용)
-                        sessionStorage.setItem('temp_social_id', naverId);
-                        sessionStorage.setItem('temp_social_type', 'naver');
-                        sessionStorage.setItem('temp_social_name', '네이버 사용자');
-                        sessionStorage.setItem('temp_social_email', `user_${randomId}@naver.com`);
-                        
-                        updateStatus('새로운 사용자', '회원가입 페이지로 이동합니다...');
-                        
-                        // 회원가입 페이지로 이동
-                        setTimeout(function() {
-                            window.location.href = "register.html?social=naver";
-                        }, 1500);
-                    }
-                } catch (error) {
-                    console.error('사용자 정보 처리 중 오류:', error);
-                    showError({
-                        message: '사용자 정보 처리 중 오류가 발생했습니다.',
-                        details: error.toString()
-                    });
                 }
-            }, 2000);
+            } catch (error) {
+                console.error('사용자 검색 중 오류:', error);
+            }
+            
+            // 이미 가입된 네이버 사용자가 있으면
+            if (isRegistered && existingNaverId) {
+                updateStatus('로그인 중', '기존 계정으로 로그인합니다...');
+                console.log('기존 네이버 사용자 로그인:', existingNaverId);
+                
+                // 현재 로그인 사용자로 설정
+                safeStorage.setItem('currentLoggedInUser', existingNaverId);
+                
+                // 최초 로그인 여부 확인
+                const isFirstLogin = safeStorage.getItem(`user_${existingNaverId}_first_login`) !== 'false';
+                
+                if (isFirstLogin) {
+                    safeStorage.setItem(`user_${existingNaverId}_first_login`, 'false');
+                    updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
+                    
+                    // 위젯 설정 페이지로 이동
+                    setTimeout(function() {
+                        window.location.href = "widget-settings.html";
+                    }, 1500);
+                } else {
+                    updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                    
+                    // 메인 페이지로 이동
+                    setTimeout(function() {
+                        window.location.href = "index.html";
+                    }, 1500);
+                }
+            } else {
+                // 새 사용자 - 회원가입 페이지로 이동
+                updateStatus('새 사용자 확인됨', '회원가입 페이지로 이동합니다...');
+                
+                // 임시 데이터 저장 (세션 스토리지 사용)
+                sessionStorage.setItem('temp_social_id', naverId);
+                sessionStorage.setItem('temp_social_type', 'naver');
+                sessionStorage.setItem('temp_social_name', '네이버 사용자');
+                sessionStorage.setItem('temp_social_email', `user_${randomId}@naver.com`);
+                
+                // 회원가입 페이지로 이동
+                setTimeout(function() {
+                    window.location.href = "register.html?social=naver";
+                }, 1500);
+            }
         }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
