@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>구글 로그인 처리 중 - 연성대학교</title>
+    <title>구글 로그인 - 연성대학교</title>
     <style>
         * {
             margin: 0;
@@ -15,229 +15,380 @@
         body {
             background-color: #f5f5f5;
             color: #333;
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            padding: 20px;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            flex-direction: column;
+        }
+        
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
             text-align: center;
         }
         
-        .loading-container {
-            background-color: white;
-            padding: 40px;
+        .login-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 90%;
-        }
-        
-        .google-logo {
-            width: 60px;
-            height: 60px;
             background-color: white;
-            border-radius: 30px;
-            color: #4285F4;
-            font-size: 30px;
+            text-align: center;
+        }
+        
+        .login-title {
+            font-size: 18px;
             font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .google-button {
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 16px;
+            background-color: white;
+            color: #444;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: background-color 0.2s;
         }
         
-        .google-logo::before {
-            content: "G";
-            font-family: Arial, sans-serif;
-            color: #4285F4;
-            font-size: 28px;
+        .google-button:hover {
+            background-color: #f5f5f5;
         }
         
-        h1 {
-            font-size: 20px;
-            margin-bottom: 16px;
-            color: #333;
+        .google-icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="%234285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="%23FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="%2334A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
         }
         
-        p {
-            color: #666;
-            margin-bottom: 24px;
-            line-height: 1.5;
+        .error-message {
+            color: #c62917;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+            padding: 10px;
+            border: 1px solid #ffcccc;
+            border-radius: 4px;
+            background-color: #fff8f8;
         }
         
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
+        .loading {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
             border-radius: 50%;
-            border-left-color: #4285F4;
+            border-top: 3px solid #4285F4;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 10px;
         }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* 구글 원클릭 로그인 버튼 컨테이너 */
+        #google-signin-button {
+            margin: 15px 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* 메시지 알림창 */
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffecb5;
+            color: #856404;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        /* 모바일 환경 감지 메시지 */
+        #mobile-webview-alert {
+            font-size: 14px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
-    <div class="loading-container">
-        <div class="google-logo"></div>
-        <h1 id="status-title">구글 로그인 처리 중</h1>
-        <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
-        <div class="spinner" id="loading-spinner"></div>
+    <div class="container">
+        <header>
+            <div class="header-title">연성대학교 캠퍼스 가이드</div>
+        </header>
+        
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-title">소셜 로그인</div>
+                
+                <!-- 기존 구글 로그인 버튼 -->
+                <button type="button" class="google-button" onclick="handleGoogleLogin()">
+                    <span class="google-icon"></span>
+                    구글 계정으로 로그인
+                </button>
+                
+                <!-- 구글 원클릭 로그인 버튼이 표시될 영역 -->
+                <div id="google-signin-button"></div>
+                
+                <!-- 모바일 웹뷰 관련 경고 메시지 -->
+                <div id="mobile-webview-alert" class="alert alert-warning">
+                    구글 정책에 따라 일부 모바일 환경에서는 구글 로그인이 제한될 수 있습니다.<br>
+                    문제가 발생할 경우 Chrome이나 Safari 브라우저에서 직접 접속해 주세요.
+                </div>
+                
+                <!-- 로딩 표시 -->
+                <div class="loading" id="loading-indicator">
+                    <div class="loading-spinner"></div>
+                    <div>로그인 처리 중...</div>
+                </div>
+                
+                <!-- 오류 메시지 표시 영역 -->
+                <div class="error-message" id="error-message">
+                    로그인 처리 중 오류가 발생했습니다. 다시 시도해 주세요.
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 로그인 페이지로 이동
-        function goToLogin() {
-            window.location.href = "login.html";
-        }
-        
-        // 상태 메시지 업데이트 함수
-        function updateStatus(title, message) {
-            document.getElementById('status-title').textContent = title;
-            document.getElementById('status-message').textContent = message;
-        }
-        
-        // 구글 회원가입 페이지로 리디렉션
-        function redirectToRegister() {
-            // 고정된 사용자 ID 사용
-            const googleId = "google_12345";
-            
-            // 세션 스토리지에 임시 데이터 저장
-            sessionStorage.setItem('temp_social_id', googleId);
-            sessionStorage.setItem('temp_social_type', 'google');
-            sessionStorage.setItem('temp_social_name', '구글 사용자');
-            sessionStorage.setItem('temp_social_email', 'google_user@example.com');
-            
-            updateStatus('새 사용자 확인', '회원가입 페이지로 이동합니다...');
-            
-            // 회원가입 페이지로 이동
-            setTimeout(function() {
-                window.location.href = "register.html?social=google";
-            }, 1000);
-        }
-        
-        // 이미 가입된 사용자 로그인 처리
-        function loginExistingUser(userId) {
-            // 현재 로그인된 사용자로 설정
-            localStorage.setItem('currentLoggedInUser', userId);
-            
-            // 최초 로그인 여부 확인
-            const isFirstLogin = localStorage.getItem(`user_${userId}_first_login`) !== 'false';
-            
-            // 리디렉션 결정
-            if (isFirstLogin) {
-                localStorage.setItem(`user_${userId}_first_login`, 'false');
-                updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
-                
-                setTimeout(function() {
-                    window.location.href = "widget-settings.html";
-                }, 1000);
-            } else {
-                updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
-                
-                setTimeout(function() {
-                    window.location.href = "index.html";
-                }, 1000);
-            }
-        }
-        
-        // 구글 사용자 확인
-        function checkGoogleUser() {
-            // 고정된 사용자 ID 사용
-            const googleId = "google_12345";
-            let isRegistered = false;
-            
-            if (isLocalStorageAvailable()) {
-                // 'user_google_12345_registered'와 같은 형식의 키 검색
-                const userKey = `user_${googleId}_registered`;
-                const userRegistered = localStorage.getItem(userKey);
-                
-                if (userRegistered === 'true') {
-                    isRegistered = true;
-                }
-            }
-            
-            return isRegistered;
-        }
-        
-        // localStorage 사용 가능 여부 확인 함수
-        function isLocalStorageAvailable() {
-            try {
-                const test = 'test';
-                localStorage.setItem(test, test);
-                localStorage.removeItem(test);
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-        
-        // 페이지 로드 시 실행되는 함수
+        // 페이지 로드 시 구글 인증 라이브러리 로드
         window.onload = function() {
-            // 취소 버튼 처리 (구글 로그인 페이지에서 취소 버튼 클릭 감지)
-            // cancel 파라미터가 전달되었거나 error 파라미터가 있으면 로그인 페이지로 이동
+            loadGoogleAuthLibrary();
             
-            // URL 파라미터 확인
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // 취소 버튼 클릭 또는 에러가 있는 경우
-            const cancel = urlParams.get('cancel');
-            const error = urlParams.get('error');
-            
-            if (cancel === 'true' || error) {
-                // 바로 로그인 페이지로 이동
-                goToLogin();
-                return;
-            }
-            
-            // 정상 로그인 처리
-            try {
-                // 인증 코드 확인
-                const authCode = urlParams.get('code');
-                
-                // 인증 코드 없음
-                if (!authCode) {
-                    // 구글은 때로 해시 파라미터로 코드를 전달함
-                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                    const hashCode = hashParams.get('code');
-                    
-                    // 해시에도 코드가 없으면
-                    if (!hashCode) {
-                        // 로그인 페이지로 이동
-                        goToLogin();
-                        return;
-                    }
-                }
-                
-                // 가입된 구글 사용자인지 확인
-                const isRegisteredUser = checkGoogleUser();
-                
-                // 사용자 상태에 따라 처리
-                if (isRegisteredUser) {
-                    // 기존 사용자 로그인
-                    loginExistingUser("google_12345");
-                } else {
-                    // 새 사용자 회원가입
-                    redirectToRegister();
-                }
-                
-            } catch (error) {
-                // 오류 발생 시 로그인 페이지로 이동
-                goToLogin();
+            // 모바일 웹뷰 감지
+            if (isMobileWebView()) {
+                document.getElementById('mobile-webview-alert').style.display = 'block';
             }
         };
         
-        // 이 코드를 추가하여 구글 선택 페이지에서 취소 버튼 클릭 감지
-        // 구글 OAuth 페이지에서 가로채기는 불가능하지만, 로그인 페이지로 이동하는 핸들러
-        document.addEventListener('click', function(event) {
-            // 취소 버튼 클릭 감지 - 실제로는 작동하지 않음 (CORS 정책 때문)
-            // 이는 단지 참고용이며, 실제로는 Google이 취소 버튼 클릭 시 redirect_uri로 error 또는 cancel 파라미터와 함께 리디렉션
-        });
+        // 모바일 웹뷰 감지 함수
+        function isMobileWebView() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            
+            // 모바일 웹뷰 감지 조건
+            const isAndroidWebView = /android/.test(userAgent) && /wv|webview/.test(userAgent);
+            const isIOSWebView = /(iphone|ipod|ipad).*applewebkit(?!.*safari)/i.test(userAgent);
+            const isStandalone = window.navigator.standalone === true;
+            
+            return isAndroidWebView || isIOSWebView || isStandalone;
+        }
+        
+        // 구글 인증 라이브러리 로드
+        function loadGoogleAuthLibrary() {
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+            
+            // 라이브러리 로드 완료 후 초기화
+            script.onload = initializeGoogleAuth;
+        }
+        
+        // 구글 인증 초기화
+        function initializeGoogleAuth() {
+            // One Tap 및 자동 로그인 비활성화 옵션
+            window.google.accounts.id.initialize({
+                client_id: '682526101032-6fpr7h5u93gkf762m0rkoj5bo5hpgs2u.apps.googleusercontent.com',
+                callback: handleGoogleCredentialResponse,
+                auto_select: false, // 자동 선택 비활성화
+                cancel_on_tap_outside: true // 외부 탭 시 취소
+            });
+            
+            // 로그인 버튼 렌더링
+            try {
+                window.google.accounts.id.renderButton(
+                    document.getElementById('google-signin-button'),
+                    { 
+                        type: 'standard', 
+                        theme: 'outline', 
+                        size: 'large',
+                        width: 280,
+                        text: 'signin_with'
+                    }
+                );
+            } catch (e) {
+                console.error('구글 로그인 버튼 렌더링 실패:', e);
+            }
+        }
+        
+        // 기존 구글 로그인 버튼 클릭 핸들러
+        function handleGoogleLogin() {
+            // 로딩 표시
+            document.getElementById('loading-indicator').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            
+            // 클릭 이벤트를 통한 구글 로그인
+            try {
+                // 구글 라이브러리가 로드되었는지 확인
+                if (window.google && window.google.accounts && window.google.accounts.id) {
+                    window.google.accounts.id.prompt();
+                } else {
+                    // 구글 OAuth URL로 직접 이동 (대체 방법)
+                    fallbackToOAuthRedirect();
+                }
+            } catch (e) {
+                console.error('구글 로그인 실패:', e);
+                fallbackToOAuthRedirect();
+            }
+        }
+        
+        // 대체 OAuth 리디렉션
+        function fallbackToOAuthRedirect() {
+            const clientId = "682526101032-6fpr7h5u93gkf762m0rkoj5bo5hpgs2u.apps.googleusercontent.com";
+            const redirectUri = encodeURIComponent(window.location.origin + "/google-callback.html");
+            const scope = encodeURIComponent("email profile");
+            const responseType = "code";
+            
+            const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}`;
+            
+            // 새 창에서 구글 로그인 페이지 열기 (모바일 브라우저에서 더 나은 호환성)
+            window.location.href = googleAuthUrl;
+        }
+        
+        // 구글 인증 응답 처리
+        function handleGoogleCredentialResponse(response) {
+            console.log('구글 로그인 응답 수신');
+            
+            if (response && response.credential) {
+                // 토큰 확인
+                const idToken = response.credential;
+                const payload = parseJwt(idToken); // JWT 토큰 파싱
+                
+                if (payload) {
+                    // 사용자 정보 추출
+                    const googleId = payload.sub;
+                    const email = payload.email;
+                    const name = payload.name;
+                    
+                    // 세션에 사용자 정보 저장
+                    sessionStorage.setItem('temp_social_id', 'google_' + googleId);
+                    sessionStorage.setItem('temp_social_type', 'google');
+                    sessionStorage.setItem('temp_social_name', name || '구글 사용자');
+                    sessionStorage.setItem('temp_social_email', email || '');
+                    
+                    // 가입된 사용자인지 확인
+                    checkUserAndRedirect('google_' + googleId);
+                } else {
+                    showError('인증 정보를 처리할 수 없습니다.');
+                }
+            } else {
+                showError('구글 로그인 응답이 올바르지 않습니다.');
+            }
+        }
+        
+        // JWT 토큰 파싱
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                console.error('JWT 토큰 파싱 실패:', e);
+                return null;
+            }
+        }
+        
+        // 사용자 확인 및 리디렉션
+        function checkUserAndRedirect(userId) {
+            // 로딩 표시
+            document.getElementById('loading-indicator').style.display = 'block';
+            
+            try {
+                // 등록된 사용자인지 확인
+                const isRegistered = localStorage.getItem(`user_${userId}_registered`) === 'true';
+                
+                if (isRegistered) {
+                    // 기존 사용자 로그인 처리
+                    localStorage.setItem('currentLoggedInUser', userId);
+                    
+                    // 최초 로그인 여부 확인
+                    const isFirstLogin = localStorage.getItem(`user_${userId}_first_login`) !== 'false';
+                    
+                    if (isFirstLogin) {
+                        localStorage.setItem(`user_${userId}_first_login`, 'false');
+                        // 위젯 설정 페이지로 이동
+                        setTimeout(() => {
+                            window.location.href = "widget-settings.html";
+                        }, 1000);
+                    } else {
+                        // 메인 페이지로 이동
+                        setTimeout(() => {
+                            window.location.href = "index.html";
+                        }, 1000);
+                    }
+                } else {
+                    // 회원가입 페이지로 이동
+                    setTimeout(() => {
+                        window.location.href = "register.html?social=google";
+                    }, 1000);
+                }
+            } catch (e) {
+                console.error('사용자 확인 중 오류:', e);
+                showError('사용자 정보를 확인하는 중 오류가 발생했습니다.');
+            }
+        }
+        
+        // 오류 메시지 표시
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            document.getElementById('loading-indicator').style.display = 'none';
+        }
     </script>
 </body>
 </html>
