@@ -110,12 +110,22 @@
         
         .form-select {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
             background-color: white;
-            max-height: 120px;
+            max-height: 36px;
+            overflow: hidden;
+        }
+        
+        .form-select option {
+            padding: 4px;
+            font-size: 13px;
+        }
+        
+        .form-select:focus {
+            max-height: 200px;
             overflow-y: auto;
         }
         
