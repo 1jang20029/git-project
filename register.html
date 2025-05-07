@@ -110,11 +110,60 @@
         
         .form-select {
             width: 100%;
-            padding: 12px;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 14px;
             background-color: white;
+        }
+        
+        .form-select option {
+            padding: 4px;
+            font-size: 13px;
+        }
+        
+        /* 드롭다운 메뉴의 높이 제한 및 스타일 */
+        select.form-select {
+            height: 38px;  /* 기본 선택 상자 높이 */
+        }
+        
+        select.form-select[size]:not([size="1"]), 
+        select.form-select[multiple] {
+            height: auto;
+        }
+        
+        /* Firefox, Chrome, Edge 등 대부분의 브라우저에서 작동 */
+        select.form-select option {
+            max-height: 300px;
+        }
+        
+        /* 드롭다운 메뉴 크기 제한 (브라우저 지원이 다를 수 있음) */
+        @supports selector(::-webkit-scrollbar) {
+            select.form-select {
+                -webkit-appearance: none;
+                appearance: none;
+                background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                background-size: 16px;
+                padding-right: 30px;
+            }
+        }
+        
+        /* Chrome, Safari용 드롭다운 메뉴 스타일 */
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+            select.form-select {
+                overflow: hidden;
+            }
+            
+            select.form-select:focus {
+                overflow: auto;
+            }
+        }
+        
+        /* 드롭다운 목록이 펼쳐질 때의 최대 높이 (일부 브라우저에서만 작동) */
+        select.form-select:focus option {
+            max-height: 250px !important;
         }
         
         .grade-dropdown {
@@ -367,6 +416,11 @@
                         <option value="" disabled style="background-color: #f5f5f5; font-weight: bold;">공통계열</option>
                         <option value="자유전공학과">자유전공학과(신설)</option>
                         
+                        <!-- 기업맞춤과정 -->
+                        <option value="" disabled style="background-color: #f5f5f5; font-weight: bold;">기업맞춤과정</option>
+                        <option value="호텔외식조리과_스마트F&B서비스전공">호텔외식조리과 스마트F&B서비스전공(P-TECH)</option>
+                        <option value="호텔외식조리과_스마트양식조리전공">호텔외식조리과 스마트양식조리전공(P-TECH)</option>
+                        <option value="주문식교육과정">주문식교육과정(LINC3.0)</option>
                     </select>
                 </div>
                 
