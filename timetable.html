@@ -61,20 +61,61 @@
             cursor: pointer;
         }
         
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
         .semester-selector {
-            padding: 16px;
+            padding: 16px 16px 8px 16px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
         
         .semester-dropdown {
-            width: 100%;
+            width: 35%;
             padding: 10px 16px;
             background-color: #333;
             color: white;
             border: 1px solid #444;
             border-radius: 4px;
             font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .timetable-selector {
+            padding: 0 16px 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .timetable-dropdown {
+            width: 35%;
+            padding: 10px 16px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .timetable-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .timetable-action-button {
+            background-color: #1e1e1e;
+            color: #ddd;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
             cursor: pointer;
         }
         
@@ -364,7 +405,6 @@
             </div>
             <div class="page-title">시간표 1</div>
             <div class="page-actions">
-                <button class="action-button" onclick="openAddCourseModal()">+</button>
                 <button class="action-button" onclick="openSettings()">⚙️</button>
             </div>
         </header>
@@ -378,8 +418,8 @@
                 <option value="2024-1">2024년 1학기</option>
                 <option value="2024-2">2024년 2학기</option>
                 <option value="2024-3">2024년 여름학기</option>
-                <option value="2024-4">2024년 겨울학기</option>
-                <option value="2025-1" selected>2025년 1학기</option>
+                <option value="2024-4" selected>2024년 겨울학기</option>
+                <option value="2025-1">2025년 1학기</option>
                 <option value="2025-2">2025년 2학기</option>
                 <option value="2025-3">2025년 여름학기</option>
                 <option value="2025-4">2025년 겨울학기</option>
@@ -388,6 +428,20 @@
                 <option value="2026-3">2026년 여름학기</option>
                 <option value="2026-4">2026년 겨울학기</option>
             </select>
+        </div>
+        
+        <div class="timetable-selector">
+            <select id="timetable-select" class="timetable-dropdown" onchange="changeTimetable()">
+                <option value="1" selected>시간표 1</option>
+                <option value="2">시간표 2</option>
+                <option value="3">시간표 3</option>
+            </select>
+            
+            <div class="timetable-actions">
+                <button class="timetable-action-button" onclick="renameTimetable()">이름 변경</button>
+                <button class="timetable-action-button" onclick="addNewTimetable()">새 시간표</button>
+                <button class="timetable-action-button" onclick="openAddCourseModal()">과목 추가</button>
+            </div>
         </div>
         
         <div class="content-section">
@@ -412,7 +466,6 @@
             
             <div class="section-title">
                 <span>수강 과목 목록</span>
-                <button class="add-course-button" onclick="openAddCourseModal()">+ 과목 추가</button>
             </div>
             
             <ul class="class-list" id="course-list">
@@ -542,9 +595,22 @@
         
         // 현재 학기 정보
         const currentSemester = {
-            year: 2025,
-            term: 1
+            year: 2024,
+            term: 4
         };
+        
+        // 현재 시간표 정보
+        let currentTimetable = {
+            id: 1,
+            name: "시간표 1" 
+        };
+        
+        // 시간표 목록
+        let timetables = [
+            { id: 1, name: "시간표 1" },
+            { id: 2, name: "시간표 2" },
+            { id: 3, name: "시간표 3" }
+        ];
         
         // 시간 데이터 (교시별 시작 시간)
         const timeData = [
@@ -564,6 +630,12 @@
         
         // 페이지 로드 시 실행되는 함수
         document.addEventListener('DOMContentLoaded', function() {
+            // 로컬 스토리지에서 시간표 목록 로드
+            loadTimetablesFromStorage();
+            
+            // 시간표 선택기 초기화
+            updateTimetableSelector();
+            
             // 로컬 스토리지에서 데이터 로드
             loadCoursesFromStorage();
             
@@ -575,7 +647,134 @@
             
             // 과목 목록 표시
             renderCourseList();
+            
+            // 페이지 타이틀 업데이트
+            updatePageTitle();
         });
+        
+        // 페이지 타이틀 업데이트
+        function updatePageTitle() {
+            document.querySelector('.page-title').textContent = currentTimetable.name;
+        }
+        
+        // 로컬 스토리지에서 시간표 목록 로드
+        function loadTimetablesFromStorage() {
+            const savedTimetables = localStorage.getItem('timetables');
+            if (savedTimetables) {
+                timetables = JSON.parse(savedTimetables);
+            }
+            
+            // 현재 시간표 로드
+            const savedCurrentTimetable = localStorage.getItem('currentTimetable');
+            if (savedCurrentTimetable) {
+                currentTimetable = JSON.parse(savedCurrentTimetable);
+            }
+        }
+        
+        // 시간표 선택기 업데이트
+        function updateTimetableSelector() {
+            const timetableSelect = document.getElementById('timetable-select');
+            timetableSelect.innerHTML = '';
+            
+            timetables.forEach(timetable => {
+                const option = document.createElement('option');
+                option.value = timetable.id;
+                option.textContent = timetable.name;
+                if (timetable.id === currentTimetable.id) {
+                    option.selected = true;
+                }
+                timetableSelect.appendChild(option);
+            });
+        }
+        
+        // 시간표 변경 함수
+        function changeTimetable() {
+            const timetableSelect = document.getElementById('timetable-select');
+            const selectedTimetableId = parseInt(timetableSelect.value);
+            
+            // 선택한 시간표 찾기
+            const selectedTimetable = timetables.find(t => t.id === selectedTimetableId);
+            if (!selectedTimetable) return;
+            
+            // 현재 시간표 업데이트
+            currentTimetable = selectedTimetable;
+            localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+            
+            // 페이지 타이틀 업데이트
+            updatePageTitle();
+            
+            // 선택된 시간표에 맞는 과목 데이터 로드
+            loadCoursesFromStorage();
+            
+            // 시간표 갱신
+            renderCoursesOnTimetable();
+            
+            // 과목 목록 갱신
+            renderCourseList();
+        }
+        
+        // 시간표 이름 변경
+        function renameTimetable() {
+            const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
+            if (newName && newName.trim() !== "") {
+                // 시간표 이름 업데이트
+                currentTimetable.name = newName.trim();
+                
+                // 시간표 목록에서 해당 시간표 업데이트
+                const index = timetables.findIndex(t => t.id === currentTimetable.id);
+                if (index !== -1) {
+                    timetables[index] = currentTimetable;
+                }
+                
+                // 로컬 스토리지에 저장
+                localStorage.setItem('timetables', JSON.stringify(timetables));
+                localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+                
+                // 시간표 선택기 업데이트
+                updateTimetableSelector();
+                
+                // 페이지 타이틀 업데이트
+                updatePageTitle();
+            }
+        }
+        
+        // 새 시간표 추가
+        function addNewTimetable() {
+            const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
+            if (newName && newName.trim() !== "") {
+                // 새 시간표 ID 생성 (최대 ID + 1)
+                const maxId = timetables.reduce((max, t) => Math.max(max, t.id), 0);
+                const newId = maxId + 1;
+                
+                // 새 시간표 객체 생성
+                const newTimetable = {
+                    id: newId,
+                    name: newName.trim()
+                };
+                
+                // 시간표 목록에 추가
+                timetables.push(newTimetable);
+                
+                // 현재 시간표로 설정
+                currentTimetable = newTimetable;
+                
+                // 로컬 스토리지에 저장
+                localStorage.setItem('timetables', JSON.stringify(timetables));
+                localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+                
+                // 시간표 선택기 업데이트
+                updateTimetableSelector();
+                
+                // 페이지 타이틀 업데이트
+                updatePageTitle();
+                
+                // 과목 데이터 초기화 및 화면 갱신
+                courses = [];
+                saveCoursesToStorage();
+                renderCoursesOnTimetable();
+                renderCourseList();
+            }
+        }
         
         // 학기 변경 함수
         function changeSemester() {
@@ -598,7 +797,7 @@
         
         // 로컬 스토리지에서 과목 데이터 로드
         function loadCoursesFromStorage() {
-            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}`;
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}`;
             const savedCourses = localStorage.getItem(semesterKey);
             
             if (savedCourses) {
@@ -610,7 +809,7 @@
         
         // 로컬 스토리지에 과목 데이터 저장
         function saveCoursesToStorage() {
-            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}`;
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}`;
             localStorage.setItem(semesterKey, JSON.stringify(courses));
         }
         
