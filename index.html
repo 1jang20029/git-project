@@ -1397,7 +1397,7 @@
                <div class="weather-widget">
                    <div class="weather-info">
                        <div class="weather-temp">23°C</div>
-                       <div class="weather-desc">흐림, 안양시</div>
+                       <div class="weather-desc">맑음, 안양시</div>
                    </div>
                    <div class="weather-icon">☀️</div>
                </div>
@@ -2365,18 +2365,7 @@
             });
     }
 
-    // 기본 날씨 정보 표시 (API 호출 실패 시)
-    function displayDefaultWeather() {
-        const weatherTempElement = document.querySelector('.weather-temp');
-        const weatherDescElement = document.querySelector('.weather-desc');
-        const weatherIconElement = document.querySelector('.weather-icon');
-        
-        if (weatherTempElement) weatherTempElement.textContent = '25.1°C';
-        if (weatherDescElement) weatherDescElement.textContent = '흐림, 안양시';
-        if (weatherIconElement) weatherIconElement.textContent = '☀️';
-        
-        console.log('기본 날씨 정보로 표시됨');
-    }
+    
         
     
 
