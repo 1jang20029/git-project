@@ -246,6 +246,7 @@
             margin-bottom: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
         }
         
         .timetable {
@@ -261,6 +262,7 @@
             padding: 8px;
             text-align: center;
             font-size: 14px;
+            position: relative;
         }
         
         .timetable th {
@@ -283,6 +285,8 @@
             padding: 0;
             background-color: #1e1e1e;
             transition: background-color 0.2s;
+            position: relative;
+            overflow: visible;
         }
         
         .timetable .class-cell:hover {
@@ -300,6 +304,9 @@
             justify-content: space-between;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin: -1px;
+            z-index: 5;
         }
         
         .class-name {
@@ -738,30 +745,30 @@
                                 <div class="form-group">
                                     <label class="form-label">시작 교시</label>
                                     <select class="form-select start-select">
-                                        <option value="1">1교시 (9:00)</option>
-                                        <option value="2">2교시 (10:00)</option>
-                                        <option value="3">3교시 (11:00)</option>
-                                        <option value="4">4교시 (12:00)</option>
-                                        <option value="5">5교시 (13:00)</option>
-                                        <option value="6">6교시 (14:00)</option>
-                                        <option value="7">7교시 (15:00)</option>
-                                        <option value="8">8교시 (16:00)</option>
-                                        <option value="9">9교시 (17:00)</option>
+                                        <option value="1">1교시 (9:30)</option>
+                                        <option value="2">2교시 (10:30)</option>
+                                        <option value="3">3교시 (11:30)</option>
+                                        <option value="4">4교시 (12:30)</option>
+                                        <option value="5">5교시 (13:30)</option>
+                                        <option value="6">6교시 (14:30)</option>
+                                        <option value="7">7교시 (15:30)</option>
+                                        <option value="8">8교시 (16:30)</option>
+                                        <option value="9">9교시 (17:30)</option>
                                     </select>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label class="form-label">종료 교시</label>
                                     <select class="form-select end-select">
-                                        <option value="1">1교시 (9:50)</option>
-                                        <option value="2">2교시 (10:50)</option>
-                                        <option value="3">3교시 (11:50)</option>
-                                        <option value="4">4교시 (12:50)</option>
-                                        <option value="5">5교시 (13:50)</option>
-                                        <option value="6">6교시 (14:50)</option>
-                                        <option value="7">7교시 (15:50)</option>
-                                        <option value="8">8교시 (16:50)</option>
-                                        <option value="9">9교시 (17:50)</option>
+                                        <option value="1">1교시 (10:20)</option>
+                                        <option value="2">2교시 (11:20)</option>
+                                        <option value="3">3교시 (12:20)</option>
+                                        <option value="4">4교시 (13:20)</option>
+                                        <option value="5">5교시 (14:20)</option>
+                                        <option value="6">6교시 (15:20)</option>
+                                        <option value="7">7교시 (16:20)</option>
+                                        <option value="8">8교시 (17:20)</option>
+                                        <option value="9">9교시 (18:20)</option>
                                     </select>
                                 </div>
                             </div>
@@ -814,15 +821,15 @@
         
         // 시간 데이터 (교시별 시작 시간)
         const timeData = [
-            { period: 1, startTime: "9:00" },
-            { period: 2, startTime: "10:00" },
-            { period: 3, startTime: "11:00" },
-            { period: 4, startTime: "12:00" },
-            { period: 5, startTime: "13:00" },
-            { period: 6, startTime: "14:00" },
-            { period: 7, startTime: "15:00" },
-            { period: 8, startTime: "16:00" },
-            { period: 9, startTime: "17:00" }
+            { period: 1, startTime: "9:30" },
+            { period: 2, startTime: "10:30" },
+            { period: 3, startTime: "11:30" },
+            { period: 4, startTime: "12:30" },
+            { period: 5, startTime: "13:30" },
+            { period: 6, startTime: "14:30" },
+            { period: 7, startTime: "15:30" },
+            { period: 8, startTime: "16:30" },
+            { period: 9, startTime: "17:30" }
         ];
         
         // 요일 데이터
@@ -1073,12 +1080,33 @@
                     // 연속된 교시 계산
                     const span = time.end - time.start + 1;
                     
+                    // 약간 벗어나게 표시하기 위한 셀 크기 계산
+                    const cellHeight = startCell.offsetHeight;
+                    const cellWidth = startCell.offsetWidth;
+                    
                     // rowspan 설정
                     startCell.rowSpan = span;
                     
-                    // 과목 정보 표시
+                    // 과목 정보 표시 - 약간 벗어나게 표시
                     const courseDiv = document.createElement('div');
                     courseDiv.className = `class-item ${course.color}`;
+                    courseDiv.style.width = `${cellWidth + 4}px`;
+                    courseDiv.style.margin = `-1px -2px`;
+                    
+                    // 회색 영역 추가 (다음 교시에 영향을 주는 부분)
+                    if (time.end > time.start) {
+                        const grayOverflow = document.createElement('div');
+                        grayOverflow.style.position = 'absolute';
+                        grayOverflow.style.right = '-4px';
+                        grayOverflow.style.top = `${cellHeight}px`;
+                        grayOverflow.style.width = '4px';
+                        grayOverflow.style.height = `${cellHeight * (span-1)}px`;
+                        grayOverflow.style.backgroundColor = '#555';
+                        grayOverflow.style.opacity = '0.5';
+                        grayOverflow.style.zIndex = '1';
+                        startCell.appendChild(grayOverflow);
+                    }
+                    
                     courseDiv.innerHTML = `
                         <div class="class-name">${course.name}</div>
                         <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
@@ -1114,10 +1142,12 @@
                 const li = document.createElement('li');
                 li.className = 'class-list-item';
                 
-                // 과목 시간 정보 문자열 생성
+        // 과목 시간 정보 문자열 생성
                 const timeStrings = course.times.map(time => {
                     const day = dayData[time.day];
-                    return `${day} ${time.start}-${time.end}교시`;
+                    const startTime = `${time.start}교시(${timeData[time.start-1].startTime})`;
+                    const endTime = `${time.end}교시(${(parseInt(time.end) === 9 ? '18' : (parseInt(time.end) + 10))}:20)`;
+                    return `${day} ${startTime}~${endTime}`;
                 });
                 
                 li.innerHTML = `
@@ -1237,7 +1267,7 @@
             const slotDiv = document.createElement('div');
             slotDiv.className = 'form-row time-slot';
             
-            slotDiv.innerHTML = `
+                                    slotDiv.innerHTML = `
                 <div class="form-group">
                     <label class="form-label">요일</label>
                     <select class="form-select day-select">
@@ -1253,30 +1283,30 @@
                 <div class="form-group">
                     <label class="form-label">시작 교시</label>
                     <select class="form-select start-select">
-                        <option value="1">1교시 (9:00)</option>
-                        <option value="2">2교시 (10:00)</option>
-                        <option value="3">3교시 (11:00)</option>
-                        <option value="4">4교시 (12:00)</option>
-                        <option value="5">5교시 (13:00)</option>
-                        <option value="6">6교시 (14:00)</option>
-                        <option value="7">7교시 (15:00)</option>
-                        <option value="8">8교시 (16:00)</option>
-                        <option value="9">9교시 (17:00)</option>
+                        <option value="1">1교시 (9:30)</option>
+                        <option value="2">2교시 (10:30)</option>
+                        <option value="3">3교시 (11:30)</option>
+                        <option value="4">4교시 (12:30)</option>
+                        <option value="5">5교시 (13:30)</option>
+                        <option value="6">6교시 (14:30)</option>
+                        <option value="7">7교시 (15:30)</option>
+                        <option value="8">8교시 (16:30)</option>
+                        <option value="9">9교시 (17:30)</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">종료 교시</label>
                     <select class="form-select end-select">
-                        <option value="1">1교시 (9:50)</option>
-                        <option value="2">2교시 (10:50)</option>
-                        <option value="3">3교시 (11:50)</option>
-                        <option value="4">4교시 (12:50)</option>
-                        <option value="5">5교시 (13:50)</option>
-                        <option value="6">6교시 (14:50)</option>
-                        <option value="7">7교시 (15:50)</option>
-                        <option value="8">8교시 (16:50)</option>
-                        <option value="9">9교시 (17:50)</option>
+                        <option value="1">1교시 (10:20)</option>
+                        <option value="2">2교시 (11:20)</option>
+                        <option value="3">3교시 (12:20)</option>
+                        <option value="4">4교시 (13:20)</option>
+                        <option value="5">5교시 (14:20)</option>
+                        <option value="6">6교시 (15:20)</option>
+                        <option value="7">7교시 (16:20)</option>
+                        <option value="8">8교시 (17:20)</option>
+                        <option value="9">9교시 (18:20)</option>
                     </select>
                 </div>
                 
