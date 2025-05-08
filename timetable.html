@@ -834,6 +834,29 @@
         
         // 페이지 로드 시 실행되는 함수
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("현재 로그인 사용자:", localStorage.getItem('currentLoggedInUser'));
+            
+            // 로그인 상태 확인
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            if (!currentUser) {
+                // 로그인하지 않은 경우 메시지 표시
+                const courseList = document.getElementById('course-list');
+                if (courseList) {
+                    courseList.innerHTML = '<div class="empty-message">로그인이 필요한 서비스입니다.</div>';
+                }
+            }
+            
+            // 기존 일반 키의 데이터 삭제 (이전 형식의 데이터 정리)
+            localStorage.removeItem('timetables');
+            localStorage.removeItem('currentTimetable');
+            for (let year = 2023; year <= 2026; year++) {
+                for (let term = 1; term <= 4; term++) {
+                    for (let tableId = 1; tableId <= 10; tableId++) {
+                        localStorage.removeItem(`courses_${year}_${term}_${tableId}`);
+                    }
+                }
+            }
+            
             // 로컬 스토리지에서 시간표 목록 로드
             loadTimetablesFromStorage();
             
@@ -1439,6 +1462,40 @@
         // 이전 페이지로 이동
         function goToBack() {
             window.history.back();
+        }
+
+
+        // 이전 페이지로 이동
+        function goToBack() {
+            window.history.back();
+        }
+
+        // 로그인 성공 후 호출할 함수
+        function resetTimetableAfterLogin() {
+            // 초기 시간표 설정
+            timetables = [
+                { id: 1, name: "시간표 1" },
+                { id: 2, name: "시간표 2" },
+                { id: 3, name: "시간표 3" }
+            ];
+            currentTimetable = { id: 1, name: "시간표 1" };
+            courses = [];
+            
+            // 화면 갱신
+            loadTimetablesFromStorage();
+            updateTimetableSelector();
+            loadCoursesFromStorage();
+            createTimetable();
+            renderCourseList();
+            updatePageTitle();
+        }
+
+        // 로그아웃 시 호출할 함수
+        function cleanupOnLogout() {
+            // 화면 초기화
+            courses = [];
+            renderCoursesOnTimetable();
+            renderCourseList();
         }
     </script>
 </body>
