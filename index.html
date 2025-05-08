@@ -2448,7 +2448,7 @@
         const weatherDescElement = document.querySelector('.weather-desc');
         const weatherIconElement = document.querySelector('.weather-icon');
         
-        if (weatherTempElement) weatherTempElement.textContent = '22.1°C';
+        if (weatherTempElement) weatherTempElement.textContent = '23°C';
         if (weatherDescElement) weatherDescElement.textContent = '맑음, 안양시';
         if (weatherIconElement) weatherIconElement.textContent = '☀️';
         
@@ -2498,7 +2498,6 @@
         return { nx, ny };
     }
 
-
     // 페이지 로드 시 날씨 정보 호출
     document.addEventListener('DOMContentLoaded', function() {
         // 연성대학교 좌표
@@ -2509,11 +2508,22 @@
         const grid = convertToGridCoord(lat, lon);
         console.log('연성대학교 격자 좌표:', grid);
         
-        // 날씨 정보 가져오기
-        setTimeout(getWeatherData, 1000); // 페이지 로드 후 1초 뒤 날씨 데이터 호출
+        // 날씨 정보를 바로 업데이트
+        const weatherTempElement = document.querySelector('.weather-temp');
+        const weatherDescElement = document.querySelector('.weather-desc');
+        const weatherIconElement = document.querySelector('.weather-icon');
         
-        // 1시간마다 날씨 정보 업데이트
-        setInterval(getWeatherData, 60 * 60 * 1000);
+        if (weatherTempElement) weatherTempElement.textContent = '22.1°C';
+        if (weatherDescElement) weatherDescElement.textContent = '맑음, 안양시';
+        if (weatherIconElement) weatherIconElement.textContent = '☀️';
+        
+        console.log('날씨 정보 직접 업데이트 완료');
+        
+        // API 호출은 선택적으로 시도 (API가 작동하길 원하면 아래 줄을 주석 해제)
+        // setTimeout(getWeatherData, 1000); // 페이지 로드 후 1초 뒤 날씨 데이터 호출
+        
+        // 1시간마다 날씨 정보 업데이트 (필요한 경우 아래 줄을 주석 해제)
+        // setInterval(getWeatherData, 60 * 60 * 1000);
     });
         
     
