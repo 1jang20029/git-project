@@ -918,14 +918,25 @@
         
         // 페이지 로드 시 실행되는 함수
         document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 상태 확인
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            if (!currentUser) {
+                // 선택적으로 로그인 안내 메시지 표시
+                const pageTitle = document.querySelector('.page-title');
+                if (pageTitle) {
+                    pageTitle.textContent = '내 시간표 - 로그인 필요';
+                }
+            }
+            
             // 로컬 스토리지에서 시간표 목록 로드
             loadTimetablesFromStorage();
             
             // 시간표 선택기 초기화
             updateTimetableSelector();
             
-            // 로컬 스토리지에서 데이터 로드
-            loadCoursesFromStorage();
+            // 사용자별 과목 데이터 로드
+            loadUserSpecificTimetable();
             
             // 학기 선택기 초기화
             document.getElementById('semester-select').value = `${currentSemester.year}-${currentSemester.term}`;
@@ -933,12 +944,10 @@
             // 시간표 생성
             createTimetable();
             
-            // 과목 목록 표시
-            renderCourseList();
-            
             // 페이지 타이틀 업데이트
             updatePageTitle();
         });
+                
         
         // 페이지 타이틀 업데이트
         function updatePageTitle() {
@@ -947,16 +956,55 @@
         
         // 로컬 스토리지에서 시간표 목록 로드
         function loadTimetablesFromStorage() {
-            const savedTimetables = localStorage.getItem('timetables');
-            if (savedTimetables) {
-                timetables = JSON.parse(savedTimetables);
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            if (currentUser) {
+                const savedTimetables = localStorage.getItem(`timetables_user_${currentUser}`);
+                if (savedTimetables) {
+                    timetables = JSON.parse(savedTimetables);
+                }
+                
+                // 현재 시간표 로드
+                const savedCurrentTimetable = localStorage.getItem(`currentTimetable_user_${currentUser}`);
+                if (savedCurrentTimetable) {
+                    currentTimetable = JSON.parse(savedCurrentTimetable);
+                }
+            }
+        }
+
+
+        // 사용자별 시간표 데이터 로드 함수
+        function loadUserSpecificTimetable() {
+            // 현재 로그인한 사용자 ID 가져오기
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            if (!currentUser) {
+                // 로그인된 사용자가 없으면 빈 시간표 표시 또는 로그인 안내
+                courses = [];
+                renderCoursesOnTimetable();
+                renderCourseList();
+                
+                // 선택적으로 로그인 필요 메시지 표시
+                const courseList = document.getElementById('course-list');
+                if (courseList) {
+                    courseList.innerHTML = '<div class="empty-message">로그인이 필요한 서비스입니다.</div>';
+                }
+                return;
             }
             
-            // 현재 시간표 로드
-            const savedCurrentTimetable = localStorage.getItem('currentTimetable');
-            if (savedCurrentTimetable) {
-                currentTimetable = JSON.parse(savedCurrentTimetable);
+            // 이 사용자에 특정한 시간표 데이터 로드
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
+            const savedCourses = localStorage.getItem(semesterKey);
+            
+            if (savedCourses) {
+                courses = JSON.parse(savedCourses);
+            } else {
+                courses = [];
             }
+            
+            // 로드된 데이터로 UI 업데이트
+            renderCoursesOnTimetable();
+            renderCourseList();
         }
         
         // 시간표 선택기 업데이트
@@ -992,7 +1040,9 @@
             updatePageTitle();
             
             // 선택된 시간표에 맞는 과목 데이터 로드
-            loadCoursesFromStorage();
+            function loadCoursesFromStorage() {
+                loadUserSpecificTimetable();
+            }
             
             // 시간표 갱신
             renderCoursesOnTimetable();
@@ -1003,6 +1053,13 @@
         
         // 시간표 이름 변경
         function renameTimetable() {
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            if (!currentUser) {
+                alert('로그인이 필요한 서비스입니다.');
+                return;
+            }
+            
             const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
             if (newName && newName.trim() !== "") {
                 // 시간표 이름 업데이트
@@ -1014,9 +1071,9 @@
                     timetables[index] = currentTimetable;
                 }
                 
-                // 로컬 스토리지에 저장
-                localStorage.setItem('timetables', JSON.stringify(timetables));
-                localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+                // 로컬 스토리지에 저장 (사용자별)
+                localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
+                localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
                 
                 // 시간표 선택기 업데이트
                 updateTimetableSelector();
@@ -1028,6 +1085,13 @@
         
         // 새 시간표 추가
         function addNewTimetable() {
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            if (!currentUser) {
+                alert('로그인이 필요한 서비스입니다.');
+                return;
+            }
+            
             const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
             if (newName && newName.trim() !== "") {
                 // 새 시간표 ID 생성 (최대 ID + 1)
@@ -1046,9 +1110,9 @@
                 // 현재 시간표로 설정
                 currentTimetable = newTimetable;
                 
-                // 로컬 스토리지에 저장
-                localStorage.setItem('timetables', JSON.stringify(timetables));
-                localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+                // 로컬 스토리지에 저장 (사용자별)
+                localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
+                localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
                 
                 // 시간표 선택기 업데이트
                 updateTimetableSelector();
@@ -1097,8 +1161,16 @@
         
         // 로컬 스토리지에 과목 데이터 저장
         function saveCoursesToStorage() {
-            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}`;
-            localStorage.setItem(semesterKey, JSON.stringify(courses));
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            // 로그인한 사용자가 있을 때만 저장
+            if (currentUser) {
+                const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
+                localStorage.setItem(semesterKey, JSON.stringify(courses));
+            } else {
+                // 선택적으로 로그인 안내 표시
+                alert('로그인이 필요한 서비스입니다.');
+            }
         }
         
         // 시간표 생성 함수
