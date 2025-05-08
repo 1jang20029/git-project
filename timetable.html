@@ -617,70 +617,6 @@
         // 요일 데이터
         const dayData = ["", "월", "화", "수", "목", "금", "토"];
         
-        // 초기 과목 데이터 (예시)
-        let courses = [
-            {
-                id: 1,
-                name: "머신러닝",
-                professor: "김교수",
-                credits: 3,
-                type: "전공필수",
-                color: "color-2",
-                room: "공1-101",
-                times: [
-                    { day: 3, start: 1, end: 2 }
-                ]
-            },
-            {
-                id: 2,
-                name: "클라우드 디자인",
-                professor: "이교수",
-                credits: 3,
-                type: "전공선택",
-                color: "color-3",
-                room: "공2-215",
-                times: [
-                    { day: 4, start: 1, end: 2 }
-                ]
-            },
-            {
-                id: 3,
-                name: "클라우드 컴퓨팅",
-                professor: "박교수",
-                credits: 2,
-                type: "전공선택",
-                color: "color-1",
-                room: "공2-201",
-                times: [
-                    { day: 2, start: 3, end: 4 }
-                ]
-            },
-            {
-                id: 4,
-                name: "모바일 프로그래밍2",
-                professor: "한교수",
-                credits: 3,
-                type: "전공필수",
-                color: "color-5",
-                room: "공2-204",
-                times: [
-                    { day: 4, start: 3, end: 4 }
-                ]
-            },
-            {
-                id: 5,
-                name: "동서융합 학점교류(문제해결과사고력)",
-                professor: "최교수",
-                credits: 2,
-                type: "교양선택",
-                color: "color-4",
-                room: "",
-                times: [
-                    { day: 5, start: 3, end: 3 }
-                ]
-            }
-        ];
-        
         // 페이지 로드 시 실행되는 함수
         document.addEventListener('DOMContentLoaded', function() {
             // 로컬 스토리지에서 데이터 로드
@@ -1074,6 +1010,6 @@
         function goToBack() {
             window.history.back();
         }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
