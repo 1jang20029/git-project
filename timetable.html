@@ -311,13 +311,7 @@
         .class-info {
             font-size: 10px;
             opacity: 0.85;
-        }
-        
-        .class-room {
             text-align: right;
-            font-size: 10px;
-            font-weight: 500;
-            opacity: 0.85;
         }
         
         /* 과목 색상 */
@@ -1087,8 +1081,7 @@
                     courseDiv.className = `class-item ${course.color}`;
                     courseDiv.innerHTML = `
                         <div class="class-name">${course.name}</div>
-                        <div class="class-info">${course.professor || ''}</div>
-                        <div class="class-room">${course.room || ''}</div>
+                        <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
                     `;
                     startCell.appendChild(courseDiv);
                     
