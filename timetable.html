@@ -1,62 +1,4 @@
-/* 모달 */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-            backdrop-filter: blur(4px);
-        }
-        
-        .modal-content {
-            background-color: #222;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: white;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #ddd;
-            font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background-color: #333;
-            color: white;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 2px rgba(255<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -272,16 +214,6 @@
             align-items: center;
         }
         
-        .add-course-button {
-            padding: 6px 12px;
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
         .timetable-container {
             overflow-x: auto;
             margin-bottom: 20px;
@@ -474,26 +406,27 @@
             align-items: center;
             z-index: 1000;
             display: none;
+            backdrop-filter: blur(4px);
         }
         
         .modal-content {
-            background-color: #1e1e1e;
-            border-radius: 8px;
+            background-color: #222;
+            border-radius: 12px;
             width: 90%;
             max-width: 500px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
         
         .modal-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 16px;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
             color: white;
         }
         
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
         
         .form-label {
@@ -501,26 +434,46 @@
             margin-bottom: 8px;
             font-size: 14px;
             color: #ddd;
+            font-weight: 500;
         }
         
         .form-input {
             width: 100%;
-            padding: 8px 12px;
+            padding: 12px 16px;
             border: 1px solid #444;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: #333;
             color: white;
             font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
         }
         
         .form-select {
             width: 100%;
-            padding: 8px 12px;
+            padding: 12px 16px;
             border: 1px solid #444;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: #333;
             color: white;
             font-size: 14px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
         }
         
         .form-row {
@@ -536,34 +489,44 @@
         
         .color-select {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 16px;
         }
         
         .color-option {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid transparent;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
         }
         
         .color-option.selected {
             border-color: white;
+            transform: scale(1.1);
         }
         
         .modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 12px;
+            margin-top: 24px;
         }
         
         .modal-button {
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 10px 20px;
+            border-radius: 8px;
             font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s;
         }
         
         .cancel-button {
@@ -572,10 +535,21 @@
             border: 1px solid #444;
         }
         
+        .cancel-button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
         .save-button {
             background-color: #ff6b6b;
             color: white;
             border: none;
+            box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+        }
+        
+        .save-button:hover {
+            background-color: #ff5252;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(255, 107, 107, 0.4);
         }
     </style>
 </head>
@@ -596,14 +570,14 @@
         
         <div class="semester-selector">
             <select id="semester-select" class="semester-dropdown" onchange="changeSemester()">
-                <option value="2023-1">2023년 1학기</option>
+                <option value="2023-1" selected>2023년 1학기</option>
                 <option value="2023-2">2023년 2학기</option>
                 <option value="2023-3">2023년 여름학기</option>
                 <option value="2023-4">2023년 겨울학기</option>
                 <option value="2024-1">2024년 1학기</option>
                 <option value="2024-2">2024년 2학기</option>
                 <option value="2024-3">2024년 여름학기</option>
-                <option value="2024-4" selected>2024년 겨울학기</option>
+                <option value="2024-4">2024년 겨울학기</option>
                 <option value="2025-1">2025년 1학기</option>
                 <option value="2025-2">2025년 2학기</option>
                 <option value="2025-3">2025년 여름학기</option>
@@ -772,7 +746,12 @@
                             </div>
                         </div>
                         
-                        <button type="button" class="add-course-button" onclick="addTimeSlot()" style="margin-top: 8px;">+ 수업 시간 추가</button>
+                        <button type="button" class="add-course-button" onclick="addTimeSlot()" style="margin-top: 12px;">
+                            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                수업 시간 추가
+                            </span>
+                        </button>
                     </div>
                     
                     <div class="form-group">
@@ -795,8 +774,8 @@
         
         // 현재 학기 정보
         const currentSemester = {
-            year: 2024,
-            term: 4
+            year: 2023,
+            term: 1
         };
         
         // 현재 시간표 정보
@@ -1128,8 +1107,12 @@
                         <div class="class-list-time">${timeStrings.join(', ')} | ${course.room || '강의실 미정'}</div>
                     </div>
                     <div class="class-actions">
-                        <button class="class-action-button" onclick="editCourse(${course.id})">✏️</button>
-                        <button class="class-action-button" onclick="deleteCourse(${course.id})">🗑️</button>
+                        <button class="class-action-button" onclick="editCourse(${course.id})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
+                        </button>
+                        <button class="class-action-button" onclick="deleteCourse(${course.id})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        </button>
                     </div>
                 `;
                 
@@ -1279,7 +1262,9 @@
                 
                 <div class="form-group" style="flex: 0.2">
                     <label class="form-label">&nbsp;</label>
-                    <button type="button" class="form-input" style="background-color: #ff6b6b; color: white" onclick="removeTimeSlot(this)">×</button>
+                    <button type="button" class="form-input" style="background-color: #ff6b6b; color: white; display: flex; align-items: center; justify-content: center;" onclick="removeTimeSlot(this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
                 </div>
             `;
             
