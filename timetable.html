@@ -298,11 +298,14 @@
             border-radius: 4px;
             font-size: 12px;
             color: white;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin: -1px;
             z-index: 5;
         }
         
@@ -1057,44 +1060,59 @@
             const classCells = document.querySelectorAll('.class-cell');
             classCells.forEach(cell => {
                 cell.innerHTML = '';
-                cell.rowSpan = 1;
-            });
-            
-            // 숨겨진 셀 복원
-            const hiddenCells = document.querySelectorAll('.hidden-cell');
-            hiddenCells.forEach(cell => {
-                cell.classList.remove('hidden-cell');
-                cell.style.display = '';
+                cell.style.position = 'relative';
             });
             
             // 과목별로 시간표에 표시
             courses.forEach(course => {
                 course.times.forEach(time => {
-                    // 시작 셀 찾기
-                    const startCell = document.querySelector(`.class-cell[data-day="${time.day}"][data-period="${time.start}"]`);
-                    if (!startCell) return;
+                    // 요일 열 찾기
+                    const day = time.day;
+                    const startPeriod = time.start;
+                    const endPeriod = time.end;
                     
-                    // 연속된 교시 계산
-                    const span = time.end - time.start + 1;
-                    
-                    // rowspan 설정
-                    startCell.rowSpan = span;
-                    
-                    // 과목 정보 표시
-                    const courseDiv = document.createElement('div');
-                    courseDiv.className = `class-item ${course.color}`;
-                    courseDiv.innerHTML = `
-                        <div class="class-name">${course.name}</div>
-                        <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
-                    `;
-                    startCell.appendChild(courseDiv);
-                    
-                    // 연속된 교시에 해당하는 셀 숨기기
-                    for (let i = time.start + 1; i <= time.end; i++) {
-                        const cellToHide = document.querySelector(`.class-cell[data-day="${time.day}"][data-period="${i}"]`);
-                        if (cellToHide) {
-                            cellToHide.classList.add('hidden-cell');
-                            cellToHide.style.display = 'none';
+                    // 30분부터 시작하는 수업 (반만 채우기)
+                    for (let period = startPeriod; period <= endPeriod; period++) {
+                        const cell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${period}"]`);
+                        if (!cell) continue;
+                        
+                        // 수업 블록 생성
+                        const courseBlock = document.createElement('div');
+                        cell.appendChild(courseBlock);
+                        
+                        // 블록 포지셔닝 및 스타일링
+                        courseBlock.style.position = 'absolute';
+                        courseBlock.style.zIndex = '5';
+                        courseBlock.className = `class-item ${course.color}`;
+                        
+                        if (period === startPeriod) {
+                            // 첫 번째 교시 (30분부터 시작)
+                            courseBlock.style.top = '50%';
+                            courseBlock.style.height = '50%';
+                            courseBlock.style.left = '0';
+                            courseBlock.style.right = '0';
+                            
+                            // 첫 교시에는 과목명과 정보 표시
+                            courseBlock.innerHTML = `
+                                <div class="class-name">${course.name}</div>
+                                <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
+                            `;
+                        } else if (period === endPeriod) {
+                            // 마지막 교시 (20분에 종료)
+                            courseBlock.style.top = '0';
+                            courseBlock.style.height = '35%';
+                            courseBlock.style.left = '0';
+                            courseBlock.style.right = '0';
+                            courseBlock.style.borderTop = 'none';
+                            courseBlock.style.borderTopLeftRadius = '0';
+                            courseBlock.style.borderTopRightRadius = '0';
+                        } else {
+                            // 중간 교시 (전체 채우기)
+                            courseBlock.style.top = '0';
+                            courseBlock.style.height = '100%';
+                            courseBlock.style.left = '0';
+                            courseBlock.style.right = '0';
+                            courseBlock.style.borderRadius = '0';
                         }
                     }
                 });
