@@ -61,11 +61,21 @@
             cursor: pointer;
         }
         
-        .current-semester {
+        .semester-selector {
             padding: 16px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #ff6b6b;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .semester-dropdown {
+            padding: 8px 12px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
         }
         
         .content-section {
@@ -164,29 +174,6 @@
         .color-6 { background-color: #4db6ac; }
         .color-7 { background-color: #7986cb; }
         .color-8 { background-color: #a1887f; }
-        
-        .semester-selector {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        
-        .semester-button {
-            padding: 8px 16px;
-            border: 1px solid #444;
-            border-radius: 20px;
-            background-color: #1e1e1e;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        .semester-button.active {
-            background-color: #ff6b6b;
-            color: white;
-            border-color: #ff6b6b;
-        }
         
         .class-list {
             list-style: none;
@@ -366,44 +353,6 @@
             color: white;
             border: none;
         }
-        
-        /* 하단 탭 메뉴 */
-        .tab-menu {
-            display: flex;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 768px;
-            margin: 0 auto;
-            background-color: #1e1e1e;
-            border-top: 1px solid #333;
-            z-index: 100;
-        }
-        
-        .tab-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px 0;
-            font-size: 12px;
-            color: #888;
-            text-decoration: none;
-        }
-        
-        .tab-item.active {
-            color: #ff6b6b;
-        }
-        
-        .tab-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-        
-        .content-pad {
-            padding-bottom: 60px; /* 하단 탭 메뉴 높이만큼 여백 */
-        }
     </style>
 </head>
 <body>
@@ -420,7 +369,21 @@
             </div>
         </header>
         
-        <div class="current-semester">2025년 1학기</div>
+        <div class="semester-selector">
+            <select id="year-select" class="semester-dropdown" onchange="changeSemester()">
+                <option value="2023">2023년</option>
+                <option value="2024">2024년</option>
+                <option value="2025" selected>2025년</option>
+                <option value="2026">2026년</option>
+            </select>
+            
+            <select id="term-select" class="semester-dropdown" onchange="changeSemester()">
+                <option value="1" selected>1학기</option>
+                <option value="2">2학기</option>
+                <option value="3">여름학기</option>
+                <option value="4">겨울학기</option>
+            </select>
+        </div>
         
         <div class="content-section">
             <div class="timetable-container">
@@ -450,8 +413,6 @@
             <ul class="class-list" id="course-list">
                 <!-- 과목 목록은 JavaScript로 동적 생성됩니다 -->
             </ul>
-            
-            <div class="content-pad"></div>
         </div>
         
         <!-- 과목 추가/수정 모달 -->
@@ -568,33 +529,12 @@
                 </form>
             </div>
         </div>
-        
-        <!-- 하단 탭 메뉴 -->
-        <div class="tab-menu">
-            <a href="#" class="tab-item">
-                <span class="tab-icon">🏠</span>
-                <span>홈</span>
-            </a>
-            <a href="#" class="tab-item active">
-                <span class="tab-icon">📅</span>
-                <span>시간표</span>
-            </a>
-            <a href="#" class="tab-item">
-                <span class="tab-icon">📋</span>
-                <span>게시판</span>
-            </a>
-            <a href="#" class="tab-item">
-                <span class="tab-icon">👤</span>
-                <span>내 정보</span>
-            </a>
-            <a href="#" class="tab-item">
-                <span class="tab-icon">⚙️</span>
-                <span>설정</span>
-            </a>
-        </div>
     </div>
 
     <script>
+        // 과목 배열 초기화
+        let courses = [];
+        
         // 현재 학기 정보
         const currentSemester = {
             year: 2025,
@@ -622,6 +562,10 @@
             // 로컬 스토리지에서 데이터 로드
             loadCoursesFromStorage();
             
+            // 학기 선택기 초기화
+            document.getElementById('year-select').value = currentSemester.year;
+            document.getElementById('term-select').value = currentSemester.term;
+            
             // 시간표 생성
             createTimetable();
             
@@ -629,17 +573,40 @@
             renderCourseList();
         });
         
+        // 학기 변경 함수
+        function changeSemester() {
+            const yearSelect = document.getElementById('year-select');
+            const termSelect = document.getElementById('term-select');
+            
+            currentSemester.year = parseInt(yearSelect.value);
+            currentSemester.term = parseInt(termSelect.value);
+            
+            // 선택된 학기에 맞는 과목 데이터 로드
+            loadCoursesFromStorage();
+            
+            // 시간표 갱신
+            renderCoursesOnTimetable();
+            
+            // 과목 목록 갱신
+            renderCourseList();
+        }
+        
         // 로컬 스토리지에서 과목 데이터 로드
         function loadCoursesFromStorage() {
-            const savedCourses = localStorage.getItem('courses');
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}`;
+            const savedCourses = localStorage.getItem(semesterKey);
+            
             if (savedCourses) {
                 courses = JSON.parse(savedCourses);
+            } else {
+                courses = [];
             }
         }
         
         // 로컬 스토리지에 과목 데이터 저장
         function saveCoursesToStorage() {
-            localStorage.setItem('courses', JSON.stringify(courses));
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}`;
+            localStorage.setItem(semesterKey, JSON.stringify(courses));
         }
         
         // 시간표 생성 함수
@@ -1007,9 +974,9 @@
         }
         
         // 이전 페이지로 이동
-        function goToBack() {A
+        function goToBack() {
             window.history.back();
         }
-        </script>
-    </body>
+    </script>
+</body>
 </html>
