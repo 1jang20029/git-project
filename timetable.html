@@ -1,1391 +1,1407 @@
-<!DOCTYPE html>
+.timetable-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+    border: none;
+    overflow: hidden<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 시간표 - 연성대학교 캠퍼스 가이드</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-        }
-        
-        body {
-            background-color: #111111;
-            color: #f5f5f5;
-            background-image: linear-gradient(135deg, rgba(30, 30, 35, 0.7) 0%, rgba(20, 20, 25, 0.7) 100%);
-            background-attachment: fixed;
-        }
-        
-        .container {
-            max-width: 768px;
-            margin: 0 auto;
-            background-color: rgba(18, 18, 18, 0.6);
-            min-height: 100vh;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        header {
-            background-color: rgba(34, 34, 34, 0.8);
-            color: white;
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(80, 80, 80, 0.3);
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .back-button {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-size: 14px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .page-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-        
-        .page-actions {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .action-button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-        
-        .action-button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .semester-selector {
-            padding: 16px 16px 8px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .semester-dropdown {
-            width: 35%;
-            padding: 14px 20px;
-            background-color: rgba(40, 40, 40, 0.7);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 18px center;
-            background-size: 14px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-        
-        .semester-dropdown:hover {
-            background-color: rgba(50, 50, 50, 0.7);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .semester-dropdown:focus {
-            outline: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 107, 107, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .timetable-selector {
-            padding: 0 16px 16px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .timetable-dropdown {
-            width: 35%;
-            padding: 14px 20px;
-            background-color: rgba(40, 40, 40, 0.7);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 18px center;
-            background-size: 14px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-        
-        .timetable-dropdown:hover {
-            background-color: rgba(50, 50, 50, 0.7);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .timetable-dropdown:focus {
-            outline: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 107, 107, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .timetable-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .timetable-action-button {
-            background-color: rgba(60, 60, 65, 0.7);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-        }
-        
-        .timetable-action-button:hover {
-            background-color: rgba(70, 70, 75, 0.7);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .timetable-action-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .add-course-button {
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.8), rgba(255, 82, 82, 0.8));
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-        }
-        
-        .add-course-button:hover {
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.9), rgba(255, 82, 82, 0.9));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(255, 107, 107, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-        
-        .add-course-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 6px rgba(255, 107, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-        
-        .content-section {
-            padding: 0 16px 16px 16px;
-        }
-        
-        .section-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin: 24px 0 16px;
-            color: #f5f5f5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .timetable-container {
-            overflow-x: auto;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .timetable {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-            border: none;
-            overflow: hidden;
-        }
-        
-        .timetable th, .timetable td {
-            border: 1px solid #333;
-            padding: 8px;
-            text-align: center;
-            font-size: 14px;
-        }
-        
-        .timetable th {
-            background-color: #222;
-            font-weight: 600;
-            padding: 12px 8px;
-            color: #f0f0f0;
-        }
-        
-        .timetable .time-col {
-            width: 60px;
-            background-color: #222;
-            font-weight: 600;
-            color: #f0f0f0;
-        }
-        
-        .timetable .class-cell {
-            height: 60px;
-            vertical-align: top;
-            padding: 0;
-            background-color: #1e1e1e;
-            transition: background-color 0.2s;
-        }
-        
-        .timetable .class-cell:hover {
-            background-color: #252525;
-        }
-        
-        .class-item {
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: white;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .class-name {
-            font-weight: 700;
-            margin-bottom: 3px;
-            font-size: 13px;
-        }
-        
-        .class-info {
-            font-size: 10px;
-            opacity: 0.85;
-            text-align: right;
-        }
-        
-        /* 과목 색상 */
-        .color-1 { background-color: #e57373; background-image: linear-gradient(45deg, #e57373, #ef5350); }
-        .color-2 { background-color: #81c784; background-image: linear-gradient(45deg, #81c784, #66bb6a); }
-        .color-3 { background-color: #64b5f6; background-image: linear-gradient(45deg, #64b5f6, #42a5f5); }
-        .color-4 { background-color: #ba68c8; background-image: linear-gradient(45deg, #ba68c8, #ab47bc); }
-        .color-5 { background-color: #ffb74d; background-image: linear-gradient(45deg, #ffb74d, #ffa726); }
-        .color-6 { background-color: #4db6ac; background-image: linear-gradient(45deg, #4db6ac, #26a69a); }
-        .color-7 { background-color: #7986cb; background-image: linear-gradient(45deg, #7986cb, #5c6bc0); }
-        .color-8 { background-color: #a1887f; background-image: linear-gradient(45deg, #a1887f, #8d6e63); }
-        
-        .class-list {
-            list-style: none;
-            margin-top: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .class-list-item {
-            padding: 16px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #1e1e1e;
-            transition: background-color 0.2s;
-        }
-        
-        .class-list-item:last-child {
-            border-bottom: none;
-        }
-        
-        .class-list-item:hover {
-            background-color: #252525;
-        }
-        
-        .class-list-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        
-        .class-list-title {
-            font-weight: 700;
-            font-size: 15px;
-        }
-        
-        .class-list-details {
-            font-size: 13px;
-            color: #bbb;
-        }
-        
-        .class-list-time {
-            color: #999;
-            font-size: 13px;
-        }
-        
-        .class-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: white;
-            align-self: flex-start;
-        }
-        
-        .class-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .class-action-button {
-            background: none;
-            border: none;
-            color: #bbb;
-            font-size: 16px;
-            cursor: pointer;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-        
-        .class-action-button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .empty-message {
-            text-align: center;
-            padding: 60px 0;
-            color: #888;
-            font-size: 15px;
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        /* 모달 */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-            backdrop-filter: blur(4px);
-        }
-        
-        .modal-content {
-            background-color: #222;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: white;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #ddd;
-            font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background-color: #333;
-            color: white;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
-        }
-        
-        .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background-color: #333;
-            color: white;
-            font-size: 14px;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            background-size: 12px;
-            transition: all 0.2s;
-        }
-        
-        .form-select:focus {
-            outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-        
-        .color-select {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-        
-        .color-option {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: all 0.2s;
-        }
-        
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-        
-        .color-option.selected {
-            border-color: white;
-            transform: scale(1.1);
-        }
-        
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 24px;
-        }
-        
-        .modal-button {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .cancel-button {
-            background-color: transparent;
-            color: #ddd;
-            border: 1px solid #444;
-        }
-        
-        .cancel-button:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        .save-button {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
-        }
-        
-        .save-button:hover {
-            background-color: #ff5252;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(255, 107, 107, 0.4);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 시간표 - 연성대학교 캠퍼스 가이드</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: #111111;
+    color: #f5f5f5;
+    background-image: linear-gradient(135deg, rgba(30, 30, 35, 0.7) 0%, rgba(20, 20, 25, 0.7) 100%);
+    background-attachment: fixed;
+}
+
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: rgba(18, 18, 18, 0.6);
+    min-height: 100vh;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+header {
+    background-color: rgba(34, 34, 34, 0.8);
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(80, 80, 80, 0.3);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.back-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.page-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.page-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.action-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.semester-selector {
+    padding: 16px 16px 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.semester-dropdown {
+    width: 35%;
+    padding: 14px 20px;
+    background-color: rgba(40, 40, 40, 0.7);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 14px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.semester-dropdown:hover {
+    background-color: rgba(50, 50, 50, 0.7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.semester-dropdown:focus {
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 107, 107, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.timetable-selector {
+    padding: 0 16px 16px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timetable-dropdown {
+    width: 35%;
+    padding: 14px 20px;
+    background-color: rgba(40, 40, 40, 0.7);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 14px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.timetable-dropdown:hover {
+    background-color: rgba(50, 50, 50, 0.7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.timetable-dropdown:focus {
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 107, 107, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.timetable-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.timetable-action-button {
+    background-color: rgba(60, 60, 65, 0.7);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.timetable-action-button:hover {
+    background-color: rgba(70, 70, 75, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.timetable-action-button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.add-course-button {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.8), rgba(255, 82, 82, 0.8));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+.add-course-button:hover {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.9), rgba(255, 82, 82, 0.9));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 107, 107, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.add-course-button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(255, 107, 107, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.content-section {
+    padding: 0 16px 16px 16px;
+}
+
+.section-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 24px 0 16px;
+    color: #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timetable-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+    border: none;
+    overflow: hidden;
+}
+
+.timetable th, .timetable td {
+    border: 1px solid #333;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.timetable th {
+    background-color: #222;
+    font-weight: 600;
+    padding: 12px 8px;
+    color: #f0f0f0;
+}
+
+.timetable .time-col {
+    width: 60px;
+    background-color: #222;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.timetable .class-cell {
+    height: 60px;
+    vertical-align: top;
+    padding: 0;
+    background-color: #1e1e1e;
+    transition: background-color 0.2s;
+}
+
+.timetable .class-cell:hover {
+    background-color: #252525;
+}
+
+.class-item {
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin: -1px;
+    z-index: 5;
+}
+
+.class-name {
+    font-weight: 700;
+    margin-bottom: 3px;
+    font-size: 13px;
+}
+
+.class-info {
+    font-size: 10px;
+    opacity: 0.85;
+    text-align: right;
+}
+
+/* 과목 색상 */
+.color-1 { background-color: #e57373; background-image: linear-gradient(45deg, #e57373, #ef5350); }
+.color-2 { background-color: #81c784; background-image: linear-gradient(45deg, #81c784, #66bb6a); }
+.color-3 { background-color: #64b5f6; background-image: linear-gradient(45deg, #64b5f6, #42a5f5); }
+.color-4 { background-color: #ba68c8; background-image: linear-gradient(45deg, #ba68c8, #ab47bc); }
+.color-5 { background-color: #ffb74d; background-image: linear-gradient(45deg, #ffb74d, #ffa726); }
+.color-6 { background-color: #4db6ac; background-image: linear-gradient(45deg, #4db6ac, #26a69a); }
+.color-7 { background-color: #7986cb; background-image: linear-gradient(45deg, #7986cb, #5c6bc0); }
+.color-8 { background-color: #a1887f; background-image: linear-gradient(45deg, #a1887f, #8d6e63); }
+
+.class-list {
+    list-style: none;
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.class-list-item {
+    padding: 16px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e1e1e;
+    transition: background-color 0.2s;
+}
+
+.class-list-item:last-child {
+    border-bottom: none;
+}
+
+.class-list-item:hover {
+    background-color: #252525;
+}
+
+.class-list-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.class-list-title {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.class-list-details {
+    font-size: 13px;
+    color: #bbb;
+}
+
+.class-list-time {
+    color: #999;
+    font-size: 13px;
+}
+
+.class-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: white;
+    align-self: flex-start;
+}
+
+.class-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.class-action-button {
+    background: none;
+    border: none;
+    color: #bbb;
+    font-size: 16px;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.class-action-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 60px 0;
+    color: #888;
+    font-size: 15px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 모달 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: #222;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #ddd;
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+    transition: all 0.2s;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.color-select {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.color-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border-color: white;
+    transform: scale(1.1);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-button {
+    background-color: transparent;
+    color: #ddd;
+    border: 1px solid #444;
+}
+
+.cancel-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.save-button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+}
+
+.save-button:hover {
+    background-color: #ff5252;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(255, 107, 107, 0.4);
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="back-button" onclick="goToBack()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                <span>뒤로</span>
-            </div>
-            <div class="page-title">시간표 1</div>
-            <div class="page-actions">
-                <button class="action-button" onclick="openSettings()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                </button>
-            </div>
-        </header>
+<div class="container">
+<header>
+    <div class="back-button" onclick="goToBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>뒤로</span>
+    </div>
+    <div class="page-title">시간표 1</div>
+    <div class="page-actions">
+        <button class="action-button" onclick="openSettings()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+    </div>
+</header>
+
+<div class="semester-selector">
+    <select id="semester-select" class="semester-dropdown" onchange="changeSemester()">
+        <option value="2023-1" selected>2023년 1학기</option>
+        <option value="2023-2">2023년 2학기</option>
+        <option value="2023-3">2023년 여름학기</option>
+        <option value="2023-4">2023년 겨울학기</option>
+        <option value="2024-1">2024년 1학기</option>
+        <option value="2024-2">2024년 2학기</option>
+        <option value="2024-3">2024년 여름학기</option>
+        <option value="2024-4">2024년 겨울학기</option>
+        <option value="2025-1">2025년 1학기</option>
+        <option value="2025-2">2025년 2학기</option>
+        <option value="2025-3">2025년 여름학기</option>
+        <option value="2025-4">2025년 겨울학기</option>
+        <option value="2026-1">2026년 1학기</option>
+        <option value="2026-2">2026년 2학기</option>
+        <option value="2026-3">2026년 여름학기</option>
+        <option value="2026-4">2026년 겨울학기</option>
+    </select>
+</div>
+
+<div class="timetable-selector">
+    <select id="timetable-select" class="timetable-dropdown" onchange="changeTimetable()">
+        <option value="1" selected>시간표 1</option>
+        <option value="2">시간표 2</option>
+        <option value="3">시간표 3</option>
+    </select>
+    
+    <div class="timetable-actions">
+        <button class="timetable-action-button" onclick="renameTimetable()">
+            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
+                이름 변경
+            </span>
+        </button>
+        <button class="timetable-action-button" onclick="addNewTimetable()">
+            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                새 시간표
+            </span>
+        </button>
+        <button class="add-course-button" onclick="openAddCourseModal()">
+            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                과목 추가
+            </span>
+        </button>
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="timetable-container">
+        <table class="timetable">
+            <thead>
+                <tr>
+                    <th class="time-col">시간</th>
+                    <th>월</th>
+                    <th>화</th>
+                    <th>수</th>
+                    <th>목</th>
+                    <th>금</th>
+                    <th>토</th>
+                </tr>
+            </thead>
+            <tbody id="timetable-body">
+                <!-- 시간표 내용은 JavaScript로 동적 생성됩니다 -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="section-title">
+        <span>수강 과목 목록</span>
+    </div>
+    
+    <ul class="class-list" id="course-list">
+        <!-- 과목 목록은 JavaScript로 동적 생성됩니다 -->
+    </ul>
+</div>
+
+<!-- 과목 추가/수정 모달 -->
+<div class="modal" id="course-modal">
+    <div class="modal-content">
+        <div class="modal-title" id="modal-title">과목 추가</div>
         
-        <div class="semester-selector">
-            <select id="semester-select" class="semester-dropdown" onchange="changeSemester()">
-                <option value="2023-1" selected>2023년 1학기</option>
-                <option value="2023-2">2023년 2학기</option>
-                <option value="2023-3">2023년 여름학기</option>
-                <option value="2023-4">2023년 겨울학기</option>
-                <option value="2024-1">2024년 1학기</option>
-                <option value="2024-2">2024년 2학기</option>
-                <option value="2024-3">2024년 여름학기</option>
-                <option value="2024-4">2024년 겨울학기</option>
-                <option value="2025-1">2025년 1학기</option>
-                <option value="2025-2">2025년 2학기</option>
-                <option value="2025-3">2025년 여름학기</option>
-                <option value="2025-4">2025년 겨울학기</option>
-                <option value="2026-1">2026년 1학기</option>
-                <option value="2026-2">2026년 2학기</option>
-                <option value="2026-3">2026년 여름학기</option>
-                <option value="2026-4">2026년 겨울학기</option>
-            </select>
-        </div>
-        
-        <div class="timetable-selector">
-            <select id="timetable-select" class="timetable-dropdown" onchange="changeTimetable()">
-                <option value="1" selected>시간표 1</option>
-                <option value="2">시간표 2</option>
-                <option value="3">시간표 3</option>
-            </select>
+        <form id="course-form" onsubmit="saveCourse(event)">
+            <input type="hidden" id="course-id">
             
-            <div class="timetable-actions">
-                <button class="timetable-action-button" onclick="renameTimetable()">
-                    <span style="display: inline-flex; align-items: center; gap: 4px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
-                        이름 변경
-                    </span>
-                </button>
-                <button class="timetable-action-button" onclick="addNewTimetable()">
-                    <span style="display: inline-flex; align-items: center; gap: 4px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                        새 시간표
-                    </span>
-                </button>
-                <button class="add-course-button" onclick="openAddCourseModal()">
-                    <span style="display: inline-flex; align-items: center; gap: 4px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                        과목 추가
-                    </span>
-                </button>
-            </div>
-        </div>
-        
-        <div class="content-section">
-            <div class="timetable-container">
-                <table class="timetable">
-                    <thead>
-                        <tr>
-                            <th class="time-col">시간</th>
-                            <th>월</th>
-                            <th>화</th>
-                            <th>수</th>
-                            <th>목</th>
-                            <th>금</th>
-                            <th>토</th>
-                        </tr>
-                    </thead>
-                    <tbody id="timetable-body">
-                        <!-- 시간표 내용은 JavaScript로 동적 생성됩니다 -->
-                    </tbody>
-                </table>
+            <div class="form-group">
+                <label class="form-label" for="course-name">과목명 *</label>
+                <input type="text" id="course-name" class="form-input" required>
             </div>
             
-            <div class="section-title">
-                <span>수강 과목 목록</span>
+            <div class="form-group">
+                <label class="form-label" for="course-professor">담당 교수</label>
+                <input type="text" id="course-professor" class="form-input">
             </div>
             
-            <ul class="class-list" id="course-list">
-                <!-- 과목 목록은 JavaScript로 동적 생성됩니다 -->
-            </ul>
-        </div>
-        
-        <!-- 과목 추가/수정 모달 -->
-        <div class="modal" id="course-modal">
-            <div class="modal-content">
-                <div class="modal-title" id="modal-title">과목 추가</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="course-credits">학점</label>
+                    <input type="number" id="course-credits" class="form-input" min="1" max="6" value="3">
+                </div>
                 
-                <form id="course-form" onsubmit="saveCourse(event)">
-                    <input type="hidden" id="course-id">
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="course-name">과목명 *</label>
-                        <input type="text" id="course-name" class="form-input" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="course-professor">담당 교수</label>
-                        <input type="text" id="course-professor" class="form-input">
-                    </div>
-                    
-                    <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="course-type">이수 구분</label>
+                    <select id="course-type" class="form-select">
+                        <option value="전공필수">전공필수</option>
+                        <option value="전공선택">전공선택</option>
+                        <option value="교양필수">교양필수</option>
+                        <option value="교양선택">교양선택</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">과목 색상</label>
+                <div class="color-select" id="color-select">
+                    <div class="color-option color-1" data-color="color-1" onclick="selectColor(this)"></div>
+                    <div class="color-option color-2" data-color="color-2" onclick="selectColor(this)"></div>
+                    <div class="color-option color-3" data-color="color-3" onclick="selectColor(this)"></div>
+                    <div class="color-option color-4" data-color="color-4" onclick="selectColor(this)"></div>
+                    <div class="color-option color-5" data-color="color-5" onclick="selectColor(this)"></div>
+                    <div class="color-option color-6" data-color="color-6" onclick="selectColor(this)"></div>
+                    <div class="color-option color-7" data-color="color-7" onclick="selectColor(this)"></div>
+                    <div class="color-option color-8" data-color="color-8" onclick="selectColor(this)"></div>
+                </div>
+                <input type="hidden" id="course-color" value="color-1">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">수업 시간 *</label>
+                
+                <div id="time-slots">
+                    <div class="form-row time-slot">
                         <div class="form-group">
-                            <label class="form-label" for="course-credits">학점</label>
-                            <input type="number" id="course-credits" class="form-input" min="1" max="6" value="3">
+                            <label class="form-label">요일</label>
+                            <select class="form-select day-select">
+                                <option value="1">월요일</option>
+                                <option value="2">화요일</option>
+                                <option value="3">수요일</option>
+                                <option value="4">목요일</option>
+                                <option value="5">금요일</option>
+                                <option value="6">토요일</option>
+                            </select>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label" for="course-type">이수 구분</label>
-                            <select id="course-type" class="form-select">
-                                <option value="전공필수">전공필수</option>
-                                <option value="전공선택">전공선택</option>
-                                <option value="교양필수">교양필수</option>
-                                <option value="교양선택">교양선택</option>
+                            <label class="form-label">시작 교시</label>
+                            <select class="form-select start-select">
+                                <option value="1">1교시 (9:30)</option>
+                                <option value="2">2교시 (10:30)</option>
+                                <option value="3">3교시 (11:30)</option>
+                                <option value="4">4교시 (12:30)</option>
+                                <option value="5">5교시 (13:30)</option>
+                                <option value="6">6교시 (14:30)</option>
+                                <option value="7">7교시 (15:30)</option>
+                                <option value="8">8교시 (16:30)</option>
+                                <option value="9">9교시 (17:30)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">종료 교시</label>
+                            <select class="form-select end-select">
+                                <option value="1">1교시 (10:20)</option>
+                                <option value="2">2교시 (11:20)</option>
+                                <option value="3">3교시 (12:20)</option>
+                                <option value="4">4교시 (13:20)</option>
+                                <option value="5">5교시 (14:20)</option>
+                                <option value="6">6교시 (15:20)</option>
+                                <option value="7">7교시 (16:20)</option>
+                                <option value="8">8교시 (17:20)</option>
+                                <option value="9">9교시 (18:20)</option>
                             </select>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">과목 색상</label>
-                        <div class="color-select" id="color-select">
-                            <div class="color-option color-1" data-color="color-1" onclick="selectColor(this)"></div>
-                            <div class="color-option color-2" data-color="color-2" onclick="selectColor(this)"></div>
-                            <div class="color-option color-3" data-color="color-3" onclick="selectColor(this)"></div>
-                            <div class="color-option color-4" data-color="color-4" onclick="selectColor(this)"></div>
-                            <div class="color-option color-5" data-color="color-5" onclick="selectColor(this)"></div>
-                            <div class="color-option color-6" data-color="color-6" onclick="selectColor(this)"></div>
-                            <div class="color-option color-7" data-color="color-7" onclick="selectColor(this)"></div>
-                            <div class="color-option color-8" data-color="color-8" onclick="selectColor(this)"></div>
-                        </div>
-                        <input type="hidden" id="course-color" value="color-1">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">수업 시간 *</label>
-                        
-                        <div id="time-slots">
-                            <div class="form-row time-slot">
-                                <div class="form-group">
-                                    <label class="form-label">요일</label>
-                                    <select class="form-select day-select">
-                                        <option value="1">월요일</option>
-                                        <option value="2">화요일</option>
-                                        <option value="3">수요일</option>
-                                        <option value="4">목요일</option>
-                                        <option value="5">금요일</option>
-                                        <option value="6">토요일</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">시작 교시</label>
-                                    <select class="form-select start-select">
-                                        <option value="1">1교시 (9:00)</option>
-                                        <option value="2">2교시 (10:00)</option>
-                                        <option value="3">3교시 (11:00)</option>
-                                        <option value="4">4교시 (12:00)</option>
-                                        <option value="5">5교시 (13:00)</option>
-                                        <option value="6">6교시 (14:00)</option>
-                                        <option value="7">7교시 (15:00)</option>
-                                        <option value="8">8교시 (16:00)</option>
-                                        <option value="9">9교시 (17:00)</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">종료 교시</label>
-                                    <select class="form-select end-select">
-                                        <option value="1">1교시 (9:50)</option>
-                                        <option value="2">2교시 (10:50)</option>
-                                        <option value="3">3교시 (11:50)</option>
-                                        <option value="4">4교시 (12:50)</option>
-                                        <option value="5">5교시 (13:50)</option>
-                                        <option value="6">6교시 (14:50)</option>
-                                        <option value="7">7교시 (15:50)</option>
-                                        <option value="8">8교시 (16:50)</option>
-                                        <option value="9">9교시 (17:50)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button type="button" class="add-course-button" onclick="addTimeSlot()" style="margin-top: 12px;">
-                            <span style="display: inline-flex; align-items: center; gap: 4px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                수업 시간 추가
-                            </span>
-                        </button>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="course-room">강의실</label>
-                        <input type="text" id="course-room" class="form-input" placeholder="예: 공2-204">
-                    </div>
-                    
-                    <div class="modal-actions">
-                        <button type="button" class="modal-button cancel-button" onclick="closeModal()">취소</button>
-                        <button type="submit" class="modal-button save-button">저장</button>
-                    </div>
-                </form>
+                </div>
+                
+                <button type="button" class="add-course-button" onclick="addTimeSlot()" style="margin-top: 12px;">
+                    <span style="display: inline-flex; align-items: center; gap: 4px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        수업 시간 추가
+                    </span>
+                </button>
             </div>
-        </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="course-room">강의실</label>
+                <input type="text" id="course-room" class="form-input" placeholder="예: 공2-204">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="modal-button cancel-button" onclick="closeModal()">취소</button>
+                <button type="submit" class="modal-button save-button">저장</button>
+            </div>
+        </form>
     </div>
+</div>
+</div>
 
-    <script>
-        // 과목 배열 초기화
-        let courses = [];
+<script>
+// 과목 배열 초기화
+let courses = [];
+
+// 현재 학기 정보
+const currentSemester = {
+    year: 2023,
+    term: 1
+};
+
+// 현재 시간표 정보
+let currentTimetable = {
+    id: 1,
+    name: "시간표 1" 
+};
+
+// 시간표 목록
+let timetables = [
+    { id: 1, name: "시간표 1" },
+    { id: 2, name: "시간표 2" },
+    { id: 3, name: "시간표 3" }
+];
+
+// 시간 데이터 (교시별 시작 시간)
+const timeData = [
+    { period: 1, startTime: "9:30" },
+    { period: 2, startTime: "10:30" },
+    { period: 3, startTime: "11:30" },
+    { period: 4, startTime: "12:30" },
+    { period: 5, startTime: "13:30" },
+    { period: 6, startTime: "14:30" },
+    { period: 7, startTime: "15:30" },
+    { period: 8, startTime: "16:30" },
+    { period: 9, startTime: "17:30" }
+];
+
+// 요일 데이터
+const dayData = ["", "월", "화", "수", "목", "금", "토"];
+
+// 페이지 로드 시 실행되는 함수
+document.addEventListener('DOMContentLoaded', function() {
+    // 로컬 스토리지에서 시간표 목록 로드
+    loadTimetablesFromStorage();
+    
+    // 시간표 선택기 초기화
+    updateTimetableSelector();
+    
+    // 로컬 스토리지에서 데이터 로드
+    loadCoursesFromStorage();
+    
+    // 학기 선택기 초기화
+    document.getElementById('semester-select').value = `${currentSemester.year}-${currentSemester.term}`;
+    
+    // 시간표 생성
+    createTimetable();
+    
+    // 과목 목록 표시
+    renderCourseList();
+    
+    // 페이지 타이틀 업데이트
+    updatePageTitle();
+});
+
+// 페이지 타이틀 업데이트
+function updatePageTitle() {
+    document.querySelector('.page-title').textContent = currentTimetable.name;
+}
+
+// 로컬 스토리지에서 시간표 목록 로드
+function loadTimetablesFromStorage() {
+    const savedTimetables = localStorage.getItem('timetables');
+    if (savedTimetables) {
+        timetables = JSON.parse(savedTimetables);
+    }
+    
+    // 현재 시간표 로드
+    const savedCurrentTimetable = localStorage.getItem('currentTimetable');
+    if (savedCurrentTimetable) {
+        currentTimetable = JSON.parse(savedCurrentTimetable);
+    }
+}
+
+// 시간표 선택기 업데이트
+function updateTimetableSelector() {
+    const timetableSelect = document.getElementById('timetable-select');
+    timetableSelect.innerHTML = '';
+    
+    timetables.forEach(timetable => {
+        const option = document.createElement('option');
+        option.value = timetable.id;
+        option.textContent = timetable.name;
+        if (timetable.id === currentTimetable.id) {
+            option.selected = true;
+        }
+        timetableSelect.appendChild(option);
+    });
+}
+
+// 시간표 변경 함수
+function changeTimetable() {
+    const timetableSelect = document.getElementById('timetable-select');
+    const selectedTimetableId = parseInt(timetableSelect.value);
+    
+    // 선택한 시간표 찾기
+    const selectedTimetable = timetables.find(t => t.id === selectedTimetableId);
+    if (!selectedTimetable) return;
+    
+    // 현재 시간표 업데이트
+    currentTimetable = selectedTimetable;
+    localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+    
+    // 페이지 타이틀 업데이트
+    updatePageTitle();
+    
+    // 선택된 시간표에 맞는 과목 데이터 로드
+    loadCoursesFromStorage();
+    
+    // 시간표 갱신
+    renderCoursesOnTimetable();
+    
+    // 과목 목록 갱신
+    renderCourseList();
+}
+
+// 시간표 이름 변경
+function renameTimetable() {
+    const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
+    if (newName && newName.trim() !== "") {
+        // 시간표 이름 업데이트
+        currentTimetable.name = newName.trim();
         
-        // 현재 학기 정보
-        const currentSemester = {
-            year: 2023,
-            term: 1
-        };
-        
-        // 현재 시간표 정보
-        let currentTimetable = {
-            id: 1,
-            name: "시간표 1" 
-        };
-        
-        // 시간표 목록
-        let timetables = [
-            { id: 1, name: "시간표 1" },
-            { id: 2, name: "시간표 2" },
-            { id: 3, name: "시간표 3" }
-        ];
-        
-        // 시간 데이터 (교시별 시작 시간)
-        const timeData = [
-            { period: 1, startTime: "9:00" },
-            { period: 2, startTime: "10:00" },
-            { period: 3, startTime: "11:00" },
-            { period: 4, startTime: "12:00" },
-            { period: 5, startTime: "13:00" },
-            { period: 6, startTime: "14:00" },
-            { period: 7, startTime: "15:00" },
-            { period: 8, startTime: "16:00" },
-            { period: 9, startTime: "17:00" }
-        ];
-        
-        // 요일 데이터
-        const dayData = ["", "월", "화", "수", "목", "금", "토"];
-        
-        // 페이지 로드 시 실행되는 함수
-        document.addEventListener('DOMContentLoaded', function() {
-            // 로컬 스토리지에서 시간표 목록 로드
-            loadTimetablesFromStorage();
-            
-            // 시간표 선택기 초기화
-            updateTimetableSelector();
-            
-            // 로컬 스토리지에서 데이터 로드
-            loadCoursesFromStorage();
-            
-            // 학기 선택기 초기화
-            document.getElementById('semester-select').value = `${currentSemester.year}-${currentSemester.term}`;
-            
-            // 시간표 생성
-            createTimetable();
-            
-            // 과목 목록 표시
-            renderCourseList();
-            
-            // 페이지 타이틀 업데이트
-            updatePageTitle();
-        });
-        
-        // 페이지 타이틀 업데이트
-        function updatePageTitle() {
-            document.querySelector('.page-title').textContent = currentTimetable.name;
+        // 시간표 목록에서 해당 시간표 업데이트
+        const index = timetables.findIndex(t => t.id === currentTimetable.id);
+        if (index !== -1) {
+            timetables[index] = currentTimetable;
         }
         
-        // 로컬 스토리지에서 시간표 목록 로드
-        function loadTimetablesFromStorage() {
-            const savedTimetables = localStorage.getItem('timetables');
-            if (savedTimetables) {
-                timetables = JSON.parse(savedTimetables);
-            }
-            
-            // 현재 시간표 로드
-            const savedCurrentTimetable = localStorage.getItem('currentTimetable');
-            if (savedCurrentTimetable) {
-                currentTimetable = JSON.parse(savedCurrentTimetable);
-            }
-        }
+        // 로컬 스토리지에 저장
+        localStorage.setItem('timetables', JSON.stringify(timetables));
+        localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
         
         // 시간표 선택기 업데이트
-        function updateTimetableSelector() {
-            const timetableSelect = document.getElementById('timetable-select');
-            timetableSelect.innerHTML = '';
-            
-            timetables.forEach(timetable => {
-                const option = document.createElement('option');
-                option.value = timetable.id;
-                option.textContent = timetable.name;
-                if (timetable.id === currentTimetable.id) {
-                    option.selected = true;
-                }
-                timetableSelect.appendChild(option);
-            });
+        updateTimetableSelector();
+        
+        // 페이지 타이틀 업데이트
+        updatePageTitle();
+    }
+}
+
+// 새 시간표 추가
+function addNewTimetable() {
+    const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
+    if (newName && newName.trim() !== "") {
+        // 새 시간표 ID 생성 (최대 ID + 1)
+        const maxId = timetables.reduce((max, t) => Math.max(max, t.id), 0);
+        const newId = maxId + 1;
+        
+        // 새 시간표 객체 생성
+        const newTimetable = {
+            id: newId,
+            name: newName.trim()
+        };
+        
+        // 시간표 목록에 추가
+        timetables.push(newTimetable);
+        
+        // 현재 시간표로 설정
+        currentTimetable = newTimetable;
+        
+        // 로컬 스토리지에 저장
+        localStorage.setItem('timetables', JSON.stringify(timetables));
+        localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+        
+        // 시간표 선택기 업데이트
+        updateTimetableSelector();
+        
+        // 페이지 타이틀 업데이트
+        updatePageTitle();
+        
+        // 과목 데이터 초기화 및 화면 갱신
+        courses = [];
+        saveCoursesToStorage();
+        renderCoursesOnTimetable();
+        renderCourseList();
+    }
+}
+
+// 학기 변경 함수
+function changeSemester() {
+    const semesterSelect = document.getElementById('semester-select');
+    const selectedValue = semesterSelect.value;
+    const [year, term] = selectedValue.split('-');
+    
+    currentSemester.year = parseInt(year);
+    currentSemester.term = parseInt(term);
+    
+    // 선택된 학기에 맞는 과목 데이터 로드
+    loadCoursesFromStorage();
+    
+    // 시간표 갱신
+    renderCoursesOnTimetable();
+    
+    // 과목 목록 갱신
+    renderCourseList();
+}
+
+// 로컬 스토리지에서 과목 데이터 로드
+function loadCoursesFromStorage() {
+    const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}`;
+    const savedCourses = localStorage.getItem(semesterKey);
+    
+    if (savedCourses) {
+        courses = JSON.parse(savedCourses);
+    } else {
+        courses = [];
+    }
+}
+
+// 로컬 스토리지에 과목 데이터 저장
+function saveCoursesToStorage() {
+    const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}`;
+    localStorage.setItem(semesterKey, JSON.stringify(courses));
+}
+
+// 시간표 생성 함수
+function createTimetable() {
+    const tbody = document.getElementById('timetable-body');
+    tbody.innerHTML = '';
+    
+    // 교시별 행 생성
+    for (let i = 0; i < timeData.length; i++) {
+        const period = timeData[i].period;
+        const startTime = timeData[i].startTime;
+        
+        const row = document.createElement('tr');
+        
+        // 시간 열
+        const timeCell = document.createElement('td');
+        timeCell.className = 'time-col';
+        timeCell.innerHTML = `${period}교시<br>${startTime}`;
+        row.appendChild(timeCell);
+        
+        // 요일별 열 (월~토)
+        for (let day = 1; day <= 6; day++) {
+            const cell = document.createElement('td');
+            cell.className = 'class-cell';
+            cell.dataset.day = day;
+            cell.dataset.period = period;
+            row.appendChild(cell);
         }
         
-        // 시간표 변경 함수
-        function changeTimetable() {
-            const timetableSelect = document.getElementById('timetable-select');
-            const selectedTimetableId = parseInt(timetableSelect.value);
+        tbody.appendChild(row);
+    }
+    
+    // 과목 데이터를 시간표에 표시
+    renderCoursesOnTimetable();
+}
+
+// 시간표에 과목 데이터 표시
+function renderCoursesOnTimetable() {
+    // 기존 과목 셀 초기화
+    const classCells = document.querySelectorAll('.class-cell');
+    classCells.forEach(cell => {
+        cell.innerHTML = '';
+        cell.rowSpan = 1;
+    });
+    
+    // 숨겨진 셀 복원
+    const hiddenCells = document.querySelectorAll('.hidden-cell');
+    hiddenCells.forEach(cell => {
+        cell.classList.remove('hidden-cell');
+        cell.style.display = '';
+    });
+    
+    // 과목별로 시간표에 표시
+    courses.forEach(course => {
+        course.times.forEach(time => {
+            // 시작 셀 찾기
+            const startCell = document.querySelector(`.class-cell[data-day="${time.day}"][data-period="${time.start}"]`);
+            if (!startCell) return;
             
-            // 선택한 시간표 찾기
-            const selectedTimetable = timetables.find(t => t.id === selectedTimetableId);
-            if (!selectedTimetable) return;
+            // 연속된 교시 계산
+            const span = time.end - time.start + 1;
             
-            // 현재 시간표 업데이트
-            currentTimetable = selectedTimetable;
-            localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
+            // rowspan 설정
+            startCell.rowSpan = span;
             
-            // 페이지 타이틀 업데이트
-            updatePageTitle();
-            
-            // 선택된 시간표에 맞는 과목 데이터 로드
-            loadCoursesFromStorage();
-            
-            // 시간표 갱신
-            renderCoursesOnTimetable();
-            
-            // 과목 목록 갱신
-            renderCourseList();
-        }
-        
-        // 시간표 이름 변경
-        function renameTimetable() {
-            const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
-            if (newName && newName.trim() !== "") {
-                // 시간표 이름 업데이트
-                currentTimetable.name = newName.trim();
-                
-                // 시간표 목록에서 해당 시간표 업데이트
-                const index = timetables.findIndex(t => t.id === currentTimetable.id);
-                if (index !== -1) {
-                    timetables[index] = currentTimetable;
-                }
-                
-                // 로컬 스토리지에 저장
-                localStorage.setItem('timetables', JSON.stringify(timetables));
-                localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
-                
-                // 시간표 선택기 업데이트
-                updateTimetableSelector();
-                
-                // 페이지 타이틀 업데이트
-                updatePageTitle();
-            }
-        }
-        
-        // 새 시간표 추가
-        function addNewTimetable() {
-            const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
-            if (newName && newName.trim() !== "") {
-                // 새 시간표 ID 생성 (최대 ID + 1)
-                const maxId = timetables.reduce((max, t) => Math.max(max, t.id), 0);
-                const newId = maxId + 1;
-                
-                // 새 시간표 객체 생성
-                const newTimetable = {
-                    id: newId,
-                    name: newName.trim()
-                };
-                
-                // 시간표 목록에 추가
-                timetables.push(newTimetable);
-                
-                // 현재 시간표로 설정
-                currentTimetable = newTimetable;
-                
-                // 로컬 스토리지에 저장
-                localStorage.setItem('timetables', JSON.stringify(timetables));
-                localStorage.setItem('currentTimetable', JSON.stringify(currentTimetable));
-                
-                // 시간표 선택기 업데이트
-                updateTimetableSelector();
-                
-                // 페이지 타이틀 업데이트
-                updatePageTitle();
-                
-                // 과목 데이터 초기화 및 화면 갱신
-                courses = [];
-                saveCoursesToStorage();
-                renderCoursesOnTimetable();
-                renderCourseList();
-            }
-        }
-        
-        // 학기 변경 함수
-        function changeSemester() {
-            const semesterSelect = document.getElementById('semester-select');
-            const selectedValue = semesterSelect.value;
-            const [year, term] = selectedValue.split('-');
-            
-            currentSemester.year = parseInt(year);
-            currentSemester.term = parseInt(term);
-            
-            // 선택된 학기에 맞는 과목 데이터 로드
-            loadCoursesFromStorage();
-            
-            // 시간표 갱신
-            renderCoursesOnTimetable();
-            
-            // 과목 목록 갱신
-            renderCourseList();
-        }
-        
-        // 로컬 스토리지에서 과목 데이터 로드
-        function loadCoursesFromStorage() {
-            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}`;
-            const savedCourses = localStorage.getItem(semesterKey);
-            
-            if (savedCourses) {
-                courses = JSON.parse(savedCourses);
-            } else {
-                courses = [];
-            }
-        }
-        
-        // 로컬 스토리지에 과목 데이터 저장
-        function saveCoursesToStorage() {
-            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}`;
-            localStorage.setItem(semesterKey, JSON.stringify(courses));
-        }
-        
-        // 시간표 생성 함수
-        function createTimetable() {
-            const tbody = document.getElementById('timetable-body');
-            tbody.innerHTML = '';
-            
-            // 교시별 행 생성
-            for (let i = 0; i < timeData.length; i++) {
-                const period = timeData[i].period;
-                const startTime = timeData[i].startTime;
-                
-                const row = document.createElement('tr');
-                
-                // 시간 열
-                const timeCell = document.createElement('td');
-                timeCell.className = 'time-col';
-                timeCell.innerHTML = `${period}교시<br>${startTime}`;
-                row.appendChild(timeCell);
-                
-                // 요일별 열 (월~토)
-                for (let day = 1; day <= 6; day++) {
-                    const cell = document.createElement('td');
-                    cell.className = 'class-cell';
-                    cell.dataset.day = day;
-                    cell.dataset.period = period;
-                    row.appendChild(cell);
-                }
-                
-                tbody.appendChild(row);
-            }
-            
-            // 과목 데이터를 시간표에 표시
-            renderCoursesOnTimetable();
-        }
-        
-        // 시간표에 과목 데이터 표시
-        function renderCoursesOnTimetable() {
-            // 기존 과목 셀 초기화
-            const classCells = document.querySelectorAll('.class-cell');
-            classCells.forEach(cell => {
-                cell.innerHTML = '';
-                cell.rowSpan = 1;
-            });
-            
-            // 숨겨진 셀 복원
-            const hiddenCells = document.querySelectorAll('.hidden-cell');
-            hiddenCells.forEach(cell => {
-                cell.classList.remove('hidden-cell');
-                cell.style.display = '';
-            });
-            
-            // 과목별로 시간표에 표시
-            courses.forEach(course => {
-                course.times.forEach(time => {
-                    // 시작 셀 찾기
-                    const startCell = document.querySelector(`.class-cell[data-day="${time.day}"][data-period="${time.start}"]`);
-                    if (!startCell) return;
-                    
-                    // 연속된 교시 계산
-                    const span = time.end - time.start + 1;
-                    
-                    // rowspan 설정
-                    startCell.rowSpan = span;
-                    
-                    // 과목 정보 표시
-                    const courseDiv = document.createElement('div');
-                    courseDiv.className = `class-item ${course.color}`;
-                    courseDiv.innerHTML = `
-                        <div class="class-name">${course.name}</div>
-                        <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
-                    `;
-                    startCell.appendChild(courseDiv);
-                    
-                    // 연속된 교시에 해당하는 셀 숨기기
-                    for (let i = time.start + 1; i <= time.end; i++) {
-                        const cellToHide = document.querySelector(`.class-cell[data-day="${time.day}"][data-period="${i}"]`);
-                        if (cellToHide) {
-                            cellToHide.classList.add('hidden-cell');
-                            cellToHide.style.display = 'none';
-                        }
-                    }
-                });
-            });
-        }
-        
-        // 과목 목록 표시
-        function renderCourseList() {
-            const courseList = document.getElementById('course-list');
-            courseList.innerHTML = '';
-            
-            if (courses.length === 0) {
-                const emptyMessage = document.createElement('div');
-                emptyMessage.className = 'empty-message';
-                emptyMessage.textContent = '등록된 과목이 없습니다.';
-                courseList.appendChild(emptyMessage);
-                return;
-            }
-            
-            courses.forEach(course => {
-                const li = document.createElement('li');
-                li.className = 'class-list-item';
-                
-                // 과목 시간 정보 문자열 생성
-                const timeStrings = course.times.map(time => {
-                    const day = dayData[time.day];
-                    return `${day} ${time.start}-${time.end}교시`;
-                });
-                
-                li.innerHTML = `
-                    <div class="class-list-info">
-                        <div class="class-list-title">${course.name}</div>
-                        <div class="class-list-details">${course.professor || '교수명 미정'} | ${course.credits}학점 | ${course.type}</div>
-                        <div class="class-list-time">${timeStrings.join(', ')} | ${course.room || '강의실 미정'}</div>
-                    </div>
-                    <div class="class-actions">
-                        <button class="class-action-button" onclick="editCourse(${course.id})">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
-                        </button>
-                        <button class="class-action-button" onclick="deleteCourse(${course.id})">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                        </button>
-                    </div>
-                `;
-                
-                courseList.appendChild(li);
-            });
-        }
-        
-        // 과목 추가 모달 열기
-        function openAddCourseModal() {
-            // 모달 제목 설정
-            document.getElementById('modal-title').textContent = '과목 추가';
-            
-            // 폼 초기화
-            document.getElementById('course-form').reset();
-            document.getElementById('course-id').value = '';
-            
-            // 기본 색상 선택
-            selectColor(document.querySelector('.color-option'));
-            
-            // 시간 슬롯 초기화
-            const timeSlots = document.getElementById('time-slots');
-            timeSlots.innerHTML = '';
-            addTimeSlot();
-            
-            // 모달 표시
-            document.getElementById('course-modal').style.display = 'flex';
-        }
-        
-        // 과목 수정 모달 열기
-        function editCourse(courseId) {
-            // 해당 과목 찾기
-            const course = courses.find(c => c.id === courseId);
-            if (!course) return;
-            
-            // 모달 제목 설정
-            document.getElementById('modal-title').textContent = '과목 수정';
-            
-            // 과목 정보 설정
-            document.getElementById('course-id').value = course.id;
-            document.getElementById('course-name').value = course.name;
-            document.getElementById('course-professor').value = course.professor || '';
-            document.getElementById('course-credits').value = course.credits;
-            document.getElementById('course-type').value = course.type;
-            document.getElementById('course-room').value = course.room || '';
-            document.getElementById('course-color').value = course.color;
-            
-            // 색상 선택
-            selectColor(document.querySelector(`.color-option[data-color="${course.color}"]`));
-            
-            // 시간 슬롯 초기화
-            const timeSlots = document.getElementById('time-slots');
-            timeSlots.innerHTML = '';
-            
-            // 시간 정보 설정
-            course.times.forEach(time => {
-                addTimeSlot(time.day, time.start, time.end);
-            });
-            
-            // 시간 정보가 없는 경우 기본 슬롯 추가
-            if (course.times.length === 0) {
-                addTimeSlot();
-            }
-            
-            // 모달 표시
-            document.getElementById('course-modal').style.display = 'flex';
-        }
-        
-        // 과목 삭제
-        function deleteCourse(courseId) {
-            if (!confirm('정말 이 과목을 삭제하시겠습니까?')) return;
-            
-            // 과목 삭제
-            courses = courses.filter(course => course.id !== courseId);
-            
-            // 데이터 저장 및 화면 갱신
-            saveCoursesToStorage();
-            renderCourseList();
-            renderCoursesOnTimetable();
-        }
-        
-        // 모달 닫기
-        function closeModal() {
-            document.getElementById('course-modal').style.display = 'none';
-        }
-        
-        // 과목 색상 선택
-        function selectColor(element) {
-            // 기존 선택 제거
-            document.querySelectorAll('.color-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // 새로운 색상 선택
-            element.classList.add('selected');
-            document.getElementById('course-color').value = element.dataset.color;
-        }
-        
-        // 시간 슬롯 추가
-        function addTimeSlot(day = 1, start = 1, end = 1) {
-            const timeSlots = document.getElementById('time-slots');
-            
-            const slotDiv = document.createElement('div');
-            slotDiv.className = 'form-row time-slot';
-            
-            slotDiv.innerHTML = `
-                <div class="form-group">
-                    <label class="form-label">요일</label>
-                    <select class="form-select day-select">
-                        <option value="1">월요일</option>
-                        <option value="2">화요일</option>
-                        <option value="3">수요일</option>
-                        <option value="4">목요일</option>
-                        <option value="5">금요일</option>
-                        <option value="6">토요일</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">시작 교시</label>
-                    <select class="form-select start-select">
-                        <option value="1">1교시 (9:00)</option>
-                        <option value="2">2교시 (10:00)</option>
-                        <option value="3">3교시 (11:00)</option>
-                        <option value="4">4교시 (12:00)</option>
-                        <option value="5">5교시 (13:00)</option>
-                        <option value="6">6교시 (14:00)</option>
-                        <option value="7">7교시 (15:00)</option>
-                        <option value="8">8교시 (16:00)</option>
-                        <option value="9">9교시 (17:00)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">종료 교시</label>
-                    <select class="form-select end-select">
-                        <option value="1">1교시 (9:50)</option>
-                        <option value="2">2교시 (10:50)</option>
-                        <option value="3">3교시 (11:50)</option>
-                        <option value="4">4교시 (12:50)</option>
-                        <option value="5">5교시 (13:50)</option>
-                        <option value="6">6교시 (14:50)</option>
-                        <option value="7">7교시 (15:50)</option>
-                        <option value="8">8교시 (16:50)</option>
-                        <option value="9">9교시 (17:50)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group" style="flex: 0.2">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" class="form-input" style="background-color: #ff6b6b; color: white; display: flex; align-items: center; justify-content: center;" onclick="removeTimeSlot(this)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
+            // 과목 정보 표시
+            const courseDiv = document.createElement('div');
+            courseDiv.className = `class-item ${course.color}`;
+            courseDiv.innerHTML = `
+                <div class="class-name">${course.name}</div>
+                <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
             `;
+            startCell.appendChild(courseDiv);
             
-            timeSlots.appendChild(slotDiv);
-            
-            // 초기값 설정
-            const daySelect = slotDiv.querySelector('.day-select');
-            const startSelect = slotDiv.querySelector('.start-select');
-            const endSelect = slotDiv.querySelector('.end-select');
-            
-            daySelect.value = day;
-            startSelect.value = start;
-            endSelect.value = end;
-            
-            // 시작 교시가 변경될 때 종료 교시 업데이트
-            startSelect.addEventListener('change', function() {
-                const startValue = parseInt(this.value);
-                const endValue = parseInt(endSelect.value);
-                
-                if (endValue < startValue) {
-                    endSelect.value = startValue;
+            // 연속된 교시에 해당하는 셀 숨기기
+            for (let i = time.start + 1; i <= time.end; i++) {
+                const cellToHide = document.querySelector(`.class-cell[data-day="${time.day}"][data-period="${i}"]`);
+                if (cellToHide) {
+                    cellToHide.classList.add('hidden-cell');
+                    cellToHide.style.display = 'none';
                 }
-            });
-        }
-        
-        // 시간 슬롯 제거
-        function removeTimeSlot(button) {
-            const timeSlots = document.getElementById('time-slots');
-            const slot = button.closest('.time-slot');
-            
-            // 최소 하나의 슬롯은 유지
-            if (timeSlots.querySelectorAll('.time-slot').length > 1) {
-                timeSlots.removeChild(slot);
             }
-        }
+        });
+    });
+}
+
+// 과목 목록 표시
+function renderCourseList() {
+    const courseList = document.getElementById('course-list');
+    courseList.innerHTML = '';
+    
+    if (courses.length === 0) {
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'empty-message';
+        emptyMessage.textContent = '등록된 과목이 없습니다.';
+        courseList.appendChild(emptyMessage);
+        return;
+    }
+    
+    courses.forEach(course => {
+        const li = document.createElement('li');
+        li.className = 'class-list-item';
         
-        // 과목 저장
-        function saveCourse(event) {
-            event.preventDefault();
-            
-            // 과목 정보 수집
-            const courseId = document.getElementById('course-id').value;
-            const name = document.getElementById('course-name').value.trim();
-            const professor = document.getElementById('course-professor').value.trim();
-            const credits = parseInt(document.getElementById('course-credits').value);
-            const type = document.getElementById('course-type').value;
-            const room = document.getElementById('course-room').value.trim();
-            const color = document.getElementById('course-color').value;
-            
-            // 시간 정보 수집
-            const times = [];
-            const timeSlots = document.querySelectorAll('.time-slot');
-            
-            timeSlots.forEach(slot => {
-                const day = parseInt(slot.querySelector('.day-select').value);
-                const start = parseInt(slot.querySelector('.start-select').value);
-                const end = parseInt(slot.querySelector('.end-select').value);
-                
-                times.push({ day, start, end });
-            });
-            
-            // 과목 객체 생성
-            const course = {
-                id: courseId ? parseInt(courseId) : Date.now(),
-                name,
-                professor,
-                credits,
-                type,
-                color,
-                room,
-                times
-            };
-            
-            // 기존 과목 수정 또는 새 과목 추가
-            if (courseId) {
-                const index = courses.findIndex(c => c.id === parseInt(courseId));
-                if (index !== -1) {
-                    courses[index] = course;
-                }
-            } else {
-                courses.push(course);
-            }
-            
-            // 데이터 저장 및 화면 갱신
-            saveCoursesToStorage();
-            renderCourseList();
-            renderCoursesOnTimetable();
-            
-            // 모달 닫기
-            closeModal();
-        }
+        // 과목 시간 정보 문자열 생성
+        const timeStrings = course.times.map(time => {
+            const day = dayData[time.day];
+            return `${day} ${time.start}-${time.end}교시`;
+        });
         
-        // 설정 화면 열기
-        function openSettings() {
-            alert('시간표 설정 기능은 준비 중입니다.');
-        }
+        li.innerHTML = `
+            <div class="class-list-info">
+                <div class="class-list-title">${course.name}</div>
+                <div class="class-list-details">${course.professor || '교수명 미정'} | ${course.credits}학점 | ${course.type}</div>
+                <div class="class-list-time">${timeStrings.join(', ')} | ${course.room || '강의실 미정'}</div>
+            </div>
+            <div class="class-actions">
+                <button class="class-action-button" onclick="editCourse(${course.id})">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
+                </button>
+                <button class="class-action-button" onclick="deleteCourse(${course.id})">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+            </div>
+        `;
         
-        // 이전 페이지로 이동
-        function goToBack() {
-            window.history.back();
+        courseList.appendChild(li);
+    });
+}
+
+// 과목 추가 모달 열기
+function openAddCourseModal() {
+    // 모달 제목 설정
+    document.getElementById('modal-title').textContent = '과목 추가';
+    
+    // 폼 초기화
+    document.getElementById('course-form').reset();
+    document.getElementById('course-id').value = '';
+    
+    // 기본 색상 선택
+    selectColor(document.querySelector('.color-option'));
+    
+    // 시간 슬롯 초기화
+    const timeSlots = document.getElementById('time-slots');
+    timeSlots.innerHTML = '';
+    addTimeSlot();
+    
+    // 모달 표시
+    document.getElementById('course-modal').style.display = 'flex';
+}
+
+// 과목 수정 모달 열기
+function editCourse(courseId) {
+    // 해당 과목 찾기
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
+    
+    // 모달 제목 설정
+    document.getElementById('modal-title').textContent = '과목 수정';
+    
+    // 과목 정보 설정
+    document.getElementById('course-id').value = course.id;
+    document.getElementById('course-name').value = course.name;
+    document.getElementById('course-professor').value = course.professor || '';
+    document.getElementById('course-credits').value = course.credits;
+    document.getElementById('course-type').value = course.type;
+    document.getElementById('course-room').value = course.room || '';
+    document.getElementById('course-color').value = course.color;
+    
+    // 색상 선택
+    selectColor(document.querySelector(`.color-option[data-color="${course.color}"]`));
+    
+    // 시간 슬롯 초기화
+    const timeSlots = document.getElementById('time-slots');
+    timeSlots.innerHTML = '';
+    
+    // 시간 정보 설정
+    course.times.forEach(time => {
+        addTimeSlot(time.day, time.start, time.end);
+    });
+    
+    // 시간 정보가 없는 경우 기본 슬롯 추가
+    if (course.times.length === 0) {
+        addTimeSlot();
+    }
+    
+    // 모달 표시
+    document.getElementById('course-modal').style.display = 'flex';
+}
+
+// 과목 삭제
+function deleteCourse(courseId) {
+    if (!confirm('정말 이 과목을 삭제하시겠습니까?')) return;
+    
+    // 과목 삭제
+    courses = courses.filter(course => course.id !== courseId);
+    
+    // 데이터 저장 및 화면 갱신
+    saveCoursesToStorage();
+    renderCourseList();
+    renderCoursesOnTimetable();
+}
+
+// 모달 닫기
+function closeModal() {
+    document.getElementById('course-modal').style.display = 'none';
+}
+
+// 과목 색상 선택
+function selectColor(element) {
+    // 기존 선택 제거
+    document.querySelectorAll('.color-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // 새로운 색상 선택
+    element.classList.add('selected');
+    document.getElementById('course-color').value = element.dataset.color;
+}
+
+// 시간 슬롯 추가
+function addTimeSlot(day = 1, start = 1, end = 1) {
+    const timeSlots = document.getElementById('time-slots');
+    
+    const slotDiv = document.createElement('div');
+    slotDiv.className = 'form-row time-slot';
+    
+                            slotDiv.innerHTML = `
+        <div class="form-group">
+            <label class="form-label">요일</label>
+            <select class="form-select day-select">
+                <option value="1">월요일</option>
+                <option value="2">화요일</option>
+                <option value="3">수요일</option>
+                <option value="4">목요일</option>
+                <option value="5">금요일</option>
+                <option value="6">토요일</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">시작 교시</label>
+            <select class="form-select start-select">
+                <option value="1">1교시 (9:30)</option>
+                <option value="2">2교시 (10:30)</option>
+                <option value="3">3교시 (11:30)</option>
+                <option value="4">4교시 (12:30)</option>
+                <option value="5">5교시 (13:30)</option>
+                <option value="6">6교시 (14:30)</option>
+                <option value="7">7교시 (15:30)</option>
+                <option value="8">8교시 (16:30)</option>
+                <option value="9">9교시 (17:30)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">종료 교시</label>
+            <select class="form-select end-select">
+                <option value="1">1교시 (10:20)</option>
+                <option value="2">2교시 (11:20)</option>
+                <option value="3">3교시 (12:20)</option>
+                <option value="4">4교시 (13:20)</option>
+                <option value="5">5교시 (14:20)</option>
+                <option value="6">6교시 (15:20)</option>
+                <option value="7">7교시 (16:20)</option>
+                <option value="8">8교시 (17:20)</option>
+                <option value="9">9교시 (18:20)</option>
+            </select>
+        </div>
+        
+        <div class="form-group" style="flex: 0.2">
+            <label class="form-label">&nbsp;</label>
+            <button type="button" class="form-input" style="background-color: #ff6b6b; color: white; display: flex; align-items: center; justify-content: center;" onclick="removeTimeSlot(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+    `;
+    
+    timeSlots.appendChild(slotDiv);
+    
+    // 초기값 설정
+    const daySelect = slotDiv.querySelector('.day-select');
+    const startSelect = slotDiv.querySelector('.start-select');
+    const endSelect = slotDiv.querySelector('.end-select');
+    
+    daySelect.value = day;
+    startSelect.value = start;
+    endSelect.value = end;
+    
+    // 시작 교시가 변경될 때 종료 교시 업데이트
+    startSelect.addEventListener('change', function() {
+        const startValue = parseInt(this.value);
+        const endValue = parseInt(endSelect.value);
+        
+        if (endValue < startValue) {
+            endSelect.value = startValue;
         }
-    </script>
+    });
+}
+
+// 시간 슬롯 제거
+function removeTimeSlot(button) {
+    const timeSlots = document.getElementById('time-slots');
+    const slot = button.closest('.time-slot');
+    
+    // 최소 하나의 슬롯은 유지
+    if (timeSlots.querySelectorAll('.time-slot').length > 1) {
+        timeSlots.removeChild(slot);
+    }
+}
+
+// 과목 저장
+function saveCourse(event) {
+    event.preventDefault();
+    
+    // 과목 정보 수집
+    const courseId = document.getElementById('course-id').value;
+    const name = document.getElementById('course-name').value.trim();
+    const professor = document.getElementById('course-professor').value.trim();
+    const credits = parseInt(document.getElementById('course-credits').value);
+    const type = document.getElementById('course-type').value;
+    const room = document.getElementById('course-room').value.trim();
+    const color = document.getElementById('course-color').value;
+    
+    // 시간 정보 수집
+    const times = [];
+    const timeSlots = document.querySelectorAll('.time-slot');
+    
+    timeSlots.forEach(slot => {
+        const day = parseInt(slot.querySelector('.day-select').value);
+        const start = parseInt(slot.querySelector('.start-select').value);
+        const end = parseInt(slot.querySelector('.end-select').value);
+        
+        times.push({ day, start, end });
+    });
+    
+    // 과목 객체 생성
+    const course = {
+        id: courseId ? parseInt(courseId) : Date.now(),
+        name,
+        professor,
+        credits,
+        type,
+        color,
+        room,
+        times
+    };
+    
+    // 기존 과목 수정 또는 새 과목 추가
+    if (courseId) {
+        const index = courses.findIndex(c => c.id === parseInt(courseId));
+        if (index !== -1) {
+            courses[index] = course;
+        }
+    } else {
+        courses.push(course);
+    }
+    
+    // 데이터 저장 및 화면 갱신
+    saveCoursesToStorage();
+    renderCourseList();
+    renderCoursesOnTimetable();
+    
+    // 모달 닫기
+    closeModal();
+}
+
+// 설정 화면 열기
+function openSettings() {
+    alert('시간표 설정 기능은 준비 중입니다.');
+}
+
+// 이전 페이지로 이동
+function goToBack() {
+    window.history.back();
+}
+</script>
 </body>
 </html>
