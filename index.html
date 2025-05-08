@@ -994,669 +994,170 @@
             color: #888;
             cursor: pointer;
         }
-
-        /* 홈 화면을 위한 새로운 스타일 추가 */
-        /* 사용자 환영 카드 */
-        .welcome-card {
-            background: linear-gradient(135deg, #c62917, #e64a19);
-            color: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .welcome-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        
-        .welcome-subtitle {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        /* 날씨 위젯 */
-        .weather-widget {
-            background-color: #f5f9ff;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 0 16px 16px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        
-        .weather-info {
-            flex: 1;
-        }
-        
-        .weather-temp {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .weather-desc {
-            font-size: 13px;
-            color: #555;
-        }
-        
-        .weather-icon {
-           font-size: 40px;
-           margin-left: 16px;
-       }
-       
-       /* 학식 메뉴 카드 */
-       .cafeteria-card {
-           background-color: white;
-           border-radius: 12px;
-           border: 1px solid #eee;
-           padding: 16px;
-           margin: 0 16px 16px 16px;
-           box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-       }
-       
-       .cafeteria-header {
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           margin-bottom: 12px;
-       }
-       
-       .cafeteria-title {
-           font-size: 16px;
-           font-weight: bold;
-       }
-       
-       .cafeteria-time {
-           font-size: 12px;
-           color: #888;
-           padding: 4px 8px;
-           background-color: #f5f5f5;
-           border-radius: 12px;
-       }
-       
-       .menu-item-row {
-           display: flex;
-           justify-content: space-between;
-           padding: 8px 0;
-           border-bottom: 1px solid #f0f0f0;
-       }
-       
-       .menu-item-row:last-child {
-           border-bottom: none;
-       }
-       
-       .menu-name {
-           font-size: 14px;
-       }
-       
-       .menu-price {
-           font-size: 14px;
-           color: #666;
-       }
-       
-       /* 시간표 미리보기 */
-       .timetable-preview {
-           background-color: white;
-           border-radius: 12px;
-           border: 1px solid #eee;
-           padding: 16px;
-           margin: 0 16px 16px 16px;
-           box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-       }
-       
-       .timetable-header {
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           margin-bottom: 12px;
-       }
-       
-       .timetable-date {
-           font-size: 14px;
-           font-weight: bold;
-       }
-       
-       .timetable-now {
-           font-size: 12px;
-           padding: 4px 8px;
-           background-color: #c62917;
-           color: white;
-           border-radius: 12px;
-       }
-       
-       .class-item {
-           display: flex;
-           padding: 10px 0;
-           border-bottom: 1px solid #f0f0f0;
-       }
-       
-       .class-item:last-child {
-           border-bottom: none;
-       }
-       
-       .class-time {
-           width: 60px;
-           font-size: 14px;
-           color: #666;
-           text-align: center;
-           padding-right: 10px;
-       }
-       
-       .class-info {
-           flex: 1;
-       }
-       
-       .class-name {
-           font-size: 15px;
-           font-weight: bold;
-           margin-bottom: 4px;
-       }
-       
-       .class-location {
-           font-size: 13px;
-           color: #666;
-       }
-       
-       /* 셔틀버스 정보 카드 */
-       .shuttle-card {
-           background-color: white;
-           border-radius: 12px;
-           border: 1px solid #eee;
-           padding: 16px;
-           margin: 0 16px 16px 16px;
-           box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-       }
-       
-       .shuttle-header {
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           margin-bottom: 12px;
-       }
-       
-       .shuttle-title {
-           font-size: 16px;
-           font-weight: bold;
-       }
-       
-       .shuttle-icon {
-           font-size: 20px;
-       }
-       
-       .shuttle-next {
-           background-color: #f9f9f9;
-           border-radius: 8px;
-           padding: 12px;
-           margin-bottom: 12px;
-       }
-       
-       .shuttle-time {
-           font-size: 18px;
-           font-weight: bold;
-           margin-bottom: 4px;
-       }
-       
-       .shuttle-desc {
-           font-size: 13px;
-           color: #666;
-       }
-       
-       .shuttle-more-times {
-           display: flex;
-           justify-content: space-between;
-       }
-       
-       .shuttle-time-item {
-           text-align: center;
-           background-color: #f9f9f9;
-           border-radius: 8px;
-           padding: 8px 12px;
-           flex: 1;
-           margin-right: 8px;
-       }
-       
-       .shuttle-time-item:last-child {
-           margin-right: 0;
-       }
-       
-       .time-label {
-           font-size: 12px;
-           color: #888;
-           margin-bottom: 4px;
-       }
-       
-       .time-value {
-           font-size: 14px;
-           font-weight: bold;
-       }
-       
-       /* 캘린더 이벤트 카드 */
-       .calendar-card {
-           background-color: white;
-           border-radius: 12px;
-           border: 1px solid #eee;
-           padding: 16px;
-           margin: 0 16px 16px 16px;
-           box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-       }
-       
-       .calendar-list {
-           list-style: none;
-       }
-       
-       .calendar-item {
-           display: flex;
-           padding: 10px 0;
-           border-bottom: 1px solid #f0f0f0;
-       }
-       
-       .calendar-item:last-child {
-           border-bottom: none;
-       }
-       
-       .calendar-date {
-           width: 50px;
-           text-align: center;
-           margin-right: 12px;
-       }
-       
-       .calendar-day {
-           font-size: 16px;
-           font-weight: bold;
-           color: #c62917;
-       }
-       
-       .calendar-month {
-           font-size: 12px;
-           color: #888;
-       }
-       
-       .calendar-info {
-           flex: 1;
-       }
-       
-       .calendar-title {
-           font-size: 15px;
-           font-weight: bold;
-           margin-bottom: 2px;
-       }
-       
-       .calendar-desc {
-           font-size: 13px;
-           color: #666;
-       }
-       
-       /* 도서관 상태 카드 */
-       .library-card {
-           background-color: white;
-           border-radius: 12px;
-           border: 1px solid #eee;
-           padding: 16px;
-           margin: 0 16px 16px 16px;
-           box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-       }
-       
-       .library-status {
-           display: flex;
-           justify-content: space-between;
-           margin-top: 10px;
-       }
-       
-       .status-item {
-           flex: 1;
-           text-align: center;
-       }
-       
-       .status-label {
-           font-size: 12px;
-           color: #888;
-           margin-bottom: 4px;
-       }
-       
-       .status-value {
-           font-size: 16px;
-           font-weight: bold;
-       }
-       
-       .status-bar {
-           height: 4px;
-           background-color: #f0f0f0;
-           border-radius: 2px;
-           margin-top: 6px;
-           position: relative;
-           overflow: hidden;
-       }
-       
-       .status-fill {
-           height: 100%;
-           background-color: #c62917;
-           position: absolute;
-           left: 0;
-           top: 0;
-       }
-   </style>
+    </style>
 </head>
 <body>
-   <div class="container">
-       <header>
-           <div class="logo" onclick="goToHome()">연성대학교</div>
-           <div class="header-icons">
-               <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
-               <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
-               <div class="profile-dropdown-container" style="display: none;">
-                   <div class="header-profile-image" onclick="toggleProfileDropdown()">
-                       <!-- 여기에 프로필 이미지가 들어갑니다 -->
-                       <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
-                   </div>
-                   <div class="profile-dropdown">
-                       <div class="dropdown-profile-info">
-                           <div class="dropdown-profile-name">사용자</div>
-                           <div class="dropdown-profile-detail">학과 | 학년</div>
-                           <div class="dropdown-profile-detail">학번: 0000000000</div>
-                       </div>
-                       <div class="dropdown-divider"></div>
-                       <div class="dropdown-item" onclick="goToPage('profile-edit')">
-                           <span class="dropdown-icon">✏️</span>
-                           <span>프로필 수정</span>
-                       </div>
-                       <div class="dropdown-item" onclick="logout()">
-                           <div class="dropdown-item" onclick="logout()">
-                               <span class="dropdown-icon">🚪</span>
-                               <span>로그아웃</span>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-           </header>
-               
-           <!-- 홈 탭 -->
-           <div id="home-tab" class="tab-content active">
-               <!-- 긴급 알림 배너 -->
-               <div class="notification-banner" onclick="viewNotification('emergency')">
-                   <span class="urgent-icon">📢</span>
-                   <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
-               </div>
-               
-               <!-- 환영 카드 -->
-               <div class="welcome-card">
-                   <div class="welcome-title">안녕하세요, 학우님!</div>
-                   <div class="welcome-subtitle">오늘도 연성대학교와 함께 멋진 하루 되세요.</div>
-               </div>
-               
-               <!-- 검색 바 -->
-               <div class="search-bar">
-                   <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
-               </div>
-               
-               <!-- 오늘의 날씨 -->
-               <div class="weather-widget">
-                   <div class="weather-info">
-                       <div class="weather-temp">23°C</div>
-                       <div class="weather-desc">맑음, 안양시</div>
-                   </div>
-                   <div class="weather-icon">☀️</div>
-               </div>
-               
-               <!-- 바로가기 메뉴 -->
-               <div class="shortcut-menu">
-                   <div class="shortcut-item" onclick="switchTab('facility')">
-                       <div class="shortcut-icon">🏫</div>
-                       <div class="shortcut-text">강의실</div>
-                   </div>
-                   <div class="shortcut-item" onclick="switchTab('community')">
-                       <div class="shortcut-icon">📝</div>
-                       <div class="shortcut-text">강의평가</div>
-                   </div>
-                   <div class="shortcut-item" onclick="goToPage('shuttle')">
-                       <div class="shortcut-icon">🚌</div>
-                       <div class="shortcut-text">셔틀버스</div>
-                   </div>
-                   <div class="shortcut-item" onclick="goToPage('cafeteria')">
-                       <div class="shortcut-icon">🍽️</div>
-                       <div class="shortcut-text">학식</div>
-                   </div>
-                   <div class="shortcut-item" onclick="goToPage('academic-calendar')">
-                       <div class="shortcut-icon">📅</div>
-                       <div class="shortcut-text">학사일정</div>
-                   </div>
-               </div>
-               
-               <!-- 오늘의 시간표 -->
-               <div class="timetable-preview">
-                   <div class="timetable-header">
-                       <div class="timetable-date">2025년 4월 8일 (월) 시간표</div>
-                       <div class="timetable-now">현재 강의</div>
-                   </div>
-                   <div class="class-item">
-                       <div class="class-time">09:00</div>
-                       <div class="class-info">
-                           <div class="class-name">웹 프로그래밍 실습</div>
-                           <div class="class-location">공학관 3-201</div>
-                       </div>
-                   </div>
-                   <div class="class-item">
-                       <div class="class-time">11:00</div>
-                       <div class="class-info">
-                           <div class="class-name">경영통계학</div>
-                           <div class="class-location">경영관 2-101</div>
-                       </div>
-                   </div>
-                   <div class="class-item">
-                       <div class="class-time">14:00</div>
-                       <div class="class-info">
-                           <div class="class-name">마케팅 원론</div>
-                           <div class="class-location">경영관 1-304</div>
-                       </div>
-                   </div>
-               </div>
-               
-               <!-- 다음 셔틀버스 -->
-               <div class="shuttle-card">
-                   <div class="shuttle-header">
-                       <div class="shuttle-title">다음 셔틀버스</div>
-                       <div class="shuttle-icon">🚌</div>
-                   </div>
-                   <div class="shuttle-next">
-                       <div class="shuttle-time">15분 후 출발</div>
-                       <div class="shuttle-desc">학교 → 안양역 (14:30)</div>
-                   </div>
-                   <div class="shuttle-more-times">
-                       <div class="shuttle-time-item">
-                           <div class="time-label">다음 #1</div>
-                           <div class="time-value">15:00</div>
-                       </div>
-                       <div class="shuttle-time-item">
-                           <div class="time-label">다음 #2</div>
-                           <div class="time-value">15:30</div>
-                       </div>
-                       <div class="shuttle-time-item">
-                           <div class="time-label">다음 #3</div>
-                           <div class="time-value">16:00</div>
-                       </div>
-                   </div>
-               </div>
-               
-               <!-- 학식 메뉴 -->
-               <div class="cafeteria-card">
-                   <div class="cafeteria-header">
-                       <div class="cafeteria-title">오늘의 학식</div>
-                       <div class="cafeteria-time">11:30 - 14:00</div>
-                   </div>
-                   <div class="menu-item-row">
-                       <div class="menu-name">제육볶음 정식</div>
-                       <div class="menu-price">5,500원</div>
-                   </div>
-                   <div class="menu-item-row">
-                       <div class="menu-name">치킨 마요 덮밥</div>
-                       <div class="menu-price">5,000원</div>
-                   </div>
-                   <div class="menu-item-row">
-                       <div class="menu-name">냉모밀 세트</div>
-                       <div class="menu-price">4,800원</div>
-                   </div>
-               </div>
-               
-               <!-- 도서관 현황 -->
-               <div class="library-card">
-                   <div class="section-title">
-                       <span>도서관 현황</span>
-                       <a href="#" class="see-all" onclick="goToPage('library')">상세보기</a>
-                   </div>
-                   <div class="library-status">
-                       <div class="status-item">
-                           <div class="status-label">일반 열람실</div>
-                           <div class="status-value">68%</div>
-                           <div class="status-bar">
-                               <div class="status-fill" style="width: 68%;"></div>
-                           </div>
-                       </div>
-                       <div class="status-item">
-                           <div class="status-label">노트북 열람실</div>
-                           <div class="status-value">45%</div>
-                           <div class="status-bar">
-                               <div class="status-fill" style="width: 45%;"></div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-               
-               <!-- 학사 일정 -->
-               <div class="calendar-card">
-                   <div class="section-title">
-                       <span>다가오는 학사일정</span>
-                       <a href="#" class="see-all" onclick="goToPage('academic-calendar')">전체보기</a>
-                   </div>
-                   <ul class="calendar-list">
-                       <li class="calendar-item">
-                           <div class="calendar-date">
-                               <div class="calendar-day">22</div>
-                               <div class="calendar-month">4월</div>
-                           </div>
-                           <div class="calendar-info">
-                               <div class="calendar-title">2025-1학기 중간고사 시작</div>
-                               <div class="calendar-desc">4월 22일(월) ~ 4월 26일(금)</div>
-                           </div>
-                       </li>
-                       <li class="calendar-item">
-                           <div class="calendar-date">
-                               <div class="calendar-day">11</div>
-                               <div class="calendar-month">4월</div>
-                           </div>
-                           <div class="calendar-info">
-                               <div class="calendar-title">국가장학금 2차 신청 마감</div>
-                               <div class="calendar-desc">온라인 신청</div>
-                           </div>
-                       </li>
-                       <li class="calendar-item">
-                           <div class="calendar-date">
-                               <div class="calendar-day">15</div>
-                               <div class="calendar-month">4월</div>
-                           </div>
-                           <div class="calendar-info">
-                               <div class="calendar-title">삼성전자 채용설명회</div>
-                               <div class="calendar-desc">대강당, 오후 2시</div>
-                           </div>
-                       </li>
-                   </ul>
-               </div>
-               
-               <!-- 공지사항 섹션 -->
-               <div class="content-section">
-                   <div class="section-title">
-                       <span>주요 공지사항</span>
-                       <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
-                   </div>
-                   
-                   <div class="category-filter">
-                       <div class="category-tag active" onclick="filterNotices('all')">전체</div>
-                       <div class="category-tag" onclick="filterNotices('academic')">학사</div>
-                       <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
-                       <div class="category-tag" onclick="filterNotices('job')">취업</div>
-                       <div class="category-tag" onclick="filterNotices('event')">행사</div>
-                       <div class="category-tag" onclick="filterNotices('department')">학과</div>
-                   </div>
-                   
-                   <ul class="notice-list">
-                       <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
-                       <li class="notice-item" onclick="goToNoticeDetail('notice1')">
-                           <div class="notice-header">
-                               <span class="notice-category">학사</span>
-                               <span class="notice-date">2025.04.08</span>
-                           </div>
-                           <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
-                           <div class="notice-summary">
-                               4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
-                           </div>
-                       </li>
-                       <li class="notice-item" onclick="goToNoticeDetail('notice2')">
-                           <div class="notice-header">
-                               <span class="notice-category">장학</span>
-                               <span class="notice-date">2025.04.07</span>
-                           </div>
-                           <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
-                           <div class="notice-summary">
-                               국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
-                           </div>
-                       </li>
-                       <li class="notice-item" onclick="goToNoticeDetail('notice3')">
-                           <div class="notice-header">
-                               <span class="notice-category">취업</span>
-                               <span class="notice-date">2025.04.06</span>
-                           </div>
-                           <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
-                           <div class="notice-summary">
-                               4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
-                           </div>
-                       </li>
-                   </ul>
-               </div>
-               
-               <!-- 강의평가 섹션 -->
-               <div class="content-section">
-                   <div class="section-title">
-                       <span>인기 강의평가</span>
-                       <a href="#" class="see-all" onclick="switchTab('community')">전체보기</a>
-                   </div>
-                   
-                   <ul class="lecture-list">
-                       <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
-                           <div class="lecture-header">
-                               <div class="lecture-title">웹 프로그래밍 실습</div>
-                               <div class="lecture-rating">4.8</div>
-                           </div>
-                           <div class="lecture-info">
-                               <span class="lecture-professor">김민수 교수님</span>
-                               <span>컴퓨터정보학과</span>
-                           </div>
-                           <div class="rating-stars">★★★★★</div>
-                           <div class="lecture-reviews">
-                               "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
-                           </div>
-                       </li>
-                       <li class="lecture-item" onclick="viewLectureDetail('marketing')">
-                           <div class="lecture-header">
-                               <div class="lecture-title">마케팅 원론</div>
-                               <div class="lecture-rating">4.5</div>
-                           </div>
-                           <div class="lecture-info">
-                               <span class="lecture-professor">이지영 교수님</span>
-                               <span>경영학과</span>
-                           </div>
-                           <div class="rating-stars">★★★★☆</div>
-                           <div class="lecture-reviews">
-                               "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
-                           </div>
-                       </li>
-                   </ul>
-               </div>
-               
-               <div class="content-pad"></div>
-           </div>
+    <div class="container">
+        <header>
+            <div class="logo" onclick="goToHome()">연성대학교</div>
+            <div class="header-icons">
+                <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
+                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
+                <div class="profile-dropdown-container" style="display: none;">
+                    <div class="header-profile-image" onclick="toggleProfileDropdown()">
+                        <!-- 여기에 프로필 이미지가 들어갑니다 -->
+                        <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
+                    </div>
+                    <div class="profile-dropdown">
+                        <div class="dropdown-profile-info">
+                            <div class="dropdown-profile-name">사용자</div>
+                            <div class="dropdown-profile-detail">학과 | 학년</div>
+                            <div class="dropdown-profile-detail">학번: 0000000000</div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="goToPage('profile-edit')">
+                            <span class="dropdown-icon">✏️</span>
+                            <span>프로필 수정</span>
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <div class="dropdown-item" onclick="logout()">
+                                <span class="dropdown-icon">🚪</span>
+                                <span>로그아웃</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+                
+            <!-- 홈 탭 -->
+            <div id="home-tab" class="tab-content active">
+                <!-- 긴급 알림 배너 -->
+                <div class="notification-banner" onclick="viewNotification('emergency')">
+                    <span class="urgent-icon">📢</span>
+                    <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
+                </div>
+                
+                <!-- 검색 바 -->
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
+                </div>
+                
+                <!-- 바로가기 메뉴 -->
+                <div class="shortcut-menu">
+                    <div class="shortcut-item" onclick="switchTab('facility')">
+                        <div class="shortcut-icon">🏫</div>
+                        <div class="shortcut-text">강의실</div>
+                    </div>
+                    <div class="shortcut-item" onclick="switchTab('community')">
+                        <div class="shortcut-icon">📝</div>
+                        <div class="shortcut-text">강의평가</div>
+                    </div>
+                    <div class="shortcut-item" onclick="goToPage('shuttle')">
+                        <div class="shortcut-icon">🚌</div>
+                        <div class="shortcut-text">셔틀버스</div>
+                    </div>
+                    <div class="shortcut-item" onclick="goToPage('cafeteria')">
+                        <div class="shortcut-icon">🍽️</div>
+                        <div class="shortcut-text">학식</div>
+                    </div>
+                    <div class="shortcut-item" onclick="goToPage('academic-calendar')">
+                        <div class="shortcut-icon">📅</div>
+                        <div class="shortcut-text">학사일정</div>
+                    </div>
+                </div>
+                
+                <!-- 공지사항 섹션 -->
+                <div class="content-section">
+                    <div class="section-title">
+                        <span>주요 공지사항</span>
+                        <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
+                    </div>
+                    
+                    <div class="category-filter">
+                        <div class="category-tag active" onclick="filterNotices('all')">전체</div>
+                        <div class="category-tag" onclick="filterNotices('academic')">학사</div>
+                        <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
+                        <div class="category-tag" onclick="filterNotices('job')">취업</div>
+                        <div class="category-tag" onclick="filterNotices('event')">행사</div>
+                        <div class="category-tag" onclick="filterNotices('department')">학과</div>
+                    </div>
+                    
+                    <ul class="notice-list">
+                        <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
+                        <li class="notice-item" onclick="goToNoticeDetail('notice1')">
+                            <div class="notice-header">
+                                <span class="notice-category">학사</span>
+                                <span class="notice-date">2025.04.08</span>
+                            </div>
+                            <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+                            <div class="notice-summary">
+                                4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
+                            </div>
+                        </li>
+                        <li class="notice-item" onclick="goToNoticeDetail('notice2')">
+                            <div class="notice-header">
+                                <span class="notice-category">장학</span>
+                                <span class="notice-date">2025.04.07</span>
+                            </div>
+                            <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
+                            <div class="notice-summary">
+                                국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
+                            </div>
+                        </li>
+                        <li class="notice-item" onclick="goToNoticeDetail('notice3')">
+                            <div class="notice-header">
+                                <span class="notice-category">취업</span>
+                                <span class="notice-date">2025.04.06</span>
+                            </div>
+                            <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
+                            <div class="notice-summary">
+                                4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 강의평가 섹션 -->
+                <div class="content-section">
+                    <div class="section-title">
+                        <span>인기 강의평가</span>
+                        <a href="#" class="see-all" onclick="switchTab('community')">전체보기</a>
+                    </div>
+                    
+                    <ul class="lecture-list">
+                        <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
+                            <div class="lecture-header">
+                                <div class="lecture-title">웹 프로그래밍 실습</div>
+                                <div class="lecture-rating">4.8</div>
+                            </div>
+                            <div class="lecture-info">
+                                <span class="lecture-professor">김민수 교수님</span>
+                                <span>컴퓨터정보학과</span>
+                            </div>
+                            <div class="rating-stars">★★★★★</div>
+                            <div class="lecture-reviews">
+                                "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                            </div>
+                        </li>
+                        <li class="lecture-item" onclick="viewLectureDetail('marketing')">
+                            <div class="lecture-header">
+                                <div class="lecture-title">마케팅 원론</div>
+                                <div class="lecture-rating">4.5</div>
+                            </div>
+                            <div class="lecture-info">
+                                <span class="lecture-professor">이지영 교수님</span>
+                                <span>경영학과</span>
+                            </div>
+                            <div class="rating-stars">★★★★☆</div>
+                            <div class="lecture-reviews">
+                                "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="content-pad"></div>
+            </div>
             
             <!-- 시설 탭 -->
             <div id="facility-tab" class="tab-content">
