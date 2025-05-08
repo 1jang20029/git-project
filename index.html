@@ -2296,6 +2296,229 @@
         console.log('모든 이미지 URL 수정 완료');
     }
 
+
+
+    // 날씨 API 관련 함수
+    function getWeatherData() {
+        // 기상청 API 사용을 위한 정보
+        const apiKey = 'uPcZa3hq7/4ODzzfmi86ZMIkV2eaPmWDzKciwLKI0Ps7AQelkj5Xt5s43+ZJIzfBEPjKN7beW6a3jeV/U3VAVw=='; // 디코딩된 인증키
+        const baseUrl = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst';
+        
+        // 연성대학교 좌표의 기상청 격자 X, Y 좌표 (실제 값은 변환 필요)
+        // 위도 37.39661657434427, 경도 126.90772437800818를 기상청 격자로 변환
+        const nx = 58; // 안양시 동안구 기준 (실제로는 좌표 변환 필요)
+        const ny = 124; // 안양시 동안구 기준
+        
+        // 현재 날짜 시간 설정
+        const now = new Date();
+        const today = now.getFullYear().toString() + 
+                    (now.getMonth() + 1).toString().padStart(2, '0') + 
+                    now.getDate().toString().padStart(2, '0');
+        
+        // 현재 시각이 00:30 보다 작으면 어제 23시 데이터를 가져와야 함
+        let baseTime, baseDate;
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        
+        if (hour < 2) {
+            // 오전 2시 이전이면 전날 23시 데이터
+            const yesterday = new Date(now);
+            yesterday.setDate(now.getDate() - 1);
+            baseDate = yesterday.getFullYear().toString() + 
+                    (yesterday.getMonth() + 1).toString().padStart(2, '0') + 
+                    yesterday.getDate().toString().padStart(2, '0');
+            baseTime = '2300';
+        } else {
+            // 가장 최근 발표 시각 계산 (3시간 단위: 02:00, 05:00, 08:00, 11:00, 14:00, 17:00, 20:00, 23:00)
+            const baseHours = [2, 5, 8, 11, 14, 17, 20, 23];
+            let baseHour = 23;
+            
+            for (let i = baseHours.length - 1; i >= 0; i--) {
+                if (hour >= baseHours[i]) {
+                    baseHour = baseHours[i];
+                    break;
+                }
+            }
+            
+            baseDate = today;
+            baseTime = baseHour.toString().padStart(2, '0') + '00';
+        }
+        
+        // API 요청 URL 생성
+        const url = `${baseUrl}?serviceKey=${encodeURIComponent(apiKey)}&numOfRows=10&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
+        
+        // API 호출
+        console.log('날씨 정보 요청 URL:', url);
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // 응답 데이터 처리
+                console.log('날씨 API 응답:', data);
+                
+                // 응답이 정상인지 확인
+                if (data.response && data.response.header && data.response.header.resultCode === '00') {
+                    if (data.response.body && data.response.body.items && data.response.body.items.item) {
+                        updateWeatherWidget(data.response.body.items.item);
+                    } else {
+                        console.error('날씨 데이터 형식이 예상과 다릅니다:', data);
+                        displayDefaultWeather();
+                    }
+                } else {
+                    console.error('날씨 API 응답 오류:', data);
+                    displayDefaultWeather();
+                }
+            })
+            .catch(error => {
+                console.error('날씨 API 요청 중 오류 발생:', error);
+                displayDefaultWeather();
+            });
+    }
+
+    // 날씨 데이터 파싱 및 위젯 업데이트
+    function updateWeatherWidget(items) {
+        let temperature = null;
+        let skyCode = null;
+        let rainType = null;
+        
+        // 필요한 데이터 추출
+        items.forEach(item => {
+            if (item.category === 'T1H') { // 기온
+                temperature = item.fcstValue;
+            } else if (item.category === 'SKY') { // 하늘상태
+                skyCode = item.fcstValue;
+            } else if (item.category === 'PTY') { // 강수형태
+                rainType = item.fcstValue;
+            }
+        });
+        
+        // 날씨 아이콘 및 설명 결정
+        let weatherIcon, weatherDesc;
+        
+        // 강수형태 (PTY) 코드: 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
+        if (rainType === '0') {
+            // 하늘상태 (SKY) 코드: 맑음(1), 구름많음(3), 흐림(4)
+            if (skyCode === '1') {
+                weatherIcon = '☀️';
+                weatherDesc = '맑음';
+            } else if (skyCode === '3') {
+                weatherIcon = '⛅';
+                weatherDesc = '구름많음';
+            } else if (skyCode === '4') {
+                weatherIcon = '☁️';
+                weatherDesc = '흐림';
+            } else {
+                weatherIcon = '🌤️';
+                weatherDesc = '맑음';
+            }
+        } else if (rainType === '1') {
+            weatherIcon = '🌧️';
+            weatherDesc = '비';
+        } else if (rainType === '2') {
+            weatherIcon = '🌨️';
+            weatherDesc = '비/눈';
+        } else if (rainType === '3') {
+            weatherIcon = '❄️';
+            weatherDesc = '눈';
+        } else if (rainType === '4') {
+            weatherIcon = '🌦️';
+            weatherDesc = '소나기';
+        } else {
+            weatherIcon = '🌤️';
+            weatherDesc = '맑음';
+        }
+        
+        // UI 업데이트
+        const weatherTempElement = document.querySelector('.weather-temp');
+        const weatherDescElement = document.querySelector('.weather-desc');
+        const weatherIconElement = document.querySelector('.weather-icon');
+        
+        if (weatherTempElement && temperature !== null) {
+            weatherTempElement.textContent = `${temperature}°C`;
+        }
+        
+        if (weatherDescElement) {
+            weatherDescElement.textContent = `${weatherDesc}, 안양시`;
+        }
+        
+        if (weatherIconElement) {
+            weatherIconElement.textContent = weatherIcon;
+        }
+        
+        console.log('날씨 정보 업데이트 완료:', { 온도: temperature, 날씨: weatherDesc, 아이콘: weatherIcon });
+    }
+
+    // 기본 날씨 정보 표시 (API 호출 실패 시)
+    function displayDefaultWeather() {
+        const weatherTempElement = document.querySelector('.weather-temp');
+        const weatherDescElement = document.querySelector('.weather-desc');
+        const weatherIconElement = document.querySelector('.weather-icon');
+        
+        if (weatherTempElement) weatherTempElement.textContent = '23°C';
+        if (weatherDescElement) weatherDescElement.textContent = '맑음, 안양시';
+        if (weatherIconElement) weatherIconElement.textContent = '☀️';
+        
+        console.log('기본 날씨 정보로 표시됨');
+    }
+
+    // 위경도 좌표를 기상청 격자 좌표로 변환하는 함수
+    function convertToGridCoord(lat, lon) {
+        // 기상청 격자 변환 상수
+        const RE = 6371.00877; // 지구 반경(km)
+        const GRID = 5.0; // 격자 간격(km)
+        const SLAT1 = 30.0; // 투영 위도1(degree)
+        const SLAT2 = 60.0; // 투영 위도2(degree)
+        const OLON = 126.0; // 기준점 경도(degree)
+        const OLAT = 38.0; // 기준점 위도(degree)
+        const XO = 43; // 기준점 X좌표(GRID)
+        const YO = 136; // 기준점 Y좌표(GRID)
+        
+        const DEGRAD = Math.PI / 180.0;
+        const RADDEG = 180.0 / Math.PI;
+        
+        const re = RE / GRID;
+        const slat1 = SLAT1 * DEGRAD;
+        const slat2 = SLAT2 * DEGRAD;
+        const olon = OLON * DEGRAD;
+        const olat = OLAT * DEGRAD;
+        
+        let sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+        sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
+        let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+        sf = Math.pow(sf, sn) * Math.cos(slat1) / sn;
+        let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
+        ro = re * sf / Math.pow(ro, sn);
+        
+        let ra = Math.tan(Math.PI * 0.25 + (lat) * DEGRAD * 0.5);
+        ra = re * sf / Math.pow(ra, sn);
+        let theta = lon * DEGRAD - olon;
+        if (theta > Math.PI) theta -= 2.0 * Math.PI;
+        if (theta < -Math.PI) theta += 2.0 * Math.PI;
+        theta *= sn;
+        
+        let nx = Math.floor(ra * Math.sin(theta) + XO + 0.5);
+        let ny = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
+        
+        return { nx, ny };
+    }
+
+    // 페이지 로드 시 날씨 정보 호출
+    document.addEventListener('DOMContentLoaded', function() {
+        // 연성대학교 좌표
+        const lat = 37.39661657434427;
+        const lon = 126.90772437800818;
+        
+        // 격자 좌표 변환 (실제 변환 테스트 필요)
+        const grid = convertToGridCoord(lat, lon);
+        console.log('연성대학교 격자 좌표:', grid);
+        
+        // 날씨 정보 가져오기
+        setTimeout(getWeatherData, 1000); // 페이지 로드 후 1초 뒤 날씨 데이터 호출
+        
+        // 1시간마다 날씨 정보 업데이트
+        setInterval(getWeatherData, 60 * 60 * 1000);
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(updateAllProfileImages, 100);
         
