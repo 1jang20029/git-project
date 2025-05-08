@@ -247,7 +247,6 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             position: relative;
-            z-index: 1;
         }
         
         .timetable {
@@ -295,32 +294,26 @@
         }
         
         .class-item {
-            padding: 8px 10px;
+            padding: 6px;
             border-radius: 4px;
             font-size: 12px;
             color: white;
-            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 5;
-            /* 테이블 테두리 숨기기 위한 스타일 */
-            margin: -1px;
-            position: relative;
-            border: none;
         }
         
         .class-name {
             font-weight: 700;
             margin-bottom: 3px;
-            font-size: 15px;
-            text-align: center;
+            font-size: 13px;
         }
         
         .class-info {
-            font-size: 11px;
+            font-size: 10px;
             opacity: 0.85;
             text-align: right;
         }
@@ -1090,12 +1083,6 @@
                     // 과목 정보 표시
                     const courseDiv = document.createElement('div');
                     courseDiv.className = `class-item ${course.color}`;
-                    
-                    // 테두리가 안 보이도록 마진 설정
-                    courseDiv.style.margin = "-1px";
-                    // 테두리 위에 올라오도록 z-index 설정
-                    courseDiv.style.zIndex = "10";
-                    
                     courseDiv.innerHTML = `
                         <div class="class-name">${course.name}</div>
                         <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
