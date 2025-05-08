@@ -311,13 +311,7 @@
         .class-info {
             font-size: 10px;
             opacity: 0.85;
-        }
-        
-        .class-room {
             text-align: right;
-            font-size: 10px;
-            font-weight: 500;
-            opacity: 0.85;
         }
         
         /* 과목 색상 */
@@ -755,18 +749,19 @@
                                         <option value="9">9교시 (17:00)</option>
                                     </select>
                                 </div>
-                                ㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹ
+                                
                                 <div class="form-group">
                                     <label class="form-label">종료 교시</label>
                                     <select class="form-select end-select">
-                                        <option value="1">1교시 (10:20)</option>
-                                        <option value="3">3교시 (11:20)</option>
-                                        <option value="4">4교시 (12:20)</option>
-                                        <option value="5">5교시 (13:20)</option>
-                                        <option value="6">6교시 (14:20)</option>
-                                        <option value="7">7교시 (15:20)</option>
-                                        <option value="8">8교시 (16:20)</option>
-                                        <option value="9">9교시 (17:20)</option>
+                                        <option value="1">1교시 (9:50)</option>
+                                        <option value="2">2교시 (10:50)</option>
+                                        <option value="3">3교시 (11:50)</option>
+                                        <option value="4">4교시 (12:50)</option>
+                                        <option value="5">5교시 (13:50)</option>
+                                        <option value="6">6교시 (14:50)</option>
+                                        <option value="7">7교시 (15:50)</option>
+                                        <option value="8">8교시 (16:50)</option>
+                                        <option value="9">9교시 (17:50)</option>
                                     </select>
                                 </div>
                             </div>
@@ -812,7 +807,9 @@
         
         // 시간표 목록
         let timetables = [
-
+            { id: 1, name: "시간표 1" },
+            { id: 2, name: "시간표 2" },
+            { id: 3, name: "시간표 3" }
         ];
         
         // 시간 데이터 (교시별 시작 시간)
@@ -1084,8 +1081,7 @@
                     courseDiv.className = `class-item ${course.color}`;
                     courseDiv.innerHTML = `
                         <div class="class-name">${course.name}</div>
-                        <div class="class-info">${course.professor || ''}</div>
-                        <div class="class-room">${course.room || ''}</div>
+                        <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
                     `;
                     startCell.appendChild(courseDiv);
                     
@@ -1257,30 +1253,30 @@
                 <div class="form-group">
                     <label class="form-label">시작 교시</label>
                     <select class="form-select start-select">
-                        <option value="1">1교시 (9:30)</option>
-                        <option value="2">2교시 (10:30)</option>
-                        <option value="3">3교시 (11:30)</option>
-                        <option value="4">4교시 (12:30)</option>
-                        <option value="5">5교시 (13:30)</option>
-                        <option value="6">6교시 (14:30)</option>
-                        <option value="7">7교시 (15:30)</option>
-                        <option value="8">8교시 (16:30)</option>
-                        <option value="9">9교시 (17:30)</option>
+                        <option value="1">1교시 (9:00)</option>
+                        <option value="2">2교시 (10:00)</option>
+                        <option value="3">3교시 (11:00)</option>
+                        <option value="4">4교시 (12:00)</option>
+                        <option value="5">5교시 (13:00)</option>
+                        <option value="6">6교시 (14:00)</option>
+                        <option value="7">7교시 (15:00)</option>
+                        <option value="8">8교시 (16:00)</option>
+                        <option value="9">9교시 (17:00)</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">종료 교시</label>
                     <select class="form-select end-select">
-                        <option value="1">1교시 (9:20)</option>
-                        <option value="2">2교시 (10:20)</option>
-                        <option value="3">3교시 (11:20)</option>
-                        <option value="4">4교시 (12:20)</option>
-                        <option value="5">5교시 (13:20)</option>
-                        <option value="6">6교시 (14:20)</option>
-                        <option value="7">7교시 (15:20)</option>
-                        <option value="8">8교시 (16:20)</option>
-                        <option value="9">9교시 (17:20)</option>
+                        <option value="1">1교시 (9:50)</option>
+                        <option value="2">2교시 (10:50)</option>
+                        <option value="3">3교시 (11:50)</option>
+                        <option value="4">4교시 (12:50)</option>
+                        <option value="5">5교시 (13:50)</option>
+                        <option value="6">6교시 (14:50)</option>
+                        <option value="7">7교시 (15:50)</option>
+                        <option value="8">8교시 (16:50)</option>
+                        <option value="9">9교시 (17:50)</option>
                     </select>
                 </div>
                 
