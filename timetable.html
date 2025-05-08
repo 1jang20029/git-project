@@ -1337,16 +1337,15 @@
                     }
                 });
 
-                // HTML 구성
+                // HTML 구성 수정
                 li.innerHTML = `
                     <div class="class-list-info">
-                        <div class="class-list-title">
-                            <span>${course.name}</span>
-                        </div>
+                        <div class="class-list-title">${course.name}</div>
                         <div class="class-list-details">${course.professor || '교수명 미정'} | ${course.credits}학점 | ${course.type}</div>
                         <div class="class-list-time">${timeStrings.join(', ')} | ${course.room || '강의실 미정'}</div>
                     </div>
                     <div class="class-actions">
+                        <!-- 학점 드롭다운을 여기에 추가할 것입니다 -->
                         <button class="class-action-button" onclick="editCourse(${course.id})">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
                         </button>
@@ -1356,9 +1355,12 @@
                     </div>
                 `;
 
-                // 학점 선택 드롭다운 추가
-                const titleElement = li.querySelector('.class-list-title');
-                titleElement.appendChild(gradeSelect);
+                // 학점 선택 드롭다운 추가 (액션 버튼 앞에 추가)
+                const actionsDiv = li.querySelector('.class-actions');
+                actionsDiv.insertBefore(gradeSelect, actionsDiv.firstChild);
+
+                // 드롭다운과 다른 버튼 사이 간격 조정
+                gradeSelect.style.marginRight = '10px';
 
                 courseList.appendChild(li);
                 });
