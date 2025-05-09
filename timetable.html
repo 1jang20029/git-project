@@ -1264,7 +1264,7 @@
             loadUserSettings();
         });
         
-        // 사용자 설정a 로드
+        // 사용자 설정 로드
         function loadUserSettings() {
             const currentUser = localStorage.getItem('currentLoggedInUser');
             
@@ -1937,7 +1937,7 @@
                     const startPeriod = time.start;
                     const endPeriod = time.end;
                     
-                    // 수업 블록 생성
+                    // 30분부터 시작하는 수업 (반만 채우기)
                     for (let period = startPeriod; period <= endPeriod; period++) {
                         const cell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${period}"]`);
                         if (!cell) continue;
@@ -1950,30 +1950,35 @@
                         courseBlock.style.position = 'absolute';
                         courseBlock.style.zIndex = '5';
                         courseBlock.className = `class-item ${course.color}`;
-                        courseBlock.style.top = '0';
-                        courseBlock.style.height = '100%';
-                        courseBlock.style.left = '0';
-                        courseBlock.style.right = '0';
                         
                         if (period === startPeriod) {
+                            // 첫 번째 교시 (30분부터 시작)
+                            courseBlock.style.top = '50%';
+                            courseBlock.style.height = '50%';
+                            courseBlock.style.left = '0';
+                            courseBlock.style.right = '0';
+                            
                             // 첫 교시에는 과목명과 정보 표시
                             courseBlock.innerHTML = `
                                 <div class="class-name">${course.name}</div>
                                 <div class="class-info">${course.professor || ''} ${course.room || ''}</div>
                             `;
-                            
-                            // 첫 교시는 위쪽 테두리 둥글게
-                            courseBlock.style.borderTopLeftRadius = '4px';
-                            courseBlock.style.borderTopRightRadius = '4px';
                         } else if (period === endPeriod) {
-                            // 마지막 교시는 아래쪽 테두리 둥글게
-                            courseBlock.style.borderBottomLeftRadius = '4px';
-                            courseBlock.style.borderBottomRightRadius = '4px';
+                            // 마지막 교시 (20분에 종료)
+                            courseBlock.style.top = '0';
+                            courseBlock.style.height = '35%';
+                            courseBlock.style.left = '0';
+                            courseBlock.style.right = '0';
                             courseBlock.style.borderTop = 'none';
+                            courseBlock.style.borderTopLeftRadius = '0';
+                            courseBlock.style.borderTopRightRadius = '0';
                         } else {
-                            // 중간 교시는 테두리 직선으로
+                            // 중간 교시 (전체 채우기)
+                            courseBlock.style.top = '0';
+                            courseBlock.style.height = '100%';
+                            courseBlock.style.left = '0';
+                            courseBlock.style.right = '0';
                             courseBlock.style.borderRadius = '0';
-                            courseBlock.style.borderTop = 'none';
                         }
                     }
                 });
