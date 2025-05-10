@@ -670,10 +670,12 @@
             background-color: #2d2d2d;
             border-radius: 16px;
             width: 90%;
-            max-width: 400px;
+            max-width: 600px;
+            max-height: 90vh;
             padding: 24px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             color: white;
+            overflow-y: auto;
         }
 
         .settings-title {
@@ -771,7 +773,7 @@
         .delete-timetable-button {
             width: 100%;
             padding: 12px;
-            background-color: #f06b6b;
+            background-color: #ff6b6b;
             color: white;
             border: none;
             border-radius: 8px;
@@ -817,13 +819,59 @@
         }
 
         .settings-save-button {
-            background-color: #f06b6b;
+            background-color: #ff6b6b;
             color: white;
         }
 
         .settings-save-button:hover {
             background-color: #ff5252;
             transform: translateY(-1px);
+        }
+
+        /* 테마별 시간표 스타일 */
+        .timetable-light .timetable th {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .timetable-light .timetable .class-cell {
+            background-color: #ffffff;
+            border-color: #ddd;
+        }
+        
+        .timetable-light .timetable .time-col {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .timetable-blue .timetable th {
+            background-color: #1976d2;
+            color: white;
+        }
+        
+        .timetable-blue .timetable .class-cell {
+            background-color: #e3f2fd;
+            border-color: #64b5f6;
+        }
+        
+        .timetable-blue .timetable .time-col {
+            background-color: #1976d2;
+            color: white;
+        }
+        
+        .timetable-green .timetable th {
+            background-color: #388e3c;
+            color: white;
+        }
+        
+        .timetable-green .timetable .class-cell {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        
+        .timetable-green .timetable .time-col {
+            background-color: #388e3c;
+            color: white;
         }
 
         /* 반응형 디자인 개선 */
@@ -1235,13 +1283,13 @@
                     <div class="settings-section-title">시간표 표시 옵션</div>
                     <div class="settings-option">
                         <label class="checkbox-label">
-                            <input type="checkbox" id="show-professor" class="checkbox-input" checked>
+                            <input type="checkbox" id="show-room" class="checkbox-input" checked>
                             <span class="checkbox-text">강의실 정보 표시</span>
                         </label>
                     </div>
                     <div class="settings-option">
                         <label class="checkbox-label">
-                            <input type="checkbox" id="show-room" class="checkbox-input" checked>
+                            <input type="checkbox" id="show-professor" class="checkbox-input" checked>
                             <span class="checkbox-text">교수명 표시</span>
                         </label>
                     </div>
@@ -1260,8 +1308,8 @@
                 <div class="settings-section">
                     <div class="settings-section-title">시간 형식</div>
                     <select id="time-format-select" class="settings-dropdown" onchange="changeTimeFormat()">
-                        <option value="false">24시간 형식 (예: 14:30)</option>
-                        <option value="true">12시간 형식 (예: 오후 2:30)</option>
+                        <option value="24">24시간 형식 (예: 14:30)</option>
+                        <option value="12">12시간 형식 (예: 오후 2:30)</option>
                     </select>
                 </div>
                 
@@ -1280,9 +1328,9 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                             이미지로 내보내기
                         </button>
-                        <button class="action-button-icon" onclick="importTimetable()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="16"/><polyline points="7 11 12 16 17 11"/><circle cx="12" cy="21" r="1"/></svg>
-                            이미지에서 가져오기
+                        <button class="action-button-icon" onclick="importFromExcel()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            엑셀에서 가져오기
                         </button>
                     </div>
                 </div>
@@ -1366,7 +1414,7 @@
             showWeekend: true,
             showProfessor: true,
             showRoom: true,
-            timeFormat24: false,
+            timeFormat24: true,
             theme: 'dark'
         };
         
@@ -1408,7 +1456,7 @@
             document.getElementById('show-professor').checked = settings.showProfessor;
             document.getElementById('show-room').checked = settings.showRoom;
             document.getElementById('theme-select').value = settings.theme;
-            document.getElementById('time-format-select').value = settings.timeFormat24.toString();
+            document.getElementById('time-format-select').value = settings.timeFormat24 ? '24' : '12';
             document.getElementById('weekend-select').value = settings.showWeekend.toString();
         }
         
@@ -1432,7 +1480,7 @@
                 settings.showProfessor = document.getElementById('show-professor').checked;
                 settings.showRoom = document.getElementById('show-room').checked;
                 settings.theme = document.getElementById('theme-select').value;
-                settings.timeFormat24 = document.getElementById('time-format-select').value === 'true';
+                settings.timeFormat24 = document.getElementById('time-format-select').value === '24';
                 settings.showWeekend = document.getElementById('weekend-select').value === 'true';
                 
                 localStorage.setItem(`settings_user_${currentUser}`, JSON.stringify(settings));
@@ -1470,31 +1518,20 @@
         
         // 테마 적용
         function applyTheme(theme) {
-            switch(theme) {
-                case 'light':
-                    document.body.style.backgroundColor = '#f5f5f5';
-                    document.body.style.color = '#333';
-                    document.querySelector('.container').style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-                    break;
-                case 'blue':
-                    document.body.style.backgroundColor = '#0d47a1';
-                    document.body.style.backgroundImage = 'linear-gradient(135deg, #0d47a1 0%, #1565c0 100%)';
-                    break;
-                case 'green':
-                    document.body.style.backgroundColor = '#1b5e20';
-                    document.body.style.backgroundImage = 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)';
-                    break;
-                default: // dark
-                    document.body.style.backgroundColor = '#111111';
-                    document.body.style.backgroundImage = 'linear-gradient(135deg, rgba(30, 30, 35, 0.7) 0%, rgba(20, 20, 25, 0.7) 100%)';
-                    document.body.style.color = '#f5f5f5';
-                    document.querySelector('.container').style.backgroundColor = 'rgba(18, 18, 18, 0.6)';
+            const timetableContainer = document.querySelector('.timetable-container');
+            
+            // 모든 테마 클래스 제거
+            timetableContainer.classList.remove('timetable-light', 'timetable-blue', 'timetable-green');
+            
+            // 선택된 테마 적용
+            if (theme !== 'dark') {
+                timetableContainer.classList.add(`timetable-${theme}`);
             }
         }
         
         // 시간 형식 변경
         function changeTimeFormat() {
-            settings.timeFormat24 = document.getElementById('time-format-select').value === 'true';
+            settings.timeFormat24 = document.getElementById('time-format-select').value === '24';
             createTimetable();
         }
         
@@ -1507,14 +1544,105 @@
         
         // 이미지로 내보내기
         function exportToImage() {
-            // 이미지 내보내기 기능 구현
-            alert('이미지로 내보내기 기능은 준비 중입니다.');
+            // HTML2Canvas 라이브러리를 사용하여 시간표를 이미지로 변환
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = function() {
+                const timetableContainer = document.querySelector('.timetable-container');
+                
+                html2canvas(timetableContainer, {
+                    backgroundColor: '#ffffff',
+                    scale: 2
+                }).then(canvas => {
+                    // 이미지 다운로드
+                    const link = document.createElement('a');
+                    link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            };
+            document.head.appendChild(script);
         }
         
-        // 시간표 가져오기
-        function importTimetable() {
-            // 시간표 가져오기 기능 구현
-            alert('시간표 가져오기 기능은 준비 중입니다.');
+        // 엑셀에서 가져오기
+        function importFromExcel() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.xlsx, .xls';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // SheetJS 라이브러리 동적 로드
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+                script.onload = function() {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            
+                            // 첫 번째 시트 가져오기
+                            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                            
+                            // 데이터 파싱 및 과목 추가
+                            courses = [];
+                            jsonData.forEach((row, index) => {
+                                const course = {
+                                    id: Date.now() + index,
+                                    name: row['과목명'] || '',
+                                    professor: row['교수명'] || '',
+                                    credits: parseInt(row['학점']) || 3,
+                                    type: row['이수구분'] || '전공선택',
+                                    room: row['강의실'] || '',
+                                    color: `color-${(index % 8) + 1}`,
+                                    times: [],
+                                    grade: null
+                                };
+                                
+                                // 시간 파싱 (예: "월1,2")
+                                if (row['시간']) {
+                                    const timeStr = row['시간'];
+                                    const timeMatches = timeStr.match(/([월화수목금토])([0-9,]+)/g);
+                                    
+                                    if (timeMatches) {
+                                        timeMatches.forEach(match => {
+                                            const day = match[0];
+                                            const periods = match.substring(1).split(',');
+                                            
+                                            const dayIndex = ['월', '화', '수', '목', '금', '토'].indexOf(day) + 1;
+                                            const start = parseInt(periods[0]);
+                                            const end = parseInt(periods[periods.length - 1]);
+                                            
+                                            course.times.push({ day: dayIndex, start, end });
+                                        });
+                                    }
+                                }
+                                
+                                if (course.name) {
+                                    courses.push(course);
+                                }
+                            });
+                            
+                            // 데이터 저장 및 화면 갱신
+                            saveCoursesToStorage();
+                            renderCourseList();
+                            renderCoursesOnTimetable();
+                            calculateGrades();
+                            
+                            alert('엑셀 파일에서 시간표를 성공적으로 가져왔습니다.');
+                        } catch (error) {
+                            console.error(error);
+                            alert('엑셀 파일을 읽는 중 오류가 발생했습니다. 파일 형식을 확인해주세요.');
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                };
+                document.head.appendChild(script);
+            };
+            input.click();
         }
         
         // 현재 시간표 초기화
