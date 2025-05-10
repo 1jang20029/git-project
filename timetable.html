@@ -1074,7 +1074,7 @@
         </div>
     </div>
 
-    <script>
+        <script>
         // 과목 배열 초기화
         let courses = [];
         
@@ -1172,18 +1172,105 @@
             
             // 설정 모달 이벤트 리스너 설정 (추가)
             setupSettingsModalListeners();
+
+            // 현재 설정 적용
+            applyCurrentSettings();
         });
         
         // 설정 모달 이벤트 리스너 설정 (추가)
         function setupSettingsModalListeners() {
             // 내보내기 버튼
-            document.getElementById('export-button').addEventListener('click', exportTimetableAsImage);
+            document.getElementById('export-button')?.addEventListener('click', exportTimetableAsImage);
             
             // 가져오기 버튼
-            document.getElementById('import-button').addEventListener('click', importTimetableFromImage);
+            document.getElementById('import-button')?.addEventListener('click', importTimetableFromImage);
             
             // 초기화 버튼
-            document.getElementById('reset-button').addEventListener('click', resetCurrentTimetable);
+            document.getElementById('reset-button')?.addEventListener('click', resetCurrentTimetable);
+
+            // 체크박스 이벤트 리스너 추가
+            document.getElementById('show-room')?.addEventListener('change', function() {
+                timetableSettings.showRoom = this.checked;
+                renderCoursesOnTimetable(); // 즉시 적용
+            });
+            
+            document.getElementById('show-professor')?.addEventListener('change', function() {
+                timetableSettings.showProfessor = this.checked;
+                renderCoursesOnTimetable(); // 즉시 적용
+            });
+            
+            // 드롭다운 이벤트 리스너
+            document.getElementById('color-theme')?.addEventListener('change', function() {
+                timetableSettings.colorTheme = this.value;
+                applyColorTheme(this.value); // 즉시 테마 적용
+            });
+            
+            document.getElementById('time-format')?.addEventListener('change', function() {
+                timetableSettings.timeFormat = this.value;
+                renderCourseList(); // 시간 표시 형식 변경 적용
+            });
+            
+            document.getElementById('weekend-display')?.addEventListener('change', function() {
+                timetableSettings.weekendDisplay = this.value;
+                toggleWeekendDisplay(); // 주말 표시 설정 적용
+            });
+        }
+
+        // 현재 설정 적용
+        function applyCurrentSettings() {
+            // 테마 적용
+            applyColorTheme(timetableSettings.colorTheme);
+            
+            // 주말 표시 설정 적용
+            toggleWeekendDisplay();
+            
+            // 강의실 및 교수명 체크박스 설정
+            if (document.getElementById('show-room')) {
+                document.getElementById('show-room').checked = timetableSettings.showRoom;
+            }
+            
+            if (document.getElementById('show-professor')) {
+                document.getElementById('show-professor').checked = timetableSettings.showProfessor;
+            }
+            
+            // 드롭다운 설정
+            if (document.getElementById('color-theme')) {
+                document.getElementById('color-theme').value = timetableSettings.colorTheme;
+            }
+            
+            if (document.getElementById('time-format')) {
+                document.getElementById('time-format').value = timetableSettings.timeFormat;
+            }
+            
+            if (document.getElementById('weekend-display')) {
+                document.getElementById('weekend-display').value = timetableSettings.weekendDisplay;
+            }
+        }
+
+        // 주말 표시 설정 토글
+        function toggleWeekendDisplay() {
+            const saturdayCells = document.querySelectorAll('.class-cell[data-day="6"]');
+            const saturdayHeader = document.querySelector('.timetable th:last-child');
+            
+            if (timetableSettings.weekendDisplay === 'hide') {
+                // 토요일 열 숨기기
+                saturdayCells.forEach(cell => {
+                    cell.style.display = 'none';
+                });
+                
+                if (saturdayHeader) {
+                    saturdayHeader.style.display = 'none';
+                }
+            } else {
+                // 토요일 열 표시
+                saturdayCells.forEach(cell => {
+                    cell.style.display = '';
+                });
+                
+                if (saturdayHeader) {
+                    saturdayHeader.style.display = '';
+                }
+            }
         }
         
         // 페이지 타이틀 업데이트
@@ -1261,6 +1348,9 @@
             // 선택된 시간표에 맞는 과목 데이터 로드
             loadCoursesFromStorage();
             
+            // 시간표 갱신
+            renderCoursesOnTimetable();
+                
             // 과목 목록 갱신
             renderCourseList();
             
@@ -1440,29 +1530,7 @@
             });
             
             // 주말 표시 설정 적용 (추가)
-            if (timetableSettings.weekendDisplay === 'hide') {
-                // 토요일 열 숨기기
-                const saturdayCells = document.querySelectorAll('.class-cell[data-day="6"]');
-                saturdayCells.forEach(cell => {
-                    cell.style.display = 'none';
-                });
-                
-                const saturdayHeader = document.querySelector('.timetable th:last-child');
-                if (saturdayHeader) {
-                    saturdayHeader.style.display = 'none';
-                }
-            } else {
-                // 토요일 열 표시
-                const saturdayCells = document.querySelectorAll('.class-cell[data-day="6"]');
-                saturdayCells.forEach(cell => {
-                    cell.style.display = '';
-                });
-                
-                const saturdayHeader = document.querySelector('.timetable th:last-child');
-                if (saturdayHeader) {
-                    saturdayHeader.style.display = '';
-                }
-            }
+            toggleWeekendDisplay();
             
             // 과목별로 시간표에 표시
             courses.forEach(course => {
@@ -1991,36 +2059,130 @@
             // 선택된 테마 클래스 추가
             document.body.classList.add(`theme-${theme}`);
             
-            // 테마별 색상 변경 로직 (실제 구현 시 추가)
+            // 테마별 색상 변경 로직
+            const colorStyles = document.getElementById('theme-colors') || document.createElement('style');
+            colorStyles.id = 'theme-colors';
+            
+            let cssRules = '';
+            
             switch(theme) {
                 case 'pastel':
                     // 파스텔 테마 색상 적용
+                    cssRules = `
+                        .color-1 { background-color: #ffcdd2; background-image: linear-gradient(45deg, #ffcdd2, #ef9a9a); }
+                        .color-2 { background-color: #c8e6c9; background-image: linear-gradient(45deg, #c8e6c9, #a5d6a7); }
+                        .color-3 { background-color: #bbdefb; background-image: linear-gradient(45deg, #bbdefb, #90caf9); }
+                        .color-4 { background-color: #e1bee7; background-image: linear-gradient(45deg, #e1bee7, #ce93d8); }
+                        .color-5 { background-color: #ffe0b2; background-image: linear-gradient(45deg, #ffe0b2, #ffcc80); }
+                        .color-6 { background-color: #b2dfdb; background-image: linear-gradient(45deg, #b2dfdb, #80cbc4); }
+                        .color-7 { background-color: #c5cae9; background-image: linear-gradient(45deg, #c5cae9, #9fa8da); }
+                        .color-8 { background-color: #d7ccc8; background-image: linear-gradient(45deg, #d7ccc8, #bcaaa4); }
+                    `;
                     break;
                 case 'vivid':
                     // 비비드 테마 색상 적용
+                    cssRules = `
+                        .color-1 { background-color: #f44336; background-image: linear-gradient(45deg, #f44336, #e53935); }
+                        .color-2 { background-color: #4caf50; background-image: linear-gradient(45deg, #4caf50, #43a047); }
+                        .color-3 { background-color: #2196f3; background-image: linear-gradient(45deg, #2196f3, #1e88e5); }
+                        .color-4 { background-color: #9c27b0; background-image: linear-gradient(45deg, #9c27b0, #8e24aa); }
+                        .color-5 { background-color: #ff9800; background-image: linear-gradient(45deg, #ff9800, #fb8c00); }
+                        .color-6 { background-color: #009688; background-image: linear-gradient(45deg, #009688, #00897b); }
+                        .color-7 { background-color: #3f51b5; background-image: linear-gradient(45deg, #3f51b5, #3949ab); }
+                        .color-8 { background-color: #795548; background-image: linear-gradient(45deg, #795548, #6d4c41); }
+                    `;
                     break;
                 case 'dark':
                     // 다크 테마 색상 적용
+                    cssRules = `
+                        .color-1 { background-color: #b71c1c; background-image: linear-gradient(45deg, #b71c1c, #c62828); }
+                        .color-2 { background-color: #1b5e20; background-image: linear-gradient(45deg, #1b5e20, #2e7d32); }
+                        .color-3 { background-color: #0d47a1; background-image: linear-gradient(45deg, #0d47a1, #1565c0); }
+                        .color-4 { background-color: #4a148c; background-image: linear-gradient(45deg, #4a148c, #6a1b9a); }
+                        .color-5 { background-color: #e65100; background-image: linear-gradient(45deg, #e65100, #ef6c00); }
+                        .color-6 { background-color: #004d40; background-image: linear-gradient(45deg, #004d40, #00695c); }
+                        .color-7 { background-color: #1a237e; background-image: linear-gradient(45deg, #1a237e, #283593); }
+                        .color-8 { background-color: #3e2723; background-image: linear-gradient(45deg, #3e2723, #4e342e); }
+                    `;
                     break;
                 case 'monochrome':
                     // 모노크롬 테마 색상 적용
+                    cssRules = `
+                        .color-1 { background-color: #424242; background-image: linear-gradient(45deg, #424242, #616161); }
+                        .color-2 { background-color: #616161; background-image: linear-gradient(45deg, #616161, #757575); }
+                        .color-3 { background-color: #757575; background-image: linear-gradient(45deg, #757575, #9e9e9e); }
+                        .color-4 { background-color: #9e9e9e; background-image: linear-gradient(45deg, #9e9e9e, #bdbdbd); }
+                        .color-5 { background-color: #212121; background-image: linear-gradient(45deg, #212121, #424242); }
+                        .color-6 { background-color: #757575; background-image: linear-gradient(45deg, #757575, #9e9e9e); }
+                        .color-7 { background-color: #424242; background-image: linear-gradient(45deg, #424242, #616161); }
+                        .color-8 { background-color: #616161; background-image: linear-gradient(45deg, #616161, #757575); }
+                    `;
                     break;
                 default:
-                    // 기본 테마 색상 적용
+                    // 기본 테마 색상 (이미 CSS에 정의됨)
+                    cssRules = ``;
                     break;
             }
+            
+            colorStyles.textContent = cssRules;
+            document.head.appendChild(colorStyles);
         }
         
         // 시간표 이미지로 내보내기 (추가)
         function exportTimetableAsImage() {
-            alert('이미지로 내보내기 기능은 준비 중입니다.');
-            // 실제 구현 시에는 html2canvas 등의 라이브러리를 사용하여 구현
+            // html2canvas 라이브러리가 없으므로 CDN에서 동적으로 로드
+            if (!window.html2canvas) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = function() {
+                    // 스크립트 로드 후 내보내기 실행
+                    performExport();
+                };
+                script.onerror = function() {
+                    alert('이미지 내보내기에 필요한 라이브러리를 로드할 수 없습니다.');
+                };
+                document.head.appendChild(script);
+            } else {
+                // 이미 로드된 경우 바로 실행
+                performExport();
+            }
+            
+            function performExport() {
+                const timetableContainer = document.querySelector('.timetable-container');
+                html2canvas(timetableContainer, {
+                    backgroundColor: "#222",
+                    scale: 2,
+                    logging: false
+                }).then(canvas => {
+                    // 캔버스를 이미지로 변환
+                    const image = canvas.toDataURL('image/png');
+                    
+                    // 다운로드 링크 생성
+                    const link = document.createElement('a');
+                    link.href = image;
+                    link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
+                    link.click();
+                });
+            }
         }
         
         // 이미지에서 시간표 가져오기 (추가)
         function importTimetableFromImage() {
-            alert('이미지에서 가져오기 기능은 준비 중입니다.');
-            // 실제 구현 시에는 파일 업로드 및 이미지 처리 로직 구현
+            alert('이미지에서 가져오기 기능은 아직 개발 중입니다.');
+            // 사용자가 이미지 파일 선택할 수 있는 UI 제공
+            /*
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // 이미지 파일 처리 로직 (OCR 등)
+                    // 실제 구현을 위해서는 백엔드 연동 필요
+                }
+            };
+            input.click();
+            */
         }
         
         // 현재 시간표 초기화 (추가)
@@ -2044,6 +2206,9 @@
             
             // 설정 모달 닫기
             closeSettingsModal();
+            
+            // 사용자에게 피드백
+            alert('시간표가 초기화되었습니다.');
         }
 
         // 이전 페이지로 이동
