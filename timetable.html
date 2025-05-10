@@ -1330,19 +1330,19 @@
             // 로딩 인디케이터 표시
             showLoading();
             
+            // 파일을 Data URL로 변환
             const reader = new FileReader();
             reader.onload = function(e) {
                 // 이미지 데이터
                 const imageData = e.target.result;
                 
-                // 여기서는 간단한 처리만 실행하고 나중에 완성할 수 있습니다
-                setTimeout(() => {
-                    hideLoading();
-                    alert('이미지에서 시간표 데이터를 가져올 수 있는 기능은 개발 중입니다. 곧 업데이트될 예정입니다.');
-                    closeSettingsModal();
-                }, 1500);
-                
-                // 실제 구현에서는 서버 API 호출 또는 이미지 처리 라이브러리 사용
+                // 이미지 객체 생성
+                const img = new Image();
+                img.onload = function() {
+                    // 이미지 분석 시작
+                    analyzeTimeTableImage(img);
+                };
+                img.src = imageData;
             };
             
             reader.onerror = function() {
@@ -2255,6 +2255,9 @@
             const timeFormat = document.getElementById('time-format').value;
             const weekendDisplay = document.getElementById('weekend-display').value;
             
+            // 시간 형식 변경 확인
+            const timeFormatChanged = timetableSettings.timeFormat !== timeFormat;
+            
             // 설정 객체 업데이트
             timetableSettings = {
                 showRoom,
@@ -2273,8 +2276,13 @@
             // 색상 테마 적용
             applyColorTheme(colorTheme);
             
-            // 시간표 다시 그리기
-            renderCoursesOnTimetable();
+            // 시간 형식이 변경되었다면 시간표 다시 생성 (시간 컬럼 업데이트를 위해)
+            if (timeFormatChanged) {
+                createTimetable();
+            } else {
+                // 그렇지 않으면 과목 데이터만 다시 렌더링
+                renderCoursesOnTimetable();
+            }
             
             // 과목 목록 다시 그리기
             renderCourseList();
@@ -2282,6 +2290,7 @@
             // 모달 닫기
             closeSettingsModal();
         }
+                
         
         // 색상 테마 적용 (추가)
         function applyColorTheme(theme) {
