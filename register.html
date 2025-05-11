@@ -287,28 +287,35 @@
         }
         
         .class-item {
-            padding: 6px;
+            position: absolute;
+            padding: 4px;
             border-radius: 4px;
             font-size: 12px;
-            color: white;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 5;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10;
+            white-space: normal;
+            word-break: keep-all;
         }
         
         .class-name {
-            font-weight: 700;
-            margin-bottom: 3px;
-            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            white-space: normal;
+            word-break: keep-all;
         }
-        
+
         .class-info {
             font-size: 10px;
-            opacity: 0.85;
-            text-align: right;
+            opacity: 0.9;
+            white-space: normal;
+            word-break: keep-all;
         }
         
         /* 과목 색상 */
@@ -2038,28 +2045,41 @@
             // 과목별로 시간표에 표시
             courses.forEach(course => {
                 course.times.forEach(time => {
-                    // 요일 열 찾기
                     const day = time.day;
                     const startPeriod = time.start;
                     const endPeriod = time.end;
                     
-                    // 스팬 계산 (연속된 교시 처리)
-                    const span = endPeriod - startPeriod + 1;
+                    // 연속된 셀들 찾기
+                    const cells = [];
+                    for (let period = startPeriod; period <= endPeriod; period++) {
+                        const cell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${period}"]`);
+                        if (cell) {
+                            cells.push(cell);
+                        }
+                    }
                     
-                    // 시작 셀 찾기
-                    const startCell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${startPeriod}"]`);
-                    if (!startCell) return;
+                    if (cells.length === 0) return;
                     
-                    // 하나의 수업 블록 생성
+                    // 첫 번째 셀에만 과목 블록 생성
+                    const firstCell = cells[0];
+                    const lastCell = cells[cells.length - 1];
+                    
+                    // 첫 번째 셀과 마지막 셀의 위치 계산
+                    const firstRect = firstCell.getBoundingClientRect();
+                    const lastRect = lastCell.getBoundingClientRect();
+                    const parentRect = firstCell.parentElement.parentElement.getBoundingClientRect();
+                    
+                    // 하나의 통합된 수업 블록 생성
                     const courseBlock = document.createElement('div');
                     courseBlock.className = `class-item ${course.color}`;
                     courseBlock.style.position = 'absolute';
+                    courseBlock.style.zIndex = '10';
+                    
+                    // 첫 번째 셀과 마지막 셀을 포함하는 크기로 설정
                     courseBlock.style.top = '0';
                     courseBlock.style.left = '0';
-                    courseBlock.style.right = '0';
-                    courseBlock.style.bottom = '0';
-                    courseBlock.style.height = `${100 * span}%`;
-                    courseBlock.style.zIndex = '10';
+                    courseBlock.style.width = '100%';
+                    courseBlock.style.height = `${cells.length * 100}%`;
                     
                     // 과목 정보 표시
                     let classInfo = '';
@@ -2075,7 +2095,13 @@
                         ${classInfo ? `<div class="class-info">${classInfo}</div>` : ''}
                     `;
                     
-                    startCell.appendChild(courseBlock);
+                    // 첫 번째 셀에 블록 추가
+                    firstCell.appendChild(courseBlock);
+                    
+                    // 나머지 셀들은 비워둠 (시각적으로 통합된 블록이 보이도록)
+                    for (let i = 1; i < cells.length; i++) {
+                        cells[i].style.borderTop = 'none';
+                    }
                 });
             });
         }
