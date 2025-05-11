@@ -288,37 +288,38 @@
         
         .class-item {
             position: absolute;
+            padding: 4px;
             border-radius: 4px;
             font-size: 12px;
             font-weight: bold;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            z-index: 10;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-        }
-
-        .class-content {
+            justify-content: center;  /* 수직 중앙 정렬 */
             text-align: center;
-            padding: 8px;
-            width: 100%;
+            z-index: 10;
         }
 
         .class-name {
             font-weight: bold;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 2px;
         }
 
         .class-info {
             font-size: 10px;
             opacity: 0.9;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        }
+
+        .class-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .class-info {
+            font-size: 10px;
+            opacity: 0.9;
         }
 
         /* 테이블 셀 스타일 */
