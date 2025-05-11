@@ -666,40 +666,41 @@
             backdrop-filter: blur(4px);
         }
 
-        .setting-option {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
+        .settings-content {
+            background-color: #2d2d2d;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            color: white;
+            overflow-y: auto;
         }
 
-        .setting-option input[type="checkbox"] {
-            margin-right: 10px;
-        }
-
-        .export-import-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-
-        .danger-button {
-            background-color: rgba(255, 80, 80, 0.7);
+        .settings-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
             color: white;
         }
 
-
-        .danger-button:hover {
-            background-color: rgba(255, 60, 60, 0.8);
+        .settings-section {
+            margin-bottom: 24px;
         }
 
-
-        /* 주말 숨김 스타일 */
-        .hide-weekend .timetable th:nth-child(7),
-        .hide-weekend .timetable td:nth-child(7) {
-            display: none;
+        .settings-section-title {
+            font-size: 15px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            color: #aaa;
         }
 
+        .settings-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
 
         .checkbox-label {
             display: flex;
