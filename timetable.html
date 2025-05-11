@@ -823,9 +823,8 @@
             color: white;
         }
 
-        .settings-save-button {
-            background-color: #ff6b6b;
-            color: white;
+        .settings-save-button:hover {
+            background-color: #ff5252;
         }
 
         /* 테마별 과목 색상 스타일 */
@@ -1306,13 +1305,23 @@
                <div class="settings-section">
                    <div class="settings-section-title">시간표 내보내기/가져오기</div>
                    <div class="action-buttons">
-                       <button class="action-button-icon" onclick="exportToImage()">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                           이미지로 내보내기
+                       <button class="action-button-icon" onclick="exportToJSON()">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8v8"/><path d="m8 8 8 8"/><path d="m8 16 8-8"/><path d="M3 12h18"/></svg>
+                           JSON으로 내보내기
                        </button>
-                       <button class="action-button-icon" onclick="importFromImage()">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                           이미지에서 가져오기
+                       <button class="action-button-icon" onclick="importFromJSON()">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16v-8"/><path d="m16 16-8-8"/><path d="m16 8-8 8"/><path d="M3 12h18"/></svg>
+                           JSON에서 가져오기
+                       </button>
+                    </div>
+                   <div class="action-buttons" style="margin-top: 12px;">
+                       <button class="action-button-icon" onclick="exportToCSV()">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><polyline points="7 16 12 11 16 14"/></svg>
+                           CSV로 내보내기
+                       </button>
+                       <button class="action-button-icon" onclick="importFromCSV()">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><polyline points="7 8 12 13 16 10"/></svg>
+                           CSV에서 가져오기
                        </button>
                    </div>
                </div>
@@ -1333,27 +1342,23 @@
         </div>
     </div>
     <script>
-        // Tesseract.js 라이브러리 로드
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js';
-        document.head.appendChild(script);
-
-        // 과목 배열 초기화
+        // 글로벌 변수 선언
         let courses = [];
-        
-        // 현재 학기 정보
-        const currentSemester = {
+        let settings = {
+            showWeekend: true,
+            showProfessor: true,
+            showRoom: true,
+            timeFormat24: true,
+            theme: 'dark'
+        };
+        let currentSemester = {
             year: 2023,
             term: 1
         };
-        
-        // 현재 시간표 정보
         let currentTimetable = {
             id: 1,
             name: "시간표 1" 
         };
-        
-        // 시간표 목록
         let timetables = [
             { id: 1, name: "시간표 1" },
             { id: 2, name: "시간표 2" },
@@ -1393,15 +1398,6 @@
             "F": 0.0,
             "P": null,  // Pass는 평점 계산에 포함하지 않음
             "NP": null  // No Pass는 평점 계산에 포함하지 않음
-        };
-
-        // 설정 관련 객체
-        let settings = {
-            showWeekend: true,
-            showProfessor: true,
-            showRoom: true,
-            timeFormat24: true,
-            theme: 'dark'
         };
 
         // 이전 설정 저장용
@@ -1542,162 +1538,206 @@
             renderCoursesOnTimetable();
         }
         
-        // 이미지로 내보내기
-        function exportToImage() {
-            // HTML2Canvas 라이브러리를 사용하여 시간표를 이미지로 변환
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = function() {
-                const timetableContainer = document.querySelector('.timetable-container');
-                
-                html2canvas(timetableContainer, {
-                    backgroundColor: '#ffffff',
-                    scale: 2
-                }).then(canvas => {
-                    // 이미지 다운로드
-                    const link = document.createElement('a');
-                    link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                });
+        // JSON으로 내보내기
+        function exportToJSON() {
+            const exportData = {
+                semester: `${currentSemester.year}-${currentSemester.term}`,
+                timetableName: currentTimetable.name,
+                courses: courses,
+                exportDate: new Date().toISOString()
             };
-            document.head.appendChild(script);
+            
+            const jsonStr = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
         }
         
-        // 이미지에서 가져오기
-        function importFromImage() {
+        // JSON에서 가져오기
+        function importFromJSON() {
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = async function(event) {
+            input.accept = '.json';
+            input.onchange = function(event) {
                 const file = event.target.files[0];
                 if (!file) return;
                 
-                // 이미지 OCR 처리
-                await processImageWithOCR(file);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+                        
+                        if (importData.courses && Array.isArray(importData.courses)) {
+                            const courseCount = importData.courses.length;
+                            let message = `${courseCount}개의 과목을 찾았습니다.\n`;
+                            
+                            if (importData.semester) {
+                                message += `학기: ${importData.semester}\n`;
+                            }
+                            if (importData.timetableName) {
+                                message += `시간표명: ${importData.timetableName}\n`;
+                            }
+                            
+                            message += '현재 시간표에 추가하시겠습니까?';
+                            
+                            if (confirm(message)) {
+                                // 기존 과목 삭제할지 묻기
+                                if (courses.length > 0) {
+                                    if (confirm('기존 과목을 모두 삭제하고 새로 추가하시겠습니까?\n(취소를 누르면 기존 과목에 추가됩니다)')) {
+                                        courses = [];
+                                    }
+                                }
+                                
+                                // 과목 추가
+                                importData.courses.forEach(course => {
+                                    courses.push(course);
+                                });
+                                
+                                // 저장 및 렌더링
+                                saveCoursesToStorage();
+                                renderCoursesOnTimetable();
+                                renderCourseList();
+                                calculateGrades();
+                                
+                                alert('시간표 가져오기가 완료되었습니다.');
+                            }
+                        } else {
+                            alert('올바른 JSON 파일 형식이 아닙니다.');
+                        }
+                    } catch (error) {
+                        console.error('JSON 파싱 오류:', error);
+                        alert('파일을 읽는 중 오류가 발생했습니다.');
+                    }
+                };
+                reader.readAsText(file);
             };
             input.click();
         }
         
-        // OCR 처리 함수
-        async function processImageWithOCR(file) {
-            try {
-                // 로딩 표시
-                const loadingDiv = document.createElement('div');
-                loadingDiv.style.cssText = `
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background: rgba(0, 0, 0, 0.8);
-                    color: white;
-                    padding: 20px;
-                    border-radius: 10px;
-                    z-index: 9999;
-                `;
-                loadingDiv.textContent = '시간표 이미지를 분석 중입니다...';
-                document.body.appendChild(loadingDiv);
-                
-                // Tesseract.js로 한국어 텍스트 추출
-                const result = await Tesseract.recognize(file, 'kor', {
-                    logger: function(m) {
-                        if (m.status === 'recognizing text') {
-                            loadingDiv.textContent = `분석 중... ${Math.round(m.progress * 100)}%`;
-                        }
-                    }
+        // CSV로 내보내기
+        function exportToCSV() {
+            let csvContent = '과목명,교수명,학점,이수구분,강의실,요일,시작교시,종료교시,학점평가\n';
+            
+            courses.forEach(course => {
+                course.times.forEach(time => {
+                    csvContent += `"${course.name}","${course.professor || ''}",${course.credits},"${course.type}","${course.room || ''}","${dayData[time.day]}",${time.start},${time.end},"${course.grade || ''}"\n`;
                 });
-                
-                // 추출된 텍스트 분석
-                const text = result.data.text;
-                console.log('추출된 텍스트:', text);
-                
-                // 시간표 데이터 파싱
-                const parsedCourses = parseTimeTableFromText(text);
-                
-                // 로딩 제거
-                document.body.removeChild(loadingDiv);
-                
-                if (parsedCourses.length > 0) {
-                    if (confirm(`${parsedCourses.length}개의 과목을 찾았습니다. 시간표에 추가하시겠습니까?`)) {
-                        // 기존 과목 삭제할지 묻기
-                        if (courses.length > 0) {
-                            if (confirm('기존 과목을 모두 삭제하고 새로 추가하시겠습니까?\n(취소를 누르면 기존 과목에 추가됩니다)')) {
-                                courses = [];
-                            }
-                        }
-                        
-                        // 파싱된 과목 추가
-                        parsedCourses.forEach(course => {
-                            courses.push(course);
-                        });
-                        
-                        // 저장 및 렌더링
-                        saveCoursesToStorage();
-                        renderCoursesOnTimetable();
-                        renderCourseList();
-                        calculateGrades();
-                        
-                        alert('시간표 가져오기가 완료되었습니다.');
-                    }
-                } else {
-                    alert('시간표에서 과목을 찾을 수 없습니다. 이미지가 선명한지 확인해주세요.');
-                }
-                
-            } catch (error) {
-                console.error('OCR 처리 중 오류:', error);
-                alert('이미지 처리 중 오류가 발생했습니다.');
-            }
+            });
+            
+            const BOM = '\uFEFF';
+            const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.csv`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
         }
         
-        // 텍스트에서 시간표 데이터 파싱
-        function parseTimeTableFromText(text) {
-            const courses = [];
-            const lines = text.split('\n').filter(line => line.trim());
-            
-            // 간단한 패턴 매칭으로 과목 정보 추출
-            const courseRegex = /([가-힣]+)\s*([가-힣]+)\s*([0-9]+)\s*(월|화|수|목|금|토)\s*([0-9]+):?([0-9]+)?\s*~?\s*([0-9]+):?([0-9]+)?/g;
-            
-            let match;
-            while ((match = courseRegex.exec(text)) !== null) {
-                const courseName = match[1];
-                const professor = match[2];
-                const credits = parseInt(match[3]) || 3;
-                const dayName = match[4];
-                const startHour = parseInt(match[5]);
-                const endHour = parseInt(match[7]);
+        // CSV에서 가져오기
+        function importFromCSV() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
                 
-                // 요일을 숫자로 변환
-                const dayMap = {'월': 1, '화': 2, '수': 3, '목': 4, '금': 5, '토': 6};
-                const day = dayMap[dayName];
-                
-                // 시간을 교시로 변환
-                const startPeriod = Math.max(1, startHour - 8);
-                const endPeriod = Math.min(9, endHour - 8);
-                
-                // 중복 확인
-                let existingCourse = courses.find(c => c.name === courseName);
-                
-                if (existingCourse) {
-                    // 같은 과목이면 시간만 추가
-                    existingCourse.times.push({ day, start: startPeriod, end: endPeriod });
-                } else {
-                    // 새로운 과목 생성
-                    const randomColorIndex = Math.floor(Math.random() * 8) + 1;
-                    courses.push({
-                        id: Date.now() + Math.random(),
-                        name: courseName,
-                        professor: professor,
-                        credits: credits,
-                        type: '전공선택',
-                        color: `color-${randomColorIndex}`,
-                        room: '',
-                        times: [{ day, start: startPeriod, end: endPeriod }],
-                        grade: null
-                    });
-                }
-            }
-            
-            return courses;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const csvContent = e.target.result;
+                        const lines = csvContent.split('\n');
+                        const importedCourses = [];
+                        
+                        // 헤더 제외하고 파싱
+                        for (let i = 1; i < lines.length; i++) {
+                            const line = lines[i].trim();
+                            if (!line) continue;
+                            
+                            // CSV 파싱 (간단한 구현)
+                            const parts = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                            if (!parts || parts.length < 8) continue;
+                            
+                            // 따옴표 제거
+                            const values = parts.map(part => part.replace(/^"|"$/g, ''));
+                            
+                            const [name, professor, credits, type, room, dayName, start, end, grade] = values;
+                            
+                            // 요일 변환
+                            const dayMap = {'월': 1, '화': 2, '수': 3, '목': 4, '금': 5, '토': 6};
+                            const day = dayMap[dayName];
+                            
+                            if (!day) continue;
+                            
+                            // 기존 과목 찾기 또는 새로 생성
+                            let course = importedCourses.find(c => c.name === name);
+                            
+                            if (!course) {
+                                const randomColorIndex = Math.floor(Math.random() * 8) + 1;
+                                course = {
+                                    id: Date.now() + Math.random(),
+                                    name: name,
+                                    professor: professor,
+                                    credits: parseInt(credits) || 3,
+                                    type: type,
+                                    color: `color-${randomColorIndex}`,
+                                    room: room,
+                                    times: [],
+                                    grade: grade || null
+                                };
+                                importedCourses.push(course);
+                            }
+                            
+                            // 시간 추가
+                            course.times.push({
+                                day: day,
+                                start: parseInt(start),
+                                end: parseInt(end)
+                            });
+                        }
+                        
+                        if (importedCourses.length > 0) {
+                            if (confirm(`${importedCourses.length}개의 과목을 찾았습니다. 시간표에 추가하시겠습니까?`)) {
+                                // 기존 과목 삭제할지 묻기
+                                if (courses.length > 0) {
+                                    if (confirm('기존 과목을 모두 삭제하고 새로 추가하시겠습니까?\n(취소를 누르면 기존 과목에 추가됩니다)')) {
+                                        courses = [];
+                                    }
+                                }
+                                
+                                // 과목 추가
+                                importedCourses.forEach(course => {
+                                    courses.push(course);
+                                });
+                                
+                                // 저장 및 렌더링
+                                saveCoursesToStorage();
+                                renderCoursesOnTimetable();
+                                renderCourseList();
+                                calculateGrades();
+                                
+                                alert('시간표 가져오기가 완료되었습니다.');
+                            }
+                        } else {
+                            alert('CSV 파일에서 유효한 과목을 찾을 수 없습니다.');
+                        }
+                    } catch (error) {
+                        console.error('CSV 파싱 오류:', error);
+                        alert('파일을 읽는 중 오류가 발생했습니다.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
         }
         
         // 현재 시간표 초기화 (기본값으로 복원)
