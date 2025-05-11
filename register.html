@@ -2071,11 +2071,11 @@
                     const courseBlock = document.createElement('div');
                     courseBlock.className = `class-item ${course.color}`;
                     courseBlock.style.position = 'absolute';
-                    courseBlock.style.top = '0';
-                    courseBlock.style.left = '0';
-                    courseBlock.style.right = '0';
-                    courseBlock.style.bottom = '0';
-                    courseBlock.style.height = `${100 * span}%`;
+                    courseBlock.style.top = '1px';  /* 테두리 고려한 여백 */
+                    courseBlock.style.left = '1px';
+                    courseBlock.style.right = '1px';
+                    courseBlock.style.width = 'calc(100% - 2px)';  /* 테두리 고려한 너비 */
+                    courseBlock.style.height = `calc(${60 * span}px - 2px)`;  /* 픽셀 단위로 명확하게 */
                     courseBlock.style.zIndex = '10';
                     
                     // 과목 정보 표시
@@ -2086,12 +2086,12 @@
                     if (settings.showRoom && course.room) {
                         classInfo += (classInfo ? ' ' : '') + course.room;
                     }
-                    
+
                     courseBlock.innerHTML = `
                         <div class="class-name">${course.name}</div>
                         ${classInfo ? `<div class="class-info">${classInfo}</div>` : ''}
                     `;
-                    
+
                     startCell.appendChild(courseBlock);
                 });
             });
