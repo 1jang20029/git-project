@@ -288,7 +288,7 @@
         
         .class-item {
             position: absolute;
-            padding: 8px 4px;
+            padding: 0;
             border-radius: 4px;
             font-size: 12px;
             font-weight: bold;
@@ -297,12 +297,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;  /* 수직 중앙 정렬 */
+            justify-content: center;
             text-align: center;
             z-index: 10;
-            border: none !important;  /* 테두리 제거 */
-            margin: 0;  /* 여백 제거 */
-            min-height: 0;
+            border: none !important;
+            margin: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .class-name {
