@@ -288,7 +288,7 @@
         
         .class-item {
             position: absolute;
-            padding: 0;
+            padding: 6px;  /* 패딩 조정 */
             border-radius: 4px;
             font-size: 12px;
             font-weight: bold;
@@ -301,29 +301,38 @@
             text-align: center;
             z-index: 10;
             border: none !important;
-            margin: 0;
-            width: 100%;
-            height: 100%;
+            left: 0;
+            right: 0;
+            top: 0;
+            width: 100%;  /* 너비 100% */
+            box-sizing: border-box;  /* 패딩 포함한 박스 크기 계산 */
         }
 
         .class-name {
             font-weight: bold;
             margin-bottom: 2px;
+            line-height: 1.2;  /* 줄 높이 조정 */
         }
 
         .class-info {
             font-size: 10px;
             opacity: 0.9;
+            line-height: 1.2;  /* 줄 높이 조정 */
         }
 
-        .class-name {
-            font-weight: bold;
-            margin-bottom: 2px;
+        /* 테이블 셀 스타일 */
+        .class-cell {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0;
+            vertical-align: top;
+            position: relative;
+            height: 60px;  /* 높이 증가 */
+            min-height: 60px;  /* 최소 높이 설정 */
         }
 
-        .class-info {
-            font-size: 10px;
-            opacity: 0.9;
+        .timetable td {
+            height: 60px;  /* 테이블 셀 높이도 맞춤 */
+            vertical-align: top;
         }
 
         /* 테이블 셀 스타일 */
