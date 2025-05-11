@@ -298,49 +298,17 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 5;
         }
-
-        .class-cell {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0;
-            vertical-align: top;
-            position: relative;
-            height: 50px;  /* 셀 높이 고정 */
-        }
-
-        .class-item {
-            position: absolute;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            z-index: 10;
-            box-sizing: border-box;
-            line-height: 1.2;
-        }
-
+        
         .class-name {
-            font-weight: bold;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
+            font-weight: 700;
+            margin-bottom: 3px;
+            font-size: 13px;
         }
-
+        
         .class-info {
             font-size: 10px;
-            opacity: 0.9;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
+            opacity: 0.85;
+            text-align: right;
         }
         
         /* 과목 색상 */
@@ -2065,7 +2033,7 @@
             classCells.forEach(cell => {
                 cell.innerHTML = '';
                 cell.style.position = 'relative';
-                cell.style.borderTop = '';  // 테두리 초기화
+                cell.style.border = '1px solid rgba(255, 255, 255, 0.1)';  // 테두리 초기화
             });
             
             // 과목별로 시간표에 표시
@@ -2082,12 +2050,18 @@
                     // 하나의 통합된 수업 블록 생성
                     const courseBlock = document.createElement('div');
                     courseBlock.className = `class-item ${course.color}`;
+                    
+                    // 여러 셀에 걸치는 높이 계산
+                    const cellHeight = startCell.offsetHeight;
+                    const totalHeight = cellHeight * (endPeriod - startPeriod + 1);
+                    
                     courseBlock.style.position = 'absolute';
                     courseBlock.style.top = '0';
                     courseBlock.style.left = '0';
-                    courseBlock.style.width = '100%';
-                    courseBlock.style.height = `${(endPeriod - startPeriod + 1) * 100}%`;
+                    courseBlock.style.width = 'calc(100% - 2px)';  // 테두리 고려
+                    courseBlock.style.height = `${totalHeight - 2}px`;  // 테두리 고려
                     courseBlock.style.zIndex = '10';
+                    courseBlock.style.margin = '1px';
                     
                     // 과목 정보 표시
                     let classInfo = '';
@@ -2099,17 +2073,21 @@
                     }
                     
                     courseBlock.innerHTML = `
-                        <div class="class-name">${course.name}</div>
-                        ${classInfo ? `<div class="class-info">${classInfo}</div>` : ''}
+                        <div class="class-content">
+                            <div class="class-name">${course.name}</div>
+                            ${classInfo ? `<div class="class-info">${classInfo}</div>` : ''}
+                        </div>
                     `;
                     
                     startCell.appendChild(courseBlock);
                     
-                    // 중간 셀들의 상단 테두리 숨기기
+                    // 중간 셀들의 테두리 숨기기
                     for (let period = startPeriod + 1; period <= endPeriod; period++) {
                         const cell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${period}"]`);
                         if (cell) {
-                            cell.style.borderTop = 'transparent';
+                            cell.style.borderTop = 'none';
+                            // 박스가 걸쳐있는 셀들도 시각적으로 비어보이지 않도록
+                            cell.style.background = 'transparent';
                         }
                     }
                 });
