@@ -4426,6 +4426,212 @@
                         alert('준비 중인 기능입니다.');
                 }
             }
+
+            // 시간표 관련 데이터 가져오기 및 처리 함수
+            function loadTimetableData() {
+                const currentUser = localStorage.getItem('currentLoggedInUser');
+                if (!currentUser) return [];
+                
+                // 현재 학기 정보 가져오기 (시간표 페이지와 동일한 형식)
+                const currentYear = new Date().getFullYear();
+                const currentMonth = new Date().getMonth() + 1;
+                let semester = 1; // 기본값
+                
+                if (currentMonth >= 3 && currentMonth <= 8) {
+                    semester = 1; // 1학기
+                } else if (currentMonth >= 9 && currentMonth <= 12) {
+                    semester = 2; // 2학기
+                } else if (currentMonth >= 1 && currentMonth <= 2) {
+                    semester = 2; // 전년도 2학기 계속
+                }
+                
+                // 시간표 페이지에서 사용하는 저장 키 형식 그대로 사용
+                const currentTimetableId = JSON.parse(localStorage.getItem(`currentTimetable_user_${currentUser}`))?.id || 1;
+                const coursesKey = `courses_${currentYear}_${semester}_${currentTimetableId}_user_${currentUser}`;
+                
+                return JSON.parse(localStorage.getItem(coursesKey)) || [];
+            }
+
+            // 현재 시간 및 요일 정보 가져기기
+            function getCurrentTimeInfo() {
+                const now = new Date();
+                const dayOfWeek = now.getDay(); // 0(일) ~ 6(토)
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                
+                // 요일 매핑 (월=1, 화=2, ..., 토=6, 일=0은 제외)
+                const mappedDay = dayOfWeek;
+                
+                return {
+                    day: mappedDay === 0 ? 0 : mappedDay, // 일요일은 수업 없음
+                    hour: currentHour,
+                    minute: currentMinute,
+                    totalMinutes: currentHour * 60 + currentMinute
+                };
+            }
+
+            // 교시별 시간 정보 (시간표 페이지와 동일)
+            const periodTimes = {
+                1: { start: "09:00", end: "10:20" },
+                2: { start: "10:30", end: "11:50" },
+                3: { start: "12:00", end: "13:20" },
+                4: { start: "13:30", end: "14:50" },
+                5: { start: "15:00", end: "16:20" },
+                6: { start: "16:30", end: "17:50" },
+                7: { start: "18:00", end: "19:20" },
+                8: { start: "19:30", end: "20:50" },
+                9: { start: "21:00", end: "22:20" }
+            };
+
+            // 시간 문자열을 분으로 변환
+            function timeToMinutes(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+
+            // 현재 수업 및 다음 수업 찾기
+            function findCurrentAndNextClass() {
+                const courses = loadTimetableData();
+                const currentTime = getCurrentTimeInfo();
+                
+                let currentClass = null;
+                let nextClass = null;
+                let nextClassMinutes = Infinity;
+                
+                // 일요일이면 빈 결과 반환
+                if (currentTime.day === 0) {
+                    return { currentClass, nextClass };
+                }
+                
+                // 오늘의 모든 수업 확인
+                for (const course of courses) {
+                    for (const time of course.times) {
+                        if (time.day !== currentTime.day) continue;
+                        
+                        for (let period = time.start; period <= time.end; period++) {
+                            const periodStart = timeToMinutes(periodTimes[period].start);
+                            const periodEnd = timeToMinutes(periodTimes[period].end);
+                            
+                            // 현재 수강 중인 수업 찾기
+                            if (currentTime.totalMinutes >= periodStart && currentTime.totalMinutes < periodEnd) {
+                                const remainingMinutes = periodEnd - currentTime.totalMinutes;
+                                currentClass = {
+                                    course: course,
+                                    period: period,
+                                    startTime: periodTimes[period].start,
+                                    endTime: periodTimes[period].end,
+                                    remainingMinutes: remainingMinutes,
+                                    location: course.room || '강의실 미정'
+                                };
+                            }
+                            
+                            // 다음 수업 찾기 (아직 시작하지 않은 수업 중 가장 가까운 것)
+                            if (periodStart > currentTime.totalMinutes && periodStart < nextClassMinutes) {
+                                nextClassMinutes = periodStart;
+                                const minutesToNext = periodStart - currentTime.totalMinutes;
+                                nextClass = {
+                                    course: course,
+                                    period: period,
+                                    startTime: periodTimes[period].start,
+                                    endTime: periodTimes[period].end,
+                                    minutesToStart: minutesToNext,
+                                    location: course.room || '강의실 미정'
+                                };
+                            }
+                        }
+                    }
+                }
+                
+                return { currentClass, nextClass };
+            }
+
+            // 시간표 미리보기 업데이트
+            function updateTimetablePreview() {
+                const timetablePreview = document.querySelector('.timetable-preview');
+                if (!timetablePreview) return;
+                
+                const { currentClass, nextClass } = findCurrentAndNextClass();
+                const currentTime = getCurrentTimeInfo();
+                
+                // 날짜 정보 업데이트
+                const dateEl = timetablePreview.querySelector('.timetable-date');
+                const statusEl = timetablePreview.querySelector('.timetable-now');
+                
+                if (dateEl) {
+                    const now = new Date();
+                    const days = ['일', '월', '화', '수', '목', '금', '토'];
+                    const dateStr = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 (${days[now.getDay()]}) 시간표`;
+                    dateEl.textContent = dateStr;
+                }
+                
+                // 상태 업데이트
+                if (statusEl) {
+                    if (currentClass) {
+                        statusEl.textContent = '현재 강의';
+                        statusEl.style.backgroundColor = '#4caf50';
+                    } else if (nextClass) {
+                        statusEl.textContent = '다음 강의';
+                        statusEl.style.backgroundColor = '#ff9800';
+                    } else {
+                        statusEl.textContent = '수업 없음';
+                        statusEl.style.backgroundColor = '#888';
+                    }
+                }
+                
+                // 수업 목록 업데이트
+                const classContainer = timetablePreview.querySelector('.class-list') || 
+                                    timetablePreview.querySelector('.class-item')?.parentElement;
+                
+                if (classContainer) {
+                    classContainer.innerHTML = '';
+                    
+                    if (currentClass) {
+                        const classDiv = document.createElement('div');
+                        classDiv.className = 'class-item';
+                        classDiv.innerHTML = `
+                            <div class="class-time">${currentClass.startTime}</div>
+                            <div class="class-info">
+                                <div class="class-name" style="color: #4caf50;">${currentClass.course.name}</div>
+                                <div class="class-location">${currentClass.location}</div>
+                                <div style="color: #4caf50; font-size: 12px; margin-top: 4px;">
+                                    ${currentClass.remainingMinutes}분 후 종료
+                                </div>
+                            </div>
+                        `;
+                        classContainer.appendChild(classDiv);
+                    }
+                    
+                    if (nextClass) {
+                        const classDiv = document.createElement('div');
+                        classDiv.className = 'class-item';
+                        classDiv.innerHTML = `
+                            <div class="class-time">${nextClass.startTime}</div>
+                            <div class="class-info">
+                                <div class="class-name" style="color: #ff9800;">${nextClass.course.name}</div>
+                                <div class="class-location">${nextClass.location}</div>
+                                <div style="color: #ff9800; font-size: 12px; margin-top: 4px;">
+                                    ${nextClass.minutesToStart}분 후 시작
+                                </div>
+                            </div>
+                        `;
+                        classContainer.appendChild(classDiv);
+                    }
+                    
+                    // 수업이 없는 경우
+                    if (!currentClass && !nextClass) {
+                        const classDiv = document.createElement('div');
+                        classDiv.className = 'class-item';
+                        classDiv.innerHTML = `
+                            <div class="class-time">--:--</div>
+                            <div class="class-info">
+                                <div class="class-name">오늘 수업이 없습니다</div>
+                                <div class="class-location">좋은 하루 보내세요!</div>
+                            </div>
+                        `;
+                        classContainer.appendChild(classDiv);
+                    }
+                }
+            }
             
             // 저장된 위젯 설정 불러오기
             function loadWidgetSettings() {
