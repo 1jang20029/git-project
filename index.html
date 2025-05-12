@@ -4644,7 +4644,7 @@
             }
 
 
-            // 시간표 미리보기 업데이트
+            // 시간표 미리보기 업데이트 - 시간 비교 로직 수정 및 버튼 추가
             function updateTimetablePreview() {
                 console.log('=== 시간표 미리보기 업데이트 시작 ===');
                 
@@ -4784,7 +4784,8 @@
                                         border-radius: 6px; 
                                         font-size: 14px; 
                                         cursor: pointer;
-                                    ">
+                                        transition: background-color 0.3s;
+                                    " onmouseover="this.style.backgroundColor='#a52214'" onmouseout="this.style.backgroundColor='#c62917'">
                                         시간표로 이동
                                     </button>
                                 </div>
@@ -4800,7 +4801,18 @@
                     const currentMinute = now.getMinutes();
                     const currentTotalMinutes = currentHour * 60 + currentMinute;
                     
-                    console.log('현재 요일:', currentDay, '현재 시간:', `${currentHour}:${currentMinute.toString().padStart(2, '0')}`, '총 분:', currentTotalMinutes);
+                    // 현재 시간을 한국 시간으로 조정 (필요한 경우)
+                    const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+                    const koreanHour = koreaTime.getHours();
+                    const koreanMinute = koreaTime.getMinutes();
+                    const koreanTotalMinutes = koreanHour * 60 + koreanMinute;
+                    
+                    console.log('현재 요일:', currentDay);
+                    console.log('로컬 시간:', `${currentHour}:${currentMinute.toString().padStart(2, '0')}`, '총 분:', currentTotalMinutes);
+                    console.log('한국 시간:', `${koreanHour}:${koreanMinute.toString().padStart(2, '0')}`, '총 분:', koreanTotalMinutes);
+                    
+                    // 한국 시간 사용
+                    const actualTotalMinutes = koreanTotalMinutes;
                     
                     const todaysClasses = [];
                     
@@ -4838,7 +4850,7 @@
                                 const startMinutes = startHour * 60 + startMin;
                                 const endMinutes = endHour * 60 + endMin;
                                 
-                                console.log(`수업 ${course.name}: ${startTime}(${startMinutes}분) ~ ${endTime}(${endMinutes}분), 현재: ${currentTotalMinutes}분`);
+                                console.log(`수업 ${course.name}: ${startTime}(${startMinutes}분) ~ ${endTime}(${endMinutes}분), 현재: ${actualTotalMinutes}분 (한국시간)`);
                                 
                                 todaysClasses.push({
                                     course: course,
@@ -4899,14 +4911,15 @@
                         // 수업 시작 5분 전부터 "수강 예정"으로 표시
                         const earlyStartMinutes = cls.startMinutes - 5;
                         
-                        console.log(`수업 ${cls.course.name} 검사: ${cls.startMinutes} <= ${currentTotalMinutes} < ${cls.endMinutes}`);
+                        console.log(`수업 ${cls.course.name} 검사: ${cls.startMinutes} <= ${actualTotalMinutes} < ${cls.endMinutes}`);
                         
-                        if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
+                        // 현재 한국 시간 기준으로 비교
+                        if (actualTotalMinutes >= cls.startMinutes && actualTotalMinutes < cls.endMinutes) {
                             currentClass = cls;
                             allClassesEnded = false;
                             console.log('현재 수강 중인 강의:', currentClass.course.name);
                             break;
-                        } else if (cls.startMinutes > currentTotalMinutes) {
+                        } else if (cls.startMinutes > actualTotalMinutes) {
                             hasUpcomingClass = true;
                             allClassesEnded = false;
                         }
@@ -4915,14 +4928,16 @@
                     // 상태 배지 업데이트
                     if (statusEl) {
                         if (currentClass) {
-                            const remainingMinutes = currentClass.endMinutes - currentTotalMinutes;
-                            statusEl.textContent = `수강 중 (${remainingMinutes}분 남음)`;
+                            const remainingMinutes = currentClass.endMinutes - actualTotalMinutes;
+                            const remainingTimeText = formatMinutesToHoursMinutes(remainingMinutes);
+                            statusEl.textContent = `수강 중 (${remainingTimeText} 남음)`;
                             statusEl.style.backgroundColor = '#4caf50';
                         } else if (hasUpcomingClass) {
-                            const nextClass = todaysClasses.find(cls => cls.startMinutes > currentTotalMinutes);
+                            const nextClass = todaysClasses.find(cls => cls.startMinutes > actualTotalMinutes);
                             if (nextClass) {
-                                const minutesToStart = nextClass.startMinutes - currentTotalMinutes;
-                                statusEl.textContent = `수강 예정 (${minutesToStart}분 후)`;
+                                const minutesToStart = nextClass.startMinutes - actualTotalMinutes;
+                                const timeToStartText = formatMinutesToHoursMinutes(minutesToStart);
+                                statusEl.textContent = `수강 예정 (${timeToStartText} 후)`;
                             } else {
                                 statusEl.textContent = '수강 예정';
                             }
@@ -4945,13 +4960,16 @@
                         let statusText = '';
                         let statusColor = '#888';
                         
-                        if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
-                            const remainingMinutes = cls.endMinutes - currentTotalMinutes;
-                            statusText = `수강 중 (${remainingMinutes}분 남음)`;
+                        // 한국 시간 기준으로 상태 판단
+                        if (actualTotalMinutes >= cls.startMinutes && actualTotalMinutes < cls.endMinutes) {
+                            const remainingMinutes = cls.endMinutes - actualTotalMinutes;
+                            const remainingTimeText = formatMinutesToHoursMinutes(remainingMinutes);
+                            statusText = `수강 중 (${remainingTimeText} 남음)`;
                             statusColor = '#4caf50';
-                        } else if (cls.startMinutes > currentTotalMinutes) {
-                            const minutesToStart = cls.startMinutes - currentTotalMinutes;
-                            statusText = `수강 예정 (${minutesToStart}분 후)`;
+                        } else if (cls.startMinutes > actualTotalMinutes) {
+                            const minutesToStart = cls.startMinutes - actualTotalMinutes;
+                            const timeToStartText = formatMinutesToHoursMinutes(minutesToStart);
+                            statusText = `수강 예정 (${timeToStartText} 후)`;
                             statusColor = '#ff9800';
                         } else {
                             statusText = '수강 종료';
@@ -4990,7 +5008,8 @@
                                 border-radius: 6px; 
                                 font-size: 14px; 
                                 cursor: pointer;
-                            ">
+                                transition: background-color 0.3s;
+                            " onmouseover="this.style.backgroundColor='#a52214'" onmouseout="this.style.backgroundColor='#c62917'">
                                 시간표 보기
                             </button>
                         </div>
@@ -5034,7 +5053,6 @@
                 
                 console.log('=== 시간표 미리보기 업데이트 완료 ===');
             }
-
 
 
 
