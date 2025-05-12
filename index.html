@@ -4645,7 +4645,7 @@
 
 
             // 시간표 미리보기 업데이트
-            // 시간표 미리보기 업데이트 - 실제 사용자 데이터 사용
+            // 시간표 미리보기 업데이트 - 실제 동작하는 버전
             function updateTimetablePreview() {
                 console.log('=== 시간표 미리보기 업데이트 시작 ===');
                 
@@ -4667,9 +4667,10 @@
                 
                 // 3. 로그인 상태 확인
                 const currentUser = localStorage.getItem('currentLoggedInUser');
+                const statusEl = document.querySelector('.timetable-now');
+                
                 if (!currentUser) {
                     console.log('로그인 상태가 아닙니다.');
-                    const statusEl = document.querySelector('.timetable-now');
                     if (statusEl) {
                         statusEl.textContent = '로그인 필요';
                         statusEl.style.backgroundColor = '#888';
@@ -4687,14 +4688,33 @@
                     return;
                 }
                 
-                // 4. 실제 시간표 데이터 로드
+                // 4. 시간표 데이터 로드
                 try {
-                    const courses = loadTimetableData();
+                    const currentYear = new Date().getFullYear();
+                    const currentMonth = new Date().getMonth() + 1;
+                    const semester = (currentMonth >= 3 && currentMonth <= 8) ? 1 : 2;
+                    
+                    const currentTimetable = JSON.parse(localStorage.getItem(`currentTimetable_user_${currentUser}`)) || { id: 1 };
+                    const coursesKey = `courses_${currentYear}_${semester}_${currentTimetable.id}_user_${currentUser}`;
+                    
+                    console.log('시간표 키:', coursesKey);
+                    
+                    let courses = [];
+                    const coursesData = localStorage.getItem(coursesKey);
+                    
+                    if (coursesData) {
+                        try {
+                            courses = JSON.parse(coursesData);
+                        } catch (e) {
+                            console.error('시간표 데이터 파싱 오류:', e);
+                            courses = [];
+                        }
+                    }
+                    
                     console.log('로드된 시간표 데이터:', courses);
                     
                     if (!Array.isArray(courses) || courses.length === 0) {
                         console.log('시간표 데이터가 없습니다.');
-                        const statusEl = document.querySelector('.timetable-now');
                         if (statusEl) {
                             statusEl.textContent = '시간표 없음';
                             statusEl.style.backgroundColor = '#888';
@@ -4712,19 +4732,61 @@
                         return;
                     }
                     
-                    // 5. 오늘의 수업 가져오기
-                    const todaysClasses = getTodaysClasses();
+                    // 5. 오늘의 수업 찾기
+                    const now = new Date();
+                    const currentDay = now.getDay(); // 0(일) ~ 6(토)
+                    const currentHour = now.getHours();
+                    const currentMinute = now.getMinutes();
+                    const currentTotalMinutes = currentHour * 60 + currentMinute;
+                    
+                    const todaysClasses = [];
+                    
+                    courses.forEach(course => {
+                        if (!course.times || !Array.isArray(course.times)) {
+                            return;
+                        }
+                        
+                        course.times.forEach(time => {
+                            if (time.day === currentDay) {
+                                // periodTimes가 정의되어 있지 않다면 기본값 사용
+                                const periods = {
+                                    1: { start: "09:00", end: "10:20" },
+                                    2: { start: "10:30", end: "11:50" },
+                                    3: { start: "12:00", end: "13:20" },
+                                    4: { start: "13:30", end: "14:50" },
+                                    5: { start: "15:00", end: "16:20" },
+                                    6: { start: "16:30", end: "17:50" },
+                                    7: { start: "18:00", end: "19:20" },
+                                    8: { start: "19:30", end: "20:50" },
+                                    9: { start: "21:00", end: "22:20" }
+                                };
+                                
+                                const startTime = periods[time.start].start;
+                                const endTime = periods[time.end].end;
+                                
+                                // 시간을 분으로 변환
+                                const [startHour, startMin] = startTime.split(':').map(Number);
+                                const [endHour, endMin] = endTime.split(':').map(Number);
+                                const startMinutes = startHour * 60 + startMin;
+                                const endMinutes = endHour * 60 + endMin;
+                                
+                                todaysClasses.push({
+                                    course: course,
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    startMinutes: startMinutes,
+                                    endMinutes: endMinutes
+                                });
+                            }
+                        });
+                    });
+                    
+                    // 시간 순으로 정렬
+                    todaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
+                    
                     console.log('오늘의 수업:', todaysClasses);
                     
-                    // 6. 현재 시간 정보
-                    const currentTime = getCurrentTimeInfo();
-                    console.log('현재 시간:', currentTime);
-                    
-                    // 7. 상태 배지 업데이트
-                    const statusEl = document.querySelector('.timetable-now');
-                    
                     if (todaysClasses.length === 0) {
-                        // 오늘 수업이 없는 경우
                         if (statusEl) {
                             statusEl.textContent = '수업 없음';
                             statusEl.style.backgroundColor = '#888';
@@ -4742,16 +4804,16 @@
                         return;
                     }
                     
-                    // 8. 현재 수업 상태 확인
+                    // 6. 현재 수업 상태 확인
                     let currentClass = null;
                     let hasUpcomingClass = false;
                     
                     for (let cls of todaysClasses) {
-                        if (currentTime.totalMinutes >= cls.startMinutes && currentTime.totalMinutes < cls.endMinutes) {
+                        if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
                             currentClass = cls;
                             break;
                         }
-                        if (cls.startMinutes > currentTime.totalMinutes) {
+                        if (cls.startMinutes > currentTotalMinutes) {
                             hasUpcomingClass = true;
                         }
                     }
@@ -4770,7 +4832,7 @@
                         }
                     }
                     
-                    // 9. 수업 목록 렌더링
+                    // 7. 수업 목록 렌더링
                     classContainer.innerHTML = '';
                     todaysClasses.forEach(cls => {
                         const classDiv = document.createElement('div');
@@ -4779,10 +4841,10 @@
                         let statusText = '';
                         let statusColor = '#888';
                         
-                        if (currentTime.totalMinutes >= cls.startMinutes && currentTime.totalMinutes < cls.endMinutes) {
+                        if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
                             statusText = '수강 중';
                             statusColor = '#4caf50';
-                        } else if (cls.startMinutes > currentTime.totalMinutes) {
+                        } else if (cls.startMinutes > currentTotalMinutes) {
                             statusText = '수강 예정';
                             statusColor = '#ff9800';
                         } else {
@@ -4790,7 +4852,6 @@
                             statusColor = '#888';
                         }
                         
-                        // 과목 정보 추출
                         const professorName = cls.course.professor || '교수명 미정';
                         const roomNumber = cls.course.room || '강의실 미정';
                         
@@ -4810,7 +4871,6 @@
                 } catch (error) {
                     console.error('시간표 미리보기 업데이트 중 오류:', error);
                     
-                    const statusEl = document.querySelector('.timetable-now');
                     if (statusEl) {
                         statusEl.textContent = '오류 발생';
                         statusEl.style.backgroundColor = '#f44336';
