@@ -4645,7 +4645,7 @@
 
 
             // 시간표 미리보기 업데이트
-            // 시간표 미리보기 업데이트 - 실제 동작하는 버전
+            // 시간표 미리보기 업데이트 - 디버깅 강화 버전
             function updateTimetablePreview() {
                 console.log('=== 시간표 미리보기 업데이트 시작 ===');
                 
@@ -4688,33 +4688,79 @@
                     return;
                 }
                 
-                // 4. 시간표 데이터 로드
+                // 4. 디버깅: 모든 시간표 관련 키 찾기
+                console.log('현재 로그인 사용자:', currentUser);
+                console.log('=== localStorage의 모든 키 확인 ===');
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.includes('courses_') || key.includes('currentTimetable')) {
+                        console.log(`키: ${key}, 값: ${localStorage.getItem(key)}`);
+                    }
+                }
+                
+                // 5. 시간표 데이터 로드
                 try {
                     const currentYear = new Date().getFullYear();
                     const currentMonth = new Date().getMonth() + 1;
                     const semester = (currentMonth >= 3 && currentMonth <= 8) ? 1 : 2;
                     
-                    const currentTimetable = JSON.parse(localStorage.getItem(`currentTimetable_user_${currentUser}`)) || { id: 1 };
-                    const coursesKey = `courses_${currentYear}_${semester}_${currentTimetable.id}_user_${currentUser}`;
+                    // 현재 시간표 ID 가져오기
+                    const currentTimetableKey = `currentTimetable_user_${currentUser}`;
+                    const currentTimetable = JSON.parse(localStorage.getItem(currentTimetableKey) || '{"id": 1}');
+                    console.log('현재 시간표 정보:', currentTimetable);
                     
+                    // 시간표 데이터 키 생성 및 확인
+                    const coursesKey = `courses_${currentYear}_${semester}_${currentTimetable.id}_user_${currentUser}`;
                     console.log('시간표 키:', coursesKey);
                     
-                    let courses = [];
+                    // 데이터 존재 여부 확인
                     const coursesData = localStorage.getItem(coursesKey);
+                    console.log('시간표 데이터 원본:', coursesData);
                     
+                    let courses = [];
                     if (coursesData) {
                         try {
                             courses = JSON.parse(coursesData);
+                            console.log('파싱된 시간표 데이터:', courses);
                         } catch (e) {
                             console.error('시간표 데이터 파싱 오류:', e);
                             courses = [];
                         }
                     }
                     
-                    console.log('로드된 시간표 데이터:', courses);
-                    
+                    // 6. 데이터가 없을 때 다른 가능한 키들 시도
                     if (!Array.isArray(courses) || courses.length === 0) {
-                        console.log('시간표 데이터가 없습니다.');
+                        console.log('기본 키로 데이터를 찾지 못함. 다른 키들 시도...');
+                        
+                        // 가능한 다른 키 형식들 시도
+                        const alternativeKeys = [
+                            `courses_${currentYear}_${semester}_1_user_${currentUser}`,
+                            `courses_${currentYear}_${semester}_${currentUser}`,
+                            `courses_user_${currentUser}`,
+                            `courses_${currentUser}`,
+                        ];
+                        
+                        for (const altKey of alternativeKeys) {
+                            console.log(`시도 중인 키: ${altKey}`);
+                            const altData = localStorage.getItem(altKey);
+                            if (altData) {
+                                try {
+                                    const altCourses = JSON.parse(altData);
+                                    if (Array.isArray(altCourses) && altCourses.length > 0) {
+                                        courses = altCourses;
+                                        console.log(`성공! 키 ${altKey}에서 데이터 발견:`, courses);
+                                        break;
+                                    }
+                                } catch (e) {
+                                    console.error(`키 ${altKey} 파싱 오류:`, e);
+                                }
+                            }
+                        }
+                    }
+                    
+                    // 7. 여전히 데이터가 없으면 메시지 표시
+                    if (!Array.isArray(courses) || courses.length === 0) {
+                        console.log('모든 키 시도 후에도 시간표 데이터를 찾지 못함');
                         if (statusEl) {
                             statusEl.textContent = '시간표 없음';
                             statusEl.style.backgroundColor = '#888';
@@ -4732,23 +4778,30 @@
                         return;
                     }
                     
-                    // 5. 오늘의 수업 찾기
+                    // 8. 오늘의 수업 찾기
                     const now = new Date();
                     const currentDay = now.getDay(); // 0(일) ~ 6(토)
                     const currentHour = now.getHours();
                     const currentMinute = now.getMinutes();
                     const currentTotalMinutes = currentHour * 60 + currentMinute;
                     
+                    console.log('현재 요일:', currentDay, '현재 시간:', currentHour + ':' + currentMinute);
+                    
                     const todaysClasses = [];
                     
                     courses.forEach(course => {
+                        console.log('검사 중인 과목:', course);
                         if (!course.times || !Array.isArray(course.times)) {
+                            console.log('시간 정보 없음:', course);
                             return;
                         }
                         
                         course.times.forEach(time => {
+                            console.log('시간 정보:', time, '현재 요일:', currentDay);
                             if (time.day === currentDay) {
-                                // periodTimes가 정의되어 있지 않다면 기본값 사용
+                                console.log('오늘 수업 발견:', course.name);
+                                
+                                // periodTimes 정의
                                 const periods = {
                                     1: { start: "09:00", end: "10:20" },
                                     2: { start: "10:30", end: "11:50" },
@@ -4784,7 +4837,7 @@
                     // 시간 순으로 정렬
                     todaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
                     
-                    console.log('오늘의 수업:', todaysClasses);
+                    console.log('오늘의 수업 목록:', todaysClasses);
                     
                     if (todaysClasses.length === 0) {
                         if (statusEl) {
@@ -4804,7 +4857,7 @@
                         return;
                     }
                     
-                    // 6. 현재 수업 상태 확인
+                    // 9. 현재 수업 상태 확인
                     let currentClass = null;
                     let hasUpcomingClass = false;
                     
@@ -4832,7 +4885,7 @@
                         }
                     }
                     
-                    // 7. 수업 목록 렌더링
+                    // 10. 수업 목록 렌더링
                     classContainer.innerHTML = '';
                     todaysClasses.forEach(cls => {
                         const classDiv = document.createElement('div');
