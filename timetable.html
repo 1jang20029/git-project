@@ -1626,26 +1626,29 @@
           }
       });
       
-      // 설정값을 UI에 적용
-      function applySettingsToUI() {
+        // 설정값을 UI에 적용
+        function applySettingsToUI() {
           document.getElementById('show-professor').checked = settings.showProfessor;
           document.getElementById('show-room').checked = settings.showRoom;
           document.getElementById('theme-select').value = settings.theme;
           document.getElementById('time-format-select').value = settings.timeFormat24 ? '24' : '12';
           document.getElementById('weekend-select').value = settings.showWeekend.toString();
-      }
+        }
       
-      // 설정 로드
-      function loadSettings() {
-          const currentUser = localStorage.getItem('currentLoggedInUser');
-          if (currentUser) {
-              const savedSettings = localStorage.getItem(`settings_user_${currentUser}`);
-              if (savedSettings) {
-                  settings = { ...settings, ...JSON.parse(savedSettings) };
-                  applySettings();
-              }
-          }
-      }
+        // 설정 로드
+        function loadSettings() {
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            if (currentUser) {
+                const savedSettings = localStorage.getItem(`settings_user_${currentUser}`);
+                if (savedSettings) {
+                settings = { ...settings, ...JSON.parse(savedSettings) };
+            }
+            // 설정 적용
+            applySettings();
+            // 설정값 UI에 적용
+            applySettingsToUI();
+            }
+        }
       
       // 설정 열기
       function openSettings() {
@@ -2059,22 +2062,25 @@
       }
       
       // 로컬 스토리지에서 과목 데이터 로드
-      function loadCoursesFromStorage() {
-          const currentUser = localStorage.getItem('currentLoggedInUser');
-          
-          if (currentUser) {
-              const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
-              const savedCourses = localStorage.getItem(semesterKey);
-              
-              if (savedCourses) {
-                  courses = JSON.parse(savedCourses);
-              } else {
-                  courses = [];
-              }
-          } else {
-              courses = [];
-          }
-      }
+    function loadCoursesFromStorage() {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+        
+        if (currentUser) {
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
+            const savedCourses = localStorage.getItem(semesterKey);
+            
+            if (savedCourses) {
+                courses = JSON.parse(savedCourses);
+            } else {
+                courses = [];
+            }
+        } else {
+            courses = [];
+        }
+        
+        // 과목 로드 후 화면 갱신
+        renderCoursesOnTimetable();
+    }
       
       // 로컬 스토리지에 과목 데이터 저장
       function saveCoursesToStorage() {
