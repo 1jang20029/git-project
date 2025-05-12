@@ -4645,7 +4645,7 @@
 
 
             // 시간표 미리보기 업데이트
-            // 시간표 미리보기 업데이트 - 완전히 새로운 구현
+            // 시간표 미리보기 업데이트 - 실제 사용자 데이터 사용
             function updateTimetablePreview() {
                 console.log('=== 시간표 미리보기 업데이트 시작 ===');
                 
@@ -4668,63 +4668,90 @@
                 // 3. 로그인 상태 확인
                 const currentUser = localStorage.getItem('currentLoggedInUser');
                 if (!currentUser) {
-                    console.log('로그인 상태가 아닙니다. 테스트 사용자로 설정합니다.');
-                    localStorage.setItem('currentLoggedInUser', '2021100215');
+                    console.log('로그인 상태가 아닙니다.');
+                    const statusEl = document.querySelector('.timetable-now');
+                    if (statusEl) {
+                        statusEl.textContent = '로그인 필요';
+                        statusEl.style.backgroundColor = '#888';
+                    }
+                    
+                    classContainer.innerHTML = `
+                        <div class="class-item">
+                            <div class="class-time">--:--</div>
+                            <div class="class-info">
+                                <div class="class-name">로그인 후 시간표를 확인하세요</div>
+                                <div class="class-location">로그인이 필요한 서비스입니다</div>
+                            </div>
+                        </div>
+                    `;
+                    return;
                 }
                 
-                // 4. 상태 배지 업데이트
-                const statusEl = document.querySelector('.timetable-now');
-                
-                // 5. 현재 시간 정보
-                const now = new Date();
-                const currentDay = now.getDay(); // 0(일) ~ 6(토)
-                const currentHour = now.getHours();
-                const currentMinute = now.getMinutes();
-                const currentTotalMinutes = currentHour * 60 + currentMinute;
-                
-                // 6. 오늘이 화요일인지 확인 (샘플 데이터는 화요일 수업)
-                if (currentDay === 2) { // 화요일
-                    // 화요일 수업 시간 정의
-                    const tuesdayClasses = [
-                        {
-                            name: '웹 프로그래밍 실습',
-                            professor: '김민수',
-                            room: '공학1관 301호',
-                            startTime: '09:00',
-                            endTime: '10:20',
-                            startMinutes: 9 * 60,
-                            endMinutes: 10 * 60 + 20
-                        },
-                        {
-                            name: '마케팅 원론',
-                            professor: '이지영',
-                            room: '경영관 201호',
-                            startTime: '13:30',
-                            endTime: '14:50',
-                            startMinutes: 13 * 60 + 30,
-                            endMinutes: 14 * 60 + 50
-                        },
-                        {
-                            name: '데이터베이스 설계',
-                            professor: '박성호',
-                            room: '공학2관 105호',
-                            startTime: '18:00',
-                            endTime: '19:20',
-                            startMinutes: 18 * 60,
-                            endMinutes: 19 * 60 + 20
-                        }
-                    ];
+                // 4. 실제 시간표 데이터 로드
+                try {
+                    const courses = loadTimetableData();
+                    console.log('로드된 시간표 데이터:', courses);
                     
-                    // 현재 수업 찾기
+                    if (!Array.isArray(courses) || courses.length === 0) {
+                        console.log('시간표 데이터가 없습니다.');
+                        const statusEl = document.querySelector('.timetable-now');
+                        if (statusEl) {
+                            statusEl.textContent = '시간표 없음';
+                            statusEl.style.backgroundColor = '#888';
+                        }
+                        
+                        classContainer.innerHTML = `
+                            <div class="class-item">
+                                <div class="class-time">--:--</div>
+                                <div class="class-info">
+                                    <div class="class-name">등록된 과목이 없습니다</div>
+                                    <div class="class-location">시간표에 과목을 추가해주세요</div>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // 5. 오늘의 수업 가져오기
+                    const todaysClasses = getTodaysClasses();
+                    console.log('오늘의 수업:', todaysClasses);
+                    
+                    // 6. 현재 시간 정보
+                    const currentTime = getCurrentTimeInfo();
+                    console.log('현재 시간:', currentTime);
+                    
+                    // 7. 상태 배지 업데이트
+                    const statusEl = document.querySelector('.timetable-now');
+                    
+                    if (todaysClasses.length === 0) {
+                        // 오늘 수업이 없는 경우
+                        if (statusEl) {
+                            statusEl.textContent = '수업 없음';
+                            statusEl.style.backgroundColor = '#888';
+                        }
+                        
+                        classContainer.innerHTML = `
+                            <div class="class-item">
+                                <div class="class-time">--:--</div>
+                                <div class="class-info">
+                                    <div class="class-name">오늘 수업이 없습니다</div>
+                                    <div class="class-location">좋은 하루 보내세요!</div>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // 8. 현재 수업 상태 확인
                     let currentClass = null;
                     let hasUpcomingClass = false;
                     
-                    for (let cls of tuesdayClasses) {
-                        if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
+                    for (let cls of todaysClasses) {
+                        if (currentTime.totalMinutes >= cls.startMinutes && currentTime.totalMinutes < cls.endMinutes) {
                             currentClass = cls;
                             break;
                         }
-                        if (cls.startMinutes > currentTotalMinutes) {
+                        if (cls.startMinutes > currentTime.totalMinutes) {
                             hasUpcomingClass = true;
                         }
                     }
@@ -4743,19 +4770,19 @@
                         }
                     }
                     
-                    // 수업 목록 렌더링
+                    // 9. 수업 목록 렌더링
                     classContainer.innerHTML = '';
-                    tuesdayClasses.forEach(cls => {
+                    todaysClasses.forEach(cls => {
                         const classDiv = document.createElement('div');
                         classDiv.className = 'class-item';
                         
                         let statusText = '';
                         let statusColor = '#888';
                         
-                        if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
+                        if (currentTime.totalMinutes >= cls.startMinutes && currentTime.totalMinutes < cls.endMinutes) {
                             statusText = '수강 중';
                             statusColor = '#4caf50';
-                        } else if (cls.startMinutes > currentTotalMinutes) {
+                        } else if (cls.startMinutes > currentTime.totalMinutes) {
                             statusText = '수강 예정';
                             statusColor = '#ff9800';
                         } else {
@@ -4763,11 +4790,15 @@
                             statusColor = '#888';
                         }
                         
+                        // 과목 정보 추출
+                        const professorName = cls.course.professor || '교수명 미정';
+                        const roomNumber = cls.course.room || '강의실 미정';
+                        
                         classDiv.innerHTML = `
                             <div class="class-time">${cls.startTime}</div>
                             <div class="class-info">
-                                <div class="class-name" style="color: ${statusColor};">${cls.name}</div>
-                                <div class="class-location">${cls.professor} | ${cls.room}</div>
+                                <div class="class-name" style="color: ${statusColor};">${cls.course.name}</div>
+                                <div class="class-location">${professorName} | ${roomNumber}</div>
                                 <div style="color: ${statusColor}; font-size: 12px; margin-top: 4px; font-weight: bold;">
                                     ${statusText}
                                 </div>
@@ -4775,19 +4806,22 @@
                         `;
                         classContainer.appendChild(classDiv);
                     });
-                } else {
-                    // 다른 요일 (수업 없음)
+                    
+                } catch (error) {
+                    console.error('시간표 미리보기 업데이트 중 오류:', error);
+                    
+                    const statusEl = document.querySelector('.timetable-now');
                     if (statusEl) {
-                        statusEl.textContent = '수업 없음';
-                        statusEl.style.backgroundColor = '#888';
+                        statusEl.textContent = '오류 발생';
+                        statusEl.style.backgroundColor = '#f44336';
                     }
                     
                     classContainer.innerHTML = `
                         <div class="class-item">
                             <div class="class-time">--:--</div>
                             <div class="class-info">
-                                <div class="class-name">오늘 수업이 없습니다</div>
-                                <div class="class-location">좋은 하루 보내세요!</div>
+                                <div class="class-name">시간표 로드 중 오류 발생</div>
+                                <div class="class-location">페이지를 새로고침해주세요</div>
                             </div>
                         </div>
                     `;
