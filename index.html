@@ -4645,6 +4645,7 @@
 
 
             // 시간표 미리보기 업데이트
+            // 시간표 미리보기 업데이트
             function updateTimetablePreview() {
                 console.log('시간표 미리보기 업데이트 시작');
                 
@@ -4663,9 +4664,34 @@
                     dateEl.textContent = dateStr;
                 }
                 
+                // 시간표 데이터 로드 확인
+                const currentUser = localStorage.getItem('currentLoggedInUser');
+                console.log('현재 로그인 사용자:', currentUser);
+                
+                if (!currentUser) {
+                    // 로그인하지 않은 경우
+                    const classContainer = document.getElementById('timetable-preview-content');
+                    if (classContainer) {
+                        classContainer.innerHTML = `
+                            <div class="class-item">
+                                <div class="class-time">--:--</div>
+                                <div class="class-info">
+                                    <div class="class-name">로그인 후 시간표를 확인하세요</div>
+                                    <div class="class-location">로그인이 필요한 서비스입니다</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+                
                 // 오늘의 모든 수업 가져오기
                 const todaysClasses = getTodaysClasses();
+                console.log('오늘의 수업 개수:', todaysClasses.length);
+                console.log('오늘의 수업:', todaysClasses);
+                
                 const currentTime = getCurrentTimeInfo();
+                console.log('현재 시간:', currentTime);
                 
                 // 상태 업데이트
                 const statusEl = timetablePreview.querySelector('.timetable-now');
@@ -4693,7 +4719,7 @@
                     }
                     return;
                 }
-
+                
                 // 현재 수강 중인 강의와 다음 강의 찾기
                 let currentClass = null;
                 let nextClass = null;
@@ -4701,18 +4727,19 @@
                 
                 for (let i = 0; i < todaysClasses.length; i++) {
                     const classInfo = todaysClasses[i];
-                    const endMinutes = timeToMinutes(classInfo.endTime);
                     
                     // 현재 진행 중인 수업 찾기
                     if (currentTime.totalMinutes >= classInfo.startMinutes && 
-                        currentTime.totalMinutes < endMinutes) {
+                        currentTime.totalMinutes < classInfo.endMinutes) {
                         currentClass = classInfo;
+                        console.log('현재 수강 중인 강의:', currentClass);
                         break;
                     }
                     
                     // 다음 수업 찾기
                     if (classInfo.startMinutes > currentTime.totalMinutes && !nextClass) {
                         nextClass = classInfo;
+                        console.log('다음 수업:', nextClass);
                     }
                     
                     // 수강 예정 수업이 있는지 확인
@@ -4752,10 +4779,9 @@
                     // 수강 상태 결정
                     let statusText = '';
                     let statusColor = '#888';
-                    const endMinutes = timeToMinutes(classInfo.endTime);
                     
                     if (currentTime.totalMinutes >= classInfo.startMinutes && 
-                        currentTime.totalMinutes < endMinutes) {
+                        currentTime.totalMinutes < classInfo.endMinutes) {
                         // 현재 수강 중
                         statusText = '수강 중';
                         statusColor = '#4caf50';
