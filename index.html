@@ -1424,39 +1424,21 @@
                        <div class="shortcut-icon">📅</div>
                        <div class="shortcut-text">학사일정</div>
                    </div>
-               </div>
+                </div>
                
-               <!-- 오늘의 시간표 -->
-               <div class="timetable-preview">
-                   <div class="timetable-header">
-                       <div class="timetable-date">2025년 4월 8일 (월) 시간표</div>
-                       <div class="timetable-now">현재 강의</div>
-                   </div>
-                   <div class="class-item">
-                       <div class="class-time">09:00</div>
-                       <div class="class-info">
-                           <div class="class-name">웹 프로그래밍 실습</div>
-                           <div class="class-location">공학관 3-201</div>
-                       </div>
-                   </div>
-                   <div class="class-item">
-                       <div class="class-time">11:00</div>
-                       <div class="class-info">
-                           <div class="class-name">경영통계학</div>
-                           <div class="class-location">경영관 2-101</div>
-                       </div>
-                   </div>
-                   <div class="class-item">
-                       <div class="class-time">14:00</div>
-                       <div class="class-info">
-                           <div class="class-name">마케팅 원론</div>
-                           <div class="class-location">경영관 1-304</div>
-                       </div>
-                   </div>
-               </div>
+                <!-- 오늘의 시간표 -->
+                <div class="timetable-preview">
+                    <div class="timetable-header">
+                        <div class="timetable-date">2025년 4월 8일 (월) 시간표</div>
+                        <div class="timetable-now">현재 강의</div>
+                    </div>
+                    <div id="timetable-preview-content">
+                        <!-- 동적으로 생성될 수업 내용 -->
+                    </div>
+                </div>
                
-               <!-- 다음 셔틀버스 -->
-               <div class="shuttle-card">
+                <!-- 다음 셔틀버스 -->
+                <div class="shuttle-card">
                    <div class="shuttle-header">
                        <div class="shuttle-title">다음 셔틀버스</div>
                        <div class="shuttle-icon">🚌</div>
@@ -4545,6 +4527,40 @@
                 return { currentClass, nextClass };
             }
 
+
+            // 오늘의 모든 수업 가져오기
+            function getTodaysClasses(courses) {
+                const currentTime = getCurrentTimeInfo();
+                const todaysClasses = [];
+                
+                // 일요일이면 빈 배열 반환
+                if (currentTime.day === 0) {
+                    return todaysClasses;
+                }
+                
+                // 오늘의 모든 수업을 찾아 시간 순으로 정렬
+                for (const course of courses) {
+                    for (const time of course.times) {
+                        if (time.day !== currentTime.day) continue;
+                        
+                        // 수업의 첫 번째 교시 정보만 추가 (미리보기용)
+                        todaysClasses.push({
+                            course: course,
+                            period: time.start,
+                            startTime: periodTimes[time.start].start,
+                            endTime: periodTimes[time.end].end,
+                            startMinutes: timeToMinutes(periodTimes[time.start].start)
+                        });
+                    }
+                }
+                
+                // 시간 순으로 정렬
+                todaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
+                
+                return todaysClasses;
+            }
+
+
             // 시간표 미리보기 업데이트
             function updateTimetablePreview() {
                 const timetablePreview = document.querySelector('.timetable-preview');
@@ -4579,46 +4595,52 @@
                 }
                 
                 // 수업 목록 업데이트
-                const classContainer = timetablePreview.querySelector('.class-list') || 
-                                    timetablePreview.querySelector('.class-item')?.parentElement;
+                const classContainer = document.getElementById('timetable-preview-content');
                 
                 if (classContainer) {
                     classContainer.innerHTML = '';
                     
-                    if (currentClass) {
-                        const classDiv = document.createElement('div');
-                        classDiv.className = 'class-item';
-                        classDiv.innerHTML = `
-                            <div class="class-time">${currentClass.startTime}</div>
-                            <div class="class-info">
-                                <div class="class-name" style="color: #4caf50;">${currentClass.course.name}</div>
-                                <div class="class-location">${currentClass.location}</div>
-                                <div style="color: #4caf50; font-size: 12px; margin-top: 4px;">
+                    // 오늘의 모든 수업 가져오기
+                    const courses = loadTimetableData();
+                    const todaysClasses = getTodaysClasses(courses);
+                    
+                    if (todaysClasses.length > 0) {
+                        todaysClasses.forEach(classInfo => {
+                            const classDiv = document.createElement('div');
+                            classDiv.className = 'class-item';
+                            
+                            let statusText = '';
+                            let statusColor = '';
+                            
+                            // 현재 수강 중인 수업인지 확인
+                            if (currentClass && classInfo.course.id === currentClass.course.id && 
+                                classInfo.period === currentClass.period) {
+                                statusText = `<div style="color: #4caf50; font-size: 12px; margin-top: 4px;">
                                     ${currentClass.remainingMinutes}분 후 종료
-                                </div>
-                            </div>
-                        `;
-                        classContainer.appendChild(classDiv);
-                    }
-                    
-                    if (nextClass) {
-                        const classDiv = document.createElement('div');
-                        classDiv.className = 'class-item';
-                        classDiv.innerHTML = `
-                            <div class="class-time">${nextClass.startTime}</div>
-                            <div class="class-info">
-                                <div class="class-name" style="color: #ff9800;">${nextClass.course.name}</div>
-                                <div class="class-location">${nextClass.location}</div>
-                                <div style="color: #ff9800; font-size: 12px; margin-top: 4px;">
+                                </div>`;
+                                statusColor = '#4caf50';
+                            }
+                            // 다음 수업인지 확인
+                            else if (nextClass && classInfo.course.id === nextClass.course.id && 
+                                    classInfo.period === nextClass.period) {
+                                statusText = `<div style="color: #ff9800; font-size: 12px; margin-top: 4px;">
                                     ${nextClass.minutesToStart}분 후 시작
+                                </div>`;
+                                statusColor = '#ff9800';
+                            }
+                            
+                            classDiv.innerHTML = `
+                                <div class="class-time">${classInfo.startTime}</div>
+                                <div class="class-info">
+                                    <div class="class-name" style="color: ${statusColor || '#f0f0f0'};">${classInfo.course.name}</div>
+                                    <div class="class-location">${classInfo.course.room || '강의실 미정'}</div>
+                                    ${statusText}
                                 </div>
-                            </div>
-                        `;
-                        classContainer.appendChild(classDiv);
-                    }
-                    
-                    // 수업이 없는 경우
-                    if (!currentClass && !nextClass) {
+                            `;
+                            classContainer.appendChild(classDiv);
+                        });
+                    } else {
+                        // 수업이 없는 경우
                         const classDiv = document.createElement('div');
                         classDiv.className = 'class-item';
                         classDiv.innerHTML = `
@@ -4632,7 +4654,9 @@
                     }
                 }
             }
-            
+
+
+
             // 저장된 위젯 설정 불러오기
             function loadWidgetSettings() {
                 // 로컬 스토리지에서 위젯 설정 가져오기
