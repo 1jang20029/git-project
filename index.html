@@ -4645,7 +4645,7 @@
 
 
             // 시간표 미리보기 업데이트
-            // 시간표 미리보기 업데이트 - 디버깅 강화 버전
+            // 시간표 미리보기 업데이트 - 시간 비교 로직 수정 및 버튼 추가
             function updateTimetablePreview() {
                 console.log('=== 시간표 미리보기 업데이트 시작 ===');
                 
@@ -4774,6 +4774,22 @@
                                     <div class="class-location">시간표에 과목을 추가해주세요</div>
                                 </div>
                             </div>
+                            <div class="class-item" style="border-top: 1px solid #eee; margin-top: 10px;">
+                                <div class="class-time" style="width: 100%;">
+                                    <button onclick="navigateToTimetable()" style="
+                                        width: 100%; 
+                                        padding: 10px; 
+                                        background-color: #c62917; 
+                                        color: white; 
+                                        border: none; 
+                                        border-radius: 6px; 
+                                        font-size: 14px; 
+                                        cursor: pointer;
+                                    ">
+                                        시간표로 이동
+                                    </button>
+                                </div>
+                            </div>
                         `;
                         return;
                     }
@@ -4785,7 +4801,7 @@
                     const currentMinute = now.getMinutes();
                     const currentTotalMinutes = currentHour * 60 + currentMinute;
                     
-                    console.log('현재 요일:', currentDay, '현재 시간:', currentHour + ':' + currentMinute);
+                    console.log('현재 요일:', currentDay, '현재 시간:', `${currentHour}:${currentMinute.toString().padStart(2, '0')}`, '총 분:', currentTotalMinutes);
                     
                     const todaysClasses = [];
                     
@@ -4817,11 +4833,13 @@
                                 const startTime = periods[time.start].start;
                                 const endTime = periods[time.end].end;
                                 
-                                // 시간을 분으로 변환
+                                // 시간을 분으로 변환 (더 정확한 계산)
                                 const [startHour, startMin] = startTime.split(':').map(Number);
                                 const [endHour, endMin] = endTime.split(':').map(Number);
                                 const startMinutes = startHour * 60 + startMin;
                                 const endMinutes = endHour * 60 + endMin;
+                                
+                                console.log(`수업 ${course.name}: ${startTime}(${startMinutes}분) ~ ${endTime}(${endMinutes}분), 현재: ${currentTotalMinutes}분`);
                                 
                                 todaysClasses.push({
                                     course: course,
@@ -4853,34 +4871,68 @@
                                     <div class="class-location">좋은 하루 보내세요!</div>
                                 </div>
                             </div>
+                            <div class="class-item" style="border-top: 1px solid #eee; margin-top: 10px;">
+                                <div class="class-time" style="width: 100%;">
+                                    <button onclick="navigateToTimetable()" style="
+                                        width: 100%; 
+                                        padding: 10px; 
+                                        background-color: #c62917; 
+                                        color: white; 
+                                        border: none; 
+                                        border-radius: 6px; 
+                                        font-size: 14px; 
+                                        cursor: pointer;
+                                    ">
+                                        시간표 보기
+                                    </button>
+                                </div>
+                            </div>
                         `;
                         return;
                     }
                     
-                    // 9. 현재 수업 상태 확인
+                    // 9. 현재 수업 상태 확인 (더 정확한 로직)
                     let currentClass = null;
                     let hasUpcomingClass = false;
+                    let allClassesEnded = true;
                     
                     for (let cls of todaysClasses) {
+                        // 수업 시작 5분 전부터 "수강 예정"으로 표시
+                        const earlyStartMinutes = cls.startMinutes - 5;
+                        
+                        console.log(`수업 ${cls.course.name} 검사: ${cls.startMinutes} <= ${currentTotalMinutes} < ${cls.endMinutes}`);
+                        
                         if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
                             currentClass = cls;
+                            allClassesEnded = false;
+                            console.log('현재 수강 중인 강의:', currentClass.course.name);
                             break;
-                        }
-                        if (cls.startMinutes > currentTotalMinutes) {
+                        } else if (cls.startMinutes > currentTotalMinutes) {
                             hasUpcomingClass = true;
+                            allClassesEnded = false;
                         }
                     }
                     
                     // 상태 배지 업데이트
                     if (statusEl) {
                         if (currentClass) {
-                            statusEl.textContent = '수강 중';
+                            const remainingMinutes = currentClass.endMinutes - currentTotalMinutes;
+                            statusEl.textContent = `수강 중 (${remainingMinutes}분 남음)`;
                             statusEl.style.backgroundColor = '#4caf50';
                         } else if (hasUpcomingClass) {
-                            statusEl.textContent = '수강 예정';
+                            const nextClass = todaysClasses.find(cls => cls.startMinutes > currentTotalMinutes);
+                            if (nextClass) {
+                                const minutesToStart = nextClass.startMinutes - currentTotalMinutes;
+                                statusEl.textContent = `수강 예정 (${minutesToStart}분 후)`;
+                            } else {
+                                statusEl.textContent = '수강 예정';
+                            }
                             statusEl.style.backgroundColor = '#ff9800';
-                        } else {
+                        } else if (allClassesEnded) {
                             statusEl.textContent = '수강 종료';
+                            statusEl.style.backgroundColor = '#888';
+                        } else {
+                            statusEl.textContent = '수업 없음';
                             statusEl.style.backgroundColor = '#888';
                         }
                     }
@@ -4895,10 +4947,12 @@
                         let statusColor = '#888';
                         
                         if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
-                            statusText = '수강 중';
+                            const remainingMinutes = cls.endMinutes - currentTotalMinutes;
+                            statusText = `수강 중 (${remainingMinutes}분 남음)`;
                             statusColor = '#4caf50';
                         } else if (cls.startMinutes > currentTotalMinutes) {
-                            statusText = '수강 예정';
+                            const minutesToStart = cls.startMinutes - currentTotalMinutes;
+                            statusText = `수강 예정 (${minutesToStart}분 후)`;
                             statusColor = '#ff9800';
                         } else {
                             statusText = '수강 종료';
@@ -4921,6 +4975,29 @@
                         classContainer.appendChild(classDiv);
                     });
                     
+                    // 시간표 이동 버튼 추가
+                    const buttonDiv = document.createElement('div');
+                    buttonDiv.className = 'class-item';
+                    buttonDiv.style.borderTop = '1px solid #eee';
+                    buttonDiv.style.marginTop = '10px';
+                    buttonDiv.innerHTML = `
+                        <div class="class-time" style="width: 100%;">
+                            <button onclick="navigateToTimetable()" style="
+                                width: 100%; 
+                                padding: 10px; 
+                                background-color: #c62917; 
+                                color: white; 
+                                border: none; 
+                                border-radius: 6px; 
+                                font-size: 14px; 
+                                cursor: pointer;
+                            ">
+                                시간표 보기
+                            </button>
+                        </div>
+                    `;
+                    classContainer.appendChild(buttonDiv);
+                    
                 } catch (error) {
                     console.error('시간표 미리보기 업데이트 중 오류:', error);
                     
@@ -4937,13 +5014,27 @@
                                 <div class="class-location">페이지를 새로고침해주세요</div>
                             </div>
                         </div>
+                        <div class="class-item" style="border-top: 1px solid #eee; margin-top: 10px;">
+                            <div class="class-time" style="width: 100%;">
+                                <button onclick="navigateToTimetable()" style="
+                                    width: 100%; 
+                                    padding: 10px; 
+                                    background-color: #c62917; 
+                                    color: white; 
+                                    border: none; 
+                                    border-radius: 6px; 
+                                    font-size: 14px; 
+                                    cursor: pointer;
+                                ">
+                                    시간표 보기
+                                </button>
+                            </div>
+                        </div>
                     `;
                 }
                 
                 console.log('=== 시간표 미리보기 업데이트 완료 ===');
             }
-
-            
 
 
 
