@@ -2554,6 +2554,13 @@
             if (tabName === 'facility') {
                 handleMapResize();
             }
+
+            // 홈 탭으로 전환 시 시간표 미리보기 업데이트
+        if (tabName === 'home') {
+            setTimeout(() => {
+                updateTimetablePreview();
+            }, 200);
+        }
         };
         
         // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
@@ -2711,6 +2718,16 @@
             });
             
             console.log('Placeholder 이미지 URL 수정 완료');
+
+
+            // 시간표 미리보기 초기화 (다른 초기화 완료 후)
+            setTimeout(() => {
+                console.log('시간표 미리보기 초기화');
+                updateTimetablePreview();
+                
+                // 1분마다 시간표 미리보기 업데이트
+                setInterval(updateTimetablePreview, 60000);
+            }, 1000);
         }
 
         // 즉시 실행하여 모든 이미지 URL 수정
@@ -3761,6 +3778,45 @@
                 alert("테스트 모드: 연성대학교 근처 위치가 표시됩니다.");
             }
 
+
+            // 오늘의 모든 수업 가져오기
+            function getTodaysClasses() {
+                const courses = loadTimetableData();
+                const currentTime = getCurrentTimeInfo();
+                const todaysClasses = [];
+                
+                // 일요일이면 빈 배열 반환
+                if (currentTime.day === 0) {
+                    return todaysClasses;
+                }
+                
+                // 오늘의 모든 수업 찾기
+                courses.forEach(course => {
+                    course.times.forEach(time => {
+                        if (time.day === currentTime.day) {
+                            // 첫 번째 교시만 표시 (미리보기용)
+                            const startTime = periodTimes[time.start].start;
+                            const endTime = periodTimes[time.end].end;
+                            
+                            todaysClasses.push({
+                                course: course,
+                                startTime: startTime,
+                                endTime: endTime,
+                                startMinutes: timeToMinutes(startTime),
+                                period: time.start
+                            });
+                        }
+                    });
+                });
+                
+                // 시간 순으로 정렬
+                todaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
+                
+                console.log('오늘의 수업 목록:', todaysClasses);
+                return todaysClasses;
+            }
+
+
             // 초기화 시 현재 환경에 최적화된 위치 추적 메서드 선택
             function initLocationTracking() {
                 // GPS 버튼에 이벤트 핸들러 등록
@@ -4338,102 +4394,111 @@
                 }
             }
             
-            function navigateToProfilePage(pageName) {
-                // 현재 로그인 상태 확인
-                const currentUser = localStorage.getItem('currentLoggedInUser');
-            
-                if (!currentUser) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    goToPage('login');
-                    return;
-                }
-            
-                // 페이지 이름에 따라 분기 처리
-                switch(pageName) {
-                    case 'timetable':
-                        alert('내 시간표 페이지로 이동합니다.');
-                        window.location.href = 'timetable.html';
-                        break;
-                
-                    case 'my-courses':
-                        alert('내 수강 강의 페이지로 이동합니다.');
-                        // window.location.href = 'my-courses.html';
-                        break;
-
-                    case 'favorite-classrooms':
-                        alert('즐겨찾는 강의실 페이지로 이동합니다.');
-                        // window.location.href = 'favorite-classrooms.html';
-                        break;
-
-                    case 'profile-edit':
-                        alert('개인정보 수정 페이지로 이동합니다.');
-                        window.location.href = 'profile-edit.html';
-                        break;
-
-                    case 'grades':
-                        alert('성적 조회 페이지로 이동합니다.');
-                        // window.location.href = 'grades.html';
-                        break;
-                
-                    case 'course-registration':
-                        alert('수강 신청 내역 페이지로 이동합니다.');
-                        // window.location.href = 'course-registration.html';
-                        break;
+                    function navigateToProfilePage(pageName) {
+                        // 현재 로그인 상태 확인
+                        const currentUser = localStorage.getItem('currentLoggedInUser');
                     
-                    case 'scholarships':
-                        alert('장학금 내역 페이지로 이동합니다.');
-                        // window.location.href = 'scholarships.html';
-                        break;
+                        if (!currentUser) {
+                            alert('로그인이 필요한 서비스입니다.');
+                            goToPage('login');
+                            return;
+                        }
+                    
+                        // 페이지 이름에 따라 분기 처리
+                        switch(pageName) {
+                            case 'timetable':
+                                alert('내 시간표 페이지로 이동합니다.');
+                                window.location.href = 'timetable.html';
+                                break;
+                        
+                            case 'my-courses':
+                                alert('내 수강 강의 페이지로 이동합니다.');
+                                // window.location.href = 'my-courses.html';
+                                break;
 
-                    case 'tuition':
-                        alert('등록금 납부 내역 페이지로 이동합니다.');
-                        // window.location.href = 'tuition.html';
-                        break;
+                            case 'favorite-classrooms':
+                                alert('즐겨찾는 강의실 페이지로 이동합니다.');
+                                // window.location.href = 'favorite-classrooms.html';
+                                break;
 
-                    case 'notification-settings':
-                        alert('알림 설정 페이지로 이동합니다.');
-                        // window.location.href = 'notification-settings.html';
-                        break;
+                            case 'profile-edit':
+                                alert('개인정보 수정 페이지로 이동합니다.');
+                                window.location.href = 'profile-edit.html';
+                                break;
 
-                    case 'widget-settings':
-                        alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
-                        window.location.href = 'widget-settings.html';
-                        break;
+                            case 'grades':
+                                alert('성적 조회 페이지로 이동합니다.');
+                                // window.location.href = 'grades.html';
+                                break;
+                        
+                            case 'course-registration':
+                                alert('수강 신청 내역 페이지로 이동합니다.');
+                                // window.location.href = 'course-registration.html';
+                                break;
+                            
+                            case 'scholarships':
+                                alert('장학금 내역 페이지로 이동합니다.');
+                                // window.location.href = 'scholarships.html';
+                                break;
 
-                    case 'app-info':
-                        alert('앱 정보 페이지로 이동합니다.');
-                        window.location.href = 'app-info.html';
-                        break;
-                    default:
-                        alert('준비 중인 기능입니다.');
-                }
-            }
+                            case 'tuition':
+                                alert('등록금 납부 내역 페이지로 이동합니다.');
+                                // window.location.href = 'tuition.html';
+                                break;
+
+                            case 'notification-settings':
+                                alert('알림 설정 페이지로 이동합니다.');
+                                // window.location.href = 'notification-settings.html';
+                                break;
+
+                            case 'widget-settings':
+                                alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+                                window.location.href = 'widget-settings.html';
+                                break;
+
+                            case 'app-info':
+                                alert('앱 정보 페이지로 이동합니다.');
+                                window.location.href = 'app-info.html';
+                                break;
+                            default:
+                                alert('준비 중인 기능입니다.');
+                        }
+                    }
 
             // 시간표 관련 데이터 가져오기 및 처리 함수
             function loadTimetableData() {
                 const currentUser = localStorage.getItem('currentLoggedInUser');
-                if (!currentUser) return [];
-                
-                // 현재 학기 정보 가져오기 (시간표 페이지와 동일한 형식)
-                const currentYear = new Date().getFullYear();
-                const currentMonth = new Date().getMonth() + 1;
-                let semester = 1; // 기본값
-                
-                if (currentMonth >= 3 && currentMonth <= 8) {
-                    semester = 1; // 1학기
-                } else if (currentMonth >= 9 && currentMonth <= 12) {
-                    semester = 2; // 2학기
-                } else if (currentMonth >= 1 && currentMonth <= 2) {
-                    semester = 2; // 전년도 2학기 계속
+                if (!currentUser) {
+                    console.log('로그인되지 않은 상태입니다.');
+                    return [];
                 }
                 
-                // 시간표 페이지에서 사용하는 저장 키 형식 그대로 사용
-                const currentTimetableId = JSON.parse(localStorage.getItem(`currentTimetable_user_${currentUser}`))?.id || 1;
-                const coursesKey = `courses_${currentYear}_${semester}_${currentTimetableId}_user_${currentUser}`;
+                // 현재 학기 정보 계산
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth() + 1;
+                let semester = 1;
                 
-                return JSON.parse(localStorage.getItem(coursesKey)) || [];
+                // 3-8월: 1학기, 9-2월: 2학기
+                if (currentMonth >= 3 && currentMonth <= 8) {
+                    semester = 1;
+                } else {
+                    semester = 2;
+                }
+                
+                // 시간표 ID 가져오기
+                const currentTimetable = JSON.parse(localStorage.getItem(`currentTimetable_user_${currentUser}`)) || { id: 1 };
+                const coursesKey = `courses_${currentYear}_${semester}_${currentTimetable.id}_user_${currentUser}`;
+                
+                console.log('시간표 데이터 키:', coursesKey);
+                const courses = JSON.parse(localStorage.getItem(coursesKey)) || [];
+                console.log('시간표 데이터:', courses);
+                
+                return courses;
             }
 
+            
+            
             // 현재 시간 및 요일 정보 가져기기
             function getCurrentTimeInfo() {
                 const now = new Date();
@@ -4441,11 +4506,8 @@
                 const currentHour = now.getHours();
                 const currentMinute = now.getMinutes();
                 
-                // 요일 매핑 (월=1, 화=2, ..., 토=6, 일=0은 제외)
-                const mappedDay = dayOfWeek;
-                
                 return {
-                    day: mappedDay === 0 ? 0 : mappedDay, // 일요일은 수업 없음
+                    day: dayOfWeek, // 실제 요일 (월=1, 화=2, ..., 일=0)
                     hour: currentHour,
                     minute: currentMinute,
                     totalMinutes: currentHour * 60 + currentMinute
@@ -4465,6 +4527,7 @@
                 9: { start: "21:00", end: "22:20" }
             };
 
+
             // 시간 문자열을 분으로 변환
             function timeToMinutes(timeStr) {
                 const [hours, minutes] = timeStr.split(':').map(Number);
@@ -4474,55 +4537,75 @@
             // 현재 수업 및 다음 수업 찾기
             function findCurrentAndNextClass() {
                 const courses = loadTimetableData();
+                if (!courses || courses.length === 0) {
+                    console.log('시간표 데이터가 없습니다.');
+                    return { currentClass: null, nextClass: null };
+                }
+                
                 const currentTime = getCurrentTimeInfo();
+                console.log('현재 시간 정보:', currentTime);
                 
                 let currentClass = null;
                 let nextClass = null;
-                let nextClassMinutes = Infinity;
                 
-                // 일요일이면 빈 결과 반환
+                // 일요일이면 수업 없음
                 if (currentTime.day === 0) {
                     return { currentClass, nextClass };
                 }
                 
-                // 오늘의 모든 수업 확인
-                for (const course of courses) {
-                    for (const time of course.times) {
-                        if (time.day !== currentTime.day) continue;
-                        
-                        for (let period = time.start; period <= time.end; period++) {
-                            const periodStart = timeToMinutes(periodTimes[period].start);
-                            const periodEnd = timeToMinutes(periodTimes[period].end);
-                            
-                            // 현재 수강 중인 수업 찾기
-                            if (currentTime.totalMinutes >= periodStart && currentTime.totalMinutes < periodEnd) {
-                                const remainingMinutes = periodEnd - currentTime.totalMinutes;
-                                currentClass = {
+                let allTodaysClasses = [];
+                
+                // 오늘의 모든 수업 수집
+                courses.forEach(course => {
+                    course.times.forEach(time => {
+                        if (time.day === currentTime.day) {
+                            for (let period = time.start; period <= time.end; period++) {
+                                const startMinutes = timeToMinutes(periodTimes[period].start);
+                                const endMinutes = timeToMinutes(periodTimes[period].end);
+                                
+                                allTodaysClasses.push({
                                     course: course,
                                     period: period,
+                                    startMinutes: startMinutes,
+                                    endMinutes: endMinutes,
                                     startTime: periodTimes[period].start,
-                                    endTime: periodTimes[period].end,
-                                    remainingMinutes: remainingMinutes,
-                                    location: course.room || '강의실 미정'
-                                };
-                            }
-                            
-                            // 다음 수업 찾기 (아직 시작하지 않은 수업 중 가장 가까운 것)
-                            if (periodStart > currentTime.totalMinutes && periodStart < nextClassMinutes) {
-                                nextClassMinutes = periodStart;
-                                const minutesToNext = periodStart - currentTime.totalMinutes;
-                                nextClass = {
-                                    course: course,
-                                    period: period,
-                                    startTime: periodTimes[period].start,
-                                    endTime: periodTimes[period].end,
-                                    minutesToStart: minutesToNext,
-                                    location: course.room || '강의실 미정'
-                                };
+                                    endTime: periodTimes[period].end
+                                });
                             }
                         }
+                    });
+                });
+                
+                console.log('오늘의 모든 수업:', allTodaysClasses);
+                
+                // 시간 순으로 정렬
+                allTodaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
+                
+                // 현재 수강 중인 수업 찾기
+                for (let classInfo of allTodaysClasses) {
+                    if (currentTime.totalMinutes >= classInfo.startMinutes && 
+                        currentTime.totalMinutes < classInfo.endMinutes) {
+                        currentClass = {
+                            ...classInfo,
+                            remainingMinutes: classInfo.endMinutes - currentTime.totalMinutes
+                        };
+                        break;
                     }
                 }
+                
+                // 다음 수업 찾기
+                for (let classInfo of allTodaysClasses) {
+                    if (classInfo.startMinutes > currentTime.totalMinutes) {
+                        nextClass = {
+                            ...classInfo,
+                            minutesToStart: classInfo.startMinutes - currentTime.totalMinutes
+                        };
+                        break;
+                    }
+                }
+                
+                console.log('현재 수업:', currentClass);
+                console.log('다음 수업:', nextClass);
                 
                 return { currentClass, nextClass };
             }
@@ -4563,16 +4646,16 @@
 
             // 시간표 미리보기 업데이트
             function updateTimetablePreview() {
+                console.log('시간표 미리보기 업데이트 시작');
+                
                 const timetablePreview = document.querySelector('.timetable-preview');
-                if (!timetablePreview) return;
+                if (!timetablePreview) {
+                    console.log('시간표 미리보기 요소를 찾을 수 없습니다.');
+                    return;
+                }
                 
-                const { currentClass, nextClass } = findCurrentAndNextClass();
-                const currentTime = getCurrentTimeInfo();
-                
-                // 날짜 정보 업데이트
+                // 날짜 업데이트
                 const dateEl = timetablePreview.querySelector('.timetable-date');
-                const statusEl = timetablePreview.querySelector('.timetable-now');
-                
                 if (dateEl) {
                     const now = new Date();
                     const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -4580,7 +4663,11 @@
                     dateEl.textContent = dateStr;
                 }
                 
+                // 현재 수업과 다음 수업 찾기
+                const { currentClass, nextClass } = findCurrentAndNextClass();
+                
                 // 상태 업데이트
+                const statusEl = timetablePreview.querySelector('.timetable-now');
                 if (statusEl) {
                     if (currentClass) {
                         statusEl.textContent = '현재 강의';
@@ -4596,64 +4683,71 @@
                 
                 // 수업 목록 업데이트
                 const classContainer = document.getElementById('timetable-preview-content');
+                if (!classContainer) {
+                    console.log('시간표 컨텐츠 컨테이너를 찾을 수 없습니다.');
+                    return;
+                }
                 
-                if (classContainer) {
-                    classContainer.innerHTML = '';
-                    
-                    // 오늘의 모든 수업 가져오기
-                    const courses = loadTimetableData();
-                    const todaysClasses = getTodaysClasses(courses);
-                    
-                    if (todaysClasses.length > 0) {
-                        todaysClasses.forEach(classInfo => {
-                            const classDiv = document.createElement('div');
-                            classDiv.className = 'class-item';
-                            
-                            let statusText = '';
-                            let statusColor = '';
-                            
-                            // 현재 수강 중인 수업인지 확인
-                            if (currentClass && classInfo.course.id === currentClass.course.id && 
-                                classInfo.period === currentClass.period) {
-                                statusText = `<div style="color: #4caf50; font-size: 12px; margin-top: 4px;">
-                                    ${currentClass.remainingMinutes}분 후 종료
-                                </div>`;
-                                statusColor = '#4caf50';
-                            }
-                            // 다음 수업인지 확인
-                            else if (nextClass && classInfo.course.id === nextClass.course.id && 
-                                    classInfo.period === nextClass.period) {
-                                statusText = `<div style="color: #ff9800; font-size: 12px; margin-top: 4px;">
-                                    ${nextClass.minutesToStart}분 후 시작
-                                </div>`;
-                                statusColor = '#ff9800';
-                            }
-                            
-                            classDiv.innerHTML = `
-                                <div class="class-time">${classInfo.startTime}</div>
-                                <div class="class-info">
-                                    <div class="class-name" style="color: ${statusColor || '#f0f0f0'};">${classInfo.course.name}</div>
-                                    <div class="class-location">${classInfo.course.room || '강의실 미정'}</div>
-                                    ${statusText}
-                                </div>
-                            `;
-                            classContainer.appendChild(classDiv);
-                        });
-                    } else {
-                        // 수업이 없는 경우
+                classContainer.innerHTML = '';
+                
+                // 오늘의 모든 수업 가져오기
+                const todaysClasses = getTodaysClasses();
+                
+                if (todaysClasses.length > 0) {
+                    todaysClasses.forEach(classInfo => {
                         const classDiv = document.createElement('div');
                         classDiv.className = 'class-item';
+                        
+                        let statusText = '';
+                        let nameColor = '#f0f0f0';
+                        
+                        // 현재 수업 확인
+                        if (currentClass && classInfo.course.name === currentClass.course.name && 
+                            classInfo.period === currentClass.period) {
+                            statusText = `<div style="color: #4caf50; font-size: 12px; margin-top: 4px;">
+                                ${currentClass.remainingMinutes}분 후 종료
+                            </div>`;
+                            nameColor = '#4caf50';
+                        }
+                        // 다음 수업 확인
+                        else if (nextClass && classInfo.course.name === nextClass.course.name && 
+                                classInfo.period === nextClass.period) {
+                            statusText = `<div style="color: #ff9800; font-size: 12px; margin-top: 4px;">
+                                ${nextClass.minutesToStart}분 후 시작
+                            </div>`;
+                            nameColor = '#ff9800';
+                        }
+                        
                         classDiv.innerHTML = `
-                            <div class="class-time">--:--</div>
+                            <div class="class-time">${classInfo.startTime}</div>
                             <div class="class-info">
-                                <div class="class-name">오늘 수업이 없습니다</div>
-                                <div class="class-location">좋은 하루 보내세요!</div>
+                                <div class="class-name" style="color: ${nameColor};">${classInfo.course.name}</div>
+                                <div class="class-location">${classInfo.course.room || '강의실 미정'}</div>
+                                ${statusText}
                             </div>
                         `;
                         classContainer.appendChild(classDiv);
-                    }
+                    });
+                } else {
+                    // 수업이 없는 경우
+                    const classDiv = document.createElement('div');
+                    classDiv.className = 'class-item';
+                    classDiv.innerHTML = `
+                        <div class="class-time">--:--</div>
+                        <div class="class-info">
+                            <div class="class-name">오늘 수업이 없습니다</div>
+                            <div class="class-location">좋은 하루 보내세요!</div>
+                        </div>
+                    `;
+                    classContainer.appendChild(classDiv);
                 }
+                
+                console.log('시간표 미리보기 업데이트 완료');
             }
+
+
+            
+
 
 
 
