@@ -270,8 +270,11 @@ console.log('모든 이미지 URL 수정 완료');
 
 // 로그인 상태 확인 및 UI 업데이트 - 수정된 버전
 function checkLoginStatus() {
+    console.log('로그인 상태 체크 시작');
+    
     // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
     const currentUser = localStorage.getItem('currentLoggedInUser');
+    console.log('현재 사용자:', currentUser);
     
     // 로그인 버튼과 프로필 드롭다운 컨테이너
     const loginButton = document.querySelector('.login-button');
@@ -281,31 +284,74 @@ function checkLoginStatus() {
     const loginPrompt = document.getElementById('profile-login-prompt');
     const profileContent = document.getElementById('profile-content');
     
+    console.log('UI 요소들:', {
+        loginButton: !!loginButton,
+        profileDropdownContainer: !!profileDropdownContainer,
+        loginPrompt: !!loginPrompt,
+        profileContent: !!profileContent
+    });
+    
     if (currentUser) {
+        console.log('로그인 상태 처리');
+        
         // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
-        if (loginButton) loginButton.style.display = 'none';
-        if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
+        if (loginButton) {
+            loginButton.style.display = 'none';
+            console.log('로그인 버튼 숨김');
+        }
+        if (profileDropdownContainer) {
+            profileDropdownContainer.style.display = 'block';
+            console.log('프로필 드롭다운 표시');
+        }
         
         // 프로필 탭: 로그인 프롬프트 숨기고 프로필 내용 표시
-        if (loginPrompt) loginPrompt.style.display = 'none';
-        if (profileContent) profileContent.style.display = 'block';
+        if (loginPrompt) {
+            loginPrompt.style.display = 'none';
+            console.log('로그인 프롬프트 숨김');
+        }
+        if (profileContent) {
+            profileContent.style.display = 'block';
+            console.log('프로필 내용 표시');
+        }
         
-        // 프로필 정보 강제 업데이트
-        setTimeout(() => {
-            updateDropdownProfileInfo(currentUser);
-            updateProfileInfo(currentUser);
-            updateAllProfileImages();
-        }, 200);
+        // 프로필 정보 갱신
+        console.log('프로필 정보 갱신 시작');
+        updateDropdownProfileInfo(currentUser);
+        updateProfileInfo(currentUser);
+        updateAllProfileImages();
         
     } else {
+        console.log('비로그인 상태 처리');
+        
         // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
-        if (loginButton) loginButton.style.display = 'block';
-        if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+        if (loginButton) {
+            loginButton.style.display = 'block';
+            console.log('로그인 버튼 표시');
+        }
+        if (profileDropdownContainer) {
+            profileDropdownContainer.style.display = 'none';
+            console.log('프로필 드롭다운 숨김');
+        }
         
         // 프로필 탭: 로그인 프롬프트 표시하고 프로필 내용 숨기기
-        if (loginPrompt) loginPrompt.style.display = 'flex';  // flex로 설정하여 중앙 정렬 유지
-        if (profileContent) profileContent.style.display = 'none';
+        if (loginPrompt) {
+            loginPrompt.style.display = 'flex';  // flex로 설정하여 중앙 정렬 유지
+            console.log('로그인 프롬프트 표시');
+        }
+        if (profileContent) {
+            profileContent.style.display = 'none';
+            console.log('프로필 내용 숨김');
+        }
+        
+        // 프로필 드롭다운이 열려있다면 닫기
+        const dropdown = document.querySelector('.profile-dropdown');
+        if (dropdown && dropdown.classList.contains('active')) {
+            dropdown.classList.remove('active');
+            console.log('프로필 드롭다운 닫기');
+        }
     }
+    
+    console.log('로그인 상태 체크 완료');
 }
 
 // 드롭다운 프로필 정보 업데이트
@@ -416,26 +462,29 @@ function updateProfileInfo(studentId) {
 // 로그아웃 기능
 function logout() {
     if (confirm('로그아웃 하시겠습니까?')) {
+        console.log('로그아웃 처리 시작');
+        
         // 현재 로그인 사용자 정보 삭제
         localStorage.removeItem('currentLoggedInUser');
-        // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
-        const loginButton = document.querySelector('.login-button');
-        const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+        console.log('로그인 정보 삭제');
         
-        // 로그인 버튼 표시, 프로필 드롭다운 숨김
-        if (loginButton) loginButton.style.display = 'block';
-        if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
-
         // 프로필 드롭다운이 열려있다면 닫기
         const dropdown = document.querySelector('.profile-dropdown');
-        if (dropdown) dropdown.classList.remove('active');
+        if (dropdown) {
+            dropdown.classList.remove('active');
+            console.log('드롭다운 닫기');
+        }
+        
+        // 즉시 로그인 상태 체크하여 UI 업데이트
+        checkLoginStatus();
+        console.log('UI 업데이트 완료');
+        
         // 홈 탭으로 전환
         switchTab('home');
-        
-        // 로그인 상태 체크
-        checkLoginStatus();
+        console.log('홈 탭으로 이동');
 
         alert('로그아웃 되었습니다.');
+        console.log('로그아웃 완료');
     }
 }
 
@@ -601,13 +650,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 탭 전환 함수 - 시설 탭으로 전환 시 페이지네이션 초기화 추가 (수정된 버전)
 function switchTab(tabName) {
+    console.log(`탭 전환: ${tabName}`);
+    
     // 모든 탭 콘텐츠 숨기기
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
     // 선택한 탭 콘텐츠 표시
-    document.getElementById(`${tabName}-tab`).classList.add('active');
+    const selectedTab = document.getElementById(`${tabName}-tab`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
     
     // 탭 메뉴 활성화 상태 변경
     document.querySelectorAll('.tab-item').forEach(item => {
@@ -623,6 +677,22 @@ function switchTab(tabName) {
         }
     }
     
+    // 프로필 탭으로 전환 시 로그인 상태 재확인
+    if (tabName === 'profile') {
+        console.log('프로필 탭 - 로그인 상태 재확인');
+        
+        // 500ms 딜레이 후 로그인 상태 확인 (확실한 UI 업데이트를 위해)
+        setTimeout(() => {
+            checkLoginStatus();
+            
+            // 로그인된 상태라면 프로필 이미지 업데이트
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            if (currentUser) {
+                updateAllProfileImages();
+            }
+        }, 500);
+    }
+    
     // 시설 탭으로 전환 시 건물 목록 페이지네이션 초기화 및 지도 갱신
     if (tabName === 'facility') {
         // 첫 페이지 로드
@@ -634,18 +704,11 @@ function switchTab(tabName) {
         handleMapResize();
     }
     
-    // 프로필 탭으로 전환 시 로그인 상태 재확인
-    if (tabName === 'profile') {
-        // 로그인 상태 재확인
-        checkLoginStatus();
-        
-        // 로그인된 상태라면 프로필 이미지 업데이트
-        const currentUser = localStorage.getItem('currentLoggedInUser');
-        if (currentUser) {
-            setTimeout(() => {
-                updateAllProfileImages();
-            }, 100);
-        }
+    // 홈 탭으로 전환 시 시간표 미리보기 업데이트
+    if (tabName === 'home') {
+        setTimeout(() => {
+            updateTimetablePreview();
+        }, 200);
     }
 }
 
