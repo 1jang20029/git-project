@@ -2262,8 +2262,11 @@ function closeProfileDropdown(event) {
 
 // 로그인 상태 확인 및 UI 업데이트
 function checkLoginStatus() {
+    console.log('로그인 상태 확인 시작');
+    
     // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
     const currentUser = localStorage.getItem('currentLoggedInUser');
+    console.log('현재 로그인 사용자:', currentUser);
     
     // 로그인 버튼과 프로필 드롭다운 컨테이너
     const loginButton = document.querySelector('.login-button');
@@ -2274,11 +2277,13 @@ function checkLoginStatus() {
         if (loginButton) loginButton.style.display = 'none';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
         
-        // 드롭다운 내 프로필 정보 업데이트
-        updateDropdownProfileInfo(currentUser);
+        // 프로필 정보 강제 업데이트
+        setTimeout(() => {
+            updateDropdownProfileInfo(currentUser);
+            updateProfileInfo(currentUser);
+            updateAllProfileImages();
+        }, 100);
         
-        // 프로필 탭의 정보도 업데이트
-        updateProfileInfo(currentUser);
     } else {
         // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
         if (loginButton) loginButton.style.display = 'block';
@@ -2286,182 +2291,242 @@ function checkLoginStatus() {
     }
 }
 
+// 탭 전환 시에도 프로필 정보 업데이트
+const originalSwitchTab = window.switchTab;
+window.switchTab = function(tabName) {
+    originalSwitchTab(tabName);
+    
+    // 프로필 탭으로 전환 시 정보 업데이트
+    if (tabName === 'profile') {
+        setTimeout(() => {
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            if (currentUser) {
+                console.log('프로필 탭 전환 시 정보 업데이트');
+                updateProfileInfo(currentUser);
+                updateAllProfileImages();
+            }
+        }, 100);
+    }
+};
+
 // 드롭다운 프로필 정보 업데이트
 function updateDropdownProfileInfo(studentId) {
-    const dropdown = document.querySelector('.profile-dropdown');
-    if (!dropdown) return;
+    console.log('드롭다운 프로필 정보 업데이트 시작:', studentId);
     
-    const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
-    const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
-    const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+    const dropdown = document.querySelector('.profile-dropdown');
+    if (!dropdown) {
+        console.error('드롭다운을 찾을 수 없습니다');
+        return;
+    }
+    
+    // 사용자 정보 가져오기
+    const name = localStorage.getItem(`user_${studentId}_name`) || '이름 없음';
+    const department = localStorage.getItem(`user_${studentId}_department`) || '';
+    const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
+    
+    // 실제 학번 가져오기
+    let displayStudentId = studentId;
+    const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
+    if (actualStudentId) {
+        displayStudentId = actualStudentId;
+        console.log('소셜 로그인 사용자, 실제 학번:', actualStudentId);
+    }
     
     // 이름 업데이트
     const nameElement = dropdown.querySelector('.dropdown-profile-name');
-    if (nameElement) nameElement.textContent = name;
-    
-    // 학과 및 학년 정보 업데이트
-    const detailElement = dropdown.querySelector('.dropdown-profile-detail');
-    if (detailElement && department) {
-        let departmentText = '';
-        
-        switch(department) {
-            case 'computerScience':
-                departmentText = '컴퓨터정보학과';
-                break;
-            case 'business':
-                departmentText = '경영학과';
-                break;
-            case 'nursing':
-                departmentText = '간호학과';
-                break;
-            case 'engineering':
-                departmentText = '공학계열';
-                break;
-            case 'arts':
-                departmentText = '예술계열';
-                break;
-            default:
-                departmentText = department;
-        }
-        
-        detailElement.textContent = `${departmentText} | ${grade}학년`;
+    if (nameElement) {
+        nameElement.textContent = name;
+        console.log('드롭다운 이름 업데이트:', name);
     }
     
-    // 학번 업데이트 - 항상 실제 입력된 학번 사용
-    const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
-    if (studentIdElement) {
-        // 실제 입력된 학번 가져오기 (소셜 로그인의 경우)
-        const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
-        const displayStudentId = actualStudentId || studentId;
-        studentIdElement.textContent = `학번: ${displayStudentId}`;
+    // 학과명 변환
+    let departmentText = '';
+    switch(department) {
+        case 'computerScience':
+        case '컴퓨터정보학과':
+            departmentText = '컴퓨터정보학과';
+            break;
+        case 'business':
+        case '경영학과':
+            departmentText = '경영학과';
+            break;
+        case 'nursing':
+        case '간호학과':
+            departmentText = '간호학과';
+            break;
+        case 'engineering':
+        case '공학계열':
+            departmentText = '공학계열';
+            break;
+        case 'arts':
+        case '예술계열':
+            departmentText = '예술계열';
+            break;
+        default:
+            departmentText = department;
+    }
+    
+    // 드롭다운 상세 정보 요소들 가져오기
+    const detailElements = dropdown.querySelectorAll('.dropdown-profile-detail');
+    
+    if (detailElements.length >= 2) {
+        // 첫 번째 detail: 학과 | 학년
+        detailElements[0].textContent = `${departmentText} | ${grade}학년`;
+        console.log('드롭다운 학과/학년 업데이트:', `${departmentText} | ${grade}학년`);
+        
+        // 두 번째 detail: 학번
+        detailElements[1].textContent = `학번: ${displayStudentId}`;
+        console.log('드롭다운 학번 업데이트:', displayStudentId);
+    } else {
+        console.error('드롭다운 detail 요소를 찾을 수 없습니다:', detailElements.length);
     }
 }
 
 
 // 프로필 정보 업데이트
 function updateProfileInfo(studentId) {
+    console.log('프로필 정보 업데이트 시작:', studentId);
+    
     const profileTab = document.getElementById('profile-tab');
     
     if (profileTab) {
-        const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
-        const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
-        const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+        // 사용자 정보 가져오기
+        const name = localStorage.getItem(`user_${studentId}_name`) || '이름 없음';
+        const department = localStorage.getItem(`user_${studentId}_department`) || '';
+        const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
+        
+        // 실제 학번 가져오기 (소셜 로그인의 경우 별도 저장된 학번 사용)
+        let displayStudentId = studentId;
+        const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
+        if (actualStudentId) {
+            displayStudentId = actualStudentId;
+            console.log('소셜 로그인 사용자, 실제 학번:', actualStudentId);
+        }
         
         // 프로필 이름 업데이트
         const profileName = profileTab.querySelector('.profile-name');
         if (profileName) {
             profileName.textContent = name;
+            console.log('이름 업데이트:', name);
         }
         
-        // 학과 및 학년 정보 업데이트
-        const profileDetail = profileTab.querySelector('.profile-detail');
-        if (profileDetail && department) {
-            let departmentText = '';
-            
-            switch(department) {
-                case 'computerScience':
-                    departmentText = '컴퓨터정보학과';
-                    break;
-                case 'business':
-                    departmentText = '경영학과';
-                    break;
-                case 'nursing':
-                    departmentText = '간호학과';
-                    break;
-                case 'engineering':
-                    departmentText = '공학계열';
-                    break;
-                case 'arts':
-                    departmentText = '예술계열';
-                    break;
-                default:
-                    departmentText = department;
-            }
-            
-            profileDetail.textContent = `${departmentText} | ${grade}학년`;
+        // 학과명 변환
+        let departmentText = '';
+        switch(department) {
+            case 'computerScience':
+            case '컴퓨터정보학과':
+                departmentText = '컴퓨터정보학과';
+                break;
+            case 'business':
+            case '경영학과':
+                departmentText = '경영학과';
+                break;
+            case 'nursing':
+            case '간호학과':
+                departmentText = '간호학과';
+                break;
+            case 'engineering':
+            case '공학계열':
+                departmentText = '공학계열';
+                break;
+            case 'arts':
+            case '예술계열':
+                departmentText = '예술계열';
+                break;
+            default:
+                departmentText = department;
         }
         
-        // 학번 업데이트 - 항상 실제 입력된 학번 사용
-        const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
-        if (profileStudentId) {
-            // 실제 입력된 학번 가져오기 (소셜 로그인의 경우)
-            const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
-            const displayStudentId = actualStudentId || studentId;
-            profileStudentId.textContent = `학번: ${displayStudentId}`;
+        // 모든 프로필 상세 정보 요소 가져오기
+        const profileDetails = profileTab.querySelectorAll('.profile-detail');
+        
+        if (profileDetails.length >= 2) {
+            // 첫 번째 detail: 학과 | 학년
+            profileDetails[0].textContent = `${departmentText} | ${grade}학년`;
+            console.log('학과/학년 업데이트:', `${departmentText} | ${grade}학년`);
+            
+            // 두 번째 detail: 학번
+            profileDetails[1].textContent = `학번: ${displayStudentId}`;
+            console.log('학번 업데이트:', displayStudentId);
+        } else {
+            console.error('프로필 detail 요소를 찾을 수 없습니다:', profileDetails.length);
         }
+    } else {
+        console.error('프로필 탭을 찾을 수 없습니다');
     }
 }
 
-        function navigateToProfilePage(pageName) {
-            // 현재 로그인 상태 확인
-            const currentUser = localStorage.getItem('currentLoggedInUser');
+
+function navigateToProfilePage(pageName) {
+    // 현재 로그인 상태 확인
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        goToPage('login');
+        return;
+    }
+
+    // 페이지 이름에 따라 분기 처리
+    switch(pageName) {
+        case 'timetable':
+            alert('내 시간표 페이지로 이동합니다.');
+            window.location.href = 'timetable.html';
+            break;
+    
+        case 'my-courses':
+            alert('내 수강 강의 페이지로 이동합니다.');
+            // window.location.href = 'my-courses.html';
+            break;
+
+        case 'favorite-classrooms':
+            alert('즐겨찾는 강의실 페이지로 이동합니다.');
+            // window.location.href = 'favorite-classrooms.html';
+            break;
+
+        case 'profile-edit':
+            alert('개인정보 수정 페이지로 이동합니다.');
+            window.location.href = 'profile-edit.html';
+            break;
+
+        case 'grades':
+            alert('성적 조회 페이지로 이동합니다.');
+            // window.location.href = 'grades.html';
+            break;
+    
+        case 'course-registration':
+            alert('수강 신청 내역 페이지로 이동합니다.');
+            // window.location.href = 'course-registration.html';
+            break;
         
-            if (!currentUser) {
-                alert('로그인이 필요한 서비스입니다.');
-                goToPage('login');
-                return;
-            }
-        
-            // 페이지 이름에 따라 분기 처리
-            switch(pageName) {
-                case 'timetable':
-                    alert('내 시간표 페이지로 이동합니다.');
-                    window.location.href = 'timetable.html';
-                    break;
-            
-                case 'my-courses':
-                    alert('내 수강 강의 페이지로 이동합니다.');
-                    // window.location.href = 'my-courses.html';
-                    break;
+        case 'scholarships':
+            alert('장학금 내역 페이지로 이동합니다.');
+            // window.location.href = 'scholarships.html';
+            break;
 
-                case 'favorite-classrooms':
-                    alert('즐겨찾는 강의실 페이지로 이동합니다.');
-                    // window.location.href = 'favorite-classrooms.html';
-                    break;
+        case 'tuition':
+            alert('등록금 납부 내역 페이지로 이동합니다.');
+            // window.location.href = 'tuition.html';
+            break;
 
-                case 'profile-edit':
-                    alert('개인정보 수정 페이지로 이동합니다.');
-                    window.location.href = 'profile-edit.html';
-                    break;
+        case 'notification-settings':
+            alert('알림 설정 페이지로 이동합니다.');
+            // window.location.href = 'notification-settings.html';
+            break;
 
-                case 'grades':
-                    alert('성적 조회 페이지로 이동합니다.');
-                    // window.location.href = 'grades.html';
-                    break;
-            
-                case 'course-registration':
-                    alert('수강 신청 내역 페이지로 이동합니다.');
-                    // window.location.href = 'course-registration.html';
-                    break;
-                
-                case 'scholarships':
-                    alert('장학금 내역 페이지로 이동합니다.');
-                    // window.location.href = 'scholarships.html';
-                    break;
+        case 'widget-settings':
+            alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+            window.location.href = 'widget-settings.html';
+            break;
 
-                case 'tuition':
-                    alert('등록금 납부 내역 페이지로 이동합니다.');
-                    // window.location.href = 'tuition.html';
-                    break;
-
-                case 'notification-settings':
-                    alert('알림 설정 페이지로 이동합니다.');
-                    // window.location.href = 'notification-settings.html';
-                    break;
-
-                case 'widget-settings':
-                    alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
-                    window.location.href = 'widget-settings.html';
-                    break;
-
-                case 'app-info':
-                    alert('앱 정보 페이지로 이동합니다.');
-                    window.location.href = 'app-info.html';
-                    break;
-                default:
-                    alert('준비 중인 기능입니다.');
-            }
-        }
+        case 'app-info':
+            alert('앱 정보 페이지로 이동합니다.');
+            window.location.href = 'app-info.html';
+            break;
+        default:
+            alert('준비 중인 기능입니다.');
+    }
+}
 
 // 시간표 관련 데이터 가져오기 및 처리 함수
 function loadTimetableData() {
