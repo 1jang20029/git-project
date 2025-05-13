@@ -4515,7 +4515,7 @@
             }
 
             // 교시별 시간 정보 (시간표 페이지와 동일)
-            window.periodTimes = {
+            window.periods  = {
                 1: { start: "09:30", end: "10:20" },
                 2: { start: "10:30", end: "11:20" },
                 3: { start: "11:30", end: "12:20" },
@@ -4531,6 +4531,9 @@
                 13: { start: "21:30", end: "22:20" }
             };
 
+            // 2. periodTimes 변수도 같은 값으로 설정
+            window.periodTimes = window.periods;
+
 
             // 함수 내부의 periods 정의를 무력화
             const originalUpdateTimetablePreview = updateTimetablePreview;  
@@ -4544,20 +4547,23 @@
                 // periods 객체를 복원
                 window.periods = savedPeriods;
                 
-                // 모든 함수 내부 periods 정의를 전역 periods로 강제 변경
-                const elements = document.querySelectorAll('.class-info');
-                elements.forEach(el => {
-                    if (el.textContent.includes('1교시') && el.textContent.includes('09:00')) {
-                        el.innerHTML = el.innerHTML.replace('09:00', '09:30');
-                    }
-                });
+                // 함수 실행 후 DOM에서 시간 직접 수정
+                setTimeout(() => {
+                    const classItems = document.querySelectorAll('.class-item');
+                    classItems.forEach(item => {
+                        const timeEl = item.querySelector('.class-time');
+                        if (timeEl && timeEl.textContent === '09:00') {
+                            timeEl.textContent = '09:30';
+                            console.log('시간 수정: 09:00 → 09:30');
+                        }
+                    });
+                }, 50);
                 
                 return result;
             };
 
 
-            // periods 변수도 정의
-            window.periods = window.periodTimes;
+
 
             // 시간표 미리보기 다시 업데이트
             updateTimetablePreview();
