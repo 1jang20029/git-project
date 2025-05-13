@@ -4532,6 +4532,30 @@
             };
 
 
+            // 함수 내부의 periods 정의를 무력화
+            const originalUpdateTimetablePreview = updateTimetablePreview;  
+            updateTimetablePreview = function() {
+                // periods 객체를 보존하기 위해 임시 저장
+                const savedPeriods = window.periods;
+                
+                // 원래 함수 실행
+                const result = originalUpdateTimetablePreview.apply(this, arguments);
+                
+                // periods 객체를 복원
+                window.periods = savedPeriods;
+                
+                // 모든 함수 내부 periods 정의를 전역 periods로 강제 변경
+                const elements = document.querySelectorAll('.class-info');
+                elements.forEach(el => {
+                    if (el.textContent.includes('1교시') && el.textContent.includes('09:00')) {
+                        el.innerHTML = el.innerHTML.replace('09:00', '09:30');
+                    }
+                });
+                
+                return result;
+            };
+
+
             // periods 변수도 정의
             window.periods = window.periodTimes;
 
