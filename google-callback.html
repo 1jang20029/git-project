@@ -126,6 +126,9 @@
             // 현재 로그인된 사용자로 설정
             localStorage.setItem('currentLoggedInUser', userId);
             
+            // 사용자 정보 불러오기
+            const userInfo = getUserInfo(userId);
+            
             // 최초 로그인 여부 확인
             const isFirstLogin = localStorage.getItem(`user_${userId}_first_login`) !== 'false';
             
@@ -144,6 +147,37 @@
                     window.location.href = "index.html";
                 }, 1000);
             }
+        }
+        
+        // 사용자 정보 가져오기
+        function getUserInfo(userId) {
+            const userInfo = localStorage.getItem(`user_${userId}_info`);
+            return userInfo ? JSON.parse(userInfo) : null;
+        }
+        
+        // 회원가입 완료 처리 (register.html에서 호출)
+        function registerComplete(userData) {
+            const googleId = userData.socialId;
+            
+            // 사용자 등록 상태 저장
+            localStorage.setItem(`user_${googleId}_registered`, 'true');
+            
+            // 사용자 정보 저장
+            localStorage.setItem(`user_${googleId}_info`, JSON.stringify({
+                university: userData.university || '연성대학교',
+                department: userData.department || '영상콘텐츠과',
+                major: userData.major || '영상콘텐츠제작전공',
+                grade: userData.grade || '2학년',
+                studentId: userData.studentId || 'google_12345',
+                email: userData.email,
+                name: userData.name
+            }));
+            
+            // 첫 로그인 플래그 설정
+            localStorage.setItem(`user_${googleId}_first_login`, 'true');
+            
+            // 로그인 처리
+            loginExistingUser(googleId);
         }
         
         // 구글 사용자 확인
@@ -179,11 +213,21 @@
         
         // 페이지 로드 시 실행되는 함수
         window.onload = function() {
-            // 취소 버튼 처리 (구글 로그인 페이지에서 취소 버튼 클릭 감지)
-            // cancel 파라미터가 전달되었거나 error 파라미터가 있으면 로그인 페이지로 이동
-            
             // URL 파라미터 확인
             const urlParams = new URLSearchParams(window.location.search);
+            
+            // 회원가입 완료로 돌아온 경우
+            const fromRegister = urlParams.get('from');
+            if (fromRegister === 'register' && urlParams.get('status') === 'complete') {
+                // 회원가입 완료 후 돌아온 경우
+                const userData = sessionStorage.getItem('registered_user_data');
+                if (userData) {
+                    registerComplete(JSON.parse(userData));
+                    // 임시 데이터 삭제
+                    sessionStorage.removeItem('registered_user_data');
+                    return;
+                }
+            }
             
             // 취소 버튼 클릭 또는 에러가 있는 경우
             const cancel = urlParams.get('cancel');
@@ -232,12 +276,8 @@
             }
         };
         
-        // 이 코드를 추가하여 구글 선택 페이지에서 취소 버튼 클릭 감지
-        // 구글 OAuth 페이지에서 가로채기는 불가능하지만, 로그인 페이지로 이동하는 핸들러
-        document.addEventListener('click', function(event) {
-            // 취소 버튼 클릭 감지 - 실제로는 작동하지 않음 (CORS 정책 때문)
-            // 이는 단지 참고용이며, 실제로는 Google이 취소 버튼 클릭 시 redirect_uri로 error 또는 cancel 파라미터와 함께 리디렉션
-        });
+        // 전역으로 함수 노출 (register.html에서 호출할 수 있도록)
+        window.parentRegisterComplete = registerComplete;
     </script>
 </body>
 </html>
