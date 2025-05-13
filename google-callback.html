@@ -80,60 +80,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .error-container {
-            display: none;
-            background-color: #fff9f9;
-            border: 1px solid #ffdddd;
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .error-title {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .error-message {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .button {
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        
-        .button:hover {
-            background-color: #3367d6;
-        }
-
-        .btn-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn-secondary {
-            background-color: #f1f3f4;
-            color: #444;
-            border: 1px solid #ddd;
-        }
-
-        .btn-secondary:hover {
-            background-color: #e8eaed;
-        }
     </style>
 </head>
 <body>
@@ -142,18 +88,83 @@
         <h1 id="status-title">구글 로그인 처리 중</h1>
         <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
         <div class="spinner" id="loading-spinner"></div>
-        
-        <div id="error-container" class="error-container">
-            <div class="error-title">로그인 오류</div>
-            <div class="error-message" id="error-details">로그인 처리 중 문제가 발생했습니다. 다시 시도해주세요.</div>
-        </div>
-        
-        <div class="btn-wrapper">
-            <button class="button" id="retry-button" style="display: none;" onclick="goToLogin()">다시 시도하기</button>
-        </div>
     </div>
 
     <script>
+        // 로그인 페이지로 이동
+        function goToLogin() {
+            window.location.href = "login.html";
+        }
+        
+        // 상태 메시지 업데이트 함수
+        function updateStatus(title, message) {
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message;
+        }
+        
+        // 구글 회원가입 페이지로 리디렉션
+        function redirectToRegister() {
+            // 고정된 사용자 ID 사용
+            const googleId = "google_12345";
+            
+            // 세션 스토리지에 임시 데이터 저장
+            sessionStorage.setItem('temp_social_id', googleId);
+            sessionStorage.setItem('temp_social_type', 'google');
+            sessionStorage.setItem('temp_social_name', '구글 사용자');
+            sessionStorage.setItem('temp_social_email', 'google_user@example.com');
+            
+            updateStatus('새 사용자 확인', '회원가입 페이지로 이동합니다...');
+            
+            // 회원가입 페이지로 이동
+            setTimeout(function() {
+                window.location.href = "register.html?social=google";
+            }, 1000);
+        }
+        
+        // 이미 가입된 사용자 로그인 처리
+        function loginExistingUser(userId) {
+            // 현재 로그인된 사용자로 설정
+            localStorage.setItem('currentLoggedInUser', userId);
+            
+            // 최초 로그인 여부 확인
+            const isFirstLogin = localStorage.getItem(`user_${userId}_first_login`) !== 'false';
+            
+            // 리디렉션 결정
+            if (isFirstLogin) {
+                localStorage.setItem(`user_${userId}_first_login`, 'false');
+                updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
+                
+                setTimeout(function() {
+                    window.location.href = "widget-settings.html";
+                }, 1000);
+            } else {
+                updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                
+                setTimeout(function() {
+                    window.location.href = "index.html";
+                }, 1000);
+            }
+        }
+        
+        // 구글 사용자 확인
+        function checkGoogleUser() {
+            // 고정된 사용자 ID 사용
+            const googleId = "google_12345";
+            let isRegistered = false;
+            
+            if (isLocalStorageAvailable()) {
+                // 'user_google_12345_registered'와 같은 형식의 키 검색
+                const userKey = `user_${googleId}_registered`;
+                const userRegistered = localStorage.getItem(userKey);
+                
+                if (userRegistered === 'true') {
+                    isRegistered = true;
+                }
+            }
+            
+            return isRegistered;
+        }
+        
         // localStorage 사용 가능 여부 확인 함수
         function isLocalStorageAvailable() {
             try {
@@ -162,154 +173,71 @@
                 localStorage.removeItem(test);
                 return true;
             } catch (e) {
-                console.error('localStorage를 사용할 수 없습니다:', e);
                 return false;
             }
         }
         
-        // 안전한 로컬 스토리지 접근 함수
-        const safeStorage = {
-            data: {}, // 메모리 데이터 저장소
-            
-            setItem: function(key, value) {
-                if (isLocalStorageAvailable()) {
-                    localStorage.setItem(key, value);
-                } else {
-                    this.data[key] = value;
-                }
-            },
-            
-            getItem: function(key) {
-                if (isLocalStorageAvailable()) {
-                    return localStorage.getItem(key);
-                } else {
-                    return this.data[key] || null;
-                }
-            },
-            
-            removeItem: function(key) {
-                if (isLocalStorageAvailable()) {
-                    localStorage.removeItem(key);
-                } else {
-                    delete this.data[key];
-                }
-            }
-        };
-        
-        // 상태 메시지 업데이트 함수
-        function updateStatus(title, message, isError = false) {
-            document.getElementById('status-title').textContent = title;
-            document.getElementById('status-message').textContent = message;
-            
-            if (isError) {
-                document.getElementById('loading-spinner').style.display = 'none';
-                document.getElementById('error-container').style.display = 'block';
-                document.getElementById('retry-button').style.display = 'block';
-            }
-        }
-
-        // 로그인 페이지로 이동
-        function goToLogin() {
-            window.location.href = "login.html";
-        }
-
         // 페이지 로드 시 실행되는 함수
         window.onload = function() {
+            // 취소 버튼 처리 (구글 로그인 페이지에서 취소 버튼 클릭 감지)
+            // cancel 파라미터가 전달되었거나 error 파라미터가 있으면 로그인 페이지로 이동
+            
+            // URL 파라미터 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 취소 버튼 클릭 또는 에러가 있는 경우
+            const cancel = urlParams.get('cancel');
+            const error = urlParams.get('error');
+            
+            if (cancel === 'true' || error) {
+                // 바로 로그인 페이지로 이동
+                goToLogin();
+                return;
+            }
+            
+            // 정상 로그인 처리
             try {
-                console.log('구글 로그인 콜백 페이지 로드됨');
-                
-                // URL 파라미터에서 코드와 오류 정보 추출
-                const urlParams = new URLSearchParams(window.location.search);
+                // 인증 코드 확인
                 const authCode = urlParams.get('code');
-                const error = urlParams.get('error');
-                const state = urlParams.get('state');
                 
-                // 오류 파라미터가 있는 경우
-                if (error) {
-                    console.error('구글 인증 오류:', error);
-                    updateStatus('구글 로그인 오류', '구글 인증 서버에서 오류 응답이 반환되었습니다.', true);
-                    return;
-                }
-                
-                // 인증 코드가 없는 경우
+                // 인증 코드 없음
                 if (!authCode) {
-                    console.error('인증 코드가 없습니다.');
-                    updateStatus('로그인 오류', '인증 코드를 찾을 수 없습니다. 로그인을 다시 시도해주세요.', true);
-                    return;
+                    // 구글은 때로 해시 파라미터로 코드를 전달함
+                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                    const hashCode = hashParams.get('code');
+                    
+                    // 해시에도 코드가 없으면
+                    if (!hashCode) {
+                        // 로그인 페이지로 이동
+                        goToLogin();
+                        return;
+                    }
                 }
                 
-                // 인증 코드가 있으면 처리 진행
-                processAuthCode(authCode, state);
+                // 가입된 구글 사용자인지 확인
+                const isRegisteredUser = checkGoogleUser();
+                
+                // 사용자 상태에 따라 처리
+                if (isRegisteredUser) {
+                    // 기존 사용자 로그인
+                    loginExistingUser("google_12345");
+                } else {
+                    // 새 사용자 회원가입
+                    redirectToRegister();
+                }
                 
             } catch (error) {
-                console.error('초기화 중 예외 발생:', error);
-                updateStatus('로그인 오류', '초기화 중 예외가 발생했습니다.', true);
+                // 오류 발생 시 로그인 페이지로 이동
+                goToLogin();
             }
         };
         
-        // 인증 코드 처리 함수
-        function processAuthCode(code, state) {
-            
-            // 실제 구글 API 호출 시뮬레이션
-            setTimeout(function() {
-                try {
-                    // Google 사용자 정보 시뮬레이션
-                    const googleUserInfo = simulateGoogleUserInfo();
-                    
-                    // 기존 사용자인지 확인
-                    const existingUser = findExistingGoogleUser(googleUserInfo.id);
-                    
-                    if (existingUser) {
-                        // 기존 사용자 - 메인 페이지로 이동
-                        safeStorage.setItem('currentLoggedInUser', existingUser);
-                        updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
-                        
-                        setTimeout(function() {
-                            window.location.href = "index.html";
-                        }, 1500);
-                    } else {
-                        // 신규 사용자 - 회원가입 페이지로 이동
-                        // 구글 정보를 임시 저장
-                        safeStorage.setItem('tempGoogleUserInfo', JSON.stringify(googleUserInfo));
-                        updateStatus('신규 사용자 확인', '회원가입 페이지로 이동합니다...');
-                        
-                        setTimeout(function() {
-                            window.location.href = "register.html";
-                        }, 1500);
-                    }
-                } catch (error) {
-                    console.error('사용자 정보 처리 중 오류:', error);
-                    updateStatus('로그인 오류', '사용자 정보 처리 중 오류가 발생했습니다.', true);
-                }
-            }, 2000);
-        }
-        
-        // 구글 사용자 정보 시뮬레이션
-        function simulateGoogleUserInfo() {
-            const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-            return {
-                id: 'google_' + randomId,
-                email: 'user@gmail.com',
-                name: '구글 사용자',
-                picture: null
-            };
-        }
-        
-        // 기존 구글 사용자 찾기
-        function findExistingGoogleUser(googleId) {
-            // 모든 저장된 사용자 중에서 해당 구글 ID를 가진 사용자 찾기
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.includes('_socialType')) {
-                    const [prefix, userId] = key.split('_socialType');
-                    if (safeStorage.getItem(key) === 'google' && 
-                        safeStorage.getItem(`user_${userId.split('_')[1]}_googleId`) === googleId) {
-                        return userId.split('_')[1];
-                    }
-                }
-            }
-            return null;
-        }
+        // 이 코드를 추가하여 구글 선택 페이지에서 취소 버튼 클릭 감지
+        // 구글 OAuth 페이지에서 가로채기는 불가능하지만, 로그인 페이지로 이동하는 핸들러
+        document.addEventListener('click', function(event) {
+            // 취소 버튼 클릭 감지 - 실제로는 작동하지 않음 (CORS 정책 때문)
+            // 이는 단지 참고용이며, 실제로는 Google이 취소 버튼 클릭 시 redirect_uri로 error 또는 cancel 파라미터와 함께 리디렉션
+        });
     </script>
 </body>
 </html>
