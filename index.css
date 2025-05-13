@@ -1153,16 +1153,7 @@ header {
     color: #666;
 }
 
-/* 간단한 로그인 프롬프트 스타일 */
-.simple-login-prompt {
-    padding: 20px;
-    text-align: center;
-}
 
-.simple-login-text {
-    font-size: 16px;
-    color: #666;
-}
 
 /* 셔틀버스 정보 카드 */
 .shuttle-card {
