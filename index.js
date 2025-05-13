@@ -2295,13 +2295,6 @@ function updateDropdownProfileInfo(studentId) {
     const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
     const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
     
-    // 소셜 로그인 사용자의 경우 실제 학번 가져오기
-    let displayStudentId = studentId;
-    const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
-    if (actualStudentId) {
-        displayStudentId = actualStudentId;
-    }
-    
     // 이름 업데이트
     const nameElement = dropdown.querySelector('.dropdown-profile-name');
     if (nameElement) nameElement.textContent = name;
@@ -2334,9 +2327,12 @@ function updateDropdownProfileInfo(studentId) {
         detailElement.textContent = `${departmentText} | ${grade}학년`;
     }
     
-    // 학번 업데이트 - 실제 학번 사용
+    // 학번 업데이트 - 항상 실제 입력된 학번 사용
     const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
     if (studentIdElement) {
+        // 실제 입력된 학번 가져오기 (소셜 로그인의 경우)
+        const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
+        const displayStudentId = actualStudentId || studentId;
         studentIdElement.textContent = `학번: ${displayStudentId}`;
     }
 }
@@ -2350,13 +2346,6 @@ function updateProfileInfo(studentId) {
         const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
         const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
         const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
-        
-        // 소셜 로그인 사용자의 경우 실제 학번 가져오기
-        let displayStudentId = studentId;
-        const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
-        if (actualStudentId) {
-            displayStudentId = actualStudentId;
-        }
         
         // 프로필 이름 업데이트
         const profileName = profileTab.querySelector('.profile-name');
@@ -2392,9 +2381,12 @@ function updateProfileInfo(studentId) {
             profileDetail.textContent = `${departmentText} | ${grade}학년`;
         }
         
-        // 학번 업데이트 - 실제 학번 사용
+        // 학번 업데이트 - 항상 실제 입력된 학번 사용
         const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
         if (profileStudentId) {
+            // 실제 입력된 학번 가져오기 (소셜 로그인의 경우)
+            const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
+            const displayStudentId = actualStudentId || studentId;
             profileStudentId.textContent = `학번: ${displayStudentId}`;
         }
     }
