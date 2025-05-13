@@ -501,68 +501,149 @@ console.log('날씨 정보 직접 업데이트 완료');
 
 
 document.addEventListener('DOMContentLoaded', function() {
-setTimeout(updateAllProfileImages, 100);
+    setTimeout(updateAllProfileImages, 100);
 
-// 이미지 URL 수정 함수 실행
-fixAllImageUrls();
+    // 이미지 URL 수정 함수 실행
+    fixAllImageUrls();
 
-// localStorage 변경 감지를 위한 이벤트 리스너
-window.addEventListener('storage', function(event) {
-// 프로필 관련 변경사항 감지
-if (event.key === 'profileUpdated' || 
-    event.key === 'profileImageUpdated' || 
-    event.key.includes('_profileImage') || 
-    event.key.includes('_customProfileImage')) {
-    updateAllProfileImages();
-}
-});
+    // localStorage 변경 감지를 위한 이벤트 리스너
+    window.addEventListener('storage', function(event) {
+        // 프로필 관련 변경사항 감지
+        if (event.key === 'profileUpdated' || 
+            event.key === 'profileImageUpdated' || 
+            event.key.includes('_profileImage') || 
+            event.key.includes('_customProfileImage')) {
+            updateAllProfileImages();
+        }
+    });
 
-// 카테고리 필터 기능
-initCategoryFilter();
+    // 카테고리 필터 기능
+    initCategoryFilter();
 
-// 로그인 상태 체크 및 UI 업데이트
-checkLoginStatus();
+    // 로그인 상태 체크 및 UI 업데이트
+    checkLoginStatus();
 
-// 저장된 위젯 설정 불러오기
-loadWidgetSettings();
+    // 저장된 위젯 설정 불러오기
+    loadWidgetSettings();
 
-// 시설 탭 초기화 (페이지네이션 포함)
-initFacilityTab();
+    // 시설 탭 초기화 (페이지네이션 포함)
+    initFacilityTab();
 
-// 네이버 지도 초기화 - 수정된 함수로 교체
-initNaverMapWithFix();
+    // 네이버 지도 초기화 - 수정된 함수로 교체
+    initNaverMapWithFix();
 
-// 검색 기능 초기화
-initSearchFunctionality();
+    // 검색 기능 초기화
+    initSearchFunctionality();
 
-// 탭 전환 시에도 이미지 URL 수정 함수 실행
-const originalSwitchTab = window.switchTab;
-window.switchTab = function(tabName) {
-originalSwitchTab(tabName);
-setTimeout(fixAllImageUrls, 200);
+    // 탭 전환 시에도 이미지 URL 수정 함수 실행
+    const originalSwitchTab = window.switchTab;
+    window.switchTab = function(tabName) {
+        originalSwitchTab(tabName);
+        setTimeout(fixAllImageUrls, 200);
 
-// 시설 탭으로 전환 시 지도 크기 조정 및 갱신
-if (tabName === 'facility') {
-    handleMapResize();
-}
+        // 시설 탭으로 전환 시 지도 크기 조정 및 갱신
+        if (tabName === 'facility') {
+            handleMapResize();
+        }
 
-// 홈 탭으로 전환 시 시간표 미리보기 업데이트
-if (tabName === 'home') {
-setTimeout(() => {
-    updateTimetablePreview();
-}, 200);
-}
-};
+        // 홈 탭으로 전환 시 시간표 미리보기 업데이트
+        if (tabName === 'home') {
+            setTimeout(() => {
+                updateTimetablePreview();
+            }, 200);
+        }
+    };
 
-// pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
-window.addEventListener('pageshow', function(event) {
-// bfcache에서 페이지가 복원된 경우에도 실행
-if (event.persisted) {
-    checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
-    updateAllProfileImages(); // 프로필 이미지도 다시 확인
-    fixAllImageUrls(); // 이미지 URL도 다시 확인
-}
-});
+    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+    window.addEventListener('pageshow', function(event) {
+        // bfcache에서 페이지가 복원된 경우에도 실행
+        if (event.persisted) {
+            checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+            updateAllProfileImages(); // 프로필 이미지도 다시 확인
+            fixAllImageUrls(); // 이미지 URL도 다시 확인
+        }
+    });
+
+    // 프로필 정보 강제 업데이트 - 이 부분을 추가
+    setTimeout(() => {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+        if (currentUser) {
+            updateDropdownProfileInfo(currentUser);
+            updateProfileInfo(currentUser);
+        }
+    }, 500);
+});document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(updateAllProfileImages, 100);
+
+    // 이미지 URL 수정 함수 실행
+    fixAllImageUrls();
+
+    // localStorage 변경 감지를 위한 이벤트 리스너
+    window.addEventListener('storage', function(event) {
+        // 프로필 관련 변경사항 감지
+        if (event.key === 'profileUpdated' || 
+            event.key === 'profileImageUpdated' || 
+            event.key.includes('_profileImage') || 
+            event.key.includes('_customProfileImage')) {
+            updateAllProfileImages();
+        }
+    });
+
+    // 카테고리 필터 기능
+    initCategoryFilter();
+
+    // 로그인 상태 체크 및 UI 업데이트
+    checkLoginStatus();
+
+    // 저장된 위젯 설정 불러오기
+    loadWidgetSettings();
+
+    // 시설 탭 초기화 (페이지네이션 포함)
+    initFacilityTab();
+
+    // 네이버 지도 초기화 - 수정된 함수로 교체
+    initNaverMapWithFix();
+
+    // 검색 기능 초기화
+    initSearchFunctionality();
+
+    // 탭 전환 시에도 이미지 URL 수정 함수 실행
+    const originalSwitchTab = window.switchTab;
+    window.switchTab = function(tabName) {
+        originalSwitchTab(tabName);
+        setTimeout(fixAllImageUrls, 200);
+
+        // 시설 탭으로 전환 시 지도 크기 조정 및 갱신
+        if (tabName === 'facility') {
+            handleMapResize();
+        }
+
+        // 홈 탭으로 전환 시 시간표 미리보기 업데이트
+        if (tabName === 'home') {
+            setTimeout(() => {
+                updateTimetablePreview();
+            }, 200);
+        }
+    };
+
+    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+    window.addEventListener('pageshow', function(event) {
+        // bfcache에서 페이지가 복원된 경우에도 실행
+        if (event.persisted) {
+            checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+            updateAllProfileImages(); // 프로필 이미지도 다시 확인
+            fixAllImageUrls(); // 이미지 URL도 다시 확인
+        }
+    });
+
+    // 프로필 정보 강제 업데이트 - 이 부분을 추가
+    setTimeout(() => {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+        if (currentUser) {
+            updateDropdownProfileInfo(currentUser);
+            updateProfileInfo(currentUser);
+        }
+    }, 500);
 });
 
 // 페이지네이션 컨트롤 업데이트
@@ -2274,11 +2355,13 @@ function checkLoginStatus() {
         if (loginButton) loginButton.style.display = 'none';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
         
-        // 드롭다운 내 프로필 정보 업데이트
-        updateDropdownProfileInfo(currentUser);
+        // 프로필 정보 강제 업데이트
+        setTimeout(() => {
+            updateDropdownProfileInfo(currentUser);
+            updateProfileInfo(currentUser);
+            updateAllProfileImages();
+        }, 200);
         
-        // 프로필 탭의 정보도 업데이트
-        updateProfileInfo(currentUser);
     } else {
         // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
         if (loginButton) loginButton.style.display = 'block';
