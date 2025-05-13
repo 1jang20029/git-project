@@ -2291,7 +2291,14 @@ function updateDropdownProfileInfo(studentId) {
     const dropdown = document.querySelector('.profile-dropdown');
     if (!dropdown) return;
     
-    const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+    // 실제 학번 가져오기 - 소셜 로그인과 일반 로그인 구분
+    let actualStudentId = studentId;
+    if (studentId.startsWith('naver_') || studentId.startsWith('kakao_') || studentId.startsWith('google_')) {
+        // 소셜 로그인의 경우 별도로 저장된 실제 학번 조회
+        actualStudentId = localStorage.getItem(`user_${studentId}_studentId`) || studentId;
+    }
+    
+    const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
     const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
     const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
     
@@ -2320,6 +2327,51 @@ function updateDropdownProfileInfo(studentId) {
             case 'arts':
                 departmentText = '예술계열';
                 break;
+            // 소셜 로그인에서 선택한 학과들 추가
+            case '전자공학과':
+            case '정보통신과':
+            case '전기과':
+            case '컴퓨터소프트웨어과':
+            case '건축과':
+            case '실내건축과':
+            case '패션디자인비즈니스과':
+            case '뷰티스타일리스트과_헤어디자인전공':
+            case '뷰티스타일리스트과_메이크업전공':
+            case '뷰티스타일리스트과_스킨케어전공':
+            case '게임콘텐츠과':
+            case '웹툰만화콘텐츠과':
+            case '영상콘텐츠과_영상콘텐츠제작전공':
+            case '영상콘텐츠과_뉴미디어콘텐츠전공':
+            case '시각디자인과':
+            case 'K-POP과':
+            case '유통물류과':
+            case '경영학과':
+            case '세무회계과':
+            case '국방군사학과':
+            case '경찰경호보안과':
+            case '사회복지과':
+            case '사회복지경영과':
+            case '유아교육과':
+            case '유아특수재활과':
+            case '사회복지과_아동심리보육전공':
+            case '치위생과':
+            case '치기공과':
+            case '작업치료과':
+            case '응급구조과':
+            case '보건의료행정과':
+            case '스포츠재활과':
+            case '식품영양학과':
+            case '반려동물보건과':
+            case '반려동물산업과':
+            case '항공서비스과':
+            case '관광영어과':
+            case '호텔관광과':
+            case '호텔외식조리과':
+            case '카페·베이커리과':
+            case '호텔외식경영전공':
+            case '자유전공학과':
+                departmentText = department;
+                break;
             default:
                 departmentText = department;
         }
@@ -2327,10 +2379,10 @@ function updateDropdownProfileInfo(studentId) {
         detailElement.textContent = `${departmentText} | ${grade}학년`;
     }
     
-    // 학번 업데이트
+    // 학번 업데이트 - 실제 학번 표시
     const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
     if (studentIdElement) {
-        studentIdElement.textContent = `학번: ${studentId}`;
+        studentIdElement.textContent = `학번: ${actualStudentId}`;
     }
 }
 
@@ -2339,7 +2391,14 @@ function updateProfileInfo(studentId) {
     const profileTab = document.getElementById('profile-tab');
     
     if (profileTab) {
-        const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
+        // 실제 학번 가져오기 - 소셜 로그인과 일반 로그인 구분
+        let actualStudentId = studentId;
+        if (studentId.startsWith('naver_') || studentId.startsWith('kakao_') || studentId.startsWith('google_')) {
+            // 소셜 로그인의 경우 별도로 저장된 실제 학번 조회
+            actualStudentId = localStorage.getItem(`user_${studentId}_studentId`) || studentId;
+        }
+        
+        const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
         const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
         const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
         
@@ -2370,6 +2429,51 @@ function updateProfileInfo(studentId) {
                 case 'arts':
                     departmentText = '예술계열';
                     break;
+                // 소셜 로그인에서 선택한 학과들 추가 (위와 동일)
+                case '전자공학과':
+                case '정보통신과':
+                case '전기과':
+                case '컴퓨터소프트웨어과':
+                case '건축과':
+                case '실내건축과':
+                case '패션디자인비즈니스과':
+                case '뷰티스타일리스트과_헤어디자인전공':
+                case '뷰티스타일리스트과_메이크업전공':
+                case '뷰티스타일리스트과_스킨케어전공':
+                case '게임콘텐츠과':
+                case '웹툰만화콘텐츠과':
+                case '영상콘텐츠과_영상콘텐츠제작전공':
+                case '영상콘텐츠과_뉴미디어콘텐츠전공':
+                case '시각디자인과':
+                case 'K-POP과':
+                case '유통물류과':
+                case '경영학과':
+                case '세무회계과':
+                case '국방군사학과':
+                case '경찰경호보안과':
+                case '사회복지과':
+                case '사회복지경영과':
+                case '유아교육과':
+                case '유아특수재활과':
+                case '사회복지과_아동심리보육전공':
+                case '치위생과':
+                case '치기공과':
+                case '작업치료과':
+                case '응급구조과':
+                case '보건의료행정과':
+                case '스포츠재활과':
+                case '식품영양학과':
+                case '반려동물보건과':
+                case '반려동물산업과':
+                case '항공서비스과':
+                case '관광영어과':
+                case '호텔관광과':
+                case '호텔외식조리과':
+                case '카페·베이커리과':
+                case '호텔외식경영전공':
+                case '자유전공학과':
+                    departmentText = department;
+                    break;
                 default:
                     departmentText = department;
             }
@@ -2377,10 +2481,10 @@ function updateProfileInfo(studentId) {
             profileDetail.textContent = `${departmentText} | ${grade}학년`;
         }
         
-        // 학번 업데이트
+        // 학번 업데이트 - 실제 학번 표시
         const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
         if (profileStudentId) {
-            profileStudentId.textContent = `학번: ${studentId}`;
+            profileStudentId.textContent = `학번: ${actualStudentId}`;
         }
     }
 }
