@@ -506,17 +506,28 @@
                 <div class="content-pad"></div>
             </div>
             
-            <!-- 내 정보 탭 -->
+            <!-- 내 정보 탭 - 수정됨 -->
             <div id="profile-tab" class="tab-content">
-                <div class="profile-section">
-                    <div class="profile-image">👨‍🎓</div>
+                <!-- 로그인되지 않은 상태의 프로필 섹션 -->
+                <div id="profile-login-prompt" class="profile-section">
+                    <div class="profile-image">👤</div>
                     <div class="profile-info">
-                        <div class="profile-name">조희정</div>
-                        <div class="profile-detail">경영학과 | 3학년</div>
-                        <div class="profile-detail">학번: 2021100215</div>
+                        <div class="profile-name">로그인이 필요합니다</div>
+                        <div class="profile-detail">내 정보를 확인하려면 로그인해주세요</div>
                     </div>
                 </div>
                 
+                <!-- 로그인된 상태의 프로필 섹션 -->
+                <div id="profile-auth-section" class="profile-section" style="display: none;">
+                    <div class="profile-image">👤</div>
+                    <div class="profile-info">
+                        <div class="profile-name">이름을 불러오는 중...</div>
+                        <div class="profile-detail">정보를 불러오는 중...</div>
+                        <div class="profile-detail">정보를 불러오는 중...</div>
+                    </div>
+                </div>
+                
+                <!-- 메뉴 부분은 항상 표시됨 -->
                 <div class="content-section">
                     <div class="section-title">
                         <span>내 정보 관리</span>
