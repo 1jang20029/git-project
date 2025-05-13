@@ -4515,21 +4515,28 @@
             }
 
             // 교시별 시간 정보 (시간표 페이지와 동일)
-            const periodTimes = {
-                1: { start: "09:00", end: "10:20" },
-                2: { start: "10:30", end: "11:50" },
-                3: { start: "12:00", end: "13:20" },
-                4: { start: "13:30", end: "14:50" },
-                5: { start: "15:00", end: "16:20" },
-                6: { start: "16:30", end: "17:50" },
-                7: { start: "18:00", end: "19:20" },
-                8: { start: "19:30", end: "20:50" },
-                9: { start: "21:00", end: "22:20" },
-                10: { start: "22:30", end: "23:50" },
-                11: { start: "24:00", end: "25:20" },
-                12: { start: "25:30", end: "26:50" },
-                13: { start: "27:00", end: "28:20" },
+            window.periodTimes = {
+                1: { start: "09:30", end: "10:20" },
+                2: { start: "10:30", end: "11:20" },
+                3: { start: "11:30", end: "12:20" },
+                4: { start: "12:30", end: "13:20" },
+                5: { start: "13:30", end: "14:20" },
+                6: { start: "14:30", end: "15:20" },
+                7: { start: "15:30", end: "16:20" },
+                8: { start: "16:30", end: "17:20" },
+                9: { start: "17:30", end: "18:20" },
+                10: { start: "18:30", end: "19:20" },
+                11: { start: "19:30", end: "20:20" },
+                12: { start: "20:30", end: "21:20" },
+                13: { start: "21:30", end: "22:20" }
             };
+
+
+            // periods 변수도 정의
+            window.periods = window.periodTimes;
+
+            // 시간표 미리보기 다시 업데이트
+            updateTimetablePreview();
 
             // 시간 문자열을 분으로 변환
             function timeToMinutes(timeStr) {
