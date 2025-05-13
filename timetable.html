@@ -1532,8 +1532,67 @@
             }
             
             console.log(`현재 학기 설정: ${currentSemester.year}년 ${currentSemester.term}학기`);
+            
+            // 학기 드롭다운에 해당 연도/학기가 없으면 추가
+            const semesterSelect = document.getElementById('semester-select');
+            const targetValue = `${currentSemester.year}-${currentSemester.term}`;
+            
+            // 옵션이 있는지 확인
+            let optionExists = false;
+            for (let option of semesterSelect.options) {
+                if (option.value === targetValue) {
+                    optionExists = true;
+                    break;
+                }
+            }
+            
+            // 옵션이 없으면 추가
+            if (!optionExists) {
+                // 새로운 연도 그룹을 어디에 삽입할지 찾기
+                let insertPosition = -1;
+                
+                // 기존 옵션들 중에서 삽입할 위치 찾기
+                for (let i = 0; i < semesterSelect.options.length; i++) {
+                    const option = semesterSelect.options[i];
+                    const [year, term] = option.value.split('-').map(Number);
+                    
+                    if (year > currentSemester.year) {
+                        insertPosition = i;
+                        break;
+                    }
+                }
+                
+                // 해당 연도의 모든 학기 추가 (1학기, 2학기, 여름학기, 겨울학기)
+                const semesters = [
+                    { value: 1, text: '1학기' },
+                    { value: 2, text: '2학기' },
+                    { value: 3, text: '여름학기' },
+                    { value: 4, text: '겨울학기' }
+                ];
+                
+                // 새 연도의 옵션들 생성
+                const newOptions = [];
+                semesters.forEach(semester => {
+                    const option = document.createElement('option');
+                    option.value = `${currentSemester.year}-${semester.value}`;
+                    option.textContent = `${currentSemester.year}년 ${semester.text}`;
+                    newOptions.push(option);
+                });
+                
+                // 올바른 위치에 삽입
+                if (insertPosition === -1) {
+                    // 마지막에 추가
+                    newOptions.forEach(option => semesterSelect.appendChild(option));
+                } else {
+                    // 지정된 위치에 추가
+                    newOptions.forEach((option, index) => {
+                        semesterSelect.insertBefore(option, semesterSelect.options[insertPosition + index]);
+                    });
+                }
+                
+                console.log(`새로운 연도 추가: ${currentSemester.year}년`);
+            }
         }
-       
        
        
        // 커스텀 드롭다운 토글
