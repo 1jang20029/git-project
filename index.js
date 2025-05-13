@@ -1,4 +1,3 @@
-
 // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
 const buildingData = [
 {
@@ -2018,11 +2017,18 @@ function switchTab(tabName) {
         handleMapResize();
     }
     
-    // 프로필 탭으로 전환 시 프로필 이미지 업데이트
+    // 프로필 탭으로 전환 시 로그인 상태 재확인
     if (tabName === 'profile') {
-        setTimeout(() => {
-            updateAllProfileImages();
-        }, 100);
+        // 로그인 상태 재확인
+        checkLoginStatus();
+        
+        // 로그인된 상태라면 프로필 이미지 업데이트
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+        if (currentUser) {
+            setTimeout(() => {
+                updateAllProfileImages();
+            }, 100);
+        }
     }
 }
 
@@ -2211,112 +2217,6 @@ function logout() {
     }
 }
 
-// 회원 탈퇴 함수
-function deleteAccount() {
-    // 현재 로그인된 사용자 확인
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
-    }
-    
-    // 삭제 확인
-    if (confirm('정말 회원 탈퇴하시겠습니까? 모든 계정 정보가 삭제됩니다.')) {
-        // 사용자 관련 정보 삭제
-        localStorage.removeItem(`user_${currentUser}_registered`);
-        localStorage.removeItem(`user_${currentUser}_first_login`);
-        localStorage.removeItem(`user_${currentUser}_name`);
-        localStorage.removeItem(`user_${currentUser}_department`);
-        localStorage.removeItem(`user_${currentUser}_grade`);
-        localStorage.removeItem(`user_${currentUser}_email`);
-        localStorage.removeItem(`user_${currentUser}_phone`);
-        localStorage.removeItem(`user_${currentUser}_password`);
-        localStorage.removeItem(`user_${currentUser}_profileImageType`);
-        localStorage.removeItem(`user_${currentUser}_profileImage`);
-        localStorage.removeItem(`user_${currentUser}_customProfileImage`);
-        
-        // 현재 로그인 상태 제거
-        localStorage.removeItem('currentLoggedInUser');
-        
-        alert('회원 탈퇴가 완료되었습니다.');
-        
-        // 로그인 페이지로 이동
-        window.location.href = 'login.html';
-    }
-}
-
-// 모든 설정 초기화 함수
-function resetAllSettings() {
-    // 현재 로그인 상태 확인
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
-    }
-    
-    if (confirm('모든 설정을 초기화하시겠습니까? 설정된 위젯, 메뉴, 개인화 옵션이 모두 기본값으로 돌아갑니다.')) {
-        // 사용자 설정 초기화
-        localStorage.removeItem(`user_${currentUser}_setup_completed`);
-        localStorage.removeItem(`user_${currentUser}_profileImageType`);
-        localStorage.removeItem(`user_${currentUser}_profileImage`);
-        localStorage.removeItem(`user_${currentUser}_customProfileImage`);
-        
-        // 위젯 설정 초기화
-        const defaultWidgets = [
-            {
-                name: '강의실 찾기',
-                icon: '🏫',
-                description: '빈 강의실 정보 확인'
-            },
-            {
-                name: '학사일정',
-                icon: '📅',
-                description: '주요 일정 및 행사'
-            },
-            {
-                name: '학식 메뉴',
-                icon: '🍽️',
-                description: '오늘의 식단 정보'
-            }
-        ];
-        localStorage.setItem('selectedWidgets', JSON.stringify(defaultWidgets));
-        
-        // 메뉴 설정 초기화
-        const defaultMenus = [
-            {
-                name: '홈',
-                icon: '🏠',
-                order: 0
-            },
-            {
-                name: '시설',
-                icon: '🏫',
-                order: 1
-            },
-            {
-                name: '커뮤니티',
-                icon: '💬',
-                order: 2
-            },
-            {
-                name: '내 정보',
-                icon: '👤',
-                order: 3
-            },
-            {
-                name: '알림',
-                icon: '🔔',
-                order: 4
-            }
-        ];
-        localStorage.setItem('activeMenus', JSON.stringify(defaultMenus));
-        
-        // 앱 재시작 (페이지 리로드)
-        alert('모든 설정이 초기화되었습니다. 앱을 다시 시작합니다.');
-        window.location.reload();
-    }
-}
-
 // 프로필 드롭다운 토글 함수
 function toggleProfileDropdown() {
     const dropdown = document.querySelector('.profile-dropdown');
@@ -2341,7 +2241,7 @@ function closeProfileDropdown(event) {
     }
 }
 
-// 로그인 상태 확인 및 UI 업데이트
+// 로그인 상태 확인 및 UI 업데이트 - 수정된 버전
 function checkLoginStatus() {
     // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
     const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -2350,10 +2250,18 @@ function checkLoginStatus() {
     const loginButton = document.querySelector('.login-button');
     const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
     
+    // 프로필 탭 내의 요소들
+    const loginPrompt = document.getElementById('profile-login-prompt');
+    const profileContent = document.getElementById('profile-content');
+    
     if (currentUser) {
         // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
         if (loginButton) loginButton.style.display = 'none';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
+        
+        // 프로필 탭: 로그인 프롬프트 숨기고 프로필 내용 표시
+        if (loginPrompt) loginPrompt.style.display = 'none';
+        if (profileContent) profileContent.style.display = 'block';
         
         // 프로필 정보 강제 업데이트
         setTimeout(() => {
@@ -2366,6 +2274,10 @@ function checkLoginStatus() {
         // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
         if (loginButton) loginButton.style.display = 'block';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+        
+        // 프로필 탭: 로그인 프롬프트 표시하고 프로필 내용 숨기기
+        if (loginPrompt) loginPrompt.style.display = 'flex';  // flex로 설정하여 중앙 정렬 유지
+        if (profileContent) profileContent.style.display = 'none';
     }
 }
 
@@ -2474,76 +2386,185 @@ function updateProfileInfo(studentId) {
     }
 }
 
-        function navigateToProfilePage(pageName) {
-            // 현재 로그인 상태 확인
-            const currentUser = localStorage.getItem('currentLoggedInUser');
+// 프로필 페이지 네비게이션 함수 - 로그인 체크 추가
+function navigateToProfilePage(pageName) {
+    // 현재 로그인 상태 확인
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        goToPage('login');
+        return;
+    }
+
+    // 페이지 이름에 따라 분기 처리
+    switch(pageName) {
+        case 'timetable':
+            alert('내 시간표 페이지로 이동합니다.');
+            window.location.href = 'timetable.html';
+            break;
         
-            if (!currentUser) {
-                alert('로그인이 필요한 서비스입니다.');
-                goToPage('login');
-                return;
-            }
+        case 'my-courses':
+            alert('내 수강 강의 페이지로 이동합니다.');
+            // window.location.href = 'my-courses.html';
+            break;
+
+        case 'favorite-classrooms':
+            alert('즐겨찾는 강의실 페이지로 이동합니다.');
+            // window.location.href = 'favorite-classrooms.html';
+            break;
+
+        case 'profile-edit':
+            alert('개인정보 수정 페이지로 이동합니다.');
+            window.location.href = 'profile-edit.html';
+            break;
+
+        case 'grades':
+            alert('성적 조회 페이지로 이동합니다.');
+            // window.location.href = 'grades.html';
+            break;
         
-            // 페이지 이름에 따라 분기 처리
-            switch(pageName) {
-                case 'timetable':
-                    alert('내 시간표 페이지로 이동합니다.');
-                    window.location.href = 'timetable.html';
-                    break;
-            
-                case 'my-courses':
-                    alert('내 수강 강의 페이지로 이동합니다.');
-                    // window.location.href = 'my-courses.html';
-                    break;
+        case 'course-registration':
+            alert('수강 신청 내역 페이지로 이동합니다.');
+            // window.location.href = 'course-registration.html';
+            break;
+        
+        case 'scholarships':
+            alert('장학금 내역 페이지로 이동합니다.');
+            // window.location.href = 'scholarships.html';
+            break;
 
-                case 'favorite-classrooms':
-                    alert('즐겨찾는 강의실 페이지로 이동합니다.');
-                    // window.location.href = 'favorite-classrooms.html';
-                    break;
+        case 'tuition':
+            alert('등록금 납부 내역 페이지로 이동합니다.');
+            // window.location.href = 'tuition.html';
+            break;
 
-                case 'profile-edit':
-                    alert('개인정보 수정 페이지로 이동합니다.');
-                    window.location.href = 'profile-edit.html';
-                    break;
+        case 'notification-settings':
+            alert('알림 설정 페이지로 이동합니다.');
+            // window.location.href = 'notification-settings.html';
+            break;
 
-                case 'grades':
-                    alert('성적 조회 페이지로 이동합니다.');
-                    // window.location.href = 'grades.html';
-                    break;
-            
-                case 'course-registration':
-                    alert('수강 신청 내역 페이지로 이동합니다.');
-                    // window.location.href = 'course-registration.html';
-                    break;
-                
-                case 'scholarships':
-                    alert('장학금 내역 페이지로 이동합니다.');
-                    // window.location.href = 'scholarships.html';
-                    break;
+        case 'widget-settings':
+            alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+            window.location.href = 'widget-settings.html';
+            break;
 
-                case 'tuition':
-                    alert('등록금 납부 내역 페이지로 이동합니다.');
-                    // window.location.href = 'tuition.html';
-                    break;
+        case 'app-info':
+            alert('앱 정보 페이지로 이동합니다.');
+            window.location.href = 'app-info.html';
+            break;
+        default:
+            alert('준비 중인 기능입니다.');
+    }
+}
 
-                case 'notification-settings':
-                    alert('알림 설정 페이지로 이동합니다.');
-                    // window.location.href = 'notification-settings.html';
-                    break;
+// 회원 탈퇴 함수 - 로그인 체크 추가
+function deleteAccount() {
+    // 현재 로그인된 사용자 확인
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        switchTab('home');
+        return;
+    }
+    
+    // 삭제 확인
+    if (confirm('정말 회원 탈퇴하시겠습니까? 모든 계정 정보가 삭제됩니다.')) {
+        // 사용자 관련 정보 삭제
+        localStorage.removeItem(`user_${currentUser}_registered`);
+        localStorage.removeItem(`user_${currentUser}_first_login`);
+        localStorage.removeItem(`user_${currentUser}_name`);
+        localStorage.removeItem(`user_${currentUser}_department`);
+        localStorage.removeItem(`user_${currentUser}_grade`);
+        localStorage.removeItem(`user_${currentUser}_email`);
+        localStorage.removeItem(`user_${currentUser}_phone`);
+        localStorage.removeItem(`user_${currentUser}_password`);
+        localStorage.removeItem(`user_${currentUser}_profileImageType`);
+        localStorage.removeItem(`user_${currentUser}_profileImage`);
+        localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+        
+        // 현재 로그인 상태 제거
+        localStorage.removeItem('currentLoggedInUser');
+        
+        alert('회원 탈퇴가 완료되었습니다.');
+        
+        // 로그인 페이지로 이동
+        window.location.href = 'login.html';
+    }
+}
 
-                case 'widget-settings':
-                    alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
-                    window.location.href = 'widget-settings.html';
-                    break;
-
-                case 'app-info':
-                    alert('앱 정보 페이지로 이동합니다.');
-                    window.location.href = 'app-info.html';
-                    break;
-                default:
-                    alert('준비 중인 기능입니다.');
+// 모든 설정 초기화 함수 - 로그인 체크 추가
+function resetAllSettings() {
+    // 현재 로그인 상태 확인
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        switchTab('home');
+        return;
+    }
+    
+    if (confirm('모든 설정을 초기화하시겠습니까? 설정된 위젯, 메뉴, 개인화 옵션이 모두 기본값으로 돌아갑니다.')) {
+        // 사용자 설정 초기화
+        localStorage.removeItem(`user_${currentUser}_setup_completed`);
+        localStorage.removeItem(`user_${currentUser}_profileImageType`);
+        localStorage.removeItem(`user_${currentUser}_profileImage`);
+        localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+        
+        // 위젯 설정 초기화
+        const defaultWidgets = [
+            {
+                name: '강의실 찾기',
+                icon: '🏫',
+                description: '빈 강의실 정보 확인'
+            },
+            {
+                name: '학사일정',
+                icon: '📅',
+                description: '주요 일정 및 행사'
+            },
+            {
+                name: '학식 메뉴',
+                icon: '🍽️',
+                description: '오늘의 식단 정보'
             }
-        }
+        ];
+        localStorage.setItem('selectedWidgets', JSON.stringify(defaultWidgets));
+        
+        // 메뉴 설정 초기화
+        const defaultMenus = [
+            {
+                name: '홈',
+                icon: '🏠',
+                order: 0
+            },
+            {
+                name: '시설',
+                icon: '🏫',
+                order: 1
+            },
+            {
+                name: '커뮤니티',
+                icon: '💬',
+                order: 2
+            },
+            {
+                name: '내 정보',
+                icon: '👤',
+                order: 3
+            },
+            {
+                name: '알림',
+                icon: '🔔',
+                order: 4
+            }
+        ];
+        localStorage.setItem('activeMenus', JSON.stringify(defaultMenus));
+        
+        // 앱 재시작 (페이지 리로드)
+        alert('모든 설정이 초기화되었습니다. 앱을 다시 시작합니다.');
+        window.location.reload();
+    }
+}
 
 // 시간표 관련 데이터 가져오기 및 처리 함수
 function loadTimetableData() {
@@ -2577,9 +2598,7 @@ function loadTimetableData() {
     return courses;
 }
 
-
-
-// 현재 시간 및 요일 정보 가져기기
+// 현재 시간 및 요일 정보 가져오기
 function getCurrentTimeInfo() {
     const now = new Date();
     const dayOfWeek = now.getDay(); // 0(일) ~ 6(토)
@@ -2614,7 +2633,6 @@ window.periods  = {
 // 2. periodTimes 변수도 같은 값으로 설정
 window.periodTimes = window.periods;
 
-
 // 함수 내부의 periods 정의를 무력화
 const originalUpdateTimetablePreview = updateTimetablePreview;  
 updateTimetablePreview = function() {
@@ -2641,9 +2659,6 @@ updateTimetablePreview = function() {
     
     return result;
 };
-
-
-
 
 // 시간표 미리보기 다시 업데이트
 updateTimetablePreview();
@@ -2730,7 +2745,6 @@ function findCurrentAndNextClass() {
     return { currentClass, nextClass };
 }
 
-
 // 오늘의 모든 수업 가져오기
 function getTodaysClasses(courses) {
     const currentTime = getCurrentTimeInfo();
@@ -2762,7 +2776,6 @@ function getTodaysClasses(courses) {
     
     return todaysClasses;
 }
-
 
 // 시간표 미리보기 업데이트
 function updateTimetablePreview() {
@@ -3155,8 +3168,11 @@ function updateTimetablePreview() {
     console.log('=== 시간표 미리보기 업데이트 완료 ===');
 }
 
-
-
+// 시간표로 이동하는 함수
+function navigateToTimetable() {
+    alert('내 시간표 페이지로 이동합니다.');
+    window.location.href = 'timetable.html';
+}
 
 // 저장된 위젯 설정 불러오기
 function loadWidgetSettings() {
