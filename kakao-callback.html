@@ -237,57 +237,48 @@
                     const kakaoAccount = userData.kakao_account || {};
                     const profile = kakaoAccount.profile || {};
                     
-                    // 카카오 ID 생성
+                    // 로컬 스토리지에 사용자 정보 저장
                     const kakaoId = 'kakao_' + userData.id;
                     
-                    // 이미 가입된 사용자인지 확인
-                    const isRegistered = localStorage.getItem(`user_${kakaoId}_registered`) === 'true';
+                    localStorage.setItem(`user_${kakaoId}_registered`, 'true');
+                    localStorage.setItem(`user_${kakaoId}_name`, profile.nickname || '카카오 사용자');
+                    localStorage.setItem(`user_${kakaoId}_department`, 'defaultDepartment');
+                    localStorage.setItem(`user_${kakaoId}_grade`, '1');
                     
-                    if (!isRegistered) {
-                        // 처음 소셜 로그인하는 사용자는 회원가입 페이지로 이동
-                        // 임시 데이터 저장
-                        sessionStorage.setItem('temp_social_id', kakaoId);
-                        sessionStorage.setItem('temp_social_type', 'kakao');
-                        sessionStorage.setItem('temp_social_name', profile.nickname || '카카오 사용자');
+                    // 이메일이 있으면 저장
+                    if (kakaoAccount.email) {
+                        localStorage.setItem(`user_${kakaoId}_email`, kakaoAccount.email);
+                    }
+                    
+                    // 프로필 이미지가 있으면 저장
+                    if (profile.profile_image_url) {
+                        localStorage.setItem(`user_${kakaoId}_profileImage`, profile.profile_image_url);
+                    }
+                    
+                    // 현재 로그인된 사용자 저장
+                    localStorage.setItem('currentLoggedInUser', kakaoId);
+                    
+                    // 소셜 로그인 사용자 표시
+                    localStorage.setItem(`user_${kakaoId}_socialType`, 'kakao');
+                    
+                    // 최초 로그인 여부 확인 및 설정
+                    const isFirstLogin = localStorage.getItem(`user_${kakaoId}_first_login`) !== 'false';
+                    
+                    if (isFirstLogin) {
+                        localStorage.setItem(`user_${kakaoId}_first_login`, 'false');
+                        updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
                         
-                        if (kakaoAccount.email) {
-                            sessionStorage.setItem('temp_social_email', kakaoAccount.email);
-                        }
-                        
-                        if (profile.profile_image_url) {
-                            sessionStorage.setItem('temp_social_profile_image', profile.profile_image_url);
-                        }
-                        
-                        updateStatus('새로운 사용자', '회원가입 페이지로 이동합니다...');
-                        
-                        // 회원가입 페이지로 이동
+                        // 최초 로그인 시 위젯 설정 페이지로 이동
                         setTimeout(function() {
-                            window.location.href = "register.html?social=kakao";
+                            window.location.href = "widget-settings.html";
                         }, 1500);
                     } else {
-                        // 이미 가입된 사용자는 로그인 처리
-                        // 현재 로그인된 사용자 저장
-                        localStorage.setItem('currentLoggedInUser', kakaoId);
+                        updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
                         
-                        // 최초 로그인 여부 확인
-                        const isFirstLogin = localStorage.getItem(`user_${kakaoId}_first_login`) !== 'false';
-                        
-                        if (isFirstLogin) {
-                            localStorage.setItem(`user_${kakaoId}_first_login`, 'false');
-                            updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
-                            
-                            // 최초 로그인 시 위젯 설정 페이지로 이동
-                            setTimeout(function() {
-                                window.location.href = "widget-settings.html";
-                            }, 1500);
-                        } else {
-                            updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
-                            
-                            // 기존 사용자는 메인 페이지로 이동
-                            setTimeout(function() {
-                                window.location.href = "index.html";
-                            }, 1500);
-                        }
+                        // 기존 사용자는 메인 페이지로 이동
+                        setTimeout(function() {
+                            window.location.href = "index.html";
+                        }, 1500);
                     }
                 })
                 .catch(error => {
@@ -306,6 +297,6 @@
                 });
             }
         };
-        </script>
-    </body>
+    </script>
+</body>
 </html>

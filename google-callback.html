@@ -80,92 +80,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .error-container {
-            display: none;
-            background-color: #fff9f9;
-            border: 1px solid #ffdddd;
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .error-title {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .error-message {
-            font-family: monospace;
-            font-size: 14px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 200px;
-            overflow-y: auto;
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 4px;
-        }
-
-        .debug-info {
-            margin-top: 20px;
-            background-color: #f0f8ff;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: left;
-            border: 1px solid #cce0ff;
-        }
-
-        .debug-title {
-            color: #2970ff;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .button {
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        
-        .button:hover {
-            background-color: #3367d6;
-        }
-
-        .btn-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn-secondary {
-            background-color: #f1f3f4;
-            color: #444;
-            border: 1px solid #ddd;
-        }
-
-        .btn-secondary:hover {
-            background-color: #e8eaed;
-        }
-        
-        .notice {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #fffde7;
-            border: 1px solid #fff9c4;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #5d4037;
-        }
     </style>
 </head>
 <body>
@@ -174,28 +88,83 @@
         <h1 id="status-title">구글 로그인 처리 중</h1>
         <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
         <div class="spinner" id="loading-spinner"></div>
-        
-        <div id="storage-notice" class="notice" style="display: none;">
-            미리보기 환경에서는 로컬 저장소 사용이 제한됩니다. 실제 배포 환경에서 테스트해주세요.
-        </div>
-        
-        <div id="debug-container" class="debug-info">
-            <div class="debug-title">디버그 정보</div>
-            <div class="error-message" id="debug-details"></div>
-        </div>
-        
-        <div id="error-container" class="error-container">
-            <div class="error-title">오류 정보</div>
-            <div class="error-message" id="error-details"></div>
-        </div>
-        
-        <div class="btn-wrapper">
-            <button class="button" id="retry-button" style="display: none;" onclick="goToLogin()">다시 시도하기</button>
-            <button class="button btn-secondary" id="continue-button" style="display: none;" onclick="proceedAnyway()">계속 진행하기</button>
-        </div>
     </div>
 
     <script>
+        // 로그인 페이지로 이동
+        function goToLogin() {
+            window.location.href = "login.html";
+        }
+        
+        // 상태 메시지 업데이트 함수
+        function updateStatus(title, message) {
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message;
+        }
+        
+        // 구글 회원가입 페이지로 리디렉션
+        function redirectToRegister() {
+            // 고정된 사용자 ID 사용
+            const googleId = "google_12345";
+            
+            // 세션 스토리지에 임시 데이터 저장
+            sessionStorage.setItem('temp_social_id', googleId);
+            sessionStorage.setItem('temp_social_type', 'google');
+            sessionStorage.setItem('temp_social_name', '구글 사용자');
+            sessionStorage.setItem('temp_social_email', 'google_user@example.com');
+            
+            updateStatus('새 사용자 확인', '회원가입 페이지로 이동합니다...');
+            
+            // 회원가입 페이지로 이동
+            setTimeout(function() {
+                window.location.href = "register.html?social=google";
+            }, 1000);
+        }
+        
+        // 이미 가입된 사용자 로그인 처리
+        function loginExistingUser(userId) {
+            // 현재 로그인된 사용자로 설정
+            localStorage.setItem('currentLoggedInUser', userId);
+            
+            // 최초 로그인 여부 확인
+            const isFirstLogin = localStorage.getItem(`user_${userId}_first_login`) !== 'false';
+            
+            // 리디렉션 결정
+            if (isFirstLogin) {
+                localStorage.setItem(`user_${userId}_first_login`, 'false');
+                updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
+                
+                setTimeout(function() {
+                    window.location.href = "widget-settings.html";
+                }, 1000);
+            } else {
+                updateStatus('로그인 성공', '메인 페이지로 이동합니다...');
+                
+                setTimeout(function() {
+                    window.location.href = "index.html";
+                }, 1000);
+            }
+        }
+        
+        // 구글 사용자 확인
+        function checkGoogleUser() {
+            // 고정된 사용자 ID 사용
+            const googleId = "google_12345";
+            let isRegistered = false;
+            
+            if (isLocalStorageAvailable()) {
+                // 'user_google_12345_registered'와 같은 형식의 키 검색
+                const userKey = `user_${googleId}_registered`;
+                const userRegistered = localStorage.getItem(userKey);
+                
+                if (userRegistered === 'true') {
+                    isRegistered = true;
+                }
+            }
+            
+            return isRegistered;
+        }
+        
         // localStorage 사용 가능 여부 확인 함수
         function isLocalStorageAvailable() {
             try {
@@ -204,243 +173,71 @@
                 localStorage.removeItem(test);
                 return true;
             } catch (e) {
-                console.error('localStorage를 사용할 수 없습니다:', e);
                 return false;
             }
         }
         
-        // 안전한 로컬 스토리지 접근 함수
-        const safeStorage = {
-            data: {}, // 메모리 데이터 저장소
-            
-            setItem: function(key, value) {
-                if (isLocalStorageAvailable()) {
-                    localStorage.setItem(key, value);
-                } else {
-                    this.data[key] = value;
-                    document.getElementById('storage-notice').style.display = 'block';
-                }
-            },
-            
-            getItem: function(key) {
-                if (isLocalStorageAvailable()) {
-                    return localStorage.getItem(key);
-                } else {
-                    return this.data[key] || null;
-                }
-            },
-            
-            removeItem: function(key) {
-                if (isLocalStorageAvailable()) {
-                    localStorage.removeItem(key);
-                } else {
-                    delete this.data[key];
-                }
-            }
-        };
-        
-        // 상태 메시지 업데이트 함수
-        function updateStatus(title, message, isError = false) {
-            document.getElementById('status-title').textContent = title;
-            document.getElementById('status-message').textContent = message;
-            
-            if (isError) {
-                document.getElementById('loading-spinner').style.display = 'none';
-                document.getElementById('retry-button').style.display = 'block';
-                document.getElementById('continue-button').style.display = 'block';
-            }
-        }
-
-        // 오류 표시 함수
-        function showError(errorDetails) {
-            document.getElementById('error-container').style.display = 'block';
-            document.getElementById('error-details').textContent = JSON.stringify(errorDetails, null, 2);
-            updateStatus('구글 로그인 오류', '로그인 처리 중 문제가 발생했습니다. 오류 정보를 확인하세요.', true);
-        }
-
-        // 로그인 페이지로 이동
-        function goToLogin() {
-            window.location.href = "login.html";
-        }
-
-        // 오류 무시하고 진행
-        function proceedAnyway() {
-            createDummyAccount();
-        }
-
-        // 더미 계정 생성 및 로그인 처리
-        function createDummyAccount() {
-            try {
-                // 임시 사용자 ID 생성
-                const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                const googleId = 'google_' + randomId;
-                
-                // 사용자 정보 저장
-                safeStorage.setItem(`user_${googleId}_registered`, 'true');
-                safeStorage.setItem(`user_${googleId}_name`, '구글 사용자');
-                safeStorage.setItem(`user_${googleId}_department`, 'computerScience');
-                safeStorage.setItem(`user_${googleId}_grade`, '1');
-                safeStorage.setItem(`user_${googleId}_email`, `user_${randomId}@gmail.com`);
-                
-                // 소셜 로그인 유형 표시
-                safeStorage.setItem(`user_${googleId}_socialType`, 'google');
-                
-                // 현재 로그인된 사용자로 설정
-                safeStorage.setItem('currentLoggedInUser', googleId);
-                
-                // 최초 로그인 상태 설정
-                safeStorage.setItem(`user_${googleId}_first_login`, 'false');
-                
-                updateStatus('더미 계정 생성 완료', '메인 페이지로 이동합니다...');
-                
-                // 리디렉션
-                setTimeout(function() {
-                    window.location.href = "index.html";
-                }, 1500);
-            } catch (error) {
-                console.error('더미 계정 생성 중 오류:', error);
-                showError({
-                    message: '더미 계정 생성 중 오류가 발생했습니다.',
-                    details: error.toString()
-                });
-            }
-        }
-
         // 페이지 로드 시 실행되는 함수
         window.onload = function() {
+            // 취소 버튼 처리 (구글 로그인 페이지에서 취소 버튼 클릭 감지)
+            // cancel 파라미터가 전달되었거나 error 파라미터가 있으면 로그인 페이지로 이동
+            
+            // URL 파라미터 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 취소 버튼 클릭 또는 에러가 있는 경우
+            const cancel = urlParams.get('cancel');
+            const error = urlParams.get('error');
+            
+            if (cancel === 'true' || error) {
+                // 바로 로그인 페이지로 이동
+                goToLogin();
+                return;
+            }
+            
+            // 정상 로그인 처리
             try {
-                console.log('구글 로그인 콜백 페이지 로드됨');
-                
-                // localStorage 사용 가능 여부 확인
-                if (!isLocalStorageAvailable()) {
-                    document.getElementById('storage-notice').style.display = 'block';
-                    console.log('미리보기 환경에서는 localStorage를 사용할 수 없습니다. 메모리 저장소를 사용합니다.');
-                }
-                
-                // 전체 URL 출력 (디버깅용)
-                const fullUrl = window.location.href;
-                console.log('현재 URL:', fullUrl);
-                
-                // URL 파라미터에서 코드와 오류 정보 추출
-                const urlParams = new URLSearchParams(window.location.search);
+                // 인증 코드 확인
                 const authCode = urlParams.get('code');
-                const error = urlParams.get('error');
                 
-                // 디버그 정보 표시
-                const debugInfo = {
-                    url: fullUrl,
-                    search: window.location.search,
-                    hash: window.location.hash,
-                    code: authCode,
-                    error: error,
-                    localStorage: isLocalStorageAvailable() ? "사용 가능" : "사용 불가",
-                    allParams: {}
-                };
-                
-                // 모든 URL 매개변수 수집
-                for(const [key, value] of urlParams.entries()) {
-                    debugInfo.allParams[key] = value;
-                    console.log(`URL 매개변수: ${key} = ${value}`);
-                }
-                
-                // 디버그 정보 표시
-                document.getElementById('debug-details').textContent = JSON.stringify(debugInfo, null, 2);
-                
-                // 오류 파라미터가 있는 경우
-                if (error) {
-                    showError({
-                        error: error,
-                        message: '구글 인증 서버에서 오류 응답이 반환되었습니다.',
-                        debug: debugInfo
-                    });
-                    return;
-                }
-                
-                // 인증 코드가 없는 경우
+                // 인증 코드 없음
                 if (!authCode) {
-                    // URL 해시에서 코드 확인 시도 (구글이 때로는 해시 파라미터로 전달함)
+                    // 구글은 때로 해시 파라미터로 코드를 전달함
                     const hashParams = new URLSearchParams(window.location.hash.substring(1));
                     const hashCode = hashParams.get('code');
                     
-                    if (hashCode) {
-                        // 해시에서 코드를 찾았으면 처리 진행
-                        processAuthCode(hashCode);
-                    } else {
-                        showError({
-                            message: '인증 코드를 찾을 수 없습니다. 로그인을 다시 시도해주세요.',
-                            debug: debugInfo
-                        });
+                    // 해시에도 코드가 없으면
+                    if (!hashCode) {
+                        // 로그인 페이지로 이동
+                        goToLogin();
+                        return;
                     }
-                    return;
                 }
                 
-                // 인증 코드가 있으면 처리 진행
-                processAuthCode(authCode);
+                // 가입된 구글 사용자인지 확인
+                const isRegisteredUser = checkGoogleUser();
+                
+                // 사용자 상태에 따라 처리
+                if (isRegisteredUser) {
+                    // 기존 사용자 로그인
+                    loginExistingUser("google_12345");
+                } else {
+                    // 새 사용자 회원가입
+                    redirectToRegister();
+                }
                 
             } catch (error) {
-                console.error('초기화 중 예외 발생:', error);
-                showError({
-                    message: '초기화 중 예외가 발생했습니다.',
-                    details: error.toString()
-                });
+                // 오류 발생 시 로그인 페이지로 이동
+                goToLogin();
             }
         };
         
-        // 인증 코드 처리 함수
-        function processAuthCode(code) {
-            updateStatus('인증 코드 확인됨', '사용자 정보를 처리하고 있습니다...');
-            console.log('인증 코드 처리 시작:', code.substring(0, 10) + '...');
-            
-            // 올바른 클라이언트 ID 사용 - 업데이트된 ID
-            const CLIENT_ID = '682526101032-6fpr7h5u93gkf762m0rkoj5bo5hpgs2u.apps.googleusercontent.com';
-            // 클라이언트 시크릿은 보안상의 이유로 코드에 직접 포함하지 않음
-            const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
-            
-            // 여기서는 서버로 코드를 보내지 않고 간단히 처리
-            // 실제 환경에서는 서버에서 처리해야 함
-            setTimeout(function() {
-                try {
-                    // 안전한 방식으로 임시 사용자 ID 생성
-                    const randomId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                    const googleId = 'google_' + randomId;
-                    
-                    // 사용자 정보 저장 - 안전한 저장소 사용
-                    safeStorage.setItem(`user_${googleId}_registered`, 'true');
-                    safeStorage.setItem(`user_${googleId}_name`, '구글 사용자');
-                    safeStorage.setItem(`user_${googleId}_department`, 'computerScience');
-                    safeStorage.setItem(`user_${googleId}_grade`, '1');
-                    safeStorage.setItem(`user_${googleId}_email`, `user_${randomId}@gmail.com`);
-                    
-                    // 소셜 로그인 유형 표시
-                    safeStorage.setItem(`user_${googleId}_socialType`, 'google');
-                    
-                    // 현재 로그인된 사용자로 설정
-                    safeStorage.setItem('currentLoggedInUser', googleId);
-                    
-                    // 최초 로그인 여부 확인
-                    const isFirstLogin = safeStorage.getItem(`user_${googleId}_first_login`) !== 'false';
-                    
-                    // 최초 로그인 상태 업데이트
-                    safeStorage.setItem(`user_${googleId}_first_login`, 'false');
-                    
-                    updateStatus('로그인 성공', isFirstLogin ? 
-                        '위젯 설정 페이지로 이동합니다...' : 
-                        '메인 페이지로 이동합니다...');
-                    
-                    // 리디렉션
-                    setTimeout(function() {
-                        window.location.href = isFirstLogin ? 
-                            "widget-settings.html" : "index.html";
-                    }, 1500);
-                } catch (error) {
-                    console.error('사용자 정보 처리 중 오류:', error);
-                    showError({
-                        message: '사용자 정보 처리 중 오류가 발생했습니다.',
-                        details: error.toString()
-                    });
-                }
-            }, 2000);
-        }
+        // 이 코드를 추가하여 구글 선택 페이지에서 취소 버튼 클릭 감지
+        // 구글 OAuth 페이지에서 가로채기는 불가능하지만, 로그인 페이지로 이동하는 핸들러
+        document.addEventListener('click', function(event) {
+            // 취소 버튼 클릭 감지 - 실제로는 작동하지 않음 (CORS 정책 때문)
+            // 이는 단지 참고용이며, 실제로는 Google이 취소 버튼 클릭 시 redirect_uri로 error 또는 cancel 파라미터와 함께 리디렉션
+        });
     </script>
 </body>
 </html>
