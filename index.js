@@ -2260,32 +2260,28 @@ function closeProfileDropdown(event) {
     }
 }
 
-// 로그인 상태 확인 및 UI 업데이트
 function checkLoginStatus() {
-    console.log('로그인 상태 확인 시작');
-    
-    // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
     const currentUser = localStorage.getItem('currentLoggedInUser');
-    console.log('현재 로그인 사용자:', currentUser);
-    
-    // 로그인 버튼과 프로필 드롭다운 컨테이너
     const loginButton = document.querySelector('.login-button');
     const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
     
     if (currentUser) {
-        // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
         if (loginButton) loginButton.style.display = 'none';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
         
         // 프로필 정보 강제 업데이트
-        setTimeout(() => {
-            updateDropdownProfileInfo(currentUser);
-            updateProfileInfo(currentUser);
-            updateAllProfileImages();
-        }, 100);
+        updateDropdownProfileInfo(currentUser);
+        updateProfileInfo(currentUser);
+        updateAllProfileImages();
         
+        // 탭이 프로필 탭인 경우 추가로 업데이트
+        const profileTab = document.getElementById('profile-tab');
+        if (profileTab && profileTab.classList.contains('active')) {
+            setTimeout(() => {
+                updateProfileInfo(currentUser);
+            }, 100);
+        }
     } else {
-        // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
         if (loginButton) loginButton.style.display = 'block';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
     }
@@ -2311,150 +2307,110 @@ window.switchTab = function(tabName) {
 
 // 드롭다운 프로필 정보 업데이트
 function updateDropdownProfileInfo(studentId) {
-    console.log('드롭다운 프로필 정보 업데이트 시작:', studentId);
-    
     const dropdown = document.querySelector('.profile-dropdown');
-    if (!dropdown) {
-        console.error('드롭다운을 찾을 수 없습니다');
-        return;
-    }
+    if (!dropdown) return;
     
     // 사용자 정보 가져오기
     const name = localStorage.getItem(`user_${studentId}_name`) || '이름 없음';
     const department = localStorage.getItem(`user_${studentId}_department`) || '';
     const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
     
-    // 실제 학번 가져오기
+    // 소셜 로그인 사용자인지 확인하고 실제 학번 가져오기
     let displayStudentId = studentId;
     const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
-    if (actualStudentId) {
+    if (actualStudentId && actualStudentId !== studentId) {
         displayStudentId = actualStudentId;
-        console.log('소셜 로그인 사용자, 실제 학번:', actualStudentId);
     }
     
     // 이름 업데이트
     const nameElement = dropdown.querySelector('.dropdown-profile-name');
     if (nameElement) {
         nameElement.textContent = name;
-        console.log('드롭다운 이름 업데이트:', name);
     }
     
-    // 학과명 변환
-    let departmentText = '';
-    switch(department) {
-        case 'computerScience':
-        case '컴퓨터정보학과':
-            departmentText = '컴퓨터정보학과';
-            break;
-        case 'business':
-        case '경영학과':
-            departmentText = '경영학과';
-            break;
-        case 'nursing':
-        case '간호학과':
-            departmentText = '간호학과';
-            break;
-        case 'engineering':
-        case '공학계열':
-            departmentText = '공학계열';
-            break;
-        case 'arts':
-        case '예술계열':
-            departmentText = '예술계열';
-            break;
-        default:
-            departmentText = department;
+    // 학과 정보 변환
+    let departmentText = department;
+    if (department === 'business') {
+        departmentText = '경영학과';
     }
     
-    // 드롭다운 상세 정보 요소들 가져오기
-    const detailElements = dropdown.querySelectorAll('.dropdown-profile-detail');
-    
-    if (detailElements.length >= 2) {
-        // 첫 번째 detail: 학과 | 학년
-        detailElements[0].textContent = `${departmentText} | ${grade}학년`;
-        console.log('드롭다운 학과/학년 업데이트:', `${departmentText} | ${grade}학년`);
+    // 드롭다운 프로필 정보 영역 찾기
+    const profileInfo = dropdown.querySelector('.dropdown-profile-info');
+    if (profileInfo) {
+        // 기존 detail 요소들 제거
+        const existingDetails = profileInfo.querySelectorAll('.dropdown-profile-detail');
+        existingDetails.forEach((detail, index) => {
+            if (index > 0) { // 첫 번째는 이름이므로 제거하지 않음
+                detail.remove();
+            }
+        });
         
-        // 두 번째 detail: 학번
-        detailElements[1].textContent = `학번: ${displayStudentId}`;
-        console.log('드롭다운 학번 업데이트:', displayStudentId);
-    } else {
-        console.error('드롭다운 detail 요소를 찾을 수 없습니다:', detailElements.length);
+        // 학과/학년 정보 추가
+        const departmentGradeDiv = document.createElement('div');
+        departmentGradeDiv.className = 'dropdown-profile-detail';
+        departmentGradeDiv.textContent = `${departmentText} | ${grade}학년`;
+        profileInfo.appendChild(departmentGradeDiv);
+        
+        // 학번 정보 추가
+        const studentIdDiv = document.createElement('div');
+        studentIdDiv.className = 'dropdown-profile-detail';
+        studentIdDiv.textContent = `학번: ${displayStudentId}`;
+        profileInfo.appendChild(studentIdDiv);
     }
 }
+
 
 
 // 프로필 정보 업데이트
 function updateProfileInfo(studentId) {
-    console.log('프로필 정보 업데이트 시작:', studentId);
-    
     const profileTab = document.getElementById('profile-tab');
+    if (!profileTab) return;
     
-    if (profileTab) {
-        // 사용자 정보 가져오기
-        const name = localStorage.getItem(`user_${studentId}_name`) || '이름 없음';
-        const department = localStorage.getItem(`user_${studentId}_department`) || '';
-        const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
+    // 사용자 정보 가져오기
+    const name = localStorage.getItem(`user_${studentId}_name`) || '이름 없음';
+    const department = localStorage.getItem(`user_${studentId}_department`) || '';
+    const grade = localStorage.getItem(`user_${studentId}_grade`) || '';
+    
+    // 소셜 로그인 사용자인지 확인하고 실제 학번 가져오기
+    let displayStudentId = studentId;
+    const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
+    if (actualStudentId && actualStudentId !== studentId) {
+        displayStudentId = actualStudentId;
+    }
+    
+    // 프로필 이름 업데이트
+    const profileName = profileTab.querySelector('.profile-name');
+    if (profileName) {
+        profileName.textContent = name;
+    }
+    
+    // 학과 정보 변환
+    let departmentText = department;
+    if (department === 'business') {
+        departmentText = '경영학과';
+    }
+    
+    // 모든 profile-detail 요소를 새로 생성
+    const profileInfo = profileTab.querySelector('.profile-info');
+    if (profileInfo) {
+        // 기존 detail 요소들 제거
+        const existingDetails = profileInfo.querySelectorAll('.profile-detail');
+        existingDetails.forEach(detail => detail.remove());
         
-        // 실제 학번 가져오기 (소셜 로그인의 경우 별도 저장된 학번 사용)
-        let displayStudentId = studentId;
-        const actualStudentId = localStorage.getItem(`user_${studentId}_studentId`);
-        if (actualStudentId) {
-            displayStudentId = actualStudentId;
-            console.log('소셜 로그인 사용자, 실제 학번:', actualStudentId);
-        }
+        // 학과/학년 정보 추가
+        const departmentGradeDiv = document.createElement('div');
+        departmentGradeDiv.className = 'profile-detail';
+        departmentGradeDiv.textContent = `${departmentText} | ${grade}학년`;
+        profileInfo.appendChild(departmentGradeDiv);
         
-        // 프로필 이름 업데이트
-        const profileName = profileTab.querySelector('.profile-name');
-        if (profileName) {
-            profileName.textContent = name;
-            console.log('이름 업데이트:', name);
-        }
-        
-        // 학과명 변환
-        let departmentText = '';
-        switch(department) {
-            case 'computerScience':
-            case '컴퓨터정보학과':
-                departmentText = '컴퓨터정보학과';
-                break;
-            case 'business':
-            case '경영학과':
-                departmentText = '경영학과';
-                break;
-            case 'nursing':
-            case '간호학과':
-                departmentText = '간호학과';
-                break;
-            case 'engineering':
-            case '공학계열':
-                departmentText = '공학계열';
-                break;
-            case 'arts':
-            case '예술계열':
-                departmentText = '예술계열';
-                break;
-            default:
-                departmentText = department;
-        }
-        
-        // 모든 프로필 상세 정보 요소 가져오기
-        const profileDetails = profileTab.querySelectorAll('.profile-detail');
-        
-        if (profileDetails.length >= 2) {
-            // 첫 번째 detail: 학과 | 학년
-            profileDetails[0].textContent = `${departmentText} | ${grade}학년`;
-            console.log('학과/학년 업데이트:', `${departmentText} | ${grade}학년`);
-            
-            // 두 번째 detail: 학번
-            profileDetails[1].textContent = `학번: ${displayStudentId}`;
-            console.log('학번 업데이트:', displayStudentId);
-        } else {
-            console.error('프로필 detail 요소를 찾을 수 없습니다:', profileDetails.length);
-        }
-    } else {
-        console.error('프로필 탭을 찾을 수 없습니다');
+        // 학번 정보 추가
+        const studentIdDiv = document.createElement('div');
+        studentIdDiv.className = 'profile-detail';
+        studentIdDiv.textContent = `학번: ${displayStudentId}`;
+        profileInfo.appendChild(studentIdDiv);
     }
 }
+
 
 
 function navigateToProfilePage(pageName) {
