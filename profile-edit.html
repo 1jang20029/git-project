@@ -756,14 +756,14 @@
             
             // 로컬 스토리지에서 사용자 정보 가져오기
             const name = localStorage.getItem(`user_${userId}_name`) || '연성대학교';
-            const departmentId = localStorage.getItem(`user_${userId}_department`) || 'business';
+            const departmentId = localStorage.getItem(`user_${userId}_department`) || '';
             const grade = localStorage.getItem(`user_${userId}_grade`) || '2';
             const email = localStorage.getItem(`user_${userId}_email`) || 'test@test';
             const phone = localStorage.getItem(`user_${userId}_phone`) || '010-3402-3447';
             
             // 학과 이름 찾기
             const department = departments.find(dept => dept.id === departmentId);
-            const departmentName = department ? department.name : '학과를 선택하세요';
+            const departmentName = department ? department.name : '';
             
             // 프로필 이미지 관련 정보 가져오기
             const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
