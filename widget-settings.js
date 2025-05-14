@@ -1,8 +1,34 @@
-
 // 페이지 로드 시 메뉴 아이템에 클릭 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', function() {
     setupMenuItemClickListeners();
 });
+
+// 위젯 클릭 핸들러
+function handleWidgetClick(element, action, url) {
+    const widgetName = element.querySelector('.widget-name').textContent;
+    
+    // 셔틀버스 위젯인 경우 페이지 이동
+    if (widgetName === '셔틀버스' && action === 'navigate') {
+        window.location.href = url;
+        return;
+    }
+    
+    // 일반 위젯인 경우 토글
+    if (action === 'toggle') {
+        toggleWidget(element);
+    }
+}
+
+// 메뉴 클릭 핸들러
+function handleMenuClick(element, url) {
+    const menuName = element.querySelector('.menu-name').textContent;
+    
+    // 셔틀버스 메뉴인 경우 페이지 이동
+    if (menuName === '셔틀버스') {
+        window.location.href = url;
+        return;
+    }
+}
 
 // 메뉴 아이템 클릭 이벤트 설정
 function setupMenuItemClickListeners() {
@@ -24,6 +50,12 @@ function setupMenuItemClickListeners() {
                 const menuName = this.querySelector('.menu-name').textContent;
                 if (menuName === '내 정보') {
                     return; // 내 정보는 토글 불가
+                }
+                
+                // 셔틀버스 메뉴인 경우 페이지 이동
+                if (menuName === '셔틀버스') {
+                    handleMenuClick(this, 'shuttle-bus.html');
+                    return;
                 }
                 
                 // 토글 버튼 클릭 시와 동일한 동작 수행

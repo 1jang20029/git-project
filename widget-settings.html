@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>위젯 및 메뉴 설정 - 연성대학교</title>
-    <link rel="stylesheet" href="widget-settings.html">
+    <link rel="stylesheet" href="widget-settings.css">
 </head>
 <body>
     <div class="container">
@@ -18,53 +18,53 @@
         
         <div class="widgets-section">
             <div class="widgets-grid">
-                <div class="widget-item selected" onclick="toggleWidget(this)">
+                <div class="widget-item selected" onclick="handleWidgetClick(this, 'toggle')">
                     <div class="widget-icon">🏫</div>
                     <div class="widget-name">강의실 찾기</div>
                     <div class="widget-description">빈 강의실 정보 확인</div>
-                    <div class="widget-checkbox">✓</div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)">✓</div>
                 </div>
-                <div class="widget-item selected" onclick="toggleWidget(this)">
+                <div class="widget-item selected" onclick="handleWidgetClick(this, 'toggle')">
                     <div class="widget-icon">📅</div>
                     <div class="widget-name">학사일정</div>
                     <div class="widget-description">주요 일정 및 행사</div>
-                    <div class="widget-checkbox">✓</div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)">✓</div>
                 </div>
-                <div class="widget-item selected" onclick="toggleWidget(this)">
+                <div class="widget-item selected" onclick="handleWidgetClick(this, 'toggle')">
                     <div class="widget-icon">🍽️</div>
                     <div class="widget-name">학식 메뉴</div>
                     <div class="widget-description">오늘의 식단 정보</div>
-                    <div class="widget-checkbox">✓</div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)">✓</div>
                 </div>
-                <div class="widget-item" onclick="toggleWidget(this)">
+                <div class="widget-item" onclick="handleWidgetClick(this, 'navigate', 'shuttle-bus.html')">
                     <div class="widget-icon">🚌</div>
                     <div class="widget-name">셔틀버스</div>
                     <div class="widget-description">셔틀 시간표</div>
-                    <div class="widget-checkbox"></div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)"></div>
                 </div>
-                <div class="widget-item" onclick="toggleWidget(this)">
+                <div class="widget-item" onclick="handleWidgetClick(this, 'toggle')">
                     <div class="widget-icon">📚</div>
                     <div class="widget-name">도서관</div>
                     <div class="widget-description">좌석 현황 및 운영시간</div>
-                    <div class="widget-checkbox"></div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)"></div>
                 </div>
-                <div class="widget-item" onclick="toggleWidget(this)">
+                <div class="widget-item" onclick="handleWidgetClick(this, 'toggle')">
                     <div class="widget-icon">📝</div>
                     <div class="widget-name">강의평가</div>
                     <div class="widget-description">인기 강의 정보</div>
-                    <div class="widget-checkbox"></div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)"></div>
                 </div>
-                <div class="widget-item" onclick="toggleWidget(this)">
+                <div class="widget-item" onclick="handleWidgetClick(this, 'toggle')">
                     <div class="widget-icon">📢</div>
                     <div class="widget-name">공지사항</div>
                     <div class="widget-description">주요 공지 모아보기</div>
-                    <div class="widget-checkbox"></div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)"></div>
                 </div>
-                <div class="widget-item" onclick="toggleWidget(this)">
+                <div class="widget-item" onclick="handleWidgetClick(this, 'toggle')">
                     <div class="widget-icon">🗓️</div>
                     <div class="widget-name">내 시간표</div>
                     <div class="widget-description">수업 일정 확인</div>
-                    <div class="widget-checkbox"></div>
+                    <div class="widget-checkbox" onclick="event.stopPropagation(); toggleWidget(this.parentElement)"></div>
                 </div>
             </div>
         </div>
@@ -128,13 +128,13 @@
                     <div class="menu-toggle" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-7">
+                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-7" onclick="handleMenuClick(this, 'shuttle-bus.html')">
                     <div class="menu-icon">🚌</div>
                     <div class="menu-info">
                         <div class="menu-name">셔틀버스</div>
                         <div class="menu-status">비활성화됨</div>
                     </div>
-                    <div class="menu-toggle" onclick="toggleMenu(this)"></div>
+                    <div class="menu-toggle" onclick="event.stopPropagation(); toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
                 <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-8">
@@ -154,6 +154,7 @@
             <button class="reset-button" onclick="resetSettings()">기본값으로 초기화</button>
         </div>
     </div>
-    <script src="widget-settings.css"></script>
+
+    <script src="widget-settings.js"></script>
 </body>
 </html>
