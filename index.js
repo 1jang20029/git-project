@@ -2477,6 +2477,7 @@ function navigateToProfilePage(pageName) {
     }
 }
 
+
 // 시간표 관련 데이터 가져오기 및 처리 함수
 function loadTimetableData() {
     const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -3579,3 +3580,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+
+
+// 시간표 페이지로 이동하는 함수
+function navigateToTimetable() {
+    window.location.href = 'timetable.html';
+}
+
