@@ -2008,7 +2008,7 @@ function goToPage(pageName) {
             break;
             
         case 'shuttle':
-            alert('셔틀버스 시간표 페이지로 이동합니다.');
+            window.location.href = 'shuttle_bus_tracker.html';
             break;
             
         case 'cafeteria':
