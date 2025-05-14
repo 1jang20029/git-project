@@ -1,0 +1,246 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+}
+
+.back-button {
+    font-size: 20px;
+    margin-right: 16px;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.register-container {
+    padding: 24px;
+    flex: 1;
+}
+
+.register-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-input:focus {
+    border-color: #c62917;
+    outline: none;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.error-message {
+    color: #c62917;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+}
+
+.register-button {
+    width: 100%;
+    padding: 14px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.grade-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.grade-button {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.grade-button:after {
+    content: "▼";
+    font-size: 12px;
+    color: #888;
+}
+
+.grade-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.grade-option {
+    padding: 12px;
+    cursor: pointer;
+}
+
+.grade-option:hover {
+    background-color: #f5f5f5;
+}
+
+.show {
+    display: block;
+}
+
+.agreement {
+    margin-top: 24px;
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.agreement-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.agreement-text {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+    max-height: 100px;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid #eee;
+    margin-bottom: 8px;
+    background-color: white;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.check-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.social-info {
+    background-color: #f0f8ff;
+    padding: 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #d1e9ff;
+}
+
+.social-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #0066cc;
+}
+
+.social-text {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.5;
+}
+
+.social-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    vertical-align: middle;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.kakao-icon {
+    background-color: #FEE500;
+    color: #3A1D1D;
+}
+
+.google-icon {
+    background-color: #4285F4;
+}
+
+.naver-icon {
+    background-color: #03C75A;
+}

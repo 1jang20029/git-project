@@ -1,0 +1,241 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+}
+
+.back-button {
+    font-size: 20px;
+    margin-right: 16px;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.section-title {
+    padding: 16px;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+}
+
+.section-description {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #666;
+    background-color: #f9f9f9;
+}
+
+.widgets-section {
+    padding: 16px;
+}
+
+.widgets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.widget-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.widget-item.selected {
+    border-color: #c62917;
+    background-color: #fff8f8;
+}
+
+.widget-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.widget-name {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.widget-description {
+    font-size: 12px;
+    color: #888;
+    margin-top: 6px;
+    text-align: center;
+}
+
+.widget-checkbox {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    background-color: white;
+}
+
+.widget-item.selected .widget-checkbox {
+    border-color: #c62917;
+    background-color: #c62917;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+}
+
+.menu-section {
+    padding: 16px;
+}
+
+.menu-list {
+    margin-bottom: 24px;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    cursor: grab;
+}
+
+.menu-item.clickable {
+    position: relative;
+}
+
+/* 드래그 핸들만 제외한 아이템 공백 영역에 투명 오버레이 추가 */
+.menu-item.clickable::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 35px; /* 드래그 핸들 영역 제외 */
+    bottom: 0;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.menu-item.disabled {
+    opacity: 0.5;
+    background-color: #f5f5f5;
+}
+
+.menu-icon {
+    font-size: 20px;
+    margin-right: 16px;
+}
+
+.menu-info {
+    flex: 1;
+}
+
+.menu-name {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.menu-status {
+    font-size: 12px;
+    color: #888;
+}
+
+.menu-toggle {
+    width: 44px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2; /* 투명 오버레이보다 위에 있도록 */
+}
+
+.menu-toggle.active {
+    background-color: #c62917;
+}
+
+.menu-toggle:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s ease;
+}
+
+.menu-toggle.active:before {
+    left: 22px;
+}
+
+.drag-handle {
+    margin-left: 16px;
+    color: #ccc;
+    font-size: 20px;
+    z-index: 2; /* 투명 오버레이보다 위에 있도록 */
+}
+
+.save-button {
+    width: 100%;
+    padding: 14px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 16px 0;
+}
+
+.reset-button {
+    width: 100%;
+    padding: 14px;
+    background-color: white;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.actions-container {
+    padding: 16px;
+}
