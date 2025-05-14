@@ -480,32 +480,9 @@
         
         // 프로필 정보 로드 - 수정된 버전
         function loadProfileInfo(userId) {
-            // 실제 학번 가져오기
-            let displayStudentId = userId;
-            
-            // 소셜 로그인 사용자인지 확인
-            const socialType = localStorage.getItem(`user_${userId}_socialType`);
-            
-            if (socialType) {
-                // 소셜 로그인 사용자인 경우 실제 학번 가져오기
-                const actualStudentId = localStorage.getItem(`user_${userId}_actualStudentId`);
-                
-                if (actualStudentId) {
-                    displayStudentId = actualStudentId;
-                } else {
-                    // 실제 학번이 저장되지 않은 경우, 기본값 설정 후 저장
-                    if (socialType === 'naver') {
-                        displayStudentId = '20241001';
-                    } else if (socialType === 'kakao') {
-                        displayStudentId = '20241002';
-                    } else if (socialType === 'google') {
-                        displayStudentId = '20241003';
-                    }
-                    
-                    // 생성된 학번을 저장
-                    localStorage.setItem(`user_${userId}_actualStudentId`, displayStudentId);
-                }
-            }
+            // 메인 페이지와 동일한 학번 표시 로직 사용
+            // studentId 키에서 실제 학번 가져오기
+            let displayStudentId = localStorage.getItem(`user_${userId}_studentId`) || userId;
             
             // 학번 설정
             document.getElementById('studentId').value = displayStudentId;
