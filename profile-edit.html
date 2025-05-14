@@ -228,15 +228,67 @@
             font-size: 12px;
         }
         
-        /* 자동완성 입력 필드 스타일 */
-        input[list] {
-            background-color: white;
+        /* 커스텀 콤보박스 스타일 */
+        .combobox-container {
             position: relative;
+            width: 100%;
         }
         
-        input[list]:focus {
-            border-color: #c62917;
-            outline: none;
+        .combobox-input {
+            width: 100%;
+            padding-right: 40px;
+        }
+        
+        .combobox-arrow {
+            position: absolute;
+            right: 1px;
+            top: 1px;
+            bottom: 1px;
+            width: 38px;
+            border: none;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            border-radius: 0 3px 3px 0;
+            border-left: 1px solid #ddd;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .combobox-arrow:hover {
+            background-color: #e9ecef;
+        }
+        
+        .combobox-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .dropdown-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-option.hidden {
+            display: none;
         }
         
         /* 모달 스타일 개선 */
@@ -488,7 +540,74 @@
             
             // 폼 입력 필드 유효성 검사 이벤트 리스너 등록
             setupFormValidation();
+            
+            // 학과 콤보박스 이벤트 설정
+            setupDepartmentCombobox();
         });
+        
+        // 학과 콤보박스 설정
+        function setupDepartmentCombobox() {
+            const departmentInput = document.getElementById('department');
+            const departmentDropdown = document.getElementById('departmentDropdown');
+            
+            // 입력 필드 포커스 시 자동완성 처리
+            departmentInput.addEventListener('input', function() {
+                filterDepartmentOptions(this.value);
+                if (!departmentDropdown.style.display || departmentDropdown.style.display === 'none') {
+                    departmentDropdown.style.display = 'block';
+                }
+            });
+            
+            // 입력 필드 포커스 시
+            departmentInput.addEventListener('focus', function() {
+                filterDepartmentOptions(this.value);
+                departmentDropdown.style.display = 'block';
+            });
+            
+            // 드롭다운 외부 클릭 시 닫기
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.combobox-container')) {
+                    departmentDropdown.style.display = 'none';
+                }
+            });
+            
+            // 드롭다운 옵션 클릭 처리
+            departmentDropdown.addEventListener('click', function(event) {
+                if (event.target.classList.contains('dropdown-option')) {
+                    departmentInput.value = event.target.dataset.value;
+                    departmentDropdown.style.display = 'none';
+                }
+            });
+        }
+        
+        // 학과 드롭다운 토글
+        function toggleDepartmentDropdown() {
+            const departmentDropdown = document.getElementById('departmentDropdown');
+            const departmentInput = document.getElementById('department');
+            
+            if (departmentDropdown.style.display === 'none' || !departmentDropdown.style.display) {
+                filterDepartmentOptions(departmentInput.value);
+                departmentDropdown.style.display = 'block';
+                departmentInput.focus();
+            } else {
+                departmentDropdown.style.display = 'none';
+            }
+        }
+        
+        // 학과 옵션 필터링
+        function filterDepartmentOptions(searchTerm) {
+            const options = document.querySelectorAll('#departmentDropdown .dropdown-option');
+            const search = searchTerm.toLowerCase();
+            
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                if (text.includes(search) || search === '') {
+                    option.classList.remove('hidden');
+                } else {
+                    option.classList.add('hidden');
+                }
+            });
+        }
         
         // 로그인 상태 확인 및 프로필 정보 로드
         function checkLoginStatus() {
