@@ -4,107 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>네이버 로그인 처리 중 - 연성대학교</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-        
-        .loading-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 90%;
-        }
-        
-        .naver-logo {
-            width: 60px;
-            height: 60px;
-            background-color: #03C75A;
-            border-radius: 30px;
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        
-        .naver-logo::before {
-            content: "N";
-            font-family: Arial, sans-serif;
-            color: white;
-            font-size: 28px;
-        }
-        
-        h1 {
-            font-size: 20px;
-            margin-bottom: 16px;
-            color: #333;
-        }
-        
-        p {
-            color: #666;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-        
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: #03C75A;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .notice {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #fffde7;
-            border: 1px solid #fff9c4;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #5d4037;
-            display: none;
-        }
-    </style>
 </head>
 <body>
-    <div class="loading-container">
-        <div class="naver-logo"></div>
-        <h1 id="status-title">네이버 로그인 처리 중</h1>
-        <p id="status-message">잠시만 기다려 주세요. 로그인 정보를 확인하고 있습니다.</p>
-        <div class="spinner" id="loading-spinner"></div>
-        
-        <div id="storage-notice" class="notice">
-            미리보기 환경에서는 로컬 저장소 사용이 제한됩니다. 실제 배포 환경에서 테스트해주세요.
-        </div>
-    </div>
-
     <script>
         // 디버깅 로그 추가
         function log(message) {
@@ -139,7 +40,6 @@
                 } catch (e) {
                     console.warn('localStorage를 사용할 수 없어 메모리에 저장합니다:', e);
                     this.memoryStorage[key] = value;
-                    document.getElementById('storage-notice').style.display = 'block';
                 }
             },
             
@@ -174,7 +74,7 @@
             sessionStorage.setItem('temp_social_email', 'naver_user@example.com');
             
             // 바로 회원가입 페이지로 이동
-            window.location.href = "register.html?social=naver";
+            window.location.replace("register.html?social=naver");
         }
         
         // 이미 가입된 사용자 로그인 처리
@@ -187,13 +87,13 @@
             // 최초 로그인 여부 확인
             const isFirstLogin = safeStorage.getItem(`user_${userId}_first_login`) !== 'false';
             
-            // 중간 화면 없이 바로 이동
+            // 바로 해당 페이지로 이동
             if (isFirstLogin) {
                 safeStorage.setItem(`user_${userId}_first_login`, 'false');
-                window.location.href = "widget-settings.html";
+                window.location.replace("widget-settings.html");
             } else {
                 // 바로 메인 페이지로 이동
-                window.location.href = "index.html";
+                window.location.replace("index.html");
             }
         }
         
@@ -219,8 +119,8 @@
             return isRegistered;
         }
         
-        // 페이지 로드 시 실행되는 함수
-        window.onload = function() {
+        // 페이지 로드 즉시 실행
+        (function() {
             log("페이지 로드됨");
             
             try {
@@ -232,7 +132,7 @@
                 // 오류 또는 취소 확인 - 바로 로그인 페이지로 이동
                 if (error || !authCode) {
                     log("로그인 취소 또는 오류: " + error);
-                    window.location.href = "login.html";
+                    window.location.replace("login.html");
                     return;
                 }
                 
@@ -254,9 +154,9 @@
             } catch (error) {
                 log("예외 발생: " + error.message);
                 // 오류 시 바로 로그인 페이지로 이동
-                window.location.href = "login.html";
+                window.location.replace("login.html");
             }
-        };
+        })();
     </script>
 </body>
 </html>
