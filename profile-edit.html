@@ -1205,7 +1205,8 @@
             // 로컬 스토리지에 저장
             const currentUser = localStorage.getItem('currentLoggedInUser');
             localStorage.setItem(`user_${currentUser}_name`, name);
-            localStorage.setItem(`user_${currentUser}_department`, departmentId);
+            localStorage.setItem(`user_${currentUser}_department`, departmentName);  // 학과 이름으로 저장 (기존 방식)
+            localStorage.setItem(`user_${currentUser}_departmentId`, departmentId);  // 학과 ID도 별도 저장
             localStorage.setItem(`user_${currentUser}_departmentName`, departmentName);  // 학과 이름도 저장
             localStorage.setItem(`user_${currentUser}_grade`, grade);
             localStorage.setItem(`user_${currentUser}_email`, email);
