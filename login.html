@@ -731,26 +731,12 @@
     
         // 네이버 로그인 처리 (개선됨)
         function naverLogin() {
-            // 기존 네이버 사용자인지 확인 - localStorage에서 직접 확인
-            let hasNaverUser = false;
+            // 기존 네이버 사용자인지 확인
+            const existingNaverUsers = Object.keys(safeStorage.memoryStorage || {})
+                .concat(Object.keys(localStorage || {}))
+                .filter(key => key.includes('user_naver_') && key.includes('_registered'));
             
-            try {
-                // localStorage의 모든 키를 확인하여 네이버 사용자가 있는지 검사
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && key.includes('user_naver_') && key.includes('_registered')) {
-                        const value = localStorage.getItem(key);
-                        if (value === 'true') {
-                            hasNaverUser = true;
-                            break;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.log('localStorage 접근 오류:', e);
-            }
-            
-            // 네이버 로그인 API 사용
+            // 네이버 로그인 API 사용 - 실제 네이버 로그인 페이지로 이동
             const CLIENT_ID = '4s_r7FMu5Bfr3er3GXci';
             const REDIRECT_URI = 'https://ysu-guide.netlify.app/naver-callback.html';
             const STATE = Math.random().toString(36).substr(2, 11);
@@ -758,13 +744,12 @@
             // 상태 토큰 저장 (CSRF 방지)
             safeStorage.setItem('naverOAuthState', STATE);
         
-            // 기존 네이버 사용자가 있다면 prompt 파라미터 제거
+            // 이미 동의한 사용자가 있고 해당 사용자가 이미 로그인한 적이 있다면
+            // prompt 파라미터를 제거하여 동의 화면을 건너뛸 수 있음
             let promptParam = '';
-            if (!hasNaverUser) {
+            if (existingNaverUsers.length === 0) {
                 // 처음 네이버 로그인 사용자인 경우에만 동의 화면 표시
-                console.log('첫 번째 네이버 로그인 사용자입니다.');
-            } else {
-                console.log('기존 네이버 사용자가 발견되었습니다.');
+                promptParam = '&prompt=consent';
             }
             
             // 네이버 OAuth 2.0 인증 URL 생성
