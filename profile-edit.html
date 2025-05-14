@@ -479,21 +479,51 @@
         }
         
         // 프로필 정보 로드 - 수정된 버전
-        function loadProfileInfo(studentId) {
-            // 기본 정보 설정
-            document.getElementById('studentId').value = studentId;
+        function loadProfileInfo(userId) {
+            // 실제 학번 가져오기 (소셜 로그인 사용자의 경우 별도 처리)
+            let displayStudentId = userId;
+            
+            // 소셜 로그인 사용자인지 확인
+            const socialType = localStorage.getItem(`user_${userId}_socialType`);
+            
+            if (socialType) {
+                // 소셜 로그인 사용자의 경우 실제 학번 확인
+                const actualStudentId = localStorage.getItem(`user_${userId}_actualStudentId`);
+                
+                if (actualStudentId) {
+                    displayStudentId = actualStudentId;
+                } else {
+                    // 실제 학번이 없는 경우, 임시 학번 생성 또는 기본값 설정
+                    if (socialType === 'naver') {
+                        displayStudentId = '20241001'; // 네이버 사용자 임시 학번
+                    } else if (socialType === 'kakao') {
+                        displayStudentId = '20241002'; // 카카오 사용자 임시 학번
+                    } else if (socialType === 'google') {
+                        displayStudentId = '20241003'; // 구글 사용자 임시 학번
+                    }
+                    
+                    // 생성된 임시 학번을 저장
+                    localStorage.setItem(`user_${userId}_actualStudentId`, displayStudentId);
+                }
+            } else {
+                // 일반 로그인 사용자인 경우 userId가 그대로 학번
+                displayStudentId = userId;
+            }
+            
+            // 학번 설정
+            document.getElementById('studentId').value = displayStudentId;
             
             // 로컬 스토리지에서 사용자 정보 가져오기
-            const name = localStorage.getItem(`user_${studentId}_name`) || '조희정';
-            const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
-            const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
-            const email = localStorage.getItem(`user_${studentId}_email`) || 'student@yeonsung.ac.kr';
-            const phone = localStorage.getItem(`user_${studentId}_phone`) || '010-1234-5678';
+            const name = localStorage.getItem(`user_${userId}_name`) || '조희정';
+            const department = localStorage.getItem(`user_${userId}_department`) || 'business';
+            const grade = localStorage.getItem(`user_${userId}_grade`) || '3';
+            const email = localStorage.getItem(`user_${userId}_email`) || 'student@yeonsung.ac.kr';
+            const phone = localStorage.getItem(`user_${userId}_phone`) || '010-1234-5678';
             
             // 프로필 이미지 관련 정보 가져오기
-            const profileImageType = localStorage.getItem(`user_${studentId}_profileImageType`) || 'emoji';
-            const profileImage = localStorage.getItem(`user_${studentId}_profileImage`) || '👨‍🎓';
-            const customProfileImage = localStorage.getItem(`user_${studentId}_customProfileImage`);
+            const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
+            const profileImage = localStorage.getItem(`user_${userId}_profileImage`) || '👨‍🎓';
+            const customProfileImage = localStorage.getItem(`user_${userId}_customProfileImage`);
             
             // 폼에 정보 설정
             document.getElementById('name').value = name;
@@ -667,9 +697,11 @@
             
             // 로컬 스토리지에 저장
             const studentId = document.getElementById('studentId').value;
-            localStorage.setItem(`user_${studentId}_profileImageType`, 'custom');
-            localStorage.setItem(`user_${studentId}_profileImage`, 'custom');
-            localStorage.setItem(`user_${studentId}_customProfileImage`, imageData);
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            
+            localStorage.setItem(`user_${currentUser}_profileImageType`, 'custom');
+            localStorage.setItem(`user_${currentUser}_profileImage`, 'custom');
+            localStorage.setItem(`user_${currentUser}_customProfileImage`, imageData);
             
             // 모달 닫기
             closeProfileImageModal();
@@ -708,9 +740,9 @@
             }
             
             // 로컬 스토리지에 저장
-            const studentId = document.getElementById('studentId').value;
-            localStorage.setItem(`user_${studentId}_profileImageType`, type);
-            localStorage.setItem(`user_${studentId}_profileImage`, image);
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            localStorage.setItem(`user_${currentUser}_profileImageType`, type);
+            localStorage.setItem(`user_${currentUser}_profileImage`, image);
             
             // 모달 닫기
             closeProfileImageModal();
@@ -772,88 +804,88 @@
         }
         
         // 필드 유효성 검사 및 에러 표시
-function validateField(field, isValid) {
-    const formGroup = field.parentElement;
-    
-    if (!isValid && field.value.trim() !== '') {
-        formGroup.classList.add('has-error');
-    } else {
-        formGroup.classList.remove('has-error');
-    }
-}
+        function validateField(field, isValid) {
+            const formGroup = field.parentElement;
+            
+            if (!isValid && field.value.trim() !== '') {
+                formGroup.classList.add('has-error');
+            } else {
+                formGroup.classList.remove('has-error');
+            }
+        }
 
-// 프로필 저장
-function saveProfile(event) {
-    event.preventDefault();
-    
-    // 필수 입력 검사
-    const name = document.getElementById('name').value.trim();
-    const department = document.getElementById('department').value;
-    const grade = document.getElementById('grade').value;
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    
-    if (!name || !department || !grade || !email || !phone) {
-        alert('모든 필수 항목을 입력해주세요.');
-        return false;
-    }
-    
-    // 비밀번호 변경 검사
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    
-    if (newPassword) {
-        if (!currentPassword) {
-            alert('현재 비밀번호를 입력해주세요.');
+        // 프로필 저장
+        function saveProfile(event) {
+            event.preventDefault();
+            
+            // 필수 입력 검사
+            const name = document.getElementById('name').value.trim();
+            const department = document.getElementById('department').value;
+            const grade = document.getElementById('grade').value;
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            
+            if (!name || !department || !grade || !email || !phone) {
+                alert('모든 필수 항목을 입력해주세요.');
+                return false;
+            }
+            
+            // 비밀번호 변경 검사
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword) {
+                if (!currentPassword) {
+                    alert('현재 비밀번호를 입력해주세요.');
+                    return false;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+                    return false;
+                }
+                
+                // 비밀번호 정책 검사 (영문, 숫자, 특수문자 조합 8자 이상)
+                const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+                if (!passwordRegex.test(newPassword)) {
+                    alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.');
+                    return false;
+                }
+            }
+            
+            // 로컬 스토리지에 저장
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            localStorage.setItem(`user_${currentUser}_name`, name);
+            localStorage.setItem(`user_${currentUser}_department`, department);
+            localStorage.setItem(`user_${currentUser}_grade`, grade);
+            localStorage.setItem(`user_${currentUser}_email`, email);
+            localStorage.setItem(`user_${currentUser}_phone`, phone);
+            
+            if (newPassword) {
+                localStorage.setItem(`user_${currentUser}_password`, newPassword);
+            }
+            
+            // 프로필 이미지 정보 가져오기 (이미 있는 경우 업데이트되었을 것임)
+            const profileImageType = localStorage.getItem(`user_${currentUser}_profileImageType`) || 'emoji';
+            const profileImage = localStorage.getItem(`user_${currentUser}_profileImage`) || '👨‍🎓';
+            const customProfileImage = localStorage.getItem(`user_${currentUser}_customProfileImage`);
+            
+            // 모든 페이지에 프로필 이미지 업데이트를 알리는 플래그 설정
+            localStorage.setItem('profileUpdated', 'true');
+            
+            alert('개인정보가 성공적으로 수정되었습니다.');
+            
+            // 이전 페이지로 이동
+            goToBack();
+            
             return false;
         }
-        
-        if (newPassword !== confirmPassword) {
-            alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
-            return false;
-        }
-        
-        // 비밀번호 정책 검사 (영문, 숫자, 특수문자 조합 8자 이상)
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-        if (!passwordRegex.test(newPassword)) {
-            alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.');
-            return false;
-        }
-    }
-    
-    // 로컬 스토리지에 저장
-    const studentId = document.getElementById('studentId').value;
-    localStorage.setItem(`user_${studentId}_name`, name);
-    localStorage.setItem(`user_${studentId}_department`, department);
-    localStorage.setItem(`user_${studentId}_grade`, grade);
-    localStorage.setItem(`user_${studentId}_email`, email);
-    localStorage.setItem(`user_${studentId}_phone`, phone);
-    
-    if (newPassword) {
-        localStorage.setItem(`user_${studentId}_password`, newPassword);
-    }
-    
-    // 프로필 이미지 정보 가져오기 (이미 있는 경우 업데이트되었을 것임)
-    const profileImageType = localStorage.getItem(`user_${studentId}_profileImageType`) || 'emoji';
-    const profileImage = localStorage.getItem(`user_${studentId}_profileImage`) || '👨‍🎓';
-    const customProfileImage = localStorage.getItem(`user_${studentId}_customProfileImage`);
-    
-    // 모든 페이지에 프로필 이미지 업데이트를 알리는 플래그 설정
-    localStorage.setItem('profileUpdated', 'true');
-    
-    alert('개인정보가 성공적으로 수정되었습니다.');
-    
-    // 이전 페이지로 이동
-    goToBack();
-    
-    return false;
-}
 
-// 이전 페이지로 이동
-function goToBack() {
-    window.history.back();
-}
-</script>
+        // 이전 페이지로 이동
+        function goToBack() {
+            window.history.back();
+        }
+    </script>
 </body>
 </html>
