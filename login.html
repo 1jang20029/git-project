@@ -860,28 +860,16 @@
             }
         }
         
-        // 구글 로그인 처리 - 동의 화면 최적화
+        // 구글 로그인 처리 - 새 ID로 업데이트
         function googleLogin() {
-            // 기존 구글 사용자인지 확인
-            const existingGoogleUsers = Object.keys(safeStorage.memoryStorage || {})
-                .concat(Object.keys(localStorage || {}))
-                .filter(key => key.includes('user_google_') && key.includes('_registered'));
-            
             // 새로운 클라이언트 ID 사용
             const CLIENT_ID = '682526101032-6fpr7h5u93gkf762m0rkoj5bo5hpgs2u.apps.googleusercontent.com';
             
-            // 리디렉션 URI
+            // 리디렉션 URI - 이 부분은 변경하지 않음
             const REDIRECT_URI = 'https://ysu-guide.netlify.app/google-callback.html';
             
-            // 권한 범위
+            // 권한 범위 유지
             const SCOPE = 'email profile';
-            
-            // 처음 구글 로그인 사용자인지에 따라 prompt 파라미터 결정
-            let promptParam = '&prompt=select_account';
-            if (existingGoogleUsers.length === 0) {
-                // 처음 구글 로그인 사용자인 경우 동의 화면 표시
-                promptParam = '&prompt=consent';
-            }
             
             // Google OAuth 2.0 인증 URL 생성
             const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
@@ -889,7 +877,7 @@
                 '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
                 '&response_type=code' +
                 '&scope=' + encodeURIComponent(SCOPE) +
-                promptParam +
+                '&prompt=select_account' +
                 '&access_type=offline';
             
             // 구글 로그인 페이지로 이동
