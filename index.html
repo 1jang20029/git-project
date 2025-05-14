@@ -506,17 +506,18 @@
                 <div class="content-pad"></div>
             </div>
             
-            <!-- 내 정보 탭 -->
+            <!-- 내 정보 탭 - 로그인 상태에 따라 동적으로 변경 -->
             <div id="profile-tab" class="tab-content">
-                <div class="profile-section">
-                    <div class="profile-image">👨‍🎓</div>
+                <!-- 로그인이 필요한 상태로 고정 -->
+                <div id="profile-login-required" class="profile-section">
+                    <div class="profile-image">👤</div>
                     <div class="profile-info">
-                        <div class="profile-name">조희정</div>
-                        <div class="profile-detail">경영학과 | 3학년</div>
-                        <div class="profile-detail">학번: 2021100215</div>
+                        <div class="profile-name">로그인이 필요합니다</div>
+                        <div class="profile-detail">내 정보를 확인하려면 로그인해주세요</div>
                     </div>
                 </div>
                 
+                <!-- 메뉴들은 항상 표시 (로그인 상태와 관계없이) -->
                 <div class="content-section">
                     <div class="section-title">
                         <span>내 정보 관리</span>
@@ -539,7 +540,7 @@
                             <div class="menu-title">개인정보 수정</div>
                             <div class="menu-arrow">›</div>
                         </li>
-                        <!-- 회원 탈퇴 메뉴 추가 -->
+                        <!-- 회원 탈퇴 메뉴 -->
                         <li class="menu-item" onclick="deleteAccount()">
                             <div class="menu-title delete-account">회원 탈퇴</div>
                             <div class="menu-arrow">›</div>

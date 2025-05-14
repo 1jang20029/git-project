@@ -1937,11 +1937,20 @@ function switchTab(tabName) {
         handleMapResize();
     }
     
-    // 프로필 탭으로 전환 시 프로필 이미지 업데이트
+    // 프로필 탭으로 전환 시 프로필 정보 및 이미지 업데이트
     if (tabName === 'profile') {
         setTimeout(() => {
+            // 로그인 상태 재확인 및 프로필 정보 업데이트
+            checkLoginStatus();
             updateAllProfileImages();
         }, 100);
+    }
+    
+    // 홈 탭으로 전환 시 시간표 미리보기 업데이트
+    if (tabName === 'home') {
+        setTimeout(() => {
+            updateTimetablePreview();
+        }, 200);
     }
 }
 
@@ -2112,6 +2121,7 @@ function logout() {
     if (confirm('로그아웃 하시겠습니까?')) {
         // 현재 로그인 사용자 정보 삭제
         localStorage.removeItem('currentLoggedInUser');
+        
         // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
         const loginButton = document.querySelector('.login-button');
         const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
@@ -2123,12 +2133,17 @@ function logout() {
         // 프로필 드롭다운이 열려있다면 닫기
         const dropdown = document.querySelector('.profile-dropdown');
         if (dropdown) dropdown.classList.remove('active');
+        
+        // 프로필 탭 초기화
+        resetProfileInfo();
+        
         // 홈 탭으로 전환
         switchTab('home');
 
         alert('로그아웃 되었습니다.');
     }
 }
+
 
 // 회원 탈퇴 함수
 function deleteAccount() {
@@ -2283,6 +2298,9 @@ function checkLoginStatus() {
         // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
         if (loginButton) loginButton.style.display = 'block';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+        
+        // 프로필 탭도 로그인 필요 상태로 초기화
+        resetProfileInfo();
     }
 }
 
@@ -2386,11 +2404,24 @@ function updateDropdownProfileInfo(studentId) {
     }
 }
 
-// 프로필 정보 업데이트
+// 프로필 정보 업데이트 함수 (로그인 상태 관리 포함)
 function updateProfileInfo(studentId) {
-    const profileTab = document.getElementById('profile-tab');
+    const profileLoggedIn = document.getElementById('profile-logged-in');
+    const profileLoginRequired = document.getElementById('profile-login-required');
+    const profileMenus = document.getElementById('profile-menus');
+    const profileLoginButton = document.getElementById('profile-login-button');
     
-    if (profileTab) {
+    if (!studentId) {
+        // 로그인되지 않은 상태 - 로그인 필요 화면 표시
+        if (profileLoggedIn) profileLoggedIn.style.display = 'none';
+        if (profileMenus) profileMenus.style.display = 'none';
+        if (profileLoginRequired) profileLoginRequired.style.display = 'flex';
+        if (profileLoginButton) profileLoginButton.style.display = 'block';
+        return;
+    }
+    
+    // 로그인된 상태 - 사용자 정보 표시
+    if (profileLoggedIn) {
         // 실제 학번 가져오기 - 소셜 로그인과 일반 로그인 구분
         let actualStudentId = studentId;
         if (studentId.startsWith('naver_') || studentId.startsWith('kakao_') || studentId.startsWith('google_')) {
@@ -2403,14 +2434,14 @@ function updateProfileInfo(studentId) {
         const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
         
         // 프로필 이름 업데이트
-        const profileName = profileTab.querySelector('.profile-name');
+        const profileName = profileLoggedIn.querySelector('.profile-name');
         if (profileName) {
             profileName.textContent = name;
         }
         
         // 학과 및 학년 정보 업데이트
-        const profileDetail = profileTab.querySelector('.profile-detail');
-        if (profileDetail && department) {
+        const profileDetails = profileLoggedIn.querySelectorAll('.profile-detail');
+        if (profileDetails.length >= 2 && department) {
             let departmentText = '';
             
             switch(department) {
@@ -2429,7 +2460,7 @@ function updateProfileInfo(studentId) {
                 case 'arts':
                     departmentText = '예술계열';
                     break;
-                // 소셜 로그인에서 선택한 학과들 추가 (위와 동일)
+                // 소셜 로그인에서 선택한 학과들 추가
                 case '전자공학과':
                 case '정보통신과':
                 case '전기과':
@@ -2478,87 +2509,115 @@ function updateProfileInfo(studentId) {
                     departmentText = department;
             }
             
-            profileDetail.textContent = `${departmentText} | ${grade}학년`;
+            profileDetails[0].textContent = `${departmentText} | ${grade}학년`;
+            profileDetails[1].textContent = `학번: ${actualStudentId}`;
         }
         
-        // 학번 업데이트 - 실제 학번 표시
-        const profileStudentId = profileTab.querySelectorAll('.profile-detail')[1];
-        if (profileStudentId) {
-            profileStudentId.textContent = `학번: ${actualStudentId}`;
-        }
+        // 로그인된 상태 요소 표시
+        profileLoggedIn.style.display = 'flex';
+        profileMenus.style.display = 'block';
+        profileLoginRequired.style.display = 'none';
+        profileLoginButton.style.display = 'none';
+    }
+    
+    // 프로필 이미지도 업데이트
+    updateAllProfileImages();
+}
+
+
+// 프로필 초기화 함수 (로그아웃 시 사용)
+function resetProfileInfo() {
+    const profileLoggedIn = document.getElementById('profile-logged-in');
+    const profileLoginRequired = document.getElementById('profile-login-required');
+    const profileMenus = document.getElementById('profile-menus');
+    const profileLoginButton = document.getElementById('profile-login-button');
+    
+    // 로그인 필요 상태로 되돌리기
+    if (profileLoggedIn) profileLoggedIn.style.display = 'none';
+    if (profileMenus) profileMenus.style.display = 'none';
+    if (profileLoginRequired) profileLoginRequired.style.display = 'flex';
+    if (profileLoginButton) profileLoginButton.style.display = 'block';
+    
+    // 프로필 이미지도 초기화
+    const profileImage = profileLoginRequired.querySelector('.profile-image');
+    if (profileImage) {
+        profileImage.innerHTML = '👤';
     }
 }
 
-        function navigateToProfilePage(pageName) {
-            // 현재 로그인 상태 확인
-            const currentUser = localStorage.getItem('currentLoggedInUser');
+
+
+
+function navigateToProfilePage(pageName) {
+    // 현재 로그인 상태 확인
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        goToPage('login');
+        return;
+    }
+
+    // 페이지 이름에 따라 분기 처리
+    switch(pageName) {
+        case 'timetable':
+            alert('내 시간표 페이지로 이동합니다.');
+            window.location.href = 'timetable.html';
+            break;
+    
+        case 'my-courses':
+            alert('내 수강 강의 페이지로 이동합니다.');
+            // window.location.href = 'my-courses.html';
+            break;
+
+        case 'favorite-classrooms':
+            alert('즐겨찾는 강의실 페이지로 이동합니다.');
+            // window.location.href = 'favorite-classrooms.html';
+            break;
+
+        case 'profile-edit':
+            alert('개인정보 수정 페이지로 이동합니다.');
+            window.location.href = 'profile-edit.html';
+            break;
+
+        case 'grades':
+            alert('성적 조회 페이지로 이동합니다.');
+            // window.location.href = 'grades.html';
+            break;
+    
+        case 'course-registration':
+            alert('수강 신청 내역 페이지로 이동합니다.');
+            // window.location.href = 'course-registration.html';
+            break;
         
-            if (!currentUser) {
-                alert('로그인이 필요한 서비스입니다.');
-                goToPage('login');
-                return;
-            }
-        
-            // 페이지 이름에 따라 분기 처리
-            switch(pageName) {
-                case 'timetable':
-                    alert('내 시간표 페이지로 이동합니다.');
-                    window.location.href = 'timetable.html';
-                    break;
-            
-                case 'my-courses':
-                    alert('내 수강 강의 페이지로 이동합니다.');
-                    // window.location.href = 'my-courses.html';
-                    break;
+        case 'scholarships':
+            alert('장학금 내역 페이지로 이동합니다.');
+            // window.location.href = 'scholarships.html';
+            break;
 
-                case 'favorite-classrooms':
-                    alert('즐겨찾는 강의실 페이지로 이동합니다.');
-                    // window.location.href = 'favorite-classrooms.html';
-                    break;
+        case 'tuition':
+            alert('등록금 납부 내역 페이지로 이동합니다.');
+            // window.location.href = 'tuition.html';
+            break;
 
-                case 'profile-edit':
-                    alert('개인정보 수정 페이지로 이동합니다.');
-                    window.location.href = 'profile-edit.html';
-                    break;
+        case 'notification-settings':
+            alert('알림 설정 페이지로 이동합니다.');
+            // window.location.href = 'notification-settings.html';
+            break;
 
-                case 'grades':
-                    alert('성적 조회 페이지로 이동합니다.');
-                    // window.location.href = 'grades.html';
-                    break;
-            
-                case 'course-registration':
-                    alert('수강 신청 내역 페이지로 이동합니다.');
-                    // window.location.href = 'course-registration.html';
-                    break;
-                
-                case 'scholarships':
-                    alert('장학금 내역 페이지로 이동합니다.');
-                    // window.location.href = 'scholarships.html';
-                    break;
+        case 'widget-settings':
+            alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
+            window.location.href = 'widget-settings.html';
+            break;
 
-                case 'tuition':
-                    alert('등록금 납부 내역 페이지로 이동합니다.');
-                    // window.location.href = 'tuition.html';
-                    break;
-
-                case 'notification-settings':
-                    alert('알림 설정 페이지로 이동합니다.');
-                    // window.location.href = 'notification-settings.html';
-                    break;
-
-                case 'widget-settings':
-                    alert('위젯 및 메뉴 설정 페이지로 이동합니다.');
-                    window.location.href = 'widget-settings.html';
-                    break;
-
-                case 'app-info':
-                    alert('앱 정보 페이지로 이동합니다.');
-                    window.location.href = 'app-info.html';
-                    break;
-                default:
-                    alert('준비 중인 기능입니다.');
-            }
-        }
+        case 'app-info':
+            alert('앱 정보 페이지로 이동합니다.');
+            window.location.href = 'app-info.html';
+            break;
+        default:
+            alert('준비 중인 기능입니다.');
+    }
+}
 
 // 시간표 관련 데이터 가져오기 및 처리 함수
 function loadTimetableData() {

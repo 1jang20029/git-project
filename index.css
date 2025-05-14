@@ -1330,3 +1330,99 @@ header {
     left: 0;
     top: 0;
 }
+
+/* 로그인 필요 상태 스타일 */
+#profile-login-required {
+    padding: 24px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+}
+
+#profile-login-required .profile-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #e0e0e0;
+    margin-right: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #888;
+}
+
+#profile-login-required .profile-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #666;
+}
+
+#profile-login-required .profile-detail {
+    font-size: 14px;
+    color: #888;
+}
+
+/* 로그인 버튼 스타일 개선 */
+#profile-login-button .menu-item {
+    background-color: #f9f9f9;
+    border: 1px solid #c62917;
+    border-radius: 8px;
+    margin: 16px;
+    transition: all 0.2s ease;
+}
+
+#profile-login-button .menu-item:hover {
+    background-color: #c62917;
+    color: white;
+}
+
+#profile-login-button .menu-item:hover .menu-title {
+    color: white;
+}
+
+/* 로그인된 상태 프로필 이미지 스타일 보완 */
+#profile-logged-in .profile-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #f0f0f0;
+    margin-right: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    overflow: hidden;
+}
+
+#profile-logged-in .profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 애니메이션 효과 추가 */
+#profile-login-required,
+#profile-logged-in,
+#profile-menus,
+#profile-login-button {
+    transition: all 0.3s ease;
+}
+
+/* 반응형 디자인 개선 */
+@media screen and (max-width: 480px) {
+    #profile-login-required .profile-image,
+    #profile-logged-in .profile-image {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    #profile-login-required .profile-name,
+    #profile-logged-in .profile-name {
+        font-size: 16px;
+    }
+}
