@@ -480,45 +480,42 @@
         
         // 프로필 정보 로드 - 수정된 버전
         function loadProfileInfo(userId) {
-            // 실제 학번 가져오기 (소셜 로그인 사용자의 경우 별도 처리)
+            // 실제 학번 가져오기
             let displayStudentId = userId;
             
             // 소셜 로그인 사용자인지 확인
             const socialType = localStorage.getItem(`user_${userId}_socialType`);
             
             if (socialType) {
-                // 소셜 로그인 사용자의 경우 실제 학번 확인
+                // 소셜 로그인 사용자인 경우 실제 학번 가져오기
                 const actualStudentId = localStorage.getItem(`user_${userId}_actualStudentId`);
                 
                 if (actualStudentId) {
                     displayStudentId = actualStudentId;
                 } else {
-                    // 실제 학번이 없는 경우, 임시 학번 생성 또는 기본값 설정
+                    // 실제 학번이 저장되지 않은 경우, 기본값 설정 후 저장
                     if (socialType === 'naver') {
-                        displayStudentId = '20241001'; // 네이버 사용자 임시 학번
+                        displayStudentId = '20241001';
                     } else if (socialType === 'kakao') {
-                        displayStudentId = '20241002'; // 카카오 사용자 임시 학번
+                        displayStudentId = '20241002';
                     } else if (socialType === 'google') {
-                        displayStudentId = '20241003'; // 구글 사용자 임시 학번
+                        displayStudentId = '20241003';
                     }
                     
-                    // 생성된 임시 학번을 저장
+                    // 생성된 학번을 저장
                     localStorage.setItem(`user_${userId}_actualStudentId`, displayStudentId);
                 }
-            } else {
-                // 일반 로그인 사용자인 경우 userId가 그대로 학번
-                displayStudentId = userId;
             }
             
             // 학번 설정
             document.getElementById('studentId').value = displayStudentId;
             
             // 로컬 스토리지에서 사용자 정보 가져오기
-            const name = localStorage.getItem(`user_${userId}_name`) || '조희정';
+            const name = localStorage.getItem(`user_${userId}_name`) || '연성대학교';
             const department = localStorage.getItem(`user_${userId}_department`) || 'business';
-            const grade = localStorage.getItem(`user_${userId}_grade`) || '3';
-            const email = localStorage.getItem(`user_${userId}_email`) || 'student@yeonsung.ac.kr';
-            const phone = localStorage.getItem(`user_${userId}_phone`) || '010-1234-5678';
+            const grade = localStorage.getItem(`user_${userId}_grade`) || '2';
+            const email = localStorage.getItem(`user_${userId}_email`) || 'test@test';
+            const phone = localStorage.getItem(`user_${userId}_phone`) || '010-3402-3447';
             
             // 프로필 이미지 관련 정보 가져오기
             const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
