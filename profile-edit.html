@@ -219,10 +219,24 @@
             display: block;
         }
         
-        .notice-text {
-            font-size: 13px;
-            color: #666;
+        .department-notice {
             margin-top: 6px;
+        }
+        
+        .department-notice small {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        /* 자동완성 입력 필드 스타일 */
+        input[list] {
+            background-color: white;
+            position: relative;
+        }
+        
+        input[list]:focus {
+            border-color: #c62917;
+            outline: none;
         }
         
         /* 모달 스타일 개선 */
@@ -389,11 +403,25 @@
                 <div class="form-group">
                     <label class="form-label" for="department">학과</label>
                     <select id="department" class="form-select" required>
-                        <option value="computerScience">컴퓨터정보학과</option>
-                        <option value="business">경영학과</option>
-                        <option value="nursing">간호학과</option>
-                        <option value="engineering">공학계열</option>
-                        <option value="arts">예술계열</option>
+                        <option value="smartICT">스마트 ICT계열</option>
+                        <option value="electronics">전자공학과</option>
+                        <option value="informationCommunication">정보통신과</option>
+                        <option value="electrical">전기과</option>
+                        <option value="computerSoftware">컴퓨터소프트웨어과</option>
+                        <option value="lifeDesign">라이프디자인계열</option>
+                        <option value="architecture">건축과</option>
+                        <option value="interiorArchitecture">실내건축과</option>
+                        <option value="fashionDesignBusiness">패션디자인비즈니스과</option>
+                        <option value="beautyStylistHair">뷰티스타일리스트과 헤어디자인전공</option>
+                        <option value="beautyStylistMakeup">뷰티스타일리스트과 메이크업전공</option>
+                        <option value="beautyStylistSkincare">뷰티스타일리스트과 스킨케어전공</option>
+                        <option value="culturalContent">문화콘텐츠계열</option>
+                        <option value="gameContent">게임콘텐츠과</option>
+                        <option value="webtoonContent">웹툰만화콘텐츠과</option>
+                        <option value="videoContentProduction">영상콘텐츠과 영상콘텐츠제작전공</option>
+                        <option value="videoContentNewMedia">영상콘텐츠과 뉴미디어콘텐츠전공</option>
+                        <option value="visualDesign">시각디자인과</option>
+                        <option value="kpop">K-POP과</option>
                     </select>
                 </div>
                 
@@ -489,7 +517,38 @@
             
             // 로컬 스토리지에서 사용자 정보 가져오기
             const name = localStorage.getItem(`user_${userId}_name`) || '연성대학교';
-            const department = localStorage.getItem(`user_${userId}_department`) || 'business';
+            
+            // 학과 정보 변환 - 기존 값이 영문 코드인 경우 한글로 변환
+            let department = localStorage.getItem(`user_${userId}_department`) || 'business';
+            
+            // 영문 코드를 한글로 변환하는 매핑
+            const departmentMap = {
+                'electronics': '전자공학과',
+                'informationCommunication': '정보통신과',
+                'electrical': '전기과',
+                'computerSoftware': '컴퓨터소프트웨어과',
+                'architecture': '건축과',
+                'interiorArchitecture': '실내건축과',
+                'fashionDesignBusiness': '패션디자인비즈니스과',
+                'beautyStylistHair': '뷰티스타일리스트과 헤어디자인전공',
+                'beautyStylistMakeup': '뷰티스타일리스트과 메이크업전공',
+                'beautyStylistSkincare': '뷰티스타일리스트과 스킨케어전공',
+                'gameContent': '게임콘텐츠과',
+                'webtoonContent': '웹툰만화콘텐츠과',
+                'videoContentProduction': '영상콘텐츠과 영상콘텐츠제작전공',
+                'videoContentNewMedia': '영상콘텐츠과 뉴미디어콘텐츠전공',
+                'visualDesign': '시각디자인과',
+                'kpop': 'K-POP과',
+                'business': '경영학과',
+                'nursing': '간호학과',
+                'engineering': '공학계열',
+                'arts': '예술계열',
+                'computerScience': '컴퓨터정보학과'
+            };
+            
+            // 영문 코드인 경우 한글로 변환, 아니면 그대로 사용
+            department = departmentMap[department] || department;
+            
             const grade = localStorage.getItem(`user_${userId}_grade`) || '2';
             const email = localStorage.getItem(`user_${userId}_email`) || 'test@test';
             const phone = localStorage.getItem(`user_${userId}_phone`) || '010-3402-3447';
