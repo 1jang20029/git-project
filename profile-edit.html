@@ -1065,22 +1065,34 @@
                 validateField(this, isValid);
             });
             
-            // 새 비밀번호 유효성 검사
-            newPasswordInput.addEventListener('blur', function() {
+            // 새 비밀번호 유효성 검사 (실시간)
+            newPasswordInput.addEventListener('input', function() {
                 if (this.value.trim() !== '') {
                     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
                     const isValid = passwordRegex.test(this.value);
                     validateField(this, isValid);
+                    
+                    // 새 비밀번호가 변경되면 확인 비밀번호도 다시 체크
+                    if (confirmPasswordInput.value.trim() !== '') {
+                        const isConfirmValid = confirmPasswordInput.value === this.value;
+                        validateField(confirmPasswordInput, isConfirmValid);
+                    }
                 } else {
                     // 비어있으면 에러 제거
                     validateField(this, true);
+                    // 확인 비밀번호도 에러 제거
+                    validateField(confirmPasswordInput, true);
                 }
             });
             
             // 새 비밀번호 확인 일치 검사
             confirmPasswordInput.addEventListener('input', function() {
-                const isValid = this.value === newPasswordInput.value;
-                validateField(this, isValid);
+                if (this.value.trim() !== '' || newPasswordInput.value.trim() !== '') {
+                    const isValid = this.value === newPasswordInput.value;
+                    validateField(this, isValid);
+                } else {
+                    validateField(this, true);
+                }
             });
         }
         
