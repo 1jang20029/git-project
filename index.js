@@ -2275,26 +2275,6 @@ function logout() {
     }
 }
 
-// 드롭다운 클릭 이벤트 델리게이션
-document.addEventListener('click', function(event) {
-    // 로그아웃 드롭다운 항목 클릭 확인
-    const logoutItem = event.target.closest('.dropdown-item');
-    if (logoutItem && logoutItem.textContent.includes('로그아웃')) {
-        event.preventDefault();
-        event.stopPropagation();
-        
-        // onclick 속성이 있는 경우에만 처리하여 중복 호출 방지
-        if (!event.target.hasAttribute('onclick-processed')) {
-            event.target.setAttribute('onclick-processed', 'true');
-            logout();
-            // 100ms 후 속성 제거하여 다음 클릭 허용
-            setTimeout(() => {
-                event.target.removeAttribute('onclick-processed');
-            }, 100);
-        }
-    }
-});
-
 // 회원 탈퇴 함수
 function deleteAccount() {
     // 현재 로그인된 사용자 확인
