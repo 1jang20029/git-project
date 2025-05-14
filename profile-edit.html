@@ -477,6 +477,7 @@
                     <label class="form-label" for="newPassword">새 비밀번호</label>
                     <input type="password" id="newPassword" class="form-input" placeholder="새 비밀번호 입력">
                     <div class="notice-text">영문, 숫자, 특수문자 조합 8자 이상</div>
+                    <div class="error-message">비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.</div>
                 </div>
                 
                 <div class="form-group">
@@ -1062,6 +1063,18 @@
                 const phoneRegex = /^010-\d{4}-\d{4}$/;
                 const isValid = phoneRegex.test(this.value);
                 validateField(this, isValid);
+            });
+            
+            // 새 비밀번호 유효성 검사
+            newPasswordInput.addEventListener('blur', function() {
+                if (this.value.trim() !== '') {
+                    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+                    const isValid = passwordRegex.test(this.value);
+                    validateField(this, isValid);
+                } else {
+                    // 비어있으면 에러 제거
+                    validateField(this, true);
+                }
             });
             
             // 새 비밀번호 확인 일치 검사
