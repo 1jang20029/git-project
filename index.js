@@ -2227,14 +2227,17 @@ function logout() {
         return;
     }
     
-    // 로그아웃 진행 중 플래그 설정
+    // 로그아웃 진행 상태 플래그 설정
     isLoggingOut = true;
     
-    // 로그아웃 확인
-    const confirmed = confirm('로그아웃 하시겠습니까?');
-    
-    if (confirmed) {
-        try {
+    try {
+        // 로그아웃 확인 (한 번만 물어봄)
+        const confirmed = confirm('로그아웃 하시겠습니까?');
+        
+        if (confirmed) {
+            // 로그아웃 실행
+            console.log('로그아웃을 실행합니다.');
+            
             // 현재 로그인 사용자 정보 삭제
             localStorage.removeItem('currentLoggedInUser');
             
@@ -2256,16 +2259,20 @@ function logout() {
             // 홈 탭으로 전환
             switchTab('home');
 
-            // 로그아웃 완료 알림
+            // 로그아웃 완료 알림 (한 번만 표시)
             alert('로그아웃 되었습니다.');
-        } catch (error) {
-            console.error('로그아웃 처리 중 오류:', error);
-            alert('로그아웃 처리 중 오류가 발생했습니다.');
+            
+            console.log('로그아웃이 완료되었습니다.');
+        } else {
+            console.log('로그아웃이 취소되었습니다.');
         }
+    } catch (error) {
+        console.error('로그아웃 처리 중 오류:', error);
+        alert('로그아웃 처리 중 오류가 발생했습니다.');
+    } finally {
+        // 로그아웃 프로세스 완료 후 항상 플래그 초기화
+        isLoggingOut = false;
     }
-    
-    // 로그아웃 프로세스 완료 후 플래그 초기화
-    isLoggingOut = false;
 }
 
 // 드롭다운 클릭 이벤트 델리게이션
