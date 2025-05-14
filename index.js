@@ -2216,11 +2216,22 @@ function updateDropdownProfileInfo(studentId) {
     }
 }
 
+// 로그아웃 진행 중 플래그
+let isLoggingOut = false;
+
 // 로그아웃 기능
 function logout() {
+    // 이미 로그아웃 진행 중이면 중단
+    if (isLoggingOut) {
+        return;
+    }
+    
+    isLoggingOut = true;
+    
     if (confirm('로그아웃 하시겠습니까?')) {
         // 현재 로그인 사용자 정보 삭제
         localStorage.removeItem('currentLoggedInUser');
+        
         // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
         const loginButton = document.querySelector('.login-button');
         const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
@@ -2241,7 +2252,20 @@ function logout() {
 
         alert('로그아웃 되었습니다.');
     }
+    
+    // 플래그 초기화
+    isLoggingOut = false;
 }
+
+// 드롭다운 클릭 이벤트 델리게이션
+document.addEventListener('click', function(event) {
+    if (event.target.closest('.dropdown-item') && 
+        event.target.closest('.dropdown-item').textContent.includes('로그아웃')) {
+        event.preventDefault();
+        event.stopPropagation();
+        logout();
+    }
+});
 
 // 회원 탈퇴 함수
 function deleteAccount() {
