@@ -129,6 +129,7 @@
         
         .form-group {
             margin-bottom: 14px;
+            position: relative;
         }
         
         .form-label {
@@ -158,6 +159,42 @@
         .form-readonly {
             background-color: #f9f9f9;
             color: #777;
+        }
+        
+        /* 자동완성 드롭다운 스타일 */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .autocomplete-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+        }
+        
+        .autocomplete-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .autocomplete-item.highlighted {
+            background-color: #e8f4fd;
         }
         
         .divider {
@@ -219,76 +256,10 @@
             display: block;
         }
         
-        .department-notice {
+        .notice-text {
+            font-size: 13px;
+            color: #666;
             margin-top: 6px;
-        }
-        
-        .department-notice small {
-            color: #666;
-            font-size: 12px;
-        }
-        
-        /* 커스텀 콤보박스 스타일 */
-        .combobox-container {
-            position: relative;
-            width: 100%;
-        }
-        
-        .combobox-input {
-            width: 100%;
-            padding-right: 40px;
-        }
-        
-        .combobox-arrow {
-            position: absolute;
-            right: 1px;
-            top: 1px;
-            bottom: 1px;
-            width: 38px;
-            border: none;
-            background-color: #f8f9fa;
-            cursor: pointer;
-            border-radius: 0 3px 3px 0;
-            border-left: 1px solid #ddd;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .combobox-arrow:hover {
-            background-color: #e9ecef;
-        }
-        
-        .combobox-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .dropdown-option {
-            padding: 10px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .dropdown-option:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .dropdown-option:last-child {
-            border-bottom: none;
-        }
-        
-        .dropdown-option.hidden {
-            display: none;
         }
         
         /* 모달 스타일 개선 */
@@ -454,27 +425,8 @@
                 
                 <div class="form-group">
                     <label class="form-label" for="department">학과</label>
-                    <select id="department" class="form-select" required>
-                        <option value="smartICT">스마트 ICT계열</option>
-                        <option value="electronics">전자공학과</option>
-                        <option value="informationCommunication">정보통신과</option>
-                        <option value="electrical">전기과</option>
-                        <option value="computerSoftware">컴퓨터소프트웨어과</option>
-                        <option value="lifeDesign">라이프디자인계열</option>
-                        <option value="architecture">건축과</option>
-                        <option value="interiorArchitecture">실내건축과</option>
-                        <option value="fashionDesignBusiness">패션디자인비즈니스과</option>
-                        <option value="beautyStylistHair">뷰티스타일리스트과 헤어디자인전공</option>
-                        <option value="beautyStylistMakeup">뷰티스타일리스트과 메이크업전공</option>
-                        <option value="beautyStylistSkincare">뷰티스타일리스트과 스킨케어전공</option>
-                        <option value="culturalContent">문화콘텐츠계열</option>
-                        <option value="gameContent">게임콘텐츠과</option>
-                        <option value="webtoonContent">웹툰만화콘텐츠과</option>
-                        <option value="videoContentProduction">영상콘텐츠과 영상콘텐츠제작전공</option>
-                        <option value="videoContentNewMedia">영상콘텐츠과 뉴미디어콘텐츠전공</option>
-                        <option value="visualDesign">시각디자인과</option>
-                        <option value="kpop">K-POP과</option>
-                    </select>
+                    <input type="text" id="department" class="form-input" placeholder="학과명을 입력하세요" required autocomplete="off">
+                    <div class="autocomplete-dropdown" id="departmentDropdown"></div>
                 </div>
                 
                 <div class="form-group">
@@ -533,6 +485,29 @@
     </div>
 
     <script>
+        // 학과 목록 배열
+        const departments = [
+            { id: 'electronics', name: '전자공학과' },
+            { id: 'informationCommunication', name: '정보통신과' },
+            { id: 'electrical', name: '전기과' },
+            { id: 'computerSoftware', name: '컴퓨터소프트웨어과' },
+            { id: 'architecture', name: '건축과' },
+            { id: 'interiorArchitecture', name: '실내건축과' },
+            { id: 'fashionDesignBusiness', name: '패션디자인비즈니스과' },
+            { id: 'beautyStylistHair', name: '뷰티스타일리스트과 헤어디자인전공' },
+            { id: 'beautyStylistMakeup', name: '뷰티스타일리스트과 메이크업전공' },
+            { id: 'beautyStylistSkincare', name: '뷰티스타일리스트과 스킨케어전공' },
+            { id: 'gameContent', name: '게임콘텐츠과' },
+            { id: 'webtoonContent', name: '웹툰만화콘텐츠과' },
+            { id: 'videoContentProduction', name: '영상콘텐츠과 영상콘텐츠제작전공' },
+            { id: 'videoContentNewMedia', name: '영상콘텐츠과 뉴미디어콘텐츠전공' },
+            { id: 'visualDesign', name: '시각디자인과' },
+            { id: 'kpop', name: 'K-POP과' }
+        ];
+
+        let currentHighlightIndex = -1;
+        let currentFilteredDepartments = [];
+        
         // 페이지 로드 시 실행되는 함수
         document.addEventListener('DOMContentLoaded', function() {
             // 로그인 상태 체크
@@ -541,72 +516,131 @@
             // 폼 입력 필드 유효성 검사 이벤트 리스너 등록
             setupFormValidation();
             
-            // 학과 콤보박스 이벤트 설정
-            setupDepartmentCombobox();
+            // 학과 자동완성 설정
+            setupDepartmentAutocomplete();
         });
         
-        // 학과 콤보박스 설정
-        function setupDepartmentCombobox() {
+        // 학과 자동완성 설정 함수
+        function setupDepartmentAutocomplete() {
             const departmentInput = document.getElementById('department');
-            const departmentDropdown = document.getElementById('departmentDropdown');
+            const dropdown = document.getElementById('departmentDropdown');
             
-            // 입력 필드 포커스 시 자동완성 처리
+            // 입력 이벤트
             departmentInput.addEventListener('input', function() {
-                filterDepartmentOptions(this.value);
-                if (!departmentDropdown.style.display || departmentDropdown.style.display === 'none') {
-                    departmentDropdown.style.display = 'block';
-                }
+                const value = this.value.toLowerCase();
+                filterDepartments(value);
             });
             
-            // 입력 필드 포커스 시
+            // 포커스 이벤트
             departmentInput.addEventListener('focus', function() {
-                filterDepartmentOptions(this.value);
-                departmentDropdown.style.display = 'block';
+                const value = this.value.toLowerCase();
+                filterDepartments(value);
             });
             
-            // 드롭다운 외부 클릭 시 닫기
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.combobox-container')) {
-                    departmentDropdown.style.display = 'none';
+            // 블러 이벤트 (약간의 지연을 두어 클릭 이벤트가 먼저 실행되도록)
+            departmentInput.addEventListener('blur', function() {
+                setTimeout(() => {
+                    hideDropdown();
+                }, 200);
+            });
+            
+            // 키보드 이벤트
+            departmentInput.addEventListener('keydown', function(e) {
+                const items = dropdown.querySelectorAll('.autocomplete-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    currentHighlightIndex = Math.min(currentHighlightIndex + 1, items.length - 1);
+                    updateHighlight();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    currentHighlightIndex = Math.max(currentHighlightIndex - 1, -1);
+                    updateHighlight();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentHighlightIndex >= 0 && items[currentHighlightIndex]) {
+                        selectDepartment(currentFilteredDepartments[currentHighlightIndex]);
+                    }
+                } else if (e.key === 'Escape') {
+                    hideDropdown();
                 }
             });
             
-            // 드롭다운 옵션 클릭 처리
-            departmentDropdown.addEventListener('click', function(event) {
-                if (event.target.classList.contains('dropdown-option')) {
-                    departmentInput.value = event.target.dataset.value;
-                    departmentDropdown.style.display = 'none';
+            // 문서 클릭 이벤트 (드롭다운 외부 클릭 시 닫기)
+            document.addEventListener('click', function(e) {
+                if (!departmentInput.contains(e.target) && !dropdown.contains(e.target)) {
+                    hideDropdown();
                 }
             });
         }
         
-        // 학과 드롭다운 토글
-        function toggleDepartmentDropdown() {
-            const departmentDropdown = document.getElementById('departmentDropdown');
-            const departmentInput = document.getElementById('department');
+        // 학과 필터링 함수
+        function filterDepartments(value) {
+            const dropdown = document.getElementById('departmentDropdown');
             
-            if (departmentDropdown.style.display === 'none' || !departmentDropdown.style.display) {
-                filterDepartmentOptions(departmentInput.value);
-                departmentDropdown.style.display = 'block';
-                departmentInput.focus();
+            if (!value) {
+                currentFilteredDepartments = [...departments];
             } else {
-                departmentDropdown.style.display = 'none';
+                currentFilteredDepartments = departments.filter(dept => 
+                    dept.name.toLowerCase().includes(value)
+                );
+            }
+            
+            if (currentFilteredDepartments.length > 0) {
+                showDropdown();
+                renderDropdownItems();
+            } else {
+                hideDropdown();
             }
         }
         
-        // 학과 옵션 필터링
-        function filterDepartmentOptions(searchTerm) {
-            const options = document.querySelectorAll('#departmentDropdown .dropdown-option');
-            const search = searchTerm.toLowerCase();
+        // 드롭다운 항목 렌더링
+        function renderDropdownItems() {
+            const dropdown = document.getElementById('departmentDropdown');
+            dropdown.innerHTML = '';
             
-            options.forEach(option => {
-                const text = option.textContent.toLowerCase();
-                if (text.includes(search) || search === '') {
-                    option.classList.remove('hidden');
+            currentFilteredDepartments.forEach((dept, index) => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = dept.name;
+                item.addEventListener('click', () => selectDepartment(dept));
+                dropdown.appendChild(item);
+            });
+            
+            currentHighlightIndex = -1;
+        }
+        
+        // 하이라이트 업데이트
+        function updateHighlight() {
+            const items = document.querySelectorAll('.autocomplete-item');
+            items.forEach((item, index) => {
+                if (index === currentHighlightIndex) {
+                    item.classList.add('highlighted');
                 } else {
-                    option.classList.add('hidden');
+                    item.classList.remove('highlighted');
                 }
             });
+        }
+        
+        // 학과 선택
+        function selectDepartment(dept) {
+            const departmentInput = document.getElementById('department');
+            departmentInput.value = dept.name;
+            departmentInput.setAttribute('data-id', dept.id);
+            hideDropdown();
+        }
+        
+        // 드롭다운 표시
+        function showDropdown() {
+            const dropdown = document.getElementById('departmentDropdown');
+            dropdown.style.display = 'block';
+        }
+        
+        // 드롭다운 숨기기
+        function hideDropdown() {
+            const dropdown = document.getElementById('departmentDropdown');
+            dropdown.style.display = 'none';
+            currentHighlightIndex = -1;
         }
         
         // 로그인 상태 확인 및 프로필 정보 로드
@@ -636,41 +670,14 @@
             
             // 로컬 스토리지에서 사용자 정보 가져오기
             const name = localStorage.getItem(`user_${userId}_name`) || '연성대학교';
-            
-            // 학과 정보 변환 - 기존 값이 영문 코드인 경우 한글로 변환
-            let department = localStorage.getItem(`user_${userId}_department`) || 'business';
-            
-            // 영문 코드를 한글로 변환하는 매핑
-            const departmentMap = {
-                'electronics': '전자공학과',
-                'informationCommunication': '정보통신과',
-                'electrical': '전기과',
-                'computerSoftware': '컴퓨터소프트웨어과',
-                'architecture': '건축과',
-                'interiorArchitecture': '실내건축과',
-                'fashionDesignBusiness': '패션디자인비즈니스과',
-                'beautyStylistHair': '뷰티스타일리스트과 헤어디자인전공',
-                'beautyStylistMakeup': '뷰티스타일리스트과 메이크업전공',
-                'beautyStylistSkincare': '뷰티스타일리스트과 스킨케어전공',
-                'gameContent': '게임콘텐츠과',
-                'webtoonContent': '웹툰만화콘텐츠과',
-                'videoContentProduction': '영상콘텐츠과 영상콘텐츠제작전공',
-                'videoContentNewMedia': '영상콘텐츠과 뉴미디어콘텐츠전공',
-                'visualDesign': '시각디자인과',
-                'kpop': 'K-POP과',
-                'business': '경영학과',
-                'nursing': '간호학과',
-                'engineering': '공학계열',
-                'arts': '예술계열',
-                'computerScience': '컴퓨터정보학과'
-            };
-            
-            // 영문 코드인 경우 한글로 변환, 아니면 그대로 사용
-            department = departmentMap[department] || department;
-            
+            const departmentId = localStorage.getItem(`user_${userId}_department`) || 'business';
             const grade = localStorage.getItem(`user_${userId}_grade`) || '2';
             const email = localStorage.getItem(`user_${userId}_email`) || 'test@test';
             const phone = localStorage.getItem(`user_${userId}_phone`) || '010-3402-3447';
+            
+            // 학과 이름 찾기
+            const department = departments.find(dept => dept.id === departmentId);
+            const departmentName = department ? department.name : '학과를 선택하세요';
             
             // 프로필 이미지 관련 정보 가져오기
             const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
@@ -679,12 +686,13 @@
             
             // 폼에 정보 설정
             document.getElementById('name').value = name;
-            document.getElementById('department').value = department;
+            document.getElementById('department').value = departmentName;
+            document.getElementById('department').setAttribute('data-id', departmentId);
             document.getElementById('grade').value = grade;
             document.getElementById('email').value = email;
             document.getElementById('phone').value = phone;
             
-            // 프로필 이미지 설정 - 수정된 방식
+            // 프로필 이미지 설정
             const profileImageElement = document.getElementById('profileImage');
             const headerProfileElement = document.getElementById('headerProfileImage');
             
@@ -966,19 +974,26 @@
             }
         }
 
-        // 프로필 저장
+        // 프로필 저장 - 수정된 버전
         function saveProfile(event) {
             event.preventDefault();
             
             // 필수 입력 검사
             const name = document.getElementById('name').value.trim();
-            const department = document.getElementById('department').value;
+            const departmentName = document.getElementById('department').value.trim();
+            const departmentId = document.getElementById('department').getAttribute('data-id');
             const grade = document.getElementById('grade').value;
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
             
-            if (!name || !department || !grade || !email || !phone) {
+            if (!name || !departmentName || !grade || !email || !phone) {
                 alert('모든 필수 항목을 입력해주세요.');
+                return false;
+            }
+            
+            // 학과가 올바른지 확인
+            if (!departmentId) {
+                alert('올바른 학과를 선택해주세요.');
                 return false;
             }
             
@@ -1009,7 +1024,7 @@
             // 로컬 스토리지에 저장
             const currentUser = localStorage.getItem('currentLoggedInUser');
             localStorage.setItem(`user_${currentUser}_name`, name);
-            localStorage.setItem(`user_${currentUser}_department`, department);
+            localStorage.setItem(`user_${currentUser}_department`, departmentId);
             localStorage.setItem(`user_${currentUser}_grade`, grade);
             localStorage.setItem(`user_${currentUser}_email`, email);
             localStorage.setItem(`user_${currentUser}_phone`, phone);
