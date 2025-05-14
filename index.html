@@ -506,121 +506,99 @@
                 <div class="content-pad"></div>
             </div>
             
-            <!-- 내 정보 탭 - 로그인 상태에 따라 동적으로 변경 -->
+            <!-- 내 정보 탭 -->
             <div id="profile-tab" class="tab-content">
-                <!-- 로그인이 필요한 상태 (기본값) -->
-                <div id="profile-login-required" class="profile-section">
-                    <div class="profile-image">👤</div>
-                    <div class="profile-info">
-                        <div class="profile-name">로그인이 필요합니다</div>
-                        <div class="profile-detail">내 정보를 확인하려면 로그인해주세요</div>
-                    </div>
-                </div>
-                
-                <!-- 로그인된 상태 (로그인 후 표시) -->
-                <div id="profile-logged-in" class="profile-section" style="display: none;">
+                <div class="profile-section">
                     <div class="profile-image">👨‍🎓</div>
                     <div class="profile-info">
-                        <div class="profile-name">사용자</div>
-                        <div class="profile-detail">학과 | 학년</div>
-                        <div class="profile-detail">학번: 0000000000</div>
+                        <div class="profile-name">조희정</div>
+                        <div class="profile-detail">경영학과 | 3학년</div>
+                        <div class="profile-detail">학번: 2021100215</div>
                     </div>
                 </div>
                 
-                <!-- 로그인된 상태에서만 표시되는 메뉴들 -->
-                <div id="profile-menus" style="display: none;">
-                    <div class="content-section">
-                        <div class="section-title">
-                            <span>내 정보 관리</span>
-                        </div>
-                        
-                        <ul class="menu-list">
-                            <li class="menu-item" onclick="navigateToProfilePage('timetable')">
-                                <div class="menu-title">내 시간표</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
-                                <div class="menu-title">내 수강 강의</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
-                                <div class="menu-title">즐겨찾는 강의실</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
-                                <div class="menu-title">개인정보 수정</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <!-- 회원 탈퇴 메뉴 추가 -->
-                            <li class="menu-item" onclick="deleteAccount()">
-                                <div class="menu-title delete-account">회원 탈퇴</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                        </ul>
+                <div class="content-section">
+                    <div class="section-title">
+                        <span>내 정보 관리</span>
                     </div>
                     
-                    <div class="content-section">
-                        <div class="section-title">
-                            <span>학적 정보</span>
-                        </div>
-                        
-                        <ul class="menu-list">
-                            <li class="menu-item" onclick="navigateToProfilePage('grades')">
-                                <div class="menu-title">성적 조회</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
-                                <div class="menu-title">수강 신청 내역</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
-                                <div class="menu-title">장학금 내역</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('tuition')">
-                                <div class="menu-title">등록금 납부 내역</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="content-section">
-                        <div class="section-title">
-                            <span>앱 설정</span>
-                        </div>
-                        
-                        <ul class="menu-list">
-                            <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
-                                <div class="menu-title">알림 설정</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
-                                <div class="menu-title">위젯 및 메뉴 설정</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="resetAllSettings()">
-                                <div class="menu-title">모든 설정 초기화</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="navigateToProfilePage('app-info')">
-                                <div class="menu-title">앱 정보</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                            <li class="menu-item" onclick="logout()">
-                                <div class="menu-title">로그아웃</div>
-                                <div class="menu-arrow">›</div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- 로그인이 필요한 상태에서 표시되는 로그인 버튼 -->
-                <div id="profile-login-button" class="content-section">
-                    <div class="menu-list">
-                        <li class="menu-item" onclick="goToPage('login')" style="justify-content: center;">
-                            <div class="menu-title" style="color: #c62917; font-weight: bold;">로그인</div>
+                    <ul class="menu-list">
+                        <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                            <div class="menu-title">내 시간표</div>
+                            <div class="menu-arrow">›</div>
                         </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                            <div class="menu-title">내 수강 강의</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                            <div class="menu-title">즐겨찾는 강의실</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                            <div class="menu-title">개인정보 수정</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <!-- 회원 탈퇴 메뉴 추가 -->
+                        <li class="menu-item" onclick="deleteAccount()">
+                            <div class="menu-title delete-account">회원 탈퇴</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="content-section">
+                    <div class="section-title">
+                        <span>학적 정보</span>
                     </div>
+                    
+                    <ul class="menu-list">
+                        <li class="menu-item" onclick="navigateToProfilePage('grades')">
+                            <div class="menu-title">성적 조회</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
+                            <div class="menu-title">수강 신청 내역</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
+                            <div class="menu-title">장학금 내역</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('tuition')">
+                            <div class="menu-title">등록금 납부 내역</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="content-section">
+                    <div class="section-title">
+                        <span>앱 설정</span>
+                    </div>
+                    
+                    <ul class="menu-list">
+                        <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
+                            <div class="menu-title">알림 설정</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
+                            <div class="menu-title">위젯 및 메뉴 설정</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="resetAllSettings()">
+                            <div class="menu-title">모든 설정 초기화</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="navigateToProfilePage('app-info')">
+                            <div class="menu-title">앱 정보</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                        <li class="menu-item" onclick="logout()">
+                            <div class="menu-title">로그아웃</div>
+                            <div class="menu-arrow">›</div>
+                        </li>
+                    </ul>
                 </div>
                 
                 <div class="content-pad"></div>
