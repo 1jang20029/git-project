@@ -81,50 +81,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error-container {
-            display: none;
-            background-color: #fff9f9;
-            border: 1px solid #ffdddd;
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .error-title {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .error-message {
-            font-family: monospace;
-            font-size: 14px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 200px;
-            overflow-y: auto;
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 4px;
-        }
-
-        .debug-info {
-            display: none;
-            margin-top: 20px;
-            background-color: #f0f8ff;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: left;
-            border: 1px solid #cce0ff;
-        }
-
-        .debug-title {
-            color: #2970ff;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
         .button {
             background-color: #03C75A;
             color: white;
@@ -181,18 +137,8 @@
             미리보기 환경에서는 로컬 저장소 사용이 제한됩니다. 실제 배포 환경에서 테스트해주세요.
         </div>
         
-        <div id="debug-container" class="debug-info">
-            <div class="debug-title">디버그 정보</div>
-            <div class="error-message" id="debug-details"></div>
-        </div>
-        
-        <div id="error-container" class="error-container">
-            <div class="error-title">오류 정보</div>
-            <div class="error-message" id="error-details"></div>
-        </div>
-        
         <div class="btn-wrapper">
-            <button class="button" id="retry-button" style="display: none;" onclick="goToLogin()">다시 시도하기</button>
+            <button class="button" id="retry-button" style="display: none;" onclick="goToLogin()">로그인 페이지로 이동</button>
             <button class="button btn-secondary" id="continue-button" style="display: none;" onclick="proceedAnyway()">계속 진행하기</button>
         </div>
     </div>
@@ -222,6 +168,40 @@
             }
         }
         
+        // 안전한 스토리지 객체
+        const safeStorage = {
+            memoryStorage: {},
+            
+            setItem: function(key, value) {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    console.warn('localStorage를 사용할 수 없어 메모리에 저장합니다:', e);
+                    this.memoryStorage[key] = value;
+                    document.getElementById('storage-notice').style.display = 'block';
+                }
+            },
+            
+            getItem: function(key) {
+                try {
+                    const value = localStorage.getItem(key);
+                    return value;
+                } catch (e) {
+                    console.warn('localStorage에 접근할 수 없어 메모리에서 조회합니다:', e);
+                    return this.memoryStorage[key] || null;
+                }
+            },
+            
+            removeItem: function(key) {
+                try {
+                    localStorage.removeItem(key);
+                } catch (e) {
+                    console.warn('localStorage에서 삭제할 수 없어 메모리에서 삭제합니다:', e);
+                    delete this.memoryStorage[key];
+                }
+            }
+        };
+        
         // 로그인 페이지로 이동
         function goToLogin() {
             window.location.href = "login.html";
@@ -244,11 +224,15 @@
             }
         }
 
-        // 오류 표시 함수
-        function showError(errorDetails) {
-            document.getElementById('error-container').style.display = 'block';
-            document.getElementById('error-details').textContent = JSON.stringify(errorDetails, null, 2);
-            updateStatus('네이버 로그인 오류', '로그인 처리 중 문제가 발생했습니다. 오류 정보를 확인하세요.', true);
+        // 오류 처리 함수 (간소화됨)
+        function handleError(errorMessage) {
+            log("오류 발생: " + errorMessage);
+            updateStatus('네이버 로그인 취소', '로그인이 취소되었습니다.', true);
+            
+            // 3초 후 자동으로 로그인 페이지로 이동
+            setTimeout(function() {
+                goToLogin();
+            }, 3000);
         }
         
         // 네이버 회원가입 페이지로 리디렉션
@@ -274,14 +258,14 @@
             log("기존 사용자 로그인: " + userId);
             
             // 현재 로그인된 사용자로 설정
-            localStorage.setItem('currentLoggedInUser', userId);
+            safeStorage.setItem('currentLoggedInUser', userId);
             
             // 최초 로그인 여부 확인
-            const isFirstLogin = localStorage.getItem(`user_${userId}_first_login`) !== 'false';
+            const isFirstLogin = safeStorage.getItem(`user_${userId}_first_login`) !== 'false';
             
             // 리디렉션 결정
             if (isFirstLogin) {
-                localStorage.setItem(`user_${userId}_first_login`, 'false');
+                safeStorage.setItem(`user_${userId}_first_login`, 'false');
                 updateStatus('로그인 성공', '위젯 설정 페이지로 이동합니다...');
                 
                 setTimeout(function() {
@@ -313,13 +297,13 @@
                 
                 // 2. 'user_naver_12345_registered'와 같은 형식의 키 검색
                 const userKey = `user_${MOCK_NAVER_ID}_registered`;
-                const userRegistered = localStorage.getItem(userKey);
+                const userRegistered = safeStorage.getItem(userKey);
                 
                 log("사용자 등록 확인: " + userKey + " = " + userRegistered);
                 
                 if (userRegistered === 'true') {
                     isRegistered = true;
-                    userName = localStorage.getItem(`user_${MOCK_NAVER_ID}_name`) || '네이버 사용자';
+                    userName = safeStorage.getItem(`user_${MOCK_NAVER_ID}_name`) || '네이버 사용자';
                     log("가입된 사용자 발견: " + userName);
                 }
             }
@@ -336,21 +320,22 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const authCode = urlParams.get('code');
                 const error = urlParams.get('error');
+                const errorDescription = urlParams.get('error_description');
                 
-                // 오류 확인
+                // 오류 확인 (사용자가 취소한 경우 포함)
                 if (error) {
-                    showError({
-                        error: error,
-                        message: '네이버 인증 서버에서 오류 응답이 반환되었습니다.'
-                    });
+                    // error가 'access_denied'인 경우 사용자가 취소한 것
+                    if (error === 'access_denied') {
+                        handleError('사용자가 네이버 로그인을 취소했습니다.');
+                    } else {
+                        handleError('네이버 인증 오류: ' + (errorDescription || error));
+                    }
                     return;
                 }
                 
                 // 인증 코드 없음
                 if (!authCode) {
-                    showError({
-                        message: '인증 코드가 없습니다. 로그인을 다시 시도해주세요.'
-                    });
+                    handleError('인증 코드가 없습니다. 로그인을 다시 시도해주세요.');
                     return;
                 }
                 
@@ -368,10 +353,7 @@
                 
             } catch (error) {
                 log("오류 발생: " + error.message);
-                showError({
-                    message: '처리 중 오류가 발생했습니다.',
-                    details: error.toString()
-                });
+                handleError('로그인 처리 중 오류가 발생했습니다.');
             }
         };
         </script>

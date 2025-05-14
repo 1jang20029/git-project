@@ -730,22 +730,36 @@
             }
         }
     
-        // 네이버 로그인 모달 열기
+        // 네이버 로그인 처리 (개선됨)
         function naverLogin() {
+            // 기존 네이버 사용자인지 확인
+            const existingNaverUsers = Object.keys(safeStorage.memoryStorage || {})
+                .concat(Object.keys(localStorage || {}))
+                .filter(key => key.includes('user_naver_') && key.includes('_registered'));
+            
             // 네이버 로그인 API 사용 - 실제 네이버 로그인 페이지로 이동
-            const CLIENT_ID = '4s_r7FMu5Bfr3er3GXci'; // 이미지에서 보이는 클라이언트 ID
+            const CLIENT_ID = '4s_r7FMu5Bfr3er3GXci';
             const REDIRECT_URI = 'https://ysu-guide.netlify.app/naver-callback.html';
             const STATE = Math.random().toString(36).substr(2, 11);
         
             // 상태 토큰 저장 (CSRF 방지)
             safeStorage.setItem('naverOAuthState', STATE);
         
+            // 이미 동의한 사용자가 있고 해당 사용자가 이미 로그인한 적이 있다면
+            // prompt 파라미터를 제거하여 동의 화면을 건너뛸 수 있음
+            let promptParam = '';
+            if (existingNaverUsers.length === 0) {
+                // 처음 네이버 로그인 사용자인 경우에만 동의 화면 표시
+                promptParam = '&prompt=consent';
+            }
+            
             // 네이버 OAuth 2.0 인증 URL 생성
             const authUrl = 'https://nid.naver.com/oauth2.0/authorize?' +
                 'client_id=' + CLIENT_ID +
                 '&response_type=code' +
                 '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
-                '&state=' + STATE;
+                '&state=' + STATE +
+                promptParam;
             
             // 네이버 로그인 페이지로 이동
             window.location.href = authUrl;
