@@ -1,4 +1,3 @@
-
 // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
 const buildingData = [
 {
@@ -269,8 +268,6 @@ if (src && src.includes('/api/placeholder/')) {
 console.log('모든 이미지 URL 수정 완료');
 }
 
-
-
 // 날씨 API 관련 함수
 function getWeatherData() {
 // 기상청 API 사용을 위한 정보
@@ -337,9 +334,6 @@ fetch(url)
     displayDefaultWeather();
 });
 }
-
-
-
 
 // 날씨 데이터 파싱 및 위젯 업데이트
 function updateWeatherWidget(items) {
@@ -414,7 +408,6 @@ weatherIconElement.textContent = weatherIcon;
 console.log('날씨 정보 업데이트 완료:', { 온도: temperature, 날씨: weatherDesc, 아이콘: weatherIcon });
 }
 
-
 // 기본 날씨 정보 표시 (API 호출 실패 시)
 function displayDefaultWeather() {
 const weatherTempElement = document.querySelector('.weather-temp');
@@ -427,8 +420,6 @@ if (weatherIconElement) weatherIconElement.textContent = '☀️';
 
 console.log('기본 날씨 정보로 표시됨');
 }
-
-
 
 // 위경도 좌표를 기상청 격자 좌표로 변환하는 함수
 function convertToGridCoord(lat, lon) {
@@ -497,72 +488,6 @@ console.log('날씨 정보 직접 업데이트 완료');
 
 // 1시간마다 날씨 정보 업데이트 (필요한 경우 아래 줄을 주석 해제)
 // setInterval(getWeatherData, 60 * 60 * 1000);
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-setTimeout(updateAllProfileImages, 100);
-
-// 이미지 URL 수정 함수 실행
-fixAllImageUrls();
-
-// localStorage 변경 감지를 위한 이벤트 리스너
-window.addEventListener('storage', function(event) {
-// 프로필 관련 변경사항 감지
-if (event.key === 'profileUpdated' || 
-    event.key === 'profileImageUpdated' || 
-    event.key.includes('_profileImage') || 
-    event.key.includes('_customProfileImage')) {
-    updateAllProfileImages();
-}
-});
-
-// 카테고리 필터 기능
-initCategoryFilter();
-
-// 로그인 상태 체크 및 UI 업데이트
-checkLoginStatus();
-
-// 저장된 위젯 설정 불러오기
-loadWidgetSettings();
-
-// 시설 탭 초기화 (페이지네이션 포함)
-initFacilityTab();
-
-// 네이버 지도 초기화 - 수정된 함수로 교체
-initNaverMapWithFix();
-
-// 검색 기능 초기화
-initSearchFunctionality();
-
-// 탭 전환 시에도 이미지 URL 수정 함수 실행
-const originalSwitchTab = window.switchTab;
-window.switchTab = function(tabName) {
-originalSwitchTab(tabName);
-setTimeout(fixAllImageUrls, 200);
-
-// 시설 탭으로 전환 시 지도 크기 조정 및 갱신
-if (tabName === 'facility') {
-    handleMapResize();
-}
-
-// 홈 탭으로 전환 시 시간표 미리보기 업데이트
-if (tabName === 'home') {
-setTimeout(() => {
-    updateTimetablePreview();
-}, 200);
-}
-};
-
-// pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
-window.addEventListener('pageshow', function(event) {
-// bfcache에서 페이지가 복원된 경우에도 실행
-if (event.persisted) {
-    checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
-    updateAllProfileImages(); // 프로필 이미지도 다시 확인
-    fixAllImageUrls(); // 이미지 URL도 다시 확인
-}
-});
 });
 
 // 페이지네이션 컨트롤 업데이트
@@ -685,87 +610,42 @@ if (currentPage < totalPages) {
 paginationContainer.appendChild(nextButton);
 }
 
-// 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
-document.addEventListener('DOMContentLoaded', function() {
-// Placeholder 이미지 URL 문제 해결을 위한 코드
-function fixPlaceholderImages() {
-console.log('Placeholder 이미지 URL 수정 중...');
-
-// 모든 img 태그 중 placeholder를 사용하는 것 찾기
-document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
-    const src = img.getAttribute('src');
-    const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+// 오늘의 모든 수업 가져오기
+function getTodaysClasses() {
+    const courses = loadTimetableData();
+    const currentTime = getCurrentTimeInfo();
+    const todaysClasses = [];
     
-    if (dimensions && dimensions.length === 3) {
-        const width = dimensions[1];
-        const height = dimensions[2];
-        const altText = img.getAttribute('alt') || 'Image';
-        
-        // placehold.co 서비스로 대체
-        const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
-        console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
-        img.src = newSrc;
+    // 일요일이면 빈 배열 반환
+    if (currentTime.day === 0) {
+        return todaysClasses;
     }
-});
-
-console.log('Placeholder 이미지 URL 수정 완료');
-
-
-// 시간표 미리보기 초기화 (다른 초기화 완료 후)
-setTimeout(() => {
-    console.log('시간표 미리보기 초기화');
-    updateTimetablePreview();
     
-    // 1분마다 시간표 미리보기 업데이트
-    setInterval(updateTimetablePreview, 60000);
-}, 1000);
+    // 오늘의 모든 수업 찾기
+    courses.forEach(course => {
+        course.times.forEach(time => {
+            if (time.day === currentTime.day) {
+                // 첫 번째 교시만 표시 (미리보기용)
+                const startTime = periodTimes[time.start].start;
+                const endTime = periodTimes[time.end].end;
+                
+                todaysClasses.push({
+                    course: course,
+                    startTime: startTime,
+                    endTime: endTime,
+                    startMinutes: timeToMinutes(startTime),
+                    period: time.start
+                });
+            }
+        });
+    });
+    
+    // 시간 순으로 정렬
+    todaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
+    
+    console.log('오늘의 수업 목록:', todaysClasses);
+    return todaysClasses;
 }
-
-// 즉시 실행하여 모든 이미지 URL 수정
-fixPlaceholderImages();
-
-// 기존 초기화 코드 실행
-setTimeout(updateAllProfileImages, 100);
-
-// localStorage 변경 감지를 위한 이벤트 리스너
-window.addEventListener('storage', function(event) {
-// 프로필 관련 변경사항 감지
-if (event.key === 'profileUpdated' || 
-    event.key === 'profileImageUpdated' || 
-    event.key.includes('_profileImage') || 
-    event.key.includes('_customProfileImage')) {
-    updateAllProfileImages();
-}
-});
-
-// 카테고리 필터 기능
-initCategoryFilter();
-
-// 로그인 상태 체크 및 UI 업데이트
-checkLoginStatus();
-
-// 저장된 위젯 설정 불러오기
-loadWidgetSettings();
-
-// 시설 탭 초기화 (페이지네이션 포함)
-initFacilityTab();
-
-// 네이버 지도 초기화 - 수정된 함수로 교체
-initNaverMapWithFix();
-
-// 검색 기능 초기화
-initSearchFunctionality();
-
-// pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
-window.addEventListener('pageshow', function(event) {
-// bfcache에서 페이지가 복원된 경우에도 실행
-if (event.persisted) {
-    checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
-    updateAllProfileImages(); // 프로필 이미지도 다시 확인
-    fixPlaceholderImages(); // 이미지 URL도 다시 확인
-}
-});
-});
 
 // 네이버 지도 초기화 함수 - 수정된 버전
 function initNaverMap() {
@@ -1769,45 +1649,6 @@ function testLocationWithYeonsung() {
     alert("테스트 모드: 연성대학교 근처 위치가 표시됩니다.");
 }
 
-
-// 오늘의 모든 수업 가져오기
-function getTodaysClasses() {
-    const courses = loadTimetableData();
-    const currentTime = getCurrentTimeInfo();
-    const todaysClasses = [];
-    
-    // 일요일이면 빈 배열 반환
-    if (currentTime.day === 0) {
-        return todaysClasses;
-    }
-    
-    // 오늘의 모든 수업 찾기
-    courses.forEach(course => {
-        course.times.forEach(time => {
-            if (time.day === currentTime.day) {
-                // 첫 번째 교시만 표시 (미리보기용)
-                const startTime = periodTimes[time.start].start;
-                const endTime = periodTimes[time.end].end;
-                
-                todaysClasses.push({
-                    course: course,
-                    startTime: startTime,
-                    endTime: endTime,
-                    startMinutes: timeToMinutes(startTime),
-                    period: time.start
-                });
-            }
-        });
-    });
-    
-    // 시간 순으로 정렬
-    todaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
-    
-    console.log('오늘의 수업 목록:', todaysClasses);
-    return todaysClasses;
-}
-
-
 // 초기화 시 현재 환경에 최적화된 위치 추적 메서드 선택
 function initLocationTracking() {
     // GPS 버튼에 이벤트 핸들러 등록
@@ -1819,6 +1660,136 @@ function initLocationTracking() {
         // 개발 모드나 테스트 모드에서는 testLocationWithYeonsung 함수 사용
         // 실제 환경에서는 아래 코드를 주석 처리
         // gpsButton.onclick = testLocationWithYeonsung;
+    }
+}
+
+// 프로필 정보 업데이트 함수 (로그인 상태 관리 포함)
+function updateProfileInfo(studentId) {
+    const profileLoggedIn = document.getElementById('profile-logged-in');
+    const profileLoginRequired = document.getElementById('profile-login-required');
+    
+    if (!studentId) {
+        // 로그인되지 않은 상태 - 로그인 필요 화면 표시
+        if (profileLoggedIn) profileLoggedIn.style.display = 'none';
+        if (profileLoginRequired) profileLoginRequired.style.display = 'flex';
+        return;
+    }
+    
+    // 로그인된 상태 - 사용자 정보 표시
+    if (profileLoggedIn) {
+        // 실제 학번 가져오기 - 소셜 로그인과 일반 로그인 구분
+        let actualStudentId = studentId;
+        if (studentId.startsWith('naver_') || studentId.startsWith('kakao_') || studentId.startsWith('google_')) {
+            // 소셜 로그인의 경우 별도로 저장된 실제 학번 조회
+            actualStudentId = localStorage.getItem(`user_${studentId}_studentId`) || studentId;
+        }
+        
+        const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
+        const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+        const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+        
+        // 프로필 이름 업데이트
+        const profileName = profileLoggedIn.querySelector('.profile-name');
+        if (profileName) {
+            profileName.textContent = name;
+        }
+        
+        // 학과 및 학년 정보 업데이트
+        const profileDetails = profileLoggedIn.querySelectorAll('.profile-detail');
+        if (profileDetails.length >= 2 && department) {
+            let departmentText = '';
+            
+            switch(department) {
+                case 'computerScience':
+                    departmentText = '컴퓨터정보학과';
+                    break;
+                case 'business':
+                    departmentText = '경영학과';
+                    break;
+                case 'nursing':
+                    departmentText = '간호학과';
+                    break;
+                case 'engineering':
+                    departmentText = '공학계열';
+                    break;
+                case 'arts':
+                    departmentText = '예술계열';
+                    break;
+                // 소셜 로그인에서 선택한 학과들 추가
+                case '전자공학과':
+                case '정보통신과':
+                case '전기과':
+                case '컴퓨터소프트웨어과':
+                case '건축과':
+                case '실내건축과':
+                case '패션디자인비즈니스과':
+                case '뷰티스타일리스트과_헤어디자인전공':
+                case '뷰티스타일리스트과_메이크업전공':
+                case '뷰티스타일리스트과_스킨케어전공':
+                case '게임콘텐츠과':
+                case '웹툰만화콘텐츠과':
+                case '영상콘텐츠과_영상콘텐츠제작전공':
+                case '영상콘텐츠과_뉴미디어콘텐츠전공':
+                case '시각디자인과':
+                case 'K-POP과':
+                case '유통물류과':
+                case '경영학과':
+                case '세무회계과':
+                case '국방군사학과':
+                case '경찰경호보안과':
+                case '사회복지과':
+                case '사회복지경영과':
+                case '유아교육과':
+                case '유아특수재활과':
+                case '사회복지과_아동심리보육전공':
+                case '치위생과':
+                case '치기공과':
+                case '작업치료과':
+                case '응급구조과':
+                case '보건의료행정과':
+                case '스포츠재활과':
+                case '식품영양학과':
+                case '반려동물보건과':
+                case '반려동물산업과':
+                case '항공서비스과':
+                case '관광영어과':
+                case '호텔관광과':
+                case '호텔외식조리과':
+                case '카페·베이커리과':
+                case '호텔외식경영전공':
+                case '자유전공학과':
+                    departmentText = department;
+                    break;
+                default:
+                    departmentText = department;
+            }
+            
+            profileDetails[0].textContent = `${departmentText} | ${grade}학년`;
+            profileDetails[1].textContent = `학번: ${actualStudentId}`;
+        }
+        
+        // 로그인된 상태 요소 표시
+        profileLoggedIn.style.display = 'flex';
+        profileLoginRequired.style.display = 'none';
+    }
+    
+    // 프로필 이미지도 업데이트
+    updateAllProfileImages();
+}
+
+// 프로필 초기화 함수 (로그아웃 시 사용)
+function resetProfileInfo() {
+    const profileLoggedIn = document.getElementById('profile-logged-in');
+    const profileLoginRequired = document.getElementById('profile-login-required');
+    
+    // 로그인 필요 상태로 되돌리기
+    if (profileLoggedIn) profileLoggedIn.style.display = 'none';
+    if (profileLoginRequired) profileLoginRequired.style.display = 'flex';
+    
+    // 프로필 이미지도 초기화
+    const profileImage = profileLoginRequired.querySelector('.profile-image');
+    if (profileImage) {
+        profileImage.innerHTML = '👤';
     }
 }
 
@@ -1855,8 +1826,8 @@ function updateAllProfileImages() {
         }
     }
     
-    // 2. 내 정보 탭의 프로필 이미지 업데이트 (중요!)
-    const profileTabImage = document.querySelector('#profile-tab .profile-image');
+    // 2. 내 정보 탭의 프로필 이미지 업데이트 (로그인된 상태만)
+    const profileTabImage = document.querySelector('#profile-logged-in .profile-image');
     if (profileTabImage) {
         if (profileImageType === 'emoji') {
             profileTabImage.innerHTML = profileImage;
@@ -2116,12 +2087,140 @@ function showFacilityDetail(facilityId) {
     // window.location.href = `facility-detail.html?id=${facilityId}`;
 }
 
+// 로그인 상태 확인 및 UI 업데이트
+function checkLoginStatus() {
+    // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    
+    // 로그인 버튼과 프로필 드롭다운 컨테이너
+    const loginButton = document.querySelector('.login-button');
+    const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+    
+    if (currentUser) {
+        // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
+        if (loginButton) loginButton.style.display = 'none';
+        if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
+        
+        // 드롭다운 내 프로필 정보 업데이트
+        updateDropdownProfileInfo(currentUser);
+        
+        // 프로필 탭의 정보도 업데이트
+        updateProfileInfo(currentUser);
+    } else {
+        // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
+        if (loginButton) loginButton.style.display = 'block';
+        if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+        
+        // 프로필 탭도 로그인 필요 상태로 초기화
+        resetProfileInfo();
+    }
+}
+
+// 드롭다운 프로필 정보 업데이트
+function updateDropdownProfileInfo(studentId) {
+    const dropdown = document.querySelector('.profile-dropdown');
+    if (!dropdown) return;
+    
+    // 실제 학번 가져오기 - 소셜 로그인과 일반 로그인 구분
+    let actualStudentId = studentId;
+    if (studentId.startsWith('naver_') || studentId.startsWith('kakao_') || studentId.startsWith('google_')) {
+        // 소셜 로그인의 경우 별도로 저장된 실제 학번 조회
+        actualStudentId = localStorage.getItem(`user_${studentId}_studentId`) || studentId;
+    }
+    
+    const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
+    const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
+    const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+    
+    // 이름 업데이트
+    const nameElement = dropdown.querySelector('.dropdown-profile-name');
+    if (nameElement) nameElement.textContent = name;
+    
+    // 학과 및 학년 정보 업데이트
+    const detailElement = dropdown.querySelector('.dropdown-profile-detail');
+    if (detailElement && department) {
+        let departmentText = '';
+        
+        switch(department) {
+            case 'computerScience':
+                departmentText = '컴퓨터정보학과';
+                break;
+            case 'business':
+                departmentText = '경영학과';
+                break;
+            case 'nursing':
+                departmentText = '간호학과';
+                break;
+            case 'engineering':
+                departmentText = '공학계열';
+                break;
+            case 'arts':
+                departmentText = '예술계열';
+                break;
+            // 소셜 로그인에서 선택한 학과들 추가
+            case '전자공학과':
+            case '정보통신과':
+            case '전기과':
+            case '컴퓨터소프트웨어과':
+            case '건축과':
+            case '실내건축과':
+            case '패션디자인비즈니스과':
+            case '뷰티스타일리스트과_헤어디자인전공':
+            case '뷰티스타일리스트과_메이크업전공':
+            case '뷰티스타일리스트과_스킨케어전공':
+            case '게임콘텐츠과':
+            case '웹툰만화콘텐츠과':
+            case '영상콘텐츠과_영상콘텐츠제작전공':
+            case '영상콘텐츠과_뉴미디어콘텐츠전공':
+            case '시각디자인과':
+            case 'K-POP과':
+            case '유통물류과':
+            case '경영학과':
+            case '세무회계과':
+            case '국방군사학과':
+            case '경찰경호보안과':
+            case '사회복지과':
+            case '사회복지경영과':
+            case '유아교육과':
+            case '유아특수재활과':
+            case '사회복지과_아동심리보육전공':
+            case '치위생과':
+            case '치기공과':
+            case '작업치료과':
+            case '응급구조과':
+            case '보건의료행정과':
+            case '스포츠재활과':
+            case '식품영양학과':
+            case '반려동물보건과':
+            case '반려동물산업과':
+            case '항공서비스과':
+            case '관광영어과':
+            case '호텔관광과':
+            case '호텔외식조리과':
+            case '카페·베이커리과':
+            case '호텔외식경영전공':
+            case '자유전공학과':
+                departmentText = department;
+                break;
+            default:
+                departmentText = department;
+        }
+        
+        detailElement.textContent = `${departmentText} | ${grade}학년`;
+    }
+    
+    // 학번 업데이트 - 실제 학번 표시
+    const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
+    if (studentIdElement) {
+        studentIdElement.textContent = `학번: ${actualStudentId}`;
+    }
+}
+
 // 로그아웃 기능
 function logout() {
     if (confirm('로그아웃 하시겠습니까?')) {
         // 현재 로그인 사용자 정보 삭제
         localStorage.removeItem('currentLoggedInUser');
-        
         // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
         const loginButton = document.querySelector('.login-button');
         const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
@@ -2143,7 +2242,6 @@ function logout() {
         alert('로그아웃 되었습니다.');
     }
 }
-
 
 // 회원 탈퇴 함수
 function deleteAccount() {
@@ -2275,279 +2373,7 @@ function closeProfileDropdown(event) {
     }
 }
 
-// 로그인 상태 확인 및 UI 업데이트
-function checkLoginStatus() {
-    // 로컬 스토리지에서 현재 로그인된 사용자 정보 가져오기
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    // 로그인 버튼과 프로필 드롭다운 컨테이너
-    const loginButton = document.querySelector('.login-button');
-    const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
-    
-    if (currentUser) {
-        // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
-        if (loginButton) loginButton.style.display = 'none';
-        if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
-        
-        // 드롭다운 내 프로필 정보 업데이트
-        updateDropdownProfileInfo(currentUser);
-        
-        // 프로필 탭의 정보도 업데이트
-        updateProfileInfo(currentUser);
-    } else {
-        // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
-        if (loginButton) loginButton.style.display = 'block';
-        if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
-        
-        // 프로필 탭도 로그인 필요 상태로 초기화
-        resetProfileInfo();
-    }
-}
-
-// 드롭다운 프로필 정보 업데이트
-function updateDropdownProfileInfo(studentId) {
-    const dropdown = document.querySelector('.profile-dropdown');
-    if (!dropdown) return;
-    
-    // 실제 학번 가져오기 - 소셜 로그인과 일반 로그인 구분
-    let actualStudentId = studentId;
-    if (studentId.startsWith('naver_') || studentId.startsWith('kakao_') || studentId.startsWith('google_')) {
-        // 소셜 로그인의 경우 별도로 저장된 실제 학번 조회
-        actualStudentId = localStorage.getItem(`user_${studentId}_studentId`) || studentId;
-    }
-    
-    const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
-    const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
-    const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
-    
-    // 이름 업데이트
-    const nameElement = dropdown.querySelector('.dropdown-profile-name');
-    if (nameElement) nameElement.textContent = name;
-    
-    // 학과 및 학년 정보 업데이트
-    const detailElement = dropdown.querySelector('.dropdown-profile-detail');
-    if (detailElement && department) {
-        let departmentText = '';
-        
-        switch(department) {
-            case 'computerScience':
-                departmentText = '컴퓨터정보학과';
-                break;
-            case 'business':
-                departmentText = '경영학과';
-                break;
-            case 'nursing':
-                departmentText = '간호학과';
-                break;
-            case 'engineering':
-                departmentText = '공학계열';
-                break;
-            case 'arts':
-                departmentText = '예술계열';
-                break;
-            // 소셜 로그인에서 선택한 학과들 추가
-            case '전자공학과':
-            case '정보통신과':
-            case '전기과':
-            case '컴퓨터소프트웨어과':
-            case '건축과':
-            case '실내건축과':
-            case '패션디자인비즈니스과':
-            case '뷰티스타일리스트과_헤어디자인전공':
-            case '뷰티스타일리스트과_메이크업전공':
-            case '뷰티스타일리스트과_스킨케어전공':
-            case '게임콘텐츠과':
-            case '웹툰만화콘텐츠과':
-            case '영상콘텐츠과_영상콘텐츠제작전공':
-            case '영상콘텐츠과_뉴미디어콘텐츠전공':
-            case '시각디자인과':
-            case 'K-POP과':
-            case '유통물류과':
-            case '경영학과':
-            case '세무회계과':
-            case '국방군사학과':
-            case '경찰경호보안과':
-            case '사회복지과':
-            case '사회복지경영과':
-            case '유아교육과':
-            case '유아특수재활과':
-            case '사회복지과_아동심리보육전공':
-            case '치위생과':
-            case '치기공과':
-            case '작업치료과':
-            case '응급구조과':
-            case '보건의료행정과':
-            case '스포츠재활과':
-            case '식품영양학과':
-            case '반려동물보건과':
-            case '반려동물산업과':
-            case '항공서비스과':
-            case '관광영어과':
-            case '호텔관광과':
-            case '호텔외식조리과':
-            case '카페·베이커리과':
-            case '호텔외식경영전공':
-            case '자유전공학과':
-                departmentText = department;
-                break;
-            default:
-                departmentText = department;
-        }
-        
-        detailElement.textContent = `${departmentText} | ${grade}학년`;
-    }
-    
-    // 학번 업데이트 - 실제 학번 표시
-    const studentIdElement = dropdown.querySelectorAll('.dropdown-profile-detail')[1];
-    if (studentIdElement) {
-        studentIdElement.textContent = `학번: ${actualStudentId}`;
-    }
-}
-
-// 프로필 정보 업데이트 함수 (로그인 상태 관리 포함)
-function updateProfileInfo(studentId) {
-    const profileLoggedIn = document.getElementById('profile-logged-in');
-    const profileLoginRequired = document.getElementById('profile-login-required');
-    const profileMenus = document.getElementById('profile-menus');
-    const profileLoginButton = document.getElementById('profile-login-button');
-    
-    if (!studentId) {
-        // 로그인되지 않은 상태 - 로그인 필요 화면 표시
-        if (profileLoggedIn) profileLoggedIn.style.display = 'none';
-        if (profileMenus) profileMenus.style.display = 'none';
-        if (profileLoginRequired) profileLoginRequired.style.display = 'flex';
-        if (profileLoginButton) profileLoginButton.style.display = 'block';
-        return;
-    }
-    
-    // 로그인된 상태 - 사용자 정보 표시
-    if (profileLoggedIn) {
-        // 실제 학번 가져오기 - 소셜 로그인과 일반 로그인 구분
-        let actualStudentId = studentId;
-        if (studentId.startsWith('naver_') || studentId.startsWith('kakao_') || studentId.startsWith('google_')) {
-            // 소셜 로그인의 경우 별도로 저장된 실제 학번 조회
-            actualStudentId = localStorage.getItem(`user_${studentId}_studentId`) || studentId;
-        }
-        
-        const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
-        const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
-        const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
-        
-        // 프로필 이름 업데이트
-        const profileName = profileLoggedIn.querySelector('.profile-name');
-        if (profileName) {
-            profileName.textContent = name;
-        }
-        
-        // 학과 및 학년 정보 업데이트
-        const profileDetails = profileLoggedIn.querySelectorAll('.profile-detail');
-        if (profileDetails.length >= 2 && department) {
-            let departmentText = '';
-            
-            switch(department) {
-                case 'computerScience':
-                    departmentText = '컴퓨터정보학과';
-                    break;
-                case 'business':
-                    departmentText = '경영학과';
-                    break;
-                case 'nursing':
-                    departmentText = '간호학과';
-                    break;
-                case 'engineering':
-                    departmentText = '공학계열';
-                    break;
-                case 'arts':
-                    departmentText = '예술계열';
-                    break;
-                // 소셜 로그인에서 선택한 학과들 추가
-                case '전자공학과':
-                case '정보통신과':
-                case '전기과':
-                case '컴퓨터소프트웨어과':
-                case '건축과':
-                case '실내건축과':
-                case '패션디자인비즈니스과':
-                case '뷰티스타일리스트과_헤어디자인전공':
-                case '뷰티스타일리스트과_메이크업전공':
-                case '뷰티스타일리스트과_스킨케어전공':
-                case '게임콘텐츠과':
-                case '웹툰만화콘텐츠과':
-                case '영상콘텐츠과_영상콘텐츠제작전공':
-                case '영상콘텐츠과_뉴미디어콘텐츠전공':
-                case '시각디자인과':
-                case 'K-POP과':
-                case '유통물류과':
-                case '경영학과':
-                case '세무회계과':
-                case '국방군사학과':
-                case '경찰경호보안과':
-                case '사회복지과':
-                case '사회복지경영과':
-                case '유아교육과':
-                case '유아특수재활과':
-                case '사회복지과_아동심리보육전공':
-                case '치위생과':
-                case '치기공과':
-                case '작업치료과':
-                case '응급구조과':
-                case '보건의료행정과':
-                case '스포츠재활과':
-                case '식품영양학과':
-                case '반려동물보건과':
-                case '반려동물산업과':
-                case '항공서비스과':
-                case '관광영어과':
-                case '호텔관광과':
-                case '호텔외식조리과':
-                case '카페·베이커리과':
-                case '호텔외식경영전공':
-                case '자유전공학과':
-                    departmentText = department;
-                    break;
-                default:
-                    departmentText = department;
-            }
-            
-            profileDetails[0].textContent = `${departmentText} | ${grade}학년`;
-            profileDetails[1].textContent = `학번: ${actualStudentId}`;
-        }
-        
-        // 로그인된 상태 요소 표시
-        profileLoggedIn.style.display = 'flex';
-        profileMenus.style.display = 'block';
-        profileLoginRequired.style.display = 'none';
-        profileLoginButton.style.display = 'none';
-    }
-    
-    // 프로필 이미지도 업데이트
-    updateAllProfileImages();
-}
-
-
-// 프로필 초기화 함수 (로그아웃 시 사용)
-function resetProfileInfo() {
-    const profileLoggedIn = document.getElementById('profile-logged-in');
-    const profileLoginRequired = document.getElementById('profile-login-required');
-    const profileMenus = document.getElementById('profile-menus');
-    const profileLoginButton = document.getElementById('profile-login-button');
-    
-    // 로그인 필요 상태로 되돌리기
-    if (profileLoggedIn) profileLoggedIn.style.display = 'none';
-    if (profileMenus) profileMenus.style.display = 'none';
-    if (profileLoginRequired) profileLoginRequired.style.display = 'flex';
-    if (profileLoginButton) profileLoginButton.style.display = 'block';
-    
-    // 프로필 이미지도 초기화
-    const profileImage = profileLoginRequired.querySelector('.profile-image');
-    if (profileImage) {
-        profileImage.innerHTML = '👤';
-    }
-}
-
-
-
-
+// 프로필 관련 페이지 네비게이션
 function navigateToProfilePage(pageName) {
     // 현재 로그인 상태 확인
     const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -2651,8 +2477,6 @@ function loadTimetableData() {
     return courses;
 }
 
-
-
 // 현재 시간 및 요일 정보 가져기기
 function getCurrentTimeInfo() {
     const now = new Date();
@@ -2688,7 +2512,6 @@ window.periods  = {
 // 2. periodTimes 변수도 같은 값으로 설정
 window.periodTimes = window.periods;
 
-
 // 함수 내부의 periods 정의를 무력화
 const originalUpdateTimetablePreview = updateTimetablePreview;  
 updateTimetablePreview = function() {
@@ -2715,9 +2538,6 @@ updateTimetablePreview = function() {
     
     return result;
 };
-
-
-
 
 // 시간표 미리보기 다시 업데이트
 updateTimetablePreview();
@@ -2804,7 +2624,6 @@ function findCurrentAndNextClass() {
     return { currentClass, nextClass };
 }
 
-
 // 오늘의 모든 수업 가져오기
 function getTodaysClasses(courses) {
     const currentTime = getCurrentTimeInfo();
@@ -2836,7 +2655,6 @@ function getTodaysClasses(courses) {
     
     return todaysClasses;
 }
-
 
 // 시간표 미리보기 업데이트
 function updateTimetablePreview() {
@@ -3228,9 +3046,6 @@ function updateTimetablePreview() {
     
     console.log('=== 시간표 미리보기 업데이트 완료 ===');
 }
-
-
-
 
 // 저장된 위젯 설정 불러오기
 function loadWidgetSettings() {
@@ -3651,3 +3466,84 @@ function initSearchFunctionality() {
         });
     });
 }
+
+// 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
+document.addEventListener('DOMContentLoaded', function() {
+    // Placeholder 이미지 URL 문제 해결을 위한 코드
+    function fixPlaceholderImages() {
+        console.log('Placeholder 이미지 URL 수정 중...');
+
+        // 모든 img 태그 중 placeholder를 사용하는 것 찾기
+        document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
+            const src = img.getAttribute('src');
+            const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+            
+            if (dimensions && dimensions.length === 3) {
+                const width = dimensions[1];
+                const height = dimensions[2];
+                const altText = img.getAttribute('alt') || 'Image';
+                
+                // placehold.co 서비스로 대체
+                const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
+                console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
+                img.src = newSrc;
+            }
+        });
+
+        console.log('Placeholder 이미지 URL 수정 완료');
+
+        // 시간표 미리보기 초기화 (다른 초기화 완료 후)
+        setTimeout(() => {
+            console.log('시간표 미리보기 초기화');
+            updateTimetablePreview();
+            
+            // 1분마다 시간표 미리보기 업데이트
+            setInterval(updateTimetablePreview, 60000);
+        }, 1000);
+    }
+
+    // 즉시 실행하여 모든 이미지 URL 수정
+    fixPlaceholderImages();
+
+    // 기존 초기화 코드 실행
+    setTimeout(updateAllProfileImages, 100);
+
+    // localStorage 변경 감지를 위한 이벤트 리스너
+    window.addEventListener('storage', function(event) {
+        // 프로필 관련 변경사항 감지
+        if (event.key === 'profileUpdated' || 
+            event.key === 'profileImageUpdated' || 
+            event.key.includes('_profileImage') || 
+            event.key.includes('_customProfileImage')) {
+            updateAllProfileImages();
+        }
+    });
+
+    // 카테고리 필터 기능
+    initCategoryFilter();
+
+    // 로그인 상태 체크 및 UI 업데이트
+    checkLoginStatus();
+
+    // 저장된 위젯 설정 불러오기
+    loadWidgetSettings();
+
+    // 시설 탭 초기화 (페이지네이션 포함)
+    initFacilityTab();
+
+    // 네이버 지도 초기화 - 수정된 함수로 교체
+    initNaverMapWithFix();
+
+    // 검색 기능 초기화
+    initSearchFunctionality();
+
+    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+    window.addEventListener('pageshow', function(event) {
+        // bfcache에서 페이지가 복원된 경우에도 실행
+        if (event.persisted) {
+            checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+            updateAllProfileImages(); // 프로필 이미지도 다시 확인
+            fixPlaceholderImages(); // 이미지 URL도 다시 확인
+        }
+    });
+});

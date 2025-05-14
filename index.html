@@ -508,7 +508,7 @@
             
             <!-- 내 정보 탭 - 로그인 상태에 따라 동적으로 변경 -->
             <div id="profile-tab" class="tab-content">
-                <!-- 로그인이 필요한 상태로 고정 -->
+                <!-- 로그인이 필요한 상태 (기본값) -->
                 <div id="profile-login-required" class="profile-section">
                     <div class="profile-image">👤</div>
                     <div class="profile-info">
@@ -517,7 +517,17 @@
                     </div>
                 </div>
                 
-                <!-- 메뉴들은 항상 표시 (로그인 상태와 관계없이) -->
+                <!-- 로그인된 상태 (로그인 후 표시) -->
+                <div id="profile-logged-in" class="profile-section" style="display: none;">
+                    <div class="profile-image">👨‍🎓</div>
+                    <div class="profile-info">
+                        <div class="profile-name">사용자</div>
+                        <div class="profile-detail">학과 | 학년</div>
+                        <div class="profile-detail">학번: 0000000000</div>
+                    </div>
+                </div>
+                
+                <!-- 메뉴들은 항상 표시 -->
                 <div class="content-section">
                     <div class="section-title">
                         <span>내 정보 관리</span>
@@ -540,7 +550,6 @@
                             <div class="menu-title">개인정보 수정</div>
                             <div class="menu-arrow">›</div>
                         </li>
-                        <!-- 회원 탈퇴 메뉴 -->
                         <li class="menu-item" onclick="deleteAccount()">
                             <div class="menu-title delete-account">회원 탈퇴</div>
                             <div class="menu-arrow">›</div>
