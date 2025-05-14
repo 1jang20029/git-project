@@ -161,7 +161,6 @@
             color: #777;
         }
         
-        /* 자동완성 드롭다운 스타일 */
         .autocomplete-dropdown {
             position: absolute;
             top: 100%;
@@ -171,11 +170,20 @@
             border: 1px solid #ddd;
             border-top: none;
             border-radius: 0 0 4px 4px;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             z-index: 1000;
             display: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .autocomplete-category {
+            background-color: #f5f5f5;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 1px solid #eee;
         }
         
         .autocomplete-item {
@@ -183,6 +191,7 @@
             cursor: pointer;
             border-bottom: 1px solid #f0f0f0;
             font-size: 15px;
+            padding-left: 16px;
         }
         
         .autocomplete-item:hover {
@@ -485,24 +494,63 @@
     </div>
 
     <script>
-        // 학과 목록 배열
+        // 학과 목록 배열 (계열별 분류)
         const departments = [
-            { id: 'electronics', name: '전자공학과' },
-            { id: 'informationCommunication', name: '정보통신과' },
-            { id: 'electrical', name: '전기과' },
-            { id: 'computerSoftware', name: '컴퓨터소프트웨어과' },
-            { id: 'architecture', name: '건축과' },
-            { id: 'interiorArchitecture', name: '실내건축과' },
-            { id: 'fashionDesignBusiness', name: '패션디자인비즈니스과' },
-            { id: 'beautyStylistHair', name: '뷰티스타일리스트과 헤어디자인전공' },
-            { id: 'beautyStylistMakeup', name: '뷰티스타일리스트과 메이크업전공' },
-            { id: 'beautyStylistSkincare', name: '뷰티스타일리스트과 스킨케어전공' },
-            { id: 'gameContent', name: '게임콘텐츠과' },
-            { id: 'webtoonContent', name: '웹툰만화콘텐츠과' },
-            { id: 'videoContentProduction', name: '영상콘텐츠과 영상콘텐츠제작전공' },
-            { id: 'videoContentNewMedia', name: '영상콘텐츠과 뉴미디어콘텐츠전공' },
-            { id: 'visualDesign', name: '시각디자인과' },
-            { id: 'kpop', name: 'K-POP과' }
+            // 스마트 ICT계열
+            { id: 'electronics', name: '전자공학과', category: '스마트 ICT계열' },
+            { id: 'informationCommunication', name: '정보통신과', category: '스마트 ICT계열' },
+            { id: 'electrical', name: '전기과', category: '스마트 ICT계열' },
+            { id: 'computerSoftware', name: '컴퓨터소프트웨어과', category: '스마트 ICT계열' },
+            
+            // 라이프디자인계열
+            { id: 'architecture', name: '건축과', category: '라이프디자인계열' },
+            { id: 'interiorArchitecture', name: '실내건축과', category: '라이프디자인계열' },
+            { id: 'fashionDesignBusiness', name: '패션디자인비즈니스과', category: '라이프디자인계열' },
+            { id: 'beautyStylistHair', name: '뷰티스타일리스트과 헤어디자인전공', category: '라이프디자인계열' },
+            { id: 'beautyStylistMakeup', name: '뷰티스타일리스트과 메이크업전공', category: '라이프디자인계열' },
+            { id: 'beautyStylistSkincare', name: '뷰티스타일리스트과 스킨케어전공', category: '라이프디자인계열' },
+            
+            // 문화콘텐츠계열
+            { id: 'gameContent', name: '게임콘텐츠과', category: '문화콘텐츠계열' },
+            { id: 'webtoonContent', name: '웹툰만화콘텐츠과', category: '문화콘텐츠계열' },
+            { id: 'videoContentProduction', name: '영상콘텐츠과 영상콘텐츠제작전공', category: '문화콘텐츠계열' },
+            { id: 'videoContentNewMedia', name: '영상콘텐츠과 뉴미디어콘텐츠전공', category: '문화콘텐츠계열' },
+            { id: 'visualDesign', name: '시각디자인과', category: '문화콘텐츠계열' },
+            { id: 'kpop', name: 'K-POP과', category: '문화콘텐츠계열' },
+            
+            // 사회·교육계열
+            { id: 'distributionLogistics', name: '유통물류과', category: '사회·교육계열' },
+            { id: 'businessAdministration', name: '경영학과', category: '사회·교육계열' },
+            { id: 'taxAccounting', name: '세무회계과', category: '사회·교육계열' },
+            { id: 'nationalDefense', name: '국방군사학과', category: '사회·교육계열' },
+            { id: 'policeSecurity', name: '경찰경호보안과', category: '사회·교육계열' },
+            { id: 'socialWelfare', name: '사회복지과', category: '사회·교육계열' },
+            { id: 'socialWelfareManagement', name: '사회복지경영과', category: '사회·교육계열' },
+            { id: 'earlyChildhoodEducation', name: '유아교육과', category: '사회·교육계열' },
+            { id: 'earlyChildhoodSpecial', name: '유아특수재활과', category: '사회·교육계열' },
+            { id: 'childPsychology', name: '사회복지과 아동심리보육전공', category: '사회·교육계열' },
+            
+            // 보건생명계열
+            { id: 'dentalHygiene', name: '치위생과', category: '보건생명계열' },
+            { id: 'dentalTechnology', name: '치기공과', category: '보건생명계열' },
+            { id: 'occupationalTherapy', name: '작업치료(심리)과', category: '보건생명계열' },
+            { id: 'emergencyMedical', name: '응급구조과', category: '보건생명계열' },
+            { id: 'healthMedicalAdmin', name: '보건의료행정과', category: '보건생명계열' },
+            { id: 'sportsRehabilitation', name: '스포츠재활과', category: '보건생명계열' },
+            { id: 'foodNutrition', name: '식품영양학과', category: '보건생명계열' },
+            { id: 'companionAnimalHealth', name: '반려동물보건과', category: '보건생명계열' },
+            { id: 'companionAnimalIndustry', name: '반려동물산업과', category: '보건생명계열' },
+            
+            // 관광조리계열
+            { id: 'aviationService', name: '항공서비스과', category: '관광조리계열' },
+            { id: 'tourismEnglish', name: '관광영어과', category: '관광조리계열' },
+            { id: 'hotelTourism', name: '호텔관광과', category: '관광조리계열' },
+            { id: 'hotelCulinary', name: '호텔외식조리과', category: '관광조리계열' },
+            { id: 'cafeBakery', name: '카페·베이커리과', category: '관광조리계열' },
+            { id: 'hotelFoodManagement', name: '호텔외식경영전공', category: '관광조리계열' },
+            
+            // 공통계열
+            { id: 'liberalArts', name: '자유전공학과(신설)', category: '공통계열' }
         ];
 
         let currentHighlightIndex = -1;
@@ -547,10 +595,11 @@
             // 키보드 이벤트
             departmentInput.addEventListener('keydown', function(e) {
                 const items = dropdown.querySelectorAll('.autocomplete-item');
+                const maxIndex = items.length - 1;
                 
                 if (e.key === 'ArrowDown') {
                     e.preventDefault();
-                    currentHighlightIndex = Math.min(currentHighlightIndex + 1, items.length - 1);
+                    currentHighlightIndex = Math.min(currentHighlightIndex + 1, maxIndex);
                     updateHighlight();
                 } else if (e.key === 'ArrowUp') {
                     e.preventDefault();
@@ -559,7 +608,8 @@
                 } else if (e.key === 'Enter') {
                     e.preventDefault();
                     if (currentHighlightIndex >= 0 && items[currentHighlightIndex]) {
-                        selectDepartment(currentFilteredDepartments[currentHighlightIndex]);
+                        const selectedDept = currentFilteredDepartments[currentHighlightIndex];
+                        selectDepartment(selectedDept);
                     }
                 } else if (e.key === 'Escape') {
                     hideDropdown();
@@ -599,12 +649,46 @@
             const dropdown = document.getElementById('departmentDropdown');
             dropdown.innerHTML = '';
             
-            currentFilteredDepartments.forEach((dept, index) => {
-                const item = document.createElement('div');
-                item.className = 'autocomplete-item';
-                item.textContent = dept.name;
-                item.addEventListener('click', () => selectDepartment(dept));
-                dropdown.appendChild(item);
+            // 계열별로 그룹화
+            const groupedDepts = {};
+            currentFilteredDepartments.forEach(dept => {
+                if (!groupedDepts[dept.category]) {
+                    groupedDepts[dept.category] = [];
+                }
+                groupedDepts[dept.category].push(dept);
+            });
+            
+            // 계열 순서 정의
+            const categoryOrder = [
+                '스마트 ICT계열',
+                '라이프디자인계열', 
+                '문화콘텐츠계열',
+                '사회·교육계열',
+                '보건생명계열',
+                '관광조리계열',
+                '공통계열'
+            ];
+            
+            let itemIndex = 0;
+            categoryOrder.forEach(category => {
+                if (groupedDepts[category] && groupedDepts[category].length > 0) {
+                    // 계열 헤더 추가
+                    const categoryHeader = document.createElement('div');
+                    categoryHeader.className = 'autocomplete-category';
+                    categoryHeader.textContent = category;
+                    dropdown.appendChild(categoryHeader);
+                    
+                    // 해당 계열의 학과들 추가
+                    groupedDepts[category].forEach(dept => {
+                        const item = document.createElement('div');
+                        item.className = 'autocomplete-item';
+                        item.textContent = dept.name;
+                        item.setAttribute('data-index', itemIndex);
+                        item.addEventListener('click', () => selectDepartment(dept));
+                        dropdown.appendChild(item);
+                        itemIndex++;
+                    });
+                }
             });
             
             currentHighlightIndex = -1;
@@ -616,6 +700,8 @@
             items.forEach((item, index) => {
                 if (index === currentHighlightIndex) {
                     item.classList.add('highlighted');
+                    // 스크롤하여 선택된 항목이 보이도록 조정
+                    item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                 } else {
                     item.classList.remove('highlighted');
                 }
