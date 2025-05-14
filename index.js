@@ -2223,47 +2223,68 @@ let isLoggingOut = false;
 function logout() {
     // 이미 로그아웃 진행 중이면 중단
     if (isLoggingOut) {
+        console.log('로그아웃이 이미 진행 중입니다.');
         return;
     }
     
+    // 로그아웃 진행 중 플래그 설정
     isLoggingOut = true;
     
-    if (confirm('로그아웃 하시겠습니까?')) {
-        // 현재 로그인 사용자 정보 삭제
-        localStorage.removeItem('currentLoggedInUser');
-        
-        // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
-        const loginButton = document.querySelector('.login-button');
-        const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
-        
-        // 로그인 버튼 표시, 프로필 드롭다운 숨김
-        if (loginButton) loginButton.style.display = 'block';
-        if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+    // 로그아웃 확인
+    const confirmed = confirm('로그아웃 하시겠습니까?');
+    
+    if (confirmed) {
+        try {
+            // 현재 로그인 사용자 정보 삭제
+            localStorage.removeItem('currentLoggedInUser');
+            
+            // 로그인 버튼과 프로필 드롭다운 컨테이너 요소 가져오기
+            const loginButton = document.querySelector('.login-button');
+            const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+            
+            // 로그인 버튼 표시, 프로필 드롭다운 숨김
+            if (loginButton) loginButton.style.display = 'block';
+            if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
 
-        // 프로필 드롭다운이 열려있다면 닫기
-        const dropdown = document.querySelector('.profile-dropdown');
-        if (dropdown) dropdown.classList.remove('active');
-        
-        // 프로필 탭 초기화
-        resetProfileInfo();
-        
-        // 홈 탭으로 전환
-        switchTab('home');
+            // 프로필 드롭다운이 열려있다면 닫기
+            const dropdown = document.querySelector('.profile-dropdown');
+            if (dropdown) dropdown.classList.remove('active');
+            
+            // 프로필 탭 초기화
+            resetProfileInfo();
+            
+            // 홈 탭으로 전환
+            switchTab('home');
 
-        alert('로그아웃 되었습니다.');
+            // 로그아웃 완료 알림
+            alert('로그아웃 되었습니다.');
+        } catch (error) {
+            console.error('로그아웃 처리 중 오류:', error);
+            alert('로그아웃 처리 중 오류가 발생했습니다.');
+        }
     }
     
-    // 플래그 초기화
+    // 로그아웃 프로세스 완료 후 플래그 초기화
     isLoggingOut = false;
 }
 
 // 드롭다운 클릭 이벤트 델리게이션
 document.addEventListener('click', function(event) {
-    if (event.target.closest('.dropdown-item') && 
-        event.target.closest('.dropdown-item').textContent.includes('로그아웃')) {
+    // 로그아웃 드롭다운 항목 클릭 확인
+    const logoutItem = event.target.closest('.dropdown-item');
+    if (logoutItem && logoutItem.textContent.includes('로그아웃')) {
         event.preventDefault();
         event.stopPropagation();
-        logout();
+        
+        // onclick 속성이 있는 경우에만 처리하여 중복 호출 방지
+        if (!event.target.hasAttribute('onclick-processed')) {
+            event.target.setAttribute('onclick-processed', 'true');
+            logout();
+            // 100ms 후 속성 제거하여 다음 클릭 허용
+            setTimeout(() => {
+                event.target.removeAttribute('onclick-processed');
+            }, 100);
+        }
     }
 });
 
