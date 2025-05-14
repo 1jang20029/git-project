@@ -1033,6 +1033,23 @@
                 formatPhoneNumber(this);
             });
             
+            // 전화번호 백스페이스 처리
+            phoneInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace') {
+                    const value = this.value;
+                    const cursorPosition = this.selectionStart;
+                    
+                    // 커서가 하이폰 바로 뒤에 있으면 하이폰을 지움
+                    if (cursorPosition > 0 && value[cursorPosition - 1] === '-') {
+                        e.preventDefault();
+                        const newValue = value.substring(0, cursorPosition - 1) + value.substring(cursorPosition);
+                        this.value = newValue;
+                        this.setSelectionRange(cursorPosition - 1, cursorPosition - 1);
+                        return;
+                    }
+                }
+            });
+            
             // 이메일 입력 검사
             emailInput.addEventListener('blur', function() {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1056,6 +1073,10 @@
         
         // 전화번호 자동 포맷팅 함수
         function formatPhoneNumber(input) {
+            // 현재 커서 위치와 값 저장
+            const cursorPosition = input.selectionStart;
+            const oldLength = input.value.length;
+            
             // 숫자만 추출
             let value = input.value.replace(/[^\d]/g, '');
             
@@ -1082,6 +1103,20 @@
             }
             
             input.value = formattedValue;
+            
+            // 커서 위치 조정
+            const newLength = formattedValue.length;
+            let newCursorPosition = cursorPosition;
+            
+            // 포맷팅으로 길이가 변했을 때 커서 위치 조정
+            if (newLength > oldLength) {
+                // 하이폰이 추가된 경우
+                if (cursorPosition === 3 || cursorPosition === 8) {
+                    newCursorPosition = cursorPosition + 1;
+                }
+            }
+            
+            input.setSelectionRange(newCursorPosition, newCursorPosition);
         }
         
         // 필드 유효성 검사 및 에러 표시
