@@ -404,6 +404,31 @@ const shuttleBusTimeTable = new BusTimeTable();
 
 
 
+
+// 셔틀버스 노선 선택 함수
+function selectShuttleRoute(routeId) {
+    console.log('노선 선택:', routeId);
+    
+    // 선택된 노선 번호 업데이트
+    selectedShuttleRoute = routeId;
+    
+    // 기존 active 클래스 제거
+    document.querySelectorAll('.route-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 선택된 탭에 active 클래스 추가
+    const selectedTab = document.querySelector(`.route-tab[data-route="${routeId}"]`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // 셔틀버스 정보 업데이트
+    updateShuttleBusInfo();
+    
+    console.log('노선', routeId, '선택 완료');
+}
+
 // 노선 선택 함수
 function updateShuttleBusInfo() {
     // 선택된 노선의 정보만 가져오기
