@@ -2292,21 +2292,6 @@ function updateProfileInfo(studentId) {
             let departmentText = '';
             
             switch(department) {
-                case 'computerScience':
-                    departmentText = '컴퓨터정보학과';
-                    break;
-                case 'business':
-                    departmentText = '경영학과';
-                    break;
-                case 'nursing':
-                    departmentText = '간호학과';
-                    break;
-                case 'engineering':
-                    departmentText = '공학계열';
-                    break;
-                case 'arts':
-                    departmentText = '예술계열';
-                    break;
                 // 소셜 로그인에서 선택한 학과들 추가
                 case '전자공학과':
                 case '정보통신과':
@@ -2348,7 +2333,7 @@ function updateProfileInfo(studentId) {
                 case '호텔관광과':
                 case '호텔외식조리과':
                 case '카페·베이커리과':
-case '호텔외식경영전공':
+                case '호텔외식경영전공':
                 case '자유전공학과':
                     departmentText = department;
                     break;
