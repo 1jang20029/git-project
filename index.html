@@ -70,9 +70,9 @@
                
                <!-- 바로가기 메뉴 -->
                <div class="shortcut-menu">
-                   <div class="shortcut-item" onclick="switchTab('facility')">
-                       <div class="shortcut-icon">🏫</div>
-                       <div class="shortcut-text">강의실</div>
+                   <div class="shortcut-item" onclick="goToPage('activities')">
+                       <div class="shortcut-icon">🎯</div>
+                       <div class="shortcut-text">교내/대외활동</div>
                    </div>
                    <div class="shortcut-item" onclick="switchTab('community')">
                        <div class="shortcut-icon">📝</div>
@@ -82,9 +82,9 @@
                         <div class="shortcut-icon">🚌</div>
                         <div class="shortcut-text">셔틀버스</div>
                     </div>
-                   <div class="shortcut-item" onclick="goToPage('cafeteria')">
-                       <div class="shortcut-icon">🍽️</div>
-                       <div class="shortcut-text">학식</div>
+                   <div class="shortcut-item" onclick="goToPage('everytime-board')">
+                       <div class="shortcut-icon">💬</div>
+                       <div class="shortcut-text">커뮤니티</div>
                    </div>
                    <div class="shortcut-item" onclick="goToPage('academic-calendar')">
                        <div class="shortcut-icon">📅</div>
@@ -179,56 +179,180 @@
                     </div>
                 </div>
                
-               <!-- 학식 메뉴 -->
-               <div class="cafeteria-card">
-                   <div class="cafeteria-header">
-                       <div class="cafeteria-title">오늘의 학식</div>
-                       <div class="cafeteria-time">11:30 - 14:00</div>
+               <!-- 교내/대외활동 현황 -->
+               <div class="activity-summary-card">
+                   <div class="activity-summary-header">
+                       <div class="activity-summary-title">🎯 교내/대외활동 현황</div>
+                       <div class="activity-summary-time">실시간 업데이트</div>
                    </div>
-                   <div class="menu-item-row">
-                       <div class="menu-name">제육볶음 정식</div>
-                       <div class="menu-price">5,500원</div>
+                   <div class="activity-summary-grid">
+                       <div class="activity-stat-item">
+                           <div class="activity-stat-icon">🏆</div>
+                           <div class="activity-stat-info">
+                               <div class="activity-stat-number">12</div>
+                               <div class="activity-stat-label">진행 중인 공모전</div>
+                           </div>
+                       </div>
+                       <div class="activity-stat-item">
+                           <div class="activity-stat-icon">👥</div>
+                           <div class="activity-stat-info">
+                               <div class="activity-stat-number">8</div>
+                               <div class="activity-stat-label">신입 모집 동아리</div>
+                           </div>
+                       </div>
+                       <div class="activity-stat-item">
+                           <div class="activity-stat-icon">🌟</div>
+                           <div class="activity-stat-info">
+                               <div class="activity-stat-number">15</div>
+                               <div class="activity-stat-label">대외활동 기회</div>
+                           </div>
+                       </div>
                    </div>
-                   <div class="menu-item-row">
-                       <div class="menu-name">치킨 마요 덮밥</div>
-                       <div class="menu-price">5,000원</div>
+                   <div class="activity-summary-notices">
+                       <div class="activity-notice-item">
+                           <span class="activity-notice-icon">⏰</span>
+                           <span class="activity-notice-text">창업 아이디어 경진대회 마감 22일 남음</span>
+                       </div>
+                       <div class="activity-notice-item">
+                           <span class="activity-notice-icon">🎵</span>
+                           <span class="activity-notice-text">밴드 동아리 ECHO 오디션 이번 주</span>
+                       </div>
                    </div>
-                   <div class="menu-item-row">
-                       <div class="menu-name">냉모밀 세트</div>
-                       <div class="menu-price">4,800원</div>
+               </div>
+
+               <!-- 과제/시험 현황 (에브리타임 스타일) -->
+               <div class="everytime-assignments-card">
+                   <div class="everytime-header">
+                       <div class="everytime-title">📝 과제 & 시험</div>
+                       <div class="everytime-view-all" onclick="goToPage('assignments')">전체보기</div>
+                   </div>
+                   <div class="assignments-list">
+                       <div class="assignment-item urgent">
+                           <div class="assignment-type">과제</div>
+                           <div class="assignment-content">
+                               <div class="assignment-subject">웹 프로그래밍 실습</div>
+                               <div class="assignment-title">개인 포트폴리오 웹사이트 제작</div>
+                               <div class="assignment-due">마감: 4월 12일 오후 11:59</div>
+                           </div>
+                           <div class="assignment-status urgent">급함</div>
+                       </div>
+                       <div class="assignment-item normal">
+                           <div class="assignment-type">시험</div>
+                           <div class="assignment-content">
+                               <div class="assignment-subject">마케팅 원론</div>
+                               <div class="assignment-title">중간고사</div>
+                               <div class="assignment-due">4월 24일 오후 2:00</div>
+                           </div>
+                           <div class="assignment-status normal">8일 후</div>
+                       </div>
+                       <div class="assignment-item normal">
+                           <div class="assignment-type">과제</div>
+                           <div class="assignment-content">
+                               <div class="assignment-subject">영상콘텐츠제작</div>
+                               <div class="assignment-title">3분 브이로그 제작</div>
+                               <div class="assignment-due">마감: 4월 18일 오후 6:00</div>
+                           </div>
+                           <div class="assignment-status normal">10일 후</div>
+                       </div>
+                   </div>
+               </div>
+
+               <!-- 실시간 커뮤니티 (에브리타임 스타일) -->
+               <div class="everytime-community-card">
+                   <div class="everytime-header">
+                       <div class="everytime-title">💬 실시간 커뮤니티</div>
+                       <div class="everytime-view-all" onclick="goToPage('everytime-board')">게시판</div>
+                   </div>
+                   <div class="community-posts">
+                       <div class="post-item">
+                           <div class="post-board">[자유게시판]</div>
+                           <div class="post-content">
+                               <div class="post-title">중간고사 스터디 그룹 모집해요!</div>
+                               <div class="post-preview">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
+                               <div class="post-meta">
+                                   <span class="post-time">3분 전</span>
+                                   <span class="post-stats">👍 12 💬 8</span>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="post-item">
+                           <div class="post-board">[정보게시판]</div>
+                           <div class="post-content">
+                               <div class="post-title">김민수 교수님 수업 꿀팁 공유</div>
+                               <div class="post-preview">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
+                               <div class="post-meta">
+                                   <span class="post-time">12분 전</span>
+                                   <span class="post-stats">👍 24 💬 15</span>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="post-item">
+                           <div class="post-board">[취업게시판]</div>
+                           <div class="post-content">
+                               <div class="post-title">삼성전자 채용설명회 후기</div>
+                               <div class="post-preview">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
+                               <div class="post-meta">
+                                   <span class="post-time">32분 전</span>
+                                   <span class="post-stats">👍 45 💬 23</span>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="post-item">
+                           <div class="post-board">[강의평가]</div>
+                           <div class="post-content">
+                               <div class="post-title">이지영 교수님 마케팅 원론 후기</div>
+                               <div class="post-preview">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
+                               <div class="post-meta">
+                                   <span class="post-time">1시간 전</span>
+                                   <span class="post-stats">👍 18 💬 6</span>
+                               </div>
+                           </div>
+                       </div>
                    </div>
                </div>
                
-               <!-- 동아리 활동  -->
-               <div class="club-activity-card">
+               <!-- 교내/대외활동 정보 -->
+               <div class="activity-card">
                     <div class="section-title">
-                        <span>동아리 & 학생활동</span>
-                        <a href="#" class="see-all" onclick="goToPage('club-activities')">전체보기</a>
+                        <span>🎯 교내/대외활동</span>
+                        <a href="#" class="see-all" onclick="goToPage('activities')">전체보기</a>
                     </div>
-                    <div class="club-activities">
-                        <div class="club-item recruiting">
-                            <div class="club-icon">🎵</div>
-                            <div class="club-info">
-                                <div class="club-name">밴드 동아리 'ECHO'</div>
-                                <div class="club-description">신입 회원 모집 중</div>
-                                <div class="club-status">모집중</div>
+                    <div class="activity-list">
+                        <div class="activity-item contest">
+                            <div class="activity-icon">🏆</div>
+                            <div class="activity-info">
+                                <div class="activity-name">2025 창업 아이디어 경진대회</div>
+                                <div class="activity-description">상금 500만원, 창업 멘토링 제공</div>
+                                <div class="activity-due">마감: 4월 30일</div>
                             </div>
+                            <div class="activity-status contest">공모전</div>
                         </div>
-                        <div class="club-item event">
-                            <div class="club-icon">🏃</div>
-                            <div class="club-info">
-                                <div class="club-name">체육대회</div>
-                                <div class="club-description">4월 25일 운동장</div>
-                                <div class="club-status">D-17</div>
+                        <div class="activity-item club">
+                            <div class="activity-icon">🎵</div>
+                            <div class="activity-info">
+                                <div class="activity-name">밴드 동아리 'ECHO' 신입 모집</div>
+                                <div class="activity-description">매주 금요일 연습, 정기공연 예정</div>
+                                <div class="activity-due">선착순 10명</div>
                             </div>
+                            <div class="activity-status club">동아리</div>
                         </div>
-                        <div class="club-item activity">
-                            <div class="club-icon">🎨</div>
-                            <div class="club-info">
-                                <div class="club-name">미술 동아리 전시회</div>
-                                <div class="club-description">창조관 1층 갤러리</div>
-                                <div class="club-status">진행중</div>
+                        <div class="activity-item volunteer">
+                            <div class="activity-icon">❤️</div>
+                            <div class="activity-info">
+                                <div class="activity-name">지역아동센터 봉사활동</div>
+                                <div class="activity-description">매주 토요일 오후 2시 ~ 5시</div>
+                                <div class="activity-due">지속 모집 중</div>
                             </div>
+                            <div class="activity-status volunteer">봉사</div>
+                        </div>
+                        <div class="activity-item external">
+                            <div class="activity-icon">🌟</div>
+                            <div class="activity-info">
+                                <div class="activity-name">SK하이닉스 대학생 인턴십</div>
+                                <div class="activity-description">2개월 유급 인턴, 정규직 전환 기회</div>
+                                <div class="activity-due">4월 25일까지</div>
+                            </div>
+                            <div class="activity-status external">대외활동</div>
                         </div>
                     </div>
                 </div>
@@ -366,8 +490,6 @@
                <div class="content-pad"></div>
            </div>
 
-           
-            
             <!-- 시설 탭 -->
             <div id="facility-tab" class="tab-content">
                 <!-- 검색 바 - 새로운 구조로 변경 -->
