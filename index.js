@@ -3937,42 +3937,51 @@ function loadWidgetSettings() {
     // 로컬 스토리지에서 위젯 설정 가져오기
     const widgetsData = localStorage.getItem('selectedWidgets');
     
+    let selectedWidgets;
     if (widgetsData) {
-        const selectedWidgets = JSON.parse(widgetsData);
+        selectedWidgets = JSON.parse(widgetsData);
+    } else {
+        // 기본 위젯 설정 (학식 제거, 셔틀버스 추가)
+        selectedWidgets = [
+            { name: '강의실 찾기', icon: '🏫', description: '빈 강의실 정보 확인' },
+            { name: '학사일정', icon: '📅', description: '주요 일정 및 행사' },
+            { name: '셔틀버스', icon: '🚌', description: '셔틀 시간표' }
+        ];
+        localStorage.setItem('selectedWidgets', JSON.stringify(selectedWidgets));
+    }
+    
+    // 바로가기 메뉴 컨테이너
+    const shortcutMenu = document.querySelector('.shortcut-menu');
+    
+    if (shortcutMenu && selectedWidgets.length > 0) {
+        // 기존 메뉴 아이템 제거
+        shortcutMenu.innerHTML = '';
         
-        // 바로가기 메뉴 컨테이너
-        const shortcutMenu = document.querySelector('.shortcut-menu');
+        // 선택된 위젯 추가 (최대 5개)
+        const maxWidgets = Math.min(selectedWidgets.length, 5);
         
-        if (shortcutMenu && selectedWidgets.length > 0) {
-            // 기존 메뉴 아이템 제거
-            shortcutMenu.innerHTML = '';
+        for (let i = 0; i < maxWidgets; i++) {
+            const widget = selectedWidgets[i];
             
-            // 선택된 위젯 추가 (최대 5개)
-            const maxWidgets = Math.min(selectedWidgets.length, 5);
+            const shortcutItem = document.createElement('div');
+            shortcutItem.className = 'shortcut-item';
             
-            for (let i = 0; i < maxWidgets; i++) {
-                const widget = selectedWidgets[i];
-                
-                const shortcutItem = document.createElement('div');
-                shortcutItem.className = 'shortcut-item';
-                
-                const shortcutIcon = document.createElement('div');
-                shortcutIcon.className = 'shortcut-icon';
-                shortcutIcon.textContent = widget.icon;
-                
-                const shortcutText = document.createElement('div');
-                shortcutText.className = 'shortcut-text';
-                shortcutText.textContent = widget.name;
-                
-                shortcutItem.appendChild(shortcutIcon);
-                shortcutItem.appendChild(shortcutText);
-                shortcutMenu.appendChild(shortcutItem);
-                
-                // 위젯 클릭 이벤트 추가
-                shortcutItem.addEventListener('click', function() {
-                    handleWidgetClick(widget.name);
-                });
-            }
+            const shortcutIcon = document.createElement('div');
+            shortcutIcon.className = 'shortcut-icon';
+            shortcutIcon.textContent = widget.icon;
+            
+            const shortcutText = document.createElement('div');
+            shortcutText.className = 'shortcut-text';
+            shortcutText.textContent = widget.name;
+            
+            shortcutItem.appendChild(shortcutIcon);
+            shortcutItem.appendChild(shortcutText);
+            shortcutMenu.appendChild(shortcutItem);
+            
+            // 위젯 클릭 이벤트 추가
+            shortcutItem.addEventListener('click', function() {
+                handleWidgetClick(widget.name);
+            });
         }
     }
     
