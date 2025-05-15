@@ -163,6 +163,290 @@ relatedBuilding: '학생복지센터'
 
 ];
 
+// 셔틀버스 시간표 시스템 클래스 (shuttle_bus_tracker.js에서 가져온 구조)
+class BusTimeTable {
+    constructor() {
+        // 실제 연성대학교 셔틀버스 운행시간표
+        this.schedules = {
+            1: { // 노선 1 (인천 남동구, 경기도 시흥시, 신천동)
+                name: "인천 남동구, 경기도 시흥시, 신천동",
+                운행구간: [
+                    { 시간대: "오전", 출차: "08:30", 막차: "10:50", 배차간격: 6 },
+                    { 시간대: "낮", 출차: "12:00", 막차: "13:20", 배차간격: 10 },
+                    { 시간대: "오후", 출차: "16:55", 막차: "17:45", 배차간격: [5, 10, 15] }
+                ]
+            },
+            2: { // 노선 2 (경기도 시흥시, 시화지역, 장현지구, 시흥농곡지역)
+                name: "경기도 시흥시, 시화지역, 장현지구, 시흥농곡지역",
+                운행구간: [
+                    { 시간대: "오전", 출차: "08:30", 막차: "10:50", 배차간격: 6 },
+                    { 시간대: "낮", 출차: "12:00", 막차: "13:20", 배차간격: 10 },
+                    { 시간대: "오후", 출차: "16:55", 막차: "17:45", 배차간격: [5, 10, 15] }
+                ]
+            },
+            3: { // 노선 3 (서울 목동)
+                name: "서울 목동",
+                운행구간: [
+                    { 시간대: "오전", 출차: "08:30", 막차: "10:50", 배차간격: 6 },
+                    { 시간대: "낮", 출차: "12:00", 막차: "13:20", 배차간격: 10 },
+                    { 시간대: "오후", 출차: "16:55", 막차: "17:45", 배차간격: [5, 10, 15] }
+                ]
+            }
+        };
+    }
+    
+    // 현재 시간이 운행시간인지 확인
+    isOperatingTime(routeId) {
+        const now = new Date();
+        const currentTime = now.getHours() * 100 + now.getMinutes(); // HHMM 형식
+        const schedule = this.schedules[routeId];
+        
+        if (!schedule) return false;
+        
+        for (const period of schedule.운행구간) {
+            const startTime = parseInt(period.출차.replace(':', ''));
+            const endTime = parseInt(period.막차.replace(':', ''));
+            
+            if (currentTime >= startTime && currentTime <= endTime) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    // 다음 운행시간까지 남은 시간 계산
+    getNextOperatingTime(routeId) {
+        const now = new Date();
+        const currentTime = now.getHours() * 100 + now.getMinutes();
+        const schedule = this.schedules[routeId];
+        
+        if (!schedule) return null;
+        
+        for (const period of schedule.운행구간) {
+            const startTime = parseInt(period.출차.replace(':', ''));
+            
+            if (currentTime < startTime) {
+                const hours = Math.floor(startTime / 100);
+                const minutes = startTime % 100;
+                const nextTime = new Date();
+                nextTime.setHours(hours, minutes, 0, 0);
+                
+                const diffMillis = nextTime - now;
+                const diffMinutes = Math.floor(diffMillis / (1000 * 60));
+                
+                return {
+                    period: period.시간대,
+                    time: period.출차,
+                    minutesUntil: diffMinutes > 0 ? diffMinutes : 0
+                };
+            }
+        }
+        
+        // 오늘 운행 종료, 내일 첫 운행 시간
+        const firstPeriod = schedule.운행구간[0];
+        return {
+            period: `내일 ${firstPeriod.시간대}`,
+            time: firstPeriod.출차,
+            minutesUntil: null
+        };
+    }
+    
+    // 현재 시간대의 배차 정보 가져오기
+    getCurrentPeriodInfo(routeId) {
+        const now = new Date();
+        const currentTime = now.getHours() * 100 + now.getMinutes();
+        const schedule = this.schedules[routeId];
+        
+        if (!schedule) return null;
+        
+        for (const period of schedule.운행구간) {
+            const startTime = parseInt(period.출차.replace(':', ''));
+            const endTime = parseInt(period.막차.replace(':', ''));
+            
+            if (currentTime >= startTime && currentTime <= endTime) {
+                return period;
+            }
+        }
+        
+        return null;
+    }
+    
+    // 다음 셔틀버스 시간 계산
+    getNextBusInfo() {
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        let earliestNext = null;
+        let earliestRoute = null;
+        
+        // 모든 노선에서 다음 버스 찾기
+        for (let routeId = 1; routeId <= 3; routeId++) {
+            const schedule = this.schedules[routeId];
+            
+            for (const period of schedule.운행구간) {
+                const startTime = parseInt(period.출차.replace(':', ''));
+                const endTime = parseInt(period.막차.replace(':', ''));
+                const startMinutes = Math.floor(startTime / 100) * 60 + (startTime % 100);
+                const endMinutes = Math.floor(endTime / 100) * 60 + (endTime % 100);
+                
+                // 현재 운행 중인 구간인지 확인
+                if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
+                    // 배차 간격 확인
+                    let interval = period.배차간격;
+                    if (Array.isArray(interval)) {
+                        interval = interval[0]; // 첫 번째 간격 사용
+                    }
+                    
+                    // 다음 버스 시간 계산
+                    let nextBusMinutes = startMinutes;
+                    while (nextBusMinutes <= currentMinutes) {
+                        nextBusMinutes += interval;
+                    }
+                    
+                    // 운행 종료 시간 이후면 패스
+                    if (nextBusMinutes > endMinutes) {
+                        continue;
+                    }
+                    
+                    // 가장 빠른 다음 버스 찾기
+                    if (!earliestNext || nextBusMinutes < earliestNext) {
+                        earliestNext = nextBusMinutes;
+                        earliestRoute = {
+                            routeId: routeId,
+                            routeName: schedule.name,
+                            period: period.시간대,
+                            interval: interval
+                        };
+                    }
+                }
+                
+                // 아직 시작하지 않은 다음 구간 확인
+                if (currentMinutes < startMinutes) {
+                    if (!earliestNext || startMinutes < earliestNext) {
+                        earliestNext = startMinutes;
+                        earliestRoute = {
+                            routeId: routeId,
+                            routeName: schedule.name,
+                            period: period.시간대,
+                            interval: Array.isArray(period.배차간격) ? period.배차간격[0] : period.배차간격
+                        };
+                    }
+                }
+            }
+        }
+        
+        if (earliestNext && earliestRoute) {
+            const nextHour = Math.floor(earliestNext / 60);
+            const nextMin = earliestNext % 60;
+            const timeUntil = earliestNext - currentMinutes;
+            
+            return {
+                time: `${nextHour.toString().padStart(2, '0')}:${nextMin.toString().padStart(2, '0')}`,
+                minutesUntil: timeUntil,
+                route: earliestRoute,
+                description: `학교 → 안양역 경유`
+            };
+        }
+        
+        return null;
+    }
+    
+    // 다음 몇 개의 운행시간 가져오기
+    getUpcomingBuses(count = 3) {
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const upcoming = [];
+        
+        // 모든 노선의 모든 운행시간 수집
+        for (let routeId = 1; routeId <= 3; routeId++) {
+            const schedule = this.schedules[routeId];
+            
+            for (const period of schedule.운행구간) {
+                const startTime = parseInt(period.출차.replace(':', ''));
+                const endTime = parseInt(period.막차.replace(':', ''));
+                const startMinutes = Math.floor(startTime / 100) * 60 + (startTime % 100);
+                const endMinutes = Math.floor(endTime / 100) * 60 + (endTime % 100);
+                
+                let interval = period.배차간격;
+                if (Array.isArray(interval)) {
+                    interval = interval[0]; // 첫 번째 간격 사용
+                }
+                
+                // 해당 구간의 모든 운행시간 계산
+                let busMinutes = startMinutes;
+                while (busMinutes <= endMinutes) {
+                    if (busMinutes > currentMinutes) {
+                        const busHour = Math.floor(busMinutes / 60);
+                        const busMin = busMinutes % 60;
+                        upcoming.push({
+                            time: `${busHour.toString().padStart(2, '0')}:${busMin.toString().padStart(2, '0')}`,
+                            minutesUntil: busMinutes - currentMinutes,
+                            routeId: routeId,
+                            routeName: schedule.name
+                        });
+                    }
+                    busMinutes += interval;
+                }
+            }
+        }
+        
+        // 시간순 정렬 후 상위 count개 반환
+        upcoming.sort((a, b) => a.minutesUntil - b.minutesUntil);
+        return upcoming.slice(0, count);
+    }
+}
+
+// 메인페이지용 셔틀버스 시간표 인스턴스
+const shuttleBusTimeTable = new BusTimeTable();
+
+// 셔틀버스 정보 업데이트 함수
+function updateShuttleBusInfo() {
+    const nextBusInfo = shuttleBusTimeTable.getNextBusInfo();
+    const upcomingBuses = shuttleBusTimeTable.getUpcomingBuses(3);
+    
+    // 다음 셔틀버스 정보 업데이트
+    const shuttleTimeEl = document.querySelector('.shuttle-time');
+    const shuttleDescEl = document.querySelector('.shuttle-desc');
+    
+    if (nextBusInfo) {
+        if (shuttleTimeEl) {
+            shuttleTimeEl.textContent = `${nextBusInfo.minutesUntil}분 후 출발`;
+        }
+        if (shuttleDescEl) {
+            shuttleDescEl.textContent = `${nextBusInfo.description} (${nextBusInfo.time})`;
+        }
+        
+        // 다음 버스 시간들 업데이트
+        const shuttleTimeItems = document.querySelectorAll('.shuttle-time-item');
+        upcomingBuses.forEach((bus, index) => {
+            if (index < 3 && shuttleTimeItems[index]) {
+                const timeValueEl = shuttleTimeItems[index].querySelector('.time-value');
+                if (timeValueEl) {
+                    timeValueEl.textContent = bus.time;
+                }
+            }
+        });
+    } else {
+        // 운행종료 또는 운행 전
+        if (shuttleTimeEl) {
+            shuttleTimeEl.textContent = '운행 시간 확인';
+        }
+        if (shuttleDescEl) {
+            shuttleDescEl.textContent = '08:30~10:50, 12:00~13:20, 16:55~17:45';
+        }
+        
+        // 기본 시간들로 설정
+        const shuttleTimeItems = document.querySelectorAll('.shuttle-time-item');
+        const defaultTimes = ['08:30', '12:00', '16:55'];
+        shuttleTimeItems.forEach((item, index) => {
+            const timeValueEl = item.querySelector('.time-value');
+            if (timeValueEl && defaultTimes[index]) {
+                timeValueEl.textContent = defaultTimes[index];
+            }
+        });
+    }
+}
+
 // 네이버 지도 관련 변수
 let naverMap;
 let mapMarkers = [];
@@ -488,6 +772,10 @@ console.log('날씨 정보 직접 업데이트 완료');
 
 // 1시간마다 날씨 정보 업데이트 (필요한 경우 아래 줄을 주석 해제)
 // setInterval(getWeatherData, 60 * 60 * 1000);
+
+// 셔틀버스 정보 초기화 및 정기 업데이트
+updateShuttleBusInfo();
+setInterval(updateShuttleBusInfo, 30000); // 30초마다 업데이트
 });
 
 // 페이지네이션 컨트롤 업데이트
@@ -1756,7 +2044,7 @@ function updateProfileInfo(studentId) {
                 case '호텔관광과':
                 case '호텔외식조리과':
                 case '카페·베이커리과':
-                case '호텔외식경영전공':
+case '호텔외식경영전공':
                 case '자유전공학과':
                     departmentText = department;
                     break;
@@ -3588,3 +3876,429 @@ function navigateToTimetable() {
     window.location.href = 'timetable.html';
 }
 
+// 에러 처리 및 로깅 함수들
+function logError(message, error) {
+    console.error(`[ERROR] ${message}:`, error);
+    // 실제 서비스에서는 에러 로깅 서비스로 전송
+}
+
+function logWarning(message) {
+    console.warn(`[WARNING] ${message}`);
+}
+
+function logInfo(message) {
+    console.log(`[INFO] ${message}`);
+}
+
+// 안전한 JSON 파싱 함수
+function safeJSONParse(jsonString, defaultValue = null) {
+    try {
+        return JSON.parse(jsonString);
+    } catch (error) {
+        logError('JSON 파싱 실패', error);
+        return defaultValue;
+    }
+}
+
+// 안전한 로컬 스토리지 접근 함수
+function safeGetLocalStorage(key, defaultValue = null) {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? safeJSONParse(item, defaultValue) : defaultValue;
+    } catch (error) {
+        logError(`로컬 스토리지 접근 실패: ${key}`, error);
+        return defaultValue;
+    }
+}
+
+function safeSetLocalStorage(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+    } catch (error) {
+        logError(`로컬 스토리지 저장 실패: ${key}`, error);
+        return false;
+    }
+}
+
+// 디바운스 함수 (검색이나 리사이즈 이벤트 최적화용)
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 스로틀 함수 (스크롤 이벤트 최적화용)
+function throttle(func, wait) {
+    let inThrottle;
+    return function executedFunction(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, wait);
+        }
+    };
+}
+
+// 네트워크 상태 확인 함수
+function checkNetworkStatus() {
+    return navigator.onLine;
+}
+
+// 브라우저 지원 여부 확인 함수들
+function checkGeolocationSupport() {
+    return 'geolocation' in navigator;
+}
+
+function checkLocalStorageSupport() {
+    try {
+        const test = 'test';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+// 성능 모니터링 함수
+function measurePerformance(functionName, func) {
+    return function(...args) {
+        const start = performance.now();
+        const result = func.apply(this, args);
+        const end = performance.now();
+        logInfo(`${functionName} 실행 시간: ${(end - start).toFixed(2)}ms`);
+        return result;
+    };
+}
+
+// 이벤트 리스너 등록 헬퍼 함수
+function addEventListenerSafe(element, event, handler) {
+    if (element && typeof element.addEventListener === 'function') {
+        element.addEventListener(event, handler);
+        return true;
+    }
+    logWarning(`이벤트 리스너 등록 실패: ${event}`);
+    return false;
+}
+
+// DOM 요소 안전 선택 함수
+function safeQuerySelector(selector) {
+    try {
+        return document.querySelector(selector);
+    } catch (error) {
+        logError(`DOM 선택 실패: ${selector}`, error);
+        return null;
+    }
+}
+
+// URL 파라미터 파싱 함수
+function getURLParameter(paramName) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(paramName);
+}
+
+// 랜덤 ID 생성 함수
+function generateRandomId(length = 8) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// 시간 포맷팅 함수들
+function formatTime(date) {
+    return date.toLocaleTimeString('ko-KR', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+    });
+}
+
+function formatDate(date) {
+    return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+    });
+}
+
+// 텍스트 유틸리티 함수들
+function truncateText(text, maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+
+function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// 배열 유틸리티 함수들
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function groupBy(array, key) {
+    return array.reduce((result, item) => {
+        (result[item[key]] = result[item[key]] || []).push(item);
+        return result;
+    }, {});
+}
+
+// 딥 클론 함수 (간단한 객체용)
+function deepClone(obj) {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (obj instanceof Date) return new Date(obj.getTime());
+    if (obj instanceof Array) return obj.map(item => deepClone(item));
+    
+    const cloned = {};
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            cloned[key] = deepClone(obj[key]);
+        }
+    }
+    return cloned;
+}
+
+// 객체 비교 함수
+function isEqual(obj1, obj2) {
+    if (obj1 === obj2) return true;
+    if (obj1 == null || obj2 == null) return false;
+    if (typeof obj1 !== typeof obj2) return false;
+    
+    if (typeof obj1 === 'object') {
+        const keys1 = Object.keys(obj1);
+        const keys2 = Object.keys(obj2);
+        if (keys1.length !== keys2.length) return false;
+        
+        for (let key of keys1) {
+            if (!keys2.includes(key)) return false;
+            if (!isEqual(obj1[key], obj2[key])) return false;
+        }
+        return true;
+    }
+    
+    return obj1 === obj2;
+}
+
+// 애니메이션 유틸리티 함수
+function smoothScroll(target, duration = 500) {
+    const targetElement = typeof target === 'string' ? 
+        document.querySelector(target) : target;
+    
+    if (!targetElement) return;
+    
+    const targetPosition = targetElement.offsetTop;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    let startTime = null;
+    
+    function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const run = ease(timeElapsed, startPosition, distance, duration);
+        window.scrollTo(0, run);
+        if (timeElapsed < duration) requestAnimationFrame(animation);
+    }
+    
+    function ease(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+    }
+    
+    requestAnimationFrame(animation);
+}
+
+// 쿠키 관리 함수들 (GDPR 등 고려용)
+const CookieManager = {
+    set: function(name, value, days = 30) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+    },
+    
+    get: function(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    },
+    
+    delete: function(name) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/`;
+    }
+};
+
+// 전역 에러 핸들러 등록
+window.addEventListener('error', function(event) {
+    logError('전역 JavaScript 에러', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
+    });
+});
+
+// Promise rejection 핸들러
+window.addEventListener('unhandledrejection', function(event) {
+    logError('처리되지 않은 Promise rejection', event.reason);
+    event.preventDefault();
+});
+
+// 개발 환경 전용 디버깅 함수들
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    window.debugUtils = {
+        // 로컬 스토리지 전체 출력
+        dumpLocalStorage: function() {
+            const storage = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                storage[key] = localStorage.getItem(key);
+            }
+            console.table(storage);
+        },
+        
+        // 현재 사용자 정보 출력
+        getCurrentUser: function() {
+            const user = localStorage.getItem('currentLoggedInUser');
+            if (user) {
+                const userInfo = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith(`user_${user}_`)) {
+                        userInfo[key] = localStorage.getItem(key);
+                    }
+                }
+                console.table(userInfo);
+            } else {
+                console.log('로그인된 사용자가 없습니다.');
+            }
+        },
+        
+        // 셔틀버스 정보 출력
+        getBusInfo: function() {
+            const info = shuttleBusTimeTable.getNextBusInfo();
+            console.log('다음 셔틀버스 정보:', info);
+            console.log('다음 3개 버스:', shuttleBusTimeTable.getUpcomingBuses(3));
+        },
+        
+        // 지도 상태 확인
+        checkMapStatus: function() {
+            console.log('지도 초기화 상태:', !!naverMap);
+            console.log('마커 개수:', mapMarkers.length);
+            console.log('사용자 위치:', userLocation);
+            console.log('위치 추적 상태:', isTrackingUser);
+        },
+        
+        // 시간표 데이터 확인
+        checkTimetableData: function() {
+            const data = loadTimetableData();
+            console.log('시간표 데이터:', data);
+            console.log('오늘의 수업:', getTodaysClasses(data));
+        }
+    };
+    
+    console.log('🔧 디버그 유틸리티가 window.debugUtils로 등록되었습니다.');
+    console.log('사용 가능한 함수들:', Object.keys(window.debugUtils));
+}
+
+// 컴포넌트별 초기화 상태 추적
+const initializationStatus = {
+    map: false,
+    busSystem: false,
+    timetable: false,
+    profile: false,
+    search: false
+};
+
+// 초기화 완료 체크 함수
+function checkInitializationComplete() {
+    const allInitialized = Object.values(initializationStatus).every(status => status);
+    if (allInitialized) {
+        logInfo('모든 컴포넌트 초기화 완료');
+        // 초기화 완료 이벤트 발생
+        window.dispatchEvent(new CustomEvent('appInitComplete'));
+    }
+}
+
+// 앱 초기화 완료 이벤트 리스너
+window.addEventListener('appInitComplete', function() {
+    logInfo('앱 초기화가 완전히 완료되었습니다.');
+    // 필요한 후처리 작업 수행
+});
+
+// 페이지 언로드 시 정리 작업
+window.addEventListener('beforeunload', function(event) {
+    // 위치 추적 중지
+    if (isTrackingUser) {
+        stopUserTracking();
+    }
+    
+    // 인터벌 정리
+    if (timeInterval) {
+        clearInterval(timeInterval);
+    }
+    
+    // 기타 정리 작업
+    logInfo('페이지 언로드: 정리 작업 완료');
+});
+
+// 유틸리티 함수 내보내기 (모듈 시스템 사용 시)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        safeJSONParse,
+        safeGetLocalStorage,
+        safeSetLocalStorage,
+        debounce,
+        throttle,
+        deepClone,
+        isEqual,
+        generateRandomId,
+        formatTime,
+        formatDate,
+        CookieManager
+    };
+}
+
+// 전역 네임스페이스 오염 방지를 위한 즉시 실행 함수로 래핑
+(function() {
+    'use strict';
+    
+    // 앱 전체 설정
+    const APP_CONFIG = {
+        version: '1.0.0',
+        apiTimeout: 5000,
+        mapRefreshInterval: 30000,
+        timetableUpdateInterval: 60000,
+        debounceDelay: 300,
+        throttleDelay: 100
+    };
+    
+    // 설정 접근 함수
+    window.getAppConfig = function(key) {
+        return key ? APP_CONFIG[key] : APP_CONFIG;
+    };
+    
+    logInfo(`앱 초기화 완료 - 버전 ${APP_CONFIG.version}`);
+})();
