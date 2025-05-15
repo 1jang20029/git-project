@@ -1,4 +1,3 @@
-
 // 전역 변수
 let currentRoute = 1;
 let gpsConnected = true;
@@ -8,23 +7,23 @@ let updateInterval;
 // GPS 위성 추적 시스템 클래스
 class SatelliteShuttleTracker {
     constructor() {
-        // 실제 연성대학교 셔틀버스 운행시간표
+        // 실제 연성대학교 셔틀버스 운행시간표 (노션 기반)
         this.schedules = {
-            1: { // 노선 1 (안양역)
+            1: { // 노선 1 (인천 남동구, 경기도 시흥시, 신천동)
                 운행구간: [
                     { 시간대: "오전", 출차: "08:30", 막차: "10:50", 배차간격: 6 },
                     { 시간대: "낮", 출차: "12:00", 막차: "13:20", 배차간격: 10 },
                     { 시간대: "오후", 출차: "16:55", 막차: "17:45", 배차간격: [5, 10, 15] }
                 ]
             },
-            2: { // 노선 2 (평촌역) - 동일한 시간표 가정
+            2: { // 노선 2 (경기도 시흥시, 시화지역, 장현지구, 시흥농곡지역)
                 운행구간: [
                     { 시간대: "오전", 출차: "08:30", 막차: "10:50", 배차간격: 6 },
                     { 시간대: "낮", 출차: "12:00", 막차: "13:20", 배차간격: 10 },
                     { 시간대: "오후", 출차: "16:55", 막차: "17:45", 배차간격: [5, 10, 15] }
                 ]
             },
-            3: { // 노선 3 (인덕원) - 동일한 시간표 가정
+            3: { // 노선 3 (서울 목동)
                 운행구간: [
                     { 시간대: "오전", 출차: "08:30", 막차: "10:50", 배차간격: 6 },
                     { 시간대: "낮", 출차: "12:00", 막차: "13:20", 배차간격: 10 },
@@ -35,7 +34,7 @@ class SatelliteShuttleTracker {
         
         this.busTrackers = {
             1: { 
-                id: 'BUS-KR-YS-001', 
+                id: 'BUS-YS-Route1', 
                 lat: 37.39661, 
                 lng: 126.90772, 
                 lastUpdate: Date.now(),
@@ -45,7 +44,7 @@ class SatelliteShuttleTracker {
                 운행중: false
             },
             2: { 
-                id: 'BUS-KR-YS-002', 
+                id: 'BUS-YS-Route2', 
                 lat: 37.38945, 
                 lng: 126.95123, 
                 lastUpdate: Date.now(),
@@ -55,7 +54,7 @@ class SatelliteShuttleTracker {
                 운행중: false
             },
             3: { 
-                id: 'BUS-KR-YS-003', 
+                id: 'BUS-YS-Route3', 
                 lat: 37.40234, 
                 lng: 126.91456, 
                 lastUpdate: Date.now(),
@@ -66,24 +65,34 @@ class SatelliteShuttleTracker {
             }
         };
         
+        // 실제 노선별 정류장 (노션 페이지 기반)
         this.routeStops = {
-            1: [
-                { name: '안양역 광장', lat: 37.4013, lng: 126.9217, address: '경기도 안양시 동안구 호계동' },
-                { name: '중앙공원', lat: 37.3954, lng: 126.9189, address: '경기도 안양시 동안구 비산동' },
-                { name: '범계역 3번출구', lat: 37.3890, lng: 126.9134, address: '경기도 안양시 동안구 범계동' },
-                { name: '연성대학교', lat: 37.3966, lng: 126.9077, address: '경기도 안양시 동안구 전동' }
+            1: [ // 노선 1 (인천 남동구, 경기도 시흥시, 신천동)
+                { name: '모래내시장역', time: '8:00', lat: 37.4018, lng: 126.6990, address: '인천광역시 남동구 구월동' },
+                { name: '만수역', time: '8:03', lat: 37.4052, lng: 126.6772, address: '인천광역시 남동구 만수동' },
+                { name: '남동구청역', time: '8:10', lat: 37.3890, lng: 126.6567, address: '인천광역시 남동구 구월동' },
+                { name: '신천역(시흥)', time: '8:22', lat: 37.3445, lng: 126.7123, address: '경기도 시흥시 신천동' },
+                { name: '안양역(경유)', time: '9:05', lat: 37.4013, lng: 126.9217, address: '경기도 안양시 동안구 호계동' },
+                { name: '연성대학교', time: '9:15', lat: 37.3966, lng: 126.9077, address: '경기도 안양시 동안구 전동' }
             ],
-            2: [
-                { name: '평촌역', lat: 37.3891, lng: 126.9513, address: '경기도 안양시 동안구 흔달군' },
-                { name: '범계역', lat: 37.3890, lng: 126.9134, address: '경기도 안양시 동안구 범계동' },
-                { name: '시흥시청역', lat: 37.3645, lng: 126.9293, address: '경기도 시흥시 시흥동' },
-                { name: '연성대학교', lat: 37.3966, lng: 126.9077, address: '경기도 안양시 동안구 전동' }
+            2: [ // 노선 2 (경기도 시흥시, 시화지역, 장현지구, 시흥농곡지역)
+                { name: '이마트', time: '8:00', lat: 37.3834, lng: 126.8012, address: '경기도 시흥시 정왕동' },
+                { name: '정왕역', time: '8:04', lat: 37.3739, lng: 126.7345, address: '경기도 시흥시 정왕동' },
+                { name: '장곡고교', time: '8:13', lat: 37.3456, lng: 126.7890, address: '경기도 시흥시 장곡동' },
+                { name: '장곡중학교', time: '8:18', lat: 37.3523, lng: 126.7934, address: '경기도 시흥시 장곡동' },
+                { name: '시흥농곡역', time: '8:25', lat: 37.3612, lng: 126.8123, address: '경기도 시흥시 하상동' },
+                { name: '시흥시청역', time: '8:28', lat: 37.3645, lng: 126.8293, address: '경기도 시흥시 시흥동' },
+                { name: '동귀소입구', time: '8:31', lat: 37.3434, lng: 126.8456, address: '경기도 시흥시 동귀동' },
+                { name: '안양역(경유)', time: '9:05', lat: 37.4013, lng: 126.9217, address: '경기도 안양시 동안구 호계동' },
+                { name: '연성대학교', time: '9:15', lat: 37.3966, lng: 126.9077, address: '경기도 안양시 동안구 전동' }
             ],
-            3: [
-                { name: '인덕원역', lat: 37.3794, lng: 126.9751, address: '경기도 안양시 동안구 인덕원동' },
-                { name: '성원아파트', lat: 37.3856, lng: 126.9456, address: '경기도 안양시 동안구 평안동' },
-                { name: '과천시청', lat: 37.4023, lng: 126.9145, address: '경기도 과천시 중앙동' },
-                { name: '연성대학교', lat: 37.3966, lng: 126.9077, address: '경기도 안양시 동안구 전동' }
+            3: [ // 노선 3 (서울 목동)
+                { name: '서울남부법원', time: '8:00', lat: 37.5456, lng: 126.8734, address: '서울특별시 양천구 목동' },
+                { name: '진명여고', time: '8:02', lat: 37.5389, lng: 126.8689, address: '서울특별시 양천구 목동' },
+                { name: '목동역', time: '8:05', lat: 37.5267, lng: 126.8745, address: '서울특별시 양천구 목동' },
+                { name: '오목교역', time: '8:10', lat: 37.5234, lng: 126.8612, address: '서울특별시 양천구 목동' },
+                { name: '안양역(경유)', time: '9:05', lat: 37.4013, lng: 126.9217, address: '경기도 안양시 동안구 호계동' },
+                { name: '연성대학교', time: '9:15', lat: 37.3966, lng: 126.9077, address: '경기도 안양시 동안구 전동' }
             ]
         };
         
@@ -233,7 +242,7 @@ class SatelliteShuttleTracker {
             const stopsWithStatus = routeStops.map((stop, index) => ({
                 ...stop,
                 status: 'inactive',
-                arrivalTime: '--:--',
+                arrivalTime: stop.time || '--:--',
                 arrivalInfo: '미운행',
                 gpsData: null
             }));
@@ -264,7 +273,7 @@ class SatelliteShuttleTracker {
             );
             
             let status = 'upcoming';
-            let arrivalTime = '예정';
+            let arrivalTime = stop.time || '예정';
             let arrivalInfo = '도착 예정';
             
             if (currentStop && stop.name === currentStop.name) {
@@ -285,8 +294,14 @@ class SatelliteShuttleTracker {
                 const safeSpeed = tracker.speed || 30;
                 const estimatedMinutes = Math.round((distanceToCurrent * 60) / safeSpeed);
                 arrivalInfo = `${estimatedMinutes}분 후 도착 예정`;
-                arrivalTime = new Date(Date.now() + estimatedMinutes * 60000)
-                    .toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                
+                // 기본 시간표 시간 사용
+                if (stop.time) {
+                    arrivalTime = stop.time;
+                } else {
+                    arrivalTime = new Date(Date.now() + estimatedMinutes * 60000)
+                        .toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                }
             }
             
             return {
@@ -491,7 +506,10 @@ function updateBusRoute(busData) {
                 <p>셔틀버스가 운행하지 않는 시간입니다.</p>
                 ${nextOperatingText}
                 <small style="display: block; margin-top: 10px; color: #666;">
-                    운행시간: 오전 6분간격, 낮 10분간격, 오후 5분/10분/15분간격
+                    <strong>운행시간:</strong><br>
+                    • 오전 6분간격 (08:30~10:50)<br>
+                    • 낮 10분간격 (12:00~13:20)<br>
+                    • 오후 5분/10분/15분간격 (16:55~17:45)
                 </small>
             `;
             
@@ -514,9 +532,10 @@ function updateBusRoute(busData) {
             stopElement.style.animationDelay = `${index * 0.1}s`;
             
             // 안전한 기본값 처리
-            const arrivalTime = stop.arrivalTime || '--:--';
+            const arrivalTime = stop.arrivalTime || stop.time || '--:--';
             const arrivalInfo = stop.arrivalInfo || '정보 없음';
             const status = stop.status || 'upcoming';
+            const address = stop.address || '';
             
             stopElement.innerHTML = `
                 <div class="stop-marker ${status}"></div>
@@ -525,6 +544,7 @@ function updateBusRoute(busData) {
                     <div class="stop-name">${stop.name}</div>
                     <div class="stop-time">${arrivalTime}</div>
                     <div class="arrival-info ${status}">${arrivalInfo}</div>
+                    ${address ? `<div style="font-size: 11px; color: #999; margin-top: 4px;">${address}</div>` : ''}
                     ${stop.gpsData ? `
                         <div class="gps-info">
                             <div class="gps-coordinates">
@@ -575,7 +595,7 @@ function showGPSModal(busData) {
         <div style="margin-bottom: 15px;">
             <strong>🚌 버스 ID:</strong> ${busData.busId}<br>
             <strong>📍 현재 위치:</strong> ${currentStop.name}<br>
-            <strong>📍 주소:</strong> ${currentStop.address}
+            <strong>📍 주소:</strong> ${currentStop.address || '정보 없음'}
         </div>
         <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
             <strong>🛰️ GPS 정보:</strong><br>
@@ -588,7 +608,8 @@ function showGPSModal(busData) {
         </div>
         <div style="font-size: 12px; color: #666;">
             * GPS 위치는 위성 신호를 통해 실시간으로 추적됩니다.<br>
-            * 정확도는 날씨, 건물 등 주변 환경에 따라 달라질 수 있습니다.
+            * 정확도는 날씨, 건물 등 주변 환경에 따라 달라질 수 있습니다.<br>
+            * 운행시간: 오전 6분, 낮 10분, 오후 5분/10분/15분 간격
         </div>
     `;
     
