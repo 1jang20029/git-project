@@ -31,10 +31,16 @@
                     <div class="widget-checkbox">✓</div>
                 </div>
                 <div class="widget-item selected" onclick="toggleWidget(this)">
+                    <div class="widget-icon">📢</div>
+                    <div class="widget-name">공지사항</div>
+                    <div class="widget-description">주요 공지 모아보기</div>
+                    <div class="widget-checkbox">✓</div>
+                </div>
+                <div class="widget-item" onclick="toggleWidget(this)">
                     <div class="widget-icon">🚌</div>
                     <div class="widget-name">셔틀버스</div>
                     <div class="widget-description">셔틀 시간표</div>
-                    <div class="widget-checkbox">✓</div>
+                    <div class="widget-checkbox"></div>
                 </div>
                 <div class="widget-item" onclick="toggleWidget(this)">
                     <div class="widget-icon">🎭</div>
@@ -46,12 +52,6 @@
                     <div class="widget-icon">📝</div>
                     <div class="widget-name">강의평가</div>
                     <div class="widget-description">인기 강의 정보</div>
-                    <div class="widget-checkbox"></div>
-                </div>
-                <div class="widget-item" onclick="toggleWidget(this)">
-                    <div class="widget-icon">📢</div>
-                    <div class="widget-name">공지사항</div>
-                    <div class="widget-description">주요 공지 모아보기</div>
                     <div class="widget-checkbox"></div>
                 </div>
                 <div class="widget-item" onclick="toggleWidget(this)">
@@ -120,15 +120,6 @@
                     <div class="drag-handle">⋮⋮</div>
                 </div>
                 <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-6">
-                    <div class="menu-icon">🍽️</div>
-                    <div class="menu-info">
-                        <div class="menu-name">학식</div>
-                        <div class="menu-status">비활성화됨</div>
-                    </div>
-                    <div class="menu-toggle" onclick="toggleMenu(this)"></div>
-                    <div class="drag-handle">⋮⋮</div>
-                </div>
-                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-7">
                     <div class="menu-icon">🚌</div>
                     <div class="menu-info">
                         <div class="menu-name">셔틀버스</div>
@@ -137,10 +128,19 @@
                     <div class="menu-toggle" onclick="toggleMenu(this)"></div>
                     <div class="drag-handle">⋮⋮</div>
                 </div>
-                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-8">
+                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-7">
                     <div class="menu-icon">📝</div>
                     <div class="menu-info">
                         <div class="menu-name">강의평가</div>
+                        <div class="menu-status">비활성화됨</div>
+                    </div>
+                    <div class="menu-toggle" onclick="toggleMenu(this)"></div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="menu-item clickable disabled" draggable="true" ondragstart="drag(event)" id="menu-8">
+                    <div class="menu-icon">🏆</div>
+                    <div class="menu-info">
+                        <div class="menu-name">취업정보</div>
                         <div class="menu-status">비활성화됨</div>
                     </div>
                     <div class="menu-toggle" onclick="toggleMenu(this)"></div>
