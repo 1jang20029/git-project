@@ -1414,15 +1414,75 @@ header {
 
 /* 반응형 디자인 개선 */
 @media screen and (max-width: 480px) {
-    #profile-login-required .profile-image,
-    #profile-logged-in .profile-image {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
+    .route-select-btn {
+        min-width: 70px;
+        padding: 6px 4px;
     }
     
-    #profile-login-required .profile-name,
-    #profile-logged-in .profile-name {
-        font-size: 16px;
+    .route-select-btn span {
+        font-size: 12px;
+    }
+    
+    .route-select-btn small {
+        font-size: 9px;
     }
 }
+
+
+.shuttle-route-selector {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.route-select-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 8px 6px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.route-select-btn span {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+.route-select-btn small {
+    font-size: 10px;
+    color: #666;
+    text-align: center;
+    line-height: 1.2;
+}
+
+
+.route-select-btn.active {
+    background-color: #c62917;
+    border-color: #c62917;
+    color: white;
+}
+
+
+.route-select-btn.active span,
+.route-select-btn.active small {
+    color: white;
+}
+
+
+.route-select-btn:hover:not(.active) {
+    background-color: #f0f0f0;
+    border-color: #999;
+}
+
+
