@@ -1253,266 +1253,16 @@ console.log('날씨 정보 업데이트 완료:', { 온도: temperature, 날씨:
 
 // 기본 날씨 정보 표시 (API 호출 실패 시)
 function displayDefaultWeather() {
-    console.log('Api 호출 실패하였습니다.');
+const weatherTempElement = document.querySelector('.weather-temp');
+const weatherDescElement = document.querySelector('.weather-desc');
+const weatherIconElement = document.querySelector('.weather-icon');
+
+if (weatherTempElement) weatherTempElement.textContent = '23°C';
+if (weatherDescElement) weatherDescElement.textContent = '맑음, 안양시';
+if (weatherIconElement) weatherIconElement.textContent = '☀️';
+
+console.log('기본 날씨 정보로 표시됨');
 }
-
-
-// 계절과 시간을 고려한 현실적인 기본값
-function displayRealisticDefaultWeather() {
-    const now = new Date();
-    const hour = now.getHours();
-    const month = now.getMonth() + 1;
-    
-    let defaultTemp = 18; // 현재 안양시 기온 기준
-    let defaultDesc = '흐림';
-    let defaultIcon = '☁️';
-    
-    // 계절별 조정
-    if (month >= 12 || month <= 2) {
-        defaultTemp = Math.random() > 0.5 ? 2 : 5; // 겨울
-        defaultIcon = '❄️';
-        defaultDesc = '추움';
-    } else if (month >= 3 && month <= 5) {
-        defaultTemp = Math.random() > 0.5 ? 15 : 18; // 봄 (현재)
-        defaultIcon = '🌸';
-        defaultDesc = '포근함';
-    } else if (month >= 6 && month <= 8) {
-        defaultTemp = Math.random() > 0.5 ? 28 : 32; // 여름
-        defaultIcon = '☀️';
-        defaultDesc = '더움';
-    } else {
-        defaultTemp = Math.random() > 0.5 ? 15 : 20; // 가을
-        defaultIcon = '🍂';
-        defaultDesc = '선선함';
-    }
-    
-    // 낮/밤 조정
-    if (hour >= 22 || hour <= 6) {
-        defaultTemp -= 3;
-    }
-    
-    const weatherTempElement = document.querySelector('.weather-temp');
-    const weatherDescElement = document.querySelector('.weather-desc');
-    const weatherIconElement = document.querySelector('.weather-icon');
-    
-    if (weatherTempElement) weatherTempElement.textContent = `${defaultTemp}°C`;
-    if (weatherDescElement) weatherDescElement.textContent = `${defaultDesc}, 안양시`;
-    if (weatherIconElement) weatherIconElement.textContent = defaultIcon;
-    
-    console.log('현실적인 기본 날씨 정보 적용:', { temperature: defaultTemp, description: defaultDesc });
-}
-
-
-
-// OpenWeatherMap API를 사용한 실제 날씨 정보 가져오기
-const OPENWEATHER_API_KEY = '0402b01b5a5122098731d7504f0da98c';
-
-
-// OpenWeatherMap API 사용 (더 정확한 날씨)
-async function getWeatherDataOpenMeteo() {
-    const lat = 37.3943;
-    const lon = 126.9568;
-    
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=Asia/Seoul`;
-    
-    try {
-        console.log('Open-Meteo API 호출 (백업)');
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`API 오류: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Open-Meteo 데이터:', data);
-        
-        const currentWeather = data.current_weather;
-        const temperature = Math.round(currentWeather.temperature);
-        const weatherCode = currentWeather.weathercode;
-        
-        // WMO 날씨 코드를 아이콘과 설명으로 변환
-        const { icon, description } = getWeatherFromWMOCode(weatherCode);
-        
-        updateWeatherUI(temperature, description, icon);
-        
-    } catch (error) {
-        console.error('Open-Meteo API 오류:', error);
-        displayRealisticDefaultWeather();
-    }
-}
-
-
-
-
-// WMO 날씨 코드 변환
-function getWeatherFromWMOCode(code) {
-    const weatherMapping = {
-        0: { icon: '☀️', description: '맑음' },
-        1: { icon: '🌤️', description: '대체로 맑음' },
-        2: { icon: '⛅', description: '부분적으로 흐림' },
-        3: { icon: '☁️', description: '흐림' },
-        45: { icon: '🌫️', description: '안개' },
-        48: { icon: '🌫️', description: '서리 안개' },
-        51: { icon: '🌦️', description: '가벼운 이슬비' },
-        53: { icon: '🌦️', description: '이슬비' },
-        55: { icon: '🌧️', description: '짙은 이슬비' },
-        61: { icon: '🌧️', description: '가벼운 비' },
-        63: { icon: '🌧️', description: '비' },
-        65: { icon: '🌧️', description: '강한 비' },
-        71: { icon: '❄️', description: '가벼운 눈' },
-        73: { icon: '❄️', description: '눈' },
-        75: { icon: '❄️', description: '강한 눈' },
-        80: { icon: '🌦️', description: '가벼운 소나기' },
-        81: { icon: '🌦️', description: '소나기' },
-        82: { icon: '🌧️', description: '강한 소나기' },
-        85: { icon: '🌨️', description: '가벼운 눈 소나기' },
-        86: { icon: '❄️', description: '강한 눈 소나기' },
-        95: { icon: '⛈️', description: '천둥번개' },
-        96: { icon: '⛈️', description: '가벼운 우박을 동반한 천둥번개' },
-        99: { icon: '⛈️', description: '강한 우박을 동반한 천둥번개' }
-    };
-    
-    return weatherMapping[code] || { icon: '🌤️', description: '날씨 정보 없음' };
-}
-
-
-
-// OpenWeatherMap API 호출
-async function getWeatherDataOpenWeather() {
-    const lat = 37.3943;
-    const lon = 126.9568;
-    
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=kr`;
-    
-    try {
-        console.log('OpenWeatherMap API 호출');
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`OpenWeatherMap API 오류: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('OpenWeatherMap 데이터:', data);
-        
-        const temperature = Math.round(data.main.temp);
-        const description = data.weather[0].description;
-        const weatherId = data.weather[0].id;
-        
-        // OpenWeatherMap 날씨 ID를 아이콘으로 변환
-        const icon = getOpenWeatherIcon(weatherId);
-        
-        updateWeatherUI(temperature, description, icon);
-        
-    } catch (error) {
-        console.error('OpenWeatherMap API 오류:', error);
-        console.log('Open-Meteo API로 대체 시도');
-        await getWeatherDataOpenMeteo();
-    }
-}
-
-
-
-
-// OpenWeatherMap 날씨 ID를 아이콘으로 변환
-function getOpenWeatherIcon(weatherId) {
-    if (weatherId >= 200 && weatherId < 300) return '⛈️';  // 천둥번개
-    if (weatherId >= 300 && weatherId < 400) return '🌦️';  // 이슬비
-    if (weatherId >= 500 && weatherId < 600) return '🌧️';  // 비
-    if (weatherId >= 600 && weatherId < 700) return '❄️';  // 눈
-    if (weatherId >= 700 && weatherId < 800) return '🌫️';  // 안개
-    if (weatherId === 800) return '☀️';                    // 맑음
-    if (weatherId > 800) return '☁️';                      // 구름
-    return '🌤️';  // 기본값
-}
-
-
-
-// 통합 UI 업데이트 함수
-function updateWeatherUI(temperature, description, icon) {
-    const weatherTempElement = document.querySelector('.weather-temp');
-    const weatherDescElement = document.querySelector('.weather-desc');
-    const weatherIconElement = document.querySelector('.weather-icon');
-    
-    if (weatherTempElement) weatherTempElement.textContent = `${temperature}°C`;
-    if (weatherDescElement) weatherDescElement.textContent = `${description}, 안양시`;
-    if (weatherIconElement) weatherIconElement.textContent = icon;
-    
-    console.log('날씨 정보 업데이트 완료:', { 온도: temperature, 날씨: description, 아이콘: icon });
-}
-
-
-
-// 현실적인 기본값 표시 (API 실패 시)
-function displayRealisticDefaultWeather() {
-    const now = new Date();
-    const hour = now.getHours();
-    const month = now.getMonth() + 1;
-    
-    let defaultTemp = 18; // 현재 안양시 기온 기준
-    let defaultDesc = '흐림';
-    let defaultIcon = '☁️';
-    
-    // 계절별 조정
-    if (month >= 12 || month <= 2) {
-        defaultTemp = Math.random() > 0.5 ? 2 : 5; // 겨울
-        defaultIcon = '❄️';
-        defaultDesc = '추움';
-    } else if (month >= 3 && month <= 5) {
-        defaultTemp = Math.random() > 0.5 ? 15 : 18; // 봄 (현재)
-        defaultIcon = '🌸';
-        defaultDesc = '포근함';
-    } else if (month >= 6 && month <= 8) {
-        defaultTemp = Math.random() > 0.5 ? 28 : 32; // 여름
-        defaultIcon = '☀️';
-        defaultDesc = '더움';
-    } else {
-        defaultTemp = Math.random() > 0.5 ? 15 : 20; // 가을
-        defaultIcon = '🍂';
-        defaultDesc = '선선함';
-    }
-    
-    // 낮/밤 조정
-    if (hour >= 22 || hour <= 6) {
-        defaultTemp -= 3;
-    }
-    
-    updateWeatherUI(defaultTemp, defaultDesc, defaultIcon);
-    console.log('기본 날씨 정보 표시:', { temperature: defaultTemp, description: defaultDesc });
-}
-
-
-
-// 메인 날씨 업데이트 함수
-async function updateWeatherInfo() {
-    console.log('날씨 정보 업데이트 시작');
-    
-    // 1순위: OpenWeatherMap (실제 API 키 사용)
-    try {
-        await getWeatherDataOpenWeather();
-        return;
-    } catch (error) {
-        console.log('OpenWeatherMap 실패, Open-Meteo로 대체');
-    }
-    
-    // 2순위: Open-Meteo (API 키 불필요)
-    try {
-        await getWeatherDataOpenMeteo();
-        return;
-    } catch (error) {
-        console.log('모든 API 실패, 기본값 사용');
-    }
-    
-    // 3순위: 현실적인 기본값
-    displayRealisticDefaultWeather();
-}
-
-
-
-
-
-
-
 
 // 위경도 좌표를 기상청 격자 좌표로 변환하는 함수
 function convertToGridCoord(lat, lon) {
@@ -1565,8 +1315,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 초기 셔틀버스 정보 업데이트
     updateShuttleBusInfo();
     
-    // 30분마다 날씨 정보 업데이트
-    setInterval(updateWeatherInfo, 30 * 60 * 1000);
+    // 주기적 업데이트 (30초마다)
+    setInterval(updateShuttleBusInfo, 30000);
     
     // 기존의 다른 초기화 코드들도 여기에 유지...
     setTimeout(updateAllProfileImages, 100);
@@ -1588,14 +1338,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 검색 기능 초기화
     initSearchFunctionality();
-
-    setTimeout(updateAllProfileImages, 100);
-    initCategoryFilter();
-    checkLoginStatus();
-    loadWidgetSettings();
-    initFacilityTab();
-    initNaverMapWithFix();
-    initSearchFunctionality();
     
     // pageshow 이벤트 리스너 추가
     window.addEventListener('pageshow', function(event) {
@@ -1606,32 +1348,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-
-function refreshWeather() {
-    const weatherTempElement = document.querySelector('.weather-temp');
-    if (weatherTempElement) {
-        weatherTempElement.textContent = '로딩 중...';
-    }
-    updateWeatherInfo();
-}
-
-
-
-// 날씨 정보 테스트 함수 (개발용)
-function testWeatherAPI() {
-    console.log('=== 날씨 API 테스트 ===');
-    console.log('API 키:', OPENWEATHER_API_KEY);
-    console.log('OpenWeatherMap 테스트 시작...');
-    
-    getWeatherDataOpenWeather().catch(() => {
-        console.log('Open-Meteo 테스트 시작...');
-        getWeatherDataOpenMeteo().catch(() => {
-            console.log('기본값 테스트...');
-            displayRealisticDefaultWeather();
-        });
-    });
-}
 
 // 페이지네이션 컨트롤 업데이트
 function updatePaginationControls() {
