@@ -4088,15 +4088,11 @@ function handleWidgetClick(widgetName) {
         case '셔틀버스':
             goToPage('shuttle');
             break;
-        case '학식 메뉴':
-        case '학식':
-            goToPage('cafeteria');
-            break;
         case '학사일정':
             goToPage('academic-calendar');
             break;
-        case '도서관':
-            goToPage('library');
+        case '동아리 활동':
+            goToPage('club-activities');
             break;
         case '내 시간표':
             navigateToProfilePage('timetable');
@@ -4108,6 +4104,10 @@ function handleWidgetClick(widgetName) {
                 noticeSection.scrollIntoView({ behavior: 'smooth' });
             }
             break;
+        case '취업/채용':
+            goToPage('job-info');
+            break;
+        // 학식 메뉴 케이스 제거
         default:
             alert(`${widgetName} 기능은 준비 중입니다.`);
     }

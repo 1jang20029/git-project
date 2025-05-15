@@ -167,11 +167,11 @@ function saveSettings() {
 // 설정 초기화
 function resetSettings() {
     if (confirm('모든 설정을 기본값으로 초기화하시겠습니까?')) {
-        // 기본 위젯 목록 (도서관 대신 동아리 활동)
+        // 기본 위젯 목록 (학식 제거, 셔틀버스 추가)
         const defaultSelectedWidgets = [
             '강의실 찾기',
             '학사일정', 
-            '동아리 활동'
+            '셔틀버스'
         ];
         
         // 모든 위젯 초기화
