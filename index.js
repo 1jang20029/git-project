@@ -423,101 +423,325 @@ function selectShuttleRoute(routeId) {
         selectedTab.classList.add('active');
     }
     
-    // 셔틀버스 정보 업데이트
-    updateShuttleBusInfo();
+    // 선택된 노선에 특화된 정보 업데이트
+    updateShuttleBusInfoForRoute(routeId);
     
     console.log('노선', routeId, '선택 완료');
 }
 
-// 노선 선택 함수
-function updateShuttleBusInfo() {
-    // 선택된 노선의 정보만 가져오기
-    const routeSchedule = shuttleBusTimeTable.schedules[selectedShuttleRoute];
-    const nextBusInfo = shuttleBusTimeTable.getNextBusInfo();
-    const upcomingBuses = shuttleBusTimeTable.getUpcomingBuses(3);
+// 특정 노선의 셔틀버스 정보 업데이트
+function updateShuttleBusInfoForRoute(routeId) {
+    const schedule = shuttleBusTimeTable.schedules[routeId];
+    if (!schedule) return;
     
-    // 선택된 노선의 다음 버스만 필터링
-    const routeNextBus = nextBusInfo && nextBusInfo.route.routeId === selectedShuttleRoute ? nextBusInfo : null;
-    const routeUpcomingBuses = upcomingBuses.filter(bus => bus.routeId === selectedShuttleRoute);
+    // 운행 상태 확인
+    const isOperating = shuttleBusTimeTable.isOperatingTime(routeId);
+    const nextOperating = shuttleBusTimeTable.getNextOperatingTime(routeId);
+    const currentPeriod = shuttleBusTimeTable.getCurrentPeriodInfo(routeId);
+    
+    // 상태 배지 업데이트
+    const statusElement = document.querySelector('.status-badge');
+    if (statusElement) {
+        if (isOperating) {
+            statusElement.textContent = '운행 중';
+            statusElement.className = 'status-badge running';
+        } else {
+            statusElement.textContent = '운행 종료';
+            statusElement.className = 'status-badge stopped';
+        }
+    }
     
     // 다음 셔틀버스 정보 업데이트
     const shuttleTimeEl = document.querySelector('.shuttle-time');
     const shuttleDescEl = document.querySelector('.shuttle-desc');
     
-    if (routeNextBus) {
-        if (shuttleTimeEl) {
-            shuttleTimeEl.textContent = `${routeNextBus.minutesUntil}분 후 출발`;
-        }
-        if (shuttleDescEl) {
-            shuttleDescEl.textContent = `${routeNextBus.description} (${routeNextBus.time})`;
+    if (isOperating && currentPeriod) {
+        // 현재 운행 중일 때
+        const nextBusTimes = getNextBusTimesForRoute(routeId);
+        
+        if (nextBusTimes.length > 0) {
+            const nextBus = nextBusTimes[0];
+            shuttleTimeEl.textContent = `${nextBus.minutesUntil}분 후 출발`;
+            shuttleDescEl.textContent = `${schedule.name} (${nextBus.time})`;
+        } else {
+            shuttleTimeEl.textContent = '운행 종료';
+            shuttleDescEl.textContent = `${schedule.name} - 오늘 운행 완료`;
         }
     } else {
-        // 현재 노선에 운행 중인 버스가 없을 때
-        const isOperating = shuttleBusTimeTable.isOperatingTime(selectedShuttleRoute);
-        const nextOperating = shuttleBusTimeTable.getNextOperatingTime(selectedShuttleRoute);
-        
-        if (shuttleTimeEl) {
-            if (isOperating) {
-                shuttleTimeEl.textContent = '잠시 후 출발';
-            } else if (nextOperating && nextOperating.minutesUntil !== null) {
-                shuttleTimeEl.textContent = `${nextOperating.minutesUntil}분 후 운행 시작`;
-            } else {
-                shuttleTimeEl.textContent = '운행 시간 확인';
-            }
-        }
-        if (shuttleDescEl) {
-            if (routeSchedule) {
-                const periods = routeSchedule.운행구간;
-                const timeInfo = periods.map(p => `${p.출차}~${p.막차}`).join(', ');
-                shuttleDescEl.textContent = `${routeSchedule.name} (${timeInfo})`;
-            } else {
-                shuttleDescEl.textContent = '운행 정보를 확인할 수 없습니다';
-            }
+        // 운행 시간이 아닐 때
+        if (nextOperating && nextOperating.minutesUntil !== null) {
+            shuttleTimeEl.textContent = `${nextOperating.minutesUntil}분 후 운행 시작`;
+            shuttleDescEl.textContent = `${schedule.name} - ${nextOperating.period} ${nextOperating.time}`;
+        } else {
+            shuttleTimeEl.textContent = '운행 종료';
+            shuttleDescEl.textContent = `${schedule.name} - 내일 운행 예정`;
         }
     }
     
-    // 다음 버스 시간들 업데이트
+    // 다음 운행 시간들 업데이트 (곧 도착할 정류장 3개의 시간)
     const shuttleTimeItems = document.querySelectorAll('.shuttle-time-item');
+    const upcomingStops = getUpcomingStopsForRoute(routeId);
     
-    // 선택된 노선의 다음 3번의 운행시간 표시
-    if (routeUpcomingBuses.length > 0) {
-        routeUpcomingBuses.forEach((bus, index) => {
-            if (index < 3 && shuttleTimeItems[index]) {
-                const timeValueEl = shuttleTimeItems[index].querySelector('.time-value');
-                if (timeValueEl) {
-                    timeValueEl.textContent = bus.time;
-                }
-            }
-        });
-        
-        // 남은 슬롯은 기본 시간으로 채우기
-        for (let i = routeUpcomingBuses.length; i < 3; i++) {
-            if (shuttleTimeItems[i]) {
-                const timeValueEl = shuttleTimeItems[i].querySelector('.time-value');
-                if (timeValueEl && routeSchedule) {
-                    // 해당 노선의 다음 운행 시간 표시
-                    const nextOperating = shuttleBusTimeTable.getNextOperatingTime(selectedShuttleRoute);
-                    if (nextOperating) {
-                        timeValueEl.textContent = nextOperating.time;
-                    } else {
-                        timeValueEl.textContent = '--:--';
-                    }
-                }
+    upcomingStops.forEach((stop, index) => {
+        if (index < 3 && shuttleTimeItems[index]) {
+            const timeValueEl = shuttleTimeItems[index].querySelector('.time-value');
+            const timeLabelEl = shuttleTimeItems[index].querySelector('.time-label');
+            
+            if (timeValueEl && timeLabelEl) {
+                timeValueEl.textContent = stop.time;
+                timeLabelEl.textContent = stop.name;
             }
         }
-    } else {
-        // 운행 중인 버스가 없을 때 기본 운행시간 표시
-        const defaultTimes = routeSchedule ? 
-            routeSchedule.운행구간.map(p => p.출차) : ['--:--', '--:--', '--:--'];
-        
-        shuttleTimeItems.forEach((item, index) => {
-            const timeValueEl = item.querySelector('.time-value');
-            if (timeValueEl) {
-                timeValueEl.textContent = defaultTimes[index] || '--:--';
+    });
+    
+    // 남은 슬롯은 기본값으로 채우기
+    for (let i = upcomingStops.length; i < 3; i++) {
+        if (shuttleTimeItems[i]) {
+            const timeValueEl = shuttleTimeItems[i].querySelector('.time-value');
+            const timeLabelEl = shuttleTimeItems[i].querySelector('.time-label');
+            
+            if (timeValueEl && timeLabelEl) {
+                timeValueEl.textContent = '--:--';
+                timeLabelEl.textContent = '운행 종료';
             }
-        });
+        }
     }
 }
+
+
+// 특정 노선의 다음 버스 시간들 계산
+function getNextBusTimesForRoute(routeId) {
+    const currentPeriod = shuttleBusTimeTable.getCurrentPeriodInfo(routeId);
+    if (!currentPeriod) return [];
+    
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const periodStartTime = parseInt(currentPeriod.출차.replace(':', ''));
+    const periodEndTime = parseInt(currentPeriod.막차.replace(':', ''));
+    const periodStartMinutes = Math.floor(periodStartTime / 100) * 60 + (periodStartTime % 100);
+    const periodEndMinutes = Math.floor(periodEndTime / 100) * 60 + (periodEndTime % 100);
+    
+    const busTimes = [];
+    
+    // 배차간격에 따른 다음 운행시간 계산
+    if (Array.isArray(currentPeriod.배차간격)) {
+        // 오후 시간대 [5, 10, 15] 패턴
+        let nextTime = periodStartMinutes;
+        let patternIndex = 0;
+        
+        while (nextTime <= periodEndMinutes) {
+            if (nextTime >= currentTime) {
+                const hour = Math.floor(nextTime / 60);
+                const min = nextTime % 60;
+                busTimes.push({
+                    time: `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`,
+                    minutesUntil: nextTime - currentTime
+                });
+            }
+            if (busTimes.length >= 3) break;
+            nextTime += currentPeriod.배차간격[patternIndex];
+            patternIndex = (patternIndex + 1) % currentPeriod.배차간격.length;
+        }
+    } else {
+        // 일반 배차간격
+        let nextTime = periodStartMinutes;
+        while (nextTime <= periodEndMinutes) {
+            if (nextTime >= currentTime) {
+                const hour = Math.floor(nextTime / 60);
+                const min = nextTime % 60;
+                busTimes.push({
+                    time: `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`,
+                    minutesUntil: nextTime - currentTime
+                });
+            }
+            if (busTimes.length >= 3) break;
+            nextTime += currentPeriod.배차간격;
+        }
+    }
+    
+    return busTimes;
+}
+
+
+// 특정 노선의 곧 도착할 정류장 3개 계산
+function getUpcomingStopsForRoute(routeId) {
+    const routeStops = {
+        1: [ // 노선 1
+            { name: '모래내시장역', offsetMinutes: 0 },
+            { name: '만수역', offsetMinutes: 3 },
+            { name: '남동구청역', offsetMinutes: 10 },
+            { name: '신천역', offsetMinutes: 22 },
+            { name: '안양역', offsetMinutes: 35 },
+            { name: '연성대학교', offsetMinutes: 45 }
+        ],
+        2: [ // 노선 2
+            { name: '이마트', offsetMinutes: 0 },
+            { name: '정왕역', offsetMinutes: 4 },
+            { name: '장곡고교', offsetMinutes: 13 },
+            { name: '장곡중학교', offsetMinutes: 18 },
+            { name: '시흥농곡역', offsetMinutes: 25 },
+            { name: '시흥시청역', offsetMinutes: 28 },
+            { name: '동귀소입구', offsetMinutes: 31 },
+            { name: '안양역', offsetMinutes: 35 },
+            { name: '연성대학교', offsetMinutes: 45 }
+        ],
+        3: [ // 노선 3
+            { name: '서울남부법원', offsetMinutes: 0 },
+            { name: '진명여고', offsetMinutes: 2 },
+            { name: '목동역', offsetMinutes: 5 },
+            { name: '오목교역', offsetMinutes: 10 },
+            { name: '안양역', offsetMinutes: 35 },
+            { name: '연성대학교', offsetMinutes: 45 }
+        ]
+    };
+    
+    const stops = routeStops[routeId] || [];
+    const nextBusTimes = getNextBusTimesForRoute(routeId);
+    const upcomingStops = [];
+    
+    if (nextBusTimes.length > 0) {
+        const nextBus = nextBusTimes[0];
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        
+        // 다음 버스의 출발 시간을 분으로 변환
+        const [hour, min] = nextBus.time.split(':').map(Number);
+        const departureTime = hour * 60 + min;
+        
+        // 현재 시간 기준으로 곧 도착할 정류장들 찾기
+        const currentProgress = Math.max(0, currentTime - departureTime);
+        
+        for (const stop of stops) {
+            const arrivalTime = departureTime + stop.offsetMinutes;
+            if (arrivalTime > currentTime) {
+                const arrivalHour = Math.floor(arrivalTime / 60);
+                const arrivalMin = arrivalTime % 60;
+                upcomingStops.push({
+                    name: stop.name,
+                    time: `${arrivalHour.toString().padStart(2, '0')}:${arrivalMin.toString().padStart(2, '0')}`
+                });
+                if (upcomingStops.length >= 3) break;
+            }
+        }
+    }
+    
+    return upcomingStops;
+}
+
+
+
+
+// 노선 선택 함수
+function updateShuttleBusInfo() {
+    // 현재 선택된 노선의 정보 가져오기
+    const nextBusInfo = shuttleBusTimeTable.getNextBusInfo();
+    const routeSchedule = shuttleBusTimeTable.schedules[selectedShuttleRoute];
+    const isOperating = shuttleBusTimeTable.isOperatingTime(selectedShuttleRoute);
+    const nextOperating = shuttleBusTimeTable.getNextOperatingTime(selectedShuttleRoute);
+    const currentPeriod = shuttleBusTimeTable.getCurrentPeriodInfo(selectedShuttleRoute);
+    
+    // 상태 배지 업데이트
+    const statusElement = document.querySelector('.status-badge');
+    if (statusElement) {
+        if (isOperating) {
+            statusElement.textContent = '운행 중';
+            statusElement.className = 'status-badge running';
+        } else {
+            statusElement.textContent = '운행 종료';
+            statusElement.className = 'status-badge stopped';
+        }
+    }
+    
+    // 다음 셔틀버스 정보 업데이트
+    const shuttleTimeEl = document.querySelector('.shuttle-time');
+    const shuttleDescEl = document.querySelector('.shuttle-desc');
+    
+    if (isOperating && currentPeriod) {
+        // 현재 운행 중일 때
+        const nextBusTimes = getNextBusTimesForRoute(selectedShuttleRoute);
+        
+        if (nextBusTimes.length > 0) {
+            const nextBus = nextBusTimes[0];
+            shuttleTimeEl.textContent = `${nextBus.minutesUntil}분 후 출발`;
+            shuttleDescEl.textContent = `${routeSchedule.name} (${nextBus.time})`;
+        } else {
+            shuttleTimeEl.textContent = '운행 종료';
+            shuttleDescEl.textContent = `${routeSchedule.name} - 오늘 운행 완료`;
+        }
+    } else {
+        // 운행 시간이 아닐 때
+        if (nextOperating && nextOperating.minutesUntil !== null) {
+            shuttleTimeEl.textContent = `${nextOperating.minutesUntil}분 후 운행 시작`;
+            shuttleDescEl.textContent = `${routeSchedule.name} - ${nextOperating.period} ${nextOperating.time}`;
+        } else {
+            shuttleTimeEl.textContent = '운행 종료';
+            shuttleDescEl.textContent = `${routeSchedule.name} - 내일 운행 예정`;
+        }
+    }
+    
+    // 곧 도착할 정류장 3개의 시간 업데이트
+    const shuttleTimeItems = document.querySelectorAll('.shuttle-time-item');
+    const upcomingStops = getUpcomingStopsForRoute(selectedShuttleRoute);
+    
+    // 정류장별 시간 표시
+    upcomingStops.forEach((stop, index) => {
+        if (index < 3 && shuttleTimeItems[index]) {
+            const timeValueEl = shuttleTimeItems[index].querySelector('.time-value');
+            const timeLabelEl = shuttleTimeItems[index].querySelector('.time-label');
+            
+            if (timeValueEl && timeLabelEl) {
+                timeValueEl.textContent = stop.time;
+                timeLabelEl.textContent = stop.name;
+            }
+        }
+    });
+    
+    // 남은 슬롯은 기본값으로 채우기
+    for (let i = upcomingStops.length; i < 3; i++) {
+        if (shuttleTimeItems[i]) {
+            const timeValueEl = shuttleTimeItems[i].querySelector('.time-value');
+            const timeLabelEl = shuttleTimeItems[i].querySelector('.time-label');
+            
+            if (timeValueEl && timeLabelEl) {
+                timeValueEl.textContent = '--:--';
+                timeLabelEl.textContent = '운행 종료';
+            }
+        }
+    }
+    
+    // 운행 시간표 정보 업데이트
+    updateScheduleDisplay();
+}
+
+// 운행 시간표 표시 함수
+function updateScheduleDisplay() {
+    const routeSchedule = shuttleBusTimeTable.schedules[selectedShuttleRoute];
+    if (!routeSchedule) return;
+    
+    const scheduleContainer = document.querySelector('.shuttle-time-slots');
+    if (scheduleContainer) {
+        const scheduleHTML = routeSchedule.운행구간.map(period => {
+            let intervalText = '';
+            if (Array.isArray(period.배차간격)) {
+                intervalText = period.배차간격.join('/') + '분 간격';
+            } else {
+                intervalText = period.배차간격 + '분 간격';
+            }
+            
+            return `
+                <div class="time-slot">
+                    <div class="time-period">${period.시간대}</div>
+                    <div class="time-range">${period.출차}~${period.막차}</div>
+                    <div class="time-interval">${intervalText}</div>
+                </div>
+            `;
+        }).join('');
+        
+        scheduleContainer.innerHTML = scheduleHTML;
+    }
+}
+
+
 
 // BusTimeTable 클래스에 노선별 정보 조회 메서드 추가
 BusTimeTable.prototype.getRouteNextBusInfo = function(routeId) {
