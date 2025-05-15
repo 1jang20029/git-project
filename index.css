@@ -1460,7 +1460,7 @@ header {
 }
 
 /* 도서관 상태 카드 */
-.library-card {
+.club-activity-card {
     background-color: white;
     border-radius: 12px;
     border: 1px solid #eee;
@@ -1469,10 +1469,10 @@ header {
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.library-status {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+.club-activities {
+    margin-top: 12px;
+    display: grid;
+    gap: 12px;
 }
 
 .status-item {
@@ -1480,32 +1480,76 @@ header {
     text-align: center;
 }
 
-.status-label {
-    font-size: 12px;
-    color: #888;
+.club-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.club-item.recruiting {
+    border-left-color: #4caf50;
+    background-color: #f8fff8;
+}
+
+.club-item.event {
+    border-left-color: #ff9800;
+    background-color: #fff8f0;
+}
+
+.club-item.activity {
+    border-left-color: #2196f3;
+    background-color: #f0f8ff;
+}
+
+.club-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    width: 40px;
+    text-align: center;
+}
+
+.club-info {
+    flex: 1;
+}
+
+.club-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
     margin-bottom: 4px;
 }
 
-.status-value {
-    font-size: 16px;
+.club-description {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.club-status {
+    font-size: 12px;
     font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
 }
 
-.status-bar {
-    height: 4px;
-    background-color: #f0f0f0;
-    border-radius: 2px;
-    margin-top: 6px;
-    position: relative;
-    overflow: hidden;
+.club-item.recruiting .club-status {
+    background-color: #e8f5e9;
+    color: #2e7d32;
 }
 
-.status-fill {
-    height: 100%;
-    background-color: #c62917;
-    position: absolute;
-    left: 0;
-    top: 0;
+.club-item.event .club-status {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.club-item.activity .club-status {
+    background-color: #e3f2fd;
+    color: #1565c0;
 }
 
 /* 로그인 필요 상태 스타일 */
