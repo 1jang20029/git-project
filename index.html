@@ -105,67 +105,79 @@
                
                 <!-- 다음 셔틀버스 -->
                 <div class="shuttle-card">
-                   <!-- 셔틀버스 정보 카드 -->
-                    <div class="shuttle-card">
                     <div class="shuttle-header">
                         <div class="shuttle-title">다음 셔틀버스</div>
                         <div class="shuttle-icon">🚌</div>
                     </div>
                     
-                    <!-- 노선 선택 버튼 추가 -->
-                    <div class="shuttle-route-selector">
-                        <button class="route-select-btn active" onclick="selectShuttleRoute(1)" data-route="1">
-                            <span>노선 1</span>
-                            <small>인천 남동구, 시흥시</small>
+                    <!-- 노선 선택 탭 -->
+                    <div class="shuttle-route-tabs">
+                        <button class="route-tab active" onclick="selectShuttleRoute(1)" data-route="1">
+                            <span class="route-name">노선 1</span>
+                            <span class="route-desc">인천 남동구, 시흥시</span>
                         </button>
-                        <button class="route-select-btn" onclick="selectShuttleRoute(2)" data-route="2">
-                            <span>노선 2</span>
-                            <small>시화지역, 장현지구</small>
+                        <button class="route-tab" onclick="selectShuttleRoute(2)" data-route="2">
+                            <span class="route-name">노선 2</span>
+                            <span class="route-desc">시화지역, 장현지구</span>
                         </button>
-                        <button class="route-select-btn" onclick="selectShuttleRoute(3)" data-route="3">
-                            <span>노선 3</span>
-                            <small>서울 목동</small>
+                        <button class="route-tab" onclick="selectShuttleRoute(3)" data-route="3">
+                            <span class="route-name">노선 3</span>
+                            <span class="route-desc">서울 목동</span>
                         </button>
                     </div>
                     
-                    <div class="shuttle-next">
-                        <div class="shuttle-time">15분 후 출발</div>
-                        <div class="shuttle-desc">학교 → 안양역 경유 (14:30)</div>
-                    </div>
-                    <div class="shuttle-more-times">
-                        <div class="shuttle-time-item">
-                            <div class="time-label">다음 #1</div>
-                            <div class="time-value">15:00</div>
+                    <!-- 다음 버스 정보 -->
+                    <div class="shuttle-next-info">
+                        <div class="next-bus-main">
+                            <div class="shuttle-time">15분 후 출발</div>
+                            <div class="shuttle-desc">학교 → 안양역 경유 (14:30)</div>
                         </div>
-                        <div class="shuttle-time-item">
-                            <div class="time-label">다음 #2</div>
-                            <div class="time-value">15:30</div>
-                        </div>
-                        <div class="shuttle-time-item">
-                            <div class="time-label">다음 #3</div>
-                            <div class="time-value">16:00</div>
+                        <div class="shuttle-status">
+                            <span class="status-badge running">운행 중</span>
                         </div>
                     </div>
+                    
+                    <!-- 운행 시간표 -->
+                    <div class="shuttle-schedule">
+                        <div class="schedule-header">오늘의 운행 시간</div>
+                        <div class="shuttle-time-slots">
+                            <div class="time-slot">
+                                <div class="time-period">오전</div>
+                                <div class="time-range">08:30~10:50</div>
+                                <div class="time-interval">6분 간격</div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="time-period">점심</div>
+                                <div class="time-range">12:00~13:20</div>
+                                <div class="time-interval">10분 간격</div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="time-period">오후</div>
+                                <div class="time-range">16:55~17:45</div>
+                                <div class="time-interval">5분 간격</div>
+                            </div>
+                        </div>
                     </div>
-                   <div class="shuttle-next">
-                       <div class="shuttle-time">15분 후 출발</div>
-                       <div class="shuttle-desc">학교 → 안양역 (14:30)</div>
-                   </div>
-                   <div class="shuttle-more-times">
-                       <div class="shuttle-time-item">
-                           <div class="time-label">다음 #1</div>
-                           <div class="time-value">15:00</div>
-                       </div>
-                       <div class="shuttle-time-item">
-                           <div class="time-label">다음 #2</div>
-                           <div class="time-value">15:30</div>
-                       </div>
-                       <div class="shuttle-time-item">
-                           <div class="time-label">다음 #3</div>
-                           <div class="time-value">16:00</div>
-                       </div>
-                   </div>
-               </div>
+                    
+                    <!-- 다음 운행 시간들 -->
+                    <div class="shuttle-upcoming">
+                        <div class="upcoming-header">다음 운행 시간</div>
+                        <div class="shuttle-time-list">
+                            <div class="shuttle-time-item">
+                                <div class="time-value">15:00</div>
+                                <div class="time-label">5분 후</div>
+                            </div>
+                            <div class="shuttle-time-item">
+                                <div class="time-value">15:05</div>
+                                <div class="time-label">10분 후</div>
+                            </div>
+                            <div class="shuttle-time-item">
+                                <div class="time-value">15:10</div>
+                                <div class="time-label">15분 후</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                
                <!-- 학식 메뉴 -->
                <div class="cafeteria-card">
