@@ -489,6 +489,11 @@ function updateRouteDisplay(scheduleData) {
     }
 }
 
+// 홈으로 이동
+function goToHome() {
+    window.location.href = 'index.html';
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚌 연성대학교 셔틀버스 시간표 시스템 시작');
