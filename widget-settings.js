@@ -1,4 +1,3 @@
-
 // 페이지 로드 시 메뉴 아이템에 클릭 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', function() {
     setupMenuItemClickListeners();
@@ -168,9 +167,17 @@ function saveSettings() {
 // 설정 초기화
 function resetSettings() {
     if (confirm('모든 설정을 기본값으로 초기화하시겠습니까?')) {
-        // 기본 위젯으로 초기화 (처음 3개 선택)
-        document.querySelectorAll('.widget-item').forEach((widget, index) => {
-            if (index < 3) {
+        // 기본 위젯 목록 (도서관 대신 동아리 활동)
+        const defaultSelectedWidgets = [
+            '강의실 찾기',
+            '학사일정', 
+            '동아리 활동'
+        ];
+        
+        // 모든 위젯 초기화
+        document.querySelectorAll('.widget-item').forEach(widget => {
+            const widgetName = widget.querySelector('.widget-name').textContent;
+            if (defaultSelectedWidgets.includes(widgetName)) {
                 widget.classList.add('selected');
                 widget.querySelector('.widget-checkbox').textContent = '✓';
             } else {

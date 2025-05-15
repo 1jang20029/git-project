@@ -2860,7 +2860,7 @@ function goToPage(pageName) {
             break;
             
         case 'academic-calendar':
-        alert('학사일정 페이지로 이동합니다.');
+            alert('학사일정 페이지로 이동합니다.');
             break;
             
         case 'library':
@@ -2869,6 +2869,14 @@ function goToPage(pageName) {
             
         case 'notices':
             alert('전체 공지사항 페이지로 이동합니다.');
+            break;
+            
+        case 'club-activities':
+            alert('동아리 활동 페이지로 이동합니다.');
+            break;
+            
+        case 'job-info':
+            alert('취업/채용 정보 페이지로 이동합니다.');
             break;
             
         default:
