@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -35,48 +34,21 @@ body {
     font-weight: bold;
 }
 
-.satellite-status {
+.current-time {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     margin-top: 8px;
-    font-size: 12px;
+    font-size: 16px;
+    font-weight: bold;
 }
-
-.satellite-icon {
-    animation: satellite 3s ease-in-out infinite;
-}
-
-@keyframes satellite {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(10deg); }
-}
-
-.gps-strength {
-    display: flex;
-    gap: 2px;
-}
-
-.signal-bar {
-    width: 3px;
-    background-color: rgba(255,255,255,0.3);
-    transition: all 0.3s ease;
-}
-
-.signal-bar.active {
-    background-color: #4caf50;
-}
-
-.signal-bar:nth-child(1) { height: 8px; }
-.signal-bar:nth-child(2) { height: 12px; }
-.signal-bar:nth-child(3) { height: 16px; }
-.signal-bar:nth-child(4) { height: 20px; }
 
 .route-tabs {
     display: flex;
     background-color: #e0e0e0;
     overflow-x: auto;
+    margin-top: 10px;
 }
 
 .route-tab {
@@ -128,6 +100,9 @@ body {
 .bus-stop:nth-child(1) { animation-delay: 0.1s; }
 .bus-stop:nth-child(2) { animation-delay: 0.2s; }
 .bus-stop:nth-child(3) { animation-delay: 0.3s; }
+.bus-stop:nth-child(4) { animation-delay: 0.4s; }
+.bus-stop:nth-child(5) { animation-delay: 0.5s; }
+.bus-stop:nth-child(6) { animation-delay: 0.6s; }
 
 .bus-stop.loaded {
     opacity: 1;
@@ -160,6 +135,11 @@ body {
     background-color: #ff9800;
     border-color: #ff9800;
     animation: pulse 1.5s infinite;
+}
+
+.stop-marker.inactive {
+    background-color: #e0e0e0;
+    border-color: #bdbdbd;
 }
 
 @keyframes pulse {
@@ -199,50 +179,23 @@ body {
 .stop-info.passed {
     background-color: #f1f8e9;
     border-left-color: #4caf50;
-}  
-
-.stop-marker.current {
-    background-color: #ff9800;
-    border-color: #ff9800;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); }
-    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
-}
-
-.bus-icon {
-    position: absolute;
-    left: -70px;
-    top: -5px;
-    font-size: 30px;
-    animation: busMove 2s ease-in-out infinite;
-    z-index: 20;
-}
-
-@keyframes busMove {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-}
-
-.stop-info {
-    background-color: #f9f9f9;
-    padding: 12px;
-    border-radius: 8px;
-    border-left: 4px solid #e0e0e0;
-}
-
-.stop-info.current {
-    background-color: #fff3e0;
-    border-left-color: #ff9800;
 }
 
 .stop-info.inactive {
     background-color: #f5f5f5;
     border-left-color: #ccc;
     color: #999;
+}
+
+.stop-info.arrival-stop {
+    background-color: #e8f5e9;
+    border-left-color: #4caf50;
+    font-weight: bold;
+}
+
+.stop-info.transfer-stop {
+    background-color: #e3f2fd;
+    border-left-color: #2196f3;
 }
 
 .stop-info.inactive .stop-name {
@@ -259,13 +212,18 @@ body {
     background-color: #fff3e0;
     border: 1px solid #ffb74d;
     border-radius: 8px;
-    margin: 20px 15px;
+    margin: 20px 0;
 }
 
 .next-operating-time {
     margin-top: 10px;
     color: #ff6b00;
     font-weight: bold;
+}
+
+.current-period-info {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .stop-name {
@@ -292,24 +250,6 @@ body {
 
 .arrival-info.passed {
     color: #388e3c;
-}
-
-.gps-info {
-    margin-top: 8px;
-    padding: 8px;
-    background-color: rgba(0,0,0,0.05);
-    border-radius: 6px;
-    font-size: 11px;
-}
-
-.gps-coordinates {
-    color: #666;
-    font-family: monospace;
-}
-
-.gps-accuracy {
-    color: #4caf50;
-    margin-top: 4px;
 }
 
 .status-bar {
@@ -405,75 +345,6 @@ body {
     padding: 5px 10px;
     border-radius: 15px;
     font-size: 11px;
-}
-
-.connection-status {
-    position: absolute;
-    top: 95px;
-    right: 15px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 10px;
-    color: white;
-}
-
-.connection-status.connected {
-    background-color: #4caf50;
-}
-
-.connection-status.disconnected {
-    background-color: #f44336;
-}
-
-.connection-status.reconnecting {
-    background-color: #ff9800;
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.5; }
-}
-
-/* GPS 위성 추적 모달 */
-.gps-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    z-index: 1000;
-    max-width: 400px;
-    width: 90%;
-}
-
-.gps-modal.show {
-    display: block;
-    animation: modalShow 0.3s ease;
-}
-
-@keyframes modalShow {
-    from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-}
-
-.modal-overlay.show {
-    display: block;
 }
 
 /* 로딩 애니메이션 */

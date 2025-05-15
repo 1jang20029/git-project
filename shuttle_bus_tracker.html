@@ -3,22 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연성대학교 GPS 위성 셔틀버스 실시간 추적</title>
+    <title>연성대학교 셔틀버스 시간표</title>
     <link rel="stylesheet" href="shuttle_bus_tracker.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🛰️ 연성대학교 GPS 위성 셔틀버스</h1>
-            <div class="satellite-status">
-                <span class="satellite-icon">🛰️</span>
-                <span id="satelliteCount">위성 연결: 12/12</span>
-                <div class="gps-strength" id="gpsStrength">
-                    <div class="signal-bar active"></div>
-                    <div class="signal-bar active"></div>
-                    <div class="signal-bar active"></div>
-                    <div class="signal-bar active"></div>
-                </div>
+            <h1>🚌 연성대학교 셔틀버스</h1>
+            <div class="current-time">
+                <span id="currentTime">--:--</span>
+                <span style="font-size: 12px; margin-left: 10px;" id="operatingStatus">운행 확인 중</span>
             </div>
             <div class="route-tabs">
                 <button class="route-tab active" onclick="switchRoute(1)">노선 1</button>
@@ -26,54 +20,51 @@
                 <button class="route-tab" onclick="switchRoute(3)">노선 3</button>
             </div>
         </div>
+
         <div class="bus-route-container">
             <div class="route-line"></div>
-            <button class="refresh-button" onclick="updateBusLocation()">🔄</button>
+            <button class="refresh-button" onclick="updateSchedule()">🔄</button>
             <div class="last-update" id="lastUpdate">최근 업데이트: --:--</div>
-            <div class="connection-status connected" id="connectionStatus">GPS 연결됨</div>
             
             <div id="busRoute1" class="bus-route active">
                 <!-- 동적으로 업데이트됨 -->
             </div>
+
             <div id="busRoute2" class="bus-route" style="display: none;">
                 <!-- 동적으로 업데이트됨 -->
             </div>
+
             <div id="busRoute3" class="bus-route" style="display: none;">
                 <!-- 동적으로 업데이트됨 -->
             </div>
         </div>
+
         <div class="status-bar">
             <div class="status-indicator">
-                <span class="status-text">원활</span>
+                <span class="status-text">운행 상태</span>
                 <div class="status-bar-graphic"></div>
-                <span class="status-text" id="statusText">GPS 추적 중</span>
+                <span class="status-text" id="statusText">시간표 확인 중</span>
             </div>
             <div class="info-row">
                 <div class="legend">
                     <div class="legend-item">
                         <div class="legend-color" style="background-color: #4caf50;"></div>
-                        <span>통과</span>
+                        <span>운행 완료</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color" style="background-color: #ff9800;"></div>
-                        <span>현재 위치</span>
+                        <span>현재 시간대</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color" style="background-color: #e0e0e0;"></div>
                         <span>예정</span>
                     </div>
                 </div>
-                <small style="color: #666;" id="updateInterval">실시간 GPS 추적</small>
+                <small style="color: #666;" id="updateInterval">배차 시간표 기준</small>
             </div>
         </div>
     </div>
-    <!-- GPS 상세 정보 모달 -->
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="gps-modal" id="gpsModal">
-        <h3>🛰️ GPS 위성 추적 상세</h3>
-        <div id="gpsDetails"></div>
-        <button onclick="closeGPSModal()" style="margin-top: 15px; padding: 8px 16px; background: #c62917; color: white; border: none; border-radius: 6px;">닫기</button>
-    </div>
+
     <script src="shuttle_bus_tracker.js"></script>
 </body>
 </html>
