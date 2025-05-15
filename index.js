@@ -588,9 +588,6 @@ BusTimeTable.prototype.getRouteUpcomingBuses = function(routeId, count = 3) {
 };
 
 
-
-
-
 // 셔틀버스 정보 업데이트 함수
 function updateShuttleBusInfo() {
     const nextBusInfo = shuttleBusTimeTable.getNextBusInfo();
