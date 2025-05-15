@@ -33,34 +33,34 @@ class BusTimeTable {
             }
         };
         
-        // 노선별 정류장 시간표
+        // 노선별 정류장 시간표 (각 정류장까지의 소요시간을 분으로 표시)
         this.routeStops = {
             1: [ // 노선 1
-                { name: '모래내시장역', time: '8:00', status: 'stop' },
-                { name: '만수역', time: '8:03', status: 'stop' },
-                { name: '남동구청역', time: '8:10', status: 'stop' },
-                { name: '신천역(시흥)', time: '8:22', status: 'stop' },
-                { name: '안양역(경유)', time: '9:05', status: 'transfer' },
-                { name: '연성대학교', time: '9:15', status: 'arrival' }
+                { name: '모래내시장역', offsetMinutes: 0, status: 'stop' },
+                { name: '만수역', offsetMinutes: 3, status: 'stop' },
+                { name: '남동구청역', offsetMinutes: 10, status: 'stop' },
+                { name: '신천역(시흥)', offsetMinutes: 22, status: 'stop' },
+                { name: '안양역(경유)', offsetMinutes: 35, status: 'transfer' },
+                { name: '연성대학교', offsetMinutes: 45, status: 'arrival' }
             ],
             2: [ // 노선 2
-                { name: '이마트', time: '8:00', status: 'stop' },
-                { name: '정왕역', time: '8:04', status: 'stop' },
-                { name: '장곡고교', time: '8:13', status: 'stop' },
-                { name: '장곡중학교', time: '8:18', status: 'stop' },
-                { name: '시흥농곡역', time: '8:25', status: 'stop' },
-                { name: '시흥시청역', time: '8:28', status: 'stop' },
-                { name: '동귀소입구', time: '8:31', status: 'stop' },
-                { name: '안양역(경유)', time: '9:05', status: 'transfer' },
-                { name: '연성대학교', time: '9:15', status: 'arrival' }
+                { name: '이마트', offsetMinutes: 0, status: 'stop' },
+                { name: '정왕역', offsetMinutes: 4, status: 'stop' },
+                { name: '장곡고교', offsetMinutes: 13, status: 'stop' },
+                { name: '장곡중학교', offsetMinutes: 18, status: 'stop' },
+                { name: '시흥농곡역', offsetMinutes: 25, status: 'stop' },
+                { name: '시흥시청역', offsetMinutes: 28, status: 'stop' },
+                { name: '동귀소입구', offsetMinutes: 31, status: 'stop' },
+                { name: '안양역(경유)', offsetMinutes: 35, status: 'transfer' },
+                { name: '연성대학교', offsetMinutes: 45, status: 'arrival' }
             ],
             3: [ // 노선 3
-                { name: '서울남부법원', time: '8:00', status: 'stop' },
-                { name: '진명여고', time: '8:02', status: 'stop' },
-                { name: '목동역', time: '8:05', status: 'stop' },
-                { name: '오목교역', time: '8:10', status: 'stop' },
-                { name: '안양역(경유)', time: '9:05', status: 'transfer' },
-                { name: '연성대학교', time: '9:15', status: 'arrival' }
+                { name: '서울남부법원', offsetMinutes: 0, status: 'stop' },
+                { name: '진명여고', offsetMinutes: 2, status: 'stop' },
+                { name: '목동역', offsetMinutes: 5, status: 'stop' },
+                { name: '오목교역', offsetMinutes: 10, status: 'stop' },
+                { name: '안양역(경유)', offsetMinutes: 35, status: 'transfer' },
+                { name: '연성대학교', offsetMinutes: 45, status: 'arrival' }
             ]
         };
         
@@ -161,117 +161,168 @@ class BusTimeTable {
         return null;
     }
     
-    // 현재 사이클 정보 계산
-    getCurrentCycleInfo(routeId) {
+    // 현재 운행 시간대에서 다음 출발할 버스들의 시간 목록 생성
+    getNextBusDepartures(routeId) {
         const currentPeriod = this.getCurrentPeriodInfo(routeId);
-        if (!currentPeriod) return null;
+        if (!currentPeriod) return [];
         
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
         const periodStartTime = parseInt(currentPeriod.출차.replace(':', ''));
+        const periodEndTime = parseInt(currentPeriod.막차.replace(':', ''));
         const periodStartMinutes = Math.floor(periodStartTime / 100) * 60 + (periodStartTime % 100);
+        const periodEndMinutes = Math.floor(periodEndTime / 100) * 60 + (periodEndTime % 100);
         
-        // 배차 간격 가져오기
-        let interval = currentPeriod.배차간격;
-        if (Array.isArray(interval)) {
-            // 오후의 경우 [5, 10, 15] 패턴을 순환
-            const cycleCount = Math.floor((currentTime - periodStartMinutes) / 30); // 30분(5+10+15) 주기
-            interval = interval[cycleCount % interval.length] || interval[0];
+        const departures = [];
+        
+        // 오후 시간대의 특별한 배차간격 처리
+        if (Array.isArray(currentPeriod.배차간격)) {
+            // [5, 10, 15] 패턴을 반복
+            let nextTime = periodStartMinutes;
+            let patternIndex = 0;
+            
+            while (nextTime <= periodEndMinutes) {
+                if (nextTime >= currentTime) {
+                    departures.push(nextTime);
+                }
+                nextTime += currentPeriod.배차간격[patternIndex];
+                patternIndex = (patternIndex + 1) % currentPeriod.배차간격.length;
+            }
+        } else {
+            // 일반적인 배차간격 처리
+            let nextTime = periodStartMinutes;
+            while (nextTime <= periodEndMinutes) {
+                if (nextTime >= currentTime) {
+                    departures.push(nextTime);
+                }
+                nextTime += currentPeriod.배차간격;
+            }
         }
         
-        // 현재 사이클 번호 계산
-        const cycleNumber = Math.floor((currentTime - periodStartMinutes) / interval);
-        const cycleStartTime = periodStartMinutes + (cycleNumber * interval);
-        const nextCycleStartTime = cycleStartTime + interval;
-        
-        // 사이클 내 진행률 계산 (총 소요시간: 대략 15분)
-        const totalCycleTime = 15; // 첫 정류장부터 연성대학교까지 약 15분
-        const cycleProgressTime = currentTime - cycleStartTime;
-        const cycleProgress = Math.min(cycleProgressTime / totalCycleTime, 1);
-        
-        return {
-            cycleNumber: cycleNumber + 1,
-            cycleStartTime,
-            nextCycleStartTime,
-            cycleProgress,
-            interval,
-            totalCycleTime
-        };
+        return departures.slice(0, 10); // 최대 10개의 다음 출발시간만 반환
     }
     
-    // 시간표 기반 정류장 상태 계산 (사이클 반복 고려)
+    // 시간표 기반 정류장 상태 계산 (지속적인 운행 반영)
     getRouteTimeTable(routeId) {
         const isOperating = this.isOperatingTime(routeId);
         const nextOperating = this.getNextOperatingTime(routeId);
         const currentPeriod = this.getCurrentPeriodInfo(routeId);
-        const cycleInfo = this.getCurrentCycleInfo(routeId);
         const routeStops = this.routeStops[routeId];
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
         
-        let currentCycleNumber = cycleInfo ? cycleInfo.cycleNumber : 0;
+        let currentBusInfo = null;
+        let nextBusDepartures = [];
+        
+        if (isOperating && currentPeriod) {
+            nextBusDepartures = this.getNextBusDepartures(routeId);
+            
+            // 현재 운행 중인 버스 찾기
+            for (const departure of nextBusDepartures) {
+                const lastStopArrival = departure + routeStops[routeStops.length - 1].offsetMinutes;
+                if (departure <= currentTime && currentTime <= lastStopArrival) {
+                    currentBusInfo = {
+                        departureTime: departure,
+                        progressMinutes: currentTime - departure,
+                        totalTripTime: routeStops[routeStops.length - 1].offsetMinutes
+                    };
+                    break;
+                }
+            }
+        }
         
         const stopsWithStatus = routeStops.map((stop, index) => {
             let status = 'upcoming';
             let arrivalInfo = '예정';
+            let estimatedTime = '--:--';
             
-            if (isOperating && currentPeriod && cycleInfo) {
-                // 정류장 기본 시간을 분 단위로 변환
-                const [timeHour, timeMin] = stop.time.split(':').map(Number);
-                const baseStopTime = timeHour * 60 + timeMin;
-                
-                // 현재 사이클의 이 정류장 예정 시간
-                const currentCycleStopTime = cycleInfo.cycleStartTime + (baseStopTime - routeStops[0].time.split(':').map((h, i) => i === 0 ? parseInt(h) * 60 : parseInt(h)).reduce((a, b) => a + b, 0));
-                
-                // 사이클 진행률 기반 상태 계산
-                const stopProgressInCycle = (baseStopTime - routeStops[0].time.split(':').map((h, i) => i === 0 ? parseInt(h) * 60 : parseInt(h)).reduce((a, b) => a + b, 0)) / cycleInfo.totalCycleTime;
-                
-                if (cycleInfo.cycleProgress > stopProgressInCycle + 0.05) {
-                    // 현재 사이클에서 이미 통과
-                    status = 'passed';
-                    const nextCycleStopTime = cycleInfo.nextCycleStartTime + (baseStopTime - routeStops[0].time.split(':').map((h, i) => i === 0 ? parseInt(h) * 60 : parseInt(h)).reduce((a, b) => a + b, 0));
-                    const nextArrivalMinutes = nextCycleStopTime - currentTime;
+            if (isOperating && currentPeriod && nextBusDepartures.length > 0) {
+                // 현재 운행 중인 버스와 이 정류장의 관계 확인
+                if (currentBusInfo) {
+                    const busArrivalAtStop = currentBusInfo.departureTime + stop.offsetMinutes;
+                    const timeDiff = currentTime - busArrivalAtStop;
                     
-                    if (nextArrivalMinutes > 0 && nextArrivalMinutes < cycleInfo.interval) {
-                        arrivalInfo = `통과함 (다음 버스 ${nextArrivalMinutes}분 후)`;
+                    if (timeDiff > 2) {
+                        // 현재 버스가 이미 이 정류장을 통과함
+                        status = 'passed';
+                    } else if (timeDiff >= -2 && timeDiff <= 2) {
+                        // 현재 버스가 이 정류장 근처에 있음
+                        status = 'current';
+                        arrivalInfo = '현재 정류장';
                     } else {
-                        arrivalInfo = `통과함 (${cycleInfo.interval}분 간격 운행)`;
+                        // 현재 버스가 아직 이 정류장에 도착하지 않음
+                        status = 'upcoming';
+                        const minutesUntilArrival = busArrivalAtStop - currentTime;
+                        if (minutesUntilArrival > 0) {
+                            arrivalInfo = `${minutesUntilArrival}분 후 도착`;
+                        } else {
+                            arrivalInfo = '곧 도착';
+                        }
                     }
-                } else if (Math.abs(cycleInfo.cycleProgress - stopProgressInCycle) <= 0.05) {
-                    // 현재 위치 근처
-                    status = 'current';
-                    arrivalInfo = `${currentCycleNumber}번째 운행 중`;
-                } else {
-                    // 아직 도달하지 않음
-                    status = 'upcoming';
-                    const arrivalInMinutes = Math.round((stopProgressInCycle - cycleInfo.cycleProgress) * cycleInfo.totalCycleTime);
                     
-                    if (arrivalInMinutes > 0) {
-                        arrivalInfo = `${arrivalInMinutes}분 후 도착 예정`;
-                    } else {
-                        arrivalInfo = `곧 도착 예정`;
-                    }
+                    // 현재 버스의 이 정류장 예상 도착시간
+                    const arrivalHour = Math.floor(busArrivalAtStop / 60);
+                    const arrivalMin = busArrivalAtStop % 60;
+                    estimatedTime = `${arrivalHour.toString().padStart(2, '0')}:${arrivalMin.toString().padStart(2, '0')}`;
                 }
                 
-                // 현재 사이클의 예상 도착 시간 계산
-                const currentCycleArrivalTime = cycleInfo.cycleStartTime + (baseStopTime - routeStops[0].time.split(':').map((h, i) => i === 0 ? parseInt(h) * 60 : parseInt(h)).reduce((a, b) => a + b, 0));
-                const arrivalHour = Math.floor(currentCycleArrivalTime / 60);
-                const arrivalMin = currentCycleArrivalTime % 60;
-                stop.estimatedTime = `${arrivalHour.toString().padStart(2, '0')}:${arrivalMin.toString().padStart(2, '0')}`;
+                // 다음 버스 정보 추가
+                if (status === 'passed' || (status === 'upcoming' && !currentBusInfo)) {
+                    // 다음 버스의 이 정류장 도착시간 계산
+                    for (const departure of nextBusDepartures) {
+                        const nextBusArrival = departure + stop.offsetMinutes;
+                        if (nextBusArrival > currentTime) {
+                            const minutesUntil = nextBusArrival - currentTime;
+                            const nextArrivalHour = Math.floor(nextBusArrival / 60);
+                            const nextArrivalMin = nextBusArrival % 60;
+                            
+                            if (status === 'passed') {
+                                arrivalInfo = `통과 (다음 버스 ${minutesUntil}분 후)`;
+                            } else {
+                                arrivalInfo = `${minutesUntil}분 후 도착`;
+                            }
+                            
+                            estimatedTime = `${nextArrivalHour.toString().padStart(2, '0')}:${nextArrivalMin.toString().padStart(2, '0')}`;
+                            break;
+                        }
+                    }
+                }
                 
             } else {
                 // 미운행 시간일 때
                 status = 'inactive';
-                arrivalInfo = '미운행';
-                stop.estimatedTime = stop.time;
+                arrivalInfo = '운행시간 외';
+                estimatedTime = '--:--';
             }
             
             return {
                 ...stop,
                 status,
-                arrivalInfo
+                arrivalInfo,
+                estimatedTime
             };
         });
+        
+        // 운행 사이클 정보 계산
+        let cycleInfo = null;
+        if (currentBusInfo) {
+            const progressPercent = (currentBusInfo.progressMinutes / currentBusInfo.totalTripTime) * 100;
+            const nextDepartureIndex = nextBusDepartures.findIndex(dep => dep > currentTime);
+            let nextDepartureTime = null;
+            
+            if (nextDepartureIndex !== -1) {
+                nextDepartureTime = nextBusDepartures[nextDepartureIndex];
+            }
+            
+            cycleInfo = {
+                currentDeparture: currentBusInfo.departureTime,
+                progressPercent: Math.round(progressPercent),
+                nextDeparture: nextDepartureTime,
+                minutesToNext: nextDepartureTime ? nextDepartureTime - currentTime : null,
+                totalBuses: nextBusDepartures.length,
+                remainingBuses: nextBusDepartures.filter(dep => dep > currentTime).length
+            };
+        }
         
         return {
             routeId,
@@ -280,7 +331,8 @@ class BusTimeTable {
             currentPeriod: currentPeriod,
             cycleInfo: cycleInfo,
             다음운행: nextOperating,
-            stops: stopsWithStatus
+            stops: stopsWithStatus,
+            nextDepartures: nextBusDepartures
         };
     }
 }
@@ -350,7 +402,13 @@ function updateOperatingStatus(scheduleData) {
     if (scheduleData.운행중) {
         operatingStatusElement.textContent = '운행 중';
         operatingStatusElement.style.color = '#4caf50';
-        statusTextElement.textContent = `${scheduleData.currentPeriod.시간대} 운행`;
+        
+        if (scheduleData.cycleInfo) {
+            const remaining = scheduleData.cycleInfo.remainingBuses;
+            statusTextElement.textContent = `${scheduleData.currentPeriod.시간대} 운행 (남은 버스: ${remaining}대)`;
+        } else {
+            statusTextElement.textContent = `${scheduleData.currentPeriod.시간대} 운행`;
+        }
     } else {
         operatingStatusElement.textContent = '미운행';
         operatingStatusElement.style.color = '#f44336';
@@ -402,38 +460,46 @@ function updateRouteDisplay(scheduleData) {
             
             routeContainer.appendChild(noticeDiv);
         } else {
-            // 운행 중일 때 현재 사이클 정보 표시
+            // 운행 중일 때 현재 운행 정보 표시
             const currentPeriodDiv = document.createElement('div');
             currentPeriodDiv.className = 'current-period-info';
             
             let cycleInfoHtml = '';
             if (scheduleData.cycleInfo) {
-                const progressPercent = Math.round(scheduleData.cycleInfo.cycleProgress * 100);
-                const nextCycleMinutes = Math.round((scheduleData.cycleInfo.nextCycleStartTime - (new Date().getHours() * 60 + new Date().getMinutes())));
+                const remaining = scheduleData.cycleInfo.remainingBuses;
+                const nextMinutes = scheduleData.cycleInfo.minutesToNext;
                 
                 cycleInfoHtml = `
                     <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 14px;">
-                            <strong>${scheduleData.cycleInfo.cycleNumber}번째 운행</strong> (진행률: ${progressPercent}%)
+                            <strong>현재 버스 진행률: ${scheduleData.cycleInfo.progressPercent}%</strong>
                         </span>
                         <span style="font-size: 12px; color: #666;">
-                            다음 사이클: ${nextCycleMinutes}분 후
+                            ${nextMinutes ? `다음 버스: ${nextMinutes}분 후` : '마지막 버스'}
                         </span>
                     </div>
                     <div style="width: 100%; height: 6px; background-color: #e0e0e0; border-radius: 3px; margin-top: 8px;">
-                        <div style="width: ${progressPercent}%; height: 100%; background-color: #4caf50; border-radius: 3px; transition: width 0.3s ease;"></div>
+                        <div style="width: ${scheduleData.cycleInfo.progressPercent}%; height: 100%; background-color: #4caf50; border-radius: 3px; transition: width 0.3s ease;"></div>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 13px; color: #666;">
+                        이번 시간대 남은 버스: <strong>${remaining}대</strong>
                     </div>
                 `;
+            }
+            
+            // 배차간격 표시 개선
+            let intervalText = '';
+            if (Array.isArray(scheduleData.currentPeriod.배차간격)) {
+                intervalText = scheduleData.currentPeriod.배차간격.join('/') + '분 간격 (순환)';
+            } else {
+                intervalText = scheduleData.currentPeriod.배차간격 + '분 간격';
             }
             
             currentPeriodDiv.innerHTML = `
                 <div style="background-color: #e8f5e9; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
                     <strong>🚌 현재 ${scheduleData.currentPeriod.시간대} 운행 중</strong><br>
                     <span style="font-size: 14px; color: #2e7d32;">
-                        ${scheduleData.currentPeriod.출차}~${scheduleData.currentPeriod.막차} • 
-                        ${Array.isArray(scheduleData.currentPeriod.배차간격) 
-                            ? scheduleData.currentPeriod.배차간격.join('/') + '분 간격'
-                            : scheduleData.currentPeriod.배차간격 + '분 간격'}
+                        ${scheduleData.currentPeriod.출차}~${scheduleData.currentPeriod.막차} • ${intervalText}
                     </span>
                     ${cycleInfoHtml}
                 </div>
@@ -466,9 +532,6 @@ function updateRouteDisplay(scheduleData) {
                 stopTypeIcon = '🚏';
             }
             
-            // 예상 도착 시간 표시 (사이클 기반)
-            const displayTime = stop.estimatedTime || stop.time;
-            
             stopElement.innerHTML = `
                 <div class="stop-marker ${stop.status}"></div>
                 ${statusIcon}
@@ -476,7 +539,7 @@ function updateRouteDisplay(scheduleData) {
                     <div class="stop-name">
                         ${stopTypeIcon} ${stop.name}
                     </div>
-                    <div class="stop-time">${displayTime}</div>
+                    <div class="stop-time">${stop.estimatedTime}</div>
                     <div class="arrival-info ${stop.status}">${stop.arrivalInfo}</div>
                 </div>
             `;
@@ -512,5 +575,6 @@ window.busDebug = {
         return [1, 2, 3].map(route => timetable.getRouteTimeTable(route));
     },
     isOperating: (route) => timetable.isOperatingTime(route),
-    getNextTime: (route) => timetable.getNextOperatingTime(route)
+    getNextTime: (route) => timetable.getNextOperatingTime(route),
+    getNextDepartures: (route) => timetable.getNextBusDepartures(route)
 };
