@@ -716,6 +716,9 @@ function updateShuttleBusInfo() {
     
     // 운행 시간표 정보 업데이트
     updateScheduleDisplay();
+    
+    // 선택된 노선 탭 상태 업데이트
+    updateSelectedRouteTab();
 }
 
 // 운행 시간표 표시 함수
@@ -2834,35 +2837,21 @@ function goToPage(pageName) {
     // 페이지 이름에 따라 분기 처리
     switch(pageName) {
         case 'login':
+            alert('로그인 페이지로 이동합니다.');
             window.location.href = 'login.html';
             break;
             
         case 'profile-edit':
+            alert('프로필 수정 페이지로 이동합니다.');
             window.location.href = 'profile-edit.html';
-            break;
-            
-        case 'classroom':
-            switchTab('facility');
-            break;
-            
-        case 'lecture-evaluation':
-            switchTab('community');
             break;
             
         case 'shuttle':
             window.location.href = 'shuttle_bus_tracker.html';
             break;
             
-        case 'cafeteria':
-            alert('학식 메뉴 페이지로 이동합니다.');
-            break;
-            
         case 'academic-calendar':
             alert('학사일정 페이지로 이동합니다.');
-            break;
-            
-        case 'library':
-            window.location.href = 'activities.html';
             break;
             
         case 'notices':
@@ -2875,6 +2864,10 @@ function goToPage(pageName) {
             
         case 'job-info':
             alert('취업/채용 정보 페이지로 이동합니다.');
+            break;
+            
+        case 'activities':
+            window.location.href = 'activities.html';
             break;
             
         default:
@@ -3178,9 +3171,9 @@ function resetAllSettings() {
         // 위젯 설정 초기화
         const defaultWidgets = [
             {
-                name: '강의실 찾기',
-                icon: '🏫',
-                description: '빈 강의실 정보 확인'
+                name: '교내/대외활동',
+                icon: '🎯',
+                description: '다양한 교내/대외 활동 정보 확인'
             },
             {
                 name: '학사일정',
@@ -3188,9 +3181,9 @@ function resetAllSettings() {
                 description: '주요 일정 및 행사'
             },
             {
-                name: '학식 메뉴',
-                icon: '🍽️',
-                description: '오늘의 식단 정보'
+                name: '공지사항',
+                icon: '📢',
+                description: '공지사항'
             }
         ];
         localStorage.setItem('selectedWidgets', JSON.stringify(defaultWidgets));
@@ -3941,7 +3934,7 @@ function loadWidgetSettings() {
     } else {
         // 기본 위젯 설정 (학식 제거, 셔틀버스 추가)
         selectedWidgets = [
-            { name: '강의실 찾기', icon: '🏫', description: '빈 강의실 정보 확인' },
+            { name: '교내/대외활동', icon: '🌟', description: '공모전, 동아리, 봉사활동 정보' },
             { name: '학사일정', icon: '📅', description: '주요 일정 및 행사' },
             { name: '셔틀버스', icon: '🚌', description: '셔틀 시간표' }
         ];
@@ -4036,9 +4029,6 @@ function loadTabMenuSettings() {
                     case '내 정보':
                         tabId = 'profile';
                         break;
-                    case '학식':
-                        tabId = 'cafeteria';
-                        break;
                     case '셔틀버스':
                         tabId = 'shuttle';
                         break;
@@ -4085,23 +4075,16 @@ function loadTabMenuSettings() {
 function handleWidgetClick(widgetName) {
     // 위젯 이름에 따른 기능 처리
     switch (widgetName) {
-        case '강의실 찾기':
-        case '강의실':
-            switchTab('facility');
-            break;
         case '강의평가':
             switchTab('community');
             break;
         case '셔틀버스':
             goToPage('shuttle');
             break;
-        case '학사일정':
-            goToPage('academic-calendar');
-            break;
         case '동아리 활동':
             goToPage('club-activities');
             break;
-        case '내 시간표':
+       case '내 시간표':
             navigateToProfilePage('timetable');
             break;
         case '공지사항':
@@ -4113,6 +4096,9 @@ function handleWidgetClick(widgetName) {
             break;
         case '취업/채용':
             goToPage('job-info');
+            break;
+        case '교내/대외활동':
+            window.location.href = 'activities.html';
             break;
         // 학식 메뉴 케이스 제거
         default:
