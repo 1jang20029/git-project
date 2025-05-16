@@ -863,5 +863,3 @@ document.head.appendChild(style);
 window.addEventListener('error', function(event) {
     console.error('장학금 페이지 에러:', event.error);
 });
-
-console.log('장학금 정보 페이지가 로드되었습니다.');
