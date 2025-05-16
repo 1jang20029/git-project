@@ -103,50 +103,38 @@
                 <!-- 가족 상황 -->
                 <div class="form-section">
                     <h4>가족 상황</h4>
-                    <div class="form-group toggle-group">
-                        <label>가족 중 연성대학교 재학생/출신자 있음</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="familyInSchool" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="familyInSchool">가족 중 연성대학교 재학생/출신자 있음</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('familyInSchool', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('familyInSchool', false)">아니오</button>
                         </div>
                         <input type="hidden" id="familyInSchool" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>교직원 자녀</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="employeeFamily" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="employeeFamily">교직원 자녀</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('employeeFamily', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('employeeFamily', false)">아니오</button>
                         </div>
                         <input type="hidden" id="employeeFamily" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>한부모 가정</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="singleParent" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="singleParent">한부모 가정</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('singleParent', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('singleParent', false)">아니오</button>
                         </div>
                         <input type="hidden" id="singleParent" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>다문화 가정</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="multicultural" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="multicultural">다문화 가정</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('multicultural', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('multicultural', false)">아니오</button>
                         </div>
                         <input type="hidden" id="multicultural" value="false">
                     </div>
@@ -155,50 +143,38 @@
                 <!-- 특별 사항 -->
                 <div class="form-section">
                     <h4>특별 사항</h4>
-                    <div class="form-group toggle-group">
-                        <label>보훈대상자 (본인/자녀)</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="veteran" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="veteran">보훈대상자 (본인/자녀)</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('veteran', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('veteran', false)">아니오</button>
                         </div>
                         <input type="hidden" id="veteran" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>장애인 (본인/자녀)</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="disabled" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="disabled">장애인 (본인/자녀)</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('disabled', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('disabled', false)">아니오</button>
                         </div>
                         <input type="hidden" id="disabled" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>북한이탈주민 (본인/자녀)</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="northKorea" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="northKorea">북한이탈주민 (본인/자녀)</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('northKorea', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('northKorea', false)">아니오</button>
                         </div>
                         <input type="hidden" id="northKorea" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>기초생활수급자/차상위계층</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="lowIncome" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">해당</span>
-                                <span class="toggle-option active" data-value="false">해당없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="lowIncome">기초생활수급자/차상위계층</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('lowIncome', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('lowIncome', false)">아니오</button>
                         </div>
                         <input type="hidden" id="lowIncome" value="false">
                     </div>
@@ -207,62 +183,47 @@
                 <!-- 활동 사항 -->
                 <div class="form-section">
                     <h4>활동 사항</h4>
-                    <div class="form-group toggle-group">
-                        <label>학생회 활동</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="studentCouncil" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">경험있음</span>
-                                <span class="toggle-option active" data-value="false">경험없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="studentCouncil">학생회 활동</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('studentCouncil', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('studentCouncil', false)">아니오</button>
                         </div>
                         <input type="hidden" id="studentCouncil" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>동아리 활동</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="clubActivity" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">경험있음</span>
-                                <span class="toggle-option active" data-value="false">경험없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="clubActivity">동아리 활동</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('clubActivity', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('clubActivity', false)">아니오</button>
                         </div>
                         <input type="hidden" id="clubActivity" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>봉사활동 경험</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="volunteer" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">경험있음</span>
-                                <span class="toggle-option active" data-value="false">경험없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="volunteer">봉사활동 경험</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('volunteer', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('volunteer', false)">아니오</button>
                         </div>
                         <input type="hidden" id="volunteer" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>경진대회 수상 경험</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="competition" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">경험있음</span>
-                                <span class="toggle-option active" data-value="false">경험없음</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="competition">경진대회 수상 경험</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('competition', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('competition', false)">아니오</button>
                         </div>
                         <input type="hidden" id="competition" value="false">
                     </div>
                     
-                    <div class="form-group toggle-group">
-                        <label>전공 관련 자격증 보유</label>
-                        <div class="toggle-container">
-                            <button type="button" class="toggle-button" data-target="certification" onclick="toggleOption(this)">
-                                <span class="toggle-option" data-value="true">보유</span>
-                                <span class="toggle-option active" data-value="false">미보유</span>
-                                <div class="toggle-slider"></div>
-                            </button>
+                    <div class="form-group">
+                        <label for="certification">전공 관련 자격증 보유</label>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn" data-value="true" onclick="toggleSelection('certification', true)">예</button>
+                            <button type="button" class="toggle-btn active" data-value="false" onclick="toggleSelection('certification', false)">아니오</button>
                         </div>
                         <input type="hidden" id="certification" value="false">
                     </div>
@@ -295,7 +256,7 @@
         </div>
 
         <!-- 교내장학금 탭 -->
-        <div id="internal-scholarship" class="scholarship-content active">
+        <div id="internal-scholarship" class="scholarship-content">
             <!-- 학비감면형 -->
             <div class="section">
                 <div class="section-header">
