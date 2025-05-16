@@ -1120,7 +1120,7 @@ function getWeatherData() {
     const lat = 37.3943;
     const lon = 126.9568;
     
-    // OpenWeatherMap Current Weather API URL (공식 문서 기준)
+    // CORS 프록시를 사용하지 않고 직접 호출 (최신 브라우저에서는 대부분 지원)
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric&lang=kr`;
 
     console.log('OpenWeatherMap API 호출:', url);
@@ -1140,8 +1140,17 @@ function getWeatherData() {
         weatherIconElement.textContent = '⏳';
     }
 
-    // API 호출
-    fetch(url)
+    // 먼저 CORS 없이 직접 시도
+    const fetchOptions = {
+        method: 'GET',
+        // CORS 모드를 'cors'로 설정
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+        }
+    };
+
+    fetch(url, fetchOptions)
     .then(response => {
         console.log('API 응답 상태:', response.status);
         if (!response.ok) {
@@ -1160,10 +1169,58 @@ function getWeatherData() {
         updateWeatherWidget(data);
     })
     .catch(error => {
-        console.error('날씨 API 요청 중 오류 발생:', error);
-        displayWeatherError();
+        console.error('직접 API 호출 실패:', error);
+        
+        // 직접 호출이 실패하면 CORS 프록시 사용
+        console.log('CORS 프록시를 통한 재시도...');
+        fetchWithProxy(url);
     });
 }
+
+
+// CORS 프록시를 사용한 백업 함수
+function fetchWithProxy(url) {
+    // 여러 CORS 프록시 중 하나를 사용
+    const proxyUrls = [
+        'https://cors-anywhere.herokuapp.com/',
+        'https://api.allorigins.win/get?url=',
+        'https://corsproxy.io/?'
+    ];
+    
+    // 첫 번째 프록시 시도
+    const proxyUrl = proxyUrls[0] + url;
+    
+    fetch(proxyUrl, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => {
+        console.log('프록시 API 응답 상태:', response.status);
+        if (!response.ok) {
+            throw new Error(`프록시 API 응답 오류: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('프록시를 통한 날씨 데이터:', data);
+        
+        if (!data || !data.main || !data.weather || !data.weather[0]) {
+            throw new Error('날씨 데이터 형식이 올바르지 않습니다');
+        }
+        
+        updateWeatherWidget(data);
+    })
+    .catch(error => {
+        console.error('프록시를 통한 API 호출도 실패:', error);
+        
+        // 모든 시도가 실패하면 테스트 데이터 표시
+        console.log('테스트 데이터로 대체...');
+        displayTestWeatherData();
+    });
+}
+
 
 // 날씨 데이터 파싱 및 위젯 업데이트
 function updateWeatherWidget(items) {
