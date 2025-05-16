@@ -408,12 +408,14 @@ header {
 
 /* 장학금 콘텐츠 */
 .scholarship-content {
-    display: none !important;
+    display: none;
     padding: 0;
+    position: relative;
+    min-height: 50vh;
 }
 
 .scholarship-content.active {
-    display: block !important;
+    display: block;
 }
 
 .section {
