@@ -40,6 +40,341 @@ header {
     width: 20px;
 }
 
+/* 장학금 추천 관련 스타일 */
+.recommendation-intro {
+    margin: 16px;
+}
+
+.intro-card {
+    background: linear-gradient(135deg, #c62917, #e64a19);
+    color: white;
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(198, 41, 23, 0.3);
+}
+
+.intro-card h2 {
+    font-size: 24px;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.intro-card p {
+    font-size: 16px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.recommendation-form {
+    margin: 16px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.recommendation-form h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.form-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.form-section h4 {
+    font-size: 16px;
+    color: #c62917;
+    margin-bottom: 16px;
+    font-weight: bold;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: white;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #c62917;
+    box-shadow: 0 0 0 2px rgba(198, 41, 23, 0.1);
+}
+
+.form-group small {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+    font-size: 12px;
+}
+
+.checkbox-group .checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    cursor: pointer;
+    padding: 8px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    transform: scale(1.2);
+    accent-color: #c62917;
+}
+
+.checkbox-container span {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.recommendation-button-container {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.recommend-button {
+    background-color: #c62917;
+    color: white;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(198, 41, 23, 0.3);
+    transition: all 0.3s ease;
+}
+
+.recommend-button:hover {
+    background-color: #a52214;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(198, 41, 23, 0.4);
+}
+
+.recommend-button:active {
+    transform: translateY(0);
+}
+
+/* 추천 결과 스타일 */
+.recommendation-results {
+    margin: 16px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.recommendation-results h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.recommended-scholarship-card {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.recommended-scholarship-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.recommended-scholarship-card.highly-recommended {
+    border-color: #c62917;
+    background: linear-gradient(135deg, #fff5f5, #fff8f8);
+}
+
+.recommended-scholarship-card.highly-recommended::before {
+    content: '⭐ 적극 추천';
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: #c62917;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.recommended-scholarship-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.recommended-scholarship-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.recommendation-score {
+    background: #c62917;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.recommendation-reasons {
+    margin-bottom: 12px;
+}
+
+.recommendation-reasons h5 {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.recommendation-reasons ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+.recommendation-reasons li {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+    position: relative;
+    padding-left: 16px;
+}
+
+.recommendation-reasons li::before {
+    content: '✓';
+    color: #28a745;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.recommended-amount {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 600;
+    color: #c62917;
+}
+
+.recommendation-notice {
+    margin-top: 24px;
+    padding: 16px;
+    background: #fff8f2;
+    border-radius: 10px;
+    border: 1px solid #ffe6d1;
+}
+
+.recommendation-notice h4 {
+    font-size: 16px;
+    color: #e68900;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.recommendation-notice ul {
+    list-style: disc;
+    margin-left: 20px;
+}
+
+.recommendation-notice li {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+/* 빈 결과 스타일 */
+.no-recommendations {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.no-recommendations .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.no-recommendations h4 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.no-recommendations p {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 480px) {
+    .recommended-scholarship-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .recommendation-score {
+        align-self: flex-end;
+    }
+    
+    .form-section {
+        padding: 12px;
+    }
+    
+    .recommendation-form {
+        margin: 8px;
+        padding: 16px;
+    }
+    
+    .intro-card {
+        padding: 20px;
+    }
+}
+
 /* 탭 메뉴 */
 .tab-menu {
     display: flex;
