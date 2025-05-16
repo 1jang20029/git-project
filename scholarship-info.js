@@ -70,10 +70,10 @@ const scholarshipDatabase = {
             entranceGrade: ['top1', 'top5', 'top10', 'top20']
         },
         amounts: {
-            'top1': '수업료 100만원',
-            'top5': '수업료 70만원', 
-            'top10': '수업료 50만원',
-            'top20': '수업료 30만원'
+            'top1': '수업료 전액',
+            'top5': '수업료 150만원', 
+            'top10': '수업료 70만원',
+            'top20': '수업료 50만원'
         },
         description: '수시전형에서 입학성적 우수자 선발'
     },
@@ -628,8 +628,12 @@ function displayRecommendationResults(recommendations) {
             </div>
         `;
     } else {
+        // 가장 높은 점수 찾기
+        const maxScore = Math.max(...recommendations.map(r => r.matchScore));
+        
         scholarshipsContainer.innerHTML = recommendations.map((scholarship, index) => {
-            const isHighlyRecommended = scholarship.matchScore >= 40;
+            // 최고 점수를 받은 장학금을 적극 추천으로 표시
+            const isHighlyRecommended = scholarship.matchScore === maxScore;
             return `
                 <div class="recommended-scholarship-card ${isHighlyRecommended ? 'highly-recommended' : ''}">
                     <div class="recommended-scholarship-header">
