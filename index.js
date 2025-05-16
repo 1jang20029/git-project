@@ -2834,12 +2834,10 @@ function goToPage(pageName) {
     // 페이지 이름에 따라 분기 처리
     switch(pageName) {
         case 'login':
-            alert('로그인 페이지로 이동합니다.');
             window.location.href = 'login.html';
             break;
             
         case 'profile-edit':
-            alert('프로필 수정 페이지로 이동합니다.');
             window.location.href = 'profile-edit.html';
             break;
             
@@ -2864,7 +2862,7 @@ function goToPage(pageName) {
             break;
             
         case 'library':
-            alert('도서관 페이지로 이동합니다.');
+            window.location.href = 'activities.html';
             break;
             
         case 'notices':
