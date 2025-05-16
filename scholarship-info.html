@@ -47,7 +47,7 @@
                     <h4>기본 정보</h4>
                     <div class="form-group">
                         <label for="studentType">학생 구분</label>
-                        <select id="studentType">
+                        <select id="studentType" required>
                             <option value="">선택해주세요</option>
                             <option value="new">신입생</option>
                             <option value="current">재학생</option>
@@ -75,10 +75,15 @@
                 <!-- 성적 정보 -->
                 <div class="form-section">
                     <h4>성적 정보</h4>
+                    <div class="form-group">
+                        <small style="color: #666; margin-bottom: 12px; display: block;">
+                            학생 구분을 먼저 선택하시면 해당하는 성적 입력란이 나타납니다.
+                        </small>
+                    </div>
                     
                     <!-- 신입생용 입학성적 -->
                     <div id="entranceGradeGroup" class="form-group" style="display: none;">
-                        <label for="entranceGrade">입학 성적 순위 (신입생)</label>
+                        <label for="entranceGrade">입학 성적 순위</label>
                         <select id="entranceGrade">
                             <option value="">선택해주세요</option>
                             <option value="top1">상위 1% (수시전형 최우수)</option>
@@ -87,21 +92,24 @@
                             <option value="top20">상위 20%</option>
                             <option value="others">기타</option>
                         </select>
-                        <small>수시전형 합격 시 성적 순위를 알고 계시면 선택해주세요.</small>
+                        <small>
+                            수시전형 합격 시 성적 순위를 알고 계시면 선택해주세요.<br>
+                            입학 전이라 성적이 없으셔도 괜찮습니다.
+                        </small>
                     </div>
                     
-                    <!-- 재학생용 직전학기 성적 -->
+                    <!-- 재학생/편입생용 직전학기 성적 -->
                     <div id="currentGradeGroup" style="display: none;">
                         <div class="form-group">
                             <label for="gpa">직전학기 평점평균</label>
                             <input type="number" id="gpa" step="0.01" min="0" max="4.5" placeholder="예: 3.75">
-                            <small>4.5 만점 기준</small>
+                            <small>4.5 만점 기준으로 입력해주세요</small>
                         </div>
                         
                         <div class="form-group">
                             <label for="credits">직전학기 이수학점</label>
                             <input type="number" id="credits" min="0" max="25" placeholder="예: 18">
-                            <small>휴학, 학점포기 등을 제외한 실제 이수학점</small>
+                            <small>휴학, 학점포기 등을 제외한 실제 이수학점을 입력해주세요</small>
                         </div>
                     </div>
                 </div>
@@ -149,7 +157,7 @@
                             <option value="northKorea">북한이탈주민 (본인/자녀)</option>
                             <option value="lowIncome">기초생활수급자/차상위계층</option>
                         </select>
-                        <small>해당하는 항목을 모두 선택해주세요 (Ctrl+클릭)</small>
+                        <small>해당하는 항목을 모두 선택해주세요 (Ctrl+클릭 또는 드래그)</small>
                     </div>
                 </div>
 
@@ -164,7 +172,7 @@
                             <option value="clubActivity">동아리 활동</option>
                             <option value="clubLeader">동아리 대표</option>
                         </select>
-                        <small>해당하는 항목을 모두 선택해주세요 (Ctrl+클릭)</small>
+                        <small>해당하는 항목을 모두 선택해주세요 (Ctrl+클릭 또는 드래그)</small>
                     </div>
                     
                     <div class="form-group">
@@ -176,7 +184,7 @@
                             <option value="certification">전공 관련 자격증 보유</option>
                             <option value="language">어학 자격증 보유</option>
                         </select>
-                        <small>해당하는 항목을 모두 선택해주세요 (Ctrl+클릭)</small>
+                        <small>해당하는 항목을 모두 선택해주세요 (Ctrl+클릭 또는 드래그)</small>
                     </div>
                 </div>
 
@@ -207,7 +215,7 @@
         </div>
 
         <!-- 교내장학금 탭 -->
-        <div id="internal-scholarship" class="scholarship-content active">
+        <div id="internal-scholarship" class="scholarship-content">
             <!-- 학비감면형 -->
             <div class="section">
                 <div class="section-header">
