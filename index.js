@@ -3292,8 +3292,8 @@ function navigateToProfilePage(pageName) {
             break;
         
         case 'scholarships':
-            alert('장학금 정보 페이지로 이동합니다.');
-            // window.location.href = 'scholarships.html';
+            // 장학금 내역 페이지로 이동 (따로 만들거나 기존 장학금 정보 페이지로 이동)
+            window.location.href = 'scholarship-info.html';
             break;
 
         case 'tuition':
@@ -4082,9 +4082,10 @@ function handleWidgetClick(widgetName) {
             goToPage('shuttle');
             break;
         case '장학금 정보':
-            navigateToProfilePage('scholarships');
+            // 장학금 정보 페이지로 이동
+            window.location.href = 'scholarship-info.html';
             break;
-        case '내 시간표':
+       case '내 시간표':
             navigateToProfilePage('timetable');
             break;
         case '공지사항':
@@ -4100,7 +4101,6 @@ function handleWidgetClick(widgetName) {
         case '교내/대외활동':
             window.location.href = 'activities.html';
             break;
-        // 학식 메뉴 케이스 제거
         default:
             alert(`${widgetName} 기능은 준비 중입니다.`);
     }

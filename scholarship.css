@@ -1,0 +1,378 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back-button {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.header-right {
+    width: 20px;
+}
+
+/* 탭 메뉴 */
+.tab-menu {
+    display: flex;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+.tab-item {
+    flex: 1;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-item.active {
+    color: #c62917;
+    background-color: white;
+    border-bottom-color: #c62917;
+    font-weight: bold;
+}
+
+.tab-item:hover:not(.active) {
+    color: #999;
+    background-color: #f0f0f0;
+}
+
+/* 장학금 콘텐츠 */
+.scholarship-content {
+    display: none;
+    padding: 0;
+}
+
+.scholarship-content.active {
+    display: block;
+}
+
+.section {
+    margin-bottom: 24px;
+}
+
+.section-header {
+    background-color: #f8f9ff;
+    padding: 16px;
+    border-bottom: 2px solid #e0e7ff;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 장학금 카드 */
+.scholarship-card {
+    margin: 0 16px 16px 16px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.scholarship-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.scholarship-header {
+    background-color: #fff;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scholarship-header h3 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.scholarship-type {
+    background-color: #c62917;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.scholarship-content-detail {
+    padding: 16px;
+}
+
+.scholarship-criteria {
+    margin-bottom: 12px;
+}
+
+.scholarship-criteria p {
+    margin-bottom: 6px;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.scholarship-criteria strong {
+    color: #333;
+    font-weight: bold;
+}
+
+.scholarship-amount {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #c62917;
+}
+
+.scholarship-amount p {
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.scholarship-amount ul {
+    list-style: none;
+    margin-left: 16px;
+}
+
+.scholarship-amount li {
+    margin-bottom: 4px;
+    position: relative;
+    font-size: 14px;
+}
+
+.scholarship-amount li::before {
+    content: '•';
+    color: #c62917;
+    font-weight: bold;
+    position: absolute;
+    left: -16px;
+}
+
+/* 서브카테고리 */
+.scholarship-subcategory {
+    padding: 0 16px 16px;
+}
+
+.scholarship-subcategory h4 {
+    font-size: 15px;
+    font-weight: bold;
+    color: #555;
+    margin: 16px 0 8px;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    border-left: 3px solid #c62917;
+}
+
+/* 지급일정 테이블 */
+.schedule-table-container {
+    margin: 16px;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.schedule-table thead {
+    background-color: #c62917;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid #eee;
+    font-size: 13px;
+}
+
+.schedule-table th {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.schedule-table th:first-child {
+    min-width: 150px;
+    text-align: left;
+    padding-left: 16px;
+}
+
+.schedule-table td:first-child {
+    text-align: left;
+    padding-left: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.schedule-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: #f0f7ff;
+}
+
+.schedule-active {
+    color: #c62917;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* 연락처 정보 */
+.contact-info {
+    margin: 24px 16px 16px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+.contact-details {
+    padding: 16px;
+}
+
+.contact-item {
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.contact-item:last-child {
+    margin-bottom: 0;
+}
+
+.contact-item h4 {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.contact-item p {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 480px) {
+    .scholarship-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .scholarship-type {
+        align-self: flex-end;
+    }
+    
+    .schedule-table-container {
+        margin: 16px 8px;
+    }
+    
+    .scholarship-card {
+        margin: 0 8px 16px 8px;
+    }
+    
+    .contact-info {
+        margin: 24px 8px 16px;
+    }
+}
+
+/* 스크롤바 스타일링 */
+.schedule-table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.schedule-table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.schedule-table-container::-webkit-scrollbar-thumb {
+    background: #c62917;
+    border-radius: 4px;
+}
+
+.schedule-table-container::-webkit-scrollbar-thumb:hover {
+    background: #a52214;
+}
+
+/* 로딩 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scholarship-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* 접근성 향상 */
+.tab-item:focus {
+    outline: 2px solid #c62917;
+    outline-offset: -2px;
+}
+
+.scholarship-card:focus-within {
+    box-shadow: 0 0 0 2px #c62917;
+}
+
+/* 다크모드 대응 (선택사항) */
+@media (prefers-color-scheme: dark) {
+    /* 필요시 다크모드 스타일 추가 */
+}
