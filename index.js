@@ -1113,58 +1113,31 @@ console.log('모든 이미지 URL 수정 완료');
 
 // 날씨 API 관련 함수
 function getWeatherData() {
-    // 기상청 API 사용을 위한 정보
-    const apiKey = 'pUDq0bOmTCWA6tGzpswIIw'; 
-    const baseUrl = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst';
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS 우회 프록시
-
-    // 안양시 만안구 정확한 격자 좌표 (연성대학교 근처)
-    const nx = 59;
-    const ny = 125;
-
-    // 현재 날짜 시간 설정
-    const now = new Date();
-    const today = now.getFullYear().toString() + 
-            (now.getMonth() + 1).toString().padStart(2, '0') + 
-            now.getDate().toString().padStart(2, '0');
-
-    // 현재 시간에 따른 기준 시간 설정 (더 정확한 로직)
-    const currentHour = now.getHours();
-    let baseTime;
+    // OpenWeatherMap API 키
+    const openWeatherApiKey = '0402b01b5a5122098731';
     
-    // 기상청 API 발표 시간: 02, 05, 08, 11, 14, 17, 20, 23시
-    const baseTimes = ['0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'];
+    // 안양시 만안구 좌표 (연성대학교 근처)
+    const lat = 37.3943;
+    const lon = 126.9568;
     
-    for (let i = baseTimes.length - 1; i >= 0; i--) {
-        const time = parseInt(baseTimes[i].substring(0, 2));
-        if (currentHour >= time) {
-            baseTime = baseTimes[i];
-            break;
-        }
-    }
-    
-    // 현재 시간이 새벽 2시 이전이면 전날 23시 데이터 사용
-    if (!baseTime) {
-        baseTime = '2300';
-        const yesterday = new Date(now);
-        yesterday.setDate(yesterday.getDate() - 1);
-        today = yesterday.getFullYear().toString() + 
-               (yesterday.getMonth() + 1).toString().padStart(2, '0') + 
-               yesterday.getDate().toString().padStart(2, '0');
-    }
+    // OpenWeatherMap Current Weather API URL (공식 문서 기준)
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}&units=metric&lang=kr`;
 
-    const baseDate = today;
-
-    // API 요청 URL 생성
-    const url = `${proxyUrl}${baseUrl}?serviceKey=${apiKey}&numOfRows=10&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
-
-    console.log('날씨 정보 요청 URL:', url);
-    console.log(`기준일시: ${baseDate} ${baseTime}`);
+    console.log('OpenWeatherMap API 호출:', url);
 
     // 로딩 상태 표시
     const weatherTempElement = document.querySelector('.weather-temp');
+    const weatherDescElement = document.querySelector('.weather-desc');
+    const weatherIconElement = document.querySelector('.weather-icon');
+    
     if (weatherTempElement) {
         weatherTempElement.textContent = '로딩 중...';
+    }
+    if (weatherDescElement) {
+        weatherDescElement.textContent = '날씨 정보를 불러오는 중...';
+    }
+    if (weatherIconElement) {
+        weatherIconElement.textContent = '⏳';
     }
 
     // API 호출
@@ -1172,32 +1145,19 @@ function getWeatherData() {
     .then(response => {
         console.log('API 응답 상태:', response.status);
         if (!response.ok) {
-            throw new Error(`기상청 API 응답 오류: ${response.status}`);
+            throw new Error(`OpenWeatherMap API 응답 오류: ${response.status} ${response.statusText}`);
         }
-        return response.text();
+        return response.json();
     })
-    .then(text => {
-        console.log('API 원본 응답:', text);
+    .then(data => {
+        console.log('OpenWeatherMap 응답 데이터:', data);
         
-        try {
-            const data = JSON.parse(text);
-            console.log('파싱된 날씨 데이터:', data);
-            
-            if (data.response && data.response.header && data.response.header.resultCode === '00') {
-                if (data.response.body && data.response.body.items && data.response.body.items.item) {
-                    updateWeatherWidget(data.response.body.items.item);
-                } else {
-                    console.error('날씨 데이터 형식이 예상과 다릅니다:', data);
-                    displayWeatherError();
-                }
-            } else {
-                console.error('날씨 API 응답 오류:', data);
-                displayWeatherError();
-            }
-        } catch (error) {
-            console.error('JSON 파싱 오류:', error);
-            displayWeatherError();
+        // API 응답 유효성 검증
+        if (!data || !data.main || !data.weather || !data.weather[0]) {
+            throw new Error('날씨 데이터 형식이 올바르지 않습니다');
         }
+        
+        updateWeatherWidget(data);
     })
     .catch(error => {
         console.error('날씨 API 요청 중 오류 발생:', error);
@@ -1277,6 +1237,7 @@ function updateWeatherWidget(items) {
 
     console.log('날씨 정보 업데이트 완료:', { 온도: temperature, 날씨: weatherDesc, 아이콘: weatherIcon });
 }
+
 
 
 
