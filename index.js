@@ -2859,7 +2859,7 @@ function goToPage(pageName) {
             break;
             
         case 'club-activities':
-            alert('동아리 활동 페이지로 이동합니다.');
+            alert('장학금 정보 페이지로 이동합니다.');
             break;
             
         case 'job-info':
@@ -4081,10 +4081,10 @@ function handleWidgetClick(widgetName) {
         case '셔틀버스':
             goToPage('shuttle');
             break;
-        case '동아리 활동':
-            goToPage('club-activities');
+        case '장학금 정보':
+            navigateToProfilePage('scholarships');
             break;
-       case '내 시간표':
+        case '내 시간표':
             navigateToProfilePage('timetable');
             break;
         case '공지사항':
