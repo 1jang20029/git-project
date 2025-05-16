@@ -103,103 +103,168 @@
                 <!-- 가족 상황 -->
                 <div class="form-section">
                     <h4>가족 상황</h4>
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="familyInSchool">
-                            <span>가족 중 연성대학교 재학생/출신자 있음</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>가족 중 연성대학교 재학생/출신자 있음</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="familyInSchool" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="familyInSchool" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="employeeFamily">
-                            <span>교직원 자녀</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>교직원 자녀</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="employeeFamily" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="employeeFamily" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="singleParent">
-                            <span>한부모 가정</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>한부모 가정</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="singleParent" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="singleParent" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="multicultural">
-                            <span>다문화 가정</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>다문화 가정</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="multicultural" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="multicultural" value="false">
                     </div>
                 </div>
 
                 <!-- 특별 사항 -->
                 <div class="form-section">
                     <h4>특별 사항</h4>
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="veteran">
-                            <span>보훈대상자 (본인/자녀)</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>보훈대상자 (본인/자녀)</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="veteran" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="veteran" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="disabled">
-                            <span>장애인 (본인/자녀)</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>장애인 (본인/자녀)</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="disabled" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="disabled" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="northKorea">
-                            <span>북한이탈주민 (본인/자녀)</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>북한이탈주민 (본인/자녀)</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="northKorea" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="northKorea" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="lowIncome">
-                            <span>기초생활수급자/차상위계층</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>기초생활수급자/차상위계층</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="lowIncome" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">해당</span>
+                                <span class="toggle-option active" data-value="false">해당없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="lowIncome" value="false">
                     </div>
                 </div>
 
                 <!-- 활동 사항 -->
                 <div class="form-section">
                     <h4>활동 사항</h4>
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="studentCouncil">
-                            <span>학생회 활동</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>학생회 활동</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="studentCouncil" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">경험있음</span>
+                                <span class="toggle-option active" data-value="false">경험없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="studentCouncil" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="clubActivity">
-                            <span>동아리 활동</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>동아리 활동</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="clubActivity" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">경험있음</span>
+                                <span class="toggle-option active" data-value="false">경험없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="clubActivity" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="volunteer">
-                            <span>봉사활동 경험</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>봉사활동 경험</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="volunteer" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">경험있음</span>
+                                <span class="toggle-option active" data-value="false">경험없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="volunteer" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="competition">
-                            <span>경진대회 수상 경험</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>경진대회 수상 경험</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="competition" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">경험있음</span>
+                                <span class="toggle-option active" data-value="false">경험없음</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="competition" value="false">
                     </div>
                     
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="certification">
-                            <span>전공 관련 자격증 보유</span>
-                        </label>
+                    <div class="form-group toggle-group">
+                        <label>전공 관련 자격증 보유</label>
+                        <div class="toggle-container">
+                            <button type="button" class="toggle-button" data-target="certification" onclick="toggleOption(this)">
+                                <span class="toggle-option" data-value="true">보유</span>
+                                <span class="toggle-option active" data-value="false">미보유</span>
+                                <div class="toggle-slider"></div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="certification" value="false">
                     </div>
                 </div>
 
