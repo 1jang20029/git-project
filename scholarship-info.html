@@ -75,20 +75,20 @@
                 <!-- 성적 정보 -->
                 <div class="form-section">
                     <h4>성적 정보</h4>
-                    <div class="form-group">
+                    <div class="form-group" id="gpaGroup">
                         <label for="gpa">직전학기 평점평균</label>
                         <input type="number" id="gpa" step="0.01" min="0" max="4.5" placeholder="예: 3.75">
-                        <small>신입생은 입력하지 않으셔도 됩니다.</small>
+                        <small id="gpaNotice">신입생은 입력하지 않으셔도 됩니다.</small>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group" id="creditsGroup">
                         <label for="credits">직전학기 이수학점</label>
                         <input type="number" id="credits" min="0" max="25" placeholder="예: 18">
-                        <small>신입생은 입력하지 않으셔도 됩니다.</small>
+                        <small id="creditsNotice">신입생은 입력하지 않으셔도 됩니다.</small>
                     </div>
 
-                    <div class="form-group">
-                        <label for="entranceGrade">입학 성적 (신입생만)</label>
+                    <div class="form-group" id="entranceGradeGroup">
+                        <label for="entranceGrade">입학 성적 순위 (신입생용)</label>
                         <select id="entranceGrade">
                             <option value="">해당없음/모름</option>
                             <option value="top1">상위 1%</option>
@@ -97,31 +97,42 @@
                             <option value="top20">상위 20%</option>
                             <option value="others">기타</option>
                         </select>
+                        <small id="entranceNotice">재학생/편입생은 입력하지 않으셔도 됩니다.</small>
                     </div>
                 </div>
 
                 <!-- 가족 상황 -->
                 <div class="form-section">
                     <h4>가족 상황</h4>
-                    <div class="toggle-group">
-                        <div class="toggle-button" data-value="familyInSchool" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">👨‍👩‍👧‍👦</span>
-                            <span class="toggle-label">가족 중 연성대학교 재학생/출신자 있음</span>
+                    <div class="form-group">
+                        <label>가족 중 연성대학교 재학생/출신자 있음</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'familyInSchool')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'familyInSchool')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="employeeFamily" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">👨‍💼</span>
-                            <span class="toggle-label">교직원 자녀</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>교직원 자녀</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'employeeFamily')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'employeeFamily')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="singleParent" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">👩‍👧</span>
-                            <span class="toggle-label">한부모 가정</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>한부모 가정</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'singleParent')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'singleParent')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="multicultural" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">🌍</span>
-                            <span class="toggle-label">다문화 가정</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>다문화 가정</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'multicultural')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'multicultural')">아니오</button>
                         </div>
                     </div>
                 </div>
@@ -129,25 +140,35 @@
                 <!-- 특별 사항 -->
                 <div class="form-section">
                     <h4>특별 사항</h4>
-                    <div class="toggle-group">
-                        <div class="toggle-button" data-value="veteran" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">🎖️</span>
-                            <span class="toggle-label">보훈대상자 (본인/자녀)</span>
+                    <div class="form-group">
+                        <label>보훈대상자 (본인/자녀)</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'veteran')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'veteran')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="disabled" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">♿</span>
-                            <span class="toggle-label">장애인 (본인/자녀)</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>장애인 (본인/자녀)</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'disabled')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'disabled')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="northKorea" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">🏢</span>
-                            <span class="toggle-label">북한이탈주민 (본인/자녀)</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>북한이탈주민 (본인/자녀)</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'northKorea')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'northKorea')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="lowIncome" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">💝</span>
-                            <span class="toggle-label">기초생활수급자/차상위계층</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>기초생활수급자/차상위계층</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'lowIncome')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'lowIncome')">아니오</button>
                         </div>
                     </div>
                 </div>
@@ -155,30 +176,43 @@
                 <!-- 활동 사항 -->
                 <div class="form-section">
                     <h4>활동 사항</h4>
-                    <div class="toggle-group">
-                        <div class="toggle-button" data-value="studentCouncil" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">🏛️</span>
-                            <span class="toggle-label">학생회 활동</span>
+                    <div class="form-group">
+                        <label>학생회 활동</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'studentCouncil')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'studentCouncil')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="clubActivity" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">🎭</span>
-                            <span class="toggle-label">동아리 활동</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>동아리 활동</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'clubActivity')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'clubActivity')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="volunteer" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">🤝</span>
-                            <span class="toggle-label">봉사활동 경험</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>봉사활동 경험</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'volunteer')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'volunteer')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="competition" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">🏆</span>
-                            <span class="toggle-label">경진대회 수상 경험</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>경진대회 수상 경험</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'competition')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'competition')">아니오</button>
                         </div>
-                        
-                        <div class="toggle-button" data-value="certification" onclick="toggleSelection(this)">
-                            <span class="toggle-icon">📜</span>
-                            <span class="toggle-label">전공 관련 자격증 보유</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>전공 관련 자격증 보유</label>
+                        <div class="toggle-button-group">
+                            <button type="button" class="toggle-button" data-value="true" onclick="toggleSelection(this, 'certification')">예</button>
+                            <button type="button" class="toggle-button active" data-value="false" onclick="toggleSelection(this, 'certification')">아니오</button>
                         </div>
                     </div>
                 </div>

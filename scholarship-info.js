@@ -13,8 +13,18 @@ function switchScholarshipTab(tabName) {
         tab.classList.remove('active');
     });
     
-    // 현재 클릭된 탭 활성화
-    event.target.classList.add('active');
+    // 현재 클릭된 탭 활성화 - event.target 대신 직접 찾기
+    const tabIndex = {
+        'recommendation': 0,
+        'internal': 1,
+        'external': 2,
+        'schedule': 3
+    };
+    
+    const tabs = document.querySelectorAll('.tab-item');
+    if (tabs[tabIndex[tabName]]) {
+        tabs[tabIndex[tabName]].classList.add('active');
+    }
     
     // 페이지 맨 위로 스크롤
     window.scrollTo({ top: 0, behavior: 'smooth' });
