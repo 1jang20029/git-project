@@ -35,21 +35,27 @@ function toggleGradeFields() {
     const studentType = document.getElementById('studentType').value;
     const entranceGradeGroup = document.getElementById('entranceGradeGroup');
     const currentGradeGroup = document.getElementById('currentGradeGroup');
+    const transferGradeGroup = document.getElementById('transferGradeGroup');
     
     // 모든 필드 초기화
     entranceGradeGroup.style.display = 'none';
     currentGradeGroup.style.display = 'none';
+    transferGradeGroup.style.display = 'none';
     
     // 입력값 초기화
     document.getElementById('entranceGrade').value = '';
     document.getElementById('gpa').value = '';
     document.getElementById('credits').value = '';
+    document.getElementById('transferGpa').value = '';
+    document.getElementById('transferCredits').value = '';
     
     // 학생 구분에 따라 해당 필드 표시
     if (studentType === 'new') {
         entranceGradeGroup.style.display = 'block';
-    } else if (studentType === 'current' || studentType === 'transfer') {
+    } else if (studentType === 'current') {
         currentGradeGroup.style.display = 'block';
+    } else if (studentType === 'transfer') {
+        transferGradeGroup.style.display = 'block';
     }
 }
 
@@ -320,6 +326,10 @@ function collectUserInfo() {
     const credits = parseInt(document.getElementById('credits').value) || 0;
     const entranceGrade = document.getElementById('entranceGrade').value;
     
+    // 편입생 전적대학 성적
+    const transferGpa = parseFloat(document.getElementById('transferGpa').value) || 0;
+    const transferCredits = parseInt(document.getElementById('transferCredits').value) || 0;
+    
     // 가족 상황
     const familyInSchool = document.getElementById('familyInSchool').value;
     const employeeFamily = document.getElementById('employeeFamily').value;
@@ -343,6 +353,8 @@ function collectUserInfo() {
         gpa,
         credits,
         entranceGrade,
+        transferGpa,
+        transferCredits,
         familyInSchool,
         employeeFamily,
         familyType,
@@ -684,13 +696,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 폼 유효성 검사 설정
 function setupFormValidation() {
-    // GPA 입력 유효성 검사
+    // GPA 입력 유효성 검사 (재학생)
     const gpaInput = document.getElementById('gpa');
     if (gpaInput) {
         gpaInput.addEventListener('input', function() {
             const value = parseFloat(this.value);
             if (value < 0 || value > 4.5) {
                 this.setCustomValidity('평점은 0.0~4.5 사이의 값이어야 합니다.');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+    
+    // 편입생 전적대학 GPA 입력 유효성 검사
+    const transferGpaInput = document.getElementById('transferGpa');
+    if (transferGpaInput) {
+        transferGpaInput.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (value < 0 || value > 4.5) {
+                this.setCustomValidity('전적대학 평점은 0.0~4.5 사이의 값이어야 합니다.');
             } else {
                 this.setCustomValidity('');
             }
@@ -710,13 +735,26 @@ function setupFormValidation() {
         });
     }
     
-    // 이수학점 입력 유효성 검사
+    // 이수학점 입력 유효성 검사 (재학생)
     const creditsInput = document.getElementById('credits');
     if (creditsInput) {
         creditsInput.addEventListener('input', function() {
             const value = parseInt(this.value);
             if (value < 0 || value > 25) {
                 this.setCustomValidity('이수학점은 0~25 사이의 값이어야 합니다.');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+    
+    // 편입생 전적대학 이수학점 입력 유효성 검사
+    const transferCreditsInput = document.getElementById('transferCredits');
+    if (transferCreditsInput) {
+        transferCreditsInput.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (value < 0 || value > 140) {
+                this.setCustomValidity('전적대학 이수학점은 0~140 사이의 값이어야 합니다.');
             } else {
                 this.setCustomValidity('');
             }

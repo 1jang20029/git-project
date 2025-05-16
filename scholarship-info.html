@@ -98,7 +98,7 @@
                         </small>
                     </div>
                     
-                    <!-- 재학생/편입생용 직전학기 성적 -->
+                    <!-- 재학생용 직전학기 성적 -->
                     <div id="currentGradeGroup" style="display: none;">
                         <div class="form-group">
                             <label for="gpa">직전학기 평점평균</label>
@@ -110,6 +110,21 @@
                             <label for="credits">직전학기 이수학점</label>
                             <input type="number" id="credits" min="0" max="25" placeholder="예: 18">
                             <small>휴학, 학점포기 등을 제외한 실제 이수학점을 입력해주세요</small>
+                        </div>
+                    </div>
+                    
+                    <!-- 편입생용 전적대학 성적 -->
+                    <div id="transferGradeGroup" style="display: none;">
+                        <div class="form-group">
+                            <label for="transferGpa">전적대학 평점평균</label>
+                            <input type="number" id="transferGpa" step="0.01" min="0" max="4.5" placeholder="예: 3.50">
+                            <small>전적대학의 4.5 만점 기준 평점평균을 입력해주세요</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transferCredits">전적대학 총 이수학점</label>
+                            <input type="number" id="transferCredits" min="0" max="140" placeholder="예: 65">
+                            <small>전적대학에서 총 이수한 학점을 입력해주세요</small>
                         </div>
                     </div>
                 </div>
