@@ -3932,52 +3932,15 @@ function loadWidgetSettings() {
     if (widgetsData) {
         selectedWidgets = JSON.parse(widgetsData);
     } else {
-        // 기본 위젯 설정 (학식 제거, 셔틀버스 추가)
+        // 기본 위젯 설정 (동아리 활동을 장학금 정보로 변경)
         selectedWidgets = [
             { name: '교내/대외활동', icon: '🌟', description: '공모전, 동아리, 봉사활동 정보' },
             { name: '학사일정', icon: '📅', description: '주요 일정 및 행사' },
-            { name: '셔틀버스', icon: '🚌', description: '셔틀 시간표' }
+            { name: '장학금 정보', icon: '💰', description: '장학금 신청 및 혜택 정보' }
         ];
         localStorage.setItem('selectedWidgets', JSON.stringify(selectedWidgets));
     }
-    
-    // 바로가기 메뉴 컨테이너
-    const shortcutMenu = document.querySelector('.shortcut-menu');
-    
-    if (shortcutMenu && selectedWidgets.length > 0) {
-        // 기존 메뉴 아이템 제거
-        shortcutMenu.innerHTML = '';
-        
-        // 선택된 위젯 추가 (최대 5개)
-        const maxWidgets = Math.min(selectedWidgets.length, 5);
-        
-        for (let i = 0; i < maxWidgets; i++) {
-            const widget = selectedWidgets[i];
-            
-            const shortcutItem = document.createElement('div');
-            shortcutItem.className = 'shortcut-item';
-            
-            const shortcutIcon = document.createElement('div');
-            shortcutIcon.className = 'shortcut-icon';
-            shortcutIcon.textContent = widget.icon;
-            
-            const shortcutText = document.createElement('div');
-            shortcutText.className = 'shortcut-text';
-            shortcutText.textContent = widget.name;
-            
-            shortcutItem.appendChild(shortcutIcon);
-            shortcutItem.appendChild(shortcutText);
-            shortcutMenu.appendChild(shortcutItem);
-            
-            // 위젯 클릭 이벤트 추가
-            shortcutItem.addEventListener('click', function() {
-                handleWidgetClick(widget.name);
-            });
-        }
-    }
-    
-    // 하단 탭 메뉴 설정 불러오기
-    loadTabMenuSettings();
+    // 나머지 코드는 동일...
 }
 
 // 하단 탭 메뉴 설정 불러오기
@@ -4071,6 +4034,7 @@ function loadTabMenuSettings() {
     }
 }
 
+
 // 위젯 클릭 처리
 function handleWidgetClick(widgetName) {
     // 위젯 이름에 따른 기능 처리
@@ -4081,8 +4045,8 @@ function handleWidgetClick(widgetName) {
         case '셔틀버스':
             goToPage('shuttle');
             break;
-        case '동아리 활동':
-            goToPage('club-activities');
+        case '장학금 정보':  // 이 부분이 변경됨 (원래는 '동아리 활동')
+            navigateToProfilePage('scholarships');
             break;
        case '내 시간표':
             navigateToProfilePage('timetable');
@@ -4100,7 +4064,6 @@ function handleWidgetClick(widgetName) {
         case '교내/대외활동':
             window.location.href = 'activities.html';
             break;
-        // 학식 메뉴 케이스 제거
         default:
             alert(`${widgetName} 기능은 준비 중입니다.`);
     }
