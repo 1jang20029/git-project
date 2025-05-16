@@ -1113,142 +1113,184 @@ console.log('모든 이미지 URL 수정 완료');
 
 // 날씨 API 관련 함수
 function getWeatherData() {
-// 기상청 API 사용을 위한 정보
-const apiKey = 'pUDq0bOmTCWA6tGzpswIIw'; // 새로운 인증키
-const baseUrl = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst';
-const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS 우회 프록시
+    // 기상청 API 사용을 위한 정보
+    const apiKey = 'pUDq0bOmTCWA6tGzpswIIw'; 
+    const baseUrl = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst';
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS 우회 프록시
 
-// 안양시 동안구 기준 (실제로는 좌표 변환 필요)
-const nx = 58;
-const ny = 124;
+    // 안양시 만안구 정확한 격자 좌표 (연성대학교 근처)
+    const nx = 59;
+    const ny = 125;
 
-// 현재 날짜 시간 설정
-const now = new Date();
-const today = now.getFullYear().toString() + 
-        (now.getMonth() + 1).toString().padStart(2, '0') + 
-        now.getDate().toString().padStart(2, '0');
+    // 현재 날짜 시간 설정
+    const now = new Date();
+    const today = now.getFullYear().toString() + 
+            (now.getMonth() + 1).toString().padStart(2, '0') + 
+            now.getDate().toString().padStart(2, '0');
 
-// 기본 시간 설정
-let baseTime = '0200'; // 기본값
-const baseDate = today;
-
-// API 요청 URL 생성
-const url = `${proxyUrl}${baseUrl}?serviceKey=${apiKey}&numOfRows=10&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
-
-console.log('날씨 정보 요청 URL:', url);
-
-// 로딩 상태 표시
-const weatherTempElement = document.querySelector('.weather-temp');
-if (weatherTempElement) {
-weatherTempElement.textContent = '로딩 중...';
-}
-
-// API 호출
-fetch(url)
-.then(response => {
-    console.log('API 응답 상태:', response.status);
-    return response.text(); // JSON으로 바로 변환하지 않고 원본 텍스트 확인
-})
-.then(text => {
-    console.log('API 원본 응답:', text);
+    // 현재 시간에 따른 기준 시간 설정 (더 정확한 로직)
+    const currentHour = now.getHours();
+    let baseTime;
     
-    try {
-        const data = JSON.parse(text);
-        console.log('파싱된 날씨 데이터:', data);
-        
-        if (data.response && data.response.header && data.response.header.resultCode === '00') {
-            if (data.response.body && data.response.body.items && data.response.body.items.item) {
-                updateWeatherWidget(data.response.body.items.item);
-            } else {
-                console.error('날씨 데이터 형식이 예상과 다릅니다:', data);
-                displayDefaultWeather();
-            }
-        } else {
-            console.error('날씨 API 응답 오류:', data);
-            displayDefaultWeather();
+    // 기상청 API 발표 시간: 02, 05, 08, 11, 14, 17, 20, 23시
+    const baseTimes = ['0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'];
+    
+    for (let i = baseTimes.length - 1; i >= 0; i--) {
+        const time = parseInt(baseTimes[i].substring(0, 2));
+        if (currentHour >= time) {
+            baseTime = baseTimes[i];
+            break;
         }
-    } catch (error) {
-        console.error('JSON 파싱 오류:', error);
-        displayDefaultWeather();
     }
-})
-.catch(error => {
-    console.error('날씨 API 요청 중 오류 발생:', error);
-    displayDefaultWeather();
-});
+    
+    // 현재 시간이 새벽 2시 이전이면 전날 23시 데이터 사용
+    if (!baseTime) {
+        baseTime = '2300';
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        today = yesterday.getFullYear().toString() + 
+               (yesterday.getMonth() + 1).toString().padStart(2, '0') + 
+               yesterday.getDate().toString().padStart(2, '0');
+    }
+
+    const baseDate = today;
+
+    // API 요청 URL 생성
+    const url = `${proxyUrl}${baseUrl}?serviceKey=${apiKey}&numOfRows=10&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
+
+    console.log('날씨 정보 요청 URL:', url);
+    console.log(`기준일시: ${baseDate} ${baseTime}`);
+
+    // 로딩 상태 표시
+    const weatherTempElement = document.querySelector('.weather-temp');
+    if (weatherTempElement) {
+        weatherTempElement.textContent = '로딩 중...';
+    }
+
+    // API 호출
+    fetch(url)
+    .then(response => {
+        console.log('API 응답 상태:', response.status);
+        if (!response.ok) {
+            throw new Error(`기상청 API 응답 오류: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(text => {
+        console.log('API 원본 응답:', text);
+        
+        try {
+            const data = JSON.parse(text);
+            console.log('파싱된 날씨 데이터:', data);
+            
+            if (data.response && data.response.header && data.response.header.resultCode === '00') {
+                if (data.response.body && data.response.body.items && data.response.body.items.item) {
+                    updateWeatherWidget(data.response.body.items.item);
+                } else {
+                    console.error('날씨 데이터 형식이 예상과 다릅니다:', data);
+                    displayWeatherError();
+                }
+            } else {
+                console.error('날씨 API 응답 오류:', data);
+                displayWeatherError();
+            }
+        } catch (error) {
+            console.error('JSON 파싱 오류:', error);
+            displayWeatherError();
+        }
+    })
+    .catch(error => {
+        console.error('날씨 API 요청 중 오류 발생:', error);
+        displayWeatherError();
+    });
 }
 
 // 날씨 데이터 파싱 및 위젯 업데이트
 function updateWeatherWidget(items) {
-let temperature = null;
-let skyCode = null;
-let rainType = null;
+    let temperature = null;
+    let skyCode = null;
+    let rainType = null;
 
-// 필요한 데이터 추출
-items.forEach(item => {
-if (item.category === 'T1H') { // 기온
-    temperature = item.fcstValue;
-} else if (item.category === 'SKY') { // 하늘상태
-    skyCode = item.fcstValue;
-} else if (item.category === 'PTY') { // 강수형태
-    rainType = item.fcstValue;
+    // 필요한 데이터 추출
+    items.forEach(item => {
+        if (item.category === 'T1H') { // 기온
+            temperature = item.fcstValue;
+        } else if (item.category === 'SKY') { // 하늘상태
+            skyCode = item.fcstValue;
+        } else if (item.category === 'PTY') { // 강수형태
+            rainType = item.fcstValue;
+        }
+    });
+
+    // 날씨 아이콘 및 설명 결정
+    let weatherIcon, weatherDesc;
+
+    // 강수형태 (PTY) 코드: 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
+    if (rainType === '0') {
+        // 하늘상태 (SKY) 코드: 맑음(1), 구름많음(3), 흐림(4)
+        if (skyCode === '1') {
+            weatherIcon = '☀️';
+            weatherDesc = '맑음';
+        } else if (skyCode === '3') {
+            weatherIcon = '⛅';
+            weatherDesc = '구름많음';
+        } else if (skyCode === '4') {
+            weatherIcon = '☁️';
+            weatherDesc = '흐림';
+        } else {
+            weatherIcon = '🌤️';
+            weatherDesc = '맑음';
+        }
+    } else if (rainType === '1') {
+        weatherIcon = '🌧️';
+        weatherDesc = '비';
+    } else if (rainType === '2') {
+        weatherIcon = '🌨️';
+        weatherDesc = '비/눈';
+    } else if (rainType === '3') {
+        weatherIcon = '❄️';
+        weatherDesc = '눈';
+    } else if (rainType === '4') {
+        weatherIcon = '🌦️';
+        weatherDesc = '소나기';
+    } else {
+        weatherIcon = '🌤️';
+        weatherDesc = '맑음';
+    }
+
+    // UI 업데이트
+    const weatherTempElement = document.querySelector('.weather-temp');
+    const weatherDescElement = document.querySelector('.weather-desc');
+    const weatherIconElement = document.querySelector('.weather-icon');
+
+    if (weatherTempElement && temperature !== null) {
+        weatherTempElement.textContent = `${temperature}°C`;
+    }
+
+    if (weatherDescElement) {
+        weatherDescElement.textContent = `${weatherDesc}, 안양시 만안구`;
+    }
+
+    if (weatherIconElement) {
+        weatherIconElement.textContent = weatherIcon;
+    }
+
+    console.log('날씨 정보 업데이트 완료:', { 온도: temperature, 날씨: weatherDesc, 아이콘: weatherIcon });
 }
-});
 
-// 날씨 아이콘 및 설명 결정
-let weatherIcon, weatherDesc;
 
-// 강수형태 (PTY) 코드: 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
-if (rainType === '0') {
-// 하늘상태 (SKY) 코드: 맑음(1), 구름많음(3), 흐림(4)
-if (skyCode === '1') {
-    weatherIcon = '☀️';
-    weatherDesc = '맑음';
-} else if (skyCode === '3') {
-    weatherIcon = '⛅';
-    weatherDesc = '구름많음';
-} else if (skyCode === '4') {
-    weatherIcon = '☁️';
-    weatherDesc = '흐림';
-} else {
-    weatherIcon = '🌤️';
-    weatherDesc = '맑음';
-}
-} else if (rainType === '1') {
-weatherIcon = '🌧️';
-weatherDesc = '비';
-} else if (rainType === '2') {
-weatherIcon = '🌨️';
-weatherDesc = '비/눈';
-} else if (rainType === '3') {
-weatherIcon = '❄️';
-weatherDesc = '눈';
-} else if (rainType === '4') {
-weatherIcon = '🌦️';
-weatherDesc = '소나기';
-} else {
-weatherIcon = '🌤️';
-weatherDesc = '맑음';
-}
 
-// UI 업데이트
-const weatherTempElement = document.querySelector('.weather-temp');
-const weatherDescElement = document.querySelector('.weather-desc');
-const weatherIconElement = document.querySelector('.weather-icon');
+// 날씨 API 호출 실패 시 표시할 함수
+function displayWeatherError() {
+    const weatherTempElement = document.querySelector('.weather-temp');
+    const weatherDescElement = document.querySelector('.weather-desc');
+    const weatherIconElement = document.querySelector('.weather-icon');
 
-if (weatherTempElement && temperature !== null) {
-weatherTempElement.textContent = `${temperature}°C`;
-}
+    if (weatherTempElement) weatherTempElement.textContent = 'N/A';
+    if (weatherDescElement) weatherDescElement.textContent = '날씨 API 호출 실패';
+    if (weatherIconElement) weatherIconElement.textContent = '❌';
 
-if (weatherDescElement) {
-weatherDescElement.textContent = `${weatherDesc}, 안양시`;
-}
-
-if (weatherIconElement) {
-weatherIconElement.textContent = weatherIcon;
-}
-
-console.log('날씨 정보 업데이트 완료:', { 온도: temperature, 날씨: weatherDesc, 아이콘: weatherIcon });
+    console.log('날씨 API 호출 실패로 인한 오류 메시지 표시');
 }
 
 // 기본 날씨 정보 표시 (API 호출 실패 시)
