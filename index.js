@@ -3292,7 +3292,7 @@ function navigateToProfilePage(pageName) {
             break;
         
         case 'scholarships':
-            alert('장학금 내역 페이지로 이동합니다.');
+            alert('장학금 정보 페이지로 이동합니다.');
             // window.location.href = 'scholarships.html';
             break;
 
