@@ -477,6 +477,15 @@ function checkScholarshipMatch(userInfo, scholarship) {
     
     // 입학 성적 확인 (신입생)
     if (conditions.entranceGrade && userInfo.entranceGrade) {
+        // "기타"는 장학금 대상이 아니므로 제외
+        if (userInfo.entranceGrade === 'others') {
+            return {
+                eligible: false,
+                score: 0,
+                reasons: []
+            };
+        }
+        
         if (conditions.entranceGrade.includes(userInfo.entranceGrade)) {
             score += 25;
             const gradeNames = {
@@ -593,7 +602,11 @@ function getRecommendedAmount(userInfo, scholarship) {
     
     // 신입생 장학금의 경우 입학 성적에 따라
     if (scholarship.name === '신입생 장학금' && userInfo.entranceGrade) {
-        return amounts[userInfo.entranceGrade] || amounts.default;
+        // "기타"인 경우 장학금 대상이 아니므로 기본값 반환
+        if (userInfo.entranceGrade === 'others') {
+            return '해당 없음';
+        }
+        return amounts[userInfo.entranceGrade] || amounts.default || '해당 없음';
     }
     
     // 성적장학금의 경우 GPA에 따라
