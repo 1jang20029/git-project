@@ -379,7 +379,7 @@ function recommendScholarships() {
     
     for (const [key, scholarship] of Object.entries(scholarshipDatabase)) {
         const match = checkScholarshipMatch(userInfo, scholarship);
-        if (match.eligible) {
+        if (match.eligible && match.score > 0) { // 0점인 것들 제외
             recommendations.push({
                 ...scholarship,
                 id: key,
@@ -419,22 +419,49 @@ function checkScholarshipMatch(userInfo, scholarship) {
     }
     
     // 성적 조건 확인 (재학생/편입생)
-    if (conditions.minGpa && userInfo.gpa > 0) {
-        if (userInfo.gpa < conditions.minGpa) {
-            eligible = false;
+    if (conditions.minGpa) {
+        let currentGpa = 0;
+        let currentCredits = 0;
+        
+        // 편입생의 경우 전적대학 성적, 재학생의 경우 직전학기 성적
+        if (userInfo.studentType === 'transfer') {
+            currentGpa = userInfo.transferGpa;
+            currentCredits = userInfo.transferCredits;
         } else {
-            score += 15;
-            reasons.push(`평점 ${userInfo.gpa} (기준: ${conditions.minGpa} 이상)`);
+            currentGpa = userInfo.gpa;
+            currentCredits = userInfo.credits;
+        }
+        
+        if (currentGpa > 0) {
+            if (currentGpa < conditions.minGpa) {
+                eligible = false;
+            } else {
+                score += 15;
+                const gradeType = userInfo.studentType === 'transfer' ? '전적대학 평점' : '평점';
+                reasons.push(`${gradeType} ${currentGpa} (기준: ${conditions.minGpa} 이상)`);
+            }
         }
     }
     
     // 이수학점 확인 (재학생/편입생)
-    if (conditions.minCredits && userInfo.credits > 0) {
-        if (userInfo.credits < conditions.minCredits) {
-            eligible = false;
+    if (conditions.minCredits) {
+        let currentCredits = 0;
+        
+        // 편입생의 경우 전적대학 이수학점, 재학생의 경우 직전학기 이수학점
+        if (userInfo.studentType === 'transfer') {
+            currentCredits = userInfo.transferCredits;
         } else {
-            score += 10;
-            reasons.push(`이수학점 ${userInfo.credits}학점 (기준: ${conditions.minCredits}학점 이상)`);
+            currentCredits = userInfo.credits;
+        }
+        
+        if (currentCredits > 0) {
+            if (currentCredits < conditions.minCredits) {
+                eligible = false;
+            } else {
+                score += 10;
+                const creditType = userInfo.studentType === 'transfer' ? '전적대학 이수학점' : '이수학점';
+                reasons.push(`${creditType} ${currentCredits}학점 (기준: ${conditions.minCredits}학점 이상)`);
+            }
         }
     }
     
@@ -767,9 +794,6 @@ window.addEventListener('beforeunload', function() {
     localStorage.setItem('scholarshipScrollPosition', window.scrollY);
 });
 
-// 기타 기능들은 동일하게 유지...
-// (장학금 카드 애니메이션, 테이블 스크롤 가이드 등)
-
 // 장학금 카드 애니메이션 (인터섹션 옵저버 사용)
 const observerOptions = {
     threshold: 0.1,
@@ -863,3 +887,5 @@ document.head.appendChild(style);
 window.addEventListener('error', function(event) {
     console.error('장학금 페이지 에러:', event.error);
 });
+
+console.log('장학금 정보 페이지가 로드되었습니다.');
