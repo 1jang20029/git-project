@@ -257,7 +257,7 @@ const scholarshipDatabase = {
             achievements: ['volunteer']
         },
         amounts: {
-            'default': '해당 별한 내 자동지급'
+            'default': '예상범위 내 자동지급'
         },
         description: '봉사시간 종합시류 제출자'
     },
@@ -295,20 +295,20 @@ const scholarshipDatabase = {
             achievements: ['certification']
         },
         amounts: {
-            'default': '해당 별한 내'
+            'default': '예상범위 내'
         },
         description: '전공 관련 자격증 취득자'
     },
     
     // 기초생활수급자장학금
     'low_income': {
-        name: '무지개장학금(1유형)',
+        name: '무지개장학금(Ⅱ유형)',
         type: 'internal',
         conditions: {
             specialStatus: ['lowIncome']
         },
         amounts: {
-            'default': '해당 별한 내'
+            'default': '예상범위 내'
         },
         description: '기초생활수급자 및 차상위계층'
     }
