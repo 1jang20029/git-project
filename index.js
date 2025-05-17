@@ -4862,6 +4862,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 // 메인 페이지에서 대외활동 통계 표시
+// 메인 페이지에서 대외활동 통계 표시
 function displayActivityStats() {
     // 로컬 스토리지에서 통계 정보 가져오기
     const statsData = localStorage.getItem('activityStats');
@@ -4869,20 +4870,39 @@ function displayActivityStats() {
     if (statsData) {
         const stats = JSON.parse(statsData);
         
-        // 통계 표시 요소들 가져오기
-        const contestElement = document.querySelector('.activity-stat-number:nth-child(1)');
-        const clubElement = document.querySelector('.activity-stat-number:nth-child(2)');
-        const externalElement = document.querySelector('.activity-stat-number:nth-child(3)');
+        // 통계 표시 요소들 가져오기 - 정확한 선택자 사용
+        // 여기서는 메인 페이지의 활동 통계 표시 부분의 구조에 맞게 선택자 작성
+        const contestElement = document.querySelector('.activity-stat-item:nth-child(1) .activity-stat-number');
+        const clubElement = document.querySelector('.activity-stat-item:nth-child(2) .activity-stat-number');
+        const externalElement = document.querySelector('.activity-stat-item:nth-child(3) .activity-stat-number');
         
         // 값 업데이트
-        if (contestElement) contestElement.textContent = stats.contestCount;
-        if (clubElement) clubElement.textContent = stats.clubCount;
-        if (externalElement) externalElement.textContent = stats.externalCount;
+        if (contestElement) {
+            // 진행 중인 공모전 개수 업데이트
+            contestElement.textContent = stats.contestCount;
+        }
+        
+        if (clubElement) {
+            // 신입 모집 동아리 개수 업데이트
+            clubElement.textContent = stats.clubCount;
+        }
+        
+        if (externalElement) {
+            // 대외활동 기회 개수 업데이트
+            externalElement.textContent = stats.externalCount;
+        }
+        
+        // 추가적으로 봉사활동 통계를 표시할 요소가 있다면
+        const volunteerElement = document.querySelector('.activity-stat-item:nth-child(4) .activity-stat-number');
+        if (volunteerElement) {
+            volunteerElement.textContent = stats.volunteerCount;
+        }
+        
+        console.log('활동 통계 업데이트 완료:', stats);
+    } else {
+        console.log('저장된 활동 통계가 없습니다.');
     }
 }
-
-// 페이지 로드 시 통계 표시
-document.addEventListener('DOMContentLoaded', displayActivityStats);
 
 // 페이지 로드 시 통계 표시
 document.addEventListener('DOMContentLoaded', function() {
