@@ -469,9 +469,7 @@ function deleteActivity(activityId) {
 
 // 뒤로가기 함수
 function goBack() {
-    if (confirm('이전 페이지로 돌아가시겠습니까?')) {
-        window.history.back();
-    }
+    window.history.back();
 }
 
 // 검색 토글
