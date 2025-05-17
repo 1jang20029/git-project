@@ -414,6 +414,9 @@ function updateActivity(formData) {
     // 로컬 스토리지에 저장
     saveToLocalStorage();
     
+    // 마감 임박 활동 정보 업데이트
+    updateUpcomingDeadlines();
+    
     // 성공 메시지
     alert('활동이 수정되었습니다.');
 }
@@ -458,6 +461,9 @@ function deleteActivity(activityId) {
     
     // 로컬 스토리지에 저장
     saveToLocalStorage();
+    
+    // 마감 임박 활동 정보 업데이트
+    updateUpcomingDeadlines();
     
     // 해당 활동에 대한 신청 내역도 삭제
     const applicationIndex = userApplications.findIndex(a => a.activityId === activityId);
@@ -635,22 +641,82 @@ function updateStats() {
     const externalCount = Array.from(visibleActivities).filter(item => item.classList.contains('external')).length;
     const volunteerCount = Array.from(visibleActivities).filter(item => item.classList.contains('volunteer')).length;
     
-    // 현재 통계 UI 업데이트
     const stats = document.querySelectorAll('.stat-number');
-    stats[0].textContent = contestCount;
-    stats[1].textContent = clubCount;
-    stats[2].textContent = externalCount;
-    stats[3].textContent = volunteerCount;
+    if (stats.length >= 4) {
+        stats[0].textContent = contestCount;
+        stats[1].textContent = clubCount;
+        stats[2].textContent = externalCount;
+        stats[3].textContent = volunteerCount;
+    }
     
     // 메인 페이지용 통계 정보 저장
     localStorage.setItem('activityStats', JSON.stringify({
-        contestCount: contestCount,     // 공모전 개수
-        clubCount: clubCount,           // 동아리 개수
-        externalCount: externalCount,   // 대외활동 개수
-        volunteerCount: volunteerCount, // 봉사활동 개수
+        contestCount: contestCount,
+        clubCount: clubCount,
+        externalCount: externalCount,
+        volunteerCount: volunteerCount,
         lastUpdated: new Date().toISOString()
     }));
 }
+
+function updateUpcomingDeadlines() {
+    // 마감 날짜가 있는 활동들만 필터링
+    const activitiesWithDeadline = userActivities.filter(activity => activity.deadline);
+    
+    // 현재 날짜
+    const now = new Date();
+    
+    // 마감일 기준으로 정렬해서 임박한 순서대로 정렬
+    const sortedActivities = activitiesWithDeadline.sort((a, b) => {
+        const deadlineA = new Date(a.deadline);
+        const deadlineB = new Date(b.deadline);
+        return deadlineA - deadlineB;
+    });
+    
+    // 아직 마감되지 않은 활동만 필터링 (현재 날짜보다 마감일이 이후인 것들)
+    const upcomingActivities = sortedActivities.filter(activity => {
+        const deadline = new Date(activity.deadline);
+        return deadline > now;
+    });
+    
+    // 마감 임박 활동 최대 2개 추출
+    const urgentActivities = upcomingActivities.slice(0, 2).map(activity => {
+        // 마감까지 남은 일수 계산
+        const deadline = new Date(activity.deadline);
+        const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+        
+        // 활동 유형에 따른 아이콘 결정
+        let icon = '';
+        if (activity.type === 'contest') icon = '🏆';
+        else if (activity.type === 'club') icon = '👥';
+        else if (activity.type === 'external') icon = '🌟';
+        else if (activity.type === 'volunteer') icon = '🤝';
+        else icon = '⏰';
+        
+        return {
+            id: activity.id,
+            title: activity.title,
+            icon: icon,
+            daysLeft: daysLeft,
+            type: activity.type,
+            deadline: activity.deadline
+        };
+    });
+    
+    // 로컬 스토리지에 저장
+    localStorage.setItem('urgentActivities', JSON.stringify(urgentActivities));
+    
+    // 이벤트 발생시켜 메인 페이지 알림
+    try {
+        window.dispatchEvent(new CustomEvent('activityStatsUpdated'));
+        console.log('활동 통계 업데이트 이벤트 발생');
+    } catch (e) {
+        console.error('이벤트 발생 중 오류:', e);
+    }
+}
+
+
+
 
 // 활동 상세 보기
 function viewActivityDetail(activityId) {
@@ -1139,6 +1205,9 @@ function addNewActivity(formData, showAlert = true) {
     // 로컬 스토리지에 활동 저장
     saveToLocalStorage();
     
+    // 마감 임박 활동 정보 업데이트
+    updateUpcomingDeadlines();
+    
     // 활동 등록 성공 메시지 (showAlert이 true일 때만)
     if (showAlert) {
         alert('활동이 성공적으로 등록되었습니다.');
@@ -1169,13 +1238,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadFromLocalStorage();
     console.log(`로드된 활동: ${userActivities.length}, 저장된 카테고리: ${currentCategory}`);
     
-    // 페이지네이션 초기 설정
-    const paginationContainer = document.getElementById('paginationContainer');
-    if (paginationContainer) {
-        paginationContainer.style.display = 'block';
-        console.log("페이지네이션 컨테이너 표시 설정");
-    }
-    
     // 초기 활동 로드
     loadInitialActivities();
     
@@ -1194,85 +1256,66 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 검색 입력 이벤트 리스너
     const searchInput = document.getElementById('activitySearch');
-    searchInput.addEventListener('input', searchActivities);
+    if (searchInput) {
+        searchInput.addEventListener('input', searchActivities);
+    }
     
     // 활동 등록 폼 제출 이벤트 리스너
     const registrationForm = document.getElementById('activityRegistrationForm');
-    registrationForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        // 폼 데이터 수집
-        const formData = {
-            type: document.getElementById('activityType').value,
-            title: document.getElementById('activityTitle').value,
-            description: document.getElementById('activityDescription').value,
-            deadline: document.getElementById('activityDeadline').value,
-            details: [
-                document.querySelector('[name="detailItem1"]').value,
-                document.querySelector('[name="detailItem2"]').value,
-                document.querySelector('[name="detailItem3"]').value
-            ].filter(item => item), // 빈 항목 제거
-            tags: document.getElementById('activityTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
-        };
-        
-        // 새 활동 추가
-        addNewActivity(formData);
-        
-        // 폼 닫기 및 초기화
-        closeRegistrationForm();
-    });
+    if (registrationForm) {
+        registrationForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // 폼 데이터 수집
+            const formData = {
+                type: document.getElementById('activityType').value,
+                title: document.getElementById('activityTitle').value,
+                description: document.getElementById('activityDescription').value,
+                deadline: document.getElementById('activityDeadline').value,
+                details: [
+                    document.querySelector('[name="detailItem1"]').value,
+                    document.querySelector('[name="detailItem2"]').value,
+                    document.querySelector('[name="detailItem3"]').value
+                ].filter(item => item), // 빈 항목 제거
+                tags: document.getElementById('activityTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
+            };
+            
+            // 새 활동 추가
+            addNewActivity(formData);
+            
+            // 폼 닫기 및 초기화
+            closeRegistrationForm();
+        });
+    }
     
     // 활동 수정 폼 제출 이벤트 리스너
     const editForm = document.getElementById('activityEditForm');
-    editForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        // 폼 데이터 수집
-        const formData = {
-            id: document.getElementById('editActivityId').value,
-            type: document.getElementById('editActivityType').value,
-            title: document.getElementById('editActivityTitle').value,
-            description: document.getElementById('editActivityDescription').value,
-            deadline: document.getElementById('editActivityDeadline').value,
-            details: [
-                document.getElementById('editDetailItem1').value,
-                document.getElementById('editDetailItem2').value,
-                document.getElementById('editDetailItem3').value
-            ].filter(item => item), // 빈 항목 제거
-            tags: document.getElementById('editActivityTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
-        };
-        
-        // 활동 수정
-        updateActivity(formData);
-        
-        // 폼 닫기
-        closeEditForm();
-    });
-    
-    // 달력 버튼 이벤트 리스너 추가
-    const deadlineInput = document.getElementById('activityDeadline');
-    deadlineInput.addEventListener('click', function() {
-        openCalendarModal('activityDeadline');
-    });
-    
-    const editDeadlineInput = document.getElementById('editActivityDeadline');
-    editDeadlineInput.addEventListener('click', function() {
-        openCalendarModal('editActivityDeadline');
-    });
-    
-    // 헤더에 신청 내역 버튼 추가
-    const headerActions = document.querySelector('.header-actions');
-    const applicationsButton = document.createElement('button');
-    applicationsButton.className = 'header-btn applications-button';
-    applicationsButton.textContent = '내 신청';
-    applicationsButton.onclick = openApplicationsModal;
-    headerActions.prepend(applicationsButton);
-    
-    // 페이지네이션 강제 업데이트
-    setTimeout(function() {
-        updatePagination();
-        console.log("페이지네이션 타이머로 강제 업데이트");
-    }, 500);
+    if (editForm) {
+        editForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // 폼 데이터 수집
+            const formData = {
+                id: document.getElementById('editActivityId').value,
+                type: document.getElementById('editActivityType').value,
+                title: document.getElementById('editActivityTitle').value,
+                description: document.getElementById('editActivityDescription').value,
+                deadline: document.getElementById('editActivityDeadline').value,
+                details: [
+                    document.getElementById('editDetailItem1').value,
+                    document.getElementById('editDetailItem2').value,
+                    document.getElementById('editDetailItem3').value
+                ].filter(item => item), // 빈 항목 제거
+                tags: document.getElementById('editActivityTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
+            };
+            
+            // 활동 수정
+            updateActivity(formData);
+            
+            // 폼 닫기
+            closeEditForm();
+        });
+    }
     
     console.log('교내/대외활동 페이지가 로드되었습니다.');
 });
