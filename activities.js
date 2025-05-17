@@ -637,6 +637,15 @@ function updateStats() {
     stats[1].textContent = clubCount;
     stats[2].textContent = externalCount;
     stats[3].textContent = volunteerCount;
+    
+    // 메인 페이지용 통계 정보 저장
+    localStorage.setItem('activityStats', JSON.stringify({
+        contestCount: contestCount,
+        clubCount: clubCount,
+        externalCount: externalCount,
+        volunteerCount: volunteerCount,
+        lastUpdated: new Date().toISOString()
+    }));
 }
 
 // 활동 상세 보기

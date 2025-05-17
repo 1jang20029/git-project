@@ -4859,3 +4859,27 @@ if (typeof module !== 'undefined' && module.exports) {
     
     logInfo(`앱 초기화 완료 - 버전 ${APP_CONFIG.version}`);
 })();
+
+
+// 메인 페이지에서 대외활동 통계 표시
+function displayActivityStats() {
+    // 로컬 스토리지에서 통계 정보 가져오기
+    const statsData = localStorage.getItem('activityStats');
+    
+    if (statsData) {
+        const stats = JSON.parse(statsData);
+        
+        // 통계 표시 요소들 가져오기
+        const contestElement = document.querySelector('.activity-stat-number:nth-child(1)');
+        const clubElement = document.querySelector('.activity-stat-number:nth-child(2)');
+        const externalElement = document.querySelector('.activity-stat-number:nth-child(3)');
+        
+        // 값 업데이트
+        if (contestElement) contestElement.textContent = stats.contestCount;
+        if (clubElement) clubElement.textContent = stats.clubCount;
+        if (externalElement) externalElement.textContent = stats.externalCount;
+    }
+}
+
+// 페이지 로드 시 통계 표시
+document.addEventListener('DOMContentLoaded', displayActivityStats);
