@@ -625,6 +625,7 @@ function updateNoActivitiesMessage(visibleCount, category) {
 }
 
 // 통계 업데이트
+// 통계 업데이트 함수 수정
 function updateStats() {
     const visibleActivities = document.querySelectorAll('.activity-item:not(.hidden)');
     const contestCount = Array.from(visibleActivities).filter(item => item.classList.contains('contest')).length;
@@ -632,6 +633,7 @@ function updateStats() {
     const externalCount = Array.from(visibleActivities).filter(item => item.classList.contains('external')).length;
     const volunteerCount = Array.from(visibleActivities).filter(item => item.classList.contains('volunteer')).length;
     
+    // 현재 통계 UI 업데이트
     const stats = document.querySelectorAll('.stat-number');
     stats[0].textContent = contestCount;
     stats[1].textContent = clubCount;
@@ -640,10 +642,10 @@ function updateStats() {
     
     // 메인 페이지용 통계 정보 저장
     localStorage.setItem('activityStats', JSON.stringify({
-        contestCount: contestCount,
-        clubCount: clubCount,
-        externalCount: externalCount,
-        volunteerCount: volunteerCount,
+        contestCount: contestCount,     // 공모전 개수
+        clubCount: clubCount,           // 동아리 개수
+        externalCount: externalCount,   // 대외활동 개수
+        volunteerCount: volunteerCount, // 봉사활동 개수
         lastUpdated: new Date().toISOString()
     }));
 }
