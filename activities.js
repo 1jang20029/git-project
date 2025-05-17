@@ -2,12 +2,14 @@
 function saveToLocalStorage() {
     localStorage.setItem('userActivities', JSON.stringify(userActivities));
     localStorage.setItem('userApplications', JSON.stringify(userApplications));
+    localStorage.setItem('currentCategory', currentCategory);
 }
 
 // 로컬 스토리지에서 불러오기
 function loadFromLocalStorage() {
     const savedActivities = localStorage.getItem('userActivities');
     const savedApplications = localStorage.getItem('userApplications');
+    const savedCategory = localStorage.getItem('currentCategory');
     
     if (savedActivities) {
         userActivities = JSON.parse(savedActivities);
@@ -15,6 +17,10 @@ function loadFromLocalStorage() {
     
     if (savedApplications) {
         userApplications = JSON.parse(savedApplications);
+    }
+    
+    if (savedCategory) {
+        currentCategory = savedCategory;
     }
 }
 
@@ -527,6 +533,9 @@ function filterByCategory(category) {
     currentPage = 1;
     updatePagination();
     displayActivitiesByPage();
+    
+    // 로컬 스토리지에 현재 카테고리 저장
+    localStorage.setItem('currentCategory', category);
 }
 
 // 필터링 후 활동이 없을 때 메시지 업데이트
@@ -1073,8 +1082,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // 로컬 스토리지에서 데이터 불러오기
     loadFromLocalStorage();
     
+    // 저장된 카테고리 불러오기
+    const savedCategory = localStorage.getItem('currentCategory');
+    if (savedCategory) {
+        currentCategory = savedCategory;
+    }
+    
     // 초기 활동 로드
     loadInitialActivities();
+    
+    // 카테고리 탭 활성화
+    if (currentCategory) {
+        const categoryTab = document.querySelector(`.tab-button[data-category="${currentCategory}"]`);
+        if (categoryTab) {
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            categoryTab.classList.add('active');
+        }
+    }
     
     // 검색 입력 이벤트 리스너
     const searchInput = document.getElementById('activitySearch');
