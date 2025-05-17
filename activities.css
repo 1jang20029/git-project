@@ -1,4 +1,12 @@
-/* 상세 보기 모달 */
+.calendar-instructions {
+    text-align: center;
+    padding: 8px 0;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+}/* 상세 보기 모달 */
 .detail-modal-content {
     max-width: 700px;
 }
@@ -534,6 +542,7 @@ header {
     color: #333;
     margin-bottom: 8px;
     line-height: 1.3;
+    word-break: break-word;
 }
 
 .activity-description {
@@ -541,6 +550,7 @@ header {
     color: #666;
     margin-bottom: 12px;
     line-height: 1.4;
+    word-break: break-word;
 }
 
 .activity-details {
