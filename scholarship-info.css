@@ -797,3 +797,36 @@ header {
 @media (prefers-color-scheme: dark) {
     /* 필요시 다크모드 스타일 추가 */
 }
+
+/* 드롭다운 필터 스타일 */
+.scholarship-filter {
+    margin: 16px;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filter-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #c62917;
+    box-shadow: 0 0 0 2px rgba(198, 41, 23, 0.1);
+}

@@ -231,8 +231,18 @@
 
         <!-- 교내장학금 탭 -->
         <div id="internal-scholarship" class="scholarship-content">
+            <!-- 드롭다운 필터 추가 -->
+            <div id="scholarship-filter" class="scholarship-filter">
+                <label for="scholarshipType" class="filter-label">교내장학금 유형 선택</label>
+                <select id="scholarshipType" class="filter-select" onchange="filterInternalScholarships()">
+                    <option value="all">전체 보기</option>
+                    <option value="tuition">학비감면형</option>
+                    <option value="non-tuition">비학비감면형</option>
+                </select>
+            </div>
+            
             <!-- 학비감면형 -->
-            <div class="section">
+            <div id="tuition-section" class="section">
                 <div class="section-header">
                     <h2>교내장학금 - 학비감면형</h2>
                 </div>
@@ -589,7 +599,7 @@
             </div>
 
             <!-- 비학비감면형 -->
-            <div class="section">
+            <div id="non-tuition-section" class="section">
                 <div class="section-header">
                     <h2>교내장학금 - 비학비감면형</h2>
                 </div>

@@ -28,6 +28,12 @@ function switchScholarshipTab(tabName) {
     
     // 페이지 맨 위로 스크롤
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // 교내장학금 탭이 활성화되면 드롭다운 표시, 아니면 숨김
+    const scholarshipFilter = document.getElementById('scholarship-filter');
+    if (scholarshipFilter) {
+        scholarshipFilter.style.display = tabName === 'internal' ? 'block' : 'none';
+    }
 }
 
 // 학생 구분에 따른 성적 입력 필드 표시/숨김
@@ -57,6 +63,37 @@ function toggleGradeFields() {
     } else if (studentType === 'transfer') {
         transferGradeGroup.style.display = 'block';
     }
+}
+
+// 장학금 유형 필터링 함수
+function filterInternalScholarships() {
+    const selectedType = document.getElementById('scholarshipType').value;
+    const tuitionSection = document.getElementById('tuition-section');
+    const nonTuitionSection = document.getElementById('non-tuition-section');
+    
+    // 선택된 유형에 따라 섹션 표시/숨김 처리
+    if (selectedType === 'all') {
+        tuitionSection.style.display = 'block';
+        nonTuitionSection.style.display = 'block';
+    } else if (selectedType === 'tuition') {
+        tuitionSection.style.display = 'block';
+        nonTuitionSection.style.display = 'none';
+    } else if (selectedType === 'non-tuition') {
+        tuitionSection.style.display = 'none';
+        nonTuitionSection.style.display = 'block';
+    }
+    
+    // 애니메이션 효과 추가
+    const cards = document.querySelectorAll('.scholarship-card:not([style*="display: none"])');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
 }
 
 // 장학금 데이터베이스
@@ -295,7 +332,7 @@ const scholarshipDatabase = {
             achievements: ['certification']
         },
         amounts: {
-            'default': '예상범위 내'
+            'default': '예산범위 내'
         },
         description: '전공 관련 자격증 취득자'
     },
@@ -708,6 +745,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // 초기화: 교내장학금 탭이 활성화 상태가 아니면 드롭다운 숨김
+    const internalTabActive = document.getElementById('internal-scholarship').classList.contains('active');
+    const scholarshipFilter = document.getElementById('scholarship-filter');
+    if (scholarshipFilter) {
+        scholarshipFilter.style.display = internalTabActive ? 'block' : 'none';
+    }
+    
     // 학생 구분 변경 시 성적 입력 필드 토글
     document.getElementById('studentType').addEventListener('change', toggleGradeFields);
     
@@ -906,3 +950,204 @@ window.addEventListener('error', function(event) {
 });
 
 console.log('장학금 정보 페이지가 로드되었습니다.');
+
+// 교내장학금 드롭다운 필터 기능
+
+// 페이지 로딩 완료 후 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    // 교내장학금 필터 초기화
+    const scholarshipFilter = document.getElementById('scholarship-filter');
+    if (scholarshipFilter) {
+        // 초기에는 교내장학금 탭이 활성화되어 있지 않으므로 숨김
+        const internalTabActive = document.getElementById('internal-scholarship').classList.contains('active');
+        scholarshipFilter.style.display = internalTabActive ? 'block' : 'none';
+        
+        // 드롭다운 변경 이벤트 등록
+        document.getElementById('scholarshipType').addEventListener('change', filterInternalScholarships);
+    }
+    
+    // 초기 필터 적용 (전체 보기 상태)
+    if (document.getElementById('internal-scholarship').classList.contains('active')) {
+        filterInternalScholarships();
+    }
+});
+
+// DOM의 변경사항 감지를 위한 MutationObserver 설정
+// 이 기능은 동적으로 DOM이 변경될 때(예: 다른 코드에 의해 섹션이 표시/숨김될 때) 
+// 필터링이 올바르게 적용되도록 보장합니다
+const observeDOM = (function() {
+    const MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+    
+    return function(obj, callback) {
+        if (!obj || obj.nodeType !== 1) return;
+        
+        if (MutationObserver) {
+            // define a new observer
+            const mutationObserver = new MutationObserver(callback);
+            
+            // observe changes to attributes or children
+            mutationObserver.observe(obj, { 
+                childList: true, 
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['style', 'class']
+            });
+            return mutationObserver;
+        } 
+        // legacy browsers fallback
+        else if (window.addEventListener) {
+            obj.addEventListener('DOMNodeInserted', callback, false);
+            obj.addEventListener('DOMNodeRemoved', callback, false);
+            obj.addEventListener('DOMAttrModified', callback, false);
+        }
+    };
+})();
+
+// 교내장학금 섹션 변경 감지
+const internalScholarship = document.getElementById('internal-scholarship');
+if (internalScholarship) {
+    observeDOM(internalScholarship, function() {
+        // 교내장학금 탭이 활성화된 경우에만 필터 관련 작업을 수행
+        if (internalScholarship.classList.contains('active')) {
+            const scholarshipFilter = document.getElementById('scholarship-filter');
+            if (scholarshipFilter && scholarshipFilter.style.display === 'none') {
+                scholarshipFilter.style.display = 'block';
+            }
+        }
+    });
+}
+
+// 페이지 리사이즈 시 카드 애니메이션 효과 초기화
+window.addEventListener('resize', function() {
+    // 교내장학금 탭이 활성화된 경우에만 애니메이션 업데이트
+    if (document.getElementById('internal-scholarship').classList.contains('active')) {
+        const cards = document.querySelectorAll('.scholarship-card:not([style*="display: none"])');
+        cards.forEach(card => {
+            // 이미 애니메이션이 적용된 카드의 경우 스타일 초기화 방지
+            if (card.style.opacity !== '1') {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }
+        });
+    }
+});
+
+// 접근성 향상을 위한 키보드 단축키
+document.addEventListener('keydown', function(event) {
+    // Alt + F 키 조합으로 교내장학금 필터 포커스
+    if (event.altKey && event.key === 'f') {
+        if (document.getElementById('internal-scholarship').classList.contains('active')) {
+            const filterSelect = document.getElementById('scholarshipType');
+            if (filterSelect) {
+                event.preventDefault();
+                filterSelect.focus();
+            }
+        }
+    }
+});
+
+// 교내장학금 필터 결과 요약 정보 표시
+function showFilterSummary() {
+    const selectedType = document.getElementById('scholarshipType').value;
+    const summaryElement = document.getElementById('filter-summary');
+    
+    // 요약 정보 엘리먼트가 없는 경우 생성
+    if (!summaryElement) {
+        const summaryDiv = document.createElement('div');
+        summaryDiv.id = 'filter-summary';
+        summaryDiv.style.cssText = `
+            margin: 0 16px 16px;
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        `;
+        
+        // 필터 결과 개수 표시
+        const tuitionCount = document.querySelectorAll('#tuition-section .scholarship-card').length;
+        const nonTuitionCount = document.querySelectorAll('#non-tuition-section .scholarship-card').length;
+        
+        let displayText = '';
+        if (selectedType === 'all') {
+            displayText = `총 ${tuitionCount + nonTuitionCount}개 장학금 (학비감면형: ${tuitionCount}개, 비학비감면형: ${nonTuitionCount}개)`;
+        } else if (selectedType === 'tuition') {
+            displayText = `학비감면형 장학금 ${tuitionCount}개`;
+        } else if (selectedType === 'non-tuition') {
+            displayText = `비학비감면형 장학금 ${nonTuitionCount}개`;
+        }
+        
+        summaryDiv.textContent = displayText;
+        
+        // 요약 정보 삽입
+        const scholarshipFilter = document.getElementById('scholarship-filter');
+        scholarshipFilter.parentNode.insertBefore(summaryDiv, scholarshipFilter.nextSibling);
+    } else {
+        // 기존 요약 정보 업데이트
+        const tuitionCount = document.querySelectorAll('#tuition-section .scholarship-card').length;
+        const nonTuitionCount = document.querySelectorAll('#non-tuition-section .scholarship-card').length;
+        
+        let displayText = '';
+        if (selectedType === 'all') {
+            displayText = `총 ${tuitionCount + nonTuitionCount}개 장학금 (학비감면형: ${tuitionCount}개, 비학비감면형: ${nonTuitionCount}개)`;
+        } else if (selectedType === 'tuition') {
+            displayText = `학비감면형 장학금 ${tuitionCount}개`;
+        } else if (selectedType === 'non-tuition') {
+            displayText = `비학비감면형 장학금 ${nonTuitionCount}개`;
+        }
+        
+        summaryElement.textContent = displayText;
+    }
+}
+
+// 필터링 후 요약 정보 업데이트
+const originalFilterFunction = filterInternalScholarships;
+filterInternalScholarships = function() {
+    originalFilterFunction();
+    showFilterSummary();
+};
+
+// URL 파라미터를 통한 필터 상태 공유 기능
+function updateURLParameter() {
+    const selectedType = document.getElementById('scholarshipType').value;
+    
+    // 현재 URL 가져오기
+    let url = new URL(window.location.href);
+    
+    // 파라미터 업데이트
+    if (selectedType !== 'all') {
+        url.searchParams.set('scholarshipType', selectedType);
+    } else {
+        url.searchParams.delete('scholarshipType');
+    }
+    
+    // 브라우저 히스토리 업데이트 (페이지 새로고침 없이)
+    window.history.replaceState({}, '', url);
+}
+
+// URL 파라미터를 통한 초기 필터 상태 설정
+function loadFilterFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const scholarshipType = urlParams.get('scholarshipType');
+    
+    if (scholarshipType) {
+        const scholarshipTypeSelect = document.getElementById('scholarshipType');
+        if (scholarshipTypeSelect && (scholarshipType === 'tuition' || scholarshipType === 'non-tuition')) {
+            scholarshipTypeSelect.value = scholarshipType;
+            filterInternalScholarships();
+        }
+    }
+}
+
+// 페이지 로드 시 URL 파라미터에서 필터 상태 로드
+window.addEventListener('load', loadFilterFromURL);
+
+// 필터링 함수 확장 - URL 파라미터 업데이트 추가
+const extendedFilterFunction = filterInternalScholarships;
+filterInternalScholarships = function() {
+    extendedFilterFunction();
+    updateURLParameter();
+};
