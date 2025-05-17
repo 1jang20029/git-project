@@ -146,11 +146,151 @@ function loadMoreActivities() {
     // appendActivities(newActivities);
 }
 
+// 활동 등록 모달 열기
+function openRegistrationForm() {
+    // 로그인 확인 (실제 구현에서)
+    const isLoggedIn = localStorage.getItem('currentLoggedInUser');
+    
+    if (!isLoggedIn) {
+        alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
+        // window.location.href = 'login.html';
+        return;
+    }
+    
+    document.getElementById('registrationModal').style.display = 'block';
+    document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+}
+
+// 활동 등록 모달 닫기
+function closeRegistrationForm() {
+    document.getElementById('registrationModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // 배경 스크롤 복원
+    document.getElementById('activityRegistrationForm').reset(); // 폼 초기화
+}
+
+// 새 활동 추가
+function addNewActivity(formData) {
+    // 현재 날짜 설정
+    const currentDate = new Date();
+    const deadlineDate = formData.deadline ? new Date(formData.deadline) : null;
+    
+    // D-day 계산
+    let deadlineText = "상시모집";
+    if (deadlineDate) {
+        const diffTime = deadlineDate - currentDate;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays > 0) {
+            deadlineText = `D-${diffDays}`;
+        } else if (diffDays === 0) {
+            deadlineText = '오늘마감';
+        } else {
+            deadlineText = '마감됨';
+        }
+    }
+    
+    // 활동 유형에 따른 아이콘 설정
+    let typeIcon = '';
+    switch(formData.type) {
+        case 'contest':
+            typeIcon = '💰';
+            break;
+        case 'club':
+            typeIcon = '👥';
+            break;
+        case 'external':
+            typeIcon = '🏢';
+            break;
+        case 'volunteer':
+            typeIcon = '❤️';
+            break;
+    }
+    
+    // 활동 ID 생성 (실제 구현에서는 서버에서 생성)
+    const activityId = `user-activity-${Date.now()}`;
+    
+    // HTML 생성
+    const activityHTML = `
+        <div class="activity-item ${formData.type}" data-category="${formData.type}">
+            <div class="activity-header">
+                <div class="activity-type">${getActivityTypeName(formData.type)}</div>
+                <div class="activity-deadline">${deadlineText}</div>
+            </div>
+            <div class="activity-content">
+                <h3 class="activity-title">${formData.title}</h3>
+                <p class="activity-description">${formData.description}</p>
+                <div class="activity-details">
+                    ${formData.details.map(detail => `<span class="detail-item">${detail}</span>`).join('')}
+                </div>
+                <div class="activity-tags">
+                    ${formData.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+            </div>
+            <div class="activity-actions">
+                <button class="btn-detail" onclick="viewActivityDetail('${activityId}')">자세히 보기</button>
+                <button class="btn-apply" onclick="applyActivity('${activityId}')">신청하기</button>
+            </div>
+        </div>
+    `;
+    
+    // 컨테이너에 새 활동 추가
+    const activitiesContainer = document.querySelector('.activities-container');
+    activitiesContainer.insertAdjacentHTML('afterbegin', activityHTML);
+    
+    // 통계 업데이트
+    updateStats();
+    
+    // 활동 등록 성공 메시지
+    alert('활동이 성공적으로 등록되었습니다. 관리자 승인 후 게시됩니다.');
+}
+
+// 활동 유형 한글명 반환
+function getActivityTypeName(type) {
+    switch(type) {
+        case 'contest':
+            return '공모전';
+        case 'club':
+            return '동아리';
+        case 'external':
+            return '대외활동';
+        case 'volunteer':
+            return '봉사활동';
+        default:
+            return '기타';
+    }
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     // 검색 입력 이벤트 리스너
     const searchInput = document.getElementById('activitySearch');
     searchInput.addEventListener('input', searchActivities);
+    
+    // 활동 등록 폼 제출 이벤트 리스너
+    const registrationForm = document.getElementById('activityRegistrationForm');
+    registrationForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // 폼 데이터 수집
+        const formData = {
+            type: document.getElementById('activityType').value,
+            title: document.getElementById('activityTitle').value,
+            description: document.getElementById('activityDescription').value,
+            deadline: document.getElementById('activityDeadline').value,
+            details: [
+                document.querySelector('[name="detailItem1"]').value,
+                document.querySelector('[name="detailItem2"]').value,
+                document.querySelector('[name="detailItem3"]').value
+            ].filter(item => item), // 빈 항목 제거
+            tags: document.getElementById('activityTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
+        };
+        
+        // 새 활동 추가
+        addNewActivity(formData);
+        
+        // 폼 닫기 및 초기화
+        closeRegistrationForm();
+    });
     
     // 초기 통계 업데이트
     updateStats();
@@ -165,6 +305,12 @@ document.addEventListener('keydown', function(event) {
         const searchSection = document.getElementById('searchSection');
         if (searchSection.classList.contains('active')) {
             toggleSearch();
+        }
+        
+        // ESC 키로 모달 닫기
+        const modal = document.getElementById('registrationModal');
+        if (modal.style.display === 'block') {
+            closeRegistrationForm();
         }
     }
 });

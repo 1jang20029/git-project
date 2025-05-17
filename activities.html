@@ -11,7 +11,10 @@
         <header>
             <div class="back-button" onclick="goBack()">←</div>
             <div class="header-title">교내/대외활동</div>
-            <div class="header-search" onclick="toggleSearch()">🔍</div>
+            <div class="header-actions">
+                <div class="register-button" onclick="openRegistrationForm()">📝</div>
+                <div class="header-search" onclick="toggleSearch()">🔍</div>
+            </div>
         </header>
 
         <!-- 검색바 (토글) -->
@@ -267,6 +270,62 @@
         <!-- 더보기 버튼 -->
         <div class="load-more-container">
             <button class="load-more-btn" onclick="loadMoreActivities()">더 많은 활동 보기</button>
+        </div>
+
+        <!-- 활동 등록 모달 -->
+        <div id="registrationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>새 활동 등록</h2>
+                    <span class="close-modal" onclick="closeRegistrationForm()">&times;</span>
+                </div>
+                <form id="activityRegistrationForm">
+                    <div class="form-group">
+                        <label for="activityType">활동 유형*</label>
+                        <select id="activityType" name="activityType" required>
+                            <option value="">활동 유형 선택</option>
+                            <option value="contest">공모전</option>
+                            <option value="club">동아리</option>
+                            <option value="external">대외활동</option>
+                            <option value="volunteer">봉사활동</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="activityTitle">활동명*</label>
+                        <input type="text" id="activityTitle" name="activityTitle" placeholder="활동 제목 입력" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="activityDescription">활동 설명*</label>
+                        <textarea id="activityDescription" name="activityDescription" placeholder="활동에 대한 설명을 입력하세요" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="activityDeadline">마감일자</label>
+                        <input type="date" id="activityDeadline" name="activityDeadline">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>활동 세부정보 (최대 3개)</label>
+                        <div class="detail-inputs">
+                            <input type="text" placeholder="예: 상금 500만원" name="detailItem1">
+                            <input type="text" placeholder="예: 매주 금요일 활동" name="detailItem2">
+                            <input type="text" placeholder="예: 활동비 지급" name="detailItem3">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>태그 (쉼표로 구분)</label>
+                        <input type="text" id="activityTags" name="activityTags" placeholder="예: 창업,아이디어,혁신">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeRegistrationForm()">취소</button>
+                        <button type="submit" class="btn-submit">등록하기</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
