@@ -111,7 +111,9 @@ function loadInitialActivities() {
     
     // 콘솔에 정보 출력 (디버깅용)
     console.log(`Loaded ${userActivities.length} activities, ${visibleActivities.length} visible`);
-}// 달력 모달 열기
+}
+
+// 달력 모달 열기
 function openCalendarModal(inputField) {
     currentCalendarField = inputField;
     
@@ -265,7 +267,9 @@ function renderCalendar() {
 function selectDate(year, month, day) {
     selectedDate = new Date(year, month, day);
     renderCalendar();
-}// 활동 수정 폼 열기
+}
+
+// 활동 수정 폼 열기
 function openEditForm(activityId) {
     // 활동 찾기
     const activity = userActivities.find(a => a.id === activityId);
@@ -461,7 +465,9 @@ function deleteActivity(activityId) {
     
     // 성공 메시지
     alert('활동이 삭제되었습니다.');
-}// 뒤로가기 함수
+}
+
+// 뒤로가기 함수
 function goBack() {
     if (confirm('이전 페이지로 돌아가시겠습니까?')) {
         window.history.back();

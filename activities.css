@@ -6,7 +6,9 @@
     font-style: italic;
     border-top: 1px solid #eee;
     margin-top: 10px;
-}/* 상세 보기 모달 */
+}
+
+/* 상세 보기 모달 */
 .detail-modal-content {
     max-width: 700px;
 }
@@ -239,14 +241,18 @@
     justify-content: flex-end;
     gap: 10px;
     margin-top: 15px;
-}/* 숨김 처리 */
+}
+
+/* 숨김 처리 */
 .activity-item.hidden {
     display: none;
 }
 
 .activity-item.hidden-category {
     display: none;
-}* {
+}
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -453,17 +459,20 @@ header {
     border-left: 4px solid #4caf50;
 }
 
-/* 활동 관리 버튼 */
+/* 활동 관리 버튼 - 수정된 부분 */
 .activity-manage {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    display: none;
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .activity-item:hover .activity-manage {
+    opacity: 1;
     display: flex;
-    gap: 5px;
 }
 
 .manage-btn {
