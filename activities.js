@@ -642,12 +642,10 @@ function updateStats() {
     const volunteerCount = Array.from(visibleActivities).filter(item => item.classList.contains('volunteer')).length;
     
     const stats = document.querySelectorAll('.stat-number');
-    if (stats.length >= 4) {
-        stats[0].textContent = contestCount;
-        stats[1].textContent = clubCount;
-        stats[2].textContent = externalCount;
-        stats[3].textContent = volunteerCount;
-    }
+    stats[0].textContent = contestCount;
+    stats[1].textContent = clubCount;
+    stats[2].textContent = externalCount;
+    stats[3].textContent = volunteerCount;
     
     // 메인 페이지용 통계 정보 저장
     localStorage.setItem('activityStats', JSON.stringify({
@@ -658,6 +656,8 @@ function updateStats() {
         lastUpdated: new Date().toISOString()
     }));
 }
+
+
 
 function updateUpcomingDeadlines() {
     // 마감 날짜가 있는 활동들만 필터링
