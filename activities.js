@@ -45,7 +45,11 @@ function searchActivities() {
         }
     });
     
+    // 필터링에 따라 현재 페이지의 활동 업데이트
     updateStats();
+    currentPage = 1;
+    updatePagination();
+    displayActivitiesByPage();
 }
 
 // 검색어 삭제
@@ -75,23 +79,39 @@ function filterByCategory(category) {
     });
     document.querySelector(`[data-category="${category}"]`).classList.add('active');
     
-    // 활동 아이템 필터링
+    // 현재 카테고리 저장
+    currentCategory = category;
+    
+    // 모든 활동 가져오기
     const activities = document.querySelectorAll('.activity-item');
     
+    // 활동이 없는 경우 처리
+    if (activities.length === 0) {
+        return;
+    }
+    
+    // 활동 아이템 필터링
     activities.forEach(activity => {
+        const activityCategory = activity.getAttribute('data-category');
+        
         if (category === 'all') {
-            activity.classList.remove('hidden');
+            activity.classList.remove('hidden-category');
         } else {
-            const activityCategory = activity.getAttribute('data-category');
             if (activityCategory === category) {
-                activity.classList.remove('hidden');
+                activity.classList.remove('hidden-category');
             } else {
-                activity.classList.add('hidden');
+                activity.classList.add('hidden-category');
             }
         }
     });
     
+    // 통계 업데이트
     updateStats();
+    
+    // 페이지네이션 리셋 및 업데이트
+    currentPage = 1;
+    updatePagination();
+    displayActivitiesByPage();
 }
 
 // 통계 업데이트
@@ -142,6 +162,7 @@ let itemsPerPage = 5;
 let totalItems = 0;
 let totalPages = 0;
 let allActivities = [];
+let currentCategory = 'all';
 
 // 페이지 이동
 function goToPage(page) {
@@ -202,15 +223,15 @@ function updatePaginationButtons() {
 
 // 페이지에 맞는 활동 표시
 function displayActivitiesByPage() {
-    // 모든 활동 아이템 가져오기
-    allActivities = Array.from(document.querySelectorAll('.activity-item'));
+    // 현재 카테고리에 해당하는 모든 활동 아이템 가져오기
+    const visibleActivities = Array.from(document.querySelectorAll('.activity-item:not(.hidden-category)'));
     
     // 페이지당 표시할 아이템 계산
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     
     // 모든 활동 숨기고 현재 페이지에 해당하는 활동만 표시
-    allActivities.forEach((activity, index) => {
+    visibleActivities.forEach((activity, index) => {
         if (index >= startIndex && index < endIndex) {
             activity.style.display = 'block';
         } else {
@@ -221,9 +242,9 @@ function displayActivitiesByPage() {
 
 // 페이지네이션 상태 업데이트
 function updatePagination() {
-    // 등록된 활동이 있는지 확인
-    allActivities = Array.from(document.querySelectorAll('.activity-item'));
-    totalItems = allActivities.length;
+    // 현재 카테고리에 따른 활동 수 계산
+    const visibleActivities = document.querySelectorAll('.activity-item:not(.hidden-category)');
+    totalItems = visibleActivities.length;
     totalPages = Math.ceil(totalItems / itemsPerPage);
     
     // 페이지네이션 컨테이너
