@@ -111,6 +111,9 @@ function loadInitialActivities() {
     
     // 콘솔에 정보 출력 (디버깅용)
     console.log(`Loaded ${userActivities.length} activities, ${visibleActivities.length} visible`);
+    
+    // 마감 임박 활동 정보 업데이트
+    updateUpcomingDeadlines();
 }
 
 // 달력 모달 열기
@@ -625,7 +628,6 @@ function updateNoActivitiesMessage(visibleCount, category) {
 }
 
 // 통계 업데이트
-// 통계 업데이트 함수 수정
 function updateStats() {
     const visibleActivities = document.querySelectorAll('.activity-item:not(.hidden)');
     const contestCount = Array.from(visibleActivities).filter(item => item.classList.contains('contest')).length;
