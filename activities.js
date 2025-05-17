@@ -136,87 +136,128 @@ function applyActivity(activityId) {
     }
 }
 
-// 더 많은 활동 로드
-function loadMoreActivities() {
-    // 활동 템플릿 배열 생성
-    const activityTemplates = [
-        {
-            type: 'contest',
-            title: '대학생 UX/UI 디자인 공모전',
-            description: '창의적인 사용자 경험 디자인으로 미래를 디자인하세요',
-            deadline: '2025-07-15',
-            details: [
-                '💰 대상 500만원',
-                '🏆 수상작 실제 서비스 적용',
-                '📅 2025년 7월 15일까지'
-            ],
-            tags: ['UX', 'UI', '디자인']
-        },
-        {
-            type: 'external',
-            title: 'LG전자 대학생 인턴십 프로그램',
-            description: '글로벌 기업에서의 실무 경험을 쌓을 수 있는 기회',
-            deadline: '2025-06-30',
-            details: [
-                '💼 3개월 유급 인턴십',
-                '🌐 글로벌 프로젝트 참여',
-                '🎓 졸업예정자 우대'
-            ],
-            tags: ['인턴십', '글로벌', '취업']
-        },
-        {
-            type: 'club',
-            title: '프로그래밍 동아리 코드마스터',
-            description: '함께 성장하는 개발자 커뮤니티, 초보자도 환영합니다',
-            deadline: '',
-            details: [
-                '💻 주 1회 스터디',
-                '🏆 해커톤 및 대회 참가',
-                '👥 멘토링 시스템'
-            ],
-            tags: ['프로그래밍', '개발', '스터디']
-        },
-        {
-            type: 'volunteer',
-            title: '어르신 디지털 교육 봉사단',
-            description: '디지털 시대에 소외된 어르신들에게 스마트폰 사용법을 가르쳐드립니다',
-            deadline: '',
-            details: [
-                '👵 주 1회 2시간',
-                '📱 스마트폰 기초 교육',
-                '🏫 지역 복지관 연계'
-            ],
-            tags: ['디지털교육', '어르신', '봉사']
+// 페이지네이션 관련 변수
+let currentPage = 1;
+let itemsPerPage = 5;
+let totalItems = 0;
+let totalPages = 0;
+let allActivities = [];
+
+// 페이지 이동
+function goToPage(page) {
+    // 이전 페이지 버튼
+    if (page === 'prev') {
+        if (currentPage > 1) {
+            currentPage--;
+        } else {
+            return; // 첫 페이지면 아무것도 하지 않음
         }
-    ];
-    
-    // 활동이 없을 때 표시되는 메시지 숨기기
-    const noActivitiesMessage = document.querySelector('.no-activities-message');
-    if (noActivitiesMessage) {
-        noActivitiesMessage.style.display = 'none';
+    } 
+    // 다음 페이지 버튼
+    else if (page === 'next') {
+        if (currentPage < totalPages) {
+            currentPage++;
+        } else {
+            return; // 마지막 페이지면 아무것도 하지 않음
+        }
+    } 
+    // 특정 페이지 번호
+    else {
+        currentPage = parseInt(page);
     }
     
-    // 각 템플릿을 활동으로 추가
-    activityTemplates.forEach(template => {
-        // 활동 데이터 준비
-        const formData = {
-            type: template.type,
-            title: template.title,
-            description: template.description,
-            deadline: template.deadline,
-            details: template.details,
-            tags: template.tags
-        };
-        
-        // 새 활동 추가
-        addNewActivity(formData, false); // false: 알림 표시 안 함
+    // 페이지네이션 버튼 업데이트
+    updatePaginationButtons();
+    
+    // 활동 표시 업데이트
+    displayActivitiesByPage();
+}
+
+// 페이지네이션 버튼 상태 업데이트
+function updatePaginationButtons() {
+    // 모든 페이지 버튼의 active 상태 제거
+    document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.remove('disabled');
     });
     
-    // 더보기 버튼 감추기
-    document.querySelector('.load-more-btn').style.display = 'none';
+    // 현재 페이지 버튼 active 상태로 변경
+    const currentPageBtn = document.querySelector(`.page-btn[data-page="${currentPage}"]`);
+    if (currentPageBtn) {
+        currentPageBtn.classList.add('active');
+    }
     
-    // 통계 업데이트
-    updateStats();
+    // 이전/다음 버튼 상태 업데이트
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    
+    if (currentPage === 1) {
+        prevBtn.classList.add('disabled');
+    }
+    
+    if (currentPage === totalPages || totalPages === 0) {
+        nextBtn.classList.add('disabled');
+    }
+}
+
+// 페이지에 맞는 활동 표시
+function displayActivitiesByPage() {
+    // 모든 활동 아이템 가져오기
+    allActivities = Array.from(document.querySelectorAll('.activity-item'));
+    
+    // 페이지당 표시할 아이템 계산
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    // 모든 활동 숨기고 현재 페이지에 해당하는 활동만 표시
+    allActivities.forEach((activity, index) => {
+        if (index >= startIndex && index < endIndex) {
+            activity.style.display = 'block';
+        } else {
+            activity.style.display = 'none';
+        }
+    });
+}
+
+// 페이지네이션 상태 업데이트
+function updatePagination() {
+    // 등록된 활동이 있는지 확인
+    allActivities = Array.from(document.querySelectorAll('.activity-item'));
+    totalItems = allActivities.length;
+    totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // 페이지네이션 컨테이너
+    const paginationContainer = document.getElementById('paginationContainer');
+    
+    // 활동이 있을 때만 페이지네이션 표시
+    if (totalItems > 0) {
+        // 필요한 페이지 버튼 생성
+        const pagination = document.querySelector('.pagination');
+        const pageButtons = pagination.querySelectorAll('.page-btn:not(.prev-btn):not(.next-btn)');
+        
+        // 페이지 버튼 업데이트
+        for (let i = 0; i < pageButtons.length; i++) {
+            if (i < totalPages) {
+                pageButtons[i].style.display = 'block';
+                pageButtons[i].textContent = i + 1;
+                pageButtons[i].setAttribute('data-page', i + 1);
+            } else {
+                pageButtons[i].style.display = 'none';
+            }
+        }
+        
+        // 페이지네이션 컨테이너 표시
+        paginationContainer.style.display = 'block';
+        
+        // 페이지네이션 버튼 상태 업데이트
+        updatePaginationButtons();
+        
+        // 활동 표시 업데이트
+        displayActivitiesByPage();
+    } else {
+        // 활동이 없으면 페이지네이션 숨김
+        paginationContainer.style.display = 'none';
+    }
 }
 
 // 활동 등록 모달 열기
@@ -302,6 +343,9 @@ function addNewActivity(formData, showAlert = true) {
     // 통계 업데이트
     updateStats();
     
+    // 페이지네이션 업데이트
+    updatePagination();
+    
     // 활동 등록 성공 메시지 (showAlert이 true일 때만)
     if (showAlert) {
         alert('활동이 성공적으로 등록되었습니다. 관리자 승인 후 게시됩니다.');
@@ -358,6 +402,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 초기 통계 업데이트
     updateStats();
+    
+    // 초기 페이지네이션 업데이트
+    updatePagination();
     
     console.log('교내/대외활동 페이지가 로드되었습니다.');
 });

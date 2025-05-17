@@ -327,25 +327,51 @@ header {
     background-color: #a51e0e;
 }
 
-/* 더보기 버튼 */
-.load-more-container {
+/* 페이지네이션 */
+.pagination-container {
     text-align: center;
     padding: 20px 16px;
 }
 
-.load-more-btn {
-    padding: 12px 24px;
-    background-color: #f0f0f0;
+.pagination {
+    display: inline-flex;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.page-btn {
+    padding: 10px 16px;
+    background-color: #fff;
+    border: none;
+    border-right: 1px solid #eee;
     color: #333;
-    border: 1px solid #ddd;
-    border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.load-more-btn:hover {
-    background-color: #e0e0e0;
+.page-btn:last-child {
+    border-right: none;
+}
+
+.page-btn.active {
+    background-color: #c62917;
+    color: white;
+}
+
+.page-btn:hover:not(.active) {
+    background-color: #f0f0f0;
+}
+
+.prev-btn, .next-btn {
+    font-weight: bold;
+}
+
+.prev-btn.disabled, .next-btn.disabled {
+    color: #ccc;
+    cursor: not-allowed;
 }
 
 /* 활동 없음 메시지 */
