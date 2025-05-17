@@ -86,15 +86,16 @@ function loadInitialActivities() {
     }
     
     // 현재 선택된 카테고리에 따라 필터링
-    if (currentCategory !== 'all') {
+    const categoryTab = document.querySelector(`.tab-button[data-category="${currentCategory}"]`);
+    if (categoryTab) {
         // 탭 활성화
         document.querySelectorAll('.tab-button').forEach(btn => {
             btn.classList.remove('active');
         });
-        const categoryTab = document.querySelector(`.tab-button[data-category="${currentCategory}"]`);
-        if (categoryTab) {
-            categoryTab.classList.add('active');
-        }
+        categoryTab.classList.add('active');
+        
+        // 콘솔에 정보 출력 (디버깅용)
+        console.log(`Initial category set to: ${currentCategory}`);
     }
     
     // 필터링된 활동 개수 확인
@@ -107,6 +108,9 @@ function loadInitialActivities() {
     // 통계 및 페이지네이션 업데이트
     updateStats();
     updatePagination();
+    
+    // 콘솔에 정보 출력 (디버깅용)
+    console.log(`Loaded ${userActivities.length} activities, ${visibleActivities.length} visible`);
 }// 달력 모달 열기
 function openCalendarModal(inputField) {
     currentCalendarField = inputField;
@@ -532,6 +536,8 @@ function updateClearButton() {
 
 // 카테고리 필터
 function filterByCategory(category) {
+    console.log(`카테고리 필터 실행: ${category}`);
+    
     // 탭 버튼 상태 업데이트
     document.querySelectorAll('.tab-button').forEach(btn => {
         btn.classList.remove('active');
@@ -546,6 +552,9 @@ function filterByCategory(category) {
     
     // 활동이 없는 경우 처리
     if (activities.length === 0) {
+        console.log("활동이 없음, 필터링 중단");
+        // 페이지네이션은 여전히 표시
+        updatePagination();
         return;
     }
     
@@ -556,13 +565,19 @@ function filterByCategory(category) {
         
         if (category === 'all') {
             activity.classList.remove('hidden-category');
+            activity.style.display = '';
             visibleCount++;
+            console.log(`활동 표시: ${activity.querySelector('.activity-title').textContent} (전체 카테고리)`);
         } else {
             if (activityCategory === category) {
                 activity.classList.remove('hidden-category');
+                activity.style.display = '';
                 visibleCount++;
+                console.log(`활동 표시: ${activity.querySelector('.activity-title').textContent} (${category} 카테고리)`);
             } else {
                 activity.classList.add('hidden-category');
+                activity.style.display = 'none';
+                console.log(`활동 숨김: ${activity.querySelector('.activity-title').textContent} (${activityCategory} 카테고리)`);
             }
         }
     });
@@ -580,6 +595,8 @@ function filterByCategory(category) {
     
     // 로컬 스토리지에 현재 카테고리 저장
     localStorage.setItem('currentCategory', category);
+    
+    console.log(`카테고리 필터링 완료: ${category}, 표시된 활동 수: ${visibleCount}`);
 }
 
 // 필터링 후 활동이 없을 때 메시지 업데이트
@@ -926,19 +943,26 @@ function updatePaginationButtons() {
 
 // 페이지에 맞는 활동 표시
 function displayActivitiesByPage() {
-    // 현재 카테고리에 해당하는 모든 활동 아이템 가져오기
-    const visibleActivities = Array.from(document.querySelectorAll('.activity-item:not(.hidden-category)'));
+    // 현재 카테고리에 해당하는 모든 활동 아이템 가져오기 (display: none이 아닌 것들)
+    const visibleActivities = Array.from(document.querySelectorAll('.activity-item')).filter(item => {
+        const isHidden = item.classList.contains('hidden-category') || item.style.display === 'none';
+        return !isHidden;
+    });
+    
+    console.log(`페이지 표시: 전체 ${visibleActivities.length}개 중 페이지 ${currentPage} 표시`);
     
     // 페이지당 표시할 아이템 계산
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     
-    // 모든 활동 숨기고 현재 페이지에 해당하는 활동만 표시
+    // 모든 활동에 대해 페이지네이션 적용
     visibleActivities.forEach((activity, index) => {
         if (index >= startIndex && index < endIndex) {
             activity.style.display = 'block';
+            console.log(`활동 표시(페이지네이션): ${activity.querySelector('.activity-title')?.textContent || 'Unknown'}`);
         } else {
             activity.style.display = 'none';
+            console.log(`활동 숨김(페이지네이션): ${activity.querySelector('.activity-title')?.textContent || 'Unknown'}`);
         }
     });
 }
@@ -1122,28 +1146,34 @@ function getActivityTypeName(type) {
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("페이지 로드 시작");
+    
     // 로컬 스토리지에서 데이터 불러오기
     loadFromLocalStorage();
+    console.log(`로드된 활동: ${userActivities.length}, 저장된 카테고리: ${currentCategory}`);
     
-    // 저장된 카테고리 불러오기
-    const savedCategory = localStorage.getItem('currentCategory');
-    if (savedCategory) {
-        currentCategory = savedCategory;
+    // 페이지네이션 초기 설정
+    const paginationContainer = document.getElementById('paginationContainer');
+    if (paginationContainer) {
+        paginationContainer.style.display = 'block';
+        console.log("페이지네이션 컨테이너 표시 설정");
     }
     
     // 초기 활동 로드
     loadInitialActivities();
     
-    // 카테고리 탭 활성화
-    if (currentCategory) {
-        const categoryTab = document.querySelector(`.tab-button[data-category="${currentCategory}"]`);
-        if (categoryTab) {
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            categoryTab.classList.add('active');
-        }
-    }
+    // 카테고리 탭 버튼에 클릭 이벤트 추가
+    document.querySelectorAll('.tab-button').forEach(button => {
+        const category = button.getAttribute('data-category');
+        console.log(`${category} 탭 버튼에 이벤트 리스너 추가`);
+        
+        // 기존 onclick 속성 제거 후 addEventListener 사용
+        button.removeAttribute('onclick');
+        button.addEventListener('click', function() {
+            console.log(`${category} 탭 클릭됨`);
+            filterByCategory(category);
+        });
+    });
     
     // 검색 입력 이벤트 리스너
     const searchInput = document.getElementById('activitySearch');
@@ -1220,6 +1250,12 @@ document.addEventListener('DOMContentLoaded', function() {
     applicationsButton.textContent = '내 신청';
     applicationsButton.onclick = openApplicationsModal;
     headerActions.prepend(applicationsButton);
+    
+    // 페이지네이션 강제 업데이트
+    setTimeout(function() {
+        updatePagination();
+        console.log("페이지네이션 타이머로 강제 업데이트");
+    }, 500);
     
     console.log('교내/대외활동 페이지가 로드되었습니다.');
 });

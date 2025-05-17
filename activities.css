@@ -618,6 +618,7 @@ header {
 .pagination-container {
     text-align: center;
     padding: 20px 16px;
+    display: block !important; /* 항상 표시 */
 }
 
 .pagination {

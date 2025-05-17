@@ -49,11 +49,11 @@
 
         <!-- 카테고리 탭 -->
         <div class="category-tabs">
-            <button class="tab-button active" data-category="all" onclick="filterByCategory('all')">전체</button>
-            <button class="tab-button" data-category="contest" onclick="filterByCategory('contest')">공모전</button>
-            <button class="tab-button" data-category="club" onclick="filterByCategory('club')">동아리</button>
-            <button class="tab-button" data-category="external" onclick="filterByCategory('external')">대외활동</button>
-            <button class="tab-button" data-category="volunteer" onclick="filterByCategory('volunteer')">봉사활동</button>
+            <button class="tab-button" data-category="all">전체</button>
+            <button class="tab-button" data-category="contest">공모전</button>
+            <button class="tab-button" data-category="club">동아리</button>
+            <button class="tab-button" data-category="external">대외활동</button>
+            <button class="tab-button" data-category="volunteer">봉사활동</button>
         </div>
 
         <!-- 활동 목록 -->
@@ -64,8 +64,8 @@
             </div>
         </div>
 
-        <!-- 더보기 버튼 대신 페이지네이션 -->
-        <div class="pagination-container" id="paginationContainer" style="display: none;">
+        <!-- 페이지네이션 -->
+        <div class="pagination-container" id="paginationContainer">
             <div class="pagination">
                 <button class="page-btn prev-btn" onclick="goToPage('prev')">이전</button>
                 <button class="page-btn" data-page="1" onclick="goToPage(1)">1</button>
