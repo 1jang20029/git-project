@@ -49,8 +49,13 @@ function loadInitialActivities() {
             const isApplied = userApplications.some(a => a.activityId === activity.id);
             const applyBtnText = isApplied ? '신청 취소' : '신청하기';
             
+            // 현재 카테고리에 맞는 활동만 표시
+            const isVisible = currentCategory === 'all' || currentCategory === activity.type;
+            const displayStyle = isVisible ? '' : 'display: none;';
+            const hiddenClass = isVisible ? '' : 'hidden-category';
+            
             activitiesHTML += `
-                <div class="activity-item ${activity.type}" data-category="${activity.type}" data-id="${activity.id}">
+                <div class="activity-item ${activity.type} ${hiddenClass}" data-category="${activity.type}" data-id="${activity.id}" style="${displayStyle}">
                     <div class="activity-header">
                         <div class="activity-type">${getActivityTypeName(activity.type)}</div>
                         <div class="activity-deadline">${activity.deadlineText}</div>
@@ -82,12 +87,26 @@ function loadInitialActivities() {
     
     // 현재 선택된 카테고리에 따라 필터링
     if (currentCategory !== 'all') {
-        filterByCategory(currentCategory);
-    } else {
-        // 통계 및 페이지네이션 업데이트
-        updateStats();
-        updatePagination();
+        // 탭 활성화
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const categoryTab = document.querySelector(`.tab-button[data-category="${currentCategory}"]`);
+        if (categoryTab) {
+            categoryTab.classList.add('active');
+        }
     }
+    
+    // 필터링된 활동 개수 확인
+    const visibleActivities = document.querySelectorAll('.activity-item:not(.hidden-category)');
+    if (visibleActivities.length === 0 && userActivities.length > 0) {
+        // 필터링 결과가 없는 경우
+        updateNoActivitiesMessage(0, currentCategory);
+    }
+    
+    // 통계 및 페이지네이션 업데이트
+    updateStats();
+    updatePagination();
 }// 달력 모달 열기
 function openCalendarModal(inputField) {
     currentCalendarField = inputField;
@@ -314,6 +333,9 @@ function updateActivity(formData) {
         }
     }
     
+    // 이전 타입 저장
+    const oldType = userActivities[activityIndex].type;
+    
     // 활동 객체 업데이트
     userActivities[activityIndex] = {
         ...userActivities[activityIndex],
@@ -334,23 +356,45 @@ function updateActivity(formData) {
         return;
     }
     
+    // 카테고리가 변경된 경우 필터링 적용
+    if (oldType !== formData.type && currentCategory !== 'all' && currentCategory !== formData.type) {
+        // 현재 선택된 카테고리에 맞지 않으면 숨김 처리
+        activityElement.classList.add('hidden-category');
+        activityElement.style.display = 'none';
+    } else {
+        activityElement.classList.remove('hidden-category');
+        activityElement.style.display = 'block';
+    }
+    
     // 카테고리가 변경된 경우 클래스 변경
     activityElement.className = `activity-item ${formData.type}`;
     activityElement.setAttribute('data-category', formData.type);
     
     // 내부 요소 업데이트
-    activityElement.querySelector('.activity-type').textContent = getActivityTypeName(formData.type);
-    activityElement.querySelector('.activity-deadline').textContent = deadlineText;
-    activityElement.querySelector('.activity-title').textContent = formData.title;
-    activityElement.querySelector('.activity-description').textContent = formData.description;
-    
-    // 세부사항 업데이트
-    const detailsContainer = activityElement.querySelector('.activity-details');
-    detailsContainer.innerHTML = formData.details.map(detail => `<span class="detail-item">${detail}</span>`).join('');
-    
-    // 태그 업데이트
-    const tagsContainer = activityElement.querySelector('.activity-tags');
-    tagsContainer.innerHTML = formData.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+    activityElement.innerHTML = `
+        <div class="activity-header">
+            <div class="activity-type">${getActivityTypeName(formData.type)}</div>
+            <div class="activity-deadline">${deadlineText}</div>
+        </div>
+        <div class="activity-manage">
+            <button class="manage-btn edit-btn" onclick="openEditForm('${activityId}')">수정</button>
+            <button class="manage-btn delete-btn" onclick="deleteActivity('${activityId}')">삭제</button>
+        </div>
+        <div class="activity-content">
+            <h3 class="activity-title">${formData.title}</h3>
+            <p class="activity-description">${formData.description}</p>
+            <div class="activity-details">
+                ${formData.details.map(detail => `<span class="detail-item">${detail}</span>`).join('')}
+            </div>
+            <div class="activity-tags">
+                ${formData.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+        </div>
+        <div class="activity-actions">
+            <button class="btn-detail" onclick="viewActivityDetail('${activityId}')">자세히 보기</button>
+            <button class="btn-apply" onclick="applyActivity('${activityId}')">신청하기</button>
+        </div>
+    `;
     
     // 통계 및 페이지네이션 업데이트
     updateStats();
@@ -1003,9 +1047,8 @@ function addNewActivity(formData, showAlert = true) {
     // 사용자 활동에 추가
     userActivities.push(activityObj);
     
-    // 현재 필터링된 카테고리에 맞는지 확인
+    // HTML 생성 - 현재 선택된 카테고리에 맞는 경우에만 표시
     if (currentCategory === 'all' || currentCategory === formData.type) {
-        // HTML 생성
         const activityHTML = `
             <div class="activity-item ${formData.type}" data-category="${formData.type}" data-id="${activityId}">
                 <div class="activity-header">
