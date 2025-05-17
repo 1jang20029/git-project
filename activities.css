@@ -348,9 +348,19 @@ header {
     background-color: #e0e0e0;
 }
 
-/* 숨김 처리 */
-.activity-item.hidden {
-    display: none;
+/* 활동 없음 메시지 */
+.no-activities-message {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #ddd;
+}
+
+.no-activities-message p {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
 /* 활동 등록 모달 */

@@ -138,12 +138,85 @@ function applyActivity(activityId) {
 
 // 더 많은 활동 로드
 function loadMoreActivities() {
-    // 실제 구현에서는 서버에서 추가 데이터를 가져와서 동적으로 추가
-    alert('추가 활동을 불러오는 중입니다. 현재는 데모 버전입니다.');
+    // 활동 템플릿 배열 생성
+    const activityTemplates = [
+        {
+            type: 'contest',
+            title: '대학생 UX/UI 디자인 공모전',
+            description: '창의적인 사용자 경험 디자인으로 미래를 디자인하세요',
+            deadline: '2025-07-15',
+            details: [
+                '💰 대상 500만원',
+                '🏆 수상작 실제 서비스 적용',
+                '📅 2025년 7월 15일까지'
+            ],
+            tags: ['UX', 'UI', '디자인']
+        },
+        {
+            type: 'external',
+            title: 'LG전자 대학생 인턴십 프로그램',
+            description: '글로벌 기업에서의 실무 경험을 쌓을 수 있는 기회',
+            deadline: '2025-06-30',
+            details: [
+                '💼 3개월 유급 인턴십',
+                '🌐 글로벌 프로젝트 참여',
+                '🎓 졸업예정자 우대'
+            ],
+            tags: ['인턴십', '글로벌', '취업']
+        },
+        {
+            type: 'club',
+            title: '프로그래밍 동아리 코드마스터',
+            description: '함께 성장하는 개발자 커뮤니티, 초보자도 환영합니다',
+            deadline: '',
+            details: [
+                '💻 주 1회 스터디',
+                '🏆 해커톤 및 대회 참가',
+                '👥 멘토링 시스템'
+            ],
+            tags: ['프로그래밍', '개발', '스터디']
+        },
+        {
+            type: 'volunteer',
+            title: '어르신 디지털 교육 봉사단',
+            description: '디지털 시대에 소외된 어르신들에게 스마트폰 사용법을 가르쳐드립니다',
+            deadline: '',
+            details: [
+                '👵 주 1회 2시간',
+                '📱 스마트폰 기초 교육',
+                '🏫 지역 복지관 연계'
+            ],
+            tags: ['디지털교육', '어르신', '봉사']
+        }
+    ];
     
-    // 예시: 더미 데이터 추가
-    // const newActivities = await fetchMoreActivities();
-    // appendActivities(newActivities);
+    // 활동이 없을 때 표시되는 메시지 숨기기
+    const noActivitiesMessage = document.querySelector('.no-activities-message');
+    if (noActivitiesMessage) {
+        noActivitiesMessage.style.display = 'none';
+    }
+    
+    // 각 템플릿을 활동으로 추가
+    activityTemplates.forEach(template => {
+        // 활동 데이터 준비
+        const formData = {
+            type: template.type,
+            title: template.title,
+            description: template.description,
+            deadline: template.deadline,
+            details: template.details,
+            tags: template.tags
+        };
+        
+        // 새 활동 추가
+        addNewActivity(formData, false); // false: 알림 표시 안 함
+    });
+    
+    // 더보기 버튼 감추기
+    document.querySelector('.load-more-btn').style.display = 'none';
+    
+    // 통계 업데이트
+    updateStats();
 }
 
 // 활동 등록 모달 열기
@@ -169,7 +242,7 @@ function closeRegistrationForm() {
 }
 
 // 새 활동 추가
-function addNewActivity(formData) {
+function addNewActivity(formData, showAlert = true) {
     // 현재 날짜 설정
     const currentDate = new Date();
     const deadlineDate = formData.deadline ? new Date(formData.deadline) : null;
@@ -187,23 +260,6 @@ function addNewActivity(formData) {
         } else {
             deadlineText = '마감됨';
         }
-    }
-    
-    // 활동 유형에 따른 아이콘 설정
-    let typeIcon = '';
-    switch(formData.type) {
-        case 'contest':
-            typeIcon = '💰';
-            break;
-        case 'club':
-            typeIcon = '👥';
-            break;
-        case 'external':
-            typeIcon = '🏢';
-            break;
-        case 'volunteer':
-            typeIcon = '❤️';
-            break;
     }
     
     // 활동 ID 생성 (실제 구현에서는 서버에서 생성)
@@ -237,11 +293,19 @@ function addNewActivity(formData) {
     const activitiesContainer = document.querySelector('.activities-container');
     activitiesContainer.insertAdjacentHTML('afterbegin', activityHTML);
     
+    // 활동이 없을 때 표시되는 메시지 숨기기
+    const noActivitiesMessage = document.querySelector('.no-activities-message');
+    if (noActivitiesMessage) {
+        noActivitiesMessage.style.display = 'none';
+    }
+    
     // 통계 업데이트
     updateStats();
     
-    // 활동 등록 성공 메시지
-    alert('활동이 성공적으로 등록되었습니다. 관리자 승인 후 게시됩니다.');
+    // 활동 등록 성공 메시지 (showAlert이 true일 때만)
+    if (showAlert) {
+        alert('활동이 성공적으로 등록되었습니다. 관리자 승인 후 게시됩니다.');
+    }
 }
 
 // 활동 유형 한글명 반환
