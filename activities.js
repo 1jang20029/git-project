@@ -56,16 +56,20 @@ function loadInitialActivities() {
             
             activitiesHTML += `
                 <div class="activity-item ${activity.type} ${hiddenClass}" data-category="${activity.type}" data-id="${activity.id}" style="${displayStyle}">
-                    <div class="activity-header">
-                        <div class="activity-type">${getActivityTypeName(activity.type)}</div>
-                        <div class="activity-deadline">${activity.deadlineText}</div>
-                    </div>
-                    <div class="activity-manage">
-                        <button class="manage-btn edit-btn" onclick="openEditForm('${activity.id}')">수정</button>
-                        <button class="manage-btn delete-btn" onclick="deleteActivity('${activity.id}')">삭제</button>
+                    <div class="activity-top-row">
+                        <div class="activity-left">
+                            <div class="activity-type">${getActivityTypeName(activity.type)}</div>
+                        </div>
+                        <div class="activity-right">
+                            <div class="activity-deadline">${activity.deadlineText}</div>
+                        </div>
                     </div>
                     <div class="activity-content">
                         <h3 class="activity-title">${activity.title}</h3>
+                        <div class="activity-manage-row">
+                            <button class="manage-btn edit-btn" onclick="openEditForm('${activity.id}')">수정</button>
+                            <button class="manage-btn delete-btn" onclick="deleteActivity('${activity.id}')">삭제</button>
+                        </div>
                         <p class="activity-description">${activity.description}</p>
                         <div class="activity-details">
                             ${activity.details.map(detail => `<span class="detail-item">${detail}</span>`).join('')}
@@ -376,16 +380,20 @@ function updateActivity(formData) {
     
     // 내부 요소 업데이트
     activityElement.innerHTML = `
-        <div class="activity-header">
-            <div class="activity-type">${getActivityTypeName(formData.type)}</div>
-            <div class="activity-deadline">${deadlineText}</div>
-        </div>
-        <div class="activity-manage">
-            <button class="manage-btn edit-btn" onclick="openEditForm('${activityId}')">수정</button>
-            <button class="manage-btn delete-btn" onclick="deleteActivity('${activityId}')">삭제</button>
+        <div class="activity-top-row">
+            <div class="activity-left">
+                <div class="activity-type">${getActivityTypeName(formData.type)}</div>
+            </div>
+            <div class="activity-right">
+                <div class="activity-deadline">${deadlineText}</div>
+            </div>
         </div>
         <div class="activity-content">
             <h3 class="activity-title">${formData.title}</h3>
+            <div class="activity-manage-row">
+                <button class="manage-btn edit-btn" onclick="openEditForm('${activityId}')">수정</button>
+                <button class="manage-btn delete-btn" onclick="deleteActivity('${activityId}')">삭제</button>
+            </div>
             <p class="activity-description">${formData.description}</p>
             <div class="activity-details">
                 ${formData.details.map(detail => `<span class="detail-item">${detail}</span>`).join('')}
@@ -1075,16 +1083,20 @@ function addNewActivity(formData, showAlert = true) {
     if (currentCategory === 'all' || currentCategory === formData.type) {
         const activityHTML = `
             <div class="activity-item ${formData.type}" data-category="${formData.type}" data-id="${activityId}">
-                <div class="activity-header">
-                    <div class="activity-type">${getActivityTypeName(formData.type)}</div>
-                    <div class="activity-deadline">${deadlineText}</div>
-                </div>
-                <div class="activity-manage">
-                    <button class="manage-btn edit-btn" onclick="openEditForm('${activityId}')">수정</button>
-                    <button class="manage-btn delete-btn" onclick="deleteActivity('${activityId}')">삭제</button>
+                <div class="activity-top-row">
+                    <div class="activity-left">
+                        <div class="activity-type">${getActivityTypeName(formData.type)}</div>
+                    </div>
+                    <div class="activity-right">
+                        <div class="activity-deadline">${deadlineText}</div>
+                    </div>
                 </div>
                 <div class="activity-content">
                     <h3 class="activity-title">${formData.title}</h3>
+                    <div class="activity-manage-row">
+                        <button class="manage-btn edit-btn" onclick="openEditForm('${activityId}')">수정</button>
+                        <button class="manage-btn delete-btn" onclick="deleteActivity('${activityId}')">삭제</button>
+                    </div>
                     <p class="activity-description">${formData.description}</p>
                     <div class="activity-details">
                         ${formData.details.map(detail => `<span class="detail-item">${detail}</span>`).join('')}
