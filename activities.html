@@ -130,6 +130,131 @@
                 </form>
             </div>
         </div>
+        
+        <!-- 수정 모달 -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>활동 수정</h2>
+                    <span class="close-modal" onclick="closeEditForm()">&times;</span>
+                </div>
+                <form id="activityEditForm">
+                    <input type="hidden" id="editActivityId" name="editActivityId">
+                    <div class="form-group">
+                        <label for="editActivityType">활동 유형*</label>
+                        <select id="editActivityType" name="editActivityType" required>
+                            <option value="">활동 유형 선택</option>
+                            <option value="contest">공모전</option>
+                            <option value="club">동아리</option>
+                            <option value="external">대외활동</option>
+                            <option value="volunteer">봉사활동</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editActivityTitle">활동명*</label>
+                        <input type="text" id="editActivityTitle" name="editActivityTitle" placeholder="활동 제목 입력" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editActivityDescription">활동 설명*</label>
+                        <textarea id="editActivityDescription" name="editActivityDescription" placeholder="활동에 대한 설명을 입력하세요" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editActivityDeadline">마감일자</label>
+                        <input type="date" id="editActivityDeadline" name="editActivityDeadline">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>활동 세부정보 (최대 3개)</label>
+                        <div class="detail-inputs">
+                            <input type="text" placeholder="예: 상금 500만원" id="editDetailItem1" name="editDetailItem1">
+                            <input type="text" placeholder="예: 매주 금요일 활동" id="editDetailItem2" name="editDetailItem2">
+                            <input type="text" placeholder="예: 활동비 지급" id="editDetailItem3" name="editDetailItem3">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>태그 (쉼표로 구분)</label>
+                        <input type="text" id="editActivityTags" name="editActivityTags" placeholder="예: 창업,아이디어,혁신">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeEditForm()">취소</button>
+                        <button type="submit" class="btn-submit">수정하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 상세 보기 모달 -->
+        <div id="detailModal" class="modal">
+            <div class="modal-content detail-modal-content">
+                <div class="modal-header">
+                    <h2>활동 상세 정보</h2>
+                    <span class="close-modal" onclick="closeDetailModal()">&times;</span>
+                </div>
+                <div id="activityDetailContent" class="detail-content">
+                    <!-- 상세 내용이 여기에 동적으로 추가됩니다 -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeDetailModal()">닫기</button>
+                    <button class="btn-apply detail-apply-btn" onclick="applyActivityFromDetail()">신청하기</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 신청 관리 모달 -->
+        <div id="applicationsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>내 신청 현황</h2>
+                    <span class="close-modal" onclick="closeApplicationsModal()">&times;</span>
+                </div>
+                <div class="applications-container">
+                    <div id="noApplicationsMessage" class="no-data-message">
+                        <p>현재 신청한 활동이 없습니다.</p>
+                    </div>
+                    <div id="applicationsList">
+                        <!-- 신청 목록이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 달력 선택 모달 -->
+        <div id="calendarModal" class="modal">
+            <div class="modal-content calendar-modal-content">
+                <div class="modal-header">
+                    <h2>날짜 선택</h2>
+                    <span class="close-modal" onclick="closeCalendarModal()">&times;</span>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav-btn" onclick="prevMonth()">&lt;</button>
+                        <div id="currentMonthYear">2025년 5월</div>
+                        <button class="calendar-nav-btn" onclick="nextMonth()">&gt;</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div>일</div>
+                        <div>월</div>
+                        <div>화</div>
+                        <div>수</div>
+                        <div>목</div>
+                        <div>금</div>
+                        <div>토</div>
+                    </div>
+                    <div id="calendarDays" class="calendar-days">
+                        <!-- 날짜가 여기에 동적으로 추가됩니다 -->
+                    </div>
+                    <div class="calendar-actions">
+                        <button class="btn-cancel" onclick="clearSelectedDate()">삭제</button>
+                        <button class="btn-submit" onclick="applySelectedDate()">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="activities.js"></script>

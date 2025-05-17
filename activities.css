@@ -1,4 +1,237 @@
-/* 숨김 처리 */
+/* 상세 보기 모달 */
+.detail-modal-content {
+    max-width: 700px;
+}
+
+.detail-content {
+    padding: 15px 0;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.detail-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.detail-type-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.detail-type-badge.contest {
+    background-color: #ff9800;
+}
+
+.detail-type-badge.club {
+    background-color: #9c27b0;
+}
+
+.detail-type-badge.external {
+    background-color: #2196f3;
+}
+
+.detail-type-badge.volunteer {
+    background-color: #4caf50;
+}
+
+.detail-deadline {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff4444;
+    margin-left: 10px;
+}
+
+.detail-info-section {
+    margin-bottom: 20px;
+}
+
+.detail-info-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.detail-info-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+}
+
+.detail-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* 신청 관리 모달 */
+.applications-container {
+    padding: 10px 0;
+}
+
+.application-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.application-info {
+    flex: 1;
+}
+
+.application-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.application-meta {
+    font-size: 12px;
+    color: #666;
+}
+
+.cancel-application-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.cancel-application-btn:hover {
+    background-color: #d32f2f;
+}
+
+.no-data-message {
+    text-align: center;
+    padding: 30px 0;
+    color: #666;
+}
+
+/* 달력 스타일 */
+.calendar-modal-content {
+    max-width: 350px;
+}
+
+.calendar-container {
+    padding: 10px 0;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#currentMonthYear {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    font-size: 14px;
+}
+
+.calendar-weekdays div {
+    padding: 5px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 14px;
+}
+
+.calendar-day:hover:not(.inactive) {
+    background-color: #f0f0f0;
+}
+
+.calendar-day.selected {
+    background-color: #c62917;
+    color: white;
+}
+
+.calendar-day.today {
+    border: 1px solid #c62917;
+}
+
+.calendar-day.inactive {
+    color: #ccc;
+    cursor: default;
+}
+
+.calendar-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}/* 숨김 처리 */
 .activity-item.hidden {
     display: none;
 }
@@ -189,6 +422,7 @@ header {
     padding: 16px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     transition: all 0.2s ease;
+    position: relative;
 }
 
 .activity-item:hover {
@@ -210,6 +444,42 @@ header {
 
 .activity-item.volunteer {
     border-left: 4px solid #4caf50;
+}
+
+/* 활동 관리 버튼 */
+.activity-manage {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: none;
+}
+
+.activity-item:hover .activity-manage {
+    display: flex;
+    gap: 5px;
+}
+
+.manage-btn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: #666;
+    padding: 3px 5px;
+    border-radius: 3px;
+}
+
+.manage-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.edit-btn {
+    color: #2196f3;
+}
+
+.delete-btn {
+    color: #f44336;
 }
 
 /* 활동 헤더 */
