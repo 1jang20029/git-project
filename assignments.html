@@ -47,11 +47,11 @@
         <!-- 상태 표시 영역 -->
         <div class="status-overview">
             <div class="status-item urgent">
-                <div class="status-count">1</div>
+                <div class="status-count">0</div>
                 <div class="status-label">급함</div>
             </div>
             <div class="status-item upcoming">
-                <div class="status-count">2</div>
+                <div class="status-count">0</div>
                 <div class="status-label">예정</div>
             </div>
             <div class="status-item completed">
@@ -60,81 +60,16 @@
             </div>
         </div>
         
-        <!-- 과제/시험 목록 -->
+        <!-- 과제/시험 목록 (빈 상태로 시작) -->
         <div class="assignments-list" id="assignmentsList">
-            <!-- 급한 과제 -->
-            <div class="assignment-item urgent" data-type="assignment" data-subject="웹 프로그래밍 실습">
-                <div class="assignment-left">
-                    <div class="assignment-type">과제</div>
-                </div>
-                <div class="assignment-content">
-                    <div class="assignment-subject">웹 프로그래밍 실습</div>
-                    <div class="assignment-title">개인 포트폴리오 웹사이트 제작</div>
-                    <div class="assignment-due">마감: 4월 12일 오후 11:59</div>
-                    <div class="assignment-details" style="display: none;">
-                        HTML, CSS, JavaScript를 활용하여 개인 포트폴리오 웹사이트를 제작하세요. 
-                        자신의 프로필, 기술 스택, 프로젝트 경험을 포함해야 합니다.
-                    </div>
-                </div>
-                <div class="assignment-right">
-                    <div class="assignment-status urgent">급함</div>
-                    <div class="assignment-actions">
-                        <button class="edit-btn" onclick="editItem(this)">수정</button>
-                        <button class="delete-btn" onclick="deleteItem(this)">삭제</button>
-                        <button class="view-details-btn" onclick="toggleDetails(this)">상세</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 예정된 과제 -->
-            <div class="assignment-item normal" data-type="assignment" data-subject="영상콘텐츠제작">
-                <div class="assignment-left">
-                    <div class="assignment-type">과제</div>
-                </div>
-                <div class="assignment-content">
-                    <div class="assignment-subject">영상콘텐츠제작</div>
-                    <div class="assignment-title">3분 브이로그 제작</div>
-                    <div class="assignment-due">마감: 4월 18일 오후 6:00</div>
-                    <div class="assignment-details" style="display: none;">
-                        자신의 일상을 담은 3분 분량의 브이로그를 제작하세요. 
-                        편집 기술과 스토리텔링 능력을 평가합니다.
-                    </div>
-                </div>
-                <div class="assignment-right">
-                    <div class="assignment-status normal">10일 후</div>
-                    <div class="assignment-actions">
-                        <button class="edit-btn" onclick="editItem(this)">수정</button>
-                        <button class="delete-btn" onclick="deleteItem(this)">삭제</button>
-                        <button class="view-details-btn" onclick="toggleDetails(this)">상세</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 시험 -->
-            <div class="assignment-item normal" data-type="exam" data-subject="마케팅 원론">
-                <div class="assignment-left">
-                    <div class="assignment-type">시험</div>
-                </div>
-                <div class="assignment-content">
-                    <div class="assignment-subject">마케팅 원론</div>
-                    <div class="assignment-title">중간고사</div>
-                    <div class="assignment-due">4월 24일 오후 2:00</div>
-                    <div class="assignment-details" style="display: none;">
-                        일시: 4월 24일 오후 2:00<br>
-                        장소: 중앙 강의동 303호<br>
-                        범위: 중간고사 - 1~5장<br>
-                        참고사항: 계산기 사용 가능
-                    </div>
-                </div>
-                <div class="assignment-right">
-                    <div class="assignment-status normal">8일 후</div>
-                    <div class="assignment-actions">
-                        <button class="edit-btn" onclick="editItem(this)">수정</button>
-                        <button class="delete-btn" onclick="deleteItem(this)">삭제</button>
-                        <button class="view-details-btn" onclick="toggleDetails(this)">상세</button>
-                    </div>
-                </div>
-            </div>
+            <!-- 항목이 여기에 동적으로 추가됩니다 -->
+        </div>
+        
+        <!-- 빈 상태 메시지 -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📝</div>
+            <div class="empty-title">아직 항목이 없습니다</div>
+            <div class="empty-message">오른쪽 하단의 + 버튼을 눌러 과제나 시험을 추가해보세요!</div>
         </div>
         
         <!-- 과제 추가 버튼 -->

@@ -1,15 +1,31 @@
 // 페이지 로드 시 실행할 함수
 document.addEventListener('DOMContentLoaded', function() {
-    // 마감일 기준으로 정렬
-    sortAssignments('deadline');
-    
-    // 상태 개수 업데이트
-    updateStatusCounts();
+    // 빈 화면 또는 과제 목록 표시 여부 결정
+    checkEmptyState();
 });
 
 // 이전 페이지로 돌아가기
 function goBack() {
     window.location.href = "index.html";
+}
+
+// 빈 화면 확인 및 표시
+function checkEmptyState() {
+    const assignmentsList = document.getElementById('assignmentsList');
+    const emptyState = document.getElementById('emptyState');
+    
+    if (assignmentsList.children.length === 0) {
+        // 과제/시험이 없는 경우 빈 화면 표시
+        emptyState.style.display = 'block';
+        assignmentsList.style.display = 'none';
+    } else {
+        // 과제/시험이 있는 경우 목록 표시
+        emptyState.style.display = 'none';
+        assignmentsList.style.display = 'block';
+    }
+    
+    // 상태 개수 업데이트
+    updateStatusCounts();
 }
 
 // 필터 옵션 토글
@@ -93,6 +109,8 @@ document.querySelectorAll('.filter-option[data-type]').forEach(option => {
 function sortAssignments(sortBy) {
     const container = document.getElementById('assignmentsList');
     const items = Array.from(container.getElementsByClassName('assignment-item'));
+    
+    if (items.length === 0) return; // 항목이 없으면 정렬하지 않음
     
     if (sortBy === 'deadline') {
         // 마감일 기준 정렬 (마감이 가까운 순)
@@ -207,8 +225,8 @@ function deleteItem(button) {
         const item = button.closest('.assignment-item');
         item.remove();
         
-        // 상태 개수 업데이트
-        updateStatusCounts();
+        // 상태 개수 업데이트 및 빈 화면 확인
+        checkEmptyState();
     }
 }
 
@@ -349,7 +367,7 @@ function updateItem() {
 
 // 유형 선택 (추가 폼)
 function selectType(element) {
-    document.querySelectorAll('.type-option').forEach(option => {
+    document.querySelectorAll('#addFormOverlay .type-option').forEach(option => {
         option.classList.remove('active');
     });
     element.classList.add('active');
@@ -365,6 +383,29 @@ function selectEditType(element) {
 
 // 과제 추가 폼 표시
 function showAddForm() {
+    // 기본 설정: 과제 유형 선택
+    document.querySelectorAll('#addFormOverlay .type-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    document.querySelector('#addFormOverlay .type-option[data-type="assignment"]').classList.add('active');
+    
+    // 폼 초기화
+    document.getElementById('subjectInput').value = '';
+    document.getElementById('titleInput').value = '';
+    document.getElementById('detailsInput').value = '';
+    
+    // 오늘 날짜와 시간 설정
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    document.getElementById('dateInput').value = `${year}-${month}-${day}`;
+    
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('timeInput').value = `${hours}:${minutes}`;
+    
+    // 폼 표시
     document.getElementById('addFormOverlay').style.display = 'flex';
 }
 
@@ -437,7 +478,15 @@ function saveNewItem() {
     `;
     
     // 새 항목을 목록에 추가
-    document.getElementById('assignmentsList').prepend(newItem);
+    const assignmentsList = document.getElementById('assignmentsList');
+    assignmentsList.prepend(newItem);
+    
+    // 빈 화면 체크
+    if (assignmentsList.children.length === 1) {
+        // 첫 번째 항목 추가 시 빈 화면 숨기고 목록 표시
+        document.getElementById('emptyState').style.display = 'none';
+        assignmentsList.style.display = 'block';
+    }
     
     // 폼 닫기 및 초기화
     hideAddForm();

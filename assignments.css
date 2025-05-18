@@ -161,6 +161,31 @@ header {
     color: #2196f3;
 }
 
+/* 빈 상태 메시지 */
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #999;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.empty-message {
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
 /* 과제 및 시험 목록 */
 .assignments-list {
     padding: 16px;
