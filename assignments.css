@@ -233,6 +233,18 @@ header {
 .assignment-due {
     font-size: 12px;
     color: #888;
+    margin-bottom: 8px;
+}
+
+.assignment-details {
+    font-size: 12px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+    color: #444;
+    margin-top: 8px;
+    line-height: 1.5;
+    white-space: pre-line;
 }
 
 .assignment-right {
@@ -241,6 +253,7 @@ header {
     justify-content: space-between;
     align-items: flex-end;
     margin-left: 10px;
+    min-width: 100px;
 }
 
 .assignment-status {
@@ -250,6 +263,7 @@ header {
     text-align: center;
     background-color: #eee;
     margin-bottom: 6px;
+    white-space: nowrap;
 }
 
 .assignment-status.urgent {
@@ -264,10 +278,12 @@ header {
 
 .assignment-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
+    justify-content: flex-end;
 }
 
-.complete-btn, .view-details-btn {
+.edit-btn, .delete-btn, .view-details-btn {
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 12px;
@@ -276,8 +292,13 @@ header {
     white-space: nowrap;
 }
 
-.complete-btn {
-    background-color: #4caf50;
+.edit-btn {
+    background-color: #ff9800;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #e53935;
     color: white;
 }
 
@@ -331,6 +352,8 @@ header {
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .form-header {
@@ -362,12 +385,17 @@ header {
     margin-bottom: 6px;
 }
 
-.form-group input, .form-group select {
+.form-group input, .form-group select, .form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
 }
 
 .type-selector {
@@ -431,10 +459,16 @@ header {
         justify-content: space-between;
         margin-left: 0;
         margin-top: 10px;
+        min-width: auto;
+        width: 100%;
     }
     
     .assignment-status {
         margin-bottom: 0;
+    }
+    
+    .assignment-actions {
+        flex-wrap: wrap;
     }
 }
 

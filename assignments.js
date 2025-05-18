@@ -182,44 +182,185 @@ function updateStatusCounts() {
     document.querySelector('.status-item.completed .status-count').textContent = completedCount;
 }
 
-// 완료 표시
-function markComplete(button) {
+// 상세 정보 토글
+function toggleDetails(button) {
+    const item = button.closest('.assignment-item');
+    const detailsElement = item.querySelector('.assignment-details');
+    
+    if (detailsElement.style.display === 'none' || detailsElement.style.display === '') {
+        // 모든 상세 정보 닫기
+        document.querySelectorAll('.assignment-details').forEach(details => {
+            details.style.display = 'none';
+        });
+        
+        // 현재 항목의 상세 정보 열기
+        detailsElement.style.display = 'block';
+    } else {
+        // 현재 항목의 상세 정보 닫기
+        detailsElement.style.display = 'none';
+    }
+}
+
+// 항목 삭제
+function deleteItem(button) {
+    if (confirm('정말로 이 항목을 삭제하시겠습니까?')) {
+        const item = button.closest('.assignment-item');
+        item.remove();
+        
+        // 상태 개수 업데이트
+        updateStatusCounts();
+    }
+}
+
+// 항목 수정
+function editItem(button) {
     const item = button.closest('.assignment-item');
     
-    // 완료 클래스 토글
-    if (item.classList.contains('completed')) {
-        item.classList.remove('completed');
-        if (item.dataset.originalClass) {
-            item.classList.add(item.dataset.originalClass);
-        }
-        button.textContent = '완료';
-    } else {
-        // 원래 클래스 저장
-        if (item.classList.contains('urgent')) {
-            item.dataset.originalClass = 'urgent';
-        } else if (item.classList.contains('normal')) {
-            item.dataset.originalClass = 'normal';
-        }
-        
-        // 기존 상태 클래스 제거
-        item.classList.remove('urgent', 'normal');
-        
-        // 완료 클래스 추가
-        item.classList.add('completed');
-        button.textContent = '취소';
+    // 현재 항목의 데이터 가져오기
+    const type = item.dataset.type;
+    const subject = item.querySelector('.assignment-subject').textContent;
+    const title = item.querySelector('.assignment-title').textContent;
+    const dueText = item.querySelector('.assignment-due').textContent;
+    const details = item.querySelector('.assignment-details').textContent;
+    
+    // 마감일/시간 추출
+    const monthMatch = dueText.match(/(\d+)월/);
+    const dayMatch = dueText.match(/(\d+)일/);
+    const timeMatch = dueText.match(/(오전|오후) (\d+):(\d+)/);
+    
+    let dateString = '';
+    let timeString = '';
+    
+    if (monthMatch && dayMatch) {
+        const month = parseInt(monthMatch[1]);
+        const day = parseInt(dayMatch[1]);
+        dateString = `2025-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     }
+    
+    if (timeMatch) {
+        let hour = parseInt(timeMatch[2]);
+        const minute = parseInt(timeMatch[3]);
+        
+        // 오후인 경우 시간 변환
+        if (timeMatch[1] === '오후' && hour < 12) {
+            hour += 12;
+        } else if (timeMatch[1] === '오전' && hour === 12) {
+            hour = 0;
+        }
+        
+        timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    }
+    
+    // 수정 폼 데이터 설정
+    const typeOptions = document.querySelectorAll('#editFormOverlay .type-option');
+    typeOptions.forEach(option => {
+        option.classList.remove('active');
+        if (option.dataset.type === type) {
+            option.classList.add('active');
+        }
+    });
+    
+    document.getElementById('editSubjectInput').value = subject;
+    document.getElementById('editTitleInput').value = title;
+    document.getElementById('editDateInput').value = dateString;
+    document.getElementById('editTimeInput').value = timeString;
+    document.getElementById('editDetailsInput').value = details.trim();
+    
+    // 현재 항목의 인덱스 저장 (나중에 업데이트할 때 사용)
+    const items = Array.from(document.querySelectorAll('.assignment-item'));
+    const index = items.indexOf(item);
+    document.getElementById('editItemIndex').value = index;
+    
+    // 수정 폼 표시
+    document.getElementById('editFormOverlay').style.display = 'flex';
+}
+
+// 수정 폼 숨기기
+function hideEditForm() {
+    document.getElementById('editFormOverlay').style.display = 'none';
+}
+
+// 수정한 항목 저장
+function updateItem() {
+    // 입력값 가져오기
+    const typeElement = document.querySelector('#editFormOverlay .type-option.active');
+    const type = typeElement ? typeElement.dataset.type : 'assignment';
+    const subject = document.getElementById('editSubjectInput').value;
+    const title = document.getElementById('editTitleInput').value;
+    const date = document.getElementById('editDateInput').value;
+    const time = document.getElementById('editTimeInput').value;
+    const details = document.getElementById('editDetailsInput').value;
+    
+    // 유효성 검사
+    if (!subject || !title || !date || !time) {
+        alert('모든 필드를 입력해주세요.');
+        return;
+    }
+    
+    // 날짜 형식 변환
+    const dateObj = new Date(date + 'T' + time);
+    const month = dateObj.getMonth() + 1;
+    const day = dateObj.getDate();
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const period = hours < 12 ? '오전' : '오후';
+    const hour12 = hours % 12 || 12;
+    
+    const formattedDate = `${month}월 ${day}일 ${period} ${hour12}:${minutes < 10 ? '0' + minutes : minutes}`;
+    
+    // 마감까지 남은 일수 계산
+    const today = new Date();
+    const diffTime = dateObj - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // 상태 결정 (3일 이내면 급함, 그 외는 정상)
+    const statusClass = diffDays <= 3 ? 'urgent' : 'normal';
+    const statusText = diffDays <= 3 ? '급함' : `${diffDays}일 후`;
+    
+    // 수정할 항목 가져오기
+    const index = parseInt(document.getElementById('editItemIndex').value);
+    const items = Array.from(document.querySelectorAll('.assignment-item'));
+    const item = items[index];
+    
+    // 항목 업데이트
+    item.dataset.type = type;
+    item.dataset.subject = subject;
+    item.querySelector('.assignment-type').textContent = type === 'assignment' ? '과제' : '시험';
+    item.querySelector('.assignment-subject').textContent = subject;
+    item.querySelector('.assignment-title').textContent = title;
+    item.querySelector('.assignment-due').textContent = type === 'assignment' ? `마감: ${formattedDate}` : formattedDate;
+    item.querySelector('.assignment-details').textContent = details;
+    
+    // 상태 클래스 업데이트
+    item.classList.remove('urgent', 'normal');
+    item.classList.add(statusClass);
+    
+    const statusElement = item.querySelector('.assignment-status');
+    statusElement.classList.remove('urgent', 'normal');
+    statusElement.classList.add(statusClass);
+    statusElement.textContent = statusText;
+    
+    // 수정 폼 숨기기
+    hideEditForm();
     
     // 상태 개수 업데이트
     updateStatusCounts();
 }
 
-// 시험 상세 정보 보기
-function viewExamDetails(subject, title) {
-    alert(`${subject} - ${title} 시험 상세 정보\n\n` +
-          `일시: 4월 24일 오후 2:00\n` +
-          `장소: 중앙 강의동 303호\n` +
-          `범위: 중간고사 - 1~5장\n` +
-          `참고사항: 계산기 사용 가능`);
+// 유형 선택 (추가 폼)
+function selectType(element) {
+    document.querySelectorAll('.type-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    element.classList.add('active');
+}
+
+// 유형 선택 (수정 폼)
+function selectEditType(element) {
+    document.querySelectorAll('#editFormOverlay .type-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    element.classList.add('active');
 }
 
 // 과제 추가 폼 표시
@@ -232,23 +373,16 @@ function hideAddForm() {
     document.getElementById('addFormOverlay').style.display = 'none';
 }
 
-// 유형 선택
-function selectType(element) {
-    document.querySelectorAll('.type-option').forEach(option => {
-        option.classList.remove('active');
-    });
-    element.classList.add('active');
-}
-
 // 새 과제/시험 저장
 function saveNewItem() {
     // 입력값 가져오기
-    const typeElement = document.querySelector('.type-option.active');
+    const typeElement = document.querySelector('#addFormOverlay .type-option.active');
     const type = typeElement ? typeElement.dataset.type : 'assignment';
     const subject = document.getElementById('subjectInput').value;
     const title = document.getElementById('titleInput').value;
     const date = document.getElementById('dateInput').value;
     const time = document.getElementById('timeInput').value;
+    const details = document.getElementById('detailsInput').value;
     
     // 유효성 검사
     if (!subject || !title || !date || !time) {
@@ -290,13 +424,14 @@ function saveNewItem() {
             <div class="assignment-subject">${subject}</div>
             <div class="assignment-title">${title}</div>
             <div class="assignment-due">${type === 'assignment' ? '마감: ' : ''}${formattedDate}</div>
+            <div class="assignment-details" style="display: none;">${details}</div>
         </div>
         <div class="assignment-right">
             <div class="assignment-status ${statusClass}">${statusText}</div>
             <div class="assignment-actions">
-                ${type === 'assignment' ? 
-                  '<button class="complete-btn" onclick="markComplete(this)">완료</button>' :
-                  `<button class="view-details-btn" onclick="viewExamDetails('${subject}', '${title}')">상세</button>`}
+                <button class="edit-btn" onclick="editItem(this)">수정</button>
+                <button class="delete-btn" onclick="deleteItem(this)">삭제</button>
+                <button class="view-details-btn" onclick="toggleDetails(this)">상세</button>
             </div>
         </div>
     `;
@@ -310,6 +445,7 @@ function saveNewItem() {
     document.getElementById('titleInput').value = '';
     document.getElementById('dateInput').value = '';
     document.getElementById('timeInput').value = '';
+    document.getElementById('detailsInput').value = '';
     
     // 상태 개수 업데이트
     updateStatusCounts();
