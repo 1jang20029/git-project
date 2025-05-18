@@ -4862,7 +4862,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 // 메인 페이지에서 대외활동 통계 표시
-// 메인 페이지에서 대외활동 통계 표시
+
 function displayActivityStats() {
     // 로컬 스토리지에서 통계 정보 가져오기
     const statsData = localStorage.getItem('activityStats');
