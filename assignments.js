@@ -502,3 +502,211 @@ function saveNewItem() {
     // 알림 표시
     alert('항목이 추가되었습니다.');
 }
+
+// 과제/시험 데이터 저장 함수
+function saveAssignmentsData(assignments) {
+    try {
+        localStorage.setItem('assignments', JSON.stringify(assignments));
+        // 메인 페이지에 변경 알림 이벤트 발생
+        window.dispatchEvent(new Event('assignmentsUpdated'));
+    } catch (error) {
+        console.error('과제/시험 데이터 저장 오류:', error);
+    }
+}
+
+// 기존의 과제/시험 항목 로드 함수
+function loadAssignmentsData() {
+    const data = localStorage.getItem('assignments');
+    if (data) {
+        try {
+            return JSON.parse(data);
+        } catch (error) {
+            console.error('과제/시험 데이터 파싱 오류:', error);
+            return [];
+        }
+    }
+    return []; // 데이터가 없으면 빈 배열 반환
+}
+
+// 과제/시험 목록에서 항목들 수집 함수
+function collectAssignmentItems() {
+    const items = document.querySelectorAll('.assignment-item');
+    const assignments = [];
+    
+    items.forEach(item => {
+        const typeEl = item.querySelector('.assignment-type');
+        const subjectEl = item.querySelector('.assignment-subject');
+        const titleEl = item.querySelector('.assignment-title');
+        const dueEl = item.querySelector('.assignment-due');
+        const detailsEl = item.querySelector('.assignment-details');
+        
+        if (typeEl && subjectEl && titleEl && dueEl) {
+            const typeText = typeEl.textContent;
+            const type = typeText === '과제' ? 'assignment' : 'exam';
+            
+            assignments.push({
+                type: type,
+                subject: subjectEl.textContent,
+                title: titleEl.textContent,
+                due: dueEl.textContent,
+                details: detailsEl ? detailsEl.textContent.trim() : ''
+            });
+        }
+    });
+    
+    return assignments;
+}
+
+// 페이지의 모든 항목 업데이트 후 데이터 저장
+function updateAndSaveAllItems() {
+    const assignments = collectAssignmentItems();
+    saveAssignmentsData(assignments);
+}
+
+// 기존 saveNewItem 함수 수정 (새 항목 저장 후 데이터 업데이트)
+const originalSaveNewItem = saveNewItem;
+saveNewItem = function() {
+    // 원래 함수 호출
+    originalSaveNewItem.apply(this, arguments);
+    
+    // 모든 항목 데이터 저장
+    setTimeout(() => {
+        updateAndSaveAllItems();
+    }, 100);
+};
+
+// 기존 deleteItem 함수 수정 (항목 삭제 후 데이터 업데이트)
+const originalDeleteItem = deleteItem;
+deleteItem = function(button) {
+    // 원래 함수 호출
+    originalDeleteItem.apply(this, arguments);
+    
+    // 모든 항목 데이터 저장
+    setTimeout(() => {
+        updateAndSaveAllItems();
+    }, 100);
+};
+
+// 기존 updateItem 함수 수정 (항목 수정 후 데이터 업데이트)
+const originalUpdateItem = updateItem;
+updateItem = function() {
+    // 원래 함수 호출
+    originalUpdateItem.apply(this, arguments);
+    
+    // 모든 항목 데이터 저장
+    setTimeout(() => {
+        updateAndSaveAllItems();
+    }, 100);
+};
+
+// 초기화 시 페이지에 기존 데이터 로드
+document.addEventListener('DOMContentLoaded', function() {
+    // 기존 초기화 로직이 실행된 후 실행되도록 setTimeout 사용
+    setTimeout(() => {
+        const assignments = loadAssignmentsData();
+        
+        // 저장된 데이터가 있으면 빈 화면 대신 데이터 표시
+        if (assignments && assignments.length > 0) {
+            const emptyState = document.getElementById('emptyState');
+            const assignmentsList = document.getElementById('assignmentsList');
+            
+            if (emptyState && assignmentsList) {
+                // 빈 화면 숨기기
+                emptyState.style.display = 'none';
+                assignmentsList.style.display = 'block';
+                
+                // 저장된 항목들을 페이지에 추가
+                assignments.forEach(assignment => {
+                    // 날짜 정보 파싱
+                    const dateInfo = parseDueDate(assignment.due);
+                    
+                    // 남은 일수 계산
+                    const now = new Date();
+                    const dueDate = dateInfo.date;
+                    const diffTime = dueDate - now;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    // 상태 결정 (3일 이내면 급함, 그 외는 정상)
+                    const statusClass = diffDays <= 3 ? 'urgent' : 'normal';
+                    const statusText = diffDays <= 3 ? '급함' : `${diffDays}일 후`;
+                    
+                    // 새 항목 HTML 생성
+                    const newItem = document.createElement('div');
+                    newItem.className = `assignment-item ${statusClass}`;
+                    newItem.dataset.type = assignment.type;
+                    newItem.dataset.subject = assignment.subject;
+                    
+                    newItem.innerHTML = `
+                        <div class="assignment-left">
+                            <div class="assignment-type">${assignment.type === 'assignment' ? '과제' : '시험'}</div>
+                        </div>
+                        <div class="assignment-content">
+                            <div class="assignment-subject">${assignment.subject}</div>
+                            <div class="assignment-title">${assignment.title}</div>
+                            <div class="assignment-due">${assignment.due}</div>
+                            <div class="assignment-details" style="display: none;">${assignment.details || ''}</div>
+                        </div>
+                        <div class="assignment-right">
+                            <div class="assignment-status ${statusClass}">${statusText}</div>
+                            <div class="assignment-actions">
+                                <button class="edit-btn" onclick="editItem(this)">수정</button>
+                                <button class="delete-btn" onclick="deleteItem(this)">삭제</button>
+                                <button class="view-details-btn" onclick="toggleDetails(this)">상세</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 목록에 추가
+                    assignmentsList.appendChild(newItem);
+                });
+                
+                // 상태 개수 업데이트
+                updateStatusCounts();
+            }
+        }
+    }, 200);
+});
+
+// 날짜 문자열 파싱 함수
+function parseDueDate(dueString) {
+    // "마감: 4월 12일 오후 11:59" 또는 "4월 24일 오후 2:00" 형식에서 추출
+    const monthMatch = dueString.match(/(\d+)월/);
+    const dayMatch = dueString.match(/(\d+)일/);
+    const timeMatch = dueString.match(/(오전|오후) (\d+):(\d+)/);
+    
+    if (monthMatch && dayMatch && timeMatch) {
+        const month = parseInt(monthMatch[1]) - 1; // JavaScript의 월은 0부터 시작
+        const day = parseInt(dayMatch[1]);
+        let hour = parseInt(timeMatch[2]);
+        const minute = parseInt(timeMatch[3]);
+        
+        // 오후인 경우 시간에 12 추가 (단, 12시는 제외)
+        if (timeMatch[1] === '오후' && hour < 12) {
+            hour += 12;
+        }
+        
+        // 현재 년도 또는 2025년으로 설정
+        const currentYear = new Date().getFullYear();
+        const date = new Date(currentYear, month, day, hour, minute);
+        
+        return {
+            date: date,
+            month: month + 1,
+            day: day,
+            hour: hour,
+            minute: minute,
+            period: timeMatch[1]
+        };
+    }
+    
+    // 파싱 실패 시 현재 날짜 반환
+    const now = new Date();
+    return {
+        date: now,
+        month: now.getMonth() + 1,
+        day: now.getDate(),
+        hour: now.getHours(),
+        minute: now.getMinutes(),
+        period: now.getHours() < 12 ? '오전' : '오후'
+    };
+}

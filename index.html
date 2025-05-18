@@ -218,44 +218,29 @@
                            <span class="activity-notice-text">밴드 동아리 ECHO 오디션 이번 주</span>
                        </div>
                    </div>
-               </div>
+                </div>
 
-               <!-- 과제/시험 현황 (에브리타임 스타일) -->
-               <div class="everytime-assignments-card">
-                   <div class="everytime-header">
-                       <div class="everytime-title">📝 과제 & 시험</div>
-                       <div class="everytime-view-all" onclick="goToPage('assignments')">전체보기</div>
-                   </div>
-                   <div class="assignments-list">
-                       <div class="assignment-item urgent">
-                           <div class="assignment-type">과제</div>
-                           <div class="assignment-content">
-                               <div class="assignment-subject">웹 프로그래밍 실습</div>
-                               <div class="assignment-title">개인 포트폴리오 웹사이트 제작</div>
-                               <div class="assignment-due">마감: 4월 12일 오후 11:59</div>
-                           </div>
-                           <div class="assignment-status urgent">급함</div>
-                       </div>
-                       <div class="assignment-item normal">
-                           <div class="assignment-type">시험</div>
-                           <div class="assignment-content">
-                               <div class="assignment-subject">마케팅 원론</div>
-                               <div class="assignment-title">중간고사</div>
-                               <div class="assignment-due">4월 24일 오후 2:00</div>
-                           </div>
-                           <div class="assignment-status normal">8일 후</div>
-                       </div>
-                       <div class="assignment-item normal">
-                           <div class="assignment-type">과제</div>
-                           <div class="assignment-content">
-                               <div class="assignment-subject">영상콘텐츠제작</div>
-                               <div class="assignment-title">3분 브이로그 제작</div>
-                               <div class="assignment-due">마감: 4월 18일 오후 6:00</div>
-                           </div>
-                           <div class="assignment-status normal">10일 후</div>
-                       </div>
-                   </div>
-               </div>
+                <!-- 과제/시험 현황 (에브리타임 스타일) -->
+                <div class="everytime-assignments-card">
+                    <div class="everytime-header">
+                        <div class="everytime-title">📝 과제 & 시험</div>
+                        <div class="everytime-view-all" onclick="window.location.href='assignments.html'">전체보기</div>
+                    </div>
+                    <div class="assignments-list">
+                        <!-- 이 부분은 JavaScript에서 동적으로 생성됩니다 -->
+                        <!-- 항목이 없을 때 보여질 기본 메시지 -->
+                        <div class="assignment-item normal">
+                            <div class="assignment-type">안내</div>
+                            <div class="assignment-content">
+                                <div class="assignment-title">등록된 과제 및 시험이 없습니다</div>
+                                <div class="assignment-due">과제 & 시험 메뉴에서 항목을 추가해보세요</div>
+                            </div>
+                            <div class="assignment-status normal">
+                                <span style="font-size: 18px;">+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                <!-- 실시간 커뮤니티 (에브리타임 스타일) -->
                <div class="everytime-community-card">
