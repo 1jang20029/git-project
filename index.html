@@ -37,8 +37,7 @@
                             <span>로그아웃</span>
                         </div>
                    </div>
-               </div>
-           </header>
+               </header>
                
            <!-- 홈 탭 -->
            <div id="home-tab" class="tab-content active">
@@ -241,63 +240,43 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- 신규 콘텐츠: 인기 강의 추천 -->
+                <div class="popular-lectures-card">
+                    <div class="everytime-header">
+                        <div class="everytime-title">🔍 추천 강의</div>
+                        <div class="everytime-view-all" onclick="switchTab('community')">더보기</div>
+                    </div>
+                    <div class="popular-lectures-list">
+                        <div class="popular-lecture-item">
+                            <div class="popular-lecture-badge">HOT</div>
+                            <div class="popular-lecture-content">
+                                <div class="popular-lecture-title">직무역량 강화 특강</div>
+                                <div class="popular-lecture-info">
+                                    <span class="popular-lecture-professor">취업지원센터</span>
+                                    <span class="popular-lecture-date">4월 12일 (금) 14:00</span>
+                                </div>
+                                <div class="popular-lecture-description">
+                                    실무에서 바로 사용 가능한 핵심 역량을 키우는 특강입니다.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="popular-lecture-item">
+                            <div class="popular-lecture-badge">신규</div>
+                            <div class="popular-lecture-content">
+                                <div class="popular-lecture-title">인공지능과 미래 사회</div>
+                                <div class="popular-lecture-info">
+                                    <span class="popular-lecture-professor">김인공 교수</span>
+                                    <span class="popular-lecture-date">4월 15일 (월) 16:00</span>
+                                </div>
+                                <div class="popular-lecture-description">
+                                    AI가 바꾸는 미래 직업과 사회 변화에 대한 특강입니다.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-               <!-- 실시간 커뮤니티 (에브리타임 스타일) -->
-               <div class="everytime-community-card">
-                   <div class="everytime-header">
-                       <div class="everytime-title">💬 실시간 커뮤니티</div>
-                       <div class="everytime-view-all" onclick="goToPage('everytime-board')">게시판</div>
-                   </div>
-                   <div class="community-posts">
-                       <div class="post-item">
-                           <div class="post-board">[자유게시판]</div>
-                           <div class="post-content">
-                               <div class="post-title">중간고사 스터디 그룹 모집해요!</div>
-                               <div class="post-preview">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
-                               <div class="post-meta">
-                                   <span class="post-time">3분 전</span>
-                                   <span class="post-stats">👍 12 💬 8</span>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="post-item">
-                           <div class="post-board">[정보게시판]</div>
-                           <div class="post-content">
-                               <div class="post-title">김민수 교수님 수업 꿀팁 공유</div>
-                               <div class="post-preview">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
-                               <div class="post-meta">
-                                   <span class="post-time">12분 전</span>
-                                   <span class="post-stats">👍 24 💬 15</span>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="post-item">
-                           <div class="post-board">[취업게시판]</div>
-                           <div class="post-content">
-                               <div class="post-title">삼성전자 채용설명회 후기</div>
-                               <div class="post-preview">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
-                               <div class="post-meta">
-                                   <span class="post-time">32분 전</span>
-                                   <span class="post-stats">👍 45 💬 23</span>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="post-item">
-                           <div class="post-board">[강의평가]</div>
-                           <div class="post-content">
-                               <div class="post-title">이지영 교수님 마케팅 원론 후기</div>
-                               <div class="post-preview">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
-                               <div class="post-meta">
-                                   <span class="post-time">1시간 전</span>
-                                   <span class="post-stats">👍 18 💬 6</span>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-               
-
-               
                <!-- 학사 일정 -->
                <div class="calendar-card">
                    <div class="section-title">
@@ -565,6 +544,60 @@
             <div id="community-tab" class="tab-content">
                 <div class="search-bar">
                     <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
+                </div>
+                
+                <!-- 실시간 커뮤니티 (에브리타임 스타일) - 홈 탭에서 이동됨 -->
+                <div class="everytime-community-card">
+                    <div class="everytime-header">
+                        <div class="everytime-title">💬 실시간 커뮤니티</div>
+                        <div class="everytime-view-all" onclick="goToPage('everytime-board')">게시판</div>
+                    </div>
+                    <div class="community-posts">
+                        <div class="post-item">
+                            <div class="post-board">[자유게시판]</div>
+                            <div class="post-content">
+                                <div class="post-title">중간고사 스터디 그룹 모집해요!</div>
+                                <div class="post-preview">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
+                                <div class="post-meta">
+                                    <span class="post-time">3분 전</span>
+                                    <span class="post-stats">👍 12 💬 8</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-item">
+                            <div class="post-board">[정보게시판]</div>
+                            <div class="post-content">
+                                <div class="post-title">김민수 교수님 수업 꿀팁 공유</div>
+                                <div class="post-preview">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
+                                <div class="post-meta">
+                                    <span class="post-time">12분 전</span>
+                                    <span class="post-stats">👍 24 💬 15</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-item">
+                            <div class="post-board">[취업게시판]</div>
+                            <div class="post-content">
+                                <div class="post-title">삼성전자 채용설명회 후기</div>
+                                <div class="post-preview">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
+                                <div class="post-meta">
+                                    <span class="post-time">32분 전</span>
+                                    <span class="post-stats">👍 45 💬 23</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-item">
+                            <div class="post-board">[강의평가]</div>
+                            <div class="post-content">
+                                <div class="post-title">이지영 교수님 마케팅 원론 후기</div>
+                                <div class="post-preview">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
+                                <div class="post-meta">
+                                    <span class="post-time">1시간 전</span>
+                                    <span class="post-stats">👍 18 💬 6</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="content-section">
