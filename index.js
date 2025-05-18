@@ -5125,16 +5125,6 @@ function setupAssignmentsEventListeners() {
         });
     }
     
-    // 메인 페이지의 과제/시험 항목 클릭 시 과제/시험 페이지로 이동
-    const assignmentsList = document.querySelector('.everytime-assignments-card .assignments-list');
-    if (assignmentsList) {
-        assignmentsList.addEventListener('click', function(e) {
-            const item = e.target.closest('.assignment-item');
-            if (item) {
-                window.location.href = 'assignments.html';
-            }
-        });
-    }
 }
 
 // 페이지 로드 시 초기화 함수
