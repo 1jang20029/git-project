@@ -76,21 +76,12 @@ function logout() {
 // 로컬 스토리지에 회원가입 여부 저장
 function saveRegistrationStatus(studentId) {
     safeStorage.setItem(`user_${studentId}_registered`, 'true');
-    
-    // 위젯 설정을 완료했는지 확인
-    const setupCompleted = safeStorage.getItem(`user_${studentId}_setup_completed`) === 'true';
-    
-    // 위젯 설정을 완료하지 않은 경우에만 최초 로그인 상태를 설정
-    if (!setupCompleted) {
-        safeStorage.setItem(`user_${studentId}_first_login`, 'true');
-    }
+    // 최초 로그인 상태를 true로 설정 (아직 로그인한 적 없음)
+    safeStorage.setItem(`user_${studentId}_first_login`, 'true');
 }
 
 // 회원가입 시 사용자 정보 저장 함수 (register.html 파일에 필요)
 function registerUser(studentId, password, name, department, grade, email, phone) {
-    // 기존 사용자인지 확인
-    const isExistingUser = safeStorage.getItem(`user_${studentId}_registered`) === 'true';
-    
     // 회원 정보 저장
     safeStorage.setItem(`user_${studentId}_registered`, 'true');
     safeStorage.setItem(`user_${studentId}_password`, password);
@@ -100,13 +91,8 @@ function registerUser(studentId, password, name, department, grade, email, phone
     safeStorage.setItem(`user_${studentId}_email`, email);
     safeStorage.setItem(`user_${studentId}_phone`, phone);
     
-    // 위젯 설정을 완료했는지 확인
-    const setupCompleted = safeStorage.getItem(`user_${studentId}_setup_completed`) === 'true';
-    
-    // 위젯 설정을 완료하지 않은 경우에만 최초 로그인 상태를 설정
-    if (!isExistingUser || !setupCompleted) {
-        safeStorage.setItem(`user_${studentId}_first_login`, 'true');
-    }
+    // 최초 로그인 상태를 true로 설정
+    safeStorage.setItem(`user_${studentId}_first_login`, 'true');
     
     // 회원가입 완료 후 로그인 페이지로 리디렉션
     window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
@@ -161,20 +147,18 @@ function login() {
     // 현재 로그인된 사용자 저장
     safeStorage.setItem('currentLoggedInUser', studentId);
     
-    // 최초 로그인 여부 및 위젯 설정 완료 여부 확인
+    // 최초 로그인 여부 확인
     const isFirstLogin = safeStorage.getItem(`user_${studentId}_first_login`) === 'true';
-    const setupCompleted = safeStorage.getItem(`user_${studentId}_setup_completed`) === 'true';
     
-    // 최초 로그인이고 위젯 설정을 완료하지 않은 경우
-    if (isFirstLogin && !setupCompleted) {
-        // 최초 로그인 플래그를 false로 변경 (다음 로그인에는 위젯 설정 페이지로 이동하지 않음)
+    if (isFirstLogin) {
+        // 최초 로그인이면 위젯 설정 페이지로 이동
+        // 다음 로그인 때는 위젯 페이지로 이동하지 않도록 설정
         safeStorage.setItem(`user_${studentId}_first_login`, 'false');
         
-        // 위젯 설정 페이지로 이동
         alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
         window.location.href = "widget-settings.html";
     } else {
-        // 위젯 설정을 이미 완료했거나 최초 로그인이 아닌 경우 메인 페이지로 이동
+        // 이미 로그인한 적이 있는 경우 메인 페이지로 이동
         alert('로그인이 완료되었습니다.');
         window.location.href = "index.html";
     }
@@ -292,20 +276,18 @@ function processNaverLogin() {
         // 네이버 로그인 성공 시 임시 학번 생성
         const tempStudentId = 'naver_' + naverId;
         
-        // 기존 사용자인지 확인
-        const isExistingUser = safeStorage.getItem(`user_${tempStudentId}_registered`) === 'true';
-        const setupCompleted = safeStorage.getItem(`user_${tempStudentId}_setup_completed`) === 'true';
-        
         // 사용자 정보 저장
-        safeStorage.setItem(`user_${tempStudentId}_registered`, 'true');
+        const isNewUser = safeStorage.getItem(`user_${tempStudentId}_registered`) !== 'true';
         
-        // 기존 정보가 없는 경우에만 기본 정보 저장
-        if (!isExistingUser) {
+        // 새 사용자이면 정보 생성 및 첫 로그인 설정
+        if (isNewUser) {
+            safeStorage.setItem(`user_${tempStudentId}_registered`, 'true');
             safeStorage.setItem(`user_${tempStudentId}_name`, '네이버 사용자');
             safeStorage.setItem(`user_${tempStudentId}_department`, 'computerScience');
             safeStorage.setItem(`user_${tempStudentId}_grade`, '1');
             safeStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
             safeStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
+            safeStorage.setItem(`user_${tempStudentId}_first_login`, 'true');
             
             // 소셜 로그인 사용자 표시
             safeStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
@@ -319,21 +301,20 @@ function processNaverLogin() {
         // 현재 로그인된 사용자 저장
         safeStorage.setItem('currentLoggedInUser', tempStudentId);
         
-        // 최초 로그인 여부 확인 (기존 사용자이고 위젯 설정을 완료한 경우에는 false)
-        if (!isExistingUser || !setupCompleted) {
-            safeStorage.setItem(`user_${tempStudentId}_first_login`, 'true');
-        } else {
-            safeStorage.setItem(`user_${tempStudentId}_first_login`, 'false');
-        }
-        
         // 모달 닫기
         closeModal('naverLoginModal');
         
-        // 위젯 설정 완료 여부에 따라 페이지 이동
-        if (!setupCompleted) {
+        // 최초 로그인 여부 확인
+        const isFirstLogin = safeStorage.getItem(`user_${tempStudentId}_first_login`) === 'true';
+        
+        if (isFirstLogin) {
+            // 최초 로그인 상태 변경
+            safeStorage.setItem(`user_${tempStudentId}_first_login`, 'false');
+            
             alert('네이버 계정으로 로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
             window.location.href = "widget-settings.html";
         } else {
+            // 첫 로그인이 아닌 경우 바로 메인 페이지로
             alert('네이버 계정으로 로그인이 완료되었습니다.');
             window.location.href = "index.html";
         }

@@ -3129,22 +3129,19 @@ function deleteAccount() {
     
     // 삭제 확인
     if (confirm('정말 회원 탈퇴하시겠습니까? 모든 계정 정보가 삭제됩니다.')) {
-        // 사용자 관련 정보 삭제
-        localStorage.removeItem(`user_${currentUser}_registered`);
-        localStorage.removeItem(`user_${currentUser}_first_login`);
-        localStorage.removeItem(`user_${currentUser}_name`);
-        localStorage.removeItem(`user_${currentUser}_department`);
-        localStorage.removeItem(`user_${currentUser}_grade`);
-        localStorage.removeItem(`user_${currentUser}_email`);
-        localStorage.removeItem(`user_${currentUser}_phone`);
-        localStorage.removeItem(`user_${currentUser}_password`);
-        localStorage.removeItem(`user_${currentUser}_profileImageType`);
-        localStorage.removeItem(`user_${currentUser}_profileImage`);
-        localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+        // 해당 사용자의 모든 정보 완전히 삭제
+        // 로컬 스토리지에서 해당 사용자와 관련된 모든 키를 찾아 삭제
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.includes(`user_${currentUser}_`)) {
+                localStorage.removeItem(key);
+            }
+        }
         
         // 현재 로그인 상태 제거
         localStorage.removeItem('currentLoggedInUser');
         
+        // 회원 탈퇴 완료 메시지
         alert('회원 탈퇴가 완료되었습니다.');
         
         // 로그인 페이지로 이동

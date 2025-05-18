@@ -112,21 +112,25 @@ function drag(event) {
 document.addEventListener('DOMContentLoaded', () => {
     const menuList = document.getElementById('menuList');
     
-    menuList.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        const afterElement = getDragAfterElement(menuList, event.clientY);
-        const draggable = document.querySelector('.menu-item[draggable="true"][style*="opacity: 0.5"]');
-        if (afterElement == null) {
-            menuList.appendChild(draggable);
-        } else {
-            menuList.insertBefore(draggable, afterElement);
-        }
-    });
-    
-    menuList.addEventListener('dragend', (event) => {
-        event.target.style.opacity = '';
-        draggedItem = null;
-    });
+    if (menuList) {
+        menuList.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            const afterElement = getDragAfterElement(menuList, event.clientY);
+            const draggable = document.querySelector('.menu-item[draggable="true"][style*="opacity: 0.5"]');
+            if (draggable) {
+                if (afterElement == null) {
+                    menuList.appendChild(draggable);
+                } else {
+                    menuList.insertBefore(draggable, afterElement);
+                }
+            }
+        });
+        
+        menuList.addEventListener('dragend', (event) => {
+            event.target.style.opacity = '';
+            draggedItem = null;
+        });
+    }
 });
 
 function getDragAfterElement(container, y) {
@@ -173,11 +177,7 @@ function saveSettings() {
     // 현재 로그인한 사용자가 있다면 설정 완료 표시
     const currentUser = localStorage.getItem('currentLoggedInUser');
     if (currentUser) {
-        // 위젯 설정 완료 플래그 설정
         localStorage.setItem(`user_${currentUser}_setup_completed`, 'true');
-        
-        // 최초 로그인 플래그 비활성화 (다음 로그인에서도 위젯 페이지로 오지 않도록)
-        localStorage.setItem(`user_${currentUser}_first_login`, 'false');
     }
     
     alert('설정이 저장되었습니다. 메인 페이지로 이동합니다.');
