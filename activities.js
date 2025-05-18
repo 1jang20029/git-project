@@ -137,25 +137,26 @@ function openCalendarModal(inputField) {
     document.getElementById('calendarModal').style.display = 'block';
     document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
     
-    // 스크롤 이벤트 리스너 추가
+    // 스크롤 이벤트 리스너 추가 - passive: false로 설정하여 preventDefault가 정상 작동하도록 함
     const calendarContainer = document.querySelector('.calendar-container');
-    calendarContainer.addEventListener('wheel', handleCalendarScroll);
+    calendarContainer.addEventListener('wheel', handleCalendarScroll, { passive: false });
 }
 
 // 달력 스크롤 처리
 function handleCalendarScroll(event) {
+    // 이벤트 기본 동작 방지
+    event.preventDefault();
+    
     // 스크롤 방향 확인
     if (event.deltaY > 0) {
-        // 아래로 스크롤 - 다음 달
+        // 아래로 스크롤 - 다음 달로 즉시 이동
         nextMonth();
-    } else {
-        // 위로 스크롤 - 이전 달
+    } else if (event.deltaY < 0) {
+        // 위로 스크롤 - 이전 달로 즉시 이동
         prevMonth();
     }
-    
-    // 기본 스크롤 동작 방지
-    event.preventDefault();
 }
+
 
 // 달력 모달 닫기
 function closeCalendarModal() {
@@ -163,9 +164,9 @@ function closeCalendarModal() {
     document.body.style.overflow = 'auto'; // 배경 스크롤 복원
     currentCalendarField = null;
     
-    // 스크롤 이벤트 리스너 제거
+    // 스크롤 이벤트 리스너 제거 - passive: false 옵션 포함
     const calendarContainer = document.querySelector('.calendar-container');
-    calendarContainer.removeEventListener('wheel', handleCalendarScroll);
+    calendarContainer.removeEventListener('wheel', handleCalendarScroll, { passive: false });
 }
 
 // 선택한 날짜 적용
