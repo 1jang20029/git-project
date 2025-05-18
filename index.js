@@ -4424,6 +4424,30 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    // "과제 & 시험 전체보기" 링크 찾기
+    const assignmentsViewAllLink = document.querySelector('.everytime-header .everytime-view-all');
+    
+    if (assignmentsViewAllLink) {
+        // onclick 이벤트 핸들러 수정
+        assignmentsViewAllLink.onclick = function(e) {
+            e.preventDefault(); // 기본 동작 방지
+            window.location.href = 'assignments.html'; // 새로 만든 페이지로 이동
+        };
+    }
+    
+    // 또는 직접 href 속성 수정
+    const assignmentLinks = document.querySelectorAll('a[onclick*="goToPage(\'assignments\')"]');
+    assignmentLinks.forEach(link => {
+        link.href = 'assignments.html';
+        link.onclick = function(e) {
+            e.preventDefault();
+            window.location.href = 'assignments.html';
+        };
+    });
+});
+
+
 
 // 시간표 페이지로 이동하는 함수
 function navigateToTimetable() {
