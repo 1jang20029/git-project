@@ -4904,10 +4904,59 @@ function displayActivityStats() {
     }
 }
 
+function updateActivityNotices() {
+    const urgentActivitiesJSON = localStorage.getItem('urgentActivities');
+    if (!urgentActivitiesJSON) return;
+    
+    try {
+        const urgentActivities = JSON.parse(urgentActivitiesJSON);
+        if (!urgentActivities || !Array.isArray(urgentActivities) || urgentActivities.length === 0) return;
+        
+        // 알림 컨테이너 찾기
+        const noticesContainer = document.querySelector('.activity-summary-notices');
+        if (!noticesContainer) return;
+        
+        // 알림 내용 생성
+        let noticesHTML = '';
+        urgentActivities.forEach(activity => {
+            noticesHTML += `
+                <div class="activity-notice-item">
+                    <span class="activity-notice-icon">${activity.icon}</span>
+                    <span class="activity-notice-text">${activity.title} 마감 ${activity.daysLeft}일 남음</span>
+                </div>
+            `;
+        });
+        
+        // 내용이 있으면 업데이트
+        if (noticesHTML) {
+            noticesContainer.innerHTML = noticesHTML;
+        }
+    } catch (e) {
+        console.error('마감 임박 활동 업데이트 중 오류:', e);
+    }
+}
+
+
 // 페이지 로드 시 통계 표시
 document.addEventListener('DOMContentLoaded', function() {
     displayActivityStats();
+    updateActivityNotices();
     
     // 5분마다 자동 갱신 (선택적)
     setInterval(displayActivityStats, 300000);
+    
+    // 활동 통계 업데이트 이벤트 리스너 추가
+    window.addEventListener('activityStatsUpdated', function() {
+        displayActivityStats();
+        updateActivityNotices();
+    });
+    
+    // localStorage 변경 감지
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'activityStats' || event.key === 'urgentActivities') {
+            console.log('활동 데이터가 다른 탭에서 변경됨:', event.key);
+            displayActivityStats();
+            updateActivityNotices();
+        }
+    });
 });

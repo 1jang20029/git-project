@@ -659,6 +659,7 @@ function updateStats() {
 
 
 
+// 마감 임박 활동 정보 업데이트하는 함수 (전체)
 function updateUpcomingDeadlines() {
     // 마감 날짜가 있는 활동들만 필터링
     const activitiesWithDeadline = userActivities.filter(activity => activity.deadline);
