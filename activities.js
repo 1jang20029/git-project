@@ -655,10 +655,51 @@ function updateStats() {
         volunteerCount: volunteerCount,
         lastUpdated: new Date().toISOString()
     }));
+    
+    // 통계 업데이트 이벤트 발생
+    try {
+        window.dispatchEvent(new CustomEvent('activityStatsUpdated'));
+        console.log('활동 통계 업데이트 이벤트 발생');
+    } catch (e) {
+        console.error('이벤트 발생 중 오류:', e);
+    }
 }
 
 
 
+javascript// 통계 업데이트 함수 개선 - activities.js에 추가
+function updateStats() {
+    const visibleActivities = document.querySelectorAll('.activity-item:not(.hidden)');
+    const contestCount = Array.from(visibleActivities).filter(item => item.classList.contains('contest')).length;
+    const clubCount = Array.from(visibleActivities).filter(item => item.classList.contains('club')).length;
+    const externalCount = Array.from(visibleActivities).filter(item => item.classList.contains('external')).length;
+    const volunteerCount = Array.from(visibleActivities).filter(item => item.classList.contains('volunteer')).length;
+    
+    const stats = document.querySelectorAll('.stat-number');
+    stats[0].textContent = contestCount;
+    stats[1].textContent = clubCount;
+    stats[2].textContent = externalCount;
+    stats[3].textContent = volunteerCount;
+    
+    // 메인 페이지용 통계 정보 저장
+    localStorage.setItem('activityStats', JSON.stringify({
+        contestCount: contestCount,
+        clubCount: clubCount,
+        externalCount: externalCount,
+        volunteerCount: volunteerCount,
+        lastUpdated: new Date().toISOString()
+    }));
+    
+    // 통계 업데이트 이벤트 발생
+    try {
+        window.dispatchEvent(new CustomEvent('activityStatsUpdated'));
+        console.log('활동 통계 업데이트 이벤트 발생');
+    } catch (e) {
+        console.error('이벤트 발생 중 오류:', e);
+    }
+}
+
+// 마감 임박 활동 업데이트 함수 - activities.js에 추가
 function updateUpcomingDeadlines() {
     // 마감 날짜가 있는 활동들만 필터링
     const activitiesWithDeadline = userActivities.filter(activity => activity.deadline);
@@ -708,8 +749,8 @@ function updateUpcomingDeadlines() {
     
     // 이벤트 발생시켜 메인 페이지 알림
     try {
-        window.dispatchEvent(new CustomEvent('activityStatsUpdated'));
-        console.log('활동 통계 업데이트 이벤트 발생');
+        window.dispatchEvent(new CustomEvent('activityDeadlinesUpdated'));
+        console.log('활동 마감 정보 업데이트 이벤트 발생');
     } catch (e) {
         console.error('이벤트 발생 중 오류:', e);
     }

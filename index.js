@@ -4397,6 +4397,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
+window.addEventListener('activityStatsUpdated', function() { 
+    console.log('활동 통계 업데이트 이벤트 수신'); 
+    updateActivityStats(); 
+}); 
+
+window.addEventListener('activityDeadlinesUpdated', function() { 
+    console.log('활동 마감 정보 업데이트 이벤트 수신'); 
+    updateActivityNotices(); 
+});
+
+
+
+
     // 카테고리 필터 기능
     initCategoryFilter();
 
@@ -4904,10 +4918,96 @@ function displayActivityStats() {
     }
 }
 
-// 페이지 로드 시 통계 표시
-document.addEventListener('DOMContentLoaded', function() {
-    displayActivityStats();
+
+
+
+// 활동 통계 실시간 업데이트 함수
+function updateActivityStats() {
+    const statsData = localStorage.getItem('activityStats');
     
+    if (statsData) {
+        const stats = JSON.parse(statsData);
+        
+        // 통계 표시 요소들 가져오기
+        const contestElement = document.querySelector('.activity-stat-item:nth-child(1) .activity-stat-number');
+        const clubElement = document.querySelector('.activity-stat-item:nth-child(2) .activity-stat-number');
+        const externalElement = document.querySelector('.activity-stat-item:nth-child(3) .activity-stat-number');
+        
+        // 값 업데이트
+        if (contestElement) contestElement.textContent = stats.contestCount;
+        if (clubElement) clubElement.textContent = stats.clubCount;
+        if (externalElement) clubElement.textContent = stats.externalCount;
+        
+        console.log('활동 통계 업데이트 완료:', stats);
+    } else {
+        console.log('저장된 활동 통계가 없습니다.');
+    }
+}
+
+
+
+// 마감 임박 활동 정보 업데이트 함수
+function updateActivityNotices() {
+    const noticesContainer = document.querySelector('.activity-summary-notices');
+    if (!noticesContainer) return;
+    
+    const urgentActivitiesData = localStorage.getItem('urgentActivities');
+    
+    if (urgentActivitiesData) {
+        const urgentActivities = JSON.parse(urgentActivitiesData);
+        
+        if (urgentActivities.length > 0) {
+            // 알림 컨테이너 비우기
+            noticesContainer.innerHTML = '';
+            
+            // 마감 임박 활동들 표시
+            urgentActivities.forEach(activity => {
+                let noticeText = '';
+                
+                if (activity.daysLeft > 0) {
+                    noticeText = `${activity.title} 마감 ${activity.daysLeft}일 남음`;
+                } else {
+                    noticeText = `${activity.title} 마감 임박!`;
+                }
+                
+                const noticeItem = document.createElement('div');
+                noticeItem.className = 'activity-notice-item';
+                noticeItem.innerHTML = `
+                    <span class="activity-notice-icon">${activity.icon}</span>
+                    <span class="activity-notice-text">${noticeText}</span>
+                `;
+                
+                noticesContainer.appendChild(noticeItem);
+            });
+            
+            console.log('마감 임박 활동 정보 업데이트 완료:', urgentActivities);
+        } else {
+            noticesContainer.innerHTML = `
+                <div class="activity-notice-item">
+                    <span class="activity-notice-icon">📌</span>
+                    <span class="activity-notice-text">현재 마감 임박한 활동이 없습니다</span>
+                </div>
+            `;
+        }
+    } else {
+        noticesContainer.innerHTML = `
+            <div class="activity-notice-item">
+                <span class="activity-notice-icon">📌</span>
+                <span class="activity-notice-text">활동 정보를 불러올 수 없습니다</span>
+            </div>
+        `;
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 활동 통계 로드
+    updateActivityStats();
+    // 마감 임박 활동 정보 로드
+    updateActivityNotices();
     // 5분마다 자동 갱신 (선택적)
-    setInterval(displayActivityStats, 300000);
+    setInterval(function() {
+        updateActivityStats();
+        updateActivityNotices();
+    }, 300000);
 });
