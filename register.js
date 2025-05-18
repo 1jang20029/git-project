@@ -1,4 +1,3 @@
-
 // 휴대폰 번호 자동 하이픈 추가 함수
 function formatPhoneNumber(input) {
     // 숫자 이외의 문자 제거
@@ -161,9 +160,19 @@ function register() {
             }
         }
         
+        // 기존 사용자인지 확인 (동일한 ID로 재가입 시 처리)
+        const isExistingUser = localStorage.getItem(`user_${userId}_registered`) === 'true';
+        const hasCompletedSetup = localStorage.getItem(`user_${userId}_setup_completed`) === 'true';
+        
         // 로컬 스토리지에 저장
         localStorage.setItem(`user_${userId}_registered`, 'true');
-        localStorage.setItem(`user_${userId}_first_login`, 'true');
+        
+        // 기존 사용자가 아니거나, 위젯 설정을 완료하지 않은 경우에만 첫 로그인으로 표시
+        if (!isExistingUser || !hasCompletedSetup) {
+            localStorage.setItem(`user_${userId}_first_login`, 'true');
+        }
+        
+        // 기본 정보만 업데이트 (기존 사용자의 다른 정보는 유지)
         localStorage.setItem(`user_${userId}_studentId`, studentId);
         localStorage.setItem(`user_${userId}_name`, name);
         localStorage.setItem(`user_${userId}_department`, department);
@@ -192,7 +201,7 @@ function register() {
             // 현재 로그인 사용자로 설정
             localStorage.setItem('currentLoggedInUser', userId);
             
-            // 위젯 설정 페이지로 이동
+            // 위젯 설정 페이지로 이동 (새 사용자 또는 위젯 설정을 하지 않은 사용자)
             window.location.href = "widget-settings.html";
         } else {
             // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)

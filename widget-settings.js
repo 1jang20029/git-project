@@ -1,7 +1,23 @@
 // 페이지 로드 시 메뉴 아이템에 클릭 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', function() {
     setupMenuItemClickListeners();
+    
+    // 사용자 정보 확인
+    checkUserAuthentication();
 });
+
+// 사용자 인증 상태 확인 함수
+function checkUserAuthentication() {
+    // 현재 로그인한 사용자 ID 가져오기
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    
+    if (!currentUser) {
+        // 로그인하지 않은 상태라면 로그인 페이지로 리디렉션
+        alert('로그인이 필요한 서비스입니다.');
+        window.location.href = "login.html";
+        return;
+    }
+}
 
 // 메뉴 아이템 클릭 이벤트 설정
 function setupMenuItemClickListeners() {
@@ -157,7 +173,11 @@ function saveSettings() {
     // 현재 로그인한 사용자가 있다면 설정 완료 표시
     const currentUser = localStorage.getItem('currentLoggedInUser');
     if (currentUser) {
+        // 위젯 설정 완료 플래그 설정
         localStorage.setItem(`user_${currentUser}_setup_completed`, 'true');
+        
+        // 최초 로그인 플래그 비활성화 (다음 로그인에서도 위젯 페이지로 오지 않도록)
+        localStorage.setItem(`user_${currentUser}_first_login`, 'false');
     }
     
     alert('설정이 저장되었습니다. 메인 페이지로 이동합니다.');
