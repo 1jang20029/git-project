@@ -142,19 +142,33 @@ function openCalendarModal(inputField) {
     calendarContainer.addEventListener('wheel', handleCalendarScroll, { passive: false });
 }
 
+// 스크롤 처리를 위한 변수
+let isScrolling = false;
+
 // 달력 스크롤 처리
 function handleCalendarScroll(event) {
-    // 이벤트 기본 동작 방지
+    // 이미 스크롤 중이면 무시
+    if (isScrolling) return;
+    
+    // 스크롤 중임을 표시
+    isScrolling = true;
+    
+    // 기본 스크롤 동작 방지
     event.preventDefault();
     
     // 스크롤 방향 확인
     if (event.deltaY > 0) {
-        // 아래로 스크롤 - 다음 달로 즉시 이동
+        // 아래로 스크롤 - 다음 달
         nextMonth();
-    } else if (event.deltaY < 0) {
-        // 위로 스크롤 - 이전 달로 즉시 이동
+    } else {
+        // 위로 스크롤 - 이전 달
         prevMonth();
     }
+    
+    // 300ms 후에 스크롤 잠금 해제 (스크롤 한 번당 한 달만 이동하도록)
+    setTimeout(() => {
+        isScrolling = false;
+    }, 300);
 }
 
 
@@ -198,14 +212,28 @@ function clearSelectedDate() {
 
 // 이전 달로 이동
 function prevMonth() {
+    // 현재 날짜 객체의 월을 1 감소
     currentDate.setMonth(currentDate.getMonth() - 1);
+    
+    // 달력 다시 렌더링
     renderCalendar();
+    
+    console.log('이전 달로 이동:', 
+        currentDate.getFullYear() + '년 ' + 
+        (currentDate.getMonth() + 1) + '월');
 }
 
 // 다음 달로 이동
 function nextMonth() {
+    // 현재 날짜 객체의 월을 1 증가
     currentDate.setMonth(currentDate.getMonth() + 1);
+    
+    // 달력 다시 렌더링
     renderCalendar();
+    
+    console.log('다음 달로 이동:', 
+        currentDate.getFullYear() + '년 ' + 
+        (currentDate.getMonth() + 1) + '월');
 }
 
 // 달력 렌더링
@@ -264,6 +292,12 @@ function renderCalendar() {
     
     for (let i = 1; i <= remainingDays; i++) {
         calendarDays.innerHTML += `<div class="calendar-day inactive">${i}</div>`;
+    }
+    
+    // 스크롤 안내 추가
+    const instructions = document.querySelector('.calendar-instructions');
+    if (instructions) {
+        instructions.innerHTML = '<p>스크롤 한 번에 월 이동, 또는 화살표 버튼을 사용하세요</p>';
     }
 }
 
