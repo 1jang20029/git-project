@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0, 
             dislikes: 0,
             images: [
-                '지지고(연성대점).jpg',
+                '이미지/지지고(연성대점).jpg',
                 '/api/placeholder/400/250'
             ],
             userLiked: false,
