@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 파란색 원형 '3' 버튼 제거 (floating-add-btn)
+    const floatingButton = document.getElementById('floating-add-btn');
+    if (floatingButton) {
+        floatingButton.remove();
+        console.log('파란색 원형 3 버튼이 제거되었습니다.');
+    }
+
     // 초기 데이터 - 모든 값을 0으로 초기화
     const restaurantsData = [
         {
@@ -239,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 인기 맛집 섹션 추가 (메인 페이지에 추가)
+    // 인기 맛집 섹션 추가 (메인 페이지에 추가) - 이 부분은 유지
     const addPopularRestaurantsSection = function() {
         // 메인 페이지에 인기 맛집 섹션이 존재하는지 확인
         const existingSection = document.getElementById('popular-restaurants-section');
@@ -368,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('mobile-add-btn').addEventListener('click', toggleAddRestaurantModal);
-    document.getElementById('floating-add-btn').addEventListener('click', toggleAddRestaurantModal);
+    // floating-add-btn 이벤트 리스너는 제거했지만 다른 버튼들의 기능은 유지합니다
     document.getElementById('close-modal').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('cancel-add').addEventListener('click', toggleAddRestaurantModal);
     
@@ -1153,7 +1160,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // 새로 추가한 CSS 스타일을 동적으로 추가
+    // 파란색 '3' 버튼을 감추기 위한 추가 CSS 스타일
+    const additionalStyle = document.createElement('style');
+    additionalStyle.textContent = `
+        /* 파란색 '3' 버튼 관련 스타일 숨김 */
+        .floating-btn, .fab, .float-btn, [class*="floating-add"], #floating-add-btn {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    `;
+    document.head.appendChild(additionalStyle);
+    
+    // 기존 스타일 정의
     const style = document.createElement('style');
     style.textContent = `
         /* 수정/삭제 버튼 스타일 */
