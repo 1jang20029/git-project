@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
             dislikes: 0,
             images: [
                 'images/dalkong.jpg',
-                'images/dalkong.jpg'
+                'images/dalkongPrice.jpg'
             ],
             userLiked: false,
             userStarred: false,
