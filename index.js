@@ -5167,11 +5167,11 @@ function loadPopularRestaurants() {
                 features: '철판볶음우동과 컵밥이 인기이며, 맛있는 맛과 가성비 좋은 가격으로 학생들에게 사랑받는 곳입니다.',
                 category: '한식',
                 discount: '학생증 제시 시 15% 할인',
-                likes: 0,
-                stars: 0,
+                likes: 3,
+                stars: 5,
                 dislikes: 0,
                 images: [
-                    'images/GGgo-yeonsung.jpg'
+                    'https://placehold.co/400x250/orange/white?text=지지고'
                 ]
             },
             {
@@ -5183,8 +5183,8 @@ function loadPopularRestaurants() {
                 features: '오랜 전통을 가진 음식점으로, 학생들이 자주 찾는 곳입니다.',
                 category: '한식',
                 discount: '학생증 제시 시 5% 할인',
-                likes: 0,
-                stars: 0,
+                likes: 1,
+                stars: 4,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=부대촌'
@@ -5199,8 +5199,8 @@ function loadPopularRestaurants() {
                 features: '대로변이 아니어서 아는 사람만 아는 숨은 맛집으로, 해장국이 인기입니다.',
                 category: '한식',
                 discount: '학생 10% 할인',
-                likes: 0,
-                stars: 0,
+                likes: 1,
+                stars: 3,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=달공이네'
@@ -5215,8 +5215,8 @@ function loadPopularRestaurants() {
                 features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
                 category: '한식',
                 discount: '없음',
-                likes: 0,
-                stars: 0,
+                likes: 5,
+                stars: 4,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=칼국수',
@@ -5232,8 +5232,8 @@ function loadPopularRestaurants() {
                 features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
                 category: '한식',
                 discount: '없음',
-                likes: 0,
-                stars: 0,
+                likes: 5,
+                stars: 4,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=바베큐'
@@ -5248,8 +5248,8 @@ function loadPopularRestaurants() {
                 features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
                 category: '양식',
                 discount: '없음',
-                likes: 0,
-                stars: 0,
+                likes: 1,
+                stars: 3,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/yellow/black?text=돈까스'
@@ -5265,7 +5265,7 @@ function loadPopularRestaurants() {
                 category: '분식',
                 discount: '없음',
                 likes: 0,
-                stars: 0,
+                stars: 4,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/red/white?text=닭꼬치'
