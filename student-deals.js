@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'images/지지고(연성대점).jpg',
+                'images/GGgo-yeonsung.jpg',
                 'https://picsum.photos/400/250?random=2'
             ],
             userLiked: false,
