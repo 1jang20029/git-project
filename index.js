@@ -5171,7 +5171,7 @@ function loadPopularRestaurants() {
                 stars: 0,
                 dislikes: 0,
                 images: [
-                    'https://placehold.co/400x250/orange/white?text=지지고'
+                    'images/GGgo-yeonsung.jpg'
                 ]
             },
             {
