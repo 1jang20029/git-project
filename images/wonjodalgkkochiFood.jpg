@@ -12,7 +12,7 @@ window.TistoryBlog = {
     url: "https://rabogi.tistory.com",
     tistoryUrl: "https://rabogi.tistory.com",
     manageUrl: "https://rabogi.tistory.com/manage",
-    token: "Sal/Qyl3wBBHgw8mBL5rO5KnRQxnwgJQMelFnnWLS0MSymvGCkJ1Hj4yLYj0f79v"
+    token: "3d4VzoWLTREBgDwME8iGWN/xo1hr7EjveiBhgOUDkhsuzq3uVQhoqaxTpBQQhTx3"
 };
 var servicePath = "";
 var blogURL = "";</script>
@@ -429,18 +429,7 @@ gtag('config','G-S3W8ZH3B5J', {
 			</div>
 
 			<div class="entry-content">
-				<script onerror="changeAdsenseToNaverAd()" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9527582522912841" crossorigin="anonymous"></script>
-<!-- inventory -->
-<ins class="adsbygoogle" style="margin:50px 0; display:block;" data-ad-client="ca-pub-9527582522912841" data-ad-slot="3825649038" data-ad-format="auto" data-full-width-responsive="true" data-ad-type="inventory" data-ad-adfit-unit="DAN-nRFiQiN4avFYIKbk"></ins>
-
-<script id="adsense_script">
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-<script>
-    if(window.ObserveAdsenseUnfilledState !== undefined){ ObserveAdsenseUnfilledState(); }
-</script>
-<div data-tistory-react-app="NaverAd"></div>
-
+				
                     <!-- System - START -->
         <div class="revenue_unit_wrap">
   <div class="revenue_unit_item adsense responsive">
@@ -519,6 +508,17 @@ gtag('config','G-S3W8ZH3B5J', {
 </div>
         <!-- System - END -->
 
+<script onerror="changeAdsenseToNaverAd()" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9527582522912841" crossorigin="anonymous"></script>
+<!-- inventory -->
+<ins class="adsbygoogle" style="margin:50px 0; display:block;" data-ad-client="ca-pub-9527582522912841" data-ad-slot="4947159016" data-ad-format="auto" data-full-width-responsive="true" data-ad-type="inventory" data-ad-adfit-unit="DAN-HCZEy0KQLPMGnGuC"></ins>
+
+<script id="adsense_script">
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<script>
+    if(window.ObserveAdsenseUnfilledState !== undefined){ ObserveAdsenseUnfilledState(); }
+</script>
+<div data-tistory-react-app="NaverAd"></div>
 
                     <div class="container_postbtn #post_button_group">
   <div class="postbtn_like"><script>window.ReactionButtonType = 'reaction';
