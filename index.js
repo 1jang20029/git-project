@@ -4887,45 +4887,71 @@ if (typeof module !== 'undefined' && module.exports) {
 // 메인 페이지에서 대외활동 통계 표시
 
 function displayActivityStats() {
-    // 로컬 스토리지에서 통계 정보 가져오기
-    const statsData = localStorage.getItem('activityStats');
-    
-    if (statsData) {
-        const stats = JSON.parse(statsData);
+    // 메인 페이지용 코드: 좋아요 순으로 상위 3개 맛집 표시
+    function loadPopularRestaurants() {
+        // 로컬 스토리지에서 맛집 데이터 가져오기
+        const restaurantsData = loadRestaurantsFromStorage();
         
-        // 통계 표시 요소들 가져오기 - 정확한 선택자 사용
-        // 여기서는 메인 페이지의 활동 통계 표시 부분의 구조에 맞게 선택자 작성
-        const contestElement = document.querySelector('.activity-stat-item:nth-child(1) .activity-stat-number');
-        const clubElement = document.querySelector('.activity-stat-item:nth-child(2) .activity-stat-number');
-        const externalElement = document.querySelector('.activity-stat-item:nth-child(3) .activity-stat-number');
+        // 좋아요 순으로 정렬
+        const sortedRestaurants = [...restaurantsData].sort((a, b) => b.likes - a.likes);
         
-        // 값 업데이트
-        if (contestElement) {
-            // 진행 중인 공모전 개수 업데이트
-            contestElement.textContent = stats.contestCount;
+        // 상위 3개만 선택
+        const topRestaurants = sortedRestaurants.slice(0, 3);
+        
+        // 인기 맛집 표시 요소들 가져오기
+        const restaurantsList = document.getElementById('popular-restaurants-list');
+        
+        if (!restaurantsList) {
+            console.error('인기 맛집 컨테이너를 찾을 수 없습니다');
+            return;
         }
         
-        if (clubElement) {
-            // 신입 모집 동아리 개수 업데이트
-            clubElement.textContent = stats.clubCount;
-        }
+        // 목록 비우기
+        restaurantsList.innerHTML = '';
         
-        if (externalElement) {
-            // 대외활동 기회 개수 업데이트
-            externalElement.textContent = stats.externalCount;
-        }
-        
-        // 추가적으로 봉사활동 통계를 표시할 요소가 있다면
-        const volunteerElement = document.querySelector('.activity-stat-item:nth-child(4) .activity-stat-number');
-        if (volunteerElement) {
-            volunteerElement.textContent = stats.volunteerCount;
-        }
-        
-        console.log('활동 통계 업데이트 완료:', stats);
-    } else {
-        console.log('저장된 활동 통계가 없습니다.');
+        // 상위 3개 맛집 표시
+        topRestaurants.forEach(restaurant => {
+            const restaurantItem = document.createElement('div');
+            restaurantItem.className = 'popular-restaurant-item';
+            
+            // 카테고리에 맞는 이모지 표시
+            const emoji = getCategoryEmoji(restaurant.category);
+            
+            restaurantItem.innerHTML = `
+                <div class="restaurant-image">
+                    ${emoji}
+                </div>
+                <div class="restaurant-content">
+                    <div class="restaurant-category">${restaurant.category}</div>
+                    <div class="restaurant-name">${restaurant.name}</div>
+                    <div class="restaurant-discount">
+                        <span class="discount-icon">💰</span> ${restaurant.discount || '없음'}
+                    </div>
+                    <div class="restaurant-location">
+                        <span class="location-icon">📍</span> ${restaurant.location}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <button class="detail-button" onclick="goToRestaurantPage(${restaurant.id})">상세보기</button>
+                        <div class="restaurant-likes">❤️ ${restaurant.likes}</div>
+                    </div>
+                </div>
+            `;
+            
+            restaurantsList.appendChild(restaurantItem);
+        });
     }
+    
+    // 메인 페이지 로드 시 실행
+    loadPopularRestaurants();
+    
+    // 좋아요 수 변경 시 인기 맛집 리스트 업데이트
+    window.addEventListener('restaurantsUpdated', loadPopularRestaurants);
 }
+
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', displayActivityStats);
+
+
 
 // 활동 공지 업데이트 함수
 function updateActivityNotices() {
