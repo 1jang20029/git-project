@@ -5377,13 +5377,11 @@ function getCategoryEmoji(category) {
 // 상세 페이지로 이동 함수
 function goToRestaurantPage(restaurantId) {
     console.log(`맛집 ID ${restaurantId} 상세 페이지로 이동합니다.`);
-    
-    // 현재 페이지 URL 저장 (돌아올 수 있도록)
+    // 현재 페이지 URL 저장
     localStorage.setItem('previous_page', window.location.href);
-    
     // 상세 페이지로 이동
     window.location.href = `student-deals.html?id=${restaurantId}`;
-}
+}   
 
 
 // 맛집 반응 토글 함수 (좋아요, 추천, 싫어요)
@@ -5676,3 +5674,117 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('맛집 관련 기능 초기화 완료');
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 인기 맛집 데이터 로드 및 표시
+    loadPopularRestaurantsToMain();
+    
+    // localStorage 변경 감지 (다른 탭에서의 변경 감지용)
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'restaurantsData') {
+            loadPopularRestaurantsToMain();
+        }
+    });
+    
+    // 맛집 데이터 변경 이벤트 리스너
+    window.addEventListener('restaurantsUpdated', function() {
+        loadPopularRestaurantsToMain();
+    });
+});
+
+
+function loadPopularRestaurantsToMain() {
+    // restaurantsData 가져오기 (student-deals.js에서 정의됨)
+    let restaurants = [];
+    
+    // 로컬 스토리지에서 데이터 가져오기
+    const storedData = localStorage.getItem('restaurantsData');
+    if (storedData) {
+        try {
+            restaurants = JSON.parse(storedData);
+        } catch (e) {
+            console.error('맛집 데이터 파싱 오류:', e);
+            // 오류 발생 시 기본 데이터 사용
+            if (typeof window.restaurantsData !== 'undefined') {
+                restaurants = window.restaurantsData;
+            }
+        }
+    } else if (typeof window.restaurantsData !== 'undefined') {
+        // 전역 변수에서 가져오기
+        restaurants = window.restaurantsData;
+    }
+    
+    // 맛집 컨테이너 가져오기
+    const restaurantsList = document.getElementById('popular-restaurants-list');
+    if (!restaurantsList) {
+        console.error('인기 맛집 목록 컨테이너를 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 컨테이너 초기화
+    restaurantsList.innerHTML = '';
+    
+    // 좋아요 순으로 정렬하고 상위 3개 선택
+    const topRestaurants = [...restaurants]
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 3);
+    
+    if (topRestaurants.length === 0) {
+        restaurantsList.innerHTML = `
+            <div class="popular-restaurant-item">
+                <div class="restaurant-content">
+                    <div class="restaurant-name">등록된 맛집 정보가 없습니다</div>
+                    <div class="restaurant-description">새로운 맛집 정보가 곧 업데이트될 예정입니다.</div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // 카테고리에 따른 이모지 가져오기
+    function getCategoryEmoji(category) {
+        switch(category) {
+            case '한식': return '🍲';
+            case '중식': return '🥢';
+            case '일식': return '🍣';
+            case '양식': return '🍝';
+            case '분식': return '🍜';
+            case '카페': return '☕';
+            case '술집': return '🍺';
+            default: return '🍽️';
+        }
+    }
+    
+    // 각 맛집 정보 표시 (두 번째 이미지 형식으로)
+    topRestaurants.forEach(restaurant => {
+        const restaurantElement = document.createElement('div');
+        restaurantElement.className = 'popular-restaurant-item';
+        
+        // 두 번째 이미지 형식과 일치하도록 HTML 구성
+        restaurantElement.innerHTML = `
+            <div class="restaurant-image-container">
+                <div class="restaurant-image">
+                    <span class="category-emoji">${getCategoryEmoji(restaurant.category)}</span>
+                </div>
+            </div>
+            <div class="restaurant-content">
+                <div class="restaurant-header">
+                    <div class="restaurant-category">${restaurant.category}</div>
+                    <div class="restaurant-likes-count">❤️ ${restaurant.likes}</div>
+                </div>
+                <div class="restaurant-name">${restaurant.name}</div>
+                <div class="restaurant-discount">
+                    <span class="discount-icon">💰</span> ${restaurant.discount || '없음'}
+                </div>
+                <div class="restaurant-location">
+                    <span class="location-icon">📍</span> ${restaurant.location}
+                </div>
+                <div class="restaurant-button">
+                    <button class="detail-button" onclick="goToRestaurantPage(${restaurant.id})">상세보기</button>
+                </div>
+            </div>
+        `;
+        
+        restaurantsList.appendChild(restaurantElement);
+    });
+}
