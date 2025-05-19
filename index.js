@@ -5668,3 +5668,94 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('맛집 관련 기능 초기화 완료');
 });
+
+
+// 페이지 로드 시 인기 맛집 정보 호출
+document.addEventListener('DOMContentLoaded', function() {
+    loadPopularRestaurants();
+    
+    // 5분마다 자동 갱신 (선택적)
+    setInterval(loadPopularRestaurants, 300000);
+    
+    // localStorage 변경 감지
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'restaurantsData') {
+            console.log('맛집 데이터가 다른 탭에서 변경됨');
+            loadPopularRestaurants();
+        }
+    });
+});
+
+
+// 인기 맛집 정보 로드 함수
+function loadPopularRestaurants() {
+    // restaurant-deals.js에서 정의한 restaurantsData 배열 가져오기
+    let restaurantsData = [];
+    
+    // 로컬 스토리지에서 불러오기
+    const savedData = localStorage.getItem('restaurantsData');
+    if (savedData) {
+        try {
+            restaurantsData = JSON.parse(savedData);
+        } catch (e) {
+            console.error('맛집 데이터 파싱 오류:', e);
+        }
+    }
+
+    const restaurantsList = document.getElementById('popular-restaurants-list');
+    if (!restaurantsList) {
+        console.error('인기 맛집 목록 컨테이너를 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 초기화
+    restaurantsList.innerHTML = '';
+    
+    // 좋아요 순으로 정렬
+    const sortedRestaurants = [...restaurantsData].sort((a, b) => b.likes - a.likes);
+    
+    // 상위 3개만 표시
+    const topRestaurants = sortedRestaurants.slice(0, 3);
+    
+    if (topRestaurants.length === 0) {
+        restaurantsList.innerHTML = `
+            <div class="popular-restaurant-item">
+                <div class="restaurant-content">
+                    <div class="restaurant-name">등록된 맛집 정보가 없습니다</div>
+                    <div class="restaurant-description">새로운 맛집 정보가 곧 업데이트될 예정입니다.</div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // 각 맛집 정보 표시
+    topRestaurants.forEach(restaurant => {
+        const categoryEmoji = getCategoryEmoji(restaurant.category);
+        
+        const restaurantElement = document.createElement('div');
+        restaurantElement.className = 'popular-restaurant-item';
+        
+        restaurantElement.innerHTML = `
+            <div class="restaurant-image">
+                <img src="${restaurant.images[0]}" alt="${restaurant.name}">
+            </div>
+            <div class="restaurant-content">
+                <div class="restaurant-category">${restaurant.category}</div>
+                <div class="restaurant-name">${restaurant.name}</div>
+                <div class="restaurant-discount">
+                    <span class="discount-icon">💰</span> ${restaurant.discount || '할인 정보 없음'}
+                </div>
+                <div class="restaurant-location">
+                    <span class="location-icon">📍</span> ${restaurant.location}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <button class="detail-button" onclick="goToRestaurantPage(${restaurant.id})">상세보기</button>
+                    <div class="restaurant-likes">❤️ ${restaurant.likes}</div>
+                </div>
+            </div>
+        `;
+        
+        restaurantsList.appendChild(restaurantElement);
+    });
+}
