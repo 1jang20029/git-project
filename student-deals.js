@@ -368,7 +368,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('mobile-add-btn').addEventListener('click', toggleAddRestaurantModal);
-    document.getElementById('floating-add-btn').addEventListener('click', toggleAddRestaurantModal);
+    
+    // 플로팅 버튼 제거 (이미지의 "3" 버튼에 해당할 가능성이 높음)
+    // document.getElementById('floating-add-btn').addEventListener('click', toggleAddRestaurantModal);
+    
+    // 대신 HTML에서 해당 버튼을 제거
+    const floatingButton = document.getElementById('floating-add-btn');
+    if (floatingButton) {
+        floatingButton.remove();
+    }
+    
     document.getElementById('close-modal').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('cancel-add').addEventListener('click', toggleAddRestaurantModal);
     
@@ -1153,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // 새로 추가한 CSS 스타일을 동적으로 추가
+    // 추가 CSS 스타일을 동적으로 추가
     const style = document.createElement('style');
     style.textContent = `
         /* 수정/삭제 버튼 스타일 */
