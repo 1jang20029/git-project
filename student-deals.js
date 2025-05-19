@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
             dislikes: 0,
             images: [
                 'images/gaesma-eul.jpg',
-                'images/gaesma-eul.jpg'
+                'images/gaesma-eulPrice.jpg'
             ],
             userLiked: false,
             userStarred: false,
