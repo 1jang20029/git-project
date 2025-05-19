@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             dislikes: 0,
             images: [
                 'images/GGgo-yeonsung.jpg',
-                'images/지지고(연성대점)가격표.jpg'
+                'images/GGgoPrice.jpg'
             ],
             userLiked: false,
             userStarred: false,
