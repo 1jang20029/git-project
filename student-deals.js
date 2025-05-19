@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             id: 3,
-            name: '달공이네',
+            name: '달콩이네',
             location: '경기도 안양시 만안구 양화로36번길 9',
             hours: '11:00-21:00',
             menu: '해장국',
