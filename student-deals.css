@@ -1315,25 +1315,3 @@ button {
         display: block;
     }
 }
-
-.card-action-btn.active, .action-btn.active {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-
-.like-btn.active {
-    background-color: #ffcccb;
-    color: #e94057;
-}
-
-
-.star-btn.active {
-    background-color: #ffe0a0;
-    color: #ffb400;
-}
-
-.dislike-btn.active {
-    background-color: #ccd6ff;
-    color: #3d5af1;
-}

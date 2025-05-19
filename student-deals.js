@@ -346,174 +346,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===== 상세 페이지 반응 버튼 =====
-document.getElementById('detail-like-btn').addEventListener('click', function() {
-    if (selectedRestaurant) {
-        toggleReaction(selectedRestaurant.id, 'like');
-    }
-});
-
-document.getElementById('detail-star-btn').addEventListener('click', function() {
-    if (selectedRestaurant) {
-        toggleReaction(selectedRestaurant.id, 'star');
-    }
-});
-
-document.getElementById('detail-dislike-btn').addEventListener('click', function() {
-    if (selectedRestaurant) {
-        toggleReaction(selectedRestaurant.id, 'dislike');
-    }
-});
-
-
-// 반응 토글 함수
-function toggleReaction(restaurantId, reactionType) {
-    // 로컬 스토리지에서 맛집 데이터 가져오기
-    let restaurantsData = [];
-    const savedData = localStorage.getItem('restaurantsData');
-    
-    if (savedData) {
-        try {
-            restaurantsData = JSON.parse(savedData);
-        } catch (e) {
-            console.error('맛집 데이터 파싱 오류:', e);
-            return;
+    document.getElementById('detail-like-btn').addEventListener('click', function() {
+        if (selectedRestaurant) {
+            selectedRestaurant.likes++;
+            document.getElementById('detail-likes').textContent = selectedRestaurant.likes;
+            
+            // 목록에 있는 해당 맛집의 좋아요 수도 업데이트
+            updateRestaurantInList(selectedRestaurant.id);
         }
-    } else if (typeof window.restaurantsData !== 'undefined') {
-        restaurantsData = [...window.restaurantsData];
-    } else {
-        console.error('맛집 데이터를 찾을 수 없습니다.');
-        return;
-    }
-    
-    // 해당 ID의 맛집 찾기
-    const restaurantIndex = restaurantsData.findIndex(r => r.id === restaurantId);
-    if (restaurantIndex === -1) {
-        console.error(`ID ${restaurantId}인 맛집을 찾을 수 없습니다.`);
-        return;
-    }
-    
-    const restaurant = restaurantsData[restaurantIndex];
-    
-    // 사용자 반응 상태 가져오기
-    const currentUser = localStorage.getItem('currentLoggedInUser') || 'anonymous';
-    const userReactionsKey = `user_reactions_${currentUser}_${restaurantId}`;
-    let userReactions = JSON.parse(localStorage.getItem(userReactionsKey)) || { like: false, star: false, dislike: false };
-    
-    // 사용자가 이미 해당 반응을 했는지 확인
-    const hasReacted = userReactions[reactionType];
-    
-    // 반응 토글 (이미 반응했으면 취소, 아니면 추가)
-    if (hasReacted) {
-        // 반응 취소
-        restaurant[reactionType + 's']--;
-        userReactions[reactionType] = false;
-    } else {
-        // 반응 추가
-        restaurant[reactionType + 's']++;
-        userReactions[reactionType] = true;
-    }
-    
-    // 버튼 활성화/비활성화 상태 업데이트
-    const detailButton = document.getElementById(`detail-${reactionType}-btn`);
-    if (detailButton) {
-        if (userReactions[reactionType]) {
-            detailButton.classList.add('active');
-        } else {
-            detailButton.classList.remove('active');
-        }
-    }
-    
-    // 값 업데이트
-    const countElement = document.getElementById(`detail-${reactionType}s`);
-    if (countElement) {
-        countElement.textContent = restaurant[reactionType + 's'];
-    }
-    
-    // 데이터 업데이트
-    restaurantsData[restaurantIndex] = restaurant;
-    
-    // 로컬 스토리지에 저장
-    localStorage.setItem('restaurantsData', JSON.stringify(restaurantsData));
-    localStorage.setItem(userReactionsKey, JSON.stringify(userReactions));
-    
-    // 전역 데이터도 업데이트
-    if (typeof window.restaurantsData !== 'undefined') {
-        window.restaurantsData = restaurantsData;
-    }
-    
-    // 이벤트 발생 - 다른 부분에 알림
-    window.dispatchEvent(new CustomEvent('restaurantsUpdated', {
-        detail: { restaurantId, reactionType }
-    }));
-    
-    // 인기 맛집 목록 갱신하는 함수가 있으면 실행
-    if (typeof loadPopularRestaurants === 'function') {
-        loadPopularRestaurants();
-    }
-    
-    // 목록 페이지에서 해당 맛집의 카드도 업데이트
-    updateRestaurantInList(restaurantId);
-    
-    return { restaurant, hasReacted };
-}
+    });
 
+    document.getElementById('detail-star-btn').addEventListener('click', function() {
+        if (selectedRestaurant) {
+            selectedRestaurant.stars++;
+            document.getElementById('detail-stars').textContent = selectedRestaurant.stars;
+            
+            // 목록에 있는 해당 맛집의 별점 수도 업데이트
+            updateRestaurantInList(selectedRestaurant.id);
+        }
+    });
 
-// 리스트에서 맛집 카드 업데이트
-function updateRestaurantInList(restaurantId) {
-    const restaurantCard = document.querySelector(`.restaurant-card[data-id="${restaurantId}"]`);
-    if (!restaurantCard) return;
-    
-    // 로컬 스토리지에서 데이터 가져오기
-    const savedData = localStorage.getItem('restaurantsData');
-    if (!savedData) return;
-    
-    const restaurantsData = JSON.parse(savedData);
-    const restaurant = restaurantsData.find(r => r.id === restaurantId);
-    if (!restaurant) return;
-    
-    // 사용자 반응 상태 가져오기
-    const currentUser = localStorage.getItem('currentLoggedInUser') || 'anonymous';
-    const userReactionsKey = `user_reactions_${currentUser}_${restaurantId}`;
-    const userReactions = JSON.parse(localStorage.getItem(userReactionsKey)) || { like: false, star: false, dislike: false };
-    
-    // 반응 버튼 업데이트
-    const likeButton = restaurantCard.querySelector('.like-btn');
-    const starButton = restaurantCard.querySelector('.star-btn');
-    const dislikeButton = restaurantCard.querySelector('.dislike-btn');
-    
-    if (likeButton) {
-        if (userReactions.like) {
-            likeButton.classList.add('active');
-        } else {
-            likeButton.classList.remove('active');
+    document.getElementById('detail-dislike-btn').addEventListener('click', function() {
+        if (selectedRestaurant) {
+            selectedRestaurant.dislikes++;
+            document.getElementById('detail-dislikes').textContent = selectedRestaurant.dislikes;
+            
+            // 목록에 있는 해당 맛집의 싫어요 수도 업데이트
+            updateRestaurantInList(selectedRestaurant.id);
         }
-    }
-    
-    if (starButton) {
-        if (userReactions.star) {
-            starButton.classList.add('active');
-        } else {
-            starButton.classList.remove('active');
-        }
-    }
-    
-    if (dislikeButton) {
-        if (userReactions.dislike) {
-            dislikeButton.classList.add('active');
-        } else {
-            dislikeButton.classList.remove('active');
-        }
-    }
-    
-    // 수치 업데이트
-    const likeCount = restaurantCard.querySelector('.like-bubble span');
-    const starCount = restaurantCard.querySelector('.star-bubble span');
-    const dislikeCount = restaurantCard.querySelector('.dislike-bubble span');
-    
-    if (likeCount) likeCount.textContent = restaurant.likes;
-    if (starCount) starCount.textContent = restaurant.stars;
-    if (dislikeCount) dislikeCount.textContent = restaurant.dislikes;
-}
+    });
 
     // ===== 목록에서 맛집 항목 업데이트 =====
     const updateRestaurantInList = function(id) {
