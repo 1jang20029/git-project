@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             dislikes: 0,
             images: [
                 'images/samdeogbabekyu.jpg',
-                'imgaes/samdeogbabekyuPrice.jpg'
+                'images/samdeogbabekyuPrice.jpg'
             ],
             userLiked: false,
             userStarred: false,
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'myeong-gadonkkassu.jpg'
+                'myeong-gadonkkaseu.jpg'
             ],
             userLiked: false,
             userStarred: false,
@@ -125,7 +125,8 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'https://picsum.photos/400/250?random=11'
+                'images/wonjodalgkkochi.jpg',
+                'images/wonjodalgkkochiFood.jpg'
             ],
             userLiked: false,
             userStarred: false,
