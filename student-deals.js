@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             id: 3,
-            name: '달공이네',
+            name: '달콩이네',
             location: '경기도 안양시 만안구 양화로36번길 9',
             hours: '11:00-21:00',
             menu: '해장국',
@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'https://picsum.photos/400/250?random=4',
-                'https://picsum.photos/400/250?random=5'
+                'images/dalkong.jpg',
+                'imgaes/dalkongPrice.jpg'
             ],
             userLiked: false,
             userStarred: false,
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'https://picsum.photos/400/250?random=6',
-                'https://picsum.photos/400/250?random=7'
+                'images/gaesma-eul.jpg',
+                'imgaes/gaesma-eulPrice.jpg'
             ],
             userLiked: false,
             userStarred: false,
@@ -88,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'https://picsum.photos/400/250?random=8',
-                'https://picsum.photos/400/250?random=9'
+                'images/samdeogbabekyu.jpg',
+                'imgaes/samdeogbabekyuPrice.jpg'
             ],
             userLiked: false,
             userStarred: false,
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'https://picsum.photos/400/250?random=10'
+                'myeong-gadonkkassu.jpg'
             ],
             userLiked: false,
             userStarred: false,
