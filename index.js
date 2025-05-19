@@ -163,36 +163,6 @@ relatedBuilding: '학생복지센터'
 
 ];
 
-// 인기 맛집, 할인 정보 데이터
-const studentDeals = [
-    {
-        id: 'deal1',
-        category: '한식',
-        title: '우리집 김치찌개',
-        discount: '학생증 제시 시 15% 할인',
-        location: '대학로 203-12',
-        image: 'https://placehold.co/80x80/orange/white?text=김치찌개',
-        likes: 156
-    },
-    {
-        id: 'deal2',
-        category: '카페',
-        title: '카페 아르떼',
-        discount: '평일 오후 2-5시 아메리카노 1+1',
-        location: '대학교 정문 앞',
-        image: 'https://placehold.co/80x80/brown/white?text=카페',
-        likes: 132
-    },
-    {
-        id: 'deal3',
-        category: '양식',
-        title: '파스타 하우스',
-        discount: '학생 10% 할인 + 음료 무료 리필',
-        location: '대학로 156-3',
-        image: 'https://placehold.co/80x80/yellow/black?text=파스타',
-        likes: 98
-    }
-];
 
 
 
@@ -5177,26 +5147,167 @@ window.addEventListener('assignmentsUpdated', function() {
 });
 
 
-// 인기 맛집 할인 정보 로드 함수
-function loadStudentDeals() {
-    const dealsList = document.querySelector('.deals-list');
-    if (!dealsList) return;
+// 인기 맛집 정보 로드 함수
+function loadPopularRestaurants() {
+    // restaurant-deals.js에서 정의한 restaurantsData 배열 가져오기 시도
+    let restaurantsData = [];
+    
+    // 전역 변수로 restaurantsData가 있는지 확인
+    if (typeof window.restaurantsData !== 'undefined') {
+        restaurantsData = window.restaurantsData;
+    } else {
+        // 없다면 기본 데이터 사용
+        restaurantsData = [
+            {
+                id: 1,
+                name: '지지고 안양 연성대점',
+                location: '경기도 안양시 만안구 양화로37번길 23',
+                hours: '월금 10:30-19:30, 토 12:00-18:00',
+                menu: '지지고누들, 지지고라이스',
+                features: '철판볶음우동과 컵밥이 인기이며, 맛있는 맛과 가성비 좋은 가격으로 학생들에게 사랑받는 곳입니다.',
+                category: '한식',
+                discount: '학생증 제시 시 15% 할인',
+                likes: 3,
+                stars: 5,
+                dislikes: 0,
+                images: [
+                    'https://placehold.co/400x250/orange/white?text=지지고'
+                ]
+            },
+            {
+                id: 2,
+                name: '부대촌',
+                location: '연성대학교 인근 맛집거리',
+                hours: '10:00-21:00',
+                menu: '제육볶음, 부대찌개',
+                features: '오랜 전통을 가진 음식점으로, 학생들이 자주 찾는 곳입니다.',
+                category: '한식',
+                discount: '학생증 제시 시 5% 할인',
+                likes: 1,
+                stars: 4,
+                dislikes: 0,
+                images: [
+                    'https://placehold.co/400x250/orange/white?text=부대촌'
+                ]
+            },
+            {
+                id: 3,
+                name: '달공이네',
+                location: '경기도 안양시 만안구 양화로36번길 9',
+                hours: '11:00-21:00',
+                menu: '해장국',
+                features: '대로변이 아니어서 아는 사람만 아는 숨은 맛집으로, 해장국이 인기입니다.',
+                category: '한식',
+                discount: '학생 10% 할인',
+                likes: 1,
+                stars: 3,
+                dislikes: 0,
+                images: [
+                    'https://placehold.co/400x250/orange/white?text=달공이네'
+                ]
+            },
+            {
+                id: 4,
+                name: '겟마을 칼국수 보쌈',
+                location: '경기도 안양시 만안구 양화로 25',
+                hours: '매일 10:00-22:00',
+                menu: '칼국수, 보쌈',
+                features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
+                category: '한식',
+                discount: '없음',
+                likes: 5,
+                stars: 4,
+                dislikes: 0,
+                images: [
+                    'https://placehold.co/400x250/orange/white?text=칼국수',
+                    'https://placehold.co/400x250/orange/white?text=보쌈'
+                ]
+            },
+            {
+                id: 5,
+                name: '삼덕바베큐',
+                location: '안양중앙시장 내',
+                hours: '11:00-22:00',
+                menu: '돼지고기, 소고기 바베큐',
+                features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
+                category: '한식',
+                discount: '없음',
+                likes: 5,
+                stars: 4,
+                dislikes: 0,
+                images: [
+                    'https://placehold.co/400x250/orange/white?text=바베큐'
+                ]
+            },
+            {
+                id: 6,
+                name: '명가돈까스',
+                location: '안양중앙시장 인근',
+                hours: '11:00-21:00',
+                menu: '돈까스, 국수',
+                features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
+                category: '양식',
+                discount: '없음',
+                likes: 1,
+                stars: 3,
+                dislikes: 0,
+                images: [
+                    'https://placehold.co/400x250/yellow/black?text=돈까스'
+                ]
+            },
+            {
+                id: 7,
+                name: '원조닭꼬치',
+                location: '안양중앙시장 내',
+                hours: '11:00-20:00',
+                menu: '닭꼬치',
+                features: '부드러운 닭고기와 매콤달콤한 소스의 조화가 일품인 닭꼬치 전문점입니다.',
+                category: '분식',
+                discount: '없음',
+                likes: 0,
+                stars: 4,
+                dislikes: 0,
+                images: [
+                    'https://placehold.co/400x250/red/white?text=닭꼬치'
+                ]
+            }
+        ];
+        
+        // 로컬 스토리지에서 불러오기 시도
+        const savedData = localStorage.getItem('restaurantsData');
+        if (savedData) {
+            try {
+                const parsedData = JSON.parse(savedData);
+                if (Array.isArray(parsedData) && parsedData.length > 0) {
+                    restaurantsData = parsedData;
+                }
+            } catch (e) {
+                console.error('맛집 데이터 파싱 오류:', e);
+            }
+        }
+    }
+
+    const restaurantsList = document.getElementById('popular-restaurants-list');
+    if (!restaurantsList) {
+        console.error('인기 맛집 목록 컨테이너를 찾을 수 없습니다.');
+        return;
+    }
     
     // 초기화
-    dealsList.innerHTML = '';
+    restaurantsList.innerHTML = '';
     
     // 좋아요 순으로 정렬
-    const sortedDeals = [...studentDeals].sort((a, b) => b.likes - a.likes);
+    const sortedRestaurants = [...restaurantsData].sort((a, b) => b.likes - a.likes);
     
     // 상위 3개만 표시
-    const topDeals = sortedDeals.slice(0, 3);
+    const topRestaurants = sortedRestaurants.slice(0, 3);
     
-    if (topDeals.length === 0) {
-        dealsList.innerHTML = `
-            <div class="deal-item">
-                <div class="deal-content">
-                    <div class="deal-title">등록된 할인 정보가 없습니다</div>
-                    <div class="deal-discount">새로운 할인 정보가 곧 업데이트될 예정입니다.</div>
+    if (topRestaurants.length === 0) {
+        restaurantsList.innerHTML = `
+            <div class="popular-restaurant-item">
+                <div class="restaurant-content">
+                    <div class="restaurant-name">등록된 맛집 정보가 없습니다</div>
+                    <div class="restaurant-description">새로운 맛집 정보가 곧 업데이트될 예정입니다.</div>
                 </div>
             </div>
         `;
@@ -5204,61 +5315,356 @@ function loadStudentDeals() {
     }
     
     // 각 맛집 정보 표시
-    topDeals.forEach(deal => {
-        const dealItem = document.createElement('div');
-        dealItem.className = 'deal-item';
-        dealItem.onclick = function() {
-            goToDealPage(deal.id);
-        };
-        
-        // 이미지 URL 수정 (필요한 경우)
-        let imageUrl = deal.image;
+    topRestaurants.forEach(restaurant => {
+        // 이미지 URL 수정
+        let imageUrl = restaurant.images[0];
         if (imageUrl && imageUrl.includes('/api/placeholder/')) {
-            const dimensions = imageUrl.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
-            if (dimensions && dimensions.length === 3) {
-                const width = dimensions[1];
-                const height = dimensions[2];
-                imageUrl = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(deal.title)}`;
+            const parts = imageUrl.split('/');
+            const size = parts[parts.length - 1].split('x');
+            if (size.length === 2) {
+                imageUrl = `https://placehold.co/${size[0]}x${size[1]}/gray/white?text=${encodeURIComponent(restaurant.category)}`;
             }
         }
         
-        dealItem.innerHTML = `
-            <div class="deal-image">
-                <img src="${imageUrl}" alt="${deal.title}">
+        const categoryEmoji = getCategoryEmoji(restaurant.category);
+        
+        const restaurantElement = document.createElement('div');
+        restaurantElement.className = 'popular-restaurant-item';
+        
+        restaurantElement.innerHTML = `
+            <div class="restaurant-image">
+                ${categoryEmoji}
             </div>
-            <div class="deal-content">
-                <div class="deal-category">${deal.category}</div>
-                <div class="deal-title">${deal.title}</div>
-                <div class="deal-discount">💰 ${deal.discount}</div>
-                <div class="deal-meta">
-                    <div class="deal-location">📍 ${deal.location}</div>
-                    <div class="deal-likes"><span class="deal-likes-icon">❤️</span>${deal.likes}</div>
+            <div class="restaurant-content">
+                <div class="restaurant-category">${restaurant.category}</div>
+                <div class="restaurant-name">${restaurant.name}</div>
+                <div class="restaurant-discount">
+                    <span class="discount-icon">💰</span> ${restaurant.discount}
                 </div>
-                <button class="view-deal-button" onclick="event.stopPropagation(); goToDealPage('${deal.id}')">상세보기</button>
+                <div class="restaurant-location">
+                    <span class="location-icon">📍</span> ${restaurant.location}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <button class="detail-button" onclick="goToRestaurantPage(${restaurant.id})">상세보기</button>
+                    <div class="restaurant-likes">❤️ ${restaurant.likes}</div>
+                </div>
             </div>
         `;
         
-        dealsList.appendChild(dealItem);
+        restaurantsList.appendChild(restaurantElement);
     });
+    
+    console.log('인기 맛집 정보 로드 완료:', topRestaurants.length, '개 표시됨');
+}
+
+// 카테고리에 따른 이모지 반환 함수
+function getCategoryEmoji(category) {
+    switch(category) {
+        case '한식': return '🍲';
+        case '중식': return '🥢';
+        case '일식': return '🍣';
+        case '양식': return '🍝';
+        case '분식': return '🍜';
+        case '카페': return '☕';
+        case '술집': return '🍺';
+        default: return '🍽️';
+    }
 }
 
 // 상세 페이지로 이동 함수
-function goToDealPage(dealId) {
-    console.log(`맛집 ID ${dealId} 상세 페이지로 이동합니다.`);
+function goToRestaurantPage(restaurantId) {
+    console.log(`맛집 ID ${restaurantId} 상세 페이지로 이동합니다.`);
     
-    // 실제 구현에서는 아래 주석을 해제하세요
-    window.location.href = `student-deals.html?id=${dealId}`;
+    // 현재 페이지 URL 저장 (돌아올 수 있도록)
+    localStorage.setItem('previous_page', window.location.href);
+    
+    // 상세 페이지로 이동
+    window.location.href = `student-deals.html?id=${restaurantId}`;
 }
 
-// 초기화 함수에 추가
+// 맛집 반응 토글 함수 (좋아요, 추천, 싫어요)
+function toggleReaction(restaurantId, reactionType) {
+    // 로컬 스토리지에서 맛집 데이터 가져오기
+    let restaurantsData = [];
+    const savedData = localStorage.getItem('restaurantsData');
+    
+    if (savedData) {
+        try {
+            restaurantsData = JSON.parse(savedData);
+        } catch (e) {
+            console.error('맛집 데이터 파싱 오류:', e);
+            return;
+        }
+    } else if (typeof window.restaurantsData !== 'undefined') {
+        restaurantsData = [...window.restaurantsData];
+    } else {
+        console.error('맛집 데이터를 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 해당 ID의 맛집 찾기
+    const restaurantIndex = restaurantsData.findIndex(r => r.id === restaurantId);
+    if (restaurantIndex === -1) {
+        console.error(`ID ${restaurantId}인 맛집을 찾을 수 없습니다.`);
+        return;
+    }
+    
+    const restaurant = restaurantsData[restaurantIndex];
+    
+    // 사용자 반응 상태 가져오기
+    const currentUser = localStorage.getItem('currentLoggedInUser') || 'anonymous';
+    const userReactionsKey = `user_reactions_${currentUser}_${restaurantId}`;
+    let userReactions = JSON.parse(localStorage.getItem(userReactionsKey)) || { like: false, star: false, dislike: false };
+    
+    // 사용자가 이미 해당 반응을 했는지 확인
+    const hasReacted = userReactions[reactionType];
+    
+    // 반응 토글 (이미 반응했으면 취소, 아니면 추가)
+    if (hasReacted) {
+        // 반응 취소
+        restaurant[reactionType + 's']--;
+        userReactions[reactionType] = false;
+    } else {
+        // 반응 추가
+        restaurant[reactionType + 's']++;
+        userReactions[reactionType] = true;
+    }
+    
+    // 데이터 업데이트
+    restaurantsData[restaurantIndex] = restaurant;
+    
+    // 로컬 스토리지에 저장
+    localStorage.setItem('restaurantsData', JSON.stringify(restaurantsData));
+    localStorage.setItem(userReactionsKey, JSON.stringify(userReactions));
+    
+    // 전역 데이터도 업데이트
+    if (typeof window.restaurantsData !== 'undefined') {
+        window.restaurantsData = restaurantsData;
+    }
+    
+    // 이벤트 발생 - 다른 부분에 알림
+    window.dispatchEvent(new CustomEvent('restaurantsUpdated', {
+        detail: { restaurantId, reactionType }
+    }));
+    
+    // 인기 맛집 목록 갱신
+    loadPopularRestaurants();
+    
+    return { restaurant, hasReacted };
+}
+
+// CSS 스타일 삽입
+function addRestaurantStyles() {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+        /* 인기 맛집 할인 정보 스타일 */
+        .student-deals-card {
+            background-color: white;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            padding: 16px;
+            margin: 0 16px 16px 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        [data-theme="dark"] .student-deals-card {
+            background-color: #1e1e1e;
+            border-color: #2c3039;
+        }
+        
+        #popular-restaurants-list {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .popular-restaurant-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        [data-theme="dark"] .popular-restaurant-item {
+            border-bottom-color: #2c3039;
+        }
+        
+        .popular-restaurant-item:last-child {
+            border-bottom: none;
+        }
+        
+        .restaurant-image {
+            width: 92px;
+            height: 92px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 16px;
+            flex-shrink: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+        }
+        
+        [data-theme="dark"] .restaurant-image {
+            background-color: #2c3039;
+        }
+        
+        .restaurant-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .restaurant-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .restaurant-category {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        [data-theme="dark"] .restaurant-category {
+            color: #a7b0c0;
+        }
+        
+        .restaurant-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        
+        .restaurant-discount {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .restaurant-discount {
+            color: #e1e5ee;
+        }
+        
+        .restaurant-discount .discount-icon {
+            margin-right: 4px;
+            color: #c62917;
+        }
+        
+        .restaurant-location {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .restaurant-location {
+            color: #a7b0c0;
+        }
+        
+        .restaurant-location .location-icon {
+            margin-right: 4px;
+            color: #666;
+        }
+        
+        [data-theme="dark"] .restaurant-location .location-icon {
+            color: #a7b0c0;
+        }
+        
+        .restaurant-likes {
+            margin-left: auto;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            color: #c62917;
+            font-weight: bold;
+        }
+        
+        .detail-button {
+            background-color: #c62917;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            width: fit-content;
+        }
+        
+        .detail-button:hover {
+            background-color: #a52312;
+        }
+        
+        /* 반응 버튼 토글 스타일 */
+        .reaction-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 4px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            transition: all 0.2s ease;
+        }
+        
+        [data-theme="dark"] .reaction-button {
+            background-color: #2c3039;
+            border-color: #3d4356;
+        }
+        
+        .reaction-button.active {
+            transform: scale(1.1);
+        }
+        
+        .reaction-button.like-btn.active {
+            background-color: #ffcccb;
+            color: #e94057;
+            border-color: #e94057;
+        }
+        
+        .reaction-button.star-btn.active {
+            background-color: #ffe0a0;
+            color: #ffb400;
+            border-color: #ffb400;
+        }
+        
+        .reaction-button.dislike-btn.active {
+            background-color: #ccd6ff;
+            color: #3d5af1;
+            border-color: #3d5af1;
+        }
+    `;
+    document.head.appendChild(styleElement);
+}
+
+// 초기화 함수
 document.addEventListener('DOMContentLoaded', function() {
-    // 기존 초기화 코드...
+    // CSS 스타일 추가
+    addRestaurantStyles();
     
-    // 인기 맛집 할인 정보 로드
-    loadStudentDeals();
+    // 인기 맛집 정보 로드
+    loadPopularRestaurants();
     
-    // 맛집 할인 정보 업데이트 이벤트 리스너
-    window.addEventListener('studentDealsUpdated', function() {
-        loadStudentDeals();
+    // 맛집 데이터 변경 이벤트 리스너
+    window.addEventListener('restaurantsUpdated', function() {
+        loadPopularRestaurants();
     });
+    
+    // localStorage 변경 이벤트 리스너
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'restaurantsData') {
+            loadPopularRestaurants();
+        }
+    });
+    
+    console.log('맛집 관련 기능 초기화 완료');
 });

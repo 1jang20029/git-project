@@ -1948,6 +1948,48 @@ header {
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
+#popular-restaurants-list {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.popular-restaurant-item {
+    display: flex;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+
+.popular-restaurant-item:last-child {
+    border-bottom: none;
+}
+
+
+
+.restaurant-image {
+    width: 92px;
+    height: 92px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 16px;
+    flex-shrink: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+}
+
+
+.restaurant-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
 .deals-list {
     display: flex;
     flex-direction: column;
