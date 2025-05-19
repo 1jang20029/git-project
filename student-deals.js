@@ -408,105 +408,88 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // ===== 맛집 카드 생성 =====
-const createRestaurantCard = function(restaurant) {
-    const card = document.createElement('div');
-    card.className = 'restaurant-card';
-    card.dataset.id = restaurant.id;
-    
-    // 이미지 URL 수정
-    let imageUrl = restaurant.images[0];
-    if (imageUrl && imageUrl.includes('/api/placeholder/')) {
-        const parts = imageUrl.split('/');
-        const size = parts[parts.length - 1].split('x');
-        if (size.length === 2) {
-            imageUrl = `https://placehold.co/${size[0]}x${size[1]}/gray/white?text=${encodeURIComponent(restaurant.category)}`;
-        }
-    }
-    
-    // 사용자 반응 상태 가져오기
-    const currentUser = localStorage.getItem('currentLoggedInUser') || 'anonymous';
-    const userReactionsKey = `user_reactions_${currentUser}_${restaurant.id}`;
-    const userReactions = JSON.parse(localStorage.getItem(userReactionsKey)) || { like: false, star: false, dislike: false };
-    
-    // 반응 버튼 클래스 설정
-    const likeClass = userReactions.like ? 'card-action-btn like-btn active' : 'card-action-btn like-btn';
-    const starClass = userReactions.star ? 'card-action-btn star-btn active' : 'card-action-btn star-btn';
-    const dislikeClass = userReactions.dislike ? 'card-action-btn dislike-btn active' : 'card-action-btn dislike-btn';
-    
-    card.innerHTML = `
-        <div class="card-image-container">
-            <img class="card-image" src="${imageUrl}" alt="${restaurant.name}" loading="lazy">
-            <div class="card-category">${restaurant.category}</div>
-            ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
-        </div>
-        <div class="card-content">
-            <h3 class="card-title">${restaurant.name}</h3>
-            <div class="card-ratings">
-                <div class="rating-bubble like-bubble">
-                    <i class="fas fa-thumbs-up"></i>
-                    <span>${restaurant.likes}</span>
+    const createRestaurantCard = function(restaurant) {
+        const card = document.createElement('div');
+        card.className = 'restaurant-card';
+        card.dataset.id = restaurant.id;
+        
+        card.innerHTML = `
+            <div class="card-image-container">
+                <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
+                <div class="card-category">${restaurant.category}</div>
+                ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
+            </div>
+            <div class="card-content">
+                <h3 class="card-title">${restaurant.name}</h3>
+                <div class="card-ratings">
+                    <div class="rating-bubble like-bubble">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span>${restaurant.likes}</span>
+                    </div>
+                    <div class="rating-bubble star-bubble">
+                        <i class="fas fa-star"></i>
+                        <span>${restaurant.stars}</span>
+                    </div>
+                    <div class="rating-bubble dislike-bubble">
+                        <i class="fas fa-thumbs-down"></i>
+                        <span>${restaurant.dislikes}</span>
+                    </div>
                 </div>
-                <div class="rating-bubble star-bubble">
-                    <i class="fas fa-star"></i>
-                    <span>${restaurant.stars}</span>
+                <div class="card-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    ${restaurant.location}
                 </div>
-                <div class="rating-bubble dislike-bubble">
-                    <i class="fas fa-thumbs-down"></i>
-                    <span>${restaurant.dislikes}</span>
+                <div class="card-menu">
+                    <i class="fas fa-utensils"></i>
+                    ${restaurant.menu.split(',')[0]} 외
+                </div>
+                <div class="card-actions">
+                    <button class="card-action-btn like-btn" title="좋아요">
+                        <i class="fas fa-thumbs-up"></i>
+                    </button>
+                    <button class="card-action-btn star-btn" title="추천해요">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <button class="card-action-btn dislike-btn" title="별로예요">
+                        <i class="fas fa-thumbs-down"></i>
+                    </button>
                 </div>
             </div>
-            <div class="card-info">
-                <i class="fas fa-map-marker-alt"></i>
-                ${restaurant.location}
-            </div>
-            <div class="card-menu">
-                <i class="fas fa-utensils"></i>
-                ${restaurant.menu.split(',')[0]} 외
-            </div>
-            <div class="card-actions">
-                <button class="${likeClass}" title="좋아요">
-                    <i class="fas fa-thumbs-up"></i>
-                </button>
-                <button class="${starClass}" title="추천해요">
-                    <i class="fas fa-star"></i>
-                </button>
-                <button class="${dislikeClass}" title="별로예요">
-                    <i class="fas fa-thumbs-down"></i>
-                </button>
-            </div>
-        </div>
-    `;
-    
-    // 맛집 카드 클릭 이벤트
-    card.addEventListener('click', function(e) {
-        // 버튼 클릭은 제외
-        if (!e.target.closest('.card-action-btn')) {
-            showRestaurantDetail(restaurant.id);
-        }
-    });
-    
-    // 반응 버튼 이벤트
-    const likeButton = card.querySelector('.like-btn');
-    const starButton = card.querySelector('.star-btn');
-    const dislikeButton = card.querySelector('.dislike-btn');
-    
-    likeButton.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleReaction(restaurant.id, 'like');
-    });
-    
-    starButton.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleReaction(restaurant.id, 'star');
-    });
-    
-    dislikeButton.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleReaction(restaurant.id, 'dislike');
-    });
-    
-    return card;
-};
+        `;
+        
+        // 맛집 카드 클릭 이벤트
+        card.addEventListener('click', function(e) {
+            // 버튼 클릭은 제외
+            if (!e.target.closest('.card-action-btn')) {
+                showRestaurantDetail(restaurant.id);
+            }
+        });
+        
+        // 반응 버튼 이벤트
+        const likeButton = card.querySelector('.like-btn');
+        const starButton = card.querySelector('.star-btn');
+        const dislikeButton = card.querySelector('.dislike-btn');
+        
+        likeButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            restaurant.likes++;
+            updateRestaurantInList(restaurant.id);
+        });
+        
+        starButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            restaurant.stars++;
+            updateRestaurantInList(restaurant.id);
+        });
+        
+        dislikeButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            restaurant.dislikes++;
+            updateRestaurantInList(restaurant.id);
+        });
+        
+        return card;
+    };
 
     // ===== 맛집 목록 새로고침 =====
     const refreshRestaurantsList = function() {
