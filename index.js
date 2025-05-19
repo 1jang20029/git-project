@@ -163,6 +163,38 @@ relatedBuilding: '학생복지센터'
 
 ];
 
+// 인기 맛집, 할인 정보 데이터
+const studentDeals = [
+    {
+        id: 'deal1',
+        category: '한식',
+        title: '우리집 김치찌개',
+        discount: '학생증 제시 시 15% 할인',
+        location: '대학로 203-12',
+        image: 'https://placehold.co/80x80/orange/white?text=김치찌개',
+        likes: 156
+    },
+    {
+        id: 'deal2',
+        category: '카페',
+        title: '카페 아르떼',
+        discount: '평일 오후 2-5시 아메리카노 1+1',
+        location: '대학교 정문 앞',
+        image: 'https://placehold.co/80x80/brown/white?text=카페',
+        likes: 132
+    },
+    {
+        id: 'deal3',
+        category: '양식',
+        title: '파스타 하우스',
+        discount: '학생 10% 할인 + 음료 무료 리필',
+        location: '대학로 156-3',
+        image: 'https://placehold.co/80x80/yellow/black?text=파스타',
+        likes: 98
+    }
+];
+
+
 
 let selectedShuttleRoute = 1
 
@@ -5142,4 +5174,91 @@ document.addEventListener('DOMContentLoaded', function() {
 // 커스텀 이벤트를 통한 실시간 업데이트 메커니즘
 window.addEventListener('assignmentsUpdated', function() {
     updateMainAssignmentsSection();
+});
+
+
+// 인기 맛집 할인 정보 로드 함수
+function loadStudentDeals() {
+    const dealsList = document.querySelector('.deals-list');
+    if (!dealsList) return;
+    
+    // 초기화
+    dealsList.innerHTML = '';
+    
+    // 좋아요 순으로 정렬
+    const sortedDeals = [...studentDeals].sort((a, b) => b.likes - a.likes);
+    
+    // 상위 3개만 표시
+    const topDeals = sortedDeals.slice(0, 3);
+    
+    if (topDeals.length === 0) {
+        dealsList.innerHTML = `
+            <div class="deal-item">
+                <div class="deal-content">
+                    <div class="deal-title">등록된 할인 정보가 없습니다</div>
+                    <div class="deal-discount">새로운 할인 정보가 곧 업데이트될 예정입니다.</div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // 각 맛집 정보 표시
+    topDeals.forEach(deal => {
+        const dealItem = document.createElement('div');
+        dealItem.className = 'deal-item';
+        dealItem.onclick = function() {
+            goToDealPage(deal.id);
+        };
+        
+        // 이미지 URL 수정 (필요한 경우)
+        let imageUrl = deal.image;
+        if (imageUrl && imageUrl.includes('/api/placeholder/')) {
+            const dimensions = imageUrl.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+            if (dimensions && dimensions.length === 3) {
+                const width = dimensions[1];
+                const height = dimensions[2];
+                imageUrl = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(deal.title)}`;
+            }
+        }
+        
+        dealItem.innerHTML = `
+            <div class="deal-image">
+                <img src="${imageUrl}" alt="${deal.title}">
+            </div>
+            <div class="deal-content">
+                <div class="deal-category">${deal.category}</div>
+                <div class="deal-title">${deal.title}</div>
+                <div class="deal-discount">💰 ${deal.discount}</div>
+                <div class="deal-meta">
+                    <div class="deal-location">📍 ${deal.location}</div>
+                    <div class="deal-likes"><span class="deal-likes-icon">❤️</span>${deal.likes}</div>
+                </div>
+                <button class="view-deal-button" onclick="event.stopPropagation(); goToDealPage('${deal.id}')">상세보기</button>
+            </div>
+        `;
+        
+        dealsList.appendChild(dealItem);
+    });
+}
+
+// 상세 페이지로 이동 함수
+function goToDealPage(dealId) {
+    console.log(`맛집 ID ${dealId} 상세 페이지로 이동합니다.`);
+    
+    // 실제 구현에서는 아래 주석을 해제하세요
+    window.location.href = `student-deals.html?id=${dealId}`;
+}
+
+// 초기화 함수에 추가
+document.addEventListener('DOMContentLoaded', function() {
+    // 기존 초기화 코드...
+    
+    // 인기 맛집 할인 정보 로드
+    loadStudentDeals();
+    
+    // 맛집 할인 정보 업데이트 이벤트 리스너
+    window.addEventListener('studentDealsUpdated', function() {
+        loadStudentDeals();
+    });
 });

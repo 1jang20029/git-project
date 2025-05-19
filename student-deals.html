@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연성대 맛집 탐방</title>
+    <link rel="stylesheet" href="student-deals.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 다크모드 토글 -->
+    <div class="theme-toggle">
+        <button id="theme-toggle-btn">
+            <i class="fas fa-moon"></i>
+            <i class="fas fa-sun"></i>
+        </button>
+    </div>
+
+    <!-- 메인 헤더 -->
+    <header class="main-header">
+        <div class="header-background"></div>
+        <div class="header-content">
+            <h1>연성대 맛집 탐방</h1>
+            <p>맛있는 식사, 행복한 대학 생활</p>
+        </div>
+    </header>
+
+    <!-- 네비게이션 바 -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="logo">YeongSung Eats</div>
+            <div class="nav-links">
+                <button id="student-discount-btn" class="nav-btn">
+                    <i class="fas fa-id-card"></i> 학생증 할인
+                </button>
+                <button id="add-place-btn" class="nav-btn">
+                    <i class="fas fa-plus-circle"></i> 맛집 등록
+                </button>
+            </div>
+            <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 모바일 메뉴 -->
+    <div id="mobile-menu" class="mobile-menu">
+        <button id="mobile-discount-btn" class="mobile-nav-btn">
+            <i class="fas fa-id-card"></i> 학생증 할인
+        </button>
+        <button id="mobile-add-btn" class="mobile-nav-btn">
+            <i class="fas fa-plus-circle"></i> 맛집 등록
+        </button>
+    </div>
+
+    <main class="main-content">
+        <!-- 학생증 할인 정보 -->
+        <section id="discount-panel" class="discount-panel hidden">
+            <div class="panel-header">
+                <h2>연성대학교 학생증 할인 혜택</h2>
+                <button id="close-discount" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="discount-content">
+                <div class="discount-category">
+                    <div class="category-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="category-details">
+                        <h3>여가/문화 할인</h3>
+                        <ul>
+                            <li><span class="highlight">CGV</span>: 영화티켓 35% 할인</li>
+                            <li><span class="highlight">롯데월드/에버랜드</span>: 입장권 50% 할인</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="discount-category">
+                    <div class="category-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="category-details">
+                        <h3>외식 할인</h3>
+                        <ul>
+                            <li><span class="highlight">스타벅스</span>: 음료 20% 할인</li>
+                            <li><span class="highlight">아웃백/VIPS</span>: 식사 20% 할인</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="discount-category">
+                    <div class="category-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="category-details">
+                        <h3>통신/편의 할인</h3>
+                        <ul>
+                            <li><span class="highlight">통신요금</span>: 월 2,500원 할인</li>
+                            <li><span class="highlight">GS25/교보문고</span>: 5% 할인</li>
+                            <li><span class="highlight">금융수수료</span>: 면제</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="discount-limits">
+                <h3>월 통합 할인한도</h3>
+                <div class="limit-grid">
+                    <div class="limit-item">
+                        <div class="limit-amount">1만원</div>
+                        <div class="limit-condition">20만원 이상</div>
+                    </div>
+                    <div class="limit-item">
+                        <div class="limit-amount">2만원</div>
+                        <div class="limit-condition">30만원 이상</div>
+                    </div>
+                    <div class="limit-item">
+                        <div class="limit-amount">3만원</div>
+                        <div class="limit-condition">50만원 이상</div>
+                    </div>
+                    <div class="limit-item">
+                        <div class="limit-amount">5만원</div>
+                        <div class="limit-condition">100만원 이상</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="discount-footer">
+                <div class="footer-info">
+                    <p><i class="fas fa-info-circle"></i> 신청방법: 각 학과 안내시 신청 (신청기간 별도 공지)</p>
+                    <p><i class="fas fa-phone-alt"></i> 문의사항: KB국민은행 안양동지점 (031-469-2704)</p>
+                </div>
+                <div class="notice">
+                    ※ 연성대 주변 맛집에서는 현재 학생증 할인이 적용되지 않습니다.
+                </div>
+            </div>
+        </section>
+
+        <!-- 카테고리 필터 -->
+        <section class="filter-container">
+            <div class="filter-scroll">
+                <div class="filter-list">
+                    <button class="filter-btn active" data-category="전체">
+                        <i class="fas fa-utensils"></i> 전체
+                    </button>
+                    <button class="filter-btn" data-category="한식">
+                        <i class="fas fa-bowl-rice"></i> 한식
+                    </button>
+                    <button class="filter-btn" data-category="중식">
+                        <i class="fas fa-chopsticks"></i> 중식
+                    </button>
+                    <button class="filter-btn" data-category="일식">
+                        <i class="fas fa-fish"></i> 일식
+                    </button>
+                    <button class="filter-btn" data-category="양식">
+                        <i class="fas fa-pizza-slice"></i> 양식
+                    </button>
+                    <button class="filter-btn" data-category="분식">
+                        <i class="fas fa-hotdog"></i> 분식
+                    </button>
+                    <button class="filter-btn" data-category="카페">
+                        <i class="fas fa-coffee"></i> 카페
+                    </button>
+                    <button class="filter-btn" data-category="술집">
+                        <i class="fas fa-beer"></i> 술집
+                    </button>
+                </div>
+            </div>
+            <div class="filter-shadow left"></div>
+            <div class="filter-shadow right"></div>
+        </section>
+
+        <!-- 맛집 목록 섹션 -->
+        <section id="restaurants-list-section" class="restaurants-list-section">
+            <div class="section-header">
+                <h2 id="restaurants-count-title">연성대 맛집 추천</h2>
+                <div class="page-navigation">
+                    <button id="prev-page" class="page-nav-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="page-indicator">1 / 3</span>
+                    <button id="next-page" class="page-nav-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="restaurants-grid" class="restaurants-grid">
+                <!-- 맛집 카드들이 JavaScript로 여기에 추가됩니다 -->
+            </div>
+        </section>
+
+        <!-- 맛집 상세 정보 섹션 -->
+        <section id="restaurant-detail" class="restaurant-detail hidden">
+            <div class="detail-header">
+                <button id="back-to-list" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div id="detail-rating" class="detail-rating">
+                    <div class="rating-item">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span id="detail-likes">0</span>
+                    </div>
+                    <div class="rating-item">
+                        <i class="fas fa-star"></i>
+                        <span id="detail-stars">0</span>
+                    </div>
+                    <div class="rating-item">
+                        <i class="fas fa-thumbs-down"></i>
+                        <span id="detail-dislikes">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-gallery">
+                <div class="gallery-container">
+                    <img id="detail-image" src="" alt="맛집 이미지">
+                    <div class="gallery-controls">
+                        <button id="prev-image" class="gallery-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="image-counter">1 / 2</span>
+                        <button id="next-image" class="gallery-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-content">
+                <div class="detail-title-section">
+                    <h2 id="detail-name"></h2>
+                    <div id="detail-category-badge" class="category-badge"></div>
+                </div>
+
+                <div class="detail-info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>위치</h3>
+                            <p id="detail-location"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>영업시간</h3>
+                            <p id="detail-hours"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>대표 메뉴</h3>
+                            <p id="detail-menu"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card features-card">
+                        <div class="info-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>특징</h3>
+                            <p id="detail-features"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-actions">
+                    <button id="detail-like-btn" class="action-btn like-btn">
+                        <i class="fas fa-thumbs-up"></i> 좋아요
+                    </button>
+                    <button id="detail-star-btn" class="action-btn star-btn">
+                        <i class="fas fa-star"></i> 추천해요
+                    </button>
+                    <button id="detail-dislike-btn" class="action-btn dislike-btn">
+                        <i class="fas fa-thumbs-down"></i> 별로예요
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 맛집 등록 모달 -->
+    <div id="add-restaurant-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>새 맛집 등록하기</h2>
+                <button id="close-modal" class="close-modal-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="modal-description">
+                    연성대 주변의 맛집을 공유해주세요! 직접 방문하신 맛집의 정보와 사진을 등록하시면 다른 학생들에게 큰 도움이 됩니다.
+                </p>
+                
+                <form id="restaurant-form" class="add-restaurant-form">
+                    <div class="form-group">
+                        <label for="restaurant-name">맛집 이름</label>
+                        <input type="text" id="restaurant-name" placeholder="맛집 이름을 입력하세요" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="restaurant-category">카테고리</label>
+                        <select id="restaurant-category" required>
+                            <option value="" disabled selected>카테고리 선택</option>
+                            <option value="한식">한식</option>
+                            <option value="중식">중식</option>
+                            <option value="일식">일식</option>
+                            <option value="양식">양식</option>
+                            <option value="분식">분식</option>
+                            <option value="카페">카페</option>
+                            <option value="술집">술집</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="restaurant-location">위치</label>
+                            <input type="text" id="restaurant-location" placeholder="위치를 입력하세요" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="restaurant-hours">영업시간</label>
+                            <input type="text" id="restaurant-hours" placeholder="영업시간을 입력하세요" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="restaurant-menu">대표 메뉴</label>
+                        <input type="text" id="restaurant-menu" placeholder="대표 메뉴를 입력하세요" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="restaurant-features">특징</label>
+                        <textarea id="restaurant-features" placeholder="맛집의 특징을 입력하세요" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>사진 업로드</label>
+                        <div class="upload-area" id="upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>사진을 여기에 끌어다 놓거나 클릭하여 선택하세요</p>
+                            <span class="upload-info">최대 5장, 장당 5MB 이하</span>
+                            <input type="file" id="restaurant-images" multiple accept="image/*" class="hidden-input">
+                        </div>
+                        <div id="preview-container" class="preview-container hidden">
+                            <div id="image-previews" class="image-previews"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="cancel-add" class="modal-btn cancel-btn">취소</button>
+                <button id="submit-add" class="modal-btn submit-btn">등록하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모바일 등록 버튼 -->
+    <button id="floating-add-btn" class="floating-add-btn">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <footer class="main-footer">
+        <p>© 2025 연성대 맛집 탐방 가이드 | 모든 권리 보유</p>
+    </footer>
+
+    <script src="student-deals.js"></script>
+</body>
+</html>
