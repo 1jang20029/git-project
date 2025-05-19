@@ -1353,62 +1353,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // 사용자 ID 전환 함수 (테스트용)
-    window.switchUser = function() {
-        if (confirm('다른 사용자로 전환하시겠습니까? (테스트용)')) {
-            // 현재 사용자 ID 저장
-            const oldUserId = CURRENT_USER_ID;
-            
-            // 새 사용자 ID 생성
-            const newUserId = 'user_' + Math.random().toString(36).substring(2, 15);
-            localStorage.setItem('currentUserId', newUserId);
-            
-            // 페이지 새로고침
-            location.reload();
-        }
-    };
-    
-    // 다른 사용자로 전환 버튼 추가 (테스트용)
-    const addSwitchUserButton = function() {
-        const switchUserBtn = document.createElement('button');
-        switchUserBtn.id = 'switch-user-btn';
-        switchUserBtn.className = 'switch-user-btn';
-        switchUserBtn.innerHTML = '<i class="fas fa-user-switch"></i> 다른 사용자로 전환 (테스트용)';
-        switchUserBtn.addEventListener('click', window.switchUser);
-        
-        document.body.appendChild(switchUserBtn);
-        
-        // 스타일 추가
-        const switchUserStyle = document.createElement('style');
-        switchUserStyle.textContent = `
-            .switch-user-btn {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background-color: var(--primary-color);
-                color: white;
-                border: none;
-                border-radius: 8px;
-                padding: 10px 15px;
-                cursor: pointer;
-                z-index: 100;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            }
-            
-            .switch-user-btn:hover {
-                background-color: var(--primary-dark);
-            }
-        `;
-        document.head.appendChild(switchUserStyle);
-    };
-
     // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
     refreshRestaurantsList();
     addPopularRestaurantsSection();
-    
-    // 테스트용 사용자 전환 버튼 추가
-    addSwitchUserButton();
-    
-    // 현재 사용자 ID 표시
-    console.log('현재 사용자 ID:', CURRENT_USER_ID);
 });
