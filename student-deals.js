@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'https://picsum.photos/400/250?random=3'
+                'images/budaechon.jpg'
             ],
             userLiked: false,
             userStarred: false,
