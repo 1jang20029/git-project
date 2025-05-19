@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             userLiked: false,
             userStarred: false,
-            userDisliked: false
+            userDisliked: false,
+            userCreated: false // 시스템 기본 데이터
         },
         {
             id: 2,
@@ -36,7 +37,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             userLiked: false,
             userStarred: false,
-            userDisliked: false
+            userDisliked: false,
+            userCreated: false
         },
         {
             id: 3,
@@ -55,7 +57,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             userLiked: false,
             userStarred: false,
-            userDisliked: false
+            userDisliked: false,
+            userCreated: false
         },
         {
             id: 4,
@@ -74,7 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             userLiked: false,
             userStarred: false,
-            userDisliked: false
+            userDisliked: false,
+            userCreated: false
         },
         {
             id: 5,
@@ -93,7 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             userLiked: false,
             userStarred: false,
-            userDisliked: false
+            userDisliked: false,
+            userCreated: false
         },
         {
             id: 6,
@@ -111,7 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             userLiked: false,
             userStarred: false,
-            userDisliked: false
+            userDisliked: false,
+            userCreated: false
         },
         {
             id: 7,
@@ -130,7 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             userLiked: false,
             userStarred: false,
-            userDisliked: false
+            userDisliked: false,
+            userCreated: false
         }
     ];
 
@@ -142,6 +149,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedRestaurant = null;
     let currentImageIndex = 0;
     let theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    let uploadedImagePreviews = []; // 파일 업로드 미리보기 URL 저장
+    let isEditMode = false; // 수정 모드 여부
+    let editingRestaurantId = null; // 현재 수정 중인 맛집 ID
 
     // ===== 요소 참조 =====
     const restaurantsGrid = document.getElementById('restaurants-grid');
@@ -159,6 +169,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('restaurant-images');
     const previewContainer = document.getElementById('preview-container');
     const imagePreviews = document.getElementById('image-previews');
+    const restaurantForm = document.getElementById('restaurant-form');
+    
+    // 모달 제목 요소 추가
+    const modalTitle = document.querySelector('.modal-header h2');
+    
+    // 수정/삭제 버튼 추가
+    let editDeleteButtonsHtml = `
+        <div class="detail-admin-buttons">
+            <button id="edit-restaurant-btn" class="action-btn edit-btn">
+                <i class="fas fa-edit"></i> 수정하기
+            </button>
+            <button id="delete-restaurant-btn" class="action-btn delete-btn">
+                <i class="fas fa-trash"></i> 삭제하기
+            </button>
+        </div>
+    `;
+    
+    // 상세 페이지 컨텐츠 영역에 버튼 추가 (HTML에 해당 버튼들이 없다면 JS에서 추가)
+    const detailContent = document.querySelector('.detail-content');
+    if (detailContent) {
+        // 이미 있는지 확인하고, 없으면 추가
+        if (!document.querySelector('.detail-admin-buttons')) {
+            const buttonDiv = document.createElement('div');
+            buttonDiv.className = 'detail-admin-buttons';
+            buttonDiv.innerHTML = editDeleteButtonsHtml;
+            // 기존 elements 뒤에 추가
+            detailContent.appendChild(buttonDiv);
+        }
+    }
 
     // ===== 테마 설정 =====
     document.documentElement.setAttribute('data-theme', theme);
@@ -194,6 +233,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleAddRestaurantModal = function() {
         addRestaurantModal.classList.toggle('hidden');
         mobileMenu.style.display = 'none';
+        
+        // 모달이 닫히면 폼 초기화
+        if (addRestaurantModal.classList.contains('hidden')) {
+            resetRestaurantForm();
+        }
+    };
+
+    // 맛집 등록 폼 초기화 함수
+    const resetRestaurantForm = function() {
+        isEditMode = false;
+        editingRestaurantId = null;
+        modalTitle.textContent = '새 맛집 등록하기';
+        document.getElementById('submit-add').textContent = '등록하기';
+        
+        // 폼 필드 초기화
+        restaurantForm.reset();
+        
+        // 이미지 미리보기 초기화
+        uploadedImagePreviews = [];
+        previewContainer.classList.add('hidden');
+        imagePreviews.innerHTML = '';
     };
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
@@ -201,10 +261,87 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('floating-add-btn').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('close-modal').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('cancel-add').addEventListener('click', toggleAddRestaurantModal);
+    
+    // ===== 맛집 등록/수정 버튼 이벤트 =====
     document.getElementById('submit-add').addEventListener('click', function() {
-        // 데모 용 - 실제로는 DB에 저장하는 로직이 들어갑니다
-        alert('맛집 등록이 완료되었습니다!');
+        // 폼에서 데이터 가져오기
+        const restaurantName = document.getElementById('restaurant-name').value;
+        const restaurantCategory = document.getElementById('restaurant-category').value;
+        const restaurantLocation = document.getElementById('restaurant-location').value;
+        const restaurantHours = document.getElementById('restaurant-hours').value;
+        const restaurantMenu = document.getElementById('restaurant-menu').value;
+        const restaurantFeatures = document.getElementById('restaurant-features').value;
+        
+        // 모든 필드가 입력되었는지 확인
+        if (!restaurantName || !restaurantCategory || !restaurantLocation || 
+            !restaurantHours || !restaurantMenu || !restaurantFeatures) {
+            alert('모든 항목을 입력해주세요.');
+            return;
+        }
+        
+        // 이미지가 하나 이상 있는지 확인
+        if (uploadedImagePreviews.length === 0) {
+            alert('최소 1개 이상의 이미지를 업로드해주세요.');
+            return;
+        }
+
+        if (isEditMode && editingRestaurantId) {
+            // 수정 모드일 경우
+            const restaurantIndex = restaurants.findIndex(r => r.id === editingRestaurantId);
+            if (restaurantIndex !== -1) {
+                // 기존 맛집 정보 업데이트
+                restaurants[restaurantIndex].name = restaurantName;
+                restaurants[restaurantIndex].category = restaurantCategory;
+                restaurants[restaurantIndex].location = restaurantLocation;
+                restaurants[restaurantIndex].hours = restaurantHours;
+                restaurants[restaurantIndex].menu = restaurantMenu;
+                restaurants[restaurantIndex].features = restaurantFeatures;
+                restaurants[restaurantIndex].images = [...uploadedImagePreviews];
+                
+                alert('맛집 정보가 수정되었습니다!');
+                
+                // 상세 페이지가 표시 중이고, 현재 수정된 맛집을 보고 있다면 정보 업데이트
+                if (selectedRestaurant && selectedRestaurant.id === editingRestaurantId) {
+                    selectedRestaurant = restaurants[restaurantIndex];
+                    updateRestaurantDetail(selectedRestaurant);
+                }
+            }
+        } else {
+            // 새 맛집 추가 모드
+            const newId = Math.max(...restaurants.map(r => r.id)) + 1;
+            
+            // 새 맛집 객체 생성
+            const newRestaurant = {
+                id: newId,
+                name: restaurantName,
+                location: restaurantLocation,
+                hours: restaurantHours,
+                menu: restaurantMenu,
+                features: restaurantFeatures,
+                category: restaurantCategory,
+                likes: 0,
+                stars: 0,
+                dislikes: 0,
+                images: [...uploadedImagePreviews],
+                userLiked: false,
+                userStarred: false,
+                userDisliked: false,
+                userCreated: true // 사용자가 생성한 맛집임을 표시
+            };
+            
+            // 맛집 배열에 추가
+            restaurants.push(newRestaurant);
+            alert('새 맛집이 등록되었습니다!');
+        }
+        
+        // 폼 초기화
+        resetRestaurantForm();
+        
+        // 모달 닫기
         toggleAddRestaurantModal();
+        
+        // 맛집 목록 새로고침
+        refreshRestaurantsList();
     });
 
     // ===== 파일 업로드 처리 =====
@@ -239,6 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleFiles(files) {
         previewContainer.classList.remove('hidden');
         imagePreviews.innerHTML = '';
+        uploadedImagePreviews = []; // 미리보기 배열 초기화
         
         // 최대 5개 파일로 제한
         const maxFiles = 5;
@@ -249,10 +387,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    uploadedImagePreviews.push(imageUrl); // 미리보기 URL 저장
+                    
                     const preview = document.createElement('div');
                     preview.className = 'image-preview';
                     preview.innerHTML = `
-                        <img src="${e.target.result}" alt="미리보기 이미지 ${index + 1}">
+                        <img src="${imageUrl}" alt="미리보기 이미지 ${index + 1}">
                         <div class="remove-preview" data-index="${index}">
                             <i class="fas fa-times"></i>
                         </div>
@@ -260,7 +401,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     imagePreviews.appendChild(preview);
                     
                     preview.querySelector('.remove-preview').addEventListener('click', function() {
+                        const idx = parseInt(this.getAttribute('data-index'));
+                        uploadedImagePreviews.splice(idx, 1); // 배열에서 해당 이미지 제거
                         preview.remove();
+                        
+                        // 미리보기 인덱스 재설정
+                        const allPreviews = imagePreviews.querySelectorAll('.image-preview');
+                        allPreviews.forEach((prev, i) => {
+                            prev.querySelector('.remove-preview').setAttribute('data-index', i);
+                        });
                         
                         if (imagePreviews.children.length === 0) {
                             previewContainer.classList.add('hidden');
@@ -306,6 +455,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // ===== 맛집 상세 정보 업데이트 =====
+    const updateRestaurantDetail = function(restaurant) {
+        document.getElementById('detail-name').textContent = restaurant.name;
+        document.getElementById('detail-category-badge').textContent = restaurant.category;
+        document.getElementById('detail-location').textContent = restaurant.location;
+        document.getElementById('detail-hours').textContent = restaurant.hours;
+        document.getElementById('detail-menu').textContent = restaurant.menu;
+        document.getElementById('detail-features').textContent = restaurant.features;
+        document.getElementById('detail-likes').textContent = restaurant.likes;
+        document.getElementById('detail-stars').textContent = restaurant.stars;
+        document.getElementById('detail-dislikes').textContent = restaurant.dislikes;
+        
+        // 수정/삭제 버튼 표시 여부 설정
+        const adminButtons = document.querySelector('.detail-admin-buttons');
+        if (adminButtons) {
+            adminButtons.style.display = restaurant.userCreated ? 'flex' : 'none';
+        }
+        
+        // 이미지 업데이트
+        updateDetailImage();
+    };
+
     // ===== 맛집 목록에서 상세 페이지로 이동 =====
     const showRestaurantDetail = function(restaurantId) {
         selectedRestaurant = restaurants.find(r => r.id === restaurantId);
@@ -313,18 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (selectedRestaurant) {
             // 상세 정보 업데이트
-            document.getElementById('detail-name').textContent = selectedRestaurant.name;
-            document.getElementById('detail-category-badge').textContent = selectedRestaurant.category;
-            document.getElementById('detail-location').textContent = selectedRestaurant.location;
-            document.getElementById('detail-hours').textContent = selectedRestaurant.hours;
-            document.getElementById('detail-menu').textContent = selectedRestaurant.menu;
-            document.getElementById('detail-features').textContent = selectedRestaurant.features;
-            document.getElementById('detail-likes').textContent = selectedRestaurant.likes;
-            document.getElementById('detail-stars').textContent = selectedRestaurant.stars;
-            document.getElementById('detail-dislikes').textContent = selectedRestaurant.dislikes;
-            
-            // 이미지 업데이트
-            updateDetailImage();
+            updateRestaurantDetail(selectedRestaurant);
             
             // 갤러리 컨트롤 업데이트
             const galleryControls = document.querySelector('.gallery-controls');
@@ -366,6 +526,90 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedRestaurant && selectedRestaurant.images.length > 1) {
             currentImageIndex = (currentImageIndex + 1) % selectedRestaurant.images.length;
             updateDetailImage();
+        }
+    });
+
+    // ===== 상세 페이지 수정/삭제 버튼 이벤트 =====
+    // 이벤트 위임을 사용하여 동적으로 추가되는 버튼에 이벤트 핸들러 연결
+    document.addEventListener('click', function(e) {
+        // 수정 버튼 클릭
+        if (e.target && (e.target.id === 'edit-restaurant-btn' || e.target.closest('#edit-restaurant-btn'))) {
+            if (selectedRestaurant && selectedRestaurant.userCreated) {
+                // 수정 모드 활성화
+                isEditMode = true;
+                editingRestaurantId = selectedRestaurant.id;
+                
+                // 모달 제목 변경
+                modalTitle.textContent = '맛집 정보 수정하기';
+                document.getElementById('submit-add').textContent = '수정완료';
+                
+                // 현재 맛집 정보를 폼에 채우기
+                document.getElementById('restaurant-name').value = selectedRestaurant.name;
+                document.getElementById('restaurant-category').value = selectedRestaurant.category;
+                document.getElementById('restaurant-location').value = selectedRestaurant.location;
+                document.getElementById('restaurant-hours').value = selectedRestaurant.hours;
+                document.getElementById('restaurant-menu').value = selectedRestaurant.menu;
+                document.getElementById('restaurant-features').value = selectedRestaurant.features;
+                
+                // 이미지 미리보기 설정
+                uploadedImagePreviews = [...selectedRestaurant.images];
+                previewContainer.classList.remove('hidden');
+                imagePreviews.innerHTML = '';
+                
+                uploadedImagePreviews.forEach((imageUrl, idx) => {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview';
+                    preview.innerHTML = `
+                        <img src="${imageUrl}" alt="미리보기 이미지 ${idx + 1}">
+                        <div class="remove-preview" data-index="${idx}">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    `;
+                    imagePreviews.appendChild(preview);
+                    
+                    preview.querySelector('.remove-preview').addEventListener('click', function() {
+                        const idx = parseInt(this.getAttribute('data-index'));
+                        uploadedImagePreviews.splice(idx, 1);
+                        preview.remove();
+                        
+                        const allPreviews = imagePreviews.querySelectorAll('.image-preview');
+                        allPreviews.forEach((prev, i) => {
+                            prev.querySelector('.remove-preview').setAttribute('data-index', i);
+                        });
+                        
+                        if (imagePreviews.children.length === 0) {
+                            previewContainer.classList.add('hidden');
+                        }
+                    });
+                });
+                
+                // 모달 열기
+                addRestaurantModal.classList.remove('hidden');
+            }
+        }
+        
+        // 삭제 버튼 클릭
+        if (e.target && (e.target.id === 'delete-restaurant-btn' || e.target.closest('#delete-restaurant-btn'))) {
+            if (selectedRestaurant && selectedRestaurant.userCreated) {
+                if (confirm(`'${selectedRestaurant.name}' 맛집을 정말 삭제하시겠습니까?`)) {
+                    // 배열에서 해당 맛집 제거
+                    const index = restaurants.findIndex(r => r.id === selectedRestaurant.id);
+                    if (index !== -1) {
+                        restaurants.splice(index, 1);
+                        
+                        // 알림 표시
+                        alert('맛집이 삭제되었습니다.');
+                        
+                        // 목록으로 돌아가기
+                        restaurantDetail.classList.add('hidden');
+                        restaurantsListSection.classList.remove('hidden');
+                        selectedRestaurant = null;
+                        
+                        // 맛집 목록 새로고침
+                        refreshRestaurantsList();
+                    }
+                }
+            }
         }
     });
 
@@ -467,11 +711,17 @@ document.addEventListener('DOMContentLoaded', function() {
         card.className = 'restaurant-card';
         card.dataset.id = restaurant.id;
         
+        // userCreated 맛집에 특별한 클래스 추가
+        if (restaurant.userCreated) {
+            card.classList.add('user-created');
+        }
+        
         card.innerHTML = `
             <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
+                ${restaurant.userCreated ? '<div class="user-created-badge">내가 등록</div>' : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
@@ -618,6 +868,58 @@ document.addEventListener('DOMContentLoaded', function() {
             restaurantsGrid.appendChild(emptyMessage);
         }
     };
+    
+    // 새로 추가한 CSS 스타일을 동적으로 추가
+    const style = document.createElement('style');
+    style.textContent = `
+        /* 수정/삭제 버튼 스타일 */
+        .detail-admin-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .edit-btn {
+            background-color: #f0f4ff;
+            color: #3d5af1;
+        }
+        
+        .delete-btn {
+            background-color: #fff0f0;
+            color: #e94057;
+        }
+        
+        /* 내가 등록한 맛집 스타일 */
+        .user-created-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(61, 90, 241, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 상세 이미지 스타일 수정 */
+        .detail-gallery {
+            position: relative;
+            height: auto;
+            max-height: 500px;
+            overflow: hidden;
+        }
+
+        #detail-image {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            max-height: 500px;
+        }
+    `;
+    document.head.appendChild(style);
 
     // 초기 맛집 목록 로드
     refreshRestaurantsList();
