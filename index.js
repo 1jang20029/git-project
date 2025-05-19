@@ -5205,71 +5205,6 @@ function loadPopularRestaurants() {
                 images: [
                     'https://placehold.co/400x250/orange/white?text=달공이네'
                 ]
-            },
-            {
-                id: 4,
-                name: '겟마을 칼국수 보쌈',
-                location: '경기도 안양시 만안구 양화로 25',
-                hours: '매일 10:00-22:00',
-                menu: '칼국수, 보쌈',
-                features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                stars: 4,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/orange/white?text=칼국수',
-                    'https://placehold.co/400x250/orange/white?text=보쌈'
-                ]
-            },
-            {
-                id: 5,
-                name: '삼덕바베큐',
-                location: '안양중앙시장 내',
-                hours: '11:00-22:00',
-                menu: '돼지고기, 소고기 바베큐',
-                features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                stars: 4,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/orange/white?text=바베큐'
-                ]
-            },
-            {
-                id: 6,
-                name: '명가돈까스',
-                location: '안양중앙시장 인근',
-                hours: '11:00-21:00',
-                menu: '돈까스, 국수',
-                features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
-                category: '양식',
-                discount: '없음',
-                likes: 1,
-                stars: 3,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/yellow/black?text=돈까스'
-                ]
-            },
-            {
-                id: 7,
-                name: '원조닭꼬치',
-                location: '안양중앙시장 내',
-                hours: '11:00-20:00',
-                menu: '닭꼬치',
-                features: '부드러운 닭고기와 매콤달콤한 소스의 조화가 일품인 닭꼬치 전문점입니다.',
-                category: '분식',
-                discount: '없음',
-                likes: 0,
-                stars: 4,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/red/white?text=닭꼬치'
-                ]
             }
         ];
         
@@ -5316,16 +5251,7 @@ function loadPopularRestaurants() {
     
     // 각 맛집 정보 표시
     topRestaurants.forEach(restaurant => {
-        // 이미지 URL 수정
-        let imageUrl = restaurant.images[0];
-        if (imageUrl && imageUrl.includes('/api/placeholder/')) {
-            const parts = imageUrl.split('/');
-            const size = parts[parts.length - 1].split('x');
-            if (size.length === 2) {
-                imageUrl = `https://placehold.co/${size[0]}x${size[1]}/gray/white?text=${encodeURIComponent(restaurant.category)}`;
-            }
-        }
-        
+        // 카테고리 이모지 가져오기
         const categoryEmoji = getCategoryEmoji(restaurant.category);
         
         const restaurantElement = document.createElement('div');
@@ -5339,7 +5265,7 @@ function loadPopularRestaurants() {
                 <div class="restaurant-category">${restaurant.category}</div>
                 <div class="restaurant-name">${restaurant.name}</div>
                 <div class="restaurant-discount">
-                    <span class="discount-icon">💰</span> ${restaurant.discount}
+                    <span class="discount-icon">💰</span> ${restaurant.discount || '학생증 제시 시 10% 할인'}
                 </div>
                 <div class="restaurant-location">
                     <span class="location-icon">📍</span> ${restaurant.location}
@@ -5381,6 +5307,8 @@ function goToRestaurantPage(restaurantId) {
     // 상세 페이지로 이동
     window.location.href = `student-deals.html?id=${restaurantId}`;
 }
+
+
 
 // 맛집 반응 토글 함수 (좋아요, 추천, 싫어요)
 function toggleReaction(restaurantId, reactionType) {
@@ -5467,11 +5395,6 @@ function addRestaurantStyles() {
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
         
-        [data-theme="dark"] .student-deals-card {
-            background-color: #1e1e1e;
-            border-color: #2c3039;
-        }
-        
         #popular-restaurants-list {
             display: flex;
             flex-direction: column;
@@ -5481,10 +5404,6 @@ function addRestaurantStyles() {
             display: flex;
             padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
-        }
-        
-        [data-theme="dark"] .popular-restaurant-item {
-            border-bottom-color: #2c3039;
         }
         
         .popular-restaurant-item:last-child {
@@ -5505,16 +5424,6 @@ function addRestaurantStyles() {
             font-size: 28px;
         }
         
-        [data-theme="dark"] .restaurant-image {
-            background-color: #2c3039;
-        }
-        
-        .restaurant-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
         .restaurant-content {
             flex: 1;
             display: flex;
@@ -5525,10 +5434,6 @@ function addRestaurantStyles() {
             font-size: 14px;
             color: #666;
             margin-bottom: 4px;
-        }
-        
-        [data-theme="dark"] .restaurant-category {
-            color: #a7b0c0;
         }
         
         .restaurant-name {
@@ -5545,10 +5450,6 @@ function addRestaurantStyles() {
             align-items: center;
         }
         
-        [data-theme="dark"] .restaurant-discount {
-            color: #e1e5ee;
-        }
-        
         .restaurant-discount .discount-icon {
             margin-right: 4px;
             color: #c62917;
@@ -5562,17 +5463,9 @@ function addRestaurantStyles() {
             align-items: center;
         }
         
-        [data-theme="dark"] .restaurant-location {
-            color: #a7b0c0;
-        }
-        
         .restaurant-location .location-icon {
             margin-right: 4px;
             color: #666;
-        }
-        
-        [data-theme="dark"] .restaurant-location .location-icon {
-            color: #a7b0c0;
         }
         
         .restaurant-likes {
@@ -5600,48 +5493,6 @@ function addRestaurantStyles() {
         .detail-button:hover {
             background-color: #a52312;
         }
-        
-        /* 반응 버튼 토글 스타일 */
-        .reaction-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 4px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            transition: all 0.2s ease;
-        }
-        
-        [data-theme="dark"] .reaction-button {
-            background-color: #2c3039;
-            border-color: #3d4356;
-        }
-        
-        .reaction-button.active {
-            transform: scale(1.1);
-        }
-        
-        .reaction-button.like-btn.active {
-            background-color: #ffcccb;
-            color: #e94057;
-            border-color: #e94057;
-        }
-        
-        .reaction-button.star-btn.active {
-            background-color: #ffe0a0;
-            color: #ffb400;
-            border-color: #ffb400;
-        }
-        
-        .reaction-button.dislike-btn.active {
-            background-color: #ccd6ff;
-            color: #3d5af1;
-            border-color: #3d5af1;
-        }
     `;
     document.head.appendChild(styleElement);
 }
@@ -5665,6 +5516,4 @@ document.addEventListener('DOMContentLoaded', function() {
             loadPopularRestaurants();
         }
     });
-    
-    console.log('맛집 관련 기능 초기화 완료');
 });
