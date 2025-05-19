@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             dislikes: 0,
             images: [
                 'images/wonjodalgkkochi.jpg',
-                'images/wonjodalgkkochiFood.jpg'
+                'images/wonjodalgkkochi.jpg'
             ],
             userLiked: false,
             userStarred: false,
