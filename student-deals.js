@@ -1,137 +1,137 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 초기 데이터 - 모든 값을 0으로 초기화
     const restaurantsData = [
-        {
-            id: 1,
-            name: '지지고 안양 연성대점',
-            location: '경기도 안양시 만안구 양화로37번길 23',
-            hours: '월금 10:30-19:30, 토 12:00-18:00 (일요일 휴무)',
-            menu: '지지고누들, 지지고라이스, 참치마요, 고기마요 등',
-            features: '철판볶음우동과 컵밥이 인기이며, 맛있한 맛과 가성비 좋은 가격으로 학생들에게 사랑받는 곳입니다.',
-            category: '한식',
-            likes: 0,
-            stars: 0,
-            dislikes: 0,
-            images: [
-                'https://picsum.photos/400/250?random=1',
-                'https://picsum.photos/400/250?random=2'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
-        },
-        {
-            id: 2,
-            name: '부대촌',
-            location: '연성대학교 인근 맛집거리',
-            hours: '10:00-21:00',
-            menu: '제육볶음, 부대찌개',
-            features: '오랜 전통을 가진 음식점으로, 학생들이 자주 찾는 곳입니다.',
-            category: '한식',
-            likes: 0,
-            stars: 0,
-            dislikes: 0,
-            images: [
-                'https://picsum.photos/400/250?random=3'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
-        },
-        {
-            id: 3,
-            name: '달공이네',
-            location: '경기도 안양시 만안구 양화로36번길 9',
-            hours: '11:00-21:00',
-            menu: '해장국',
-            features: '대로변이 아니어서 아는 사람만 아는 숨은 맛집으로, 해장국이 인기입니다.',
-            category: '한식',
-            likes: 0,
-            stars: 0,
-            dislikes: 0,
-            images: [
-                'https://picsum.photos/400/250?random=4',
-                'https://picsum.photos/400/250?random=5'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
-        },
-        {
-            id: 4,
-            name: '겟마을 칼국수 보쌈',
-            location: '경기도 안양시 만안구 양화로 25',
-            hours: '매일 10:00-22:00',
-            menu: '칼국수, 보쌈',
-            features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
-            category: '한식',
-            likes: 0,
-            stars: 0,
-            dislikes: 0,
-            images: [
-                'https://picsum.photos/400/250?random=6',
-                'https://picsum.photos/400/250?random=7'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
-        },
-        {
-            id: 5,
-            name: '삼덕바베큐',
-            location: '안양중앙시장 내',
-            hours: '11:00-22:00',
-            menu: '돼지고기, 소고기 바베큐',
-            features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
-            category: '한식',
-            likes: 0,
-            stars: 0,
-            dislikes: 0,
-            images: [
-                'https://picsum.photos/400/250?random=8',
-                'https://picsum.photos/400/250?random=9'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
-        },
-        {
-            id: 6,
-            name: '명가돈까스',
-            location: '안양중앙시장 인근',
-            hours: '11:00-21:00',
-            menu: '돈까스, 국수',
-            features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
-            category: '일식',
-            likes: 0,
-            stars: 0,
-            dislikes: 0,
-            images: [
-                'https://picsum.photos/400/250?random=10'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
-        },
-        {
-            id: 7,
-            name: '원조닭꼬치',
-            location: '안양중앙시장 내',
-            hours: '11:00-20:00',
-            menu: '닭꼬치',
-            features: '부드러운 닭고기와 매콤달콤한 소스의 조화가 일품인 닭꼬치 전문점입니다.',
-            category: '분식',
-            likes: 0,
-            stars: 0,
-            dislikes: 0,
-            images: [
-                'https://picsum.photos/400/250?random=11'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
-        }
-    ];
+    {
+        id: 1,
+        name: '지지고 안양 연성대점',
+        location: '경기도 안양시 만안구 양화로37번길 23',
+        hours: '월금 10:30-19:30, 토 12:00-18:00 (일요일 휴무)',
+        menu: '지지고누들, 지지고라이스, 참치마요, 고기마요 등',
+        features: '철판볶음우동과 컵밥이 인기이며, 맛있한 맛과 가성비 좋은 가격으로 학생들에게 사랑받는 곳입니다.',
+        category: '한식',
+        likes: 0,
+        stars: 0,
+        dislikes: 0,
+        images: [
+            'https://via.placeholder.com/400x250?text=지지고',
+            'https://via.placeholder.com/400x250?text=메뉴판'
+        ],
+        userLiked: false,
+        userStarred: false,
+        userDisliked: false
+    },
+    {
+        id: 2,
+        name: '부대촌',
+        location: '연성대학교 인근 맛집거리',
+        hours: '10:00-21:00',
+        menu: '제육볶음, 부대찌개',
+        features: '오랜 전통을 가진 음식점으로, 학생들이 자주 찾는 곳입니다.',
+        category: '한식',
+        likes: 0,
+        stars: 0,
+        dislikes: 0,
+        images: [
+            'https://via.placeholder.com/400x250?text=부대촌'
+        ],
+        userLiked: false,
+        userStarred: false,
+        userDisliked: false
+    },
+    {
+        id: 3,
+        name: '달공이네',
+        location: '경기도 안양시 만안구 양화로36번길 9',
+        hours: '11:00-21:00',
+        menu: '해장국',
+        features: '대로변이 아니어서 아는 사람만 아는 숨은 맛집으로, 해장국이 인기입니다.',
+        category: '한식',
+        likes: 0,
+        stars: 0,
+        dislikes: 0,
+        images: [
+            'https://via.placeholder.com/400x250?text=달공이네',
+            'https://via.placeholder.com/400x250?text=메뉴판'
+        ],
+        userLiked: false,
+        userStarred: false,
+        userDisliked: false
+    },
+    {
+        id: 4,
+        name: '겟마을 칼국수 보쌈',
+        location: '경기도 안양시 만안구 양화로 25',
+        hours: '매일 10:00-22:00',
+        menu: '칼국수, 보쌈',
+        features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
+        category: '한식',
+        likes: 0,
+        stars: 0,
+        dislikes: 0,
+        images: [
+            'https://via.placeholder.com/400x250?text=겟마을칼국수',
+            'https://via.placeholder.com/400x250?text=메뉴판'
+        ],
+        userLiked: false,
+        userStarred: false,
+        userDisliked: false
+    },
+    {
+        id: 5,
+        name: '삼덕바베큐',
+        location: '안양중앙시장 내',
+        hours: '11:00-22:00',
+        menu: '돼지고기, 소고기 바베큐',
+        features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
+        category: '한식',
+        likes: 0,
+        stars: 0,
+        dislikes: 0,
+        images: [
+            'https://via.placeholder.com/400x250?text=삼덕바베큐',
+            'https://via.placeholder.com/400x250?text=메뉴판'
+        ],
+        userLiked: false,
+        userStarred: false,
+        userDisliked: false
+    },
+    {
+        id: 6,
+        name: '명가돈까스',
+        location: '안양중앙시장 인근',
+        hours: '11:00-21:00',
+        menu: '돈까스, 국수',
+        features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
+        category: '일식',
+        likes: 0,
+        stars: 0,
+        dislikes: 0,
+        images: [
+            'https://via.placeholder.com/400x250?text=명가돈까스'
+        ],
+        userLiked: false,
+        userStarred: false,
+        userDisliked: false
+    },
+    {
+        id: 7,
+        name: '원조닭꼬치',
+        location: '안양중앙시장 내',
+        hours: '11:00-20:00',
+        menu: '닭꼬치',
+        features: '부드러운 닭고기와 매콤달콤한 소스의 조화가 일품인 닭꼬치 전문점입니다.',
+        category: '분식',
+        likes: 0,
+        stars: 0,
+        dislikes: 0,
+        images: [
+            'https://via.placeholder.com/400x250?text=원조닭꼬치'
+        ],
+        userLiked: false,
+        userStarred: false,
+        userDisliked: false
+    }
+];
 
     // ===== 전역 상태 =====
     let restaurants = [...restaurantsData];
