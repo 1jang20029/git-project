@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-                'myeong-gadonkkaseu.jpg'
+                'images/myeong-gadonkkaseu.jpg'
             ],
             userLiked: false,
             userStarred: false,
