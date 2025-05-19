@@ -5339,7 +5339,7 @@ function loadPopularRestaurants() {
                 <div class="restaurant-category">${restaurant.category}</div>
                 <div class="restaurant-name">${restaurant.name}</div>
                 <div class="restaurant-discount">
-                    <span class="discount-icon">💰</span> ${restaurant.discount}
+                    <span class="discount-icon">💰</span> ${restaurant.discount || '할인 정보 없음'}
                 </div>
                 <div class="restaurant-location">
                     <span class="location-icon">📍</span> ${restaurant.location}
@@ -5381,6 +5381,7 @@ function goToRestaurantPage(restaurantId) {
     // 상세 페이지로 이동
     window.location.href = `student-deals.html?id=${restaurantId}`;
 }
+
 
 // 맛집 반응 토글 함수 (좋아요, 추천, 싫어요)
 function toggleReaction(restaurantId, reactionType) {
@@ -5452,6 +5453,8 @@ function toggleReaction(restaurantId, reactionType) {
     
     return { restaurant, hasReacted };
 }
+
+
 
 // CSS 스타일 삽입
 function addRestaurantStyles() {
@@ -5645,6 +5648,8 @@ function addRestaurantStyles() {
     `;
     document.head.appendChild(styleElement);
 }
+
+
 
 // 초기화 함수
 document.addEventListener('DOMContentLoaded', function() {
