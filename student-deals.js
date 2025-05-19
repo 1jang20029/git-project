@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0, 
             dislikes: 0,
             images: [
-                'images/지지고(연성대점).jpg',
+                'file:///C:/Users/user/Desktop/연성대학교 강의실 길찾기 서비스/이미지/지지고(연성대점).jpg',
                 '/api/placeholder/400/250'
             ],
             userLiked: false,
