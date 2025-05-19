@@ -5168,7 +5168,7 @@ function loadPopularRestaurants() {
                 category: '한식',
                 discount: '학생증 제시 시 15% 할인',
                 likes: 0,
-                stars: 5,
+                stars: 0,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=지지고'
@@ -5184,7 +5184,7 @@ function loadPopularRestaurants() {
                 category: '한식',
                 discount: '학생증 제시 시 5% 할인',
                 likes: 0,
-                stars: 4,
+                stars: 0,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=부대촌'
@@ -5200,7 +5200,7 @@ function loadPopularRestaurants() {
                 category: '한식',
                 discount: '학생 10% 할인',
                 likes: 0,
-                stars: 3,
+                stars: 0,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=달공이네'
@@ -5216,7 +5216,7 @@ function loadPopularRestaurants() {
                 category: '한식',
                 discount: '없음',
                 likes: 0,
-                stars: 4,
+                stars: 0,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=칼국수',
@@ -5233,7 +5233,7 @@ function loadPopularRestaurants() {
                 category: '한식',
                 discount: '없음',
                 likes: 0,
-                stars: 4,
+                stars: 0,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/orange/white?text=바베큐'
@@ -5249,7 +5249,7 @@ function loadPopularRestaurants() {
                 category: '양식',
                 discount: '없음',
                 likes: 0,
-                stars: 3,
+                stars: 0,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/yellow/black?text=돈까스'
@@ -5265,7 +5265,7 @@ function loadPopularRestaurants() {
                 category: '분식',
                 discount: '없음',
                 likes: 0,
-                stars: 4,
+                stars: 0,
                 dislikes: 0,
                 images: [
                     'https://placehold.co/400x250/red/white?text=닭꼬치'
