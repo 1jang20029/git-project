@@ -14,11 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
             dislikes: 0,
             images: [
                 './images/지지고(연성대점).jpg',
-                '/api/placeholder/400/250'
-            ],
-            userLiked: false,
-            userStarred: false,
-            userDisliked: false
+                './images/지지고(연성대점)가격표.jpg'
+            ]
         },
         {
             id: 2,
