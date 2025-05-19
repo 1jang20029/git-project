@@ -13,10 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0,
             dislikes: 0,
             images: [
-            'images/지지고(연성대점).jpg',
-            'images/지지고(연성대점)가격표.jpg'
+                'images/지지고(연성대점).jpg',
+                'https://picsum.photos/400/250?random=2'
             ],
-
             userLiked: false,
             userStarred: false,
             userDisliked: false
