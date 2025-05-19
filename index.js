@@ -5357,19 +5357,6 @@ function loadPopularRestaurants() {
     console.log('인기 맛집 정보 로드 완료:', topRestaurants.length, '개 표시됨');
 }
 
-// 카테고리에 따른 이모지 반환 함수
-function getCategoryEmoji(category) {
-    switch(category) {
-        case '한식': return '🍲';
-        case '중식': return '🥢';
-        case '일식': return '🍣';
-        case '양식': return '🍝';
-        case '분식': return '🍜';
-        case '카페': return '☕';
-        case '술집': return '🍺';
-        default: return '🍽️';
-    }
-}
 
 // 상세 페이지로 이동 함수
 function goToRestaurantPage(restaurantId) {
