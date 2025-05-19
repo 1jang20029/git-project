@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 초기 데이터
+    // 초기 데이터 - 모든 값을 0으로 초기화
     const restaurantsData = [
         {
             id: 1,
@@ -9,13 +9,16 @@ document.addEventListener('DOMContentLoaded', function() {
             menu: '지지고누들, 지지고라이스, 참치마요, 고기마요 등',
             features: '철판볶음우동과 컵밥이 인기이며, 맛있한 맛과 가성비 좋은 가격으로 학생들에게 사랑받는 곳입니다.',
             category: '한식',
-            likes: 3,
-            stars: 5,
+            likes: 0,
+            stars: 0, 
             dislikes: 0,
             images: [
                 '/api/placeholder/400/250',
                 '/api/placeholder/400/250'
-            ]
+            ],
+            userLiked: false,
+            userStarred: false,
+            userDisliked: false
         },
         {
             id: 2,
@@ -25,12 +28,15 @@ document.addEventListener('DOMContentLoaded', function() {
             menu: '제육볶음, 부대찌개',
             features: '오랜 전통을 가진 음식점으로, 학생들이 자주 찾는 곳입니다.',
             category: '한식',
-            likes: 1,
-            stars: 4,
+            likes: 0,
+            stars: 0,
             dislikes: 0,
             images: [
                 '/api/placeholder/400/250'
-            ]
+            ],
+            userLiked: false,
+            userStarred: false,
+            userDisliked: false
         },
         {
             id: 3,
@@ -40,12 +46,15 @@ document.addEventListener('DOMContentLoaded', function() {
             menu: '해장국',
             features: '대로변이 아니어서 아는 사람만 아는 숨은 맛집으로, 해장국이 인기입니다.',
             category: '한식',
-            likes: 1,
-            stars: 3,
+            likes: 0,
+            stars: 0,
             dislikes: 0,
             images: [
                 '/api/placeholder/400/250'
-            ]
+            ],
+            userLiked: false,
+            userStarred: false,
+            userDisliked: false
         },
         {
             id: 4,
@@ -55,13 +64,16 @@ document.addEventListener('DOMContentLoaded', function() {
             menu: '칼국수, 보쌈',
             features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
             category: '한식',
-            likes: 5,
-            stars: 4,
+            likes: 0,
+            stars: 0,
             dislikes: 0,
             images: [
                 '/api/placeholder/400/250',
                 '/api/placeholder/400/250'
-            ]
+            ],
+            userLiked: false,
+            userStarred: false,
+            userDisliked: false
         },
         {
             id: 5,
@@ -71,12 +83,15 @@ document.addEventListener('DOMContentLoaded', function() {
             menu: '돼지고기, 소고기 바베큐',
             features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
             category: '한식',
-            likes: 5,
-            stars: 4,
+            likes: 0,
+            stars: 0,
             dislikes: 0,
             images: [
                 '/api/placeholder/400/250'
-            ]
+            ],
+            userLiked: false,
+            userStarred: false,
+            userDisliked: false
         },
         {
             id: 6,
@@ -86,12 +101,15 @@ document.addEventListener('DOMContentLoaded', function() {
             menu: '돈까스, 국수',
             features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
             category: '일식',
-            likes: 1,
-            stars: 3,
+            likes: 0,
+            stars: 0,
             dislikes: 0,
             images: [
                 '/api/placeholder/400/250'
-            ]
+            ],
+            userLiked: false,
+            userStarred: false,
+            userDisliked: false
         },
         {
             id: 7,
@@ -102,11 +120,14 @@ document.addEventListener('DOMContentLoaded', function() {
             features: '부드러운 닭고기와 매콤달콤한 소스의 조화가 일품인 닭꼬치 전문점입니다.',
             category: '분식',
             likes: 0,
-            stars: 4,
+            stars: 0,
             dislikes: 0,
             images: [
                 '/api/placeholder/400/250'
-            ]
+            ],
+            userLiked: false,
+            userStarred: false,
+            userDisliked: false
         }
     ];
 
@@ -345,10 +366,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== 상세 페이지 반응 버튼 =====
+    // ===== 상세 페이지 반응 버튼 - 토글 기능 추가 =====
     document.getElementById('detail-like-btn').addEventListener('click', function() {
         if (selectedRestaurant) {
-            selectedRestaurant.likes++;
+            // 토글 기능 구현
+            if (selectedRestaurant.userLiked) {
+                // 이미 좋아요를 누른 상태에서 다시 클릭한 경우
+                selectedRestaurant.likes--;
+                selectedRestaurant.userLiked = false;
+            } else {
+                // 처음 좋아요를 누른 경우
+                selectedRestaurant.likes++;
+                selectedRestaurant.userLiked = true;
+            }
+            
             document.getElementById('detail-likes').textContent = selectedRestaurant.likes;
             
             // 목록에 있는 해당 맛집의 좋아요 수도 업데이트
@@ -358,7 +389,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('detail-star-btn').addEventListener('click', function() {
         if (selectedRestaurant) {
-            selectedRestaurant.stars++;
+            // 토글 기능 구현
+            if (selectedRestaurant.userStarred) {
+                // 이미 별점을 준 상태에서 다시 클릭한 경우
+                selectedRestaurant.stars--;
+                selectedRestaurant.userStarred = false;
+            } else {
+                // 처음 별점을 주는 경우
+                selectedRestaurant.stars++;
+                selectedRestaurant.userStarred = true;
+            }
+            
             document.getElementById('detail-stars').textContent = selectedRestaurant.stars;
             
             // 목록에 있는 해당 맛집의 별점 수도 업데이트
@@ -368,7 +409,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('detail-dislike-btn').addEventListener('click', function() {
         if (selectedRestaurant) {
-            selectedRestaurant.dislikes++;
+            // 토글 기능 구현
+            if (selectedRestaurant.userDisliked) {
+                // 이미 싫어요를 누른 상태에서 다시 클릭한 경우
+                selectedRestaurant.dislikes--;
+                selectedRestaurant.userDisliked = false;
+            } else {
+                // 처음 싫어요를 누른 경우
+                selectedRestaurant.dislikes++;
+                selectedRestaurant.userDisliked = true;
+            }
+            
             document.getElementById('detail-dislikes').textContent = selectedRestaurant.dislikes;
             
             // 목록에 있는 해당 맛집의 싫어요 수도 업데이트
@@ -465,26 +516,53 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // 반응 버튼 이벤트
+        // 반응 버튼 이벤트 - 토글 기능 추가
         const likeButton = card.querySelector('.like-btn');
         const starButton = card.querySelector('.star-btn');
         const dislikeButton = card.querySelector('.dislike-btn');
         
         likeButton.addEventListener('click', function(e) {
             e.stopPropagation();
-            restaurant.likes++;
+            
+            // 토글 기능 구현
+            if (restaurant.userLiked) {
+                restaurant.likes--;
+                restaurant.userLiked = false;
+            } else {
+                restaurant.likes++;
+                restaurant.userLiked = true;
+            }
+            
             updateRestaurantInList(restaurant.id);
         });
         
         starButton.addEventListener('click', function(e) {
             e.stopPropagation();
-            restaurant.stars++;
+            
+            // 토글 기능 구현
+            if (restaurant.userStarred) {
+                restaurant.stars--;
+                restaurant.userStarred = false;
+            } else {
+                restaurant.stars++;
+                restaurant.userStarred = true;
+            }
+            
             updateRestaurantInList(restaurant.id);
         });
         
         dislikeButton.addEventListener('click', function(e) {
             e.stopPropagation();
-            restaurant.dislikes++;
+            
+            // 토글 기능 구현
+            if (restaurant.userDisliked) {
+                restaurant.dislikes--;
+                restaurant.userDisliked = false;
+            } else {
+                restaurant.dislikes++;
+                restaurant.userDisliked = true;
+            }
+            
             updateRestaurantInList(restaurant.id);
         });
         
