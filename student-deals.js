@@ -141,8 +141,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
+    // ===== 로컬 스토리지 관련 함수 =====
+    // 로컬 스토리지에서 맛집 데이터 불러오기
+    const loadRestaurantsFromStorage = function() {
+        const storedData = localStorage.getItem('restaurants');
+        if (storedData) {
+            return JSON.parse(storedData);
+        }
+        return restaurantsData; // 저장된 데이터가 없으면 초기 데이터 반환
+    };
+
+    // 로컬 스토리지에 맛집 데이터 저장하기
+    const saveRestaurantsToStorage = function() {
+        localStorage.setItem('restaurants', JSON.stringify(restaurants));
+    };
+
     // ===== 전역 상태 =====
-    let restaurants = [...restaurantsData];
+    let restaurants = loadRestaurantsFromStorage();
     let currentCategory = '전체';
     let currentPage = 0;
     let restaurantsPerPage = window.innerWidth < 768 ? 2 : 3;
@@ -298,6 +313,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurants[restaurantIndex].features = restaurantFeatures;
                 restaurants[restaurantIndex].images = [...uploadedImagePreviews];
                 
+                // 로컬 스토리지에 저장
+                saveRestaurantsToStorage();
+                
                 alert('맛집 정보가 수정되었습니다!');
                 
                 // 상세 페이지가 표시 중이고, 현재 수정된 맛집을 보고 있다면 정보 업데이트
@@ -331,6 +349,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 맛집 배열에 추가
             restaurants.push(newRestaurant);
+            
+            // 로컬 스토리지에 저장
+            saveRestaurantsToStorage();
+            
             alert('새 맛집이 등록되었습니다!');
         }
         
@@ -597,6 +619,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (index !== -1) {
                         restaurants.splice(index, 1);
                         
+                        // 로컬 스토리지에 저장
+                        saveRestaurantsToStorage();
+                        
                         // 알림 표시
                         alert('맛집이 삭제되었습니다.');
                         
@@ -629,6 +654,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             document.getElementById('detail-likes').textContent = selectedRestaurant.likes;
             
+            // 로컬 스토리지에 저장
+            saveRestaurantsToStorage();
+            
             // 목록에 있는 해당 맛집의 좋아요 수도 업데이트
             updateRestaurantInList(selectedRestaurant.id);
         }
@@ -649,6 +677,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             document.getElementById('detail-stars').textContent = selectedRestaurant.stars;
             
+            // 로컬 스토리지에 저장
+            saveRestaurantsToStorage();
+            
             // 목록에 있는 해당 맛집의 별점 수도 업데이트
             updateRestaurantInList(selectedRestaurant.id);
         }
@@ -668,6 +699,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             document.getElementById('detail-dislikes').textContent = selectedRestaurant.dislikes;
+            
+            // 로컬 스토리지에 저장
+            saveRestaurantsToStorage();
             
             // 목록에 있는 해당 맛집의 싫어요 수도 업데이트
             updateRestaurantInList(selectedRestaurant.id);
@@ -786,6 +820,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurant.userLiked = true;
             }
             
+            // 로컬 스토리지에 저장
+            saveRestaurantsToStorage();
+            
             updateRestaurantInList(restaurant.id);
         });
         
@@ -801,6 +838,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurant.userStarred = true;
             }
             
+            // 로컬 스토리지에 저장
+            saveRestaurantsToStorage();
+            
             updateRestaurantInList(restaurant.id);
         });
         
@@ -815,6 +855,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurant.dislikes++;
                 restaurant.userDisliked = true;
             }
+            
+            // 로컬 스토리지에 저장
+            saveRestaurantsToStorage();
             
             updateRestaurantInList(restaurant.id);
         });
@@ -920,6 +963,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
+
+    // ===== 로컬 스토리지 데이터 초기화 함수 추가 =====
+    window.resetLocalStorage = function() {
+        if (confirm('모든 맛집 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+            localStorage.removeItem('restaurants');
+            restaurants = [...restaurantsData]; // 초기 데이터로 복원
+            saveRestaurantsToStorage(); // 초기 데이터 저장
+            refreshRestaurantsList(); // 목록 새로고침
+            alert('맛집 데이터가 초기화되었습니다.');
+            
+            // 상세 페이지가 열려있다면 목록으로 돌아가기
+            if (!restaurantDetail.classList.contains('hidden')) {
+                restaurantDetail.classList.add('hidden');
+                restaurantsListSection.classList.remove('hidden');
+                selectedRestaurant = null;
+            }
+        }
+    };
 
     // 초기 맛집 목록 로드
     refreshRestaurantsList();
