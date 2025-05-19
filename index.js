@@ -5215,7 +5215,7 @@ function loadPopularRestaurants() {
                 features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
                 category: '한식',
                 discount: '없음',
-                likes: 5,
+                likes: 0,
                 stars: 4,
                 dislikes: 0,
                 images: [
