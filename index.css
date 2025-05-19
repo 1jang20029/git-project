@@ -1963,6 +1963,7 @@ header {
     display: flex;
     padding: 12px 0;
     border-bottom: 1px solid #f0f0f0;
+    position: relative;
 }
 
 
@@ -1976,14 +1977,16 @@ header {
 }
 
 
+.restaurant-left {
+    margin-right: 16px;
+}
+
 
 .restaurant-image {
-    width: 92px;
-    height: 92px;
-    border-radius: 8px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     overflow: hidden;
-    margin-right: 16px;
-    flex-shrink: 0;
     background-color: #f0f0f0;
     display: flex;
     justify-content: center;
@@ -2009,9 +2012,8 @@ header {
 }
 
 
-
 .restaurant-category {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
     margin-bottom: 4px;
 }
@@ -2031,7 +2033,7 @@ header {
 
 
 .restaurant-discount {
-    font-size: 14px;
+    font-size: 13px;
     color: #333;
     margin-bottom: 6px;
     display: flex;
@@ -2054,7 +2056,7 @@ header {
 
 
 .restaurant-location {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
     margin-bottom: 8px;
     display: flex;
@@ -2079,6 +2081,23 @@ header {
 
 
 
+.restaurant-likes-count {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: #c62917;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
+.restaurant-actions {
+    margin-top: 5px;
+}
+
+
+
+
 .restaurant-likes {
     margin-left: auto;
     margin-top: auto;
@@ -2094,13 +2113,14 @@ header {
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 10px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    margin-top: 8px;
     width: fit-content;
 }
+
+
 
 .detail-button:hover {
     background-color: #a52312;

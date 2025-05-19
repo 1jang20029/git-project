@@ -5331,24 +5331,27 @@ function loadPopularRestaurants() {
         const restaurantElement = document.createElement('div');
         restaurantElement.className = 'popular-restaurant-item';
         
+        // 두 번째 이미지 형식과 일치하도록 HTML 구조 변경
         restaurantElement.innerHTML = `
-            <div class="restaurant-image">
-                ${categoryEmoji}
+            <div class="restaurant-left">
+                <div class="restaurant-image">
+                    ${categoryEmoji}
+                </div>
             </div>
             <div class="restaurant-content">
                 <div class="restaurant-category">${restaurant.category}</div>
                 <div class="restaurant-name">${restaurant.name}</div>
                 <div class="restaurant-discount">
-                    <span class="discount-icon">💰</span> ${restaurant.discount || '할인 정보 없음'}
+                    <span class="discount-icon">💰</span> ${restaurant.discount || '없음'}
                 </div>
                 <div class="restaurant-location">
                     <span class="location-icon">📍</span> ${restaurant.location}
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="restaurant-actions">
                     <button class="detail-button" onclick="goToRestaurantPage(${restaurant.id})">상세보기</button>
-                    <div class="restaurant-likes">❤️ ${restaurant.likes}</div>
                 </div>
             </div>
+            <div class="restaurant-likes-count">❤️ ${restaurant.likes}</div>
         `;
         
         restaurantsList.appendChild(restaurantElement);
