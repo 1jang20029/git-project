@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             id: 4,
-            name: '겟마을 칼국수 보쌈',
+            name: '갯마을 칼국수 보쌈',
             location: '경기도 안양시 만안구 양화로 25',
             hours: '매일 10:00-22:00',
             menu: '칼국수, 보쌈',
