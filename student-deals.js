@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stars: 0, 
             dislikes: 0,
             images: [
-                '/api/placeholder/400/250',
+                '지지고(연성대점).jpg',
                 '/api/placeholder/400/250'
             ],
             userLiked: false,
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             id: 4,
-            name: '겟마을 칼국수 보쌈',
+            name: '갯마을 칼국수 보쌈',
             location: '경기도 안양시 만안구 양화로 25',
             hours: '매일 10:00-22:00',
             menu: '칼국수, 보쌈',
