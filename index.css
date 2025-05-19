@@ -1990,6 +1990,69 @@ header {
 
 
 
+.restaurant-category {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+
+.restaurant-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+
+.restaurant-discount {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+
+.restaurant-discount .discount-icon {
+    margin-right: 4px;
+    color: #c62917;
+}
+
+
+.restaurant-location {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+
+.restaurant-likes {
+    margin-left: auto;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    color: #c62917;
+    font-weight: bold;
+}
+
+
+.detail-button {
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    width: fit-content;
+}
+
+
+
 .deals-list {
     display: flex;
     flex-direction: column;
