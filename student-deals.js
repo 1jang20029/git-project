@@ -986,28 +986,29 @@ document.addEventListener('DOMContentLoaded', function() {
         card.className = 'restaurant-card';
         card.dataset.id = restaurant.id;
         
-        // 내가 등록한 맛집에 특별한 클래스 추가 - 여기 수정
-        if (restaurant.createdBy === CURRENT_USER_ID) {
+        // 사용자 ID 비교 강화 - 엄격한 비교 및 방어적 코딩
+        if (restaurant.createdBy && CURRENT_USER_ID 
+            && restaurant.createdBy.toString() === CURRENT_USER_ID.toString()) {
             card.classList.add('user-created');
         } else {
-            // 본인이 생성하지 않은 맛집에는 배지를 표시하지 않도록 확실히 처리
             card.classList.remove('user-created');
         }
+        
+        // 사용자 ID 비교 강화 - 조건문에 사용할 변수
+        const isMyRestaurant = restaurant.createdBy && CURRENT_USER_ID 
+                            && restaurant.createdBy.toString() === CURRENT_USER_ID.toString();
         
         // 사용자가 좋아요/추천해요/별로예요를 눌렀는지 여부
         const isLiked = userInteractions.likedRestaurants.includes(restaurant.id);
         const isStarred = userInteractions.starredRestaurants.includes(restaurant.id);
         const isDisliked = userInteractions.dislikedRestaurants.includes(restaurant.id);
         
-        // 여기서 === 연산자만 사용해서 정확히 비교
-        const isCreatedByCurrentUser = restaurant.createdBy === CURRENT_USER_ID;
-        
         card.innerHTML = `
             <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
-                ${isCreatedByCurrentUser ? '<div class="user-created-badge">내가 등록</div>' : ''}
+                ${isMyRestaurant ? '<div class="user-created-badge">내가 등록</div>' : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
