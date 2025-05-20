@@ -306,16 +306,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 인기 맛집 카드 추가
         popularRestaurants.forEach((restaurant, index) => {
-            // 여기 수정: 현재 사용자가 생성한 맛집인지 확인
-            const isCreatedByCurrentUser = restaurant.createdBy && restaurant.createdBy === CURRENT_USER_ID;
-            const userCreatedBadge = isCreatedByCurrentUser ? '<div class="user-created-badge">내가 등록</div>' : '';
-            
             sectionHtml += `
                 <div class="popular-restaurant-card" data-id="${restaurant.id}">
                     <div class="popular-rank">${index + 1}</div>
                     <div class="popular-image">
                         <img src="${restaurant.images[0]}" alt="${restaurant.name}">
-                        ${userCreatedBadge}
                     </div>
                     <div class="popular-content">
                         <h3>${restaurant.name}</h3>
