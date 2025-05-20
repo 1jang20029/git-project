@@ -987,8 +987,11 @@ document.addEventListener('DOMContentLoaded', function() {
         card.dataset.id = restaurant.id;
         
         // 내가 등록한 맛집에 특별한 클래스 추가 - 여기 수정
-        if (restaurant.createdBy && restaurant.createdBy === CURRENT_USER_ID) {
+        if (restaurant.createdBy === CURRENT_USER_ID) {
             card.classList.add('user-created');
+        } else {
+            // 본인이 생성하지 않은 맛집에는 배지를 표시하지 않도록 확실히 처리
+            card.classList.remove('user-created');
         }
         
         // 사용자가 좋아요/추천해요/별로예요를 눌렀는지 여부
@@ -996,8 +999,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const isStarred = userInteractions.starredRestaurants.includes(restaurant.id);
         const isDisliked = userInteractions.dislikedRestaurants.includes(restaurant.id);
         
-        // 여기 수정: createdBy 확인 로직 강화
-        const isCreatedByCurrentUser = restaurant.createdBy && restaurant.createdBy === CURRENT_USER_ID;
+        // 여기서 === 연산자만 사용해서 정확히 비교
+        const isCreatedByCurrentUser = restaurant.createdBy === CURRENT_USER_ID;
         
         card.innerHTML = `
             <div class="card-image-container">
