@@ -5373,19 +5373,42 @@ function displayPopularRestaurantsOnMainPage() {
     if (storedData) {
         try {
             restaurants = JSON.parse(storedData);
+            
+            // 각 맛집의 좋아요 수를 로컬 스토리지에서 별도로 가져옴
+            restaurants.forEach(restaurant => {
+                const likesKey = `restaurantLikes_${restaurant.id}`;
+                const starsKey = `restaurantStars_${restaurant.id}`;
+                const dislikesKey = `restaurantDislikes_${restaurant.id}`;
+                
+                // 좋아요, 추천해요, 싫어요 수를 가져오거나 초기값 0으로 설정
+                const likesData = localStorage.getItem(likesKey);
+                const starsData = localStorage.getItem(starsKey);
+                const dislikesData = localStorage.getItem(dislikesKey);
+                
+                restaurant.likes = likesData !== null ? parseInt(likesData) : 0;
+                restaurant.stars = starsData !== null ? parseInt(starsData) : 0;
+                restaurant.dislikes = dislikesData !== null ? parseInt(dislikesData) : 0;
+            });
         } catch (e) {
             console.error('맛집 데이터 파싱 오류:', e);
             return;
         }
+    } else if (typeof restaurantsData !== 'undefined') {
+        // 기본 데이터 사용
+        restaurants = restaurantsData;
     } else {
-        // 메인 JS 파일의 초기 데이터 가져오기 (아직 로컬 스토리지에 없을 경우)
-        // student-deals.js 파일에서 정의된 restaurantsData 배열 사용
-        restaurants = restaurantsData || [];
+        console.log('맛집 데이터를 찾을 수 없습니다.');
+        return;
     }
 
     // 인기 맛집 가져오기 (좋아요 기준 상위 3개)
     const popularRestaurants = [...restaurants]
-        .sort((a, b) => b.likes - a.likes)
+        .sort((a, b) => {
+            // likes 속성이 undefined면 0으로 처리
+            const likesA = typeof a.likes === 'undefined' ? 0 : a.likes;
+            const likesB = typeof b.likes === 'undefined' ? 0 : b.likes;
+            return likesB - likesA;
+        })
         .slice(0, 3);
 
     // 초기화
@@ -5413,6 +5436,9 @@ function displayPopularRestaurantsOnMainPage() {
         // 카테고리 이모지 설정
         const categoryEmoji = getCategoryEmoji(restaurant.category);
 
+        // 좋아요가 undefined인 경우 0으로 표시
+        const likeCount = typeof restaurant.likes === 'undefined' ? 0 : restaurant.likes;
+
         // 맛집 항목 생성
         const restaurantElement = document.createElement('div');
         restaurantElement.className = 'popular-restaurant-item';
@@ -5428,11 +5454,13 @@ function displayPopularRestaurantsOnMainPage() {
                     <span class="location-icon">📍</span> ${restaurant.location}
                 </div>
                 <div class="restaurant-features">
-                    ${restaurant.features.length > 80 ? restaurant.features.substring(0, 80) + '...' : restaurant.features}
+                    ${restaurant.features && restaurant.features.length > 80 ? 
+                      restaurant.features.substring(0, 80) + '...' : 
+                      (restaurant.features || '정보 없음')}
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px;">
                     <button class="detail-button" onclick="window.location.href='student-deals.html'">자세히</button>
-                    <div class="restaurant-likes">👍 ${restaurant.likes}</div>
+                    <div class="restaurant-likes">👍 ${likeCount}</div>
                 </div>
             </div>
         `;
