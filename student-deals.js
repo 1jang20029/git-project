@@ -1117,35 +1117,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateRestaurantInList(restaurantId);
         });
         
-        dislikeButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            
-            // 별로예요 토글
-            const restaurantId = restaurant.id;
-            const dislikedIndex = userInteractions.dislikedRestaurants.indexOf(restaurantId);
-            
-            if (dislikedIndex !== -1) {
-                // 이미 별로예요를 누른 상태에서 다시 클릭한 경우
-                userInteractions.dislikedRestaurants.splice(dislikedIndex, 1);
-                restaurant.dislikes--;
-                this.classList.remove('active');
-            } else {
-                // 처음 별로예요를 누른 경우
-                userInteractions.dislikedRestaurants.push(restaurantId);
-                restaurant.dislikes++;
-                this.classList.add('active');
-            }
-            
-            // 사용자 상호작용 데이터 저장
-            saveUserInteractions();
-            
-            // 맛집 데이터 저장
-            saveRestaurantsToStorage();
-            
-            // UI 업데이트
-            updateRestaurantInList(restaurantId);
-        });
-        
         return card;
     };
 
