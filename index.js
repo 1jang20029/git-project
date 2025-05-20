@@ -5357,6 +5357,90 @@ function loadPopularRestaurants() {
     console.log('인기 맛집 정보 로드 완료:', topRestaurants.length, '개 표시됨');
 }
 
+
+// 인기 맛집 정보를 메인 페이지에 표시하는 함수
+function displayPopularRestaurantsOnMainPage() {
+    // 인기 맛집 컨테이너 요소 가져오기
+    const popularRestaurantsList = document.getElementById('popular-restaurants-list');
+    if (!popularRestaurantsList) {
+        console.error('인기 맛집 목록 컨테이너를 찾을 수 없습니다.');
+        return;
+    }
+
+    // 로컬 스토리지에서 맛집 데이터 가져오기
+    let restaurants = [];
+    const storedData = localStorage.getItem('restaurants');
+    if (storedData) {
+        try {
+            restaurants = JSON.parse(storedData);
+        } catch (e) {
+            console.error('맛집 데이터 파싱 오류:', e);
+            return;
+        }
+    } else {
+        // 메인 JS 파일의 초기 데이터 가져오기 (아직 로컬 스토리지에 없을 경우)
+        // student-deals.js 파일에서 정의된 restaurantsData 배열 사용
+        restaurants = restaurantsData || [];
+    }
+
+    // 인기 맛집 가져오기 (좋아요 기준 상위 3개)
+    const popularRestaurants = [...restaurants]
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 3);
+
+    // 초기화
+    popularRestaurantsList.innerHTML = '';
+
+    // 인기 맛집이 없는 경우
+    if (popularRestaurants.length === 0) {
+        popularRestaurantsList.innerHTML = `
+            <div class="popular-restaurant-item">
+                <div class="restaurant-content">
+                    <div class="restaurant-name">등록된 맛집 정보가 없습니다</div>
+                    <div class="restaurant-discount">새로운 맛집 정보가 곧 업데이트될 예정입니다.</div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // 각 맛집 정보 표시
+    popularRestaurants.forEach((restaurant, index) => {
+        // 이미지 URL 확인
+        let imageUrl = restaurant.images && restaurant.images.length > 0 ? 
+            restaurant.images[0] : 'https://placehold.co/400x250/gray/white?text=이미지없음';
+
+        // 카테고리 이모지 설정
+        const categoryEmoji = getCategoryEmoji(restaurant.category);
+
+        // 맛집 항목 생성
+        const restaurantElement = document.createElement('div');
+        restaurantElement.className = 'popular-restaurant-item';
+        
+        restaurantElement.innerHTML = `
+            <div class="restaurant-image">
+                ${categoryEmoji}
+            </div>
+            <div class="restaurant-content">
+                <div class="restaurant-category">${restaurant.category}</div>
+                <div class="restaurant-name">${restaurant.name}</div>
+                <div class="restaurant-location">
+                    <span class="location-icon">📍</span> ${restaurant.location}
+                </div>
+                <div class="restaurant-features">
+                    ${restaurant.features.length > 80 ? restaurant.features.substring(0, 80) + '...' : restaurant.features}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px;">
+                    <button class="detail-button" onclick="window.location.href='student-deals.html'">자세히</button>
+                    <div class="restaurant-likes">👍 ${restaurant.likes}</div>
+                </div>
+            </div>
+        `;
+        
+        popularRestaurantsList.appendChild(restaurantElement);
+    });
+}
+
 // 카테고리에 따른 이모지 반환 함수
 function getCategoryEmoji(category) {
     switch(category) {
@@ -5457,34 +5541,10 @@ function toggleReaction(restaurantId, reactionType) {
 function addRestaurantStyles() {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-        /* 인기 맛집 할인 정보 스타일 */
-        .student-deals-card {
-            background-color: white;
-            border-radius: 12px;
-            border: 1px solid #eee;
-            padding: 16px;
-            margin: 0 16px 16px 16px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        
-        [data-theme="dark"] .student-deals-card {
-            background-color: #1e1e1e;
-            border-color: #2c3039;
-        }
-        
-        #popular-restaurants-list {
-            display: flex;
-            flex-direction: column;
-        }
-        
         .popular-restaurant-item {
             display: flex;
             padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
-        }
-        
-        [data-theme="dark"] .popular-restaurant-item {
-            border-bottom-color: #2c3039;
         }
         
         .popular-restaurant-item:last-child {
@@ -5492,8 +5552,8 @@ function addRestaurantStyles() {
         }
         
         .restaurant-image {
-            width: 92px;
-            height: 92px;
+            width: 60px;
+            height: 60px;
             border-radius: 8px;
             overflow: hidden;
             margin-right: 16px;
@@ -5505,16 +5565,6 @@ function addRestaurantStyles() {
             font-size: 28px;
         }
         
-        [data-theme="dark"] .restaurant-image {
-            background-color: #2c3039;
-        }
-        
-        .restaurant-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
         .restaurant-content {
             flex: 1;
             display: flex;
@@ -5522,64 +5572,32 @@ function addRestaurantStyles() {
         }
         
         .restaurant-category {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
             margin-bottom: 4px;
         }
         
-        [data-theme="dark"] .restaurant-category {
-            color: #a7b0c0;
-        }
-        
         .restaurant-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            margin-bottom: 6px;
-        }
-        
-        .restaurant-discount {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-        }
-        
-        [data-theme="dark"] .restaurant-discount {
-            color: #e1e5ee;
-        }
-        
-        .restaurant-discount .discount-icon {
-            margin-right: 4px;
-            color: #c62917;
+            margin-bottom: 4px;
         }
         
         .restaurant-location {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
+            margin-bottom: 4px;
         }
         
-        [data-theme="dark"] .restaurant-location {
-            color: #a7b0c0;
-        }
-        
-        .restaurant-location .location-icon {
-            margin-right: 4px;
-            color: #666;
-        }
-        
-        [data-theme="dark"] .restaurant-location .location-icon {
-            color: #a7b0c0;
+        .restaurant-features {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+            line-height: 1.4;
         }
         
         .restaurant-likes {
-            margin-left: auto;
-            margin-top: auto;
-            display: flex;
-            align-items: center;
+            font-size: 14px;
             color: #c62917;
             font-weight: bold;
         }
@@ -5589,82 +5607,29 @@ function addRestaurantStyles() {
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 6px 12px;
+            font-size: 13px;
             cursor: pointer;
-            margin-top: 8px;
-            width: fit-content;
-        }
-        
-        .detail-button:hover {
-            background-color: #a52312;
-        }
-        
-        /* 반응 버튼 토글 스타일 */
-        .reaction-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 4px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            transition: all 0.2s ease;
-        }
-        
-        [data-theme="dark"] .reaction-button {
-            background-color: #2c3039;
-            border-color: #3d4356;
-        }
-        
-        .reaction-button.active {
-            transform: scale(1.1);
-        }
-        
-        .reaction-button.like-btn.active {
-            background-color: #ffcccb;
-            color: #e94057;
-            border-color: #e94057;
-        }
-        
-        .reaction-button.star-btn.active {
-            background-color: #ffe0a0;
-            color: #ffb400;
-            border-color: #ffb400;
-        }
-        
-        .reaction-button.dislike-btn.active {
-            background-color: #ccd6ff;
-            color: #3d5af1;
-            border-color: #3d5af1;
         }
     `;
     document.head.appendChild(styleElement);
 }
 
-// 초기화 함수
+// 페이지 로드 시 인기 맛집 정보 표시
 document.addEventListener('DOMContentLoaded', function() {
-    // CSS 스타일 추가
+    // 스타일 추가
     addRestaurantStyles();
     
-    // 인기 맛집 정보 로드
-    loadPopularRestaurants();
+    // 인기 맛집 정보 표시
+    displayPopularRestaurantsOnMainPage();
     
-    // 맛집 데이터 변경 이벤트 리스너
-    window.addEventListener('restaurantsUpdated', function() {
-        loadPopularRestaurants();
-    });
+    // 5분마다 새로고침 (선택사항)
+    setInterval(displayPopularRestaurantsOnMainPage, 300000);
     
-    // localStorage 변경 이벤트 리스너
+    // localStorage 변경 이벤트 감지
     window.addEventListener('storage', function(event) {
-        if (event.key === 'restaurantsData') {
-            loadPopularRestaurants();
+        if (event.key === 'restaurants') {
+            displayPopularRestaurantsOnMainPage();
         }
     });
-    
-    console.log('맛집 관련 기능 초기화 완료');
 });
