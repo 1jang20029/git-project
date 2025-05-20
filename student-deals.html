@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="student-deals.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- 네이버 지도 API 스크립트 (direction, geocoder, visualization 모듈 추가) -->
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction,geocoder,visualization"></script>
 </head>
 <body>
     <!-- 다크모드 토글 -->
@@ -39,9 +37,6 @@
                 <button id="add-place-btn" class="nav-btn">
                     <i class="fas fa-plus-circle"></i> 맛집 등록
                 </button>
-                <button id="show-campus-map-btn" class="nav-btn">
-                    <i class="fas fa-map-marked-alt"></i> 주변 맛집 지도
-                </button>
             </div>
             <button id="menu-toggle" class="menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -56,9 +51,6 @@
         </button>
         <button id="mobile-add-btn" class="mobile-nav-btn">
             <i class="fas fa-plus-circle"></i> 맛집 등록
-        </button>
-        <button id="mobile-campus-map-btn" class="mobile-nav-btn">
-            <i class="fas fa-map-marked-alt"></i> 주변 맛집 지도
         </button>
     </div>
 
@@ -143,95 +135,6 @@
                 </div>
                 <div class="notice">
                     ※ 연성대 주변 맛집에서는 현재 학생증 할인이 적용되지 않습니다.
-                </div>
-            </div>
-        </section>
-
-        <!-- 연성대 주변 맛집 지도 패널 -->
-        <section id="campus-map-panel" class="campus-map-panel hidden">
-            <div class="panel-header">
-                <h2>연성대 주변 맛집 지도</h2>
-                <button id="close-campus-map" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="campus-map-content">
-                <div class="map-description">
-                    <p><i class="fas fa-walking"></i> 연성대학교 기준 도보 왕복 1시간 이내 거리의 맛집들을 표시합니다.</p>
-                </div>
-                
-                <div class="map-filters">
-                    <div class="filter-title">카테고리 필터:</div>
-                    <div class="map-filter-buttons">
-                        <button class="map-filter-btn active" data-category="all">
-                            <span class="emoji-icon">🍽️</span> 전체
-                        </button>
-                        <button class="map-filter-btn" data-category="한식">
-                            <span class="emoji-icon">🍚</span> 한식
-                        </button>
-                        <button class="map-filter-btn" data-category="중식">
-                            <span class="emoji-icon">🍜</span> 중식
-                        </button>
-                        <button class="map-filter-btn" data-category="일식">
-                            <span class="emoji-icon">🍣</span> 일식
-                        </button>
-                        <button class="map-filter-btn" data-category="양식">
-                            <span class="emoji-icon">🍕</span> 양식
-                        </button>
-                        <button class="map-filter-btn" data-category="분식">
-                            <span class="emoji-icon">🌭</span> 분식
-                        </button>
-                        <button class="map-filter-btn" data-category="카페">
-                            <span class="emoji-icon">☕</span> 카페
-                        </button>
-                        <button class="map-filter-btn" data-category="술집">
-                            <span class="emoji-icon">🍺</span> 술집
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="campus-map-container" class="campus-map-container">
-                    <div id="campus-map" style="width:100%;height:500px;"></div>
-                </div>
-                
-                <div class="map-legend">
-                    <div class="legend-item">
-                        <div class="legend-marker school-marker"></div>
-                        <span>연성대학교</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker radius-circle"></div>
-                        <span>도보 왕복 1시간 거리 (약 2.5km)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker restaurant-marker korean"></div>
-                        <span>한식</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker restaurant-marker chinese"></div>
-                        <span>중식</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker restaurant-marker japanese"></div>
-                        <span>일식</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker restaurant-marker western"></div>
-                        <span>양식</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker restaurant-marker snack"></div>
-                        <span>분식</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker restaurant-marker cafe"></div>
-                        <span>카페</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-marker restaurant-marker pub"></div>
-                        <span>술집</span>
-                    </div>
                 </div>
             </div>
         </section>
@@ -386,15 +289,6 @@
                         <i class="fas fa-thumbs-down"></i> 별로예요
                     </button>
                 </div>
-                
-                <div class="detail-admin-buttons">
-                    <button id="edit-restaurant-btn" class="action-btn edit-btn">
-                        <i class="fas fa-edit"></i> 수정하기
-                    </button>
-                    <button id="delete-restaurant-btn" class="action-btn delete-btn">
-                        <i class="fas fa-trash"></i> 삭제하기
-                    </button>
-                </div>
             </div>
         </section>
     </main>
@@ -438,21 +332,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="restaurant-location">위치</label>
-                            <div class="location-input-container">
-                                <input type="text" id="restaurant-location" placeholder="위치를 입력하세요" required>
-                                <button type="button" id="search-location-btn">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                            <div id="map-container" class="map-container">
-                                <div id="naver-map" style="width:100%;height:300px;"></div>
-                                <div class="map-instructions">
-                                    <p><i class="fas fa-info-circle"></i> 지도를 클릭하여 정확한 위치를 지정하세요</p>
-                                </div>
-                            </div>
-                            <!-- 숨겨진 좌표 입력 필드 -->
-                            <input type="hidden" id="restaurant-latitude">
-                            <input type="hidden" id="restaurant-longitude">
+                            <input type="text" id="restaurant-location" placeholder="위치를 입력하세요" required>
                         </div>
                         
                         <div class="form-group">

@@ -5,20 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
         floatingButton.remove();
         console.log('파란색 원형 3 버튼이 제거되었습니다.');
     }
-    
-    // 네이버 지도 관련 변수
-    let naverMap = null;
-    let currentMarker = null;
-    // 연성대학교 좌표로 중심점 설정
-    let defaultCenter = new naver.maps.LatLng(37.39746246553631, 126.90925361473495);
-    // 걸어서 왕복 500m 거리로 변경
-    const walkingRadius = 500; // 미터 단위로 500m로 수정
-    let walkingCircle = null;
-    
-    // 범위 내 음식점들을 표시할 마커들
-    let restaurantMarkers = [];
-    // 현재 선택된 카테고리 (지도 필터링용)
-    let mapCurrentCategory = '전체';
 
     // 초기 데이터 - 모든 값을 0으로 초기화
     const restaurantsData = [
@@ -37,8 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/GGgo-yeonsung.jpg',
                 'images/GGgoPrice.jpg'
             ],
-            latitude: 37.3967, // 좌표 추가
-            longitude: 126.9077, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -56,8 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
             images: [
                 'images/budaechon.jpg'
             ],
-            latitude: 37.3978, // 좌표 추가
-            longitude: 126.9088, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -76,8 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/dalkong.jpg',
                 'images/dalkongPrice.jpg'
             ],
-            latitude: 37.3985, // 좌표 추가
-            longitude: 126.9101, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -96,8 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/gaesma-eul.jpg',
                 'images/gaesma-eulPrice.jpg'
             ],
-            latitude: 37.3971, // 좌표 추가
-            longitude: 126.9095, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -116,8 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/samdeogbabekyu.jpg',
                 'images/samdeogbabekyuPrice.jpg'
             ],
-            latitude: 37.4011, // 좌표 추가
-            longitude: 126.9170, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -135,8 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
             images: [
                 'images/myeong-gadonkkaseu.jpg'
             ],
-            latitude: 37.4002, // 좌표 추가
-            longitude: 126.9143, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -155,8 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/wonjodalgkkochi.jpg',
                 'images/wonjodalgkkochiFood.jpg'
             ],
-            latitude: 37.4005, // 좌표 추가
-            longitude: 126.9160, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         }
@@ -205,10 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
             restaurant.likes = likesData !== null ? parseInt(likesData) : 0;
             restaurant.stars = starsData !== null ? parseInt(starsData) : 0;
             restaurant.dislikes = dislikesData !== null ? parseInt(dislikesData) : 0;
-            
-            // 좌표 데이터가 없다면 기본값 설정
-            if (!restaurant.latitude) restaurant.latitude = 37.3975; // 연성대 기본 좌표
-            if (!restaurant.longitude) restaurant.longitude = 126.9093; // 연성대 기본 좌표
         });
         
         return restaurants;
@@ -283,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountPanel = document.getElementById('discount-panel');
     const addRestaurantModal = document.getElementById('add-restaurant-modal');
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const mapFilterButtons = document.querySelectorAll('.map-filter-btn');
     const prevPageButton = document.getElementById('prev-page');
     const nextPageButton = document.getElementById('next-page');
     const pageIndicator = document.getElementById('page-indicator');
@@ -322,195 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 두 지점 간의 거리 계산 함수 (하버사인 공식)
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371000; // 지구 반지름 (미터)
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = 
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
-        return distance; // 미터 단위
-    }
-    
-    // 범위 내 음식점 찾기 함수
-    function findRestaurantsInRadius(centerLat, centerLng, radius, category = '전체') {
-        return restaurants.filter(restaurant => {
-            const distance = calculateDistance(
-                centerLat, centerLng, 
-                restaurant.latitude, restaurant.longitude
-            );
-            // 카테고리 필터링 추가
-            return distance <= radius && 
-                (category === '전체' || restaurant.category === category);
-        });
-    }
-    
-    // 범위 내 음식점 마커 표시 함수
-    function showRestaurantsInRadius() {
-        // 기존 마커 제거
-        clearRestaurantMarkers();
-        
-        // 범위 내 음식점 찾기 (카테고리 필터링 추가)
-        const restaurantsInRadius = findRestaurantsInRadius(
-            defaultCenter.lat(), defaultCenter.lng(), walkingRadius, mapCurrentCategory
-        );
-        
-        // 음식점 마커 추가
-        restaurantsInRadius.forEach(restaurant => {
-            const position = new naver.maps.LatLng(restaurant.latitude, restaurant.longitude);
-            
-            // 카테고리별 아이콘 색상 지정
-            let iconColor = '#e94057'; // 기본 색상
-            switch(restaurant.category) {
-                case '한식': iconColor = '#e94057'; break;
-                case '중식': iconColor = '#ff9500'; break;
-                case '일식': iconColor = '#8a2be2'; break;
-                case '양식': iconColor = '#22cc88'; break;
-                case '분식': iconColor = '#ff6b6b'; break;
-                case '카페': iconColor = '#795548'; break;
-                case '술집': iconColor = '#607d8b'; break;
-            }
-            
-            const marker = new naver.maps.Marker({
-                position: position,
-                map: naverMap,
-                title: restaurant.name,
-                icon: {
-                    content: `<div class="restaurant-marker" style="border-color: ${iconColor}">
-                        <div class="restaurant-marker-name">${restaurant.name}</div>
-                        <div class="restaurant-marker-category">${restaurant.category}</div>
-                    </div>`,
-                    anchor: new naver.maps.Point(15, 30)
-                }
-            });
-            
-            // 마커 클릭 이벤트 - 상세 정보 보기
-            naver.maps.Event.addListener(marker, 'click', function() {
-                showRestaurantDetail(restaurant.id);
-                toggleAddRestaurantModal(); // 모달 닫기
-            });
-            
-            restaurantMarkers.push(marker);
-        });
-        
-        return restaurantsInRadius;
-    }
-    
-    // 음식점 마커 모두 제거 함수
-    function clearRestaurantMarkers() {
-        restaurantMarkers.forEach(marker => {
-            marker.setMap(null);
-        });
-        restaurantMarkers = [];
-    }
-    
-    // 지도 초기화 함수 (맛집 등록 모달에서 제거)
-    function initializeMap() {
-        if (document.getElementById('campus-map')) {
-            naverMap = new naver.maps.Map('campus-map', {
-                center: defaultCenter,
-                zoom: 15,
-                zoomControl: true,
-                zoomControlOptions: {
-                    position: naver.maps.Position.TOP_RIGHT
-                }
-            });
-            
-            // 연성대학교 위치 마커 (중심점)
-            const universityMarker = new naver.maps.Marker({
-                position: defaultCenter,
-                map: naverMap,
-                icon: {
-                    content: `<div class="university-marker">
-                        <div class="university-marker-name">연성대학교</div>
-                        <i class="fas fa-university marker-icon-university"></i>
-                    </div>`,
-                    anchor: new naver.maps.Point(15, 30)
-                }
-            });
-            
-            // 걸어서 왕복 500m 거리 원 표시
-            walkingCircle = new naver.maps.Circle({
-                map: naverMap,
-                center: defaultCenter,
-                radius: walkingRadius,
-                strokeColor: '#5347AA',
-                strokeOpacity: 0.6,
-                strokeWeight: 2,
-                fillColor: '#5347AA',
-                fillOpacity: 0.1
-            });
-            
-            // 범위 내 음식점 표시
-            const restaurantsInRadius = showRestaurantsInRadius();
-            console.log(`${restaurantsInRadius.length}개의 음식점이 연성대학교에서 ${walkingRadius/1000}km 거리 내에 있습니다.`);
-        }
-    }
-
-    // 마커 위치 설정 함수 (맛집 등록에서는 사용하지 않음)
-    function setMarkerPosition(position) {
-        // 숨겨진 필드에 좌표 값 저장
-        if (document.getElementById('restaurant-latitude')) {
-            document.getElementById('restaurant-latitude').value = position.y;
-        }
-        if (document.getElementById('restaurant-longitude')) {
-            document.getElementById('restaurant-longitude').value = position.x;
-        }
-        
-        // 주소 가져오기
-        naver.maps.Service.reverseGeocode({
-            location: new naver.maps.LatLng(position.y, position.x),
-        }, function(status, response) {
-            let address = '알 수 없는 주소';
-            
-            if (status === naver.maps.Service.Status.OK) {
-                const result = response.result;
-                const items = result.items;
-                address = items[0].address;
-            }
-            
-            // 입력 필드에 주소 표시
-            if (document.getElementById('restaurant-location')) {
-                document.getElementById('restaurant-location').value = address;
-            }
-            
-            // 연성대학교로부터의 거리 계산
-            const distance = calculateDistance(
-                defaultCenter.lat(), defaultCenter.lng(),
-                position.y, position.x
-            );
-            
-            // 범위 내인지 확인하여 알림
-            if (distance > walkingRadius) {
-                alert(`선택한 위치는 연성대학교로부터 ${(distance/1000).toFixed(2)}km 떨어져 있어, ${(walkingRadius/1000).toFixed(2)}km 거리를 벗어납니다.`);
-            } else {
-                console.log(`선택한 위치는 연성대학교로부터 ${(distance/1000).toFixed(2)}km 떨어져 있습니다.`);
-            }
-        });
-    }
-
-    // 위치 검색 함수 (맛집 등록에서는 사용하지 않음)
-    function searchLocation() {
-        const address = document.getElementById('restaurant-location').value;
-        if (!address) return;
-        
-        // 기본 좌표 사용
-        const defaultLat = 37.39746246553631;
-        const defaultLng = 126.90925361473495;
-        
-        // 맛집 등록 시 기본 좌표 설정
-        if (document.getElementById('restaurant-latitude')) {
-            document.getElementById('restaurant-latitude').value = defaultLat;
-        }
-        if (document.getElementById('restaurant-longitude')) {
-            document.getElementById('restaurant-longitude').value = defaultLng;
-        }
-    }
-
     // 인기 맛집 섹션 추가 (메인 페이지에 추가) - 이 부분은 유지
     const addPopularRestaurantsSection = function() {
         // 메인 페이지에 인기 맛집 섹션이 존재하는지 확인
@@ -636,14 +414,6 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadedImagePreviews = [];
         previewContainer.classList.add('hidden');
         imagePreviews.innerHTML = '';
-        
-        // 좌표 초기화 - 연성대학교 기본 좌표로 설정
-        if (document.getElementById('restaurant-latitude')) {
-            document.getElementById('restaurant-latitude').value = defaultCenter.lat();
-        }
-        if (document.getElementById('restaurant-longitude')) {
-            document.getElementById('restaurant-longitude').value = defaultCenter.lng();
-        }
     };
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
@@ -651,24 +421,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // floating-add-btn 이벤트 리스너는 제거했지만 다른 버튼들의 기능은 유지합니다
     document.getElementById('close-modal').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('cancel-add').addEventListener('click', toggleAddRestaurantModal);
-    
-    // 위치 검색 버튼 이벤트 리스너 (맛집 등록에서는 사용하지 않음)
-    if (document.getElementById('search-location-btn')) {
-        document.getElementById('search-location-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            searchLocation();
-        });
-    }
-
-    // 위치 입력 필드에서 엔터키 눌렀을 때 검색 (맛집 등록에서는 사용하지 않음)
-    if (document.getElementById('restaurant-location')) {
-        document.getElementById('restaurant-location').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                searchLocation();
-            }
-        });
-    }
     
     // ===== 맛집 등록/수정 버튼 이벤트 =====
     document.getElementById('submit-add').addEventListener('click', function() {
@@ -679,10 +431,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const restaurantHours = document.getElementById('restaurant-hours').value;
         const restaurantMenu = document.getElementById('restaurant-menu').value;
         const restaurantFeatures = document.getElementById('restaurant-features').value;
-        
-        // 좌표는 기본값으로 연성대학교 좌표 사용
-        const restaurantLatitude = defaultCenter.lat(); 
-        const restaurantLongitude = defaultCenter.lng();
         
         // 모든 필드가 입력되었는지 확인
         if (!restaurantName || !restaurantCategory || !restaurantLocation || 
@@ -709,8 +457,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurants[restaurantIndex].menu = restaurantMenu;
                 restaurants[restaurantIndex].features = restaurantFeatures;
                 restaurants[restaurantIndex].images = [...uploadedImagePreviews];
-                restaurants[restaurantIndex].latitude = parseFloat(restaurantLatitude);
-                restaurants[restaurantIndex].longitude = parseFloat(restaurantLongitude);
                 restaurants[restaurantIndex].updatedAt = new Date().toISOString();
                 
                 // 수정은 생성한 사용자만 가능
@@ -746,8 +492,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 stars: 0,
                 dislikes: 0,
                 images: [...uploadedImagePreviews],
-                latitude: parseFloat(restaurantLatitude),
-                longitude: parseFloat(restaurantLongitude),
                 createdBy: CURRENT_USER_ID,
                 createdAt: new Date().toISOString()
             };
@@ -772,11 +516,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 인기 맛집 섹션 업데이트
         addPopularRestaurantsSection();
-        
-        // 범위 내 음식점 마커 업데이트
-        if (naverMap) {
-            showRestaurantsInRadius();
-        }
     });
 
     // ===== 파일 업로드 처리 =====
@@ -869,20 +608,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 맛집 목록 새로고침
             refreshRestaurantsList();
-        });
-    });
-    
-    // ===== 지도 카테고리 필터링 =====
-    mapFilterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            mapCurrentCategory = this.dataset.category;
-            
-            // 활성화된 버튼 스타일 변경
-            mapFilterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            // 지도의 음식점 마커 새로고침
-            showRestaurantsInRadius();
         });
     });
 
@@ -1098,11 +823,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // 인기 맛집 섹션 업데이트
                         addPopularRestaurantsSection();
-                        
-                        // 범위 내 음식점 마커 업데이트
-                        if (naverMap) {
-                            showRestaurantsInRadius();
-                        }
                     }
                 }
             } else {
@@ -1295,29 +1015,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // String으로 변환하여 정확한 비교
         const isCreator = String(restaurant.createdBy) === String(CURRENT_USER_ID);
         
-        // 연성대학교로부터의 거리 계산
-        const distance = calculateDistance(
-            defaultCenter.lat(), defaultCenter.lng(),
-            restaurant.latitude, restaurant.longitude
-        );
-        const distanceText = (distance < 1000) ? 
-            `학교에서 ${Math.round(distance)}m` : 
-            `학교에서 ${(distance/1000).toFixed(1)}km`;
-        
-        // 500m 내 여부
-        const isWithinRange = distance <= walkingRadius;
-        const rangeClass = isWithinRange ? 'in-range' : 'out-of-range';
-        const rangeText = isWithinRange ? 
-            '500m 이내' : 
-            '500m 초과';
-        
         card.innerHTML = `
             <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
                 ${isCreator ? '<div class="user-created-badge">등록</div>' : ''}
-                <div class="distance-badge ${rangeClass}">${distanceText}</div>
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
@@ -1342,9 +1045,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-menu">
                     <i class="fas fa-utensils"></i>
                     ${restaurant.menu.split(',')[0]} 외
-                </div>
-                <div class="range-info ${rangeClass}">
-                    <i class="fas fa-walking"></i> ${rangeText}
                 </div>
                 <div class="card-actions">
                     <button class="card-action-btn like-btn ${isLiked ? 'active' : ''}" title="좋아요">
@@ -1531,118 +1231,6 @@ document.addEventListener('DOMContentLoaded', function() {
             visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
-        }
-        
-        /* 맛집 마커 스타일 */
-        .restaurant-marker {
-            padding: 6px 10px;
-            background-color: white;
-            border-radius: 4px;
-            border: 2px solid #e94057;
-            color: #333;
-            font-weight: 500;
-            font-size: 12px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            white-space: nowrap;
-            position: relative;
-        }
-        
-        .restaurant-marker:after {
-            content: '';
-            position: absolute;
-            bottom: -7px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 6px solid white;
-        }
-        
-        .restaurant-marker-name {
-            font-size: 12px;
-            margin-bottom: 3px;
-        }
-        
-        .restaurant-marker-category {
-            font-size: 10px;
-            color: #777;
-        }
-        
-        .marker-icon {
-            color: #e94057;
-            margin-right: 3px;
-        }
-        
-        /* 연성대학교 마커 스타일 */
-        .university-marker {
-            padding: 6px 10px;
-            background-color: white;
-            border-radius: 4px;
-            border: 2px solid #3d5af1;
-            color: #333;
-            font-weight: 500;
-            font-size: 12px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            white-space: nowrap;
-            position: relative;
-        }
-        
-        .university-marker:after {
-            content: '';
-            position: absolute;
-            bottom: -7px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 6px solid white;
-        }
-        
-        .university-marker-name {
-            font-size: 12px;
-            margin-bottom: 3px;
-        }
-        
-        .marker-icon-university {
-            color: #3d5af1;
-            margin-right: 3px;
-        }
-        
-        /* 거리 및 범위 정보 스타일 */
-        .distance-badge {
-            position: absolute;
-            bottom: 15px;
-            left: 15px;
-            padding: 4px 8px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border-radius: 50px;
-            font-size: 0.75rem;
-        }
-        
-        .range-info {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-        }
-        
-        .in-range {
-            color: #22cc88;
-        }
-        
-        .out-of-range {
-            color: #e94057;
-        }
-        
-        /* 맛집 등록 모달에서 지도 관련 요소 숨김 */
-        #map-container, #naver-map, .map-instructions, .location-input-container button {
-            display: none !important;
         }
     `;
     document.head.appendChild(additionalStyle);
@@ -1844,91 +1432,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurantsListSection.classList.remove('hidden');
                 selectedRestaurant = null;
             }
-            
-            // 범위 내 음식점 마커 업데이트
-            if (naverMap) {
-                showRestaurantsInRadius();
-            }
         }
     };
-
-    // 지도에서 카테고리 선택에 따른 맛집 필터링 기능 추가
-    if (document.getElementById('campus-map-panel')) {
-        // 캠퍼스 지도 패널 토글 기능
-        const toggleCampusMapPanel = function() {
-            const campusMapPanel = document.getElementById('campus-map-panel');
-            campusMapPanel.classList.toggle('hidden');
-            mobileMenu.style.display = 'none';
-            
-            // 패널이 열릴 때 캠퍼스 지도 초기화
-            if (!campusMapPanel.classList.contains('hidden')) {
-                // 약간의 지연을 주어 패널이 완전히 표시된 후 지도 초기화
-                setTimeout(() => {
-                    if (document.getElementById('campus-map')) {
-                        naverMap = new naver.maps.Map('campus-map', {
-                            center: defaultCenter,
-                            zoom: 15,
-                            zoomControl: true,
-                            zoomControlOptions: {
-                                position: naver.maps.Position.TOP_RIGHT
-                            }
-                        });
-                        
-                        // 연성대학교 위치 마커 (중심점)
-                        const universityMarker = new naver.maps.Marker({
-                            position: defaultCenter,
-                            map: naverMap,
-                            icon: {
-                                content: `<div class="university-marker">
-                                    <div class="university-marker-name">연성대학교</div>
-                                    <i class="fas fa-university marker-icon-university"></i>
-                                </div>`,
-                                anchor: new naver.maps.Point(15, 30)
-                            }
-                        });
-                        
-                        // 걸어서 500m 범위 원 표시
-                        walkingCircle = new naver.maps.Circle({
-                            map: naverMap,
-                            center: defaultCenter,
-                            radius: walkingRadius,
-                            strokeColor: '#5347AA',
-                            strokeOpacity: 0.6,
-                            strokeWeight: 2,
-                            fillColor: '#5347AA',
-                            fillOpacity: 0.1
-                        });
-                        
-                        // 범위 내 음식점 표시
-                        showRestaurantsInRadius();
-                    }
-                }, 300);
-            }
-        };
-        
-        // 캠퍼스 지도 버튼 이벤트 리스너
-        document.getElementById('show-campus-map-btn').addEventListener('click', toggleCampusMapPanel);
-        document.getElementById('mobile-campus-map-btn').addEventListener('click', toggleCampusMapPanel);
-        document.getElementById('close-campus-map').addEventListener('click', toggleCampusMapPanel);
-        
-        // 지도 카테고리 필터 버튼 이벤트 리스너
-        const mapFilterButtons = document.querySelectorAll('.map-filter-btn');
-        mapFilterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                mapCurrentCategory = this.dataset.category;
-                
-                // 활성화된 버튼 스타일 변경
-                mapFilterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                
-                // 지도의 음식점 마커 새로고침
-                showRestaurantsInRadius();
-            });
-        });
-    }
-    
-    // 지도 기능 초기화
-    initializeMap();
 
     // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
     refreshRestaurantsList();
