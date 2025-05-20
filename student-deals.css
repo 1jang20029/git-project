@@ -1338,31 +1338,3 @@ button {
     color: var(--primary-color);
     filter: grayscale(0) opacity(1);
 }
-
-/* 수정하기/삭제하기 버튼의 텍스트가 한 줄로 유지되도록 설정 */
-.action-btn, .edit-btn, .delete-btn, #edit-restaurant-btn, #delete-restaurant-btn {
-    white-space: nowrap !important;
-    width: auto !important;
-    flex: 1 1 auto !important;
-}
-
-/* 더 작은 화면에서 버튼 스타일 최적화 */
-@media (max-width: 768px) {
-    .detail-admin-buttons {
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    
-    .action-btn, .edit-btn, .delete-btn, #edit-restaurant-btn, #delete-restaurant-btn {
-        padding: 10px 15px !important;
-        font-size: 0.9rem !important;
-        text-align: center !important;
-        justify-content: center !important;
-    }
-    
-    .action-btn i, .edit-btn i, .delete-btn i {
-        margin-right: 5px;
-    }
-}
