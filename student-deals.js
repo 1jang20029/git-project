@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
         floatingButton.remove();
         console.log('파란색 원형 3 버튼이 제거되었습니다.');
     }
+    
+    // 네이버 지도 관련 변수
+    let naverMap = null;
+    let currentMarker = null;
+    let defaultCenter = new naver.maps.LatLng(37.3956, 126.9567); // 안양시 기본 좌표 (연성대 근처)
 
     // 초기 데이터 - 모든 값을 0으로 초기화
     const restaurantsData = [
@@ -177,6 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
             restaurant.likes = likesData !== null ? parseInt(likesData) : 0;
             restaurant.stars = starsData !== null ? parseInt(starsData) : 0;
             restaurant.dislikes = dislikesData !== null ? parseInt(dislikesData) : 0;
+            
+            // 좌표 데이터가 없다면 기본값 설정
+            if (!restaurant.latitude) restaurant.latitude = 37.3956; // 연성대 기본 좌표
+            if (!restaurant.longitude) restaurant.longitude = 126.9567; // 연성대 기본 좌표
         });
         
         return restaurants;
@@ -286,6 +295,115 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonDiv.innerHTML = editDeleteButtonsHtml;
             // 기존 elements 뒤에 추가
             detailContent.appendChild(buttonDiv);
+        }
+    }
+    
+    // 지도 초기화 함수
+    function initializeMap() {
+        if (document.getElementById('naver-map')) {
+            naverMap = new naver.maps.Map('naver-map', {
+                center: defaultCenter,
+                zoom: 15,
+                zoomControl: true,
+                zoomControlOptions: {
+                    position: naver.maps.Position.TOP_RIGHT
+                }
+            });
+            
+            // 지도 클릭 이벤트
+            naver.maps.Event.addListener(naverMap, 'click', function(e) {
+                setMarkerPosition(e.coord);
+            });
+            
+            // 초기 마커 생성
+            currentMarker = new naver.maps.Marker({
+                position: defaultCenter,
+                map: naverMap,
+                icon: {
+                    content: '<div class="marker-info">위치를 선택하세요</div>',
+                    anchor: new naver.maps.Point(90, 33)
+                }
+            });
+            
+            // 입력된 좌표가 있다면 마커 위치 설정
+            const lat = document.getElementById('restaurant-latitude').value;
+            const lng = document.getElementById('restaurant-longitude').value;
+            if (lat && lng) {
+                const position = new naver.maps.LatLng(lat, lng);
+                setMarkerPosition(position);
+            }
+        }
+    }
+
+    // 마커 위치 설정 함수
+    function setMarkerPosition(position) {
+        // 숨겨진 필드에 좌표 값 저장
+        document.getElementById('restaurant-latitude').value = position.y;
+        document.getElementById('restaurant-longitude').value = position.x;
+        
+        // 주소 가져오기
+        naver.maps.Service.reverseGeocode({
+            location: new naver.maps.LatLng(position.y, position.x),
+        }, function(status, response) {
+            let address = '알 수 없는 주소';
+            
+            if (status === naver.maps.Service.Status.OK) {
+                const result = response.result;
+                const items = result.items;
+                address = items[0].address;
+            }
+            
+            // 마커 업데이트
+            currentMarker.setPosition(position);
+            currentMarker.setIcon({
+                content: `<div class="marker-info">${address}</div>`,
+                anchor: new naver.maps.Point(120, 33)
+            });
+            
+            // 입력 필드에 주소 표시
+            document.getElementById('restaurant-location').value = address;
+        });
+    }
+
+    // 위치 검색 함수
+    function searchLocation() {
+        const address = document.getElementById('restaurant-location').value;
+        if (!address) return;
+        
+        naver.maps.Service.geocode({
+            query: address
+        }, function(status, response) {
+            if (status === naver.maps.Service.Status.OK) {
+                const result = response.v2.addresses[0];
+                if (result) {
+                    const position = new naver.maps.LatLng(result.y, result.x);
+                    naverMap.setCenter(position);
+                    setMarkerPosition(position);
+                } else {
+                    alert('검색 결과가 없습니다. 다른 주소를 입력해보세요.');
+                }
+            } else {
+                alert('주소 검색에 실패했습니다. 다시 시도해주세요.');
+            }
+        });
+    }
+
+    // 모달이 열릴 때 지도 초기화
+    function initializeMapOnModalOpen() {
+        const modalObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.target.classList && 
+                    !mutation.target.classList.contains('hidden') && 
+                    mutation.target.id === 'add-restaurant-modal') {
+                    // 약간의 지연을 주어 모달이 완전히 표시된 후 지도 초기화
+                    setTimeout(initializeMap, 300);
+                }
+            });
+        });
+        
+        const addRestaurantModal = document.getElementById('add-restaurant-modal');
+        if (addRestaurantModal) {
+            modalObserver.observe(addRestaurantModal, { attributes: true, attributeFilter: ['class'] });
         }
     }
     
@@ -414,6 +532,10 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadedImagePreviews = [];
         previewContainer.classList.add('hidden');
         imagePreviews.innerHTML = '';
+        
+        // 좌표 초기화
+        document.getElementById('restaurant-latitude').value = '';
+        document.getElementById('restaurant-longitude').value = '';
     };
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
@@ -421,6 +543,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // floating-add-btn 이벤트 리스너는 제거했지만 다른 버튼들의 기능은 유지합니다
     document.getElementById('close-modal').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('cancel-add').addEventListener('click', toggleAddRestaurantModal);
+    
+    // 위치 검색 버튼 이벤트 리스너
+    document.getElementById('search-location-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        searchLocation();
+    });
+
+    // 위치 입력 필드에서 엔터키 눌렀을 때 검색
+    document.getElementById('restaurant-location').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchLocation();
+        }
+    });
     
     // ===== 맛집 등록/수정 버튼 이벤트 =====
     document.getElementById('submit-add').addEventListener('click', function() {
@@ -431,6 +567,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const restaurantHours = document.getElementById('restaurant-hours').value;
         const restaurantMenu = document.getElementById('restaurant-menu').value;
         const restaurantFeatures = document.getElementById('restaurant-features').value;
+        const restaurantLatitude = document.getElementById('restaurant-latitude').value;
+        const restaurantLongitude = document.getElementById('restaurant-longitude').value;
         
         // 모든 필드가 입력되었는지 확인
         if (!restaurantName || !restaurantCategory || !restaurantLocation || 
@@ -442,6 +580,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // 이미지가 하나 이상 있는지 확인
         if (uploadedImagePreviews.length === 0) {
             alert('최소 1개 이상의 이미지를 업로드해주세요.');
+            return;
+        }
+        
+        // 좌표가 지정되었는지 확인
+        if (!restaurantLatitude || !restaurantLongitude) {
+            alert('지도에서 정확한 위치를 선택해주세요.');
             return;
         }
 
@@ -457,6 +601,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurants[restaurantIndex].menu = restaurantMenu;
                 restaurants[restaurantIndex].features = restaurantFeatures;
                 restaurants[restaurantIndex].images = [...uploadedImagePreviews];
+                restaurants[restaurantIndex].latitude = parseFloat(restaurantLatitude);
+                restaurants[restaurantIndex].longitude = parseFloat(restaurantLongitude);
                 restaurants[restaurantIndex].updatedAt = new Date().toISOString();
                 
                 // 수정은 생성한 사용자만 가능
@@ -492,6 +638,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 stars: 0,
                 dislikes: 0,
                 images: [...uploadedImagePreviews],
+                latitude: parseFloat(restaurantLatitude),
+                longitude: parseFloat(restaurantLongitude),
                 createdBy: CURRENT_USER_ID,
                 createdAt: new Date().toISOString()
             };
@@ -752,6 +900,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('restaurant-hours').value = selectedRestaurant.hours;
                 document.getElementById('restaurant-menu').value = selectedRestaurant.menu;
                 document.getElementById('restaurant-features').value = selectedRestaurant.features;
+                
+                // 좌표 설정
+                document.getElementById('restaurant-latitude').value = selectedRestaurant.latitude || '';
+                document.getElementById('restaurant-longitude').value = selectedRestaurant.longitude || '';
                 
                 // 이미지 미리보기 설정
                 uploadedImagePreviews = [...selectedRestaurant.images];
@@ -1434,6 +1586,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
+    
+    // 지도 기능 초기화
+    initializeMapOnModalOpen();
 
     // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
     refreshRestaurantsList();
