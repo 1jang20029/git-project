@@ -502,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 로컬 스토리지에 저장
             saveRestaurantsToStorage();
             
-            alert(`'${selectedRestaurant.name}' 등록되었습니다!`);
+            alert('새 맛집이 등록되었습니다!');
         }
         
         // 폼 초기화
@@ -811,7 +811,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         saveUserInteractions();
                         
                         // 알림 표시
-                        alert(`'${selectedRestaurant.name}' 맛집 등록에서 삭제 완료되었습니다.`);
+                        alert(`'${selectedRestaurant.name}' 맛집 등록에서 삭제완료되었습니다.`);
                         
                         // 목록으로 돌아가기
                         restaurantDetail.classList.add('hidden');
