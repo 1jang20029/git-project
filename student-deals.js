@@ -997,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isDisliked = userInteractions.dislikedRestaurants.includes(restaurant.id);
         
         card.innerHTML = `
-            <div class="card-image-container">
+             <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
