@@ -502,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 로컬 스토리지에 저장
             saveRestaurantsToStorage();
             
-            alert('새 맛집이 등록되었습니다!');
+            alert(`'${selectedRestaurant.name}' 등록되었습니다!`);
         }
         
         // 폼 초기화
