@@ -1020,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
-                ${isCreator ? '<div class="user-created-badge">내가 등록</div>' : ''}
+                ${isCreator ? '<div class="user-created-badge">등록</div>' : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
