@@ -1116,23 +1116,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // UI 업데이트
             updateRestaurantInList(restaurantId);
         });
-        
-        dislikeButton.addEventListener('click', function(e) {
+
+
+        // starButton(추천해요) 이벤트 핸들러 추가
+        starButton.addEventListener('click', function(e) {
             e.stopPropagation();
             
-            // 별로예요 토글
+            // 추천해요 토글
             const restaurantId = restaurant.id;
-            const dislikedIndex = userInteractions.dislikedRestaurants.indexOf(restaurantId);
+            const starredIndex = userInteractions.starredRestaurants.indexOf(restaurantId);
             
-            if (dislikedIndex !== -1) {
-                // 이미 별로예요를 누른 상태에서 다시 클릭한 경우
-                userInteractions.dislikedRestaurants.splice(dislikedIndex, 1);
-                restaurant.dislikes--;
+            if (starredIndex !== -1) {
+                // 이미 추천해요를 누른 상태에서 다시 클릭한 경우
+                userInteractions.starredRestaurants.splice(starredIndex, 1);
+                restaurant.stars = Math.max(0, restaurant.stars - 1); // 음수 방지
                 this.classList.remove('active');
             } else {
-                // 처음 별로예요를 누른 경우
-                userInteractions.dislikedRestaurants.push(restaurantId);
-                restaurant.dislikes++;
+                // 처음 추천해요를 누른 경우
+                userInteractions.starredRestaurants.push(restaurantId);
+                restaurant.stars = (restaurant.stars || 0) + 1;
                 this.classList.add('active');
             }
             
