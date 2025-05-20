@@ -179,13 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveUserInteractions = function() {
         localStorage.setItem(`userInteractions_${CURRENT_USER_ID}`, JSON.stringify(userInteractions));
     };
-    
-    // 인기 맛집 가져오기 (좋아요 기준 상위 3개)
-    const getPopularRestaurants = function() {
-        return [...restaurants]
-            .sort((a, b) => b.likes - a.likes)
-            .slice(0, 3);
-    };
 
     // ===== 전역 상태 =====
     let restaurants = loadRestaurantsFromStorage();
