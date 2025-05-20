@@ -9,13 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // 네이버 지도 관련 변수
     let naverMap = null;
     let currentMarker = null;
+    let defaultCenter = new naver.maps.LatLng(37.3956, 126.9567); // 안양시 기본 좌표 (연성대 근처)
+    let restaurantMarkers = []; // 음식점 마커 저장 배열
+    let oneHourCircle = null; // 1시간 범위 원
     
-    // 연성대학교 위치 (기준점)
-    const yeongsungUniversity = new naver.maps.LatLng(37.3956, 126.9567); // 연성대학교 좌표
-    let defaultCenter = yeongsungUniversity;
-    
-    // 도보 제한 시간 (분)
-    const MAX_WALKING_TIME = 30; // 편도 30분 (왕복 1시간)
+    // 연성대학교 정확한 좌표
+    const yeonsungUniversityLocation = new naver.maps.LatLng(37.3956, 126.9567);
 
     // 초기 데이터 - 모든 값을 0으로 초기화
     const restaurantsData = [
@@ -257,7 +256,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let uploadedImagePreviews = []; // 파일 업로드 미리보기 URL 저장
     let isEditMode = false; // 수정 모드 여부
     let editingRestaurantId = null; // 현재 수정 중인 맛집 ID
-    let isInWalkingRange = false; // 도보 범위 내 여부
 
     // ===== 요소 참조 =====
     const restaurantsGrid = document.getElementById('restaurants-grid');
@@ -305,36 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 도보 시간 계산 함수
-    function calculateWalkingTime(start, end) {
-        return new Promise((resolve, reject) => {
-            // 네이버 Direction 서비스 초기화
-            const directions = new naver.maps.Direction();
-            
-            // 경로 탐색 옵션 설정 (도보 경로)
-            directions.setOptions({
-                startPoint: start,
-                endPoint: end,
-                travelMode: naver.maps.Direction.TravelMode.WALKING,
-                onSuccess: function(result) {
-                    // 결과에서 소요 시간 추출 (초 단위)
-                    const routes = result.route;
-                    if (routes && routes.length > 0) {
-                        const duration = routes[0][0].duration; // 초 단위
-                        resolve(duration / 60); // 분 단위로 변환하여 반환
-                    } else {
-                        reject('경로를 찾을 수 없습니다.');
-                    }
-                },
-                onFailure: function(error) {
-                    reject('경로 탐색 실패: ' + error.message);
-                }
-            });
-            
-            directions.calculate();
-        });
-    }
-    
     // 지도 초기화 함수
     function initializeMap() {
         if (document.getElementById('naver-map')) {
@@ -344,16 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 zoomControl: true,
                 zoomControlOptions: {
                     position: naver.maps.Position.TOP_RIGHT
-                }
-            });
-            
-            // 연성대학교 마커 추가
-            new naver.maps.Marker({
-                position: yeongsungUniversity,
-                map: naverMap,
-                icon: {
-                    content: '<div class="marker-info school-marker">연성대학교</div>',
-                    anchor: new naver.maps.Point(90, 33)
                 }
             });
             
@@ -380,27 +338,117 @@ document.addEventListener('DOMContentLoaded', function() {
                 setMarkerPosition(position);
             }
             
-            // 30분 도보 범위 원 표시
-            showWalkingRangeCircle();
+            // 연성대학교 중심으로 왕복 1시간 거리 범위 표시 (차량 기준 약 25km 반경)
+            showOneHourDistanceCircle();
+            
+            // 범위 내 음식점 표시
+            searchRestaurantsInRange();
         }
     }
     
-    // 도보 범위 원 표시 함수
-    function showWalkingRangeCircle() {
-        // 대략적인 30분 도보 거리 (미터 단위, 평균 도보 속도 기준)
-        const walkingDistanceFor30Min = 2500; // 약 2.5km
+    // 연성대학교 중심으로 왕복 1시간 거리 범위 표시 함수
+    function showOneHourDistanceCircle() {
+        // 이미 원이 존재하면 제거
+        if (oneHourCircle) {
+            oneHourCircle.setMap(null);
+        }
         
-        // 원 추가
-        new naver.maps.Circle({
+        // 왕복 1시간 거리는 차량 기준 약 25km로 설정 (편도 30분 기준)
+        oneHourCircle = new naver.maps.Circle({
             map: naverMap,
-            center: yeongsungUniversity,
-            radius: walkingDistanceFor30Min,
-            strokeColor: '#5B76FF',
+            center: yeonsungUniversityLocation,
+            radius: 25000, // 25km (미터 단위)
+            strokeColor: '#5347AA',
             strokeOpacity: 0.5,
             strokeWeight: 2,
-            fillColor: '#5B76FF',
+            fillColor: '#5347AA',
             fillOpacity: 0.1
         });
+        
+        // 연성대학교 위치 표시
+        new naver.maps.Marker({
+            position: yeonsungUniversityLocation,
+            map: naverMap,
+            icon: {
+                content: '<div class="university-marker">연성대학교</div>',
+                anchor: new naver.maps.Point(60, 15)
+            }
+        });
+        
+        // 지도 중심과 줌 레벨 조정
+        naverMap.setCenter(yeonsungUniversityLocation);
+        naverMap.setZoom(11); // 더 넓은 영역이 보이도록 줌 레벨 조정
+    }
+    
+    // 범위 내 음식점 검색 및 표시 함수
+    function searchRestaurantsInRange() {
+        // 기존 마커 제거
+        clearRestaurantMarkers();
+        
+        // 네이버 지도 API를 사용하여 음식점 검색
+        const ps = new naver.maps.Service.Places();
+        
+        // 검색 반경 (25km)
+        const searchRadius = 25000;
+        
+        // 음식점 검색 요청
+        ps.categorySearch({
+            query: '음식점',
+            location: yeonsungUniversityLocation,
+            radius: searchRadius,
+            page: 1,
+            size: 100 // 최대 검색 결과 수
+        }, function(status, response) {
+            if (status === naver.maps.Service.Status.OK) {
+                const places = response.items;
+                
+                // 검색된 음식점을 지도에 마커로 표시
+                places.forEach(function(place) {
+                    const markerPosition = new naver.maps.LatLng(place.y, place.x);
+                    
+                    // 마커 생성
+                    const marker = new naver.maps.Marker({
+                        position: markerPosition,
+                        map: naverMap,
+                        icon: {
+                            content: '<div class="restaurant-marker"><i class="fas fa-utensils"></i></div>',
+                            anchor: new naver.maps.Point(10, 10)
+                        }
+                    });
+                    
+                    // 마커 클릭 이벤트
+                    naver.maps.Event.addListener(marker, 'click', function() {
+                        const infoWindow = new naver.maps.InfoWindow({
+                            content: `
+                                <div class="info-window">
+                                    <h3>${place.name}</h3>
+                                    <p>${place.address}</p>
+                                    <p>${place.category}</p>
+                                </div>
+                            `
+                        });
+                        
+                        infoWindow.open(naverMap, marker);
+                    });
+                    
+                    // 마커 배열에 추가
+                    restaurantMarkers.push(marker);
+                });
+                
+                // 검색 결과를 안내
+                alert(`연성대학교 반경 25km 내에서 ${places.length}개의 음식점을 찾았습니다.`);
+            } else {
+                alert('음식점 검색에 실패했습니다.');
+            }
+        });
+    }
+    
+    // 음식점 마커 제거 함수
+    function clearRestaurantMarkers() {
+        restaurantMarkers.forEach(function(marker) {
+            marker.setMap(null);
+        });
+        restaurantMarkers = [];
     }
 
     // 마커 위치 설정 함수
@@ -421,47 +469,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 address = items[0].address;
             }
             
-            // 도보 시간 계산
-            calculateWalkingTime(yeongsungUniversity, position)
-                .then(walkingTime => {
-                    // 도보 시간이 MAX_WALKING_TIME 이내인지 확인
-                    isInWalkingRange = walkingTime <= MAX_WALKING_TIME;
-                    
-                    // 마커 업데이트
-                    currentMarker.setPosition(position);
-                    
-                    let markerContent;
-                    if (isInWalkingRange) {
-                        markerContent = `<div class="marker-info">${address}<br>연성대에서 도보 약 ${Math.round(walkingTime)}분</div>`;
-                    } else {
-                        markerContent = `<div class="marker-info warning">${address}<br>연성대에서 도보 약 ${Math.round(walkingTime)}분 (범위 초과)</div>`;
-                        
-                        // 사용자에게 알림
-                        alert(`선택한 위치는 연성대학교에서 도보로 약 ${Math.round(walkingTime)}분 거리입니다.\n왕복 1시간(편도 30분) 이내 범위만 등록 가능합니다.`);
-                    }
-                    
-                    currentMarker.setIcon({
-                        content: markerContent,
-                        anchor: new naver.maps.Point(120, 60)
-                    });
-                    
-                    // 입력 필드에 주소 표시
-                    document.getElementById('restaurant-location').value = address;
-                })
-                .catch(error => {
-                    console.error('도보 시간 계산 오류:', error);
-                    alert('도보 시간을 계산할 수 없습니다. 다시 시도해주세요.');
-                    
-                    // 기본 마커 업데이트
-                    currentMarker.setPosition(position);
-                    currentMarker.setIcon({
-                        content: `<div class="marker-info">${address}</div>`,
-                        anchor: new naver.maps.Point(120, 33)
-                    });
-                    
-                    document.getElementById('restaurant-location').value = address;
-                    isInWalkingRange = false; // 확인할 수 없으면 기본적으로 false로 설정
-                });
+            // 마커 업데이트
+            currentMarker.setPosition(position);
+            currentMarker.setIcon({
+                content: `<div class="marker-info">${address}</div>`,
+                anchor: new naver.maps.Point(120, 33)
+            });
+            
+            // 입력 필드에 주소 표시
+            document.getElementById('restaurant-location').value = address;
         });
     }
 
@@ -636,9 +652,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // 좌표 초기화
         document.getElementById('restaurant-latitude').value = '';
         document.getElementById('restaurant-longitude').value = '';
-        
-        // 도보 범위 내 여부 초기화
-        isInWalkingRange = false;
     };
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
@@ -689,12 +702,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // 좌표가 지정되었는지 확인
         if (!restaurantLatitude || !restaurantLongitude) {
             alert('지도에서 정확한 위치를 선택해주세요.');
-            return;
-        }
-        
-        // 도보 범위 내인지 확인
-        if (!isInWalkingRange) {
-            alert('선택한 위치는 연성대학교에서 도보 왕복 1시간(편도 30분) 이내 범위가 아닙니다.\n범위 내에 있는 맛집만 등록할 수 있습니다.');
             return;
         }
 
@@ -1048,17 +1055,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 모달 열기
                 addRestaurantModal.classList.remove('hidden');
-                
-                // 도보 범위 내인지 확인
-                const selectedPosition = new naver.maps.LatLng(selectedRestaurant.latitude, selectedRestaurant.longitude);
-                calculateWalkingTime(yeongsungUniversity, selectedPosition)
-                    .then(walkingTime => {
-                        isInWalkingRange = walkingTime <= MAX_WALKING_TIME;
-                    })
-                    .catch(error => {
-                        console.error('도보 시간 계산 오류:', error);
-                        isInWalkingRange = false;
-                    });
             } else {
                 alert('본인이 등록한 맛집만 수정할 수 있습니다.');
             }
@@ -1287,24 +1283,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // String으로 변환하여 정확한 비교
         const isCreator = String(restaurant.createdBy) === String(CURRENT_USER_ID);
         
-        // 연성대에서의 도보 시간 계산 및 표시
-        let walkingTimeHtml = '';
-        if (restaurant.latitude && restaurant.longitude) {
-            const position = new naver.maps.LatLng(restaurant.latitude, restaurant.longitude);
-            calculateWalkingTime(yeongsungUniversity, position)
-                .then(walkingTime => {
-                    const walkingTimeEl = card.querySelector('.walking-time');
-                    if (walkingTimeEl) {
-                        walkingTimeEl.textContent = `연성대에서 도보 약 ${Math.round(walkingTime)}분`;
-                    }
-                })
-                .catch(error => {
-                    console.error('도보 시간 계산 오류:', error);
-                });
-            
-            walkingTimeHtml = `<div class="walking-time">거리 계산 중...</div>`;
-        }
-        
         card.innerHTML = `
             <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
@@ -1332,7 +1310,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="fas fa-map-marker-alt"></i>
                     ${restaurant.location}
                 </div>
-                ${walkingTimeHtml}
                 <div class="card-menu">
                     <i class="fas fa-utensils"></i>
                     ${restaurant.menu.split(',')[0]} 외
@@ -1524,34 +1501,47 @@ document.addEventListener('DOMContentLoaded', function() {
             pointer-events: none !important;
         }
         
-        /* 연성대 마커 스타일 */
-        .school-marker {
-            background-color: #ff9800 !important;
-            color: white !important;
-            font-weight: bold !important;
+        /* 연성대학교 마커 스타일 */
+        .university-marker {
+            background-color: #3d5af1;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
         }
         
-        /* 도보 시간 정보 스타일 */
-        .walking-time {
-            font-size: 0.85rem;
-            color: var(--primary-color);
-            margin-bottom: 8px;
+        /* 음식점 마커 스타일 */
+        .restaurant-marker {
+            background-color: #e94057;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
-        .walking-time:before {
-            content: "\\f554";
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            margin-right: 5px;
+        /* 정보창 스타일 */
+        .info-window {
+            padding: 10px;
+            max-width: 250px;
         }
         
-        /* 범위 초과 경고 스타일 */
-        .marker-info.warning {
-            background-color: #fff0f0 !important;
-            color: #e94057 !important;
-            border: 1px solid #e94057 !important;
+        .info-window h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .info-window p {
+            font-size: 12px;
+            margin-bottom: 3px;
+            color: #777;
         }
     `;
     document.head.appendChild(additionalStyle);
