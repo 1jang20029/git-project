@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="student-deals.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction"></script>
 </head>
 <body>
     <!-- 다크모드 토글 -->
@@ -290,15 +289,6 @@
                         <i class="fas fa-thumbs-down"></i> 별로예요
                     </button>
                 </div>
-                
-                <div class="detail-admin-buttons">
-                    <button id="edit-restaurant-btn" class="action-btn edit-btn">
-                        <i class="fas fa-edit"></i> 수정하기
-                    </button>
-                    <button id="delete-restaurant-btn" class="action-btn delete-btn">
-                        <i class="fas fa-trash"></i> 삭제하기
-                    </button>
-                </div>
             </div>
         </section>
     </main>
@@ -342,21 +332,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="restaurant-location">위치</label>
-                            <div class="location-input-container">
-                                <input type="text" id="restaurant-location" placeholder="위치를 입력하세요" required>
-                                <button type="button" id="search-location-btn">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                            <div id="map-container" class="map-container">
-                                <div id="naver-map" style="width:100%;height:300px;"></div>
-                                <div class="map-instructions">
-                                    <p><i class="fas fa-info-circle"></i> 지도를 클릭하여 정확한 위치를 지정하세요</p>
-                                </div>
-                            </div>
-                            <!-- 숨겨진 좌표 입력 필드 -->
-                            <input type="hidden" id="restaurant-latitude">
-                            <input type="hidden" id="restaurant-longitude">
+                            <input type="text" id="restaurant-location" placeholder="위치를 입력하세요" required>
                         </div>
                         
                         <div class="form-group">
@@ -406,6 +382,6 @@
         <p>© 2025 연성대 맛집 탐방 가이드 | 모든 권리 보유</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="student-deals.js"></script>
 </body>
 </html>
