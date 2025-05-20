@@ -150,19 +150,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 맛집 데이터 불러오기 (모든 사용자가 공유)
     const loadRestaurantsFromStorage = function() {
-        // 기본 맛집 데이터 불러오기
         const storedData = localStorage.getItem('restaurants');
         let restaurants = storedData ? JSON.parse(storedData) : restaurantsData;
         
-        // 각 맛집의 좋아요 수를 별도로 불러와 업데이트
+        // 각 맛집의 좋아요/별점/싫어요 수를 별도로 불러와 업데이트
         restaurants.forEach(restaurant => {
-            // 각 맛집의 좋아요 수를 별도 키에서 불러오기
             const likesKey = `restaurantLikes_${restaurant.id}`;
-            const likesData = localStorage.getItem(likesKey);
+            const starsKey = `restaurantStars_${restaurant.id}`;
+            const dislikesKey = `restaurantDislikes_${restaurant.id}`;
             
-            if (likesData !== null) {
-                restaurant.likes = parseInt(likesData);
-            }
+            const likesData = localStorage.getItem(likesKey);
+            const starsData = localStorage.getItem(starsKey);
+            const dislikesData = localStorage.getItem(dislikesKey);
+            
+            restaurant.likes = likesData !== null ? parseInt(likesData) : 0;
+            restaurant.stars = starsData !== null ? parseInt(starsData) : 0;
+            restaurant.dislikes = dislikesData !== null ? parseInt(dislikesData) : 0;
         });
         
         return restaurants;
@@ -171,19 +174,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 맛집 데이터 저장하기 (모든 사용자가 공유)
     const saveRestaurantsToStorage = function() {
-        // 기본 맛집 정보 저장 (좋아요 수는 제외)
-        const restaurantsToSave = restaurants.map(restaurant => {
-            // 좋아요 수는 별도로 저장하므로 복사본에서 제외
-            const { likes, ...rest } = restaurant;
-            return rest;
-        });
+        // 기본 맛집 정보 저장 (좋아요/별점/싫어요 수는 별도로 저장)
+        localStorage.setItem('restaurants', JSON.stringify(restaurants));
         
-        localStorage.setItem('restaurants', JSON.stringify(restaurantsToSave));
-        
-        // 각 맛집의 좋아요 수를 별도로 저장
+        // 각 맛집의 좋아요/별점/싫어요 수를 별도로 저장
         restaurants.forEach(restaurant => {
             const likesKey = `restaurantLikes_${restaurant.id}`;
-            localStorage.setItem(likesKey, restaurant.likes.toString());
+            const starsKey = `restaurantStars_${restaurant.id}`;
+            const dislikesKey = `restaurantDislikes_${restaurant.id}`;
+            
+            // 값이 undefined인 경우 0으로 저장
+            const likes = restaurant.likes || 0;
+            const stars = restaurant.stars || 0;
+            const dislikes = restaurant.dislikes || 0;
+            
+            localStorage.setItem(likesKey, likes.toString());
+            localStorage.setItem(starsKey, stars.toString());
+            localStorage.setItem(dislikesKey, dislikes.toString());
         });
     };
     
@@ -818,18 +825,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const restaurantId = selectedRestaurant.id;
             const likedIndex = userInteractions.likedRestaurants.indexOf(restaurantId);
             
-            // 사용자의 이전 좋아요 상태 확인 (true 또는 false)
-            const wasLiked = likedIndex !== -1;
-            
-            if (wasLiked) {
-                // 이미 좋아요를 누른 상태에서 다시 클릭한 경우 - 좋아요 취소
+            if (likedIndex !== -1) {
+                // 이미 좋아요를 누른 상태에서 다시 클릭한 경우 - 현재 사용자의 좋아요만 취소
                 userInteractions.likedRestaurants.splice(likedIndex, 1);
-                selectedRestaurant.likes--;
+                selectedRestaurant.likes = Math.max(0, selectedRestaurant.likes - 1); // 음수 방지
                 this.classList.remove('active');
             } else {
-                // 처음 좋아요를 누른 경우 - 좋아요 추가
+                // 처음 좋아요를 누른 경우 - 현재 사용자의 좋아요 추가
                 userInteractions.likedRestaurants.push(restaurantId);
-                selectedRestaurant.likes++;
+                selectedRestaurant.likes = (selectedRestaurant.likes || 0) + 1;
                 this.classList.add('active');
             }
             
@@ -850,6 +854,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // 추천해요(별점) 버튼 이벤트 리스너 - 계정별로 독립적으로 동작
     document.getElementById('detail-star-btn').addEventListener('click', function() {
         if (selectedRestaurant) {
             // 추천해요 토글
@@ -857,14 +862,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const starredIndex = userInteractions.starredRestaurants.indexOf(restaurantId);
             
             if (starredIndex !== -1) {
-                // 이미 추천해요를 누른 상태에서 다시 클릭한 경우
+                // 이미 추천해요를 누른 상태에서 다시 클릭한 경우 - 현재 사용자의 추천만 취소
                 userInteractions.starredRestaurants.splice(starredIndex, 1);
-                selectedRestaurant.stars--;
+                selectedRestaurant.stars = Math.max(0, selectedRestaurant.stars - 1); // 음수 방지
                 this.classList.remove('active');
             } else {
-                // 처음 추천해요를 누른 경우
+                // 처음 추천해요를 누른 경우 - 현재 사용자의 추천 추가
                 userInteractions.starredRestaurants.push(restaurantId);
-                selectedRestaurant.stars++;
+                selectedRestaurant.stars = (selectedRestaurant.stars || 0) + 1;
                 this.classList.add('active');
             }
             
@@ -882,21 +887,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // 싫어요 버튼 이벤트 리스너 - 계정별로 독립적으로 동작
     document.getElementById('detail-dislike-btn').addEventListener('click', function() {
         if (selectedRestaurant) {
-            // 별로예요 토글
+            // 싫어요 토글
             const restaurantId = selectedRestaurant.id;
             const dislikedIndex = userInteractions.dislikedRestaurants.indexOf(restaurantId);
             
             if (dislikedIndex !== -1) {
-                // 이미 별로예요를 누른 상태에서 다시 클릭한 경우
+                // 이미 싫어요를 누른 상태에서 다시 클릭한 경우 - 현재 사용자의 싫어요만 취소
                 userInteractions.dislikedRestaurants.splice(dislikedIndex, 1);
-                selectedRestaurant.dislikes--;
+                selectedRestaurant.dislikes = Math.max(0, selectedRestaurant.dislikes - 1); // 음수 방지
                 this.classList.remove('active');
             } else {
-                // 처음 별로예요를 누른 경우
+                // 처음 싫어요를 누른 경우 - 현재 사용자의 싫어요 추가
                 userInteractions.dislikedRestaurants.push(restaurantId);
-                selectedRestaurant.dislikes++;
+                selectedRestaurant.dislikes = (selectedRestaurant.dislikes || 0) + 1;
                 this.classList.add('active');
             }
             
@@ -909,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // UI 업데이트
             document.getElementById('detail-dislikes').textContent = selectedRestaurant.dislikes;
             
-            // 목록에 있는 해당 맛집의 별로예요 수도 업데이트
+            // 목록에 있는 해당 맛집의 싫어요 수도 업데이트
             updateRestaurantInList(restaurantId);
         }
     });
@@ -1048,6 +1054,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const starButton = card.querySelector('.star-btn');
         const dislikeButton = card.querySelector('.dislike-btn');
         
+        // 카드의 좋아요 버튼 이벤트
         likeButton.addEventListener('click', function(e) {
             e.stopPropagation();
             
@@ -1055,18 +1062,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const restaurantId = restaurant.id;
             const likedIndex = userInteractions.likedRestaurants.indexOf(restaurantId);
             
-            // 사용자의 이전 좋아요 상태 확인
-            const wasLiked = likedIndex !== -1;
-            
-            if (wasLiked) {
-                // 이미 좋아요를 누른 상태에서 다시 클릭한 경우 - 좋아요 취소
+            if (likedIndex !== -1) {
+                // 이미 좋아요를 누른 상태에서 다시 클릭한 경우
                 userInteractions.likedRestaurants.splice(likedIndex, 1);
-                restaurant.likes--;
+                restaurant.likes = Math.max(0, restaurant.likes - 1);
                 this.classList.remove('active');
             } else {
-                // 처음 좋아요를 누른 경우 - 좋아요 추가
+                // 처음 좋아요를 누른 경우
                 userInteractions.likedRestaurants.push(restaurantId);
-                restaurant.likes++;
+                restaurant.likes = (restaurant.likes || 0) + 1;
                 this.classList.add('active');
             }
             
@@ -1083,22 +1087,23 @@ document.addEventListener('DOMContentLoaded', function() {
             addPopularRestaurantsSection();
         });
         
-        starButton.addEventListener('click', function(e) {
+        // 카드의 싫어요 버튼 이벤트
+        dislikeButton.addEventListener('click', function(e) {
             e.stopPropagation();
             
-            // 추천해요 토글
+            // 싫어요 토글
             const restaurantId = restaurant.id;
-            const starredIndex = userInteractions.starredRestaurants.indexOf(restaurantId);
+            const dislikedIndex = userInteractions.dislikedRestaurants.indexOf(restaurantId);
             
-            if (starredIndex !== -1) {
-                // 이미 추천해요를 누른 상태에서 다시 클릭한 경우
-                userInteractions.starredRestaurants.splice(starredIndex, 1);
-                restaurant.stars--;
+            if (dislikedIndex !== -1) {
+                // 이미 싫어요를 누른 상태에서 다시 클릭한 경우
+                userInteractions.dislikedRestaurants.splice(dislikedIndex, 1);
+                restaurant.dislikes = Math.max(0, restaurant.dislikes - 1);
                 this.classList.remove('active');
             } else {
-                // 처음 추천해요를 누른 경우
-                userInteractions.starredRestaurants.push(restaurantId);
-                restaurant.stars++;
+                // 처음 싫어요를 누른 경우
+                userInteractions.dislikedRestaurants.push(restaurantId);
+                restaurant.dislikes = (restaurant.dislikes || 0) + 1;
                 this.classList.add('active');
             }
             
