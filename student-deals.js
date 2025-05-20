@@ -1087,7 +1087,40 @@ document.addEventListener('DOMContentLoaded', function() {
             addPopularRestaurantsSection();
         });
         
-        // 카드의 싫어요 버튼 이벤트
+        // 추천해요(별표) 버튼 이벤트 핸들러 추가
+        starButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            // 추천해요 토글
+            const restaurantId = restaurant.id;
+            const starredIndex = userInteractions.starredRestaurants.indexOf(restaurantId);
+            
+            if (starredIndex !== -1) {
+                // 이미 추천해요를 누른 상태에서 다시 클릭한 경우
+                userInteractions.starredRestaurants.splice(starredIndex, 1);
+                restaurant.stars = Math.max(0, restaurant.stars - 1); // 음수 방지
+                this.classList.remove('active');
+            } else {
+                // 처음 추천해요를 누른 경우
+                userInteractions.starredRestaurants.push(restaurantId);
+                restaurant.stars = (restaurant.stars || 0) + 1;
+                this.classList.add('active');
+            }
+            
+            // 사용자 상호작용 데이터 저장
+            saveUserInteractions();
+            
+            // 맛집 데이터 저장
+            saveRestaurantsToStorage();
+            
+            // UI 업데이트
+            updateRestaurantInList(restaurantId);
+            
+            // 인기 맛집 섹션 업데이트
+            addPopularRestaurantsSection();
+        });
+        
+        // 싫어요 버튼 이벤트 - 중복 제거하고 하나만 유지
         dislikeButton.addEventListener('click', function(e) {
             e.stopPropagation();
             
@@ -1098,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (dislikedIndex !== -1) {
                 // 이미 싫어요를 누른 상태에서 다시 클릭한 경우
                 userInteractions.dislikedRestaurants.splice(dislikedIndex, 1);
-                restaurant.dislikes = Math.max(0, restaurant.dislikes - 1);
+                restaurant.dislikes = Math.max(0, restaurant.dislikes - 1); // 음수 방지
                 this.classList.remove('active');
             } else {
                 // 처음 싫어요를 누른 경우
@@ -1115,6 +1148,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // UI 업데이트
             updateRestaurantInList(restaurantId);
+            
+            // 인기 맛집 섹션 업데이트
+            addPopularRestaurantsSection();
         });
         
         return card;
