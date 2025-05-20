@@ -5346,7 +5346,7 @@ function loadPopularRestaurants() {
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                     <button class="detail-button" onclick="goToRestaurantPage(${restaurant.id})">상세보기</button>
-                    <div class="restaurant-likes">❤️ ${restaurant.likes}</div>
+                    <div class="restaurant-likes">👍 ${restaurant.likes}</div>
                 </div>
             </div>
         `;
