@@ -5171,7 +5171,7 @@ function loadPopularRestaurants() {
                 stars: 5,
                 dislikes: 0,
                 images: [
-                    'GGgo-yeonsung.jpg'
+                    'images/GGgo-yeonsung.jpg'
                 ]
             },
             {
