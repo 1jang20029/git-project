@@ -987,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function() {
         card.dataset.id = restaurant.id;
         
         // 내가 등록한 맛집에 특별한 클래스 추가
-        if (restaurant.createdBy === CURRENT_USER_ID) {
+        if (restaurant.createdBy === CURRENT_USER_ID && restaurant.createdBy !== 'system') {
             card.classList.add('user-created');
         }
         
@@ -1001,7 +1001,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
-                ${restaurant.createdBy === CURRENT_USER_ID ? '<div class="user-created-badge">내가 등록</div>' : ''}
+                ${restaurant.createdBy === CURRENT_USER_ID && restaurant.createdBy !== 'system' ? '<div class="user-created-badge">내가 등록</div>' : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
