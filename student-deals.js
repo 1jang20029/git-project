@@ -140,19 +140,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== 로컬 스토리지 관련 함수 =====
     // 현재 사용자 ID 생성 또는 가져오기
     function getUserId() {
-        // 로그인 시스템에서 저장하는 'currentLoggedInUser' 값을 먼저 확인
+        // 로그인 시스템에서 저장한 currentLoggedInUser ID를 우선적으로 사용
         let loggedInUserId = localStorage.getItem('currentLoggedInUser');
+        
+        // 로그인된 사용자 ID가 있으면 그것을 사용
         if (loggedInUserId) {
-            return loggedInUserId; // 로그인된 사용자 ID 반환
+            console.log('로그인된 사용자 ID:', loggedInUserId);
+            return loggedInUserId;
         }
-
-        // 로그인되지 않은 경우에만 임시 ID 생성 또는 기존 임시 ID 사용
-        let tempUserId = localStorage.getItem('currentUserId');
-        if (!tempUserId) {
-            tempUserId = 'user_' + Math.random().toString(36).substring(2, 15);
-            localStorage.setItem('currentUserId', tempUserId);
+        
+        // 로그인되지 않은 경우 기존 로직 사용
+        let userId = localStorage.getItem('currentUserId');
+        if (!userId) {
+            userId = 'user_' + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('currentUserId', userId);
         }
-        return tempUserId;
+        console.log('임시 사용자 ID:', userId);
+        return userId;
     }
     
     // 맛집 데이터 불러오기 (모든 사용자가 공유)
@@ -666,7 +670,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // 수정/삭제 버튼 표시 여부 설정 (자신이 등록한 맛집만)
         const adminButtons = document.querySelector('.detail-admin-buttons');
         if (adminButtons) {
-            adminButtons.style.display = restaurant.createdBy === CURRENT_USER_ID ? 'flex' : 'none';
+            console.log('상세 페이지 - 맛집 등록자:', restaurant.createdBy, '현재 사용자:', CURRENT_USER_ID);
+            // 문자열로 변환하여 정확한 비교
+            adminButtons.style.display = String(restaurant.createdBy) === String(CURRENT_USER_ID) ? 'flex' : 'none';
         }
         
         // 이미지 업데이트
@@ -993,8 +999,11 @@ document.addEventListener('DOMContentLoaded', function() {
         card.className = 'restaurant-card';
         card.dataset.id = restaurant.id;
         
-        // 내가 등록한 맛집에 특별한 클래스 추가
-        if (restaurant.createdBy === CURRENT_USER_ID) {
+        // 디버깅을 위한 로그 추가
+        console.log('맛집 카드 생성:', restaurant.id, '등록자:', restaurant.createdBy, '현재 사용자:', CURRENT_USER_ID);
+        
+        // 내가 등록한 맛집에 특별한 클래스 추가 - String으로 변환하여 정확한 비교
+        if (String(restaurant.createdBy) === String(CURRENT_USER_ID)) {
             card.classList.add('user-created');
         }
         
@@ -1003,12 +1012,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const isStarred = userInteractions.starredRestaurants.includes(restaurant.id);
         const isDisliked = userInteractions.dislikedRestaurants.includes(restaurant.id);
         
+        // String으로 변환하여 정확한 비교
+        const isCreator = String(restaurant.createdBy) === String(CURRENT_USER_ID);
+        
         card.innerHTML = `
             <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
-                ${restaurant.createdBy === CURRENT_USER_ID ? '<div class="user-created-badge">내가 등록</div>' : ''}
+                ${isCreator ? '<div class="user-created-badge">내가 등록</div>' : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
