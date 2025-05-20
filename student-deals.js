@@ -23,8 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/GGgo-yeonsung.jpg',
                 'images/GGgoPrice.jpg'
             ],
-            latitude: 37.3956, // 좌표 추가
-            longitude: 126.9567, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -42,8 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
             images: [
                 'images/budaechon.jpg'
             ],
-            latitude: 37.3966, // 좌표 추가
-            longitude: 126.9577, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -62,8 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/dalkong.jpg',
                 'images/dalkongPrice.jpg'
             ],
-            latitude: 37.3946, // 좌표 추가
-            longitude: 126.9557, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -82,8 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/gaesma-eul.jpg',
                 'images/gaesma-eulPrice.jpg'
             ],
-            latitude: 37.3936, // 좌표 추가
-            longitude: 126.9547, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -102,8 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/samdeogbabekyu.jpg',
                 'images/samdeogbabekyuPrice.jpg'
             ],
-            latitude: 37.3926, // 좌표 추가
-            longitude: 126.9537, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -121,8 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
             images: [
                 'images/myeong-gadonkkaseu.jpg'
             ],
-            latitude: 37.3916, // 좌표 추가
-            longitude: 126.9527, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         },
@@ -141,8 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'images/wonjodalgkkochi.jpg',
                 'images/wonjodalgkkochiFood.jpg'
             ],
-            latitude: 37.3906, // 좌표 추가
-            longitude: 126.9517, // 좌표 추가
             createdBy: 'system',
             createdAt: new Date().toISOString()
         }
@@ -191,10 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
             restaurant.likes = likesData !== null ? parseInt(likesData) : 0;
             restaurant.stars = starsData !== null ? parseInt(starsData) : 0;
             restaurant.dislikes = dislikesData !== null ? parseInt(dislikesData) : 0;
-            
-            // 좌표 데이터가 없다면 기본값 설정
-            if (!restaurant.latitude) restaurant.latitude = 37.3956; // 연성대 기본 좌표
-            if (!restaurant.longitude) restaurant.longitude = 126.9567; // 연성대 기본 좌표
         });
         
         return restaurants;
@@ -260,11 +242,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let uploadedImagePreviews = []; // 파일 업로드 미리보기 URL 저장
     let isEditMode = false; // 수정 모드 여부
     let editingRestaurantId = null; // 현재 수정 중인 맛집 ID
-    
-    // 네이버 지도 관련 변수
-    let naverMap = null;
-    let currentMarker = null;
-    let defaultCenter = new naver.maps.LatLng(37.3956, 126.9567); // 안양시 기본 좌표 (연성대 근처)
 
     // ===== 요소 참조 =====
     const restaurantsGrid = document.getElementById('restaurants-grid');
@@ -287,116 +264,101 @@ document.addEventListener('DOMContentLoaded', function() {
     // 모달 제목 요소 추가
     const modalTitle = document.querySelector('.modal-header h2');
     
-    // ===== 네이버 지도 관련 함수 =====
-    // 지도 초기화 함수
-    function initializeMap() {
-        if (document.getElementById('naver-map')) {
-            naverMap = new naver.maps.Map('naver-map', {
-                center: defaultCenter,
-                zoom: 15,
-                zoomControl: true,
-                zoomControlOptions: {
-                    position: naver.maps.Position.TOP_RIGHT
-                }
-            });
-            
-            // 지도 클릭 이벤트
-            naver.maps.Event.addListener(naverMap, 'click', function(e) {
-                setMarkerPosition(e.coord);
-            });
-            
-            // 초기 마커 생성
-            currentMarker = new naver.maps.Marker({
-                position: defaultCenter,
-                map: naverMap,
-                icon: {
-                    content: '<div class="marker-info">위치를 선택하세요</div>',
-                    anchor: new naver.maps.Point(90, 33)
-                }
-            });
-            
-            // 입력된 좌표가 있다면 마커 위치 설정
-            const lat = document.getElementById('restaurant-latitude').value;
-            const lng = document.getElementById('restaurant-longitude').value;
-            if (lat && lng) {
-                const position = new naver.maps.LatLng(lat, lng);
-                setMarkerPosition(position);
-            }
+    // 수정/삭제 버튼 추가
+    let editDeleteButtonsHtml = `
+        <div class="detail-admin-buttons">
+            <button id="edit-restaurant-btn" class="action-btn edit-btn">
+                <i class="fas fa-edit"></i> 수정하기
+            </button>
+            <button id="delete-restaurant-btn" class="action-btn delete-btn">
+                <i class="fas fa-trash"></i> 삭제하기
+            </button>
+        </div>
+    `;
+    
+    // 상세 페이지 컨텐츠 영역에 버튼 추가 (HTML에 해당 버튼들이 없다면 JS에서 추가)
+    const detailContent = document.querySelector('.detail-content');
+    if (detailContent) {
+        // 이미 있는지 확인하고, 없으면 추가
+        if (!document.querySelector('.detail-admin-buttons')) {
+            const buttonDiv = document.createElement('div');
+            buttonDiv.className = 'detail-admin-buttons';
+            buttonDiv.innerHTML = editDeleteButtonsHtml;
+            // 기존 elements 뒤에 추가
+            detailContent.appendChild(buttonDiv);
         }
     }
     
-    // 마커 위치 설정 함수
-    function setMarkerPosition(position) {
-        // 숨겨진 필드에 좌표 값 저장
-        document.getElementById('restaurant-latitude').value = position.y;
-        document.getElementById('restaurant-longitude').value = position.x;
+    // 인기 맛집 섹션 추가 (메인 페이지에 추가) - 이 부분은 유지
+    const addPopularRestaurantsSection = function() {
+        // 메인 페이지에 인기 맛집 섹션이 존재하는지 확인
+        const existingSection = document.getElementById('popular-restaurants-section');
+        if (existingSection) {
+            existingSection.remove(); // 기존 섹션 제거
+        }
         
-        // 주소 가져오기
-        naver.maps.Service.reverseGeocode({
-            location: new naver.maps.LatLng(position.y, position.x),
-        }, function(status, response) {
-            let address = '알 수 없는 주소';
-            
-            if (status === naver.maps.Service.Status.OK) {
-                const result = response.result;
-                const items = result.items;
-                address = items[0].address;
-            }
-            
-            // 마커 업데이트
-            currentMarker.setPosition(position);
-            currentMarker.setIcon({
-                content: `<div class="marker-info">${address}</div>`,
-                anchor: new naver.maps.Point(120, 33)
-            });
-            
-            // 입력 필드에 주소 표시
-            document.getElementById('restaurant-location').value = address;
+        // 인기 맛집 가져오기
+        const popularRestaurants = getPopularRestaurants();
+        
+        // 인기 맛집이 없으면 섹션을 추가하지 않음
+        if (popularRestaurants.length === 0) return;
+        
+        // 인기 맛집 섹션 생성
+        const section = document.createElement('section');
+        section.id = 'popular-restaurants-section';
+        section.className = 'popular-restaurants-section';
+        
+        let sectionHtml = `
+            <div class="section-header">
+                <h2>인기 맛집 TOP 3</h2>
+            </div>
+            <div class="popular-restaurants-grid">
+        `;
+        
+        // 인기 맛집 카드 추가
+        popularRestaurants.forEach((restaurant, index) => {
+            sectionHtml += `
+                <div class="popular-restaurant-card" data-id="${restaurant.id}">
+                    <div class="popular-rank">${index + 1}</div>
+                    <div class="popular-image">
+                        <img src="${restaurant.images[0]}" alt="${restaurant.name}">
+                    </div>
+                    <div class="popular-content">
+                        <h3>${restaurant.name}</h3>
+                        <div class="popular-category">${restaurant.category}</div>
+                        <div class="popular-likes">
+                            <i class="fas fa-thumbs-up"></i> ${restaurant.likes}
+                        </div>
+                    </div>
+                </div>
+            `;
         });
-    }
-    
-    // 위치 검색 함수
-    function searchLocation() {
-        const address = document.getElementById('restaurant-location').value;
-        if (!address) return;
         
-        naver.maps.Service.geocode({
-            query: address
-        }, function(status, response) {
-            if (status === naver.maps.Service.Status.OK) {
-                const result = response.v2.addresses[0];
-                if (result) {
-                    const position = new naver.maps.LatLng(result.y, result.x);
-                    naverMap.setCenter(position);
-                    setMarkerPosition(position);
-                } else {
-                    alert('검색 결과가 없습니다. 다른 주소를 입력해보세요.');
-                }
+        sectionHtml += `</div>`;
+        section.innerHTML = sectionHtml;
+        
+        // 메인 콘텐츠 영역에 인기 맛집 섹션 추가
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            // 필터 컨테이너 뒤, 맛집 목록 섹션 앞에 추가
+            const filterContainer = document.querySelector('.filter-container');
+            if (filterContainer) {
+                mainContent.insertBefore(section, filterContainer.nextSibling);
             } else {
-                alert('주소 검색에 실패했습니다. 다시 시도해주세요.');
+                mainContent.prepend(section);
             }
-        });
-    }
-    
-    // 모달이 열릴 때 지도 초기화
-    function initializeMapOnModalOpen() {
-        const modalObserver = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.target.classList && 
-                    !mutation.target.classList.contains('hidden') && 
-                    mutation.target.id === 'add-restaurant-modal') {
-                    // 약간의 지연을 주어 모달이 완전히 표시된 후 지도 초기화
-                    setTimeout(initializeMap, 300);
-                }
+            
+            // 인기 맛집 카드 클릭 이벤트 추가
+            const popularCards = document.querySelectorAll('.popular-restaurant-card');
+            popularCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const restaurantId = parseInt(this.dataset.id);
+                    showRestaurantDetail(restaurantId);
+                });
             });
-        });
-        
-        const addRestaurantModal = document.getElementById('add-restaurant-modal');
-        if (addRestaurantModal) {
-            modalObserver.observe(addRestaurantModal, { attributes: true, attributeFilter: ['class'] });
         }
-    }
-    
+    };
+
     // ===== 테마 설정 =====
     document.documentElement.setAttribute('data-theme', theme);
     
@@ -452,30 +414,13 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadedImagePreviews = [];
         previewContainer.classList.add('hidden');
         imagePreviews.innerHTML = '';
-        
-        // 좌표 초기화
-        document.getElementById('restaurant-latitude').value = '';
-        document.getElementById('restaurant-longitude').value = '';
     };
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('mobile-add-btn').addEventListener('click', toggleAddRestaurantModal);
+    // floating-add-btn 이벤트 리스너는 제거했지만 다른 버튼들의 기능은 유지합니다
     document.getElementById('close-modal').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('cancel-add').addEventListener('click', toggleAddRestaurantModal);
-    
-    // 위치 검색 버튼 이벤트 리스너
-    document.getElementById('search-location-btn').addEventListener('click', function(e) {
-        e.preventDefault();
-        searchLocation();
-    });
-    
-    // 위치 입력 필드에서 엔터키 눌렀을 때 검색
-    document.getElementById('restaurant-location').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            searchLocation();
-        }
-    });
     
     // ===== 맛집 등록/수정 버튼 이벤트 =====
     document.getElementById('submit-add').addEventListener('click', function() {
@@ -486,8 +431,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const restaurantHours = document.getElementById('restaurant-hours').value;
         const restaurantMenu = document.getElementById('restaurant-menu').value;
         const restaurantFeatures = document.getElementById('restaurant-features').value;
-        const restaurantLatitude = document.getElementById('restaurant-latitude').value;
-        const restaurantLongitude = document.getElementById('restaurant-longitude').value;
         
         // 모든 필드가 입력되었는지 확인
         if (!restaurantName || !restaurantCategory || !restaurantLocation || 
@@ -499,12 +442,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // 이미지가 하나 이상 있는지 확인
         if (uploadedImagePreviews.length === 0) {
             alert('최소 1개 이상의 이미지를 업로드해주세요.');
-            return;
-        }
-        
-        // 좌표가 지정되었는지 확인
-        if (!restaurantLatitude || !restaurantLongitude) {
-            alert('지도에서 정확한 위치를 선택해주세요.');
             return;
         }
 
@@ -520,8 +457,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 restaurants[restaurantIndex].menu = restaurantMenu;
                 restaurants[restaurantIndex].features = restaurantFeatures;
                 restaurants[restaurantIndex].images = [...uploadedImagePreviews];
-                restaurants[restaurantIndex].latitude = parseFloat(restaurantLatitude); // 좌표 추가
-                restaurants[restaurantIndex].longitude = parseFloat(restaurantLongitude); // 좌표 추가
                 restaurants[restaurantIndex].updatedAt = new Date().toISOString();
                 
                 // 수정은 생성한 사용자만 가능
@@ -557,8 +492,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 stars: 0,
                 dislikes: 0,
                 images: [...uploadedImagePreviews],
-                latitude: parseFloat(restaurantLatitude), // 좌표 추가
-                longitude: parseFloat(restaurantLongitude), // 좌표 추가
                 createdBy: CURRENT_USER_ID,
                 createdAt: new Date().toISOString()
             };
@@ -819,10 +752,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('restaurant-hours').value = selectedRestaurant.hours;
                 document.getElementById('restaurant-menu').value = selectedRestaurant.menu;
                 document.getElementById('restaurant-features').value = selectedRestaurant.features;
-                
-                // 좌표 설정
-                document.getElementById('restaurant-latitude').value = selectedRestaurant.latitude || '';
-                document.getElementById('restaurant-longitude').value = selectedRestaurant.longitude || '';
                 
                 // 이미지 미리보기 설정
                 uploadedImagePreviews = [...selectedRestaurant.images];
@@ -1293,75 +1222,188 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // 인기 맛집 섹션 추가 
-    const addPopularRestaurantsSection = function() {
-        // 메인 페이지에 인기 맛집 섹션이 존재하는지 확인
-        const existingSection = document.getElementById('popular-restaurants-section');
-        if (existingSection) {
-            existingSection.remove(); // 기존 섹션 제거
+    // 파란색 '3' 버튼을 감추기 위한 추가 CSS 스타일
+    const additionalStyle = document.createElement('style');
+    additionalStyle.textContent = `
+        /* 파란색 '3' 버튼 관련 스타일 숨김 */
+        .floating-btn, .fab, .float-btn, [class*="floating-add"], #floating-add-btn {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    `;
+    document.head.appendChild(additionalStyle);
+    
+    // 기존 스타일 정의
+    const style = document.createElement('style');
+    style.textContent = `
+        /* 수정/삭제 버튼 스타일 */
+        .detail-admin-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
         }
         
-        // 인기 맛집 가져오기
-        const popularRestaurants = getPopularRestaurants();
+        .edit-btn {
+            background-color: #f0f4ff;
+            color: #3d5af1;
+        }
         
-        // 인기 맛집이 없으면 섹션을 추가하지 않음
-        if (popularRestaurants.length === 0) return;
+        .delete-btn {
+            background-color: #fff0f0;
+            color: #e94057;
+        }
         
-        // 인기 맛집 섹션 생성
-        const section = document.createElement('section');
-        section.id = 'popular-restaurants-section';
-        section.className = 'popular-restaurants-section';
+        /* 내가 등록한 맛집 스타일 */
+        .user-created-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(61, 90, 241, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
         
-        let sectionHtml = `
-            <div class="section-header">
-                <h2>인기 맛집 TOP 3</h2>
-            </div>
-            <div class="popular-restaurants-grid">
-        `;
+        /* 상세 이미지 스타일 수정 */
+        .detail-gallery {
+            position: relative;
+            height: auto;
+            max-height: 500px;
+            overflow: hidden;
+        }
+
+        #detail-image {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            max-height: 500px;
+        }
         
-        // 인기 맛집 카드 추가
-        popularRestaurants.forEach((restaurant, index) => {
-            sectionHtml += `
-                <div class="popular-restaurant-card" data-id="${restaurant.id}">
-                    <div class="popular-rank">${index + 1}</div>
-                    <div class="popular-image">
-                        <img src="${restaurant.images[0]}" alt="${restaurant.name}">
-                    </div>
-                    <div class="popular-content">
-                        <h3>${restaurant.name}</h3>
-                        <div class="popular-category">${restaurant.category}</div>
-                        <div class="popular-likes">
-                            <i class="fas fa-thumbs-up"></i> ${restaurant.likes}
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
+        /* 인기 맛집 섹션 스타일 */
+        .popular-restaurants-section {
+            margin-bottom: 30px;
+            background-color: var(--background-light);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
         
-        sectionHtml += `</div>`;
-        section.innerHTML = sectionHtml;
+        .popular-restaurants-section .section-header {
+            margin-bottom: 15px;
+        }
         
-        // 메인 콘텐츠 영역에 인기 맛집 섹션 추가
-        const mainContent = document.querySelector('.main-content');
-        if (mainContent) {
-            // 필터 컨테이너 뒤, 맛집 목록 섹션 앞에 추가
-            const filterContainer = document.querySelector('.filter-container');
-            if (filterContainer) {
-                mainContent.insertBefore(section, filterContainer.nextSibling);
-            } else {
-                mainContent.prepend(section);
+        .popular-restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .popular-restaurant-card {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 3px 8px var(--shadow-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .popular-restaurant-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        
+        .popular-rank {
+            background-color: var(--primary-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            z-index: 2;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .popular-image {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .popular-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .popular-content {
+            padding: 10px;
+            flex-grow: 1;
+        }
+        
+        .popular-content h3 {
+            margin: 0 0 5px 0;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .popular-category {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .popular-likes {
+            color: var(--like-color);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* 버튼 활성화 상태 스타일 */
+        .card-action-btn.active, .action-btn.active {
+            transform: scale(1.1);
+        }
+        
+        .like-btn.active {
+            background-color: #ffe0e0;
+            color: var(--like-color);
+        }
+        
+        .star-btn.active {
+            background-color: #fff0c0;
+            color: var(--star-color);
+        }
+        
+        .dislike-btn.active {
+            background-color: #e0e8ff;
+            color: var(--dislike-color);
+        }
+        
+        @media (max-width: 768px) {
+            .popular-restaurants-grid {
+                grid-template-columns: 1fr;
             }
-            
-            // 인기 맛집 카드 클릭 이벤트 추가
-            const popularCards = document.querySelectorAll('.popular-restaurant-card');
-            popularCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const restaurantId = parseInt(this.dataset.id);
-                    showRestaurantDetail(restaurantId);
-                });
-            });
         }
-    };
+    `;
+    document.head.appendChild(style);
 
     // ===== 로컬 스토리지 데이터 초기화 함수 추가 =====
     window.resetLocalStorage = function() {
@@ -1393,9 +1435,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // 지도 기능 초기화
-    initializeMapOnModalOpen();
-    
     // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
     refreshRestaurantsList();
     addPopularRestaurantsSection();
