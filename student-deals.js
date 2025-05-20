@@ -811,7 +811,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         saveUserInteractions();
                         
                         // 알림 표시
-                        alert('삭제가 완료되었습니다.');
+                        alert('${selectedRestaurant.name} 삭제가 완료되었습니다.');
                         
                         // 목록으로 돌아가기
                         restaurantDetail.classList.add('hidden');
