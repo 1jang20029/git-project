@@ -140,12 +140,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== 로컬 스토리지 관련 함수 =====
     // 현재 사용자 ID 생성 또는 가져오기
     function getUserId() {
-        let userId = localStorage.getItem('currentUserId');
-        if (!userId) {
-            userId = 'user_' + Math.random().toString(36).substring(2, 15);
-            localStorage.setItem('currentUserId', userId);
+        // 로그인 시스템에서 저장하는 'currentLoggedInUser' 값을 먼저 확인
+        let loggedInUserId = localStorage.getItem('currentLoggedInUser');
+        if (loggedInUserId) {
+            return loggedInUserId; // 로그인된 사용자 ID 반환
         }
-        return userId;
+
+        // 로그인되지 않은 경우에만 임시 ID 생성 또는 기존 임시 ID 사용
+        let tempUserId = localStorage.getItem('currentUserId');
+        if (!tempUserId) {
+            tempUserId = 'user_' + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('currentUserId', tempUserId);
+        }
+        return tempUserId;
     }
     
     // 맛집 데이터 불러오기 (모든 사용자가 공유)
