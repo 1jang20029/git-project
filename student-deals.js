@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 인기 맛집 섹션 추가 (메인 페이지에 추가) - 이 부분은 유지
+    // ===== 인기 맛집 섹션 추가 =====
     const addPopularRestaurantsSection = function() {
         // 메인 페이지에 인기 맛집 섹션이 존재하는지 확인
         const existingSection = document.getElementById('popular-restaurants-section');
@@ -306,11 +306,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 인기 맛집 카드 추가
         popularRestaurants.forEach((restaurant, index) => {
+            // 여기 수정: 현재 사용자가 생성한 맛집인지 확인
+            const isCreatedByCurrentUser = restaurant.createdBy && restaurant.createdBy === CURRENT_USER_ID;
+            const userCreatedBadge = isCreatedByCurrentUser ? '<div class="user-created-badge">내가 등록</div>' : '';
+            
             sectionHtml += `
                 <div class="popular-restaurant-card" data-id="${restaurant.id}">
                     <div class="popular-rank">${index + 1}</div>
                     <div class="popular-image">
                         <img src="${restaurant.images[0]}" alt="${restaurant.name}">
+                        ${userCreatedBadge}
                     </div>
                     <div class="popular-content">
                         <h3>${restaurant.name}</h3>
@@ -986,8 +991,8 @@ document.addEventListener('DOMContentLoaded', function() {
         card.className = 'restaurant-card';
         card.dataset.id = restaurant.id;
         
-        // 내가 등록한 맛집에 특별한 클래스 추가
-        if (restaurant.createdBy === CURRENT_USER_ID) {
+        // 내가 등록한 맛집에 특별한 클래스 추가 - 여기 수정
+        if (restaurant.createdBy && restaurant.createdBy === CURRENT_USER_ID) {
             card.classList.add('user-created');
         }
         
@@ -996,12 +1001,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const isStarred = userInteractions.starredRestaurants.includes(restaurant.id);
         const isDisliked = userInteractions.dislikedRestaurants.includes(restaurant.id);
         
+        // 여기 수정: createdBy 확인 로직 강화
+        const isCreatedByCurrentUser = restaurant.createdBy && restaurant.createdBy === CURRENT_USER_ID;
+        
         card.innerHTML = `
             <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
-                ${restaurant.createdBy === CURRENT_USER_ID ? '<div class="user-created-badge">내가 등록</div>' : ''}
+                ${isCreatedByCurrentUser ? '<div class="user-created-badge">내가 등록</div>' : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
