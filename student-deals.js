@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let oneHourCircle = null; // 1시간 범위 원
     
     // 연성대학교 정확한 좌표
-    const yeonsungUniversityLocation = new naver.maps.LatLng(37.3956, 126.9567);
+    const yeonsungUniversityLocation = new naver.maps.LatLng(37.39746246553631, 126.90925361473495);
 
     // 초기 데이터 - 모든 값을 0으로 초기화
     const restaurantsData = [
