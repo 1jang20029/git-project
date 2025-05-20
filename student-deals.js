@@ -996,7 +996,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isStarred = userInteractions.starredRestaurants.includes(restaurant.id);
         const isDisliked = userInteractions.dislikedRestaurants.includes(restaurant.id);
         
-        card.innerHTML = `
+        card.innerHTML = `const SYSTEM_ID = 'system';
              <div class="card-image-container">
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
