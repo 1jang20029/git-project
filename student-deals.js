@@ -306,11 +306,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 인기 맛집 카드 추가
         popularRestaurants.forEach((restaurant, index) => {
+            // 사용자 ID 비교 강화 - 조건문에 사용할 변수
+            const isMyRestaurant = restaurant.createdBy && CURRENT_USER_ID 
+                                && restaurant.createdBy.toString() === CURRENT_USER_ID.toString();
+            
             sectionHtml += `
                 <div class="popular-restaurant-card" data-id="${restaurant.id}">
                     <div class="popular-rank">${index + 1}</div>
                     <div class="popular-image">
                         <img src="${restaurant.images[0]}" alt="${restaurant.name}">
+                        ${isMyRestaurant ? '<div class="user-created-badge">내가 등록</div>' : ''}
                     </div>
                     <div class="popular-content">
                         <h3>${restaurant.name}</h3>
@@ -659,7 +664,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // 수정/삭제 버튼 표시 여부 설정 (자신이 등록한 맛집만)
         const adminButtons = document.querySelector('.detail-admin-buttons');
         if (adminButtons) {
-            adminButtons.style.display = restaurant.createdBy === CURRENT_USER_ID ? 'flex' : 'none';
+            // 사용자 ID 비교 강화 - 엄격한 비교 및 방어적 코딩
+            if (restaurant.createdBy && CURRENT_USER_ID 
+                && restaurant.createdBy.toString() === CURRENT_USER_ID.toString()) {
+                adminButtons.style.display = 'flex';
+            } else {
+                adminButtons.style.display = 'none';
+            }
         }
         
         // 이미지 업데이트
