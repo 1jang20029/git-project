@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ===== 인기 맛집 섹션 추가 =====
+    // 인기 맛집 섹션 추가 (메인 페이지에 추가) - 이 부분은 유지
     const addPopularRestaurantsSection = function() {
         // 메인 페이지에 인기 맛집 섹션이 존재하는지 확인
         const existingSection = document.getElementById('popular-restaurants-section');
@@ -306,17 +306,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 인기 맛집 카드 추가
         popularRestaurants.forEach((restaurant, index) => {
-            // 내가 등록한 맛집인지 확인 (정확히 일치할 때만)
-            const isMyRestaurant = restaurant.createdBy === CURRENT_USER_ID;
-            
             sectionHtml += `
                 <div class="popular-restaurant-card" data-id="${restaurant.id}">
                     <div class="popular-rank">${index + 1}</div>
                     <div class="popular-image">
                         <img src="${restaurant.images[0]}" alt="${restaurant.name}">
-                        ${isMyRestaurant ? '<div class="user-created-badge">내가 등록</div>' : ''}
                     </div>
-                    <!-- 나머지 코드는 그대로 유지 -->
+                    <div class="popular-content">
+                        <h3>${restaurant.name}</h3>
+                        <div class="popular-category">${restaurant.category}</div>
+                        <div class="popular-likes">
+                            <i class="fas fa-thumbs-up"></i> ${restaurant.likes}
+                        </div>
+                    </div>
                 </div>
             `;
         });
@@ -657,13 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 수정/삭제 버튼 표시 여부 설정 (자신이 등록한 맛집만)
         const adminButtons = document.querySelector('.detail-admin-buttons');
         if (adminButtons) {
-            // 사용자 ID 비교 강화 - 엄격한 비교 및 방어적 코딩
-            if (restaurant.createdBy && CURRENT_USER_ID 
-                && restaurant.createdBy.toString() === CURRENT_USER_ID.toString()) {
-                adminButtons.style.display = 'flex';
-            } else {
-                adminButtons.style.display = 'none';
-            }
+            adminButtons.style.display = restaurant.createdBy === CURRENT_USER_ID ? 'flex' : 'none';
         }
         
         // 이미지 업데이트
@@ -990,11 +986,8 @@ document.addEventListener('DOMContentLoaded', function() {
         card.className = 'restaurant-card';
         card.dataset.id = restaurant.id;
         
-        // 내가 등록한 맛집인지 확인 (정확히 일치할 때만)
-        const isMyRestaurant = restaurant.createdBy === CURRENT_USER_ID;
-        
-        // 내가 등록한 맛집에만 클래스 추가
-        if (isMyRestaurant) {
+        // 내가 등록한 맛집에 특별한 클래스 추가
+        if (restaurant.createdBy === CURRENT_USER_ID) {
             card.classList.add('user-created');
         }
         
@@ -1008,15 +1001,157 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img class="card-image" src="${restaurant.images[0]}" alt="${restaurant.name}" loading="lazy">
                 <div class="card-category">${restaurant.category}</div>
                 ${restaurant.images.length > 1 ? `<div class="card-image-count">1 / ${restaurant.images.length}</div>` : ''}
-                ${isMyRestaurant ? '<div class="user-created-badge">내가 등록</div>' : ''}
+                ${restaurant.createdBy === CURRENT_USER_ID ? '<div class="user-created-badge">내가 등록</div>' : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${restaurant.name}</h3>
-                <!-- 나머지 코드는 그대로 유지 -->
+                <div class="card-ratings">
+                    <div class="rating-bubble like-bubble">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span>${restaurant.likes}</span>
+                    </div>
+                    <div class="rating-bubble star-bubble">
+                        <i class="fas fa-star"></i>
+                        <span>${restaurant.stars}</span>
+                    </div>
+                    <div class="rating-bubble dislike-bubble">
+                        <i class="fas fa-thumbs-down"></i>
+                        <span>${restaurant.dislikes}</span>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    ${restaurant.location}
+                </div>
+                <div class="card-menu">
+                    <i class="fas fa-utensils"></i>
+                    ${restaurant.menu.split(',')[0]} 외
+                </div>
+                <div class="card-actions">
+                    <button class="card-action-btn like-btn ${isLiked ? 'active' : ''}" title="좋아요">
+                        <i class="fas fa-thumbs-up"></i>
+                    </button>
+                    <button class="card-action-btn star-btn ${isStarred ? 'active' : ''}" title="추천해요">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <button class="card-action-btn dislike-btn ${isDisliked ? 'active' : ''}" title="별로예요">
+                        <i class="fas fa-thumbs-down"></i>
+                    </button>
+                </div>
             </div>
         `;
         
-        // 나머지 코드는 그대로 유지
+        // 맛집 카드 클릭 이벤트
+        card.addEventListener('click', function(e) {
+            // 버튼 클릭은 제외
+            if (!e.target.closest('.card-action-btn')) {
+                showRestaurantDetail(restaurant.id);
+            }
+        });
+        
+        // 반응 버튼 이벤트 - 토글 기능 추가
+        const likeButton = card.querySelector('.like-btn');
+        const starButton = card.querySelector('.star-btn');
+        const dislikeButton = card.querySelector('.dislike-btn');
+        
+        // 카드의 좋아요 버튼 이벤트
+        likeButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            // 좋아요 토글
+            const restaurantId = restaurant.id;
+            const likedIndex = userInteractions.likedRestaurants.indexOf(restaurantId);
+            
+            if (likedIndex !== -1) {
+                // 이미 좋아요를 누른 상태에서 다시 클릭한 경우
+                userInteractions.likedRestaurants.splice(likedIndex, 1);
+                restaurant.likes = Math.max(0, restaurant.likes - 1);
+                this.classList.remove('active');
+            } else {
+                // 처음 좋아요를 누른 경우
+                userInteractions.likedRestaurants.push(restaurantId);
+                restaurant.likes = (restaurant.likes || 0) + 1;
+                this.classList.add('active');
+            }
+            
+            // 사용자 상호작용 데이터 저장
+            saveUserInteractions();
+            
+            // 맛집 데이터 저장
+            saveRestaurantsToStorage();
+            
+            // UI 업데이트
+            updateRestaurantInList(restaurantId);
+            
+            // 인기 맛집 섹션 업데이트
+            addPopularRestaurantsSection();
+        });
+        
+        // 추천해요(별표) 버튼 이벤트 핸들러 추가
+        starButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            // 추천해요 토글
+            const restaurantId = restaurant.id;
+            const starredIndex = userInteractions.starredRestaurants.indexOf(restaurantId);
+            
+            if (starredIndex !== -1) {
+                // 이미 추천해요를 누른 상태에서 다시 클릭한 경우
+                userInteractions.starredRestaurants.splice(starredIndex, 1);
+                restaurant.stars = Math.max(0, restaurant.stars - 1); // 음수 방지
+                this.classList.remove('active');
+            } else {
+                // 처음 추천해요를 누른 경우
+                userInteractions.starredRestaurants.push(restaurantId);
+                restaurant.stars = (restaurant.stars || 0) + 1;
+                this.classList.add('active');
+            }
+            
+            // 사용자 상호작용 데이터 저장
+            saveUserInteractions();
+            
+            // 맛집 데이터 저장
+            saveRestaurantsToStorage();
+            
+            // UI 업데이트
+            updateRestaurantInList(restaurantId);
+            
+            // 인기 맛집 섹션 업데이트
+            addPopularRestaurantsSection();
+        });
+        
+        // 싫어요 버튼 이벤트 - 중복 제거하고 하나만 유지
+        dislikeButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            // 싫어요 토글
+            const restaurantId = restaurant.id;
+            const dislikedIndex = userInteractions.dislikedRestaurants.indexOf(restaurantId);
+            
+            if (dislikedIndex !== -1) {
+                // 이미 싫어요를 누른 상태에서 다시 클릭한 경우
+                userInteractions.dislikedRestaurants.splice(dislikedIndex, 1);
+                restaurant.dislikes = Math.max(0, restaurant.dislikes - 1); // 음수 방지
+                this.classList.remove('active');
+            } else {
+                // 처음 싫어요를 누른 경우
+                userInteractions.dislikedRestaurants.push(restaurantId);
+                restaurant.dislikes = (restaurant.dislikes || 0) + 1;
+                this.classList.add('active');
+            }
+            
+            // 사용자 상호작용 데이터 저장
+            saveUserInteractions();
+            
+            // 맛집 데이터 저장
+            saveRestaurantsToStorage();
+            
+            // UI 업데이트
+            updateRestaurantInList(restaurantId);
+            
+            // 인기 맛집 섹션 업데이트
+            addPopularRestaurantsSection();
+        });
         
         return card;
     };
