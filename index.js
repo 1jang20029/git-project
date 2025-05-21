@@ -5397,74 +5397,8 @@ function displayPopularRestaurantsOnMainPage() {
         // 기본 데이터 사용
         restaurants = restaurantsData;
     } else {
-        console.log('맛집 데이터를 찾을 수 없습니다. 기본 데이터를 사용합니다.');
-        
-        // 기본 데이터 설정 - 실제 이미지 파일 경로 사용
-        restaurants = [
-            {
-                id: 1,
-                name: '지지고 안양 연성대점',
-                location: '경기도 안양시 만안구 양화로37번길 23',
-                category: '한식',
-                discount: '학생증 제시 시 15% 할인',
-                likes: 3,
-                images: ['images/GGgo-yeonsung.jpg', 'images/GGgoPrice.jpg']
-            },
-            {
-                id: 2,
-                name: '부대촌',
-                location: '연성대학교 인근 맛집거리',
-                category: '한식',
-                discount: '학생증 제시 시 5% 할인',
-                likes: 1,
-                images: ['images/budaechon.jpg']
-            },
-            {
-                id: 3,
-                name: '달콩이네',
-                location: '경기도 안양시 만안구 양화로36번길 9',
-                category: '한식',
-                discount: '학생 10% 할인',
-                likes: 1,
-                images: ['images/dalkong.jpg', 'images/dalkongPrice.jpg']
-            },
-            {
-                id: 4,
-                name: '갯마을 칼국수 보쌈',
-                location: '경기도 안양시 만안구 양화로 25',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                images: ['images/gaesma-eul.jpg', 'images/gaesma-eulPrice.jpg']
-            },
-            {
-                id: 5,
-                name: '삼덕바베큐',
-                location: '안양중앙시장 내',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                images: ['images/samdeogbabekyu.jpg', 'images/samdeogbabekyuPrice.jpg']
-            },
-            {
-                id: 6,
-                name: '명가돈까스',
-                location: '안양중앙시장 인근',
-                category: '일식',
-                discount: '없음',
-                likes: 0,
-                images: ['images/myeong-gadonkkaseu.jpg']
-            },
-            {
-                id: 7,
-                name: '원조닭꼬치',
-                location: '안양중앙시장 내',
-                category: '분식',
-                discount: '없음',
-                likes: 0,
-                images: ['images/wonjodalgkkochi.jpg', 'images/wonjodalgkkochiFood.jpg']
-            }
-        ];
+        console.log('맛집 데이터를 찾을 수 없습니다.');
+        return;
     }
 
     // 인기 맛집 가져오기 (좋아요 기준 상위 3개)
@@ -5495,10 +5429,10 @@ function displayPopularRestaurantsOnMainPage() {
 
     // 각 맛집 정보 표시
     popularRestaurants.forEach((restaurant, index) => {
-        // 이미지 URL 확인 - 실제 이미지 파일 경로 사용
+        // 이미지 URL 확인
         let imageUrl = restaurant.images && restaurant.images.length > 0 ? 
             restaurant.images[0] : 'https://placehold.co/400x250/gray/white?text=이미지없음';
-        
+
         // 카테고리 이모지 설정
         const categoryEmoji = getCategoryEmoji(restaurant.category);
 
@@ -5508,38 +5442,24 @@ function displayPopularRestaurantsOnMainPage() {
         // 맛집 항목 생성
         const restaurantElement = document.createElement('div');
         restaurantElement.className = 'popular-restaurant-item';
-        restaurantElement.setAttribute('data-id', restaurant.id);
-        restaurantElement.style.cursor = 'pointer';
-        
-        // 항목 전체 클릭 시 상세 페이지로 이동
-        restaurantElement.addEventListener('click', function(e) {
-            // 버튼 클릭은 제외 (버튼은 자체 onClick 이벤트가 있음)
-            if (!e.target.closest('.action-btn') && !e.target.closest('.detail-button')) {
-                goToRestaurantDetail(restaurant.id);
-            }
-        });
-        
-        // 사용자가 등록한 맛집인지 확인
-        const currentUser = localStorage.getItem('currentLoggedInUser');
-        const isCreator = currentUser && String(restaurant.createdBy) === String(currentUser);
         
         restaurantElement.innerHTML = `
             <div class="restaurant-image">
-                <img src="${imageUrl}" alt="${restaurant.name}" style="width:100%; height:100%; object-fit:cover;">
-                ${index === 0 ? '<div class="best-badge">인기 1위</div>' : ''}
-                ${isCreator ? '<div class="user-created-badge">내가 등록</div>' : ''}
+                ${categoryEmoji}
             </div>
             <div class="restaurant-content">
-                <div class="restaurant-category">${categoryEmoji} ${restaurant.category}</div>
+                <div class="restaurant-category">${restaurant.category}</div>
                 <div class="restaurant-name">${restaurant.name}</div>
                 <div class="restaurant-location">
                     <span class="location-icon">📍</span> ${restaurant.location}
                 </div>
-                <div class="restaurant-discount">
-                    <span class="discount-icon">💰</span> ${restaurant.discount || '할인 없음'}
+                <div class="restaurant-features">
+                    ${restaurant.features && restaurant.features.length > 80 ? 
+                      restaurant.features.substring(0, 80) + '...' : 
+                      (restaurant.features || '정보 없음')}
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                    <button class="detail-button" onclick="goToRestaurantDetail(${restaurant.id}); event.stopPropagation();">상세보기</button>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px;">
+                    <button class="detail-button" onclick="window.location.href='student-deals.html'">자세히</button>
                     <div class="restaurant-likes">👍 ${likeCount}</div>
                 </div>
             </div>
@@ -5548,7 +5468,6 @@ function displayPopularRestaurantsOnMainPage() {
         popularRestaurantsList.appendChild(restaurantElement);
     });
 }
-
 
 // 카테고리에 따른 이모지 반환 함수
 function getCategoryEmoji(category) {
@@ -5648,31 +5567,21 @@ function toggleReaction(restaurantId, reactionType) {
 
 // CSS 스타일 삽입
 function addRestaurantStyles() {
-    // 이미 스타일이 있는지 확인
-    if (document.getElementById('restaurant-custom-styles')) return;
-    
     const styleElement = document.createElement('style');
-    styleElement.id = 'restaurant-custom-styles';
     styleElement.textContent = `
         .popular-restaurant-item {
             display: flex;
             padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
-            transition: transform 0.2s ease, background-color 0.2s ease;
         }
         
         .popular-restaurant-item:last-child {
             border-bottom: none;
         }
         
-        .popular-restaurant-item:hover {
-            background-color: #f9f9f9;
-            transform: translateY(-2px);
-        }
-        
         .restaurant-image {
-            width: 92px;
-            height: 92px;
+            width: 60px;
+            height: 60px;
             border-radius: 8px;
             overflow: hidden;
             margin-right: 16px;
@@ -5682,13 +5591,6 @@ function addRestaurantStyles() {
             justify-content: center;
             align-items: center;
             font-size: 28px;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: box-shadow 0.2s ease;
-        }
-        
-        .popular-restaurant-item:hover .restaurant-image {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .restaurant-content {
@@ -5698,51 +5600,32 @@ function addRestaurantStyles() {
         }
         
         .restaurant-category {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
             margin-bottom: 4px;
         }
         
         .restaurant-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            margin-bottom: 6px;
-            transition: color 0.2s ease;
-        }
-        
-        .popular-restaurant-item:hover .restaurant-name {
-            color: #c62917;
-        }
-        
-        .restaurant-discount {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .discount-icon {
-            margin-right: 4px;
-            color: #c62917;
+            margin-bottom: 4px;
         }
         
         .restaurant-location {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
+            margin-bottom: 4px;
         }
         
-        .location-icon {
-            margin-right: 4px;
+        .restaurant-features {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+            line-height: 1.4;
         }
         
         .restaurant-likes {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
+            font-size: 14px;
             color: #c62917;
             font-weight: bold;
         }
@@ -5753,37 +5636,8 @@ function addRestaurantStyles() {
             border: none;
             border-radius: 4px;
             padding: 6px 12px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
-        
-        .detail-button:hover {
-            background-color: #a52312;
-            transform: translateY(-1px);
-        }
-        
-        .best-badge {
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: #c62917;
-            color: white;
-            font-size: 10px;
-            padding: 2px 5px;
-            border-radius: 0 0 5px 0;
-        }
-        
-        .user-created-badge {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background-color: rgba(61, 90, 241, 0.9);
-            color: white;
-            font-size: 10px;
-            padding: 2px 5px;
-            border-radius: 5px 0 0 0;
         }
     `;
     document.head.appendChild(styleElement);
@@ -5807,23 +5661,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-
-// 좋아요 업데이트 후 메인 페이지 업데이트를 위한 이벤트 발생 함수
-function notifyRestaurantUpdated() {
-    // 사용자 정의 이벤트 생성 및 디스패치
-    const event = new CustomEvent('restaurantUpdated');
-    window.dispatchEvent(event);
-}
-
-// 맛집 업데이트 이벤트 리스너 등록
-window.addEventListener('restaurantUpdated', function() {
-    // 인기 맛집 정보 다시 로드
-    displayPopularRestaurantsOnMainPage();
-});
-
-// 맛집 상세 페이지로 직접 이동하는 함수
-function goToRestaurantDetail(restaurantId) {
-    // 상세 페이지로 이동하면서 ID 전달
-    window.location.href = `student-deals.html?id=${restaurantId}`;
-}
