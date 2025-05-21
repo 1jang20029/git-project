@@ -201,6 +201,7 @@ button {
     align-items: center;
     gap: 6px;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .nav-btn:hover {
@@ -238,6 +239,7 @@ button {
     align-items: center;
     gap: 10px;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .mobile-nav-btn:hover {
