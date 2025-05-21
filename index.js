@@ -5755,3 +5755,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+
+// 좋아요 업데이트 후 메인 페이지 업데이트를 위한 이벤트 발생 함수
+function notifyRestaurantUpdated() {
+    // 사용자 정의 이벤트 생성 및 디스패치
+    const event = new CustomEvent('restaurantUpdated');
+    window.dispatchEvent(event);
+}
+
+// 맛집 업데이트 이벤트 리스너 등록
+window.addEventListener('restaurantUpdated', function() {
+    // 인기 맛집 정보 다시 로드
+    displayPopularRestaurantsOnMainPage();
+});
