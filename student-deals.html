@@ -31,12 +31,23 @@
         <div class="nav-container">
             <div class="logo">YeongSung Eats</div>
             <div class="nav-links">
+                <!-- 로그인 사용자 정보 표시 영역 추가 -->
+                <div id="user-info" class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="user-name">로그인 중...</span>
+                    <div class="user-dropdown">
+                        <a href="#" id="logout-btn">로그아웃</a>
+                    </div>
+                </div>
                 <button id="student-discount-btn" class="nav-btn">
                     <i class="fas fa-id-card"></i> 학생증 할인
                 </button>
                 <button id="add-place-btn" class="nav-btn">
                     <i class="fas fa-plus-circle"></i> 맛집 등록
                 </button>
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i> 메인으로
+                </a>
             </div>
             <button id="menu-toggle" class="menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -46,12 +57,20 @@
 
     <!-- 모바일 메뉴 -->
     <div id="mobile-menu" class="mobile-menu">
+        <!-- 모바일 로그인 사용자 정보 추가 -->
+        <div id="mobile-user-info" class="user-info" style="margin-bottom: 10px;">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name">로그인 중...</span>
+        </div>
         <button id="mobile-discount-btn" class="mobile-nav-btn">
             <i class="fas fa-id-card"></i> 학생증 할인
         </button>
         <button id="mobile-add-btn" class="mobile-nav-btn">
             <i class="fas fa-plus-circle"></i> 맛집 등록
         </button>
+        <a href="index.html" class="mobile-nav-btn">
+            <i class="fas fa-home"></i> 메인으로
+        </a>
     </div>
 
     <main class="main-content">
@@ -196,7 +215,7 @@
         <!-- 맛집 상세 정보 섹션 -->
         <section id="restaurant-detail" class="restaurant-detail hidden">
             <div class="detail-header">
-                <button id="back-to-list" class="back-btn">
+                <button id="back-to-list" class="back-btn" title="목록으로 돌아가기">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <div id="detail-rating" class="detail-rating">
@@ -289,6 +308,16 @@
                         <i class="fas fa-thumbs-down"></i> 별로예요
                     </button>
                 </div>
+                
+                <!-- 수정/삭제 버튼을 위한 컨테이너 -->
+                <div class="detail-admin-buttons">
+                    <button id="edit-restaurant-btn" class="action-btn edit-btn">
+                        <i class="fas fa-edit"></i> 수정하기
+                    </button>
+                    <button id="delete-restaurant-btn" class="action-btn delete-btn">
+                        <i class="fas fa-trash"></i> 삭제하기
+                    </button>
+                </div>
             </div>
         </section>
     </main>
@@ -372,11 +401,6 @@
             </div>
         </div>
     </div>
-
-    <!-- 모바일 등록 버튼 -->
-    <button id="floating-add-btn" class="floating-add-btn">
-        <i class="fas fa-plus"></i>
-    </button>
 
     <footer class="main-footer">
         <p>© 2025 연성대 맛집 탐방 가이드 | 모든 권리 보유</p>
