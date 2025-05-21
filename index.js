@@ -5397,8 +5397,56 @@ function displayPopularRestaurantsOnMainPage() {
         // 기본 데이터 사용
         restaurants = restaurantsData;
     } else {
-        console.log('맛집 데이터를 찾을 수 없습니다.');
-        return;
+        console.log('맛집 데이터를 찾을 수 없습니다. 기본 데이터를 사용합니다.');
+        
+        // 기본 데이터 설정 - 실제 이미지 파일 경로 사용
+        restaurants = [
+            {
+                id: 1,
+                name: '지지고 안양 연성대점',
+                location: '경기도 안양시 만안구 양화로37번길 23',
+                category: '한식',
+                discount: '학생증 제시 시 15% 할인',
+                likes: 3,
+                images: ['images/GGgo-yeonsung.jpg', 'images/GGgoPrice.jpg']
+            },
+            {
+                id: 2,
+                name: '부대촌',
+                location: '연성대학교 인근 맛집거리',
+                category: '한식',
+                discount: '학생증 제시 시 5% 할인',
+                likes: 1,
+                images: ['images/budaechon.jpg']
+            },
+            {
+                id: 3,
+                name: '달콩이네',
+                location: '경기도 안양시 만안구 양화로36번길 9',
+                category: '한식',
+                discount: '학생 10% 할인',
+                likes: 1,
+                images: ['images/dalkong.jpg', 'images/dalkongPrice.jpg']
+            },
+            {
+                id: 4,
+                name: '갯마을 칼국수 보쌈',
+                location: '경기도 안양시 만안구 양화로 25',
+                category: '한식',
+                discount: '없음',
+                likes: 5,
+                images: ['images/gaesma-eul.jpg', 'images/gaesma-eulPrice.jpg']
+            },
+            {
+                id: 5,
+                name: '삼덕바베큐',
+                location: '안양중앙시장 내',
+                category: '한식',
+                discount: '없음',
+                likes: 5,
+                images: ['images/samdeogbabekyu.jpg', 'images/samdeogbabekyuPrice.jpg']
+            }
+        ];
     }
 
     // 인기 맛집 가져오기 (좋아요 기준 상위 3개)
@@ -5429,10 +5477,10 @@ function displayPopularRestaurantsOnMainPage() {
 
     // 각 맛집 정보 표시
     popularRestaurants.forEach((restaurant, index) => {
-        // 이미지 URL 확인
+        // 이미지 URL 확인 - 실제 이미지 파일 경로 사용
         let imageUrl = restaurant.images && restaurant.images.length > 0 ? 
             restaurant.images[0] : 'https://placehold.co/400x250/gray/white?text=이미지없음';
-
+        
         // 카테고리 이모지 설정
         const categoryEmoji = getCategoryEmoji(restaurant.category);
 
@@ -5443,23 +5491,27 @@ function displayPopularRestaurantsOnMainPage() {
         const restaurantElement = document.createElement('div');
         restaurantElement.className = 'popular-restaurant-item';
         
+        // 사용자가 등록한 맛집인지 확인
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+        const isCreator = currentUser && String(restaurant.createdBy) === String(currentUser);
+        
         restaurantElement.innerHTML = `
             <div class="restaurant-image">
-                ${categoryEmoji}
+                <img src="${imageUrl}" alt="${restaurant.name}" style="width:100%; height:100%; object-fit:cover;">
+                ${index === 0 ? '<div class="best-badge">인기 1위</div>' : ''}
+                ${isCreator ? '<div class="user-created-badge">내가 등록</div>' : ''}
             </div>
             <div class="restaurant-content">
-                <div class="restaurant-category">${restaurant.category}</div>
+                <div class="restaurant-category">${categoryEmoji} ${restaurant.category}</div>
                 <div class="restaurant-name">${restaurant.name}</div>
                 <div class="restaurant-location">
                     <span class="location-icon">📍</span> ${restaurant.location}
                 </div>
-                <div class="restaurant-features">
-                    ${restaurant.features && restaurant.features.length > 80 ? 
-                      restaurant.features.substring(0, 80) + '...' : 
-                      (restaurant.features || '정보 없음')}
+                <div class="restaurant-discount">
+                    <span class="discount-icon">💰</span> ${restaurant.discount || '할인 없음'}
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px;">
-                    <button class="detail-button" onclick="window.location.href='student-deals.html'">자세히</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                    <button class="detail-button" onclick="window.location.href='student-deals.html?id=${restaurant.id}'">상세보기</button>
                     <div class="restaurant-likes">👍 ${likeCount}</div>
                 </div>
             </div>
