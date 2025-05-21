@@ -1,24 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 모든 맛집 데이터 삭제
-    localStorage.removeItem('restaurants');
-
-
-    // 모든 좋아요/별점/싫어요 데이터 삭제
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-        const key = localStorage.key(i);
-        if (key && (key.startsWith('restaurantLikes_') || 
-                    key.startsWith('restaurantStars_') || 
-                    key.startsWith('restaurantDislikes_') ||
-                    key.includes('restaurants'))) {
-            localStorage.removeItem(key);
-        }
-}
-
-
-
-    window.location.reload();
-
-
     // 파란색 원형 '3' 버튼 제거 (floating-add-btn)
     const floatingButton = document.getElementById('floating-add-btn');
     if (floatingButton) {
