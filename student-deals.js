@@ -642,49 +642,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 페이지 로드 시 URL 파라미터 확인하여 맛집 상세 정보 표시
     function checkURLAndShowRestaurant() {
-        // URL에 파라미터가 없으면 항상 목록 페이지 표시
-        if (window.location.search === "") {
-            restaurantDetail.classList.add('hidden');
-            restaurantsListSection.classList.remove('hidden');
-            selectedRestaurant = null;
-            return;
-        }
+        // 페이지가 새로고침된 경우 (URL 파라미터에 관계없이)
+        // 항상 목록 페이지 표시
+        restaurantDetail.classList.add('hidden');
+        restaurantsListSection.classList.remove('hidden');
+        selectedRestaurant = null;
         
-        const params = getURLParameters();
-        
-        // id 파라미터가 있으면 해당 맛집 상세 정보 표시
-        if (params.id) {
-            const restaurantId = parseInt(params.id);
-            console.log(`URL 파라미터로 전달된 맛집 ID: ${restaurantId}`);
-            
-            // 해당 ID의 맛집 찾기
-            const restaurant = restaurants.find(r => r.id === restaurantId);
-            
-            if (restaurant) {
-                // 이미지 인덱스 파라미터가 있으면 해당 이미지 표시
-                if (params.image) {
-                    const imageIndex = parseInt(params.image);
-                    if (imageIndex >= 0 && imageIndex < restaurant.images.length) {
-                        currentImageIndex = imageIndex;
-                    }
-                }
-                
-                // 상세 정보 화면으로 바로 이동
-                showRestaurantDetail(restaurantId);
-                console.log(`맛집 '${restaurant.name}'의 상세 정보 페이지를 표시합니다.`);
-            } else {
-                console.error(`ID ${restaurantId}에 해당하는 맛집을 찾을 수 없습니다.`);
-                // 맛집을 찾을 수 없을 경우 목록 페이지로 이동
-                restaurantDetail.classList.add('hidden');
-                restaurantsListSection.classList.remove('hidden');
-                selectedRestaurant = null;
-                history.replaceState({}, '', window.location.pathname);
-            }
-        } else {
-            // id 파라미터가 없으면 목록 페이지 표시
-            restaurantDetail.classList.add('hidden');
-            restaurantsListSection.classList.remove('hidden');
-            selectedRestaurant = null;
+        // URL에서 파라미터 제거 (명시적으로 새로고침에 대해서는 목록 페이지 표시)
+        if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_RELOAD) {
+            history.replaceState({}, '', window.location.pathname);
         }
     }
     
@@ -795,8 +761,8 @@ document.addEventListener('DOMContentLoaded', function() {
         restaurantsListSection.classList.remove('hidden');
         selectedRestaurant = null;
         
-        // URL에서 파라미터를 완전히 제거
-        history.pushState({}, '', window.location.pathname);
+        // URL 업데이트 - 목록 페이지로 돌아감을 표시
+        updateURL(null);
     });
 
     // ===== 갤러리 네비게이션 =====
