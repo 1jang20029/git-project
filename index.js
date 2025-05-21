@@ -5445,6 +5445,24 @@ function displayPopularRestaurantsOnMainPage() {
                 discount: '없음',
                 likes: 5,
                 images: ['images/samdeogbabekyu.jpg', 'images/samdeogbabekyuPrice.jpg']
+            },
+            {
+                id: 6,
+                name: '명가돈까스',
+                location: '안양중앙시장 인근',
+                category: '일식',
+                discount: '없음',
+                likes: 0,
+                images: ['images/myeong-gadonkkaseu.jpg']
+            },
+            {
+                id: 7,
+                name: '원조닭꼬치',
+                location: '안양중앙시장 내',
+                category: '분식',
+                discount: '없음',
+                likes: 0,
+                images: ['images/wonjodalgkkochi.jpg', 'images/wonjodalgkkochiFood.jpg']
             }
         ];
     }
@@ -5490,6 +5508,16 @@ function displayPopularRestaurantsOnMainPage() {
         // 맛집 항목 생성
         const restaurantElement = document.createElement('div');
         restaurantElement.className = 'popular-restaurant-item';
+        restaurantElement.setAttribute('data-id', restaurant.id);
+        restaurantElement.style.cursor = 'pointer';
+        
+        // 항목 전체 클릭 시 상세 페이지로 이동
+        restaurantElement.addEventListener('click', function(e) {
+            // 버튼 클릭은 제외 (버튼은 자체 onClick 이벤트가 있음)
+            if (!e.target.closest('.action-btn') && !e.target.closest('.detail-button')) {
+                goToRestaurantDetail(restaurant.id);
+            }
+        });
         
         // 사용자가 등록한 맛집인지 확인
         const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -5511,7 +5539,7 @@ function displayPopularRestaurantsOnMainPage() {
                     <span class="discount-icon">💰</span> ${restaurant.discount || '할인 없음'}
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                    <button class="detail-button" onclick="window.location.href='student-deals.html?id=${restaurant.id}'">상세보기</button>
+                    <button class="detail-button" onclick="goToRestaurantDetail(${restaurant.id}); event.stopPropagation();">상세보기</button>
                     <div class="restaurant-likes">👍 ${likeCount}</div>
                 </div>
             </div>
@@ -5630,10 +5658,16 @@ function addRestaurantStyles() {
             display: flex;
             padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
         
         .popular-restaurant-item:last-child {
             border-bottom: none;
+        }
+        
+        .popular-restaurant-item:hover {
+            background-color: #f9f9f9;
+            transform: translateY(-2px);
         }
         
         .restaurant-image {
@@ -5649,6 +5683,12 @@ function addRestaurantStyles() {
             align-items: center;
             font-size: 28px;
             position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .popular-restaurant-item:hover .restaurant-image {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .restaurant-content {
@@ -5667,6 +5707,11 @@ function addRestaurantStyles() {
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 6px;
+            transition: color 0.2s ease;
+        }
+        
+        .popular-restaurant-item:hover .restaurant-name {
+            color: #c62917;
         }
         
         .restaurant-discount {
@@ -5711,6 +5756,12 @@ function addRestaurantStyles() {
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        
+        .detail-button:hover {
+            background-color: #a52312;
+            transform: translateY(-1px);
         }
         
         .best-badge {
@@ -5770,3 +5821,9 @@ window.addEventListener('restaurantUpdated', function() {
     // 인기 맛집 정보 다시 로드
     displayPopularRestaurantsOnMainPage();
 });
+
+// 맛집 상세 페이지로 직접 이동하는 함수
+function goToRestaurantDetail(restaurantId) {
+    // 상세 페이지로 이동하면서 ID 전달
+    window.location.href = `student-deals.html?id=${restaurantId}`;
+}
