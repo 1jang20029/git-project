@@ -208,6 +208,31 @@ button {
     color: var(--primary-color);
 }
 
+/* 사용자 정보 표시 영역 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    padding: 6px 12px;
+    background-color: var(--background-light);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.user-info:hover {
+    background-color: var(--primary-light);
+}
+
+.user-info i {
+    color: var(--primary-color);
+}
+
+.user-name {
+    font-weight: 500;
+}
+
 .menu-toggle {
     display: none;
     background: none;
@@ -1263,6 +1288,11 @@ button {
     .detail-gallery {
         height: 200px;
     }
+    
+    .user-info {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+    }
 }
 
 /* 다크 모드 자동 전환을 위한 미디어 쿼리 */
@@ -1366,4 +1396,54 @@ button {
     justify-content: space-between !important;
     gap: 15px !important;
     margin-top: 20px !important;
+}
+
+/* 뒤로가기 버튼 스타일 개선 */
+.back-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.back-btn:after {
+    content: '목록으로';
+    position: absolute;
+    right: -100px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.back-btn:hover {
+    width: auto;
+    padding-right: 80px;
+}
+
+.back-btn:hover:after {
+    right: 10px;
+    opacity: 1;
+}
+
+/* 로그인 사용자 정보를 위한 추가 스타일 */
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    margin-left: 10px;
+    font-weight: 500;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: all 0.2s ease;
+}
+
+.user-badge i {
+    margin-right: 5px;
+}
+
+.user-badge:hover {
+    background-color: var(--primary-color);
+    color: white;
 }

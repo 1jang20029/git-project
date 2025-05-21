@@ -159,6 +159,28 @@ document.addEventListener('DOMContentLoaded', function() {
         return userId;
     }
     
+    // 사용자 정보 가져오기
+    function getUserInfo(userId) {
+        let userInfo = {
+            name: '게스트',
+            department: null,
+            grade: null
+        };
+        
+        // 로그인 시스템에서 저장한 사용자 정보 가져오기
+        if (userId && userId !== 'guest') {
+            const userName = localStorage.getItem(`user_${userId}_name`);
+            const userDepartment = localStorage.getItem(`user_${userId}_department`);
+            const userGrade = localStorage.getItem(`user_${userId}_grade`);
+            
+            if (userName) userInfo.name = userName;
+            if (userDepartment) userInfo.department = userDepartment;
+            if (userGrade) userInfo.grade = userGrade;
+        }
+        
+        return userInfo;
+    }
+    
     // 맛집 데이터 불러오기 (모든 사용자가 공유)
     const loadRestaurantsFromStorage = function() {
         const storedData = localStorage.getItem('restaurants');
@@ -263,28 +285,44 @@ document.addEventListener('DOMContentLoaded', function() {
     // 모달 제목 요소 추가
     const modalTitle = document.querySelector('.modal-header h2');
     
-    // 수정/삭제 버튼 추가
-    let editDeleteButtonsHtml = `
-        <div class="detail-admin-buttons">
-            <button id="edit-restaurant-btn" class="action-btn edit-btn">
-                <i class="fas fa-edit"></i> 수정하기
-            </button>
-            <button id="delete-restaurant-btn" class="action-btn delete-btn">
-                <i class="fas fa-trash"></i> 삭제하기
-            </button>
-        </div>
-    `;
-    
-    // 상세 페이지 컨텐츠 영역에 버튼 추가 (HTML에 해당 버튼들이 없다면 JS에서 추가)
-    const detailContent = document.querySelector('.detail-content');
-    if (detailContent) {
-        // 이미 있는지 확인하고, 없으면 추가
-        if (!document.querySelector('.detail-admin-buttons')) {
-            const buttonDiv = document.createElement('div');
-            buttonDiv.className = 'detail-admin-buttons';
-            buttonDiv.innerHTML = editDeleteButtonsHtml;
-            // 기존 elements 뒤에 추가
-            detailContent.appendChild(buttonDiv);
+    // ===== 사용자 정보 표시 =====
+    function updateUserDisplay() {
+        const userInfo = getUserInfo(CURRENT_USER_ID);
+        const userInfoElement = document.getElementById('user-info');
+        const mobileUserInfoElement = document.getElementById('mobile-user-info');
+        
+        // 사용자 정보 업데이트 (데스크톱)
+        if (userInfoElement) {
+            if (userInfo.name !== '게스트') {
+                // 사용자 정보가 있는 경우
+                let displayText = userInfo.name;
+                
+                // 학과 및 학년 정보가 있으면 추가
+                if (userInfo.department && userInfo.grade) {
+                    displayText += ` (${userInfo.department} ${userInfo.grade}학년)`;
+                }
+                
+                userInfoElement.querySelector('.user-name').textContent = displayText;
+            } else {
+                // 게스트인 경우
+                userInfoElement.querySelector('.user-name').textContent = '게스트';
+            }
+        }
+        
+        // 모바일용 사용자 정보 업데이트
+        if (mobileUserInfoElement) {
+            if (userInfo.name !== '게스트') {
+                let displayText = userInfo.name;
+                
+                // 학과 및 학년 정보가 있으면 추가 (모바일에서는 간단하게)
+                if (userInfo.department) {
+                    displayText += ` (${userInfo.department})`;
+                }
+                
+                mobileUserInfoElement.querySelector('.user-name').textContent = displayText;
+            } else {
+                mobileUserInfoElement.querySelector('.user-name').textContent = '게스트';
+            }
         }
     }
     
@@ -658,7 +696,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     const imageIndex = parseInt(params.image);
                     if (imageIndex >= 0 && imageIndex < restaurant.images.length) {
                         currentImageIndex = imageIndex;
+                    } else {
+                        currentImageIndex = 0;
                     }
+                } else {
+                    currentImageIndex = 0;
                 }
                 
                 // 상세 정보 화면으로 바로 이동
@@ -1520,10 +1562,21 @@ document.addEventListener('DOMContentLoaded', function() {
         checkURLAndShowRestaurant();
     });
 
-    // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
-    refreshRestaurantsList();
-    addPopularRestaurantsSection();
-    
-    // URL 파라미터 확인하여 맛집 상세 정보 표시
-    checkURLAndShowRestaurant();
+    // 초기화 함수 정의
+    function init() {
+        // 사용자 정보 표시 업데이트
+        updateUserDisplay();
+        
+        // 맛집 목록 로드
+        refreshRestaurantsList();
+        
+        // 인기 맛집 섹션 추가
+        addPopularRestaurantsSection();
+        
+        // URL 파라미터 확인하여 맛집 상세 정보 표시
+        checkURLAndShowRestaurant();
+    }
+
+    // 초기화 실행
+    init();
 });
