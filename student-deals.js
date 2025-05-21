@@ -642,6 +642,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 페이지 로드 시 URL 파라미터 확인하여 맛집 상세 정보 표시
     function checkURLAndShowRestaurant() {
+        // 페이지 새로고침 여부 확인 (performance.navigation.type === 1은 새로고침을 의미)
+        if (performance.navigation.type === 1) {
+            // 새로고침인 경우, URL의 id 파라미터 무시하고 맛집 목록 화면 표시
+            restaurantDetail.classList.add('hidden');
+            restaurantsListSection.classList.remove('hidden');
+            selectedRestaurant = null;
+            
+            // URL에서 id 파라미터 제거
+            history.replaceState({}, '', window.location.pathname);
+            
+            return; // 함수 실행 종료
+        }
+        
         const params = getURLParameters();
         
         // id 파라미터가 있으면 해당 맛집 상세 정보 표시
