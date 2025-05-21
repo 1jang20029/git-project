@@ -1,4 +1,85 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 드롭다운 메뉴 생성
+    function createUserDropdown(parent) {
+        // 기존 드롭다운이 있으면 제거
+        const existingDropdown = document.querySelector('.user-dropdown');
+        if (existingDropdown) existingDropdown.remove();
+        
+        // 드롭다운 메뉴 생성
+        const dropdown = document.createElement('div');
+        dropdown.className = 'user-dropdown';
+        dropdown.innerHTML = `
+            <div class="dropdown-item">프로필 보기</div>
+            <div class="dropdown-item logout-btn">로그아웃</div>
+        `;
+        
+        // 스타일 설정
+        dropdown.style.position = 'absolute';
+        dropdown.style.backgroundColor = 'white';
+        dropdown.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+        dropdown.style.borderRadius = '8px';
+        dropdown.style.padding = '8px 0';
+        dropdown.style.zIndex = '1000';
+        dropdown.style.minWidth = '120px';
+        
+        // 드롭다운 아이템 스타일
+        const items = dropdown.querySelectorAll('.dropdown-item');
+        items.forEach(item => {
+            item.style.padding = '8px 16px';
+            item.style.cursor = 'pointer';
+            item.style.fontSize = '14px';
+            
+            // 호버 효과
+            item.addEventListener('mouseover', () => {
+                item.style.backgroundColor = '#f5f5f5';
+            });
+            item.addEventListener('mouseout', () => {
+                item.style.backgroundColor = 'transparent';
+            });
+        });
+        
+        // 로그아웃 버튼 클릭 이벤트
+        const logoutBtn = dropdown.querySelector('.logout-btn');
+        logoutBtn.addEventListener('click', function() {
+            logout(); // 기존 logout 함수 호출
+        });
+        
+        // 부모 요소에 추가하고 위치 조정
+        document.body.appendChild(dropdown);
+        const rect = parent.getBoundingClientRect();
+        dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+        dropdown.style.left = (rect.left + window.scrollX) + 'px';
+        
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target) && !parent.contains(e.target)) {
+                dropdown.remove();
+                document.removeEventListener('click', closeDropdown);
+            }
+        });
+        
+        return dropdown;
+    }
+    
+    // 프로필 클릭 이벤트 추가
+    if (userInfoElement) {
+        userInfoElement.style.cursor = 'pointer';
+        userInfoElement.addEventListener('click', function(e) {
+            e.stopPropagation();
+            createUserDropdown(this);
+        });
+    }
+    
+    // 모바일 프로필 클릭 이벤트 추가
+    if (mobileUserInfoElement) {
+        mobileUserInfoElement.style.cursor = 'pointer';
+        mobileUserInfoElement.addEventListener('click', function(e) {
+            e.stopPropagation();
+            createUserDropdown(this);
+        });
+    }
+
+    
     // 파란색 원형 '3' 버튼 제거 (floating-add-btn)
     const floatingButton = document.getElementById('floating-add-btn');
     if (floatingButton) {
