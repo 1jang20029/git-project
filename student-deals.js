@@ -1,14 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            logoutUser();
-        });
-    }
-
-    
     // 파란색 원형 '3' 버튼 제거 (floating-add-btn)
     const floatingButton = document.getElementById('floating-add-btn');
     if (floatingButton) {
@@ -190,19 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return userInfo;
     }
-
-
-    function logoutUser() {
-    // 로그아웃 확인 메시지
-    if (confirm("정말 로그아웃 하시겠습니까?")) {
-        // 로컬 스토리지에서 로그인 상태 제거
-        localStorage.removeItem('currentLoggedInUser');
-        
-        // 페이지 리로드하여 UI 업데이트
-        alert("로그아웃 되었습니다.");
-        location.reload();
-    }
-}
     
     // 맛집 데이터 불러오기 (모든 사용자가 공유)
     const loadRestaurantsFromStorage = function() {
