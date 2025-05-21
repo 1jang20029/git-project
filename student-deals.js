@@ -642,6 +642,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 페이지 로드 시 URL 파라미터 확인하여 맛집 상세 정보 표시
     function checkURLAndShowRestaurant() {
+        // URL에 파라미터가 없으면 항상 목록 페이지 표시
+        if (window.location.search === "") {
+            restaurantDetail.classList.add('hidden');
+            restaurantsListSection.classList.remove('hidden');
+            selectedRestaurant = null;
+            return;
+        }
+        
         const params = getURLParameters();
         
         // id 파라미터가 있으면 해당 맛집 상세 정보 표시
@@ -666,9 +674,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`맛집 '${restaurant.name}'의 상세 정보 페이지를 표시합니다.`);
             } else {
                 console.error(`ID ${restaurantId}에 해당하는 맛집을 찾을 수 없습니다.`);
-                // 맛집을 찾을 수 없을 경우 알림 표시 (선택사항)
-                alert('요청하신 맛집 정보를 찾을 수 없습니다.');
+                // 맛집을 찾을 수 없을 경우 목록 페이지로 이동
+                restaurantDetail.classList.add('hidden');
+                restaurantsListSection.classList.remove('hidden');
+                selectedRestaurant = null;
+                history.replaceState({}, '', window.location.pathname);
             }
+        } else {
+            // id 파라미터가 없으면 목록 페이지 표시
+            restaurantDetail.classList.add('hidden');
+            restaurantsListSection.classList.remove('hidden');
+            selectedRestaurant = null;
         }
     }
     
@@ -779,8 +795,8 @@ document.addEventListener('DOMContentLoaded', function() {
         restaurantsListSection.classList.remove('hidden');
         selectedRestaurant = null;
         
-        // URL 업데이트 - 목록 페이지로 돌아감을 표시
-        updateURL(null);
+        // URL에서 파라미터를 완전히 제거
+        history.pushState({}, '', window.location.pathname);
     });
 
     // ===== 갤러리 네비게이션 =====
