@@ -5,12 +5,134 @@ document.addEventListener('DOMContentLoaded', function() {
         floatingButton.remove();
         console.log('파란색 원형 3 버튼이 제거되었습니다.');
     }
-    
-    // 중요: 모든 맛집 데이터 완전 삭제
-    localStorage.clear(); // 모든 로컬 스토리지 데이터 삭제
-    
-    // 초기 데이터 - 빈 배열로 설정
-    const restaurantsData = [];
+
+    // 초기 데이터 - 모든 값을 0으로 초기화
+    const restaurantsData = [
+        {
+            id: 1,
+            name: '지지고 안양 연성대점',
+            location: '경기도 안양시 만안구 양화로37번길 23',
+            hours: '월금 10:30-19:30, 토 12:00-18:00 (일요일 휴무)',
+            menu: '지지고누들, 지지고라이스, 참치마요, 고기마요 등',
+            features: '철판볶음우동과 컵밥이 인기이며, 맛있한 맛과 가성비 좋은 가격으로 학생들에게 사랑받는 곳입니다.',
+            category: '한식',
+            likes: 0,
+            stars: 0,
+            dislikes: 0,
+            images: [
+                'images/GGgo-yeonsung.jpg',
+                'images/GGgoPrice.jpg'
+            ],
+            createdBy: 'system',
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 2,
+            name: '부대촌',
+            location: '연성대학교 인근 맛집거리',
+            hours: '10:00-21:00',
+            menu: '제육볶음, 부대찌개',
+            features: '오랜 전통을 가진 음식점으로, 학생들이 자주 찾는 곳입니다.',
+            category: '한식',
+            likes: 0,
+            stars: 0,
+            dislikes: 0,
+            images: [
+                'images/budaechon.jpg'
+            ],
+            createdBy: 'system',
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 3,
+            name: '달콩이네',
+            location: '경기도 안양시 만안구 양화로36번길 9',
+            hours: '11:00-21:00',
+            menu: '해장국',
+            features: '대로변이 아니어서 아는 사람만 아는 숨은 맛집으로, 해장국이 인기입니다.',
+            category: '한식',
+            likes: 0,
+            stars: 0,
+            dislikes: 0,
+            images: [
+                'images/dalkong.jpg',
+                'images/dalkongPrice.jpg'
+            ],
+            createdBy: 'system',
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 4,
+            name: '갯마을 칼국수 보쌈',
+            location: '경기도 안양시 만안구 양화로 25',
+            hours: '매일 10:00-22:00',
+            menu: '칼국수, 보쌈',
+            features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
+            category: '한식',
+            likes: 0,
+            stars: 0,
+            dislikes: 0,
+            images: [
+                'images/gaesma-eul.jpg',
+                'images/gaesma-eulPrice.jpg'
+            ],
+            createdBy: 'system',
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 5,
+            name: '삼덕바베큐',
+            location: '안양중앙시장 내',
+            hours: '11:00-22:00',
+            menu: '돼지고기, 소고기 바베큐',
+            features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
+            category: '한식',
+            likes: 0,
+            stars: 0,
+            dislikes: 0,
+            images: [
+                'images/samdeogbabekyu.jpg',
+                'images/samdeogbabekyuPrice.jpg'
+            ],
+            createdBy: 'system',
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 6,
+            name: '명가돈까스',
+            location: '안양중앙시장 인근',
+            hours: '11:00-21:00',
+            menu: '돈까스, 국수',
+            features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
+            category: '일식',
+            likes: 0,
+            stars: 0,
+            dislikes: 0,
+            images: [
+                'images/myeong-gadonkkaseu.jpg'
+            ],
+            createdBy: 'system',
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 7,
+            name: '원조닭꼬치',
+            location: '안양중앙시장 내',
+            hours: '11:00-20:00',
+            menu: '닭꼬치',
+            features: '부드러운 닭고기와 매콤달콤한 소스의 조화가 일품인 닭꼬치 전문점입니다.',
+            category: '분식',
+            likes: 0,
+            stars: 0,
+            dislikes: 0,
+            images: [
+                'images/wonjodalgkkochi.jpg',
+                'images/wonjodalgkkochiFood.jpg'
+            ],
+            createdBy: 'system',
+            createdAt: new Date().toISOString()
+        }
+    ];
 
     // ===== 전역 상수 =====
     const CURRENT_USER_ID = getUserId(); // 현재 사용자 ID 가져오기
@@ -39,12 +161,30 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 맛집 데이터 불러오기 (모든 사용자가 공유)
     const loadRestaurantsFromStorage = function() {
-        // 항상 빈 배열 반환 (초기 데이터 사용)
-        return [];
+        const storedData = localStorage.getItem('restaurants');
+        let restaurants = storedData ? JSON.parse(storedData) : restaurantsData;
+        
+        // 각 맛집의 좋아요/별점/싫어요 수를 별도로 불러와 업데이트
+        restaurants.forEach(restaurant => {
+            const likesKey = `restaurantLikes_${restaurant.id}`;
+            const starsKey = `restaurantStars_${restaurant.id}`;
+            const dislikesKey = `restaurantDislikes_${restaurant.id}`;
+            
+            const likesData = localStorage.getItem(likesKey);
+            const starsData = localStorage.getItem(starsKey);
+            const dislikesData = localStorage.getItem(dislikesKey);
+            
+            restaurant.likes = likesData !== null ? parseInt(likesData) : 0;
+            restaurant.stars = starsData !== null ? parseInt(starsData) : 0;
+            restaurant.dislikes = dislikesData !== null ? parseInt(dislikesData) : 0;
+        });
+        
+        return restaurants;
     };
 
     // 맛집 데이터 저장하기 (모든 사용자가 공유)
     const saveRestaurantsToStorage = function() {
+        // 기본 맛집 정보 저장 (좋아요/별점/싫어요 수는 별도로 저장)
         localStorage.setItem('restaurants', JSON.stringify(restaurants));
         
         // 각 맛집의 좋아요/별점/싫어요 수를 별도로 저장
@@ -66,6 +206,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 사용자 상호작용 데이터 불러오기 (각 사용자마다 독립적)
     const loadUserInteractions = function() {
+        const storedData = localStorage.getItem(`userInteractions_${CURRENT_USER_ID}`);
+        if (storedData) {
+            return JSON.parse(storedData);
+        }
         return {
             likedRestaurants: [],
             starredRestaurants: [],
@@ -80,7 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 인기 맛집 가져오기 (좋아요 기준 상위 3개)
     const getPopularRestaurants = function() {
-        return [];
+        return [...restaurants]
+            .sort((a, b) => b.likes - a.likes)
+            .slice(0, 3);
     };
 
     // ===== 전역 상태 =====
@@ -537,6 +683,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('요청하신 맛집 정보를 찾을 수 없습니다.');
             }
         }
+    }
+    
+    // URL 업데이트 함수 추가 (새로고침 시 현재 상태 유지를 위해)
+    function updateURL(restaurantId, imageIndex = 0) {
+        // 현재 URL 정보 가져오기
+        const url = new URL(window.location);
+        
+        if (restaurantId) {
+            // 상세 정보 페이지인 경우 URL 파라미터 설정
+            url.searchParams.set('id', restaurantId);
+            url.searchParams.set('image', imageIndex);
+        } else {
+            // 목록 페이지인 경우 URL 파라미터 제거
+            url.searchParams.delete('id');
+            url.searchParams.delete('image');
+        }
+        
+        // URL 업데이트 (페이지 새로고침 없이)
+        history.pushState({}, '', url);
     }
 
     // ===== 맛집 상세 정보 업데이트 =====
@@ -1146,25 +1311,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // URL 업데이트 함수 추가 (새로고침 시 현재 상태 유지를 위해)
-    function updateURL(restaurantId, imageIndex = 0) {
-        // 현재 URL 정보 가져오기
-        const url = new URL(window.location);
-        
-        if (restaurantId) {
-            // 상세 정보 페이지인 경우 URL 파라미터 설정
-            url.searchParams.set('id', restaurantId);
-            url.searchParams.set('image', imageIndex);
-        } else {
-            // 목록 페이지인 경우 URL 파라미터 제거
-            url.searchParams.delete('id');
-            url.searchParams.delete('image');
-        }
-        
-        // URL 업데이트 (페이지 새로고침 없이)
-        history.pushState({}, '', url);
-    }
-    
     // 파란색 '3' 버튼을 감추기 위한 추가 CSS 스타일
     const additionalStyle = document.createElement('style');
     additionalStyle.textContent = `
@@ -1389,6 +1535,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
     refreshRestaurantsList();
+    addPopularRestaurantsSection();
     
     // URL 파라미터 확인하여 맛집 상세 정보 표시
     checkURLAndShowRestaurant();
