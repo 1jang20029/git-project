@@ -5156,122 +5156,8 @@ function loadPopularRestaurants() {
     if (typeof window.restaurantsData !== 'undefined') {
         restaurantsData = window.restaurantsData;
     } else {
-        // 없다면 기본 데이터 사용
-        restaurantsData = [
-            {
-                id: 1,
-                name: '지지고 안양 연성대점',
-                location: '경기도 안양시 만안구 양화로37번길 23',
-                hours: '월금 10:30-19:30, 토 12:00-18:00',
-                menu: '지지고누들, 지지고라이스',
-                features: '철판볶음우동과 컵밥이 인기이며, 맛있는 맛과 가성비 좋은 가격으로 학생들에게 사랑받는 곳입니다.',
-                category: '한식',
-                discount: '학생증 제시 시 15% 할인',
-                likes: 3,
-                stars: 5,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/orange/white?text=지지고'
-                ]
-            },
-            {
-                id: 2,
-                name: '부대촌',
-                location: '연성대학교 인근 맛집거리',
-                hours: '10:00-21:00',
-                menu: '제육볶음, 부대찌개',
-                features: '오랜 전통을 가진 음식점으로, 학생들이 자주 찾는 곳입니다.',
-                category: '한식',
-                discount: '학생증 제시 시 5% 할인',
-                likes: 1,
-                stars: 4,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/orange/white?text=부대촌'
-                ]
-            },
-            {
-                id: 3,
-                name: '달공이네',
-                location: '경기도 안양시 만안구 양화로36번길 9',
-                hours: '11:00-21:00',
-                menu: '해장국',
-                features: '대로변이 아니어서 아는 사람만 아는 숨은 맛집으로, 해장국이 인기입니다.',
-                category: '한식',
-                discount: '학생 10% 할인',
-                likes: 1,
-                stars: 3,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/orange/white?text=달공이네'
-                ]
-            },
-            {
-                id: 4,
-                name: '겟마을 칼국수 보쌈',
-                location: '경기도 안양시 만안구 양화로 25',
-                hours: '매일 10:00-22:00',
-                menu: '칼국수, 보쌈',
-                features: '연성대 건축과 학생들이 추천하는 맛집으로, 칼국수와 보쌈이 인기입니다.',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                stars: 4,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/orange/white?text=칼국수',
-                    'https://placehold.co/400x250/orange/white?text=보쌈'
-                ]
-            },
-            {
-                id: 5,
-                name: '삼덕바베큐',
-                location: '안양중앙시장 내',
-                hours: '11:00-22:00',
-                menu: '돼지고기, 소고기 바베큐',
-                features: '훈연한 고기의 부드러움과 쫄깃함을 동시에 느낄 수 있는 BBQ 전문점입니다.',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                stars: 4,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/orange/white?text=바베큐'
-                ]
-            },
-            {
-                id: 6,
-                name: '명가돈까스',
-                location: '안양중앙시장 인근',
-                hours: '11:00-21:00',
-                menu: '돈까스, 국수',
-                features: '오랜 전통을 자랑하는 돈까스 전문점으로, 바삭한 돈까스와 함께 나오는 국수나 밥의 조화가 일품입니다.',
-                category: '양식',
-                discount: '없음',
-                likes: 1,
-                stars: 3,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/yellow/black?text=돈까스'
-                ]
-            },
-            {
-                id: 7,
-                name: '원조닭꼬치',
-                location: '안양중앙시장 내',
-                hours: '11:00-20:00',
-                menu: '닭꼬치',
-                features: '부드러운 닭고기와 매콤달콤한 소스의 조화가 일품인 닭꼬치 전문점입니다.',
-                category: '분식',
-                discount: '없음',
-                likes: 0,
-                stars: 4,
-                dislikes: 0,
-                images: [
-                    'https://placehold.co/400x250/red/white?text=닭꼬치'
-                ]
-            }
-        ];
+        // 더미 데이터 제거 - 빈 배열로 초기화
+        restaurantsData = [];
         
         // 로컬 스토리지에서 불러오기 시도
         const savedData = localStorage.getItem('restaurantsData');
@@ -5307,7 +5193,7 @@ function loadPopularRestaurants() {
             <div class="popular-restaurant-item">
                 <div class="restaurant-content">
                     <div class="restaurant-name">등록된 맛집 정보가 없습니다</div>
-                    <div class="restaurant-description">새로운 맛집 정보가 곧 업데이트될 예정입니다.</div>
+                    <div class="restaurant-description">맛집 탐방 페이지에서 맛집을 등록해보세요!</div>
                 </div>
             </div>
         `;
@@ -5339,7 +5225,7 @@ function loadPopularRestaurants() {
                 <div class="restaurant-category">${restaurant.category}</div>
                 <div class="restaurant-name">${restaurant.name}</div>
                 <div class="restaurant-discount">
-                    <span class="discount-icon">💰</span> ${restaurant.discount}
+                    <span class="discount-icon">💰</span> ${restaurant.discount || '할인 정보 없음'}
                 </div>
                 <div class="restaurant-location">
                     <span class="location-icon">📍</span> ${restaurant.location}
@@ -5397,56 +5283,10 @@ function displayPopularRestaurantsOnMainPage() {
         // 기본 데이터 사용
         restaurants = restaurantsData;
     } else {
-        console.log('맛집 데이터를 찾을 수 없습니다. 기본 데이터를 사용합니다.');
+        console.log('맛집 데이터를 찾을 수 없습니다.');
         
-        // 기본 데이터 설정 - 실제 이미지 파일 경로 사용
-        restaurants = [
-            {
-                id: 1,
-                name: '지지고 안양 연성대점',
-                location: '경기도 안양시 만안구 양화로37번길 23',
-                category: '한식',
-                discount: '학생증 제시 시 15% 할인',
-                likes: 3,
-                images: ['images/GGgo-yeonsung.jpg', 'images/GGgoPrice.jpg']
-            },
-            {
-                id: 2,
-                name: '부대촌',
-                location: '연성대학교 인근 맛집거리',
-                category: '한식',
-                discount: '학생증 제시 시 5% 할인',
-                likes: 1,
-                images: ['images/budaechon.jpg']
-            },
-            {
-                id: 3,
-                name: '달콩이네',
-                location: '경기도 안양시 만안구 양화로36번길 9',
-                category: '한식',
-                discount: '학생 10% 할인',
-                likes: 1,
-                images: ['images/dalkong.jpg', 'images/dalkongPrice.jpg']
-            },
-            {
-                id: 4,
-                name: '갯마을 칼국수 보쌈',
-                location: '경기도 안양시 만안구 양화로 25',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                images: ['images/gaesma-eul.jpg', 'images/gaesma-eulPrice.jpg']
-            },
-            {
-                id: 5,
-                name: '삼덕바베큐',
-                location: '안양중앙시장 내',
-                category: '한식',
-                discount: '없음',
-                likes: 5,
-                images: ['images/samdeogbabekyu.jpg', 'images/samdeogbabekyuPrice.jpg']
-            }
-        ];
+        // 더미 데이터 제거 - 빈 배열로 초기화
+        restaurants = [];
     }
 
     // 인기 맛집 가져오기 (좋아요 기준 상위 3개)
@@ -5468,7 +5308,7 @@ function displayPopularRestaurantsOnMainPage() {
             <div class="popular-restaurant-item">
                 <div class="restaurant-content">
                     <div class="restaurant-name">등록된 맛집 정보가 없습니다</div>
-                    <div class="restaurant-discount">새로운 맛집 정보가 곧 업데이트될 예정입니다.</div>
+                    <div class="restaurant-discount">맛집 탐방 페이지에서 맛집을 등록해보세요!</div>
                 </div>
             </div>
         `;
@@ -5520,6 +5360,7 @@ function displayPopularRestaurantsOnMainPage() {
         popularRestaurantsList.appendChild(restaurantElement);
     });
 }
+
 
 // 카테고리에 따른 이모지 반환 함수
 function getCategoryEmoji(category) {
@@ -5616,6 +5457,8 @@ function toggleReaction(restaurantId, reactionType) {
     
     return { restaurant, hasReacted };
 }
+
+
 
 // CSS 스타일 삽입
 function addRestaurantStyles() {
@@ -5739,9 +5582,6 @@ function addRestaurantStyles() {
 
 // 페이지 로드 시 인기 맛집 정보 표시
 document.addEventListener('DOMContentLoaded', function() {
-    // 스타일 추가
-    addRestaurantStyles();
-    
     // 인기 맛집 정보 표시
     displayPopularRestaurantsOnMainPage();
     
