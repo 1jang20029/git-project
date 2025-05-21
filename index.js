@@ -5619,7 +5619,11 @@ function toggleReaction(restaurantId, reactionType) {
 
 // CSS 스타일 삽입
 function addRestaurantStyles() {
+    // 이미 스타일이 있는지 확인
+    if (document.getElementById('restaurant-custom-styles')) return;
+    
     const styleElement = document.createElement('style');
+    styleElement.id = 'restaurant-custom-styles';
     styleElement.textContent = `
         .popular-restaurant-item {
             display: flex;
@@ -5632,8 +5636,8 @@ function addRestaurantStyles() {
         }
         
         .restaurant-image {
-            width: 60px;
-            height: 60px;
+            width: 92px;
+            height: 92px;
             border-radius: 8px;
             overflow: hidden;
             margin-right: 16px;
@@ -5643,6 +5647,7 @@ function addRestaurantStyles() {
             justify-content: center;
             align-items: center;
             font-size: 28px;
+            position: relative;
         }
         
         .restaurant-content {
@@ -5652,32 +5657,46 @@ function addRestaurantStyles() {
         }
         
         .restaurant-category {
-            font-size: 13px;
+            font-size: 14px;
             color: #666;
             margin-bottom: 4px;
         }
         
         .restaurant-name {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+        }
+        
+        .restaurant-discount {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .discount-icon {
+            margin-right: 4px;
+            color: #c62917;
         }
         
         .restaurant-location {
-            font-size: 13px;
+            font-size: 14px;
             color: #666;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
         }
         
-        .restaurant-features {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 4px;
-            line-height: 1.4;
+        .location-icon {
+            margin-right: 4px;
         }
         
         .restaurant-likes {
-            font-size: 14px;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
             color: #c62917;
             font-weight: bold;
         }
@@ -5688,8 +5707,31 @@ function addRestaurantStyles() {
             border: none;
             border-radius: 4px;
             padding: 6px 12px;
-            font-size: 13px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
+        }
+        
+        .best-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #c62917;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 0 0 5px 0;
+        }
+        
+        .user-created-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: rgba(61, 90, 241, 0.9);
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 5px 0 0 0;
         }
     `;
     document.head.appendChild(styleElement);
