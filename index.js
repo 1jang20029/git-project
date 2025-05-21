@@ -5491,6 +5491,15 @@ function displayPopularRestaurantsOnMainPage() {
         const restaurantElement = document.createElement('div');
         restaurantElement.className = 'popular-restaurant-item';
         
+        // 전체 항목 클릭 시 상세 페이지로 이동하는 이벤트 추가
+        restaurantElement.addEventListener('click', function() {
+            // 상세 페이지로 이동하되, 상세보기 버튼 클릭은 별도 처리 (이벤트 버블링 방지)
+            if (!event.target.closest('.detail-button')) {
+                goToRestaurantDetail(restaurant.id);
+            }
+        });
+        restaurantElement.style.cursor = 'pointer';
+        
         // 사용자가 등록한 맛집인지 확인
         const currentUser = localStorage.getItem('currentLoggedInUser');
         const isCreator = currentUser && String(restaurant.createdBy) === String(currentUser);
@@ -5511,7 +5520,7 @@ function displayPopularRestaurantsOnMainPage() {
                     <span class="discount-icon">💰</span> ${restaurant.discount || '할인 없음'}
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                    <button class="detail-button" onclick="window.location.href='student-deals.html?id=${restaurant.id}'">상세보기</button>
+                    <button class="detail-button" onclick="goToRestaurantDetail(${restaurant.id}); event.stopPropagation();">상세보기</button>
                     <div class="restaurant-likes">👍 ${likeCount}</div>
                 </div>
             </div>
@@ -5536,13 +5545,11 @@ function getCategoryEmoji(category) {
 }
 
 // 상세 페이지로 이동 함수
-function goToRestaurantPage(restaurantId) {
-    console.log(`맛집 ID ${restaurantId} 상세 페이지로 이동합니다.`);
-    
+function goToRestaurantDetail(restaurantId) {
     // 현재 페이지 URL 저장 (돌아올 수 있도록)
     localStorage.setItem('previous_page', window.location.href);
     
-    // 상세 페이지로 이동
+    // 맛집 ID를 URL 파라미터로 전달하여 상세 페이지로 이동
     window.location.href = `student-deals.html?id=${restaurantId}`;
 }
 
