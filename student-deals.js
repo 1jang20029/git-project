@@ -182,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return restaurants;
     };
 
-
     // 맛집 데이터 저장하기 (모든 사용자가 공유)
     const saveRestaurantsToStorage = function() {
         // 기본 맛집 정보 저장 (좋아요/별점/싫어요 수는 별도로 저장)
@@ -289,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 인기 맛집 섹션 추가 (메인 페이지에 추가) - 이 부분은 유지
+    // 인기 맛집 섹션 추가 (메인 페이지에 추가)
     const addPopularRestaurantsSection = function() {
         // 메인 페이지에 인기 맛집 섹션이 존재하는지 확인
         const existingSection = document.getElementById('popular-restaurants-section');
@@ -418,7 +417,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('add-place-btn').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('mobile-add-btn').addEventListener('click', toggleAddRestaurantModal);
-    // floating-add-btn 이벤트 리스너는 제거했지만 다른 버튼들의 기능은 유지합니다
     document.getElementById('close-modal').addEventListener('click', toggleAddRestaurantModal);
     document.getElementById('cancel-add').addEventListener('click', toggleAddRestaurantModal);
     
@@ -628,6 +626,43 @@ document.addEventListener('DOMContentLoaded', function() {
             refreshRestaurantsList();
         }
     });
+
+    // ===== URL 파라미터 처리 =====
+    // URL에서 파라미터 가져오기
+    function getURLParameters() {
+        const params = {};
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        for (const [key, value] of urlParams.entries()) {
+            params[key] = value;
+        }
+        
+        return params;
+    }
+    
+    // 페이지 로드 시 URL 파라미터 확인하여 맛집 상세 정보 표시
+    function checkURLAndShowRestaurant() {
+        const params = getURLParameters();
+        
+        // id 파라미터가 있으면 해당 맛집 상세 정보 표시
+        if (params.id) {
+            const restaurantId = parseInt(params.id);
+            console.log(`URL 파라미터로 전달된 맛집 ID: ${restaurantId}`);
+            
+            // 해당 ID의 맛집 찾기
+            const restaurant = restaurants.find(r => r.id === restaurantId);
+            
+            if (restaurant) {
+                // 상세 정보 화면으로 바로 이동
+                showRestaurantDetail(restaurantId);
+                console.log(`맛집 '${restaurant.name}'의 상세 정보 페이지를 표시합니다.`);
+            } else {
+                console.error(`ID ${restaurantId}에 해당하는 맛집을 찾을 수 없습니다.`);
+                // 맛집을 찾을 수 없을 경우 알림 표시 (선택사항)
+                alert('요청하신 맛집 정보를 찾을 수 없습니다.');
+            }
+        }
+    }
 
     // ===== 맛집 상세 정보 업데이트 =====
     const updateRestaurantDetail = function(restaurant) {
@@ -1438,4 +1473,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
     refreshRestaurantsList();
     addPopularRestaurantsSection();
+    
+    // URL 파라미터 확인하여 맛집 상세 정보 표시 (새로 추가)
+    checkURLAndShowRestaurant();
 });
