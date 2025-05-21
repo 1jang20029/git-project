@@ -261,6 +261,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const imagePreviews = document.getElementById('image-previews');
     const restaurantForm = document.getElementById('restaurant-form');
     
+    // ===== URL 파라미터 처리 함수 =====
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        const results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+    
+    // URL에서 맛집 ID 가져오기
+    const restaurantIdParam = getUrlParameter('id');
+    
+    // 맛집 ID가 있으면 바로 상세 페이지 표시
+    if (restaurantIdParam && restaurantIdParam !== '') {
+        const restaurantId = parseInt(restaurantIdParam);
+        console.log('URL 파라미터로 맛집 ID 확인:', restaurantId);
+        
+        // ID에 해당하는 맛집 찾기
+        const restaurant = restaurants.find(r => r.id === restaurantId);
+        
+        if (restaurant) {
+            console.log('특정 맛집 정보 찾음:', restaurant.name);
+            
+            // 필요한 초기화 작업 완료 후 상세 페이지 표시 (약간의 지연 추가)
+            setTimeout(() => {
+                showRestaurantDetail(restaurantId);
+            }, 100);
+        } else {
+            console.error(`ID ${restaurantId}에 해당하는 맛집을 찾을 수 없습니다.`);
+            // 맛집을 찾지 못한 경우 목록 페이지 표시
+            refreshRestaurantsList();
+        }
+    } else {
+        // 파라미터가 없으면 기본 목록 표시
+        refreshRestaurantsList();
+    }
+    
     // 모달 제목 요소 추가
     const modalTitle = document.querySelector('.modal-header h2');
     
@@ -714,6 +750,13 @@ document.addEventListener('DOMContentLoaded', function() {
         restaurantDetail.classList.add('hidden');
         restaurantsListSection.classList.remove('hidden');
         selectedRestaurant = null;
+        
+        // URL에서 id 파라미터 제거 (브라우저 히스토리 관리)
+        if (window.history && window.history.pushState) {
+            const url = new URL(window.location);
+            url.searchParams.delete('id');
+            window.history.pushState({}, '', url);
+        }
     });
 
     // ===== 갤러리 네비게이션 =====
@@ -818,6 +861,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         restaurantsListSection.classList.remove('hidden');
                         selectedRestaurant = null;
                         
+                        // URL에서 id 파라미터 제거
+                        if (window.history && window.history.pushState) {
+                            const url = new URL(window.location);
+                            url.searchParams.delete('id');
+                            window.history.pushState({}, '', url);
+                        }
+                        
                         // 맛집 목록 새로고침
                         refreshRestaurantsList();
                         
@@ -864,6 +914,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 인기 맛집 섹션 업데이트
             addPopularRestaurantsSection();
+            
+            // 다른 페이지에서의 맛집 업데이트를 위한 이벤트 발생
+            // 이 이벤트는 다른 탭이나 윈도우에서 감지되지 않지만, 
+            // 메인 페이지로 이동했을 때 업데이트된 데이터를 볼 수 있도록 함
+            const event = new CustomEvent('restaurantUpdated');
+            window.dispatchEvent(event);
         }
     });
 
@@ -897,6 +953,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 목록에 있는 해당 맛집의 추천해요 수도 업데이트
             updateRestaurantInList(restaurantId);
+            
+            // 다른 페이지에서의 맛집 업데이트를 위한 이벤트 발생
+            const event = new CustomEvent('restaurantUpdated');
+            window.dispatchEvent(event);
         }
     });
 
@@ -930,6 +990,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 목록에 있는 해당 맛집의 싫어요 수도 업데이트
             updateRestaurantInList(restaurantId);
+            
+            // 다른 페이지에서의 맛집 업데이트를 위한 이벤트 발생
+            const event = new CustomEvent('restaurantUpdated');
+            window.dispatchEvent(event);
         }
     });
 
@@ -1064,6 +1128,13 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('click', function(e) {
             // 버튼 클릭은 제외
             if (!e.target.closest('.card-action-btn')) {
+                // 맛집 ID를 URL 파라미터로 추가하고 상세 페이지 표시
+                if (window.history && window.history.pushState) {
+                    const url = new URL(window.location);
+                    url.searchParams.set('id', restaurant.id);
+                    window.history.pushState({}, '', url);
+                }
+                
                 showRestaurantDetail(restaurant.id);
             }
         });
@@ -1104,6 +1175,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 인기 맛집 섹션 업데이트
             addPopularRestaurantsSection();
+            
+            // 다른 페이지에서의 맛집 업데이트를 위한 이벤트 발생
+            const event = new CustomEvent('restaurantUpdated');
+            window.dispatchEvent(event);
         });
         
         // 추천해요(별표) 버튼 이벤트 핸들러 추가
@@ -1137,6 +1212,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 인기 맛집 섹션 업데이트
             addPopularRestaurantsSection();
+            
+            // 다른 페이지에서의 맛집 업데이트를 위한 이벤트 발생
+            const event = new CustomEvent('restaurantUpdated');
+            window.dispatchEvent(event);
         });
         
         // 싫어요 버튼 이벤트 - 중복 제거하고 하나만 유지
@@ -1170,6 +1249,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 인기 맛집 섹션 업데이트
             addPopularRestaurantsSection();
+            
+            // 다른 페이지에서의 맛집 업데이트를 위한 이벤트 발생
+            const event = new CustomEvent('restaurantUpdated');
+            window.dispatchEvent(event);
         });
         
         return card;
@@ -1320,6 +1403,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         .popular-rank {
+            position: absolute;
+            top: 0;
+            left: 0;
             background-color: var(--primary-color);
             color: white;
             width: 28px;
@@ -1329,9 +1415,6 @@ document.addEventListener('DOMContentLoaded', function() {
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            position: absolute;
-            top: 5px;
-            left: 5px;
             z-index: 2;
             font-size: 0.9rem;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -1434,8 +1517,63 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
+    
+    // ===== 카테고리 이모지 반환 함수 =====
+    function getCategoryEmoji(category) {
+        switch(category) {
+            case '한식': return '🍲';
+            case '중식': return '🥢';
+            case '일식': return '🍣';
+            case '양식': return '🍝';
+            case '분식': return '🍜';
+            case '카페': return '☕';
+            case '술집': return '🍺';
+            default: return '🍽️';
+        }
+    }
 
     // 초기 맛집 목록 로드 및 인기 맛집 섹션 추가
-    refreshRestaurantsList();
-    addPopularRestaurantsSection();
+    // URL 파라미터가 있으면 상세 페이지를, 없으면 목록을 표시합니다.
+    if (!restaurantIdParam) {
+        refreshRestaurantsList();
+        addPopularRestaurantsSection();
+    }
+    
+    // 페이지 이동 시 이벤트 처리 - popstate 이벤트 리스너 추가
+    window.addEventListener('popstate', function(event) {
+        // URL 파라미터 다시 확인
+        const newIdParam = getUrlParameter('id');
+        
+        if (newIdParam && newIdParam !== '') {
+            // ID 파라미터가 있으면 상세 페이지 표시
+            const restaurantId = parseInt(newIdParam);
+            showRestaurantDetail(restaurantId);
+        } else {
+            // ID 파라미터가 없으면 목록 페이지 표시
+            restaurantDetail.classList.add('hidden');
+            restaurantsListSection.classList.remove('hidden');
+            selectedRestaurant = null;
+        }
+    });
+    
+    // 맛집 업데이트 감지 및 처리를 위한 이벤트 리스너
+    window.addEventListener('restaurantUpdated', function() {
+        console.log('맛집 데이터 업데이트 감지됨');
+        
+        // 상세 페이지가 표시 중이고 선택된 맛집이 있으면 상세 정보 업데이트
+        if (!restaurantDetail.classList.contains('hidden') && selectedRestaurant) {
+            // 최신 데이터로 업데이트
+            const updatedRestaurant = restaurants.find(r => r.id === selectedRestaurant.id);
+            if (updatedRestaurant) {
+                selectedRestaurant = updatedRestaurant;
+                updateRestaurantDetail(selectedRestaurant);
+            }
+        }
+        
+        // 목록 갱신
+        refreshRestaurantsList();
+        
+        // 인기 맛집 섹션 업데이트
+        addPopularRestaurantsSection();
+    });
 });
