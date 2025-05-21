@@ -4,7 +4,7 @@ const buildingData = [
     id: '공학1관',
     name: '공학1관',
     description: '공학계열 강의실, 실험실',
-    image: 'https://placehold.co/80x60/gray/white?text=공학1관',
+    image: 'images/EngineeringBuilding1',
     type: 'building',
     position: { lat: 37.39632767479923, lng: 126.90699348692698 }
 },
