@@ -1,4 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 맛집 데이터 초기화하고 로컬 스토리지에서도 삭제
+    localStorage.removeItem('restaurants');
+
+
+    // 좋아요/별점/싫어요 데이터도 삭제
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('restaurantLikes_') || key.startsWith('restaurantStars_') || key.startsWith('restaurantDislikes_')) {
+            localStorage.removeItem(key);
+        }
+    }
+
+
     // 파란색 원형 '3' 버튼 제거 (floating-add-btn)
     const floatingButton = document.getElementById('floating-add-btn');
     if (floatingButton) {
