@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학사일정 - 연성대학교</title>
+    <link rel="stylesheet" href="academic-calendar.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <button class="back-button" onclick="goBack()">
+                <span class="back-icon">←</span>
+            </button>
+            <h1 class="header-title">학사일정</h1>
+            <button class="today-button" onclick="goToToday()">오늘</button>
+        </header>
+
+        <!-- 년도 및 학기 선택 -->
+        <div class="period-selector">
+            <button class="period-nav-btn" onclick="changePeriod(-1)">‹</button>
+            <div class="period-info">
+                <span class="year">2025학년도</span>
+                <span class="semester">1학기</span>
+            </div>
+            <button class="period-nav-btn" onclick="changePeriod(1)">›</button>
+        </div>
+
+        <!-- 필터 옵션 -->
+        <div class="filter-section">
+            <div class="filter-chips">
+                <button class="filter-chip active" data-filter="all">전체</button>
+                <button class="filter-chip" data-filter="exam">시험</button>
+                <button class="filter-chip" data-filter="registration">수강신청</button>
+                <button class="filter-chip" data-filter="scholarship">장학</button>
+                <button class="filter-chip" data-filter="event">행사</button>
+                <button class="filter-chip" data-filter="holiday">휴일</button>
+            </div>
+        </div>
+
+        <!-- 달력 뷰 토글 -->
+        <div class="view-toggle">
+            <button class="view-btn active" data-view="list">목록</button>
+            <button class="view-btn" data-view="calendar">달력</button>
+        </div>
+
+        <!-- 목록 뷰 -->
+        <div class="content-area" id="list-view">
+            <div class="month-section">
+                <div class="month-header">
+                    <h2 class="month-title">1월</h2>
+                    <span class="event-count">8개 일정</span>
+                </div>
+                <div class="events-list">
+                    <div class="event-item urgent">
+                        <div class="event-date">
+                            <span class="day">1</span>
+                            <span class="weekday">수</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">신정</div>
+                            <div class="event-type">공휴일</div>
+                        </div>
+                        <div class="event-badge holiday">휴일</div>
+                    </div>
+                    
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">6</span>
+                            <span class="weekday">월</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">동계 계절학기</div>
+                            <div class="event-type">1월 6일 ~ 1월 17일</div>
+                        </div>
+                        <div class="event-badge academic">학사</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">7</span>
+                            <span class="weekday">화</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">2학기 성적확정</div>
+                            <div class="event-type">성적 관련</div>
+                        </div>
+                        <div class="event-badge grade">성적</div>
+                    </div>
+
+                    <div class="event-item important">
+                        <div class="event-date">
+                            <span class="day">8</span>
+                            <span class="weekday">수</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">전기 졸업대상 참가신청</div>
+                            <div class="event-type">1월 8일 ~ 1월 15일</div>
+                        </div>
+                        <div class="event-badge graduation">졸업</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">9</span>
+                            <span class="weekday">목</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">교직원세미나</div>
+                            <div class="event-type">교직원 대상</div>
+                        </div>
+                        <div class="event-badge event">행사</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">10</span>
+                            <span class="weekday">금</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">국고내역 점검보고 및 원류 워크숍</div>
+                            <div class="event-type">행정 업무</div>
+                        </div>
+                        <div class="event-badge admin">행정</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">17</span>
+                            <span class="weekday">금</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">동계계절학기 성적입력</div>
+                            <div class="event-type">1월 17일 ~ 1월 20일</div>
+                        </div>
+                        <div class="event-badge grade">성적</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">27</span>
+                            <span class="weekday">월</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">입시요람</div>
+                            <div class="event-type">입시 관련</div>
+                        </div>
+                        <div class="event-badge admission">입시</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="month-section">
+                <div class="month-header">
+                    <h2 class="month-title">2월</h2>
+                    <span class="event-count">6개 일정</span>
+                </div>
+                <div class="events-list">
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">3</span>
+                            <span class="weekday">월</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">전기전담 및 졸업사정회</div>
+                            <div class="event-type">졸업 관련</div>
+                        </div>
+                        <div class="event-badge graduation">졸업</div>
+                    </div>
+
+                    <div class="event-item important">
+                        <div class="event-date">
+                            <span class="day">6</span>
+                            <span class="weekday">목</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">2025학년도 정시 합격자 발표</div>
+                            <div class="event-type">입시 결과</div>
+                        </div>
+                        <div class="event-badge admission">입시</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">10</span>
+                            <span class="weekday">월</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">2025학년도 정시 합격자 등록기간</div>
+                            <div class="event-type">2월 10일 ~ 2월 12일</div>
+                        </div>
+                        <div class="event-badge registration">등록</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">12</span>
+                            <span class="weekday">수</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">제47회 학위수여식</div>
+                            <div class="event-type">졸업식</div>
+                        </div>
+                        <div class="event-badge graduation">졸업</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">17</span>
+                            <span class="weekday">월</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">1학기 재학생 등록기간</div>
+                            <div class="event-type">2월 17일 ~ 2월 21일</div>
+                        </div>
+                        <div class="event-badge registration">등록</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">21</span>
+                            <span class="weekday">금</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">2025학년도 입학식</div>
+                            <div class="event-type">신입생 대상</div>
+                        </div>
+                        <div class="event-badge ceremony">입학</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="month-section">
+                <div class="month-header">
+                    <h2 class="month-title">3월</h2>
+                    <span class="event-count">4개 일정</span>
+                </div>
+                <div class="events-list">
+                    <div class="event-item urgent">
+                        <div class="event-date">
+                            <span class="day">1</span>
+                            <span class="weekday">토</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">삼일절</div>
+                            <div class="event-type">공휴일</div>
+                        </div>
+                        <div class="event-badge holiday">휴일</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">3</span>
+                            <span class="weekday">월</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">대체공휴일</div>
+                            <div class="event-type">삼일절 대체</div>
+                        </div>
+                        <div class="event-badge holiday">휴일</div>
+                    </div>
+
+                    <div class="event-item important">
+                        <div class="event-date">
+                            <span class="day">4</span>
+                            <span class="weekday">화</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">2025학년도 1학기 개강</div>
+                            <div class="event-type">학기 시작</div>
+                        </div>
+                        <div class="event-badge academic">개강</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">4</span>
+                            <span class="weekday">화</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">신입생 수강신청기간</div>
+                            <div class="event-type">3월 4일 ~ 3월 7일</div>
+                        </div>
+                        <div class="event-badge registration">수강신청</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="month-section">
+                <div class="month-header">
+                    <h2 class="month-title">4월</h2>
+                    <span class="event-count">2개 일정</span>
+                </div>
+                <div class="events-list">
+                    <div class="event-item important">
+                        <div class="event-date">
+                            <span class="day">21</span>
+                            <span class="weekday">월</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">중간고사 평가 관찰기간</div>
+                            <div class="event-type">4월 21일 ~ 5월 2일</div>
+                        </div>
+                        <div class="event-badge exam">시험</div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">24</span>
+                            <span class="weekday">목</span>
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">수업일수 2/4선</div>
+                            <div class="event-type">학사 일정</div>
+                        </div>
+                        <div class="event-badge academic">학사</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 달력 뷰 -->
+        <div class="content-area hidden" id="calendar-view">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="calendar-nav-btn" onclick="changeMonth(-1)">‹</button>
+                    <h3 class="calendar-month">2025년 1월</h3>
+                    <button class="calendar-nav-btn" onclick="changeMonth(1)">›</button>
+                </div>
+                
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">일</div>
+                    <div class="calendar-day-header">월</div>
+                    <div class="calendar-day-header">화</div>
+                    <div class="calendar-day-header">수</div>
+                    <div class="calendar-day-header">목</div>
+                    <div class="calendar-day-header">금</div>
+                    <div class="calendar-day-header">토</div>
+                    
+                    <!-- 달력 날짜들이 JavaScript로 동적 생성됩니다 -->
+                    <div class="calendar-dates" id="calendar-dates">
+                        <!-- 동적으로 생성될 날짜들 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 선택된 날짜의 이벤트 상세 모달 -->
+        <div class="event-modal hidden" id="event-modal">
+            <div class="modal-backdrop" onclick="closeEventModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-date"></h3>
+                    <button class="modal-close" onclick="closeEventModal()">×</button>
+                </div>
+                <div class="modal-body" id="modal-events">
+                    <!-- 선택된 날짜의 이벤트들이 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="academic-calendar.js"></script>
+</body>
+</html>
