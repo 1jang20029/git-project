@@ -157,15 +157,16 @@ body {
 }
 
 
-/* 주요 일정 요약 카드 배경색 - 연성대학교 브랜드 컬러로 변경 */
+/* 주요 일정 카드 기본 스타일 */
 .summary-card {
     background: white;
     border-radius: 15px;
     padding: 25px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    border-left: 5px solid #B8E985;
     transition: all 0.3s ease;
     cursor: pointer;
+    flex: 0 0 280px;
+    min-width: 280px;
 }
 
 .summary-card:hover {
@@ -352,6 +353,8 @@ body {
 
 
 /* 연속 일정 스타일 개선 - 모든 날짜에 텍스트 표시 */
+
+/* 개별 색상을 위한 기본 이벤트 스타일 */
 .event-item {
     padding: 3px 8px;
     border-radius: 6px;
@@ -374,6 +377,7 @@ body {
     transform: scale(1.02);
     z-index: 10;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
 }
 
 /* 이벤트 타입별 색상 */
@@ -462,13 +466,14 @@ body {
     padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border-left: 5px solid #B8E985;
+    margin-bottom: 15px;
 }
 
 .event-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
+
 
 .event-card.academic {
     border-left-color: #B8E985;
@@ -528,6 +533,7 @@ body {
     line-height: 1.5;
 }
 
+/* 이벤트 타입 라벨 스타일 */
 .event-type {
     display: inline-flex;
     align-items: center;
@@ -537,6 +543,7 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
 }
+
 
 /* 이벤트 타입 라벨 색상 */
 .event-type.academic {
