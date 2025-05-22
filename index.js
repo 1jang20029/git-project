@@ -4904,15 +4904,19 @@ function displayActivityStats() {
 
 // 활동 공지 업데이트 함수
 function updateActivityNotices() {
-    const urgentActivitiesJSON = localStorage.getItem('urgentActivities');
-    const urgentActivities = urgentActivitiesJSON ? JSON.parse(urgentActivitiesJSON) : [];
-    
+    // 알림 컨테이너 찾기
     const noticesContainer = document.querySelector('.activity-summary-notices');
     if (!noticesContainer) return;
     
+    const urgentActivitiesJSON = localStorage.getItem('urgentActivities');
+    const urgentActivities = urgentActivitiesJSON ? JSON.parse(urgentActivitiesJSON) : [];
+    
+    // HTML 내용 초기화
     let noticesHTML = '';
     
-    if (urgentActivities && urgentActivities.length > 0) {
+    // 마감 임박한 활동이 있는지 확인
+    if (urgentActivities && Array.isArray(urgentActivities) && urgentActivities.length > 0) {
+        // 활동이 있는 경우 각 활동 표시
         urgentActivities.forEach(activity => {
             noticesHTML += `
                 <div class="activity-notice-item">
@@ -4922,15 +4926,23 @@ function updateActivityNotices() {
             `;
         });
     } else {
+        // 마감 임박한 활동이 없는 경우 안내 메시지 표시
         noticesHTML = `
             <div class="activity-notice-item">
                 <span class="activity-notice-icon">📌</span>
                 <span class="activity-notice-text">현재 마감 임박한 활동이 없습니다.</span>
             </div>
+            <div class="activity-notice-item">
+                <span class="activity-notice-icon">✨</span>
+                <span class="activity-notice-text">새로운 활동을 등록하시려면 교내/대외활동 페이지로 이동하세요.</span>
+            </div>
         `;
     }
     
+    // 내용 업데이트
     noticesContainer.innerHTML = noticesHTML;
+    
+    console.log('활동 공지 업데이트 완료', urgentActivities ? urgentActivities.length : 0, '개의 마감 임박 활동');
 }
 
 
