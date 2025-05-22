@@ -1157,23 +1157,23 @@ function renderDayEvents(date) {
         let eventClass = `event-item ${event.type}`;
         let displayText = event.title;
         
-        // 연속 이벤트 처리
+        // 연속 이벤트 처리 - 모든 날짜에 텍스트 표시
         if (event.endDate && event.endDate !== event.date) {
             const eventStart = new Date(event.date);
             const eventEnd = new Date(event.endDate);
             const currentDate = new Date(dateString);
             
-            // 시작일, 중간일, 종료일 구분
+            // 시작일, 중간일, 종료일 구분하되 모두 텍스트 표시
             if (isSameDay(currentDate, eventStart)) {
                 eventClass += ' multi-day-start';
-                displayText = event.title;
             } else if (isSameDay(currentDate, eventEnd)) {
                 eventClass += ' multi-day-end';
-                displayText = ''; // 종료일에는 텍스트 없음
             } else {
                 eventClass += ' multi-day-middle';
-                displayText = ''; // 중간일에는 텍스트 없음
             }
+            
+            // 모든 날짜에 동일한 제목 표시
+            displayText = event.title;
         }
         
         eventElement.className = eventClass;

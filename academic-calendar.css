@@ -293,14 +293,15 @@ body {
     grid-template-columns: repeat(7, 1fr);
 }
 
+/* 캘린더 날짜 셀 높이 조정 */
 .calendar-day {
-    min-height: 140px;
-    border: 1px solid #f0f2f5;
-    padding: 10px;
+    min-height: 120px;
+    padding: 8px;
     position: relative;
     background: white;
     transition: all 0.3s ease;
     cursor: pointer;
+    border: 1px solid #f0f2f5;
 }
 
 .calendar-day:hover {
@@ -340,12 +341,17 @@ body {
     color: #2c3e50;
 }
 
+/* 이벤트 컨테이너 스타일 */
 .day-events {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 1px;
+    margin-top: 5px;
 }
 
+
+
+/* 연속 일정 스타일 개선 - 모든 날짜에 텍스트 표시 */
 .event-item {
     padding: 3px 8px;
     border-radius: 6px;
@@ -357,10 +363,15 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     color: white;
+    margin-bottom: 2px;
+    min-height: 18px;
+    display: flex;
+    align-items: center;
 }
 
+/* 호버 효과 */
 .event-item:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
     z-index: 10;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
@@ -553,13 +564,9 @@ body {
     color: #00695c;
 }
 
-/* 범례 */
+/* 범례 관련 CSS 제거 */
 .legend {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 30px;
+    display: none;
 }
 
 .legend-title {
@@ -830,23 +837,20 @@ body {
 /* 연속 일정 스타일 - 네이버 캘린더 스타일 */
 .event-item.multi-day-start {
     border-radius: 4px 0 0 4px;
-    position: relative;
-    padding-right: 12px;
+    margin-right: -1px;
 }
+
 
 
 .event-item.multi-day-middle {
     border-radius: 0;
-    position: relative;
-    padding: 3px 4px;
-    min-height: 18px;
+    margin-left: -1px;
+    margin-right: -1px;
 }
 
 .event-item.multi-day-end {
     border-radius: 0 4px 4px 0;
-    position: relative;
-    padding: 3px 4px;
-    min-height: 18px;
+    margin-left: -1px;
 }
 
 /* 연속 일정 시각적 연결 */
