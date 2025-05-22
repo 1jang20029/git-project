@@ -1338,7 +1338,9 @@ function handleResponsiveNavigation() {
         });
         
         // 월 제목도 더 작게
-        currentMonth.style.fontSize = '1.5rem';
+        if (currentMonth) {
+            currentMonth.style.fontSize = '1.5rem';
+        }
     } else {
         // 데스크톱에서는 원래 크기
         document.querySelectorAll('.nav-btn, .today-btn').forEach(btn => {
@@ -1346,7 +1348,9 @@ function handleResponsiveNavigation() {
             btn.style.fontSize = '1.1rem';
         });
         
-        currentMonth.style.fontSize = '2.2rem';
+        if (currentMonth) {
+            currentMonth.style.fontSize = '2.2rem';
+        }
     }
 }
 
