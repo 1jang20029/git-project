@@ -1079,6 +1079,13 @@ function renderCalendar() {
             calendarBody.appendChild(dayElement);
         }
     }
+    
+    // 모든 날짜 요소가 생성된 후 이벤트 렌더링
+    setTimeout(() => {
+        for (let day = 1; day <= daysInMonth; day++) {
+            renderDayEvents(new Date(year, month, day));
+        }
+    }, 100);
 }
 
 // 국가 공휴일만 감지하는 함수
@@ -1141,55 +1148,53 @@ function renderDayEvents(date) {
     const dayEvents = getEventsForDate(dateString);
     const eventsContainer = document.getElementById(`events-${dateString}`);
     
-    if (eventsContainer) {
-        eventsContainer.innerHTML = '';
+    if (!eventsContainer) return;
+    
+    eventsContainer.innerHTML = '';
+    
+    dayEvents.forEach(event => {
+        const eventElement = document.createElement('div');
+        let eventClass = `event-item ${event.type}`;
+        let displayText = event.title;
         
-        dayEvents.forEach(event => {
-            const eventElement = document.createElement('div');
-            let eventClass = `event-item ${event.type}`;
+        // 연속 이벤트 처리
+        if (event.endDate && event.endDate !== event.date) {
+            const eventStart = new Date(event.date);
+            const eventEnd = new Date(event.endDate);
+            const currentDate = new Date(dateString);
             
-            // 연속 이벤트인지 확인하고 위치 결정
-            if (event.endDate && event.endDate !== event.date) {
-                const eventStart = new Date(event.date);
-                const eventEnd = new Date(event.endDate);
-                const currentDate = new Date(dateString);
-                
-                if (currentDate.getTime() === eventStart.getTime()) {
-                    eventClass += ' multi-day-start';
-                } else if (currentDate.getTime() === eventEnd.getTime()) {
-                    eventClass += ' multi-day-end';
-                } else {
-                    eventClass += ' multi-day-middle';
-                }
-            }
-            
-            eventElement.className = eventClass;
-            
-            // 연속 일정의 경우 첫날에만 전체 제목, 나머지는 축약
-            if (event.endDate && event.endDate !== event.date) {
-                const eventStart = new Date(event.date);
-                const currentDate = new Date(dateString);
-                
-                if (currentDate.getTime() === eventStart.getTime()) {
-                    eventElement.textContent = event.title;
-                } else {
-                    eventElement.textContent = '···';
-                }
+            // 시작일, 중간일, 종료일 구분
+            if (isSameDay(currentDate, eventStart)) {
+                eventClass += ' multi-day-start';
+                displayText = event.title;
+            } else if (isSameDay(currentDate, eventEnd)) {
+                eventClass += ' multi-day-end';
+                displayText = ''; // 종료일에는 텍스트 없음
             } else {
-                eventElement.textContent = event.title;
+                eventClass += ' multi-day-middle';
+                displayText = ''; // 중간일에는 텍스트 없음
             }
-            
-            eventElement.title = event.description;
-            
-            // 이벤트 클릭 시 상세보기
-            eventElement.addEventListener('click', function(e) {
-                e.stopPropagation();
-                showEventDetail(event);
-            });
-            
-            eventsContainer.appendChild(eventElement);
+        }
+        
+        eventElement.className = eventClass;
+        eventElement.textContent = displayText;
+        eventElement.title = `${event.title}: ${event.description}`;
+        
+        // 이벤트 클릭 시 상세보기
+        eventElement.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showEventDetail(event);
         });
-    }
+        
+        eventsContainer.appendChild(eventElement);
+    });
+}
+
+// 날짜 비교 헬퍼 함수
+function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
 }
 
 // 주요 일정 요약 카드 렌더링 - 미래 일정 우선 및 스와이프 기능
@@ -1402,17 +1407,26 @@ function isToday(date) {
     return date.toDateString() === today.toDateString();
 }
 
+// 해당 날짜의 이벤트 가져오기 - 모든 학기 포함
 function getEventsForDate(dateString) {
-    const events = academicSchedule[currentSemester] || [];
-    return events.filter(event => {
-        if (event.endDate) {
-            // 기간이 있는 이벤트
-            return dateString >= event.date && dateString <= event.endDate;
-        } else {
-            // 단일 날짜 이벤트
-            return event.date === dateString;
-        }
+    let allEvents = [];
+    
+    // 모든 학기의 이벤트를 확인
+    Object.keys(academicSchedule).forEach(semester => {
+        const events = academicSchedule[semester] || [];
+        const relevantEvents = events.filter(event => {
+            if (event.endDate) {
+                // 기간이 있는 이벤트 - 해당 날짜가 시작일과 종료일 사이에 있는지 확인
+                return dateString >= event.date && dateString <= event.endDate;
+            } else {
+                // 단일 날짜 이벤트
+                return event.date === dateString;
+            }
+        });
+        allEvents = allEvents.concat(relevantEvents);
     });
+    
+    return allEvents;
 }
 
 // 월 네비게이션 함수들

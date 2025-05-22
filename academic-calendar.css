@@ -826,25 +826,57 @@ body {
     font-weight: bold;
 }
 
-/* 연속 일정 스타일 */
+
+/* 연속 일정 스타일 - 네이버 캘린더 스타일 */
 .event-item.multi-day-start {
-    border-radius: 6px 0 0 6px;
-    margin-right: 0;
+    border-radius: 4px 0 0 4px;
     position: relative;
+    padding-right: 12px;
 }
+
 
 .event-item.multi-day-middle {
     border-radius: 0;
-    margin-left: 0;
-    margin-right: 0;
     position: relative;
+    padding: 3px 4px;
+    min-height: 18px;
 }
 
 .event-item.multi-day-end {
-    border-radius: 0 6px 6px 0;
-    margin-left: 0;
+    border-radius: 0 4px 4px 0;
     position: relative;
+    padding: 3px 4px;
+    min-height: 18px;
 }
+
+/* 연속 일정 시각적 연결 */
+.event-item.multi-day-start::after,
+.event-item.multi-day-middle::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: inherit;
+    z-index: 1;
+}
+
+
+.event-item.multi-day-middle::before,
+.event-item.multi-day-end::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: inherit;
+    z-index: 1;
+}
+
+
+
 
 /* 연속 일정 연결선 효과 */
 .event-item.multi-day-start::after {
@@ -883,4 +915,57 @@ body {
     bottom: 0;
     width: 1px;
     background: rgba(255, 255, 255, 0.3);
+}
+
+
+/* 각 이벤트 타입별 연속 일정 색상 통일 */
+.event-item.academic.multi-day-start,
+.event-item.academic.multi-day-middle,
+.event-item.academic.multi-day-end {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+
+.event-item.exam.multi-day-start,
+.event-item.exam.multi-day-middle,
+.event-item.exam.multi-day-end {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+
+.event-item.holiday.multi-day-start,
+.event-item.holiday.multi-day-middle,
+.event-item.holiday.multi-day-end {
+    background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.event-item.event.multi-day-start,
+.event-item.event.multi-day-middle,
+.event-item.event.multi-day-end {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+
+.event-item.registration.multi-day-start,
+.event-item.registration.multi-day-middle,
+.event-item.registration.multi-day-end {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+}
+
+
+/* 연속 일정 호버 효과 */
+.calendar-day:hover .event-item.multi-day-start,
+.calendar-day:hover .event-item.multi-day-middle,
+.calendar-day:hover .event-item.multi-day-end {
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+
+/* 빈 연속 일정 블록 (중간/끝) 최소 높이 보장 */
+.event-item.multi-day-middle:empty,
+.event-item.multi-day-end:empty {
+    min-height: 18px;
+    display: block;
 }
