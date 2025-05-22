@@ -2853,7 +2853,9 @@ function goToPage(pageName) {
             break;
             
         case 'academic-calendar':
-            alert('학사일정 페이지로 이동합니다.');
+            // 현재 페이지 URL 저장
+            localStorage.setItem('previousPage', window.location.href);
+            window.location.href = 'academic-calendar.html';
             break;
             
         case 'notices':
