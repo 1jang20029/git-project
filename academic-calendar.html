@@ -3,387 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>학사일정 - 연성대학교</title>
-    <link rel="stylesheet" href="academic-calendar.css">
-    <!-- Font Awesome 추가 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Google Fonts 추가 -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>2025-2026 학사일정</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <!-- 헤더 -->
         <header class="header">
-            <div class="header-background"></div>
-            <div class="header-content">
-                <button class="back-button" onclick="goBack()">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <div class="header-info">
-                    <h1 class="header-title">학사일정</h1>
-                    <p class="header-subtitle">연성대학교 2025년</p>
-                </div>
-                <button class="today-button" onclick="goToToday()">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>오늘</span>
-                </button>
+            <h1>2025-2026학년도 학사일정</h1>
+            <div class="controls">
+                <select id="semesterFilter">
+                    <option value="all">전체 학기</option>
+                    <option value="2025-1">2025년 1학기</option>
+                    <option value="2025-summer">2025년 여름학기</option>
+                    <option value="2025-2">2025년 2학기</option>
+                    <option value="2026-winter">2026년 겨울학기</option>
+                    <option value="2026-1">2026년 1학기</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="일정 검색...">
+                <button id="todayBtn">오늘</button>
             </div>
         </header>
 
-        <!-- 년도 및 학기 선택 -->
-        <div class="period-selector">
-            <div class="period-card">
-                <button class="period-nav-btn" onclick="changePeriod(-1)">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <div class="period-info">
-                    <div class="year-display">2025학년도</div>
-                    <div class="semester-display">1학기</div>
-                    <div class="period-decoration"></div>
-                </div>
-                <button class="period-nav-btn" onclick="changePeriod(1)">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
+        <div class="calendar-navigation">
+            <button id="prevMonth">&lt;</button>
+            <h2 id="currentMonth">2025년 1월</h2>
+            <button id="nextMonth">&gt;</button>
         </div>
 
-        <!-- 필터 및 뷰 컨트롤 -->
-        <div class="controls-section">
-            <!-- 필터 칩 -->
-            <div class="filter-container">
-                <h3 class="filter-title">
-                    <i class="fas fa-filter"></i>
-                    카테고리
-                </h3>
-                <div class="filter-chips">
-                    <button class="filter-chip active" data-filter="all">
-                        <i class="fas fa-list"></i>
-                        <span>전체</span>
-                        <div class="chip-glow"></div>
-                    </button>
-                    <button class="filter-chip" data-filter="exam">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>시험</span>
-                        <div class="chip-glow"></div>
-                    </button>
-                    <button class="filter-chip" data-filter="registration">
-                        <i class="fas fa-edit"></i>
-                        <span>수강신청</span>
-                        <div class="chip-glow"></div>
-                    </button>
-                    <button class="filter-chip" data-filter="scholarship">
-                        <i class="fas fa-trophy"></i>
-                        <span>장학</span>
-                        <div class="chip-glow"></div>
-                    </button>
-                    <button class="filter-chip" data-filter="event">
-                        <i class="fas fa-calendar-star"></i>
-                        <span>행사</span>
-                        <div class="chip-glow"></div>
-                    </button>
-                    <button class="filter-chip" data-filter="holiday">
-                        <i class="fas fa-umbrella-beach"></i>
-                        <span>휴일</span>
-                        <div class="chip-glow"></div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 뷰 토글 -->
-            <div class="view-toggle">
-                <div class="toggle-background"></div>
-                <button class="view-btn active" data-view="list">
-                    <i class="fas fa-list-ul"></i>
-                    <span>목록</span>
-                </button>
-                <button class="view-btn" data-view="calendar">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>달력</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- 목록 뷰 -->
-        <div class="content-area" id="list-view">
-            <!-- 통계 카드 -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon holiday">
-                        <i class="fas fa-umbrella-beach"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number" id="holiday-count">12</div>
-                        <div class="stat-label">휴일</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon exam">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number" id="exam-count">8</div>
-                        <div class="stat-label">시험</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon event">
-                        <i class="fas fa-calendar-star"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number" id="event-count">15</div>
-                        <div class="stat-label">행사</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 월별 일정 -->
-            <div class="months-container">
-                <!-- 1월 -->
-                <div class="month-section" data-month="1">
-                    <div class="month-header">
-                        <div class="month-title-container">
-                            <h2 class="month-title">1월</h2>
-                            <div class="month-subtitle">January</div>
-                        </div>
-                        <div class="event-count-badge">
-                            <span class="count-number">8</span>
-                            <span class="count-label">개 일정</span>
-                        </div>
-                    </div>
-                    <div class="events-timeline">
-                        <div class="event-card urgent">
-                            <div class="event-marker"></div>
-                            <div class="event-date-card">
-                                <div class="event-day">1</div>
-                                <div class="event-weekday">수</div>
-                                <div class="event-month">JAN</div>
-                            </div>
-                            <div class="event-content">
-                                <div class="event-header">
-                                    <h3 class="event-title">신정</h3>
-                                    <div class="event-badge holiday">
-                                        <i class="fas fa-umbrella-beach"></i>
-                                        휴일
-                                    </div>
-                                </div>
-                                <p class="event-description">공휴일</p>
-                                <div class="event-time">전일</div>
-                            </div>
-                        </div>
-
-                        <div class="event-card">
-                            <div class="event-marker"></div>
-                            <div class="event-date-card">
-                                <div class="event-day">6</div>
-                                <div class="event-weekday">월</div>
-                                <div class="event-month">JAN</div>
-                            </div>
-                            <div class="event-content">
-                                <div class="event-header">
-                                    <h3 class="event-title">동계 계절학기</h3>
-                                    <div class="event-badge academic">
-                                        <i class="fas fa-book"></i>
-                                        학사
-                                    </div>
-                                </div>
-                                <p class="event-description">1월 6일 ~ 1월 17일</p>
-                                <div class="event-time">12일간</div>
-                            </div>
-                        </div>
-
-                        <div class="event-card">
-                            <div class="event-marker"></div>
-                            <div class="event-date-card">
-                                <div class="event-day">7</div>
-                                <div class="event-weekday">화</div>
-                                <div class="event-month">JAN</div>
-                            </div>
-                            <div class="event-content">
-                                <div class="event-header">
-                                    <h3 class="event-title">2학기 성적확정</h3>
-                                    <div class="event-badge grade">
-                                        <i class="fas fa-star"></i>
-                                        성적
-                                    </div>
-                                </div>
-                                <p class="event-description">성적 관련</p>
-                                <div class="event-time">전일</div>
-                            </div>
-                        </div>
-
-                        <div class="event-card important">
-                            <div class="event-marker"></div>
-                            <div class="event-date-card">
-                                <div class="event-day">8</div>
-                                <div class="event-weekday">수</div>
-                                <div class="event-month">JAN</div>
-                            </div>
-                            <div class="event-content">
-                                <div class="event-header">
-                                    <h3 class="event-title">전기 졸업대상 참가신청</h3>
-                                    <div class="event-badge graduation">
-                                        <i class="fas fa-user-graduate"></i>
-                                        졸업
-                                    </div>
-                                </div>
-                                <p class="event-description">1월 8일 ~ 1월 15일</p>
-                                <div class="event-time">8일간</div>
-                            </div>
-                        </div>
-
-                        <!-- 더 많은 1월 이벤트들... -->
-                    </div>
-                </div>
-
-                <!-- 2월 -->
-                <div class="month-section" data-month="2">
-                    <div class="month-header">
-                        <div class="month-title-container">
-                            <h2 class="month-title">2월</h2>
-                            <div class="month-subtitle">February</div>
-                        </div>
-                        <div class="event-count-badge">
-                            <span class="count-number">6</span>
-                            <span class="count-label">개 일정</span>
-                        </div>
-                    </div>
-                    <div class="events-timeline">
-                        <div class="event-card">
-                            <div class="event-marker"></div>
-                            <div class="event-date-card">
-                                <div class="event-day">3</div>
-                                <div class="event-weekday">월</div>
-                                <div class="event-month">FEB</div>
-                            </div>
-                            <div class="event-content">
-                                <div class="event-header">
-                                    <h3 class="event-title">전기전담 및 졸업사정회</h3>
-                                    <div class="event-badge graduation">
-                                        <i class="fas fa-user-graduate"></i>
-                                        졸업
-                                    </div>
-                                </div>
-                                <p class="event-description">졸업 관련</p>
-                                <div class="event-time">전일</div>
-                            </div>
-                        </div>
-
-                        <div class="event-card important">
-                            <div class="event-marker"></div>
-                            <div class="event-date-card">
-                                <div class="event-day">6</div>
-                                <div class="event-weekday">목</div>
-                                <div class="event-month">FEB</div>
-                            </div>
-                            <div class="event-content">
-                                <div class="event-header">
-                                    <h3 class="event-title">2025학년도 정시 합격자 발표</h3>
-                                    <div class="event-badge admission">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        입시
-                                    </div>
-                                </div>
-                                <p class="event-description">입시 결과</p>
-                                <div class="event-time">전일</div>
-                            </div>
-                        </div>
-
-                        <!-- 더 많은 2월 이벤트들... -->
-                    </div>
-                </div>
-
-                <!-- 3월부터 12월까지 모든 달 추가 -->
-                <!-- 여기서는 샘플만 보여주고, JavaScript에서 동적으로 생성할 예정 -->
-            </div>
-
-            <!-- 플로팅 액션 버튼 -->
-            <div class="floating-actions">
-                <button class="fab-main" onclick="toggleFabMenu()">
-                    <i class="fas fa-plus"></i>
-                </button>
-                <div class="fab-menu">
-                    <button class="fab-item" onclick="exportCalendar()">
-                        <i class="fas fa-download"></i>
-                        <span>내보내기</span>
-                    </button>
-                    <button class="fab-item" onclick="shareCalendar()">
-                        <i class="fas fa-share"></i>
-                        <span>공유하기</span>
-                    </button>
-                    <button class="fab-item" onclick="addToMyCalendar()">
-                        <i class="fas fa-calendar-plus"></i>
-                        <span>내 달력에 추가</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 달력 뷰 -->
-        <div class="content-area hidden" id="calendar-view">
+        <div class="main-content">
             <div class="calendar-container">
-                <div class="calendar-header">
-                    <button class="calendar-nav-btn" onclick="changeMonth(-1)">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div class="calendar-title-container">
-                        <h3 class="calendar-month">2025년 1월</h3>
-                        <div class="calendar-subtitle">January</div>
-                    </div>
-                    <button class="calendar-nav-btn" onclick="changeMonth(1)">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
                 </div>
-                
-                <div class="calendar-grid">
-                    <div class="calendar-weekdays">
-                        <div class="calendar-weekday sunday">일</div>
-                        <div class="calendar-weekday">월</div>
-                        <div class="calendar-weekday">화</div>
-                        <div class="calendar-weekday">수</div>
-                        <div class="calendar-weekday">목</div>
-                        <div class="calendar-weekday">금</div>
-                        <div class="calendar-weekday saturday">토</div>
+            </div>
+
+            <div class="sidebar">
+                <div class="upcoming-events">
+                    <h3>다가오는 일정</h3>
+                    <div id="upcomingList"></div>
+                </div>
+
+                <div class="legend">
+                    <h3>범례</h3>
+                    <div class="legend-item">
+                        <span class="legend-color academic"></span>
+                        <span>학사일정</span>
                     </div>
-                    
-                    <div class="calendar-dates" id="calendar-dates">
-                        <!-- 동적으로 생성될 날짜들 -->
+                    <div class="legend-item">
+                        <span class="legend-color exam"></span>
+                        <span>시험기간</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color vacation"></span>
+                        <span>방학</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color holiday"></span>
+                        <span>공휴일</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color registration"></span>
+                        <span>등록/수강신청</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 이벤트 상세 모달 -->
-        <div class="event-modal hidden" id="event-modal">
-            <div class="modal-overlay" onclick="closeEventModal()"></div>
-            <div class="modal-container">
-                <div class="modal-header">
-                    <div class="modal-date-info">
-                        <div class="modal-day" id="modal-day"></div>
-                        <div class="modal-date-text" id="modal-date"></div>
-                    </div>
-                    <button class="modal-close" onclick="closeEventModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-content">
-                    <div class="modal-events" id="modal-events">
-                        <!-- 선택된 날짜의 이벤트들이 여기에 표시됩니다 -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 로딩 스피너 -->
-        <div class="loading-spinner hidden" id="loading-spinner">
-            <div class="spinner">
-                <div class="bounce1"></div>
-                <div class="bounce2"></div>
-                <div class="bounce3"></div>
-            </div>
-            <p>일정을 불러오는 중...</p>
+        <div class="event-details" id="eventDetails" style="display: none;">
+            <h3 id="eventTitle"></h3>
+            <p id="eventDate"></p>
+            <p id="eventDescription"></p>
+            <button id="closeDetails">닫기</button>
         </div>
     </div>
 
-    <script src="academic-calendar.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
