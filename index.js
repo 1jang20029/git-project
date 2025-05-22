@@ -401,7 +401,7 @@ class BusTimeTable {
     }
 }
 
-// 메인페이지용 셔틀버스 시간표 인스턴스
+// 메인페이지용 셋틀버스 시간표 인스턴스
 const shuttleBusTimeTable = new BusTimeTable();
 
 
@@ -4243,7 +4243,7 @@ function searchFacilities(query) {
 function highlightText(text, query) {
     if (!text || !query || query.trim() === '') return text;
     
-    const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+    const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\        if (tabMenu && activeMenus.length >')})`, 'gi');
     return text.replace(regex, '<span class="search-highlight">$1</span>');
 }
 
@@ -4427,17 +4427,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    // "과제 & 시험 전체보기" 링크 찾기
-    const assignmentsViewAllLink = document.querySelector('.everytime-header .everytime-view-all');
-    
-    if (assignmentsViewAllLink) {
-        // onclick 이벤트 핸들러 수정
-        assignmentsViewAllLink.onclick = function(e) {
-            e.preventDefault(); // 기본 동작 방지
-            window.location.href = 'assignments.html'; // 새로 만든 페이지로 이동
-        };
-    }
-    
     // 또는 직접 href 속성 수정
     const assignmentLinks = document.querySelectorAll('a[onclick*="goToPage(\'assignments\')"]');
     assignmentLinks.forEach(link => {
@@ -4904,19 +4893,15 @@ function displayActivityStats() {
 
 // 활동 공지 업데이트 함수
 function updateActivityNotices() {
-    // 알림 컨테이너 찾기
-    const noticesContainer = document.querySelector('.activity-summary-notices');
-    if (!noticesContainer) return;
-    
     const urgentActivitiesJSON = localStorage.getItem('urgentActivities');
     const urgentActivities = urgentActivitiesJSON ? JSON.parse(urgentActivitiesJSON) : [];
     
-    // HTML 내용 초기화
+    const noticesContainer = document.querySelector('.activity-summary-notices');
+    if (!noticesContainer) return;
+    
     let noticesHTML = '';
     
-    // 마감 임박한 활동이 있는지 확인
-    if (urgentActivities && Array.isArray(urgentActivities) && urgentActivities.length > 0) {
-        // 활동이 있는 경우 각 활동 표시
+    if (urgentActivities && urgentActivities.length > 0) {
         urgentActivities.forEach(activity => {
             noticesHTML += `
                 <div class="activity-notice-item">
@@ -4926,23 +4911,15 @@ function updateActivityNotices() {
             `;
         });
     } else {
-        // 마감 임박한 활동이 없는 경우 안내 메시지 표시
         noticesHTML = `
             <div class="activity-notice-item">
                 <span class="activity-notice-icon">📌</span>
                 <span class="activity-notice-text">현재 마감 임박한 활동이 없습니다.</span>
             </div>
-            <div class="activity-notice-item">
-                <span class="activity-notice-icon">✨</span>
-                <span class="activity-notice-text">새로운 활동을 등록하시려면 교내/대외활동 페이지로 이동하세요.</span>
-            </div>
         `;
     }
     
-    // 내용 업데이트
     noticesContainer.innerHTML = noticesHTML;
-    
-    console.log('활동 공지 업데이트 완료', urgentActivities ? urgentActivities.length : 0, '개의 마감 임박 활동');
 }
 
 
@@ -4968,157 +4945,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateActivityNotices();
         }
     });
-});
-
-
-// 과제/시험 데이터 로드 함수
-function loadAssignmentsData() {
-    // localStorage에서 데이터 가져오기
-    const assignmentsData = localStorage.getItem('assignments');
-    if (assignmentsData) {
-        try {
-            return JSON.parse(assignmentsData);
-        } catch (error) {
-            console.error('과제/시험 데이터 파싱 오류:', error);
-            return [];
-        }
-    }
-    return []; // 데이터가 없으면 빈 배열 반환
-}
-
-// 메인 페이지의 과제/시험 섹션 업데이트 함수
-function updateMainAssignmentsSection() {
-    const assignments = loadAssignmentsData();
-    const assignmentsList = document.querySelector('.everytime-assignments-card .assignments-list');
-    
-    if (!assignmentsList) {
-        console.error('과제/시험 목록 컨테이너를 찾을 수 없습니다.');
-        return;
-    }
-    
-    // 현재 날짜 및 시간 가져오기
-    const now = new Date();
-    
-    if (assignments.length === 0) {
-        // 데이터가 없는 경우 빈 화면 표시
-        assignmentsList.innerHTML = `
-            <div class="assignment-item normal">
-                <div class="assignment-type">안내</div>
-                <div class="assignment-content">
-                    <div class="assignment-title">등록된 과제 및 시험이 없습니다</div>
-                    <div class="assignment-due">과제 & 시험 메뉴에서 항목을 추가해보세요</div>
-                </div>
-                <div class="assignment-status normal">
-                    <span style="font-size: 18px;">+</span>
-                </div>
-            </div>
-        `;
-        return;
-    }
-    
-    // 데이터를 날짜 순으로 정렬 (가까운 마감일 순)
-    assignments.sort((a, b) => {
-        const aDate = extractDateFromAssignment(a);
-        const bDate = extractDateFromAssignment(b);
-        return aDate - bDate;
-    });
-    
-    // 최대 3개만 표시
-    const displayCount = Math.min(assignments.length, 3);
-    let html = '';
-    
-    for (let i = 0; i < displayCount; i++) {
-        const assignment = assignments[i];
-        const dueDate = extractDateFromAssignment(assignment);
-        const daysLeft = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
-        
-        // 상태 결정 (3일 이내면 급함, 그 외는 정상)
-        const statusClass = daysLeft <= 3 ? 'urgent' : 'normal';
-        const statusText = daysLeft <= 3 ? '급함' : `${daysLeft}일 후`;
-        
-        html += `
-            <div class="assignment-item ${statusClass}" data-type="${assignment.type}" data-subject="${assignment.subject}">
-                <div class="assignment-type">${assignment.type === 'assignment' ? '과제' : '시험'}</div>
-                <div class="assignment-content">
-                    <div class="assignment-subject">${assignment.subject}</div>
-                    <div class="assignment-title">${assignment.title}</div>
-                    <div class="assignment-due">${assignment.type === 'assignment' ? '마감: ' : ''}${assignment.due}</div>
-                </div>
-                <div class="assignment-status ${statusClass}">${statusText}</div>
-            </div>
-        `;
-    }
-    
-    assignmentsList.innerHTML = html;
-}
-
-// 날짜 문자열에서 Date 객체 추출 함수
-function extractDateFromAssignment(assignment) {
-    // "마감: 4월 12일 오후 11:59" 또는 "4월 24일 오후 2:00" 형식에서 추출
-    const dateStr = assignment.due;
-    const monthMatch = dateStr.match(/(\d+)월/);
-    const dayMatch = dateStr.match(/(\d+)일/);
-    const timeMatch = dateStr.match(/(오전|오후) (\d+):(\d+)/);
-    
-    if (monthMatch && dayMatch && timeMatch) {
-        const month = parseInt(monthMatch[1]) - 1; // JavaScript의 월은 0부터 시작
-        const day = parseInt(dayMatch[1]);
-        let hour = parseInt(timeMatch[2]);
-        const minute = parseInt(timeMatch[3]);
-        
-        // 오후인 경우 시간에 12 추가 (단, 12시는 제외)
-        if (timeMatch[1] === '오후' && hour < 12) {
-            hour += 12;
-        }
-        
-        // 2025년 기준 (현재 연도로 설정해도 됨)
-        return new Date(2025, month, day, hour, minute);
-    }
-    
-    // 날짜 추출 실패 시 현재 날짜로부터 1달 후로 설정
-    const fallbackDate = new Date();
-    fallbackDate.setMonth(fallbackDate.getMonth() + 1);
-    return fallbackDate;
-}
-
-// localStorage 변경 감지 함수 (다른 탭에서의 변경 감지용)
-function setupStorageListener() {
-    window.addEventListener('storage', function(event) {
-        if (event.key === 'assignments') {
-            // 과제/시험 데이터가 변경되면 메인 페이지 섹션 업데이트
-            updateMainAssignmentsSection();
-        }
-    });
-}
-
-// 이벤트 리스너 등록을 위한 함수
-function setupAssignmentsEventListeners() {
-    // 메인 페이지의 "전체보기" 버튼 클릭 시 과제/시험 페이지로 이동
-    const viewAllBtn = document.querySelector('.everytime-assignments-card .everytime-view-all');
-    if (viewAllBtn) {
-        viewAllBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = 'assignments.html';
-        });
-    }
-    
-}
-
-// 페이지 로드 시 초기화 함수
-document.addEventListener('DOMContentLoaded', function() {
-    // 과제/시험 섹션 초기화
-    updateMainAssignmentsSection();
-    
-    // localStorage 변경 감지 리스너 설정
-    setupStorageListener();
-    
-    // 과제/시험 이벤트 리스너 설정
-    setupAssignmentsEventListeners();
-});
-
-// 커스텀 이벤트를 통한 실시간 업데이트 메커니즘
-window.addEventListener('assignmentsUpdated', function() {
-    updateMainAssignmentsSection();
 });
 
 
