@@ -1079,54 +1079,6 @@ function renderCalendar() {
             calendarBody.appendChild(dayElement);
         }
     }
-}// 캘린더 렌더링 - 1일부터 시작하도록 수정
-function renderCalendar() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    
-    // 현재 월 표시
-    document.getElementById('currentMonth').textContent = 
-        `${year}년 ${monthNames[month]}`;
-    
-    // 달력 생성
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-    const lastDayOfWeek = lastDay.getDay();
-    
-    const calendarBody = document.getElementById('calendarBody');
-    calendarBody.innerHTML = '';
-    
-    // 현재 달의 1일이 일요일이 아닌 경우, 빈 셀 추가
-    for (let i = 0; i < startingDayOfWeek; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'calendar-day empty-cell';
-        calendarBody.appendChild(emptyCell);
-    }
-    
-    // 현재 달의 날짜들
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayElement = createDayElement(
-            day, 
-            new Date(year, month, day), 
-            false
-        );
-        calendarBody.appendChild(dayElement);
-    }
-    
-    // 다음 달의 빈 날짜들 - 마지막 날이 토요일이 아닌 경우에만
-    if (lastDayOfWeek !== 6) {
-        const nextMonthDaysToShow = 6 - lastDayOfWeek;
-        for (let day = 1; day <= nextMonthDaysToShow; day++) {
-            const dayElement = createDayElement(
-                day, 
-                new Date(year, month + 1, day), 
-                true
-            );
-            calendarBody.appendChild(dayElement);
-        }
-    }
 }
 
 // 국가 공휴일만 감지하는 함수
