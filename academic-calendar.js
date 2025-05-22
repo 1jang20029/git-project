@@ -1513,7 +1513,7 @@ function printSchedule() {
                 </tbody>
             </table>
             <div class="footer">
-                <p>한국대학교 학사팀 | 문의: 02-1234-5678</p>
+                <p>연성대학교 학사팀 | 문의: 02-1234-5678</p>
                 <p>출력일: ${new Date().toLocaleDateString('ko-KR')}</p>
             </div>
         </body>
