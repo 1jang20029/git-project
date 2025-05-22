@@ -266,7 +266,7 @@ const academicSchedule = {
         // 4-5월 중간고사 및 행사
         {
             id: 31,
-            title: '중간고사 평가 관찰기간',
+            title: '중간고사 평가 권장기간',
             date: '2025-04-21',
             endDate: '2025-05-02',
             type: 'exam',
@@ -342,7 +342,7 @@ const academicSchedule = {
         },
         {
             id: 40,
-            title: '기말고사 기간',
+            title: '기말고사 권장기간',
             date: '2025-06-16',
             endDate: '2025-06-20',
             type: 'exam',
@@ -1497,7 +1497,7 @@ function printSchedule() {
             </style>
         </head>
         <body>
-            <h1>한국대학교 2025학년도 ${semesterText} 학사일정</h1>
+            <h1>연성대학교 2025학년도 ${semesterText} 학사일정</h1>
             <table>
                 <thead>
                     <tr>
