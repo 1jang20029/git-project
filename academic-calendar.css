@@ -106,11 +106,56 @@ body {
     gap: 10px;
 }
 
+
+/* 스와이프 컨테이너 스타일 */
 .summary-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    overflow: hidden;
+    position: relative;
 }
+
+.swipe-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 10px 0;
+    cursor: grab;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.swipe-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+
+.swipe-container .summary-card {
+    flex: 0 0 280px; /* 고정 너비 */
+    min-width: 280px;
+}
+
+
+
+/* 과거 일정 스타일 */
+.summary-card.past-event {
+    opacity: 0.7;
+    border-left-color: #95a5a6;
+}
+
+
+.summary-card.past-event h4 {
+    color: #7f8c8d;
+}
+
+.summary-card.past-event .date {
+    color: #95a5a6;
+}
+
+
+.summary-card.past-event .description {
+    color: #95a5a6;
+}
+
 
 /* 주요 일정 요약 카드 배경색 - 연성대학교 브랜드 컬러로 변경 */
 .summary-card {
@@ -779,4 +824,63 @@ body {
 .day-number.holiday-date {
     color: #e74c3c !important;
     font-weight: bold;
+}
+
+/* 연속 일정 스타일 */
+.event-item.multi-day-start {
+    border-radius: 6px 0 0 6px;
+    margin-right: 0;
+    position: relative;
+}
+
+.event-item.multi-day-middle {
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+    position: relative;
+}
+
+.event-item.multi-day-end {
+    border-radius: 0 6px 6px 0;
+    margin-left: 0;
+    position: relative;
+}
+
+/* 연속 일정 연결선 효과 */
+.event-item.multi-day-start::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.event-item.multi-day-middle::before,
+.event-item.multi-day-middle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.event-item.multi-day-middle::before {
+    left: -1px;
+}
+
+.event-item.multi-day-middle::after {
+    right: -1px;
+}
+
+.event-item.multi-day-end::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
 }

@@ -1129,6 +1129,20 @@ function renderCalendar() {
     }
 }
 
+// 국가 공휴일만 감지하는 함수
+function isNationalHoliday(dateString, events) {
+    const nationalHolidays = [
+        '신정', '설날', '삼일절', '어린이날', '부처님오신날', 
+        '현충일', '광복절', '추석', '개천절', '한글날', '성탄절',
+        '대체공휴일'
+    ];
+    
+    return events.some(event => 
+        event.type === 'holiday' && 
+        nationalHolidays.some(holiday => event.title.includes(holiday))
+    );
+}
+
 // 날짜 요소 생성
 function createDayElement(dayNumber, date, isOtherMonth) {
     const dayElement = document.createElement('div');
@@ -1150,13 +1164,13 @@ function createDayElement(dayNumber, date, isOtherMonth) {
         dayElement.classList.add('saturday');
     }
     
-    // 공휴일 체크
+    // 국가 공휴일만 체크
     const dateString = formatDate(date);
     const dayEvents = getEventsForDate(dateString);
-    const hasHoliday = dayEvents.some(event => event.type === 'holiday');
+    const hasNationalHoliday = isNationalHoliday(dateString, dayEvents);
     
     dayElement.innerHTML = `
-        <div class="day-number ${hasHoliday ? 'holiday-date' : ''}">${dayNumber}</div>
+        <div class="day-number ${hasNationalHoliday ? 'holiday-date' : ''}">${dayNumber}</div>
         <div class="day-events" id="events-${dateString}"></div>
     `;
     
@@ -1168,7 +1182,8 @@ function createDayElement(dayNumber, date, isOtherMonth) {
     return dayElement;
 }
 
-// 특정 날짜의 이벤트 렌더링
+
+// 특정 날짜의 이벤트 렌더링 - 연속 일정 개선
 function renderDayEvents(date) {
     const dateString = formatDate(date);
     const dayEvents = getEventsForDate(dateString);
@@ -1181,13 +1196,37 @@ function renderDayEvents(date) {
             const eventElement = document.createElement('div');
             let eventClass = `event-item ${event.type}`;
             
-            // 연속 이벤트인지 확인
+            // 연속 이벤트인지 확인하고 위치 결정
             if (event.endDate && event.endDate !== event.date) {
-                eventClass += ' multi-day';
+                const eventStart = new Date(event.date);
+                const eventEnd = new Date(event.endDate);
+                const currentDate = new Date(dateString);
+                
+                if (currentDate.getTime() === eventStart.getTime()) {
+                    eventClass += ' multi-day-start';
+                } else if (currentDate.getTime() === eventEnd.getTime()) {
+                    eventClass += ' multi-day-end';
+                } else {
+                    eventClass += ' multi-day-middle';
+                }
             }
             
             eventElement.className = eventClass;
-            eventElement.textContent = event.title;
+            
+            // 연속 일정의 경우 첫날에만 전체 제목, 나머지는 축약
+            if (event.endDate && event.endDate !== event.date) {
+                const eventStart = new Date(event.date);
+                const currentDate = new Date(dateString);
+                
+                if (currentDate.getTime() === eventStart.getTime()) {
+                    eventElement.textContent = event.title;
+                } else {
+                    eventElement.textContent = '···';
+                }
+            } else {
+                eventElement.textContent = event.title;
+            }
+            
             eventElement.title = event.description;
             
             // 이벤트 클릭 시 상세보기
@@ -1201,20 +1240,32 @@ function renderDayEvents(date) {
     }
 }
 
-// 주요 일정 요약 카드 렌더링
+// 주요 일정 요약 카드 렌더링 - 미래 일정 우선 및 스와이프 기능
 function renderSummaryCards() {
     const summaryCards = document.getElementById('summaryCards');
     const events = academicSchedule[currentSemester] || [];
+    const today = new Date();
     
-    // 중요한 일정만 필터링하고 날짜순 정렬
-    const importantEvents = events
-        .filter(event => event.important)
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, 4); // 최대 4개만 표시
+    // 중요한 일정을 미래/과거로 분류
+    const importantEvents = events.filter(event => event.important);
+    const futureEvents = importantEvents.filter(event => new Date(event.date) >= today);
+    const pastEvents = importantEvents.filter(event => new Date(event.date) < today);
+    
+    // 미래 일정을 날짜순 정렬, 과거 일정을 역순 정렬
+    futureEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    pastEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // 미래 일정을 우선으로 배치
+    const allEvents = [...futureEvents, ...pastEvents];
     
     summaryCards.innerHTML = '';
+    summaryCards.className = 'summary-cards';
     
-    importantEvents.forEach(event => {
+    // 스와이프 컨테이너 생성
+    const swipeContainer = document.createElement('div');
+    swipeContainer.className = 'swipe-container';
+    
+    allEvents.forEach((event, index) => {
         const card = document.createElement('div');
         card.className = `summary-card ${event.type}`;
         
@@ -1222,17 +1273,82 @@ function renderSummaryCards() {
             `${formatDateKorean(event.date)} ~ ${formatDateKorean(event.endDate)}` :
             formatDateKorean(event.date);
         
+        // 과거 일정 표시
+        const isPast = new Date(event.date) < today;
+        
         card.innerHTML = `
-            <h4>${event.title}</h4>
+            <h4>${event.title} ${isPast ? '(완료)' : ''}</h4>
             <div class="date">${dateText}</div>
             <div class="description">${event.description}</div>
         `;
+        
+        if (isPast) {
+            card.classList.add('past-event');
+        }
         
         card.addEventListener('click', function() {
             showEventDetail(event);
         });
         
-        summaryCards.appendChild(card);
+        swipeContainer.appendChild(card);
+    });
+    
+    summaryCards.appendChild(swipeContainer);
+    
+    // 스와이프 기능 추가
+    addSwipeFeature(swipeContainer);
+}
+
+// 스와이프 기능 추가
+function addSwipeFeature(container) {
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+    let startScrollLeft = 0;
+    
+    container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startScrollLeft = container.scrollLeft;
+        container.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+    
+    container.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        currentX = e.clientX;
+        const diffX = startX - currentX;
+        container.scrollLeft = startScrollLeft + diffX;
+    });
+    
+    container.addEventListener('mouseup', () => {
+        isDragging = false;
+        container.style.cursor = 'grab';
+    });
+    
+    container.addEventListener('mouseleave', () => {
+        isDragging = false;
+        container.style.cursor = 'grab';
+    });
+    
+    // 터치 이벤트 (모바일)
+    container.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startScrollLeft = container.scrollLeft;
+    });
+    
+    container.addEventListener('touchmove', (e) => {
+        if (!startX) return;
+        currentX = e.touches[0].clientX;
+        const diffX = startX - currentX;
+        container.scrollLeft = startScrollLeft + diffX;
+        e.preventDefault();
+    });
+    
+    container.addEventListener('touchend', () => {
+        startX = 0;
+        currentX = 0;
     });
 }
 
