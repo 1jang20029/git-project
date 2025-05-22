@@ -1,6 +1,6 @@
-// script.js
+// script.js - 완전한 코드
 
-// 학사일정 데이터
+// 학사일정 데이터 (모든 데이터 포함)
 const academicEvents = [
     // 2024-2025 겨울학기 및 신정
     { date: '2024-12-30', endDate: '2025-01-03', title: '성적열람 및 이의신청기간', type: 'academic' },
@@ -174,56 +174,65 @@ const categoryNames = {
 };
 
 // 이벤트 리스너 등록
-prevMonthBtn.addEventListener('click', () => {
-    if (currentMonth === 0) {
-        currentMonth = 11;
-        currentYear--;
-    } else {
-        currentMonth--;
-    }
-    renderCalendar();
-});
-
-nextMonthBtn.addEventListener('click', () => {
-    if (currentMonth === 11) {
-        currentMonth = 0;
-        currentYear++;
-    } else {
-        currentMonth++;
-    }
-    renderCalendar();
-});
-
-navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // 활성 버튼 변경
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // 카테고리 변경
-        currentCategory = btn.dataset.category;
-        currentPage = 1;
-        
-        // 화면 업데이트
+document.addEventListener('DOMContentLoaded', () => {
+    // 월 네비게이션
+    prevMonthBtn.addEventListener('click', () => {
+        if (currentMonth === 0) {
+            currentMonth = 11;
+            currentYear--;
+        } else {
+            currentMonth--;
+        }
         renderCalendar();
-        renderEvents();
     });
-});
 
-prevPageBtn.addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        renderEvents();
-    }
-});
+    nextMonthBtn.addEventListener('click', () => {
+        if (currentMonth === 11) {
+            currentMonth = 0;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        renderCalendar();
+    });
 
-nextPageBtn.addEventListener('click', () => {
-    const filteredEvents = getFilteredEvents();
-    const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        renderEvents();
-    }
+    // 카테고리 버튼들
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // 활성 버튼 변경
+            navButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // 카테고리 변경
+            currentCategory = btn.dataset.category;
+            currentPage = 1;
+            
+            // 화면 업데이트
+            renderCalendar();
+            renderEvents();
+        });
+    });
+
+    // 페이지네이션
+    prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderEvents();
+        }
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+        const filteredEvents = getFilteredEvents();
+        const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderEvents();
+        }
+    });
+
+    // 초기 렌더링
+    renderCalendar();
+    renderEvents();
 });
 
 // 유틸리티 함수들
@@ -411,12 +420,6 @@ function goToMonth(year, month) {
     renderCalendar();
 }
 
-// 초기 로드
-document.addEventListener('DOMContentLoaded', () => {
-    renderCalendar();
-    renderEvents();
-});
-
 // 키보드 단축키
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey) {
@@ -438,4 +441,10 @@ document.addEventListener('keydown', (e) => {
                 break;
         }
     }
+});
+
+// 윈도우 리사이즈 이벤트
+window.addEventListener('resize', () => {
+    // 필요시 캘린더 다시 렌더링
+    renderCalendar();
 });
