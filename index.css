@@ -1754,8 +1754,8 @@ header {
     color: #666;
 }
 
-/* 에브리타임 커뮤니티 카드 */
-.everytime-community-card {
+/* 에브리타임 과제/시험 현황 카드 */
+.everytime-assignments-card {
     background-color: white;
     border-radius: 12px;
     border: 1px solid #eee;
@@ -1782,6 +1782,94 @@ header {
     color: #c62917;
     cursor: pointer;
     text-decoration: none;
+}
+
+.assignments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.assignment-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.assignment-item.urgent {
+    border-left: 4px solid #ff4444;
+    background-color: #fff5f5;
+}
+
+.assignment-item.normal {
+    border-left: 4px solid #4caf50;
+    background-color: #f8fff8;
+}
+
+.assignment-type {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background-color: #666;
+    margin-right: 12px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.assignment-content {
+    flex: 1;
+}
+
+.assignment-subject {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.assignment-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.assignment-due {
+    font-size: 12px;
+    color: #888;
+}
+
+.assignment-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 50px;
+}
+
+.assignment-status.urgent {
+    background-color: #ff4444;
+    color: white;
+}
+
+.assignment-status.normal {
+    background-color: #4caf50;
+    color: white;
+}
+
+/* 에브리타임 커뮤니티 카드 */
+.everytime-community-card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 16px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .community-posts {
