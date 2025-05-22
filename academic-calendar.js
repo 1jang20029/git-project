@@ -3,8 +3,18 @@ let currentDate = new Date();
 let currentSemester = '1';
 let currentFilter = 'all';
 
+// 뒤로 가기 함수
+function goBackToMain() {
+    // 브라우저 히스토리에서 이전 페이지로 이동
+    if (document.referrer && document.referrer !== '') {
+        window.history.back();
+    } else {
+        // 직접 접근한 경우 메인 페이지로 이동
+        window.location.href = 'index.html';
+    }
+}
+
 // 2025학년도 연성대학교 학사일정 데이터
-// 연성대학교 완전한 학사일정 데이터 - 이미지 기반 업데이트
 const academicSchedule = {
     '1': [ // 1학기
         // 12-1월 겨울방학 기간
@@ -394,7 +404,7 @@ const academicSchedule = {
             important: false
         }
     ],
-    'summer': [ // 여름학기 - 이미지 기반 완전 업데이트
+    'summer': [ // 여름학기
         {
             id: 101,
             title: '하계 융합학기',
@@ -544,7 +554,7 @@ const academicSchedule = {
             important: true
         }
     ],
-    '2': [ // 2학기 - 이미지 기반 완전 업데이트
+    '2': [ // 2학기
         {
             id: 201,
             title: '2025학년도 2학기 개강',
@@ -785,7 +795,7 @@ const academicSchedule = {
             important: false
         }
     ],
-    'winter': [ // 겨울학기 - 이미지 기반 완전 업데이트
+    'winter': [ // 겨울학기
         {
             id: 301,
             title: '동계 융합학기',
@@ -931,7 +941,8 @@ const academicSchedule = {
             description: '정시모집 합격자 발표',
             important: true
         },
-         {
+        // 2026년 2월 일정 추가
+        {
             id: 318,
             title: '복학 접수기간',
             date: '2026-02-02',
@@ -1132,7 +1143,7 @@ function changeSemester() {
     renderSummaryCards();
 }
 
-// 캘린더 렌더링 - 1일부터 시작하도록 수정
+// 캘린더 렌더링
 function renderCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -1242,7 +1253,7 @@ function createDayElement(dayNumber, date, isOtherMonth) {
     return dayElement;
 }
 
-// 특정 날짜의 이벤트 렌더링 - 연속 일정 개선
+// 특정 날짜의 이벤트 렌더링
 function renderDayEvents(date) {
     const dateString = formatDate(date);
     const dayEvents = getEventsForDate(dateString);
@@ -1297,7 +1308,7 @@ function isSameDay(date1, date2) {
            date1.getDate() === date2.getDate();
 }
 
-// 주요 일정 요약 카드 렌더링 - 미래 일정 우선 및 스와이프 기능
+// 주요 일정 요약 카드 렌더링
 function renderSummaryCards() {
     const summaryCards = document.getElementById('summaryCards');
     const events = academicSchedule[currentSemester] || [];
@@ -1415,7 +1426,7 @@ function addSwipeFeature(container) {
     });
 }
 
-// 일정 목록 렌더링 - 수정된 버전 (모든 학기 일정을 표시하도록)
+// 일정 목록 렌더링
 function renderEventsList() {
     const eventsList = document.getElementById('eventsList');
     const monthlyTitle = document.getElementById('monthlyTitle');
@@ -1539,7 +1550,7 @@ function isToday(date) {
     return date.toDateString() === today.toDateString();
 }
 
-// 해당 날짜의 이벤트 가져오기 - 모든 학기 포함 수정
+// 해당 날짜의 이벤트 가져오기
 function getEventsForDate(dateString) {
     // 모든 학기의 일정을 확인
     let allEvents = [];
@@ -2025,127 +2036,6 @@ function animateCalendar() {
     });
 }
 
-// 데이터 내보내기 (JSON 형식)
-function exportScheduleData() {
-    const dataStr = JSON.stringify(academicSchedule, null, 2);
-    const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    const url = URL.createObjectURL(dataBlob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `academic_schedule_2025.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    alert('학사일정 데이터가 내보내기되었습니다.');
-}
-
-// CSV 형식으로 일정 내보내기
-function exportScheduleCSV() {
-    const events = academicSchedule[currentSemester] || [];
-    let csvContent = '날짜,종료날짜,제목,구분,설명,장소,중요도\n';
-    
-    events.forEach(event => {
-        const row = [
-            event.date,
-            event.endDate || '',
-            `"${event.title}"`,
-            eventTypeLabels[event.type],
-            `"${event.description}"`,
-            event.location || '',
-            event.important ? '중요' : '일반'
-        ].join(',');
-        csvContent += row + '\n';
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `academic_schedule_${currentSemester}_2025.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    alert('학사일정이 CSV 파일로 내보내기되었습니다.');
-}
-
-// iCal 형식으로 일정 내보내기
-function exportScheduleICal() {
-    const events = academicSchedule[currentSemester] || [];
-    let icalContent = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//연성대학교//학사일정//KO'
-    ].join('\n');
-    
-    events.forEach(event => {
-        const startDate = event.date.replace(/-/g, '');
-        const endDate = event.endDate ? event.endDate.replace(/-/g, '') : startDate;
-        
-        icalContent += '\n' + [
-            'BEGIN:VEVENT',
-            `DTSTART:${startDate}`,
-            `DTEND:${endDate}`,
-            `SUMMARY:${event.title}`,
-            `DESCRIPTION:${event.description}`,
-            `LOCATION:${event.location || ''}`,
-            `CATEGORIES:${eventTypeLabels[event.type]}`,
-            `UID:${event.id}@yeonsung.ac.kr`,
-            'END:VEVENT'
-        ].join('\n');
-    });
-    
-    icalContent += '\nEND:VCALENDAR';
-    
-    const blob = new Blob([icalContent], { type: 'text/calendar;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `academic_schedule_${currentSemester}_2025.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    alert('학사일정이 iCal 파일로 내보내기되었습니다.');
-}
-
-// 접근성 향상을 위한 키보드 네비게이션
-document.addEventListener('keydown', function(e) {
-    if (e.altKey) {
-        switch(e.key) {
-            case '1':
-                document.getElementById('semesterSelect').value = '1';
-                changeSemester();
-                break;
-            case '2':
-                document.getElementById('semesterSelect').value = '2';
-                changeSemester();
-                break;
-            case 's':
-                document.getElementById('semesterSelect').value = 'summer';
-                changeSemester();
-                break;
-            case 'w':
-                document.getElementById('semesterSelect').value = 'winter';
-                changeSemester();
-                break;
-            case 't':
-                goToToday();
-                break;
-            case 'p':
-                printSchedule();
-                break;
-        }
-    }
-});
-
 // 초기화 함수들을 페이지 로드 시 실행
 window.addEventListener('load', function() {
     loadTheme();
@@ -2165,17 +2055,6 @@ document.addEventListener('visibilitychange', function() {
         }
     }
 });
-
-// 서비스 워커 등록 (PWA 지원)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(function(registration) {
-            console.log('ServiceWorker registration successful');
-        }, function(err) {
-            console.log('ServiceWorker registration failed');
-        });
-    });
-}
 
 // 알림 권한 요청 및 중요 일정 알림
 function requestNotificationPermission() {
