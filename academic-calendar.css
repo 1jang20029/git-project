@@ -143,10 +143,6 @@ body {
     border-left-color: #9b59b6;
 }
 
-.summary-card.academic {
-    border-left-color: #3498db;
-}
-
 .summary-card h4 {
     font-size: 1.3rem;
     margin-bottom: 8px;
@@ -370,7 +366,6 @@ body {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
-    font-size: 0.9rem;
 }
 
 .filter-btn:hover {
@@ -441,8 +436,6 @@ body {
     font-size: 1.2rem;
     color: #2c3e50;
     line-height: 1.4;
-    flex: 1;
-    margin-right: 15px;
 }
 
 .event-card-date {
@@ -717,11 +710,6 @@ body {
         justify-content: center;
     }
     
-    .filter-btn {
-        font-size: 0.8rem;
-        padding: 10px 15px;
-    }
-    
     .legend-items {
         justify-content: center;
     }
@@ -729,12 +717,6 @@ body {
     .modal-content {
         margin: 10% auto;
         width: 95%;
-    }
-    
-    .event-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
     }
 }
 
@@ -755,5 +737,11 @@ body {
     .event-item {
         font-size: 0.7rem;
         padding: 1px 4px;
+    }
+    
+    .event-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 }

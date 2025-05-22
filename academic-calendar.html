@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연성대학교 2025학년도 학사일정</title>
-    <link rel="stylesheet" href="style.css">
+    <title>2025학년도 학사일정</title>
+    <link rel="stylesheet" href="academic-calendar.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -15,16 +15,16 @@
                 <div class="university-info">
                     <h1 class="title">
                         <i class="fas fa-university"></i>
-                        연성대학교
+                        한국대학교
                     </h1>
                     <p class="subtitle">2025학년도 학사일정</p>
                 </div>
                 <div class="semester-selector">
                     <select id="semesterSelect" onchange="changeSemester()">
-                        <option value="winter">겨울학기</option>
-                        <option value="1" selected>1학기</option>
+                        <option value="1">1학기</option>
                         <option value="summer">여름학기</option>
                         <option value="2">2학기</option>
+                        <option value="winter">겨울학기</option>
                     </select>
                 </div>
             </div>
@@ -81,10 +81,9 @@
             <div class="events-filter">
                 <button class="filter-btn active" data-type="all" onclick="filterEvents('all')">전체</button>
                 <button class="filter-btn" data-type="academic" onclick="filterEvents('academic')">학사</button>
-                <button class="filter-btn" data-type="exam" onclick="filterEvents('exam')">시험/평가</button>
-                <button class="filter-btn" data-type="holiday" onclick="filterEvents('holiday')">휴일/방학</button>
+                <button class="filter-btn" data-type="exam" onclick="filterEvents('exam')">시험</button>
+                <button class="filter-btn" data-type="holiday" onclick="filterEvents('holiday')">휴일</button>
                 <button class="filter-btn" data-type="event" onclick="filterEvents('event')">행사</button>
-                <button class="filter-btn" data-type="registration" onclick="filterEvents('registration')">접수/등록</button>
             </div>
             <div class="events-list" id="eventsList">
                 <!-- 일정 목록이 JavaScript로 동적 생성됩니다 -->
@@ -101,7 +100,7 @@
                 </div>
                 <div class="legend-item">
                     <span class="legend-color exam"></span>
-                    <span class="legend-text">시험/평가</span>
+                    <span class="legend-text">시험</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color holiday"></span>
@@ -113,7 +112,7 @@
                 </div>
                 <div class="legend-item">
                     <span class="legend-color registration"></span>
-                    <span class="legend-text">접수/등록</span>
+                    <span class="legend-text">수강신청</span>
                 </div>
             </div>
         </div>
@@ -149,6 +148,11 @@
                     <strong>상세내용:</strong>
                     <p id="detailDescription"></p>
                 </div>
+                <div class="detail-item" id="detailLocation" style="display: none;">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <strong>장소:</strong>
+                    <span id="detailLocationText"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -156,11 +160,11 @@
     <!-- 푸터 -->
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2025 연성대학교. 모든 권리 보유.</p>
-            <p>문의: 학사팀 031-299-3114 | academic@ycc.ac.kr</p>
+            <p>&copy; 2025 한국대학교. 모든 권리 보유.</p>
+            <p>문의: 학사팀 02-1234-5678 | academic@university.ac.kr</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="academic-calendar.js"></script>
 </body>
 </html>
