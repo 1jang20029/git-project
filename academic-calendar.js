@@ -1045,21 +1045,24 @@ function renderCalendar() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
+    const lastDayOfWeek = lastDay.getDay(); // 마지막 날의 요일
     
     const calendarBody = document.getElementById('calendarBody');
     calendarBody.innerHTML = '';
     
-    // 이전 달의 빈 날짜들
-    const prevMonth = new Date(year, month - 1, 0);
-    const prevMonthDays = prevMonth.getDate();
-    
-    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-        const dayElement = createDayElement(
-            prevMonthDays - i, 
-            new Date(year, month - 1, prevMonthDays - i), 
-            true
-        );
-        calendarBody.appendChild(dayElement);
+    // 이전 달의 빈 날짜들 - 첫째 날이 일요일이 아닌 경우에만
+    if (startingDayOfWeek > 0) {
+        const prevMonth = new Date(year, month - 1, 0);
+        const prevMonthDays = prevMonth.getDate();
+        
+        for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+            const dayElement = createDayElement(
+                prevMonthDays - i, 
+                new Date(year, month - 1, prevMonthDays - i), 
+                true
+            );
+            calendarBody.appendChild(dayElement);
+        }
     }
     
     // 현재 달의 날짜들
@@ -1072,17 +1075,17 @@ function renderCalendar() {
         calendarBody.appendChild(dayElement);
     }
     
-    // 다음 달의 빈 날짜들
-    const totalCells = calendarBody.children.length;
-    const remainingCells = 42 - totalCells; // 6주 * 7일
-    
-    for (let day = 1; day <= remainingCells; day++) {
-        const dayElement = createDayElement(
-            day, 
-            new Date(year, month + 1, day), 
-            true
-        );
-        calendarBody.appendChild(dayElement);
+    // 다음 달의 빈 날짜들 - 마지막 날이 토요일이 아닌 경우에만
+    if (lastDayOfWeek !== 6) { // 토요일(6)이 아닌 경우
+        const nextMonthDaysToShow = 6 - lastDayOfWeek;
+        for (let day = 1; day <= nextMonthDaysToShow; day++) {
+            const dayElement = createDayElement(
+                day, 
+                new Date(year, month + 1, day), 
+                true
+            );
+            calendarBody.appendChild(dayElement);
+        }
     }
 }
 
@@ -1131,7 +1134,14 @@ function renderDayEvents(date) {
         
         dayEvents.forEach(event => {
             const eventElement = document.createElement('div');
-            eventElement.className = `event-item ${event.type}`;
+            let eventClass = `event-item ${event.type}`;
+            
+            // 연속 이벤트인지 확인
+            if (event.endDate && event.endDate !== event.date) {
+                eventClass += ' multi-day';
+            }
+            
+            eventElement.className = eventClass;
             eventElement.textContent = event.title;
             eventElement.title = event.description;
             
@@ -1463,8 +1473,8 @@ function printSchedule() {
                     font-size: 12px;
                 }
                 h1 { 
-                    color: #1e3c72; 
-                    border-bottom: 3px solid #667eea; 
+                    color: #6AC1C5; 
+                    border-bottom: 3px solid #B8E985; 
                     padding-bottom: 10px; 
                     text-align: center;
                 }
@@ -1761,7 +1771,7 @@ function exportScheduleICal() {
     let icalContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//한국대학교//학사일정//KO'
+        'PRODID:-//연성대학교//학사일정//KO'
     ].join('\n');
     
     events.forEach(event => {
@@ -1776,7 +1786,7 @@ function exportScheduleICal() {
             `DESCRIPTION:${event.description}`,
             `LOCATION:${event.location || ''}`,
             `CATEGORIES:${eventTypeLabels[event.type]}`,
-            `UID:${event.id}@university.ac.kr`,
+            `UID:${event.id}@yeonsung.ac.kr`,
             'END:VEVENT'
         ].join('\n');
     });
