@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('파란색 원형 3 버튼이 제거되었습니다.');
     }
 
-    // 초기 데이터 - 모든 값을 0으로 초기화
+    // 초기 데이터 - 빈 배열로 변경 (더미 데이터 제거)
     const restaurantsData = [];
 
     // ===== 전역 상수 =====
@@ -1361,9 +1361,39 @@ document.addEventListener('DOMContentLoaded', function() {
             color: var(--dislike-color);
         }
         
+        /* 빈 목록 메시지 스타일 추가 */
+        .empty-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+            background-color: var(--background-light);
+            border-radius: 16px;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-message p {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .empty-message p:last-child {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
         @media (max-width: 768px) {
             .popular-restaurants-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .empty-message {
+                padding: 40px 20px;
             }
         }
     `;
@@ -1375,7 +1405,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.removeItem('restaurants');
             localStorage.removeItem(`userInteractions_${CURRENT_USER_ID}`);
             
-            restaurants = [...restaurantsData]; // 초기 데이터로 복원
+            restaurants = [...restaurantsData]; // 초기 데이터로 복원 (빈 배열)
             userInteractions = {
                 likedRestaurants: [],
                 starredRestaurants: [],
