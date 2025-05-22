@@ -888,8 +888,7 @@ const academicSchedule = {
             description: '겨울학기 성적처리',
             important: false
         },
-
-         {
+        {
             id: 313,
             title: '동계계절학기 성적열람 및 이의신청',
             date: '2026-01-21',
@@ -898,7 +897,6 @@ const academicSchedule = {
             description: '겨울학기 성적확인',
             important: false
         },
-
         {
             id: 314,
             title: '2026학년도 정시 면접/실기고사',
@@ -910,34 +908,23 @@ const academicSchedule = {
         },
         {
             id: 315,
-            title: '2026학년도 	일반휴학·전과·재입학 접수기간',
+            title: '2026학년도 일반휴학·전과·재입학 접수기간',
             date: '2026-01-26',
             endDate: '2026-01-30',
             type: 'registration',
             description: '후학 및 전과, 재입학 신청',
             important: false
         },
-
         {
             id: 316,
-            title: '2026학년도 	일반휴학·전과·재입학 접수기간',
-            date: '2026-01-26',
-            endDate: '2026-01-30',
-            type: 'registration',
-            description: '후학 및 전과, 재입학 신청',
-            important: false
-        },
-        {
-            id: 317,
             title: '전기진급 및 졸업사정회',
             date: '2026-01-28',
             type: 'academic',
             description: '진급 및 졸업 심사',
             important: true
         },
-
         {
-            id: 318,
+            id: 317,
             title: '2026학년도 정시 합격자 발표',
             date: '2026-01-30',
             type: 'academic',
@@ -945,13 +932,7 @@ const academicSchedule = {
             important: true
         }
     ]
-}
-
-        
-
-
-
-
+};
 
 // 일정별 세분화된 색상 매핑
 const eventColorMapping = {
@@ -975,6 +956,7 @@ const eventColorMapping = {
     '2026학년도 정시 합격자 등록기간': '#e67e22',
     '2026학년도 수시 합격자 등록기간': '#d35400',
     '일반후학·전과·재입학 접수기간': '#e67e22',
+    '2026학년도 일반휴학·전과·재입학 접수기간': '#e67e22',
     
     // 공휴일/방학
     '신정': '#e74c3c',
@@ -1199,7 +1181,6 @@ function createDayElement(dayNumber, date, isOtherMonth) {
     return dayElement;
 }
 
-
 // 특정 날짜의 이벤트 렌더링 - 연속 일정 개선
 function renderDayEvents(date) {
     const dateString = formatDate(date);
@@ -1247,7 +1228,6 @@ function renderDayEvents(date) {
         eventsContainer.appendChild(eventElement);
     });
 }
-
 
 // 날짜 비교 헬퍼 함수
 function isSameDay(date1, date2) {
@@ -1374,7 +1354,7 @@ function addSwipeFeature(container) {
     });
 }
 
-// 일정 목록 렌더링
+// 일정 목록 렌더링 - 수정된 버전 (모든 학기 일정을 표시하도록)
 function renderEventsList() {
     const eventsList = document.getElementById('eventsList');
     const monthlyTitle = document.getElementById('monthlyTitle');
@@ -1383,9 +1363,16 @@ function renderEventsList() {
     
     monthlyTitle.textContent = `${year}년 ${monthNames[month]} 학사일정`;
     
-    // 현재 학기와 월의 이벤트 필터링
-    const events = academicSchedule[currentSemester] || [];
-    let monthEvents = events.filter(event => {
+    // 모든 학기의 일정을 가져와서 현재 월에 해당하는 것만 필터링
+    let allEvents = [];
+    
+    // 모든 학기의 일정을 합치기
+    Object.keys(academicSchedule).forEach(semester => {
+        allEvents = allEvents.concat(academicSchedule[semester]);
+    });
+    
+    // 현재 월의 이벤트 필터링
+    let monthEvents = allEvents.filter(event => {
         const eventDate = new Date(event.date);
         const eventEndDate = event.endDate ? new Date(event.endDate) : eventDate;
         const currentMonthStart = new Date(year, month, 1);
@@ -1478,12 +1465,17 @@ function isToday(date) {
     return date.toDateString() === today.toDateString();
 }
 
-// 해당 날짜의 이벤트 가져오기 - 모든 학기 포함
+// 해당 날짜의 이벤트 가져오기 - 모든 학기 포함 수정
 function getEventsForDate(dateString) {
-    // 현재 선택된 학기의 이벤트만 표시
-    const events = academicSchedule[currentSemester] || [];
+    // 모든 학기의 일정을 확인
+    let allEvents = [];
     
-    return events.filter(event => {
+    // 모든 학기의 일정을 합치기
+    Object.keys(academicSchedule).forEach(semester => {
+        allEvents = allEvents.concat(academicSchedule[semester]);
+    });
+    
+    return allEvents.filter(event => {
         if (event.endDate) {
             // 기간이 있는 이벤트 - 해당 날짜가 시작일과 종료일 사이에 있는지 확인
             return dateString >= event.date && dateString <= event.endDate;
@@ -1556,6 +1548,11 @@ function closeDetailModal() {
     document.body.style.overflow = 'auto';
 }
 
+// 이벤트별 색상 가져오기 함수
+function getEventColor(eventTitle) {
+    return eventColorMapping[eventTitle] || '#95a5a6'; // 기본 회색
+}
+
 // 키보드 이벤트 처리
 document.addEventListener('keydown', function(e) {
     // ESC 키로 모달 닫기
@@ -1582,8 +1579,13 @@ function searchSchedule(query) {
         return;
     }
     
-    const events = academicSchedule[currentSemester] || [];
-    const filteredEvents = events.filter(event => 
+    // 모든 학기의 일정을 검색 대상으로 포함
+    let allEvents = [];
+    Object.keys(academicSchedule).forEach(semester => {
+        allEvents = allEvents.concat(academicSchedule[semester]);
+    });
+    
+    const filteredEvents = allEvents.filter(event => 
         event.title.toLowerCase().includes(query.toLowerCase()) ||
         event.description.toLowerCase().includes(query.toLowerCase())
     );
@@ -1605,17 +1607,23 @@ function searchSchedule(query) {
             `${formatDateKorean(event.date)} ~ ${formatDateKorean(event.endDate)}` :
             formatDateKorean(event.date);
         
+        // 개별 색상 적용
+        const eventColor = getEventColor(event.title);
+        
         eventCard.innerHTML = `
             <div class="event-card-header">
                 <div class="event-card-title">${event.title}</div>
                 <div class="event-card-date">${dateText}</div>
             </div>
             <div class="event-card-description">${event.description}</div>
-            <span class="event-type ${event.type}">
+            <span class="event-type" style="background-color: ${eventColor}20; color: ${eventColor}; border: 1px solid ${eventColor};">
                 ${eventTypeLabels[event.type]}
                 ${event.important ? ' ★' : ''}
             </span>
         `;
+        
+        // 카드 좌측 테두리도 해당 색상으로
+        eventCard.style.borderLeft = `5px solid ${eventColor}`;
         
         eventCard.addEventListener('click', function() {
             showEventDetail(event);
@@ -1746,9 +1754,14 @@ function showTodaySchedule() {
 function showUpcomingSchedule() {
     const today = new Date();
     const oneWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const events = academicSchedule[currentSemester] || [];
     
-    const upcomingEvents = events.filter(event => {
+    // 모든 학기의 일정을 확인
+    let allEvents = [];
+    Object.keys(academicSchedule).forEach(semester => {
+        allEvents = allEvents.concat(academicSchedule[semester]);
+    });
+    
+    const upcomingEvents = allEvents.filter(event => {
         const eventDate = new Date(event.date);
         return eventDate >= today && eventDate <= oneWeekLater;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -1818,9 +1831,14 @@ function isFavorite(eventId) {
 function updateMonthEventCount() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const events = academicSchedule[currentSemester] || [];
     
-    const monthEvents = events.filter(event => {
+    // 모든 학기의 일정을 확인
+    let allEvents = [];
+    Object.keys(academicSchedule).forEach(semester => {
+        allEvents = allEvents.concat(academicSchedule[semester]);
+    });
+    
+    const monthEvents = allEvents.filter(event => {
         const eventDate = new Date(event.date);
         const eventEndDate = event.endDate ? new Date(event.endDate) : eventDate;
         const currentMonthStart = new Date(year, month, 1);
@@ -1840,7 +1858,7 @@ function updateMonthEventCount() {
     `;
 }
 
-// 달력 렌더링 함수 수정 (월별 이벤트 개수 추가)
+// 달력 렌더링 함수를 재정의
 const originalRenderCalendar = renderCalendar;
 renderCalendar = function() {
     originalRenderCalendar();
@@ -1849,7 +1867,6 @@ renderCalendar = function() {
 
 // 반응형 네비게이션 처리
 function handleResponsiveNavigation() {
-    const calendarNav = document.querySelector('.calendar-nav');
     const currentMonth = document.getElementById('currentMonth');
     
     if (window.innerWidth <= 768) {
@@ -2077,9 +2094,14 @@ function checkImportantEvents() {
     if (Notification.permission === 'granted') {
         const today = new Date();
         const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-        const events = academicSchedule[currentSemester] || [];
         
-        const importantTomorrowEvents = events.filter(event => {
+        // 모든 학기의 일정을 확인
+        let allEvents = [];
+        Object.keys(academicSchedule).forEach(semester => {
+            allEvents = allEvents.concat(academicSchedule[semester]);
+        });
+        
+        const importantTomorrowEvents = allEvents.filter(event => {
             const eventDate = new Date(event.date);
             return event.important && 
                    eventDate.toDateString() === tomorrow.toDateString();
@@ -2098,11 +2120,3 @@ function checkImportantEvents() {
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(requestNotificationPermission, 2000);
 });
-
-
-// 이벤트별 색상 가져오기 함수
-function getEventColor(eventTitle) {
-    return eventColorMapping[eventTitle] || '#95a5a6'; // 기본 회색
-}
-
-
