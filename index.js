@@ -4887,61 +4887,32 @@ if (typeof module !== 'undefined' && module.exports) {
 // 메인 페이지에서 대외활동 통계 표시
 
 function displayActivityStats() {
-    // 로컬 스토리지에서 통계 정보 가져오기
     const statsData = localStorage.getItem('activityStats');
     
     if (statsData) {
         const stats = JSON.parse(statsData);
         
-        // 통계 표시 요소들 가져오기 - 정확한 선택자 사용
-        // 여기서는 메인 페이지의 활동 통계 표시 부분의 구조에 맞게 선택자 작성
         const contestElement = document.querySelector('.activity-stat-item:nth-child(1) .activity-stat-number');
         const clubElement = document.querySelector('.activity-stat-item:nth-child(2) .activity-stat-number');
         const externalElement = document.querySelector('.activity-stat-item:nth-child(3) .activity-stat-number');
         
-        // 값 업데이트
-        if (contestElement) {
-            // 진행 중인 공모전 개수 업데이트
-            contestElement.textContent = stats.contestCount;
-        }
-        
-        if (clubElement) {
-            // 신입 모집 동아리 개수 업데이트
-            clubElement.textContent = stats.clubCount;
-        }
-        
-        if (externalElement) {
-            // 대외활동 기회 개수 업데이트
-            externalElement.textContent = stats.externalCount;
-        }
-        
-        // 추가적으로 봉사활동 통계를 표시할 요소가 있다면
-        const volunteerElement = document.querySelector('.activity-stat-item:nth-child(4) .activity-stat-number');
-        if (volunteerElement) {
-            volunteerElement.textContent = stats.volunteerCount;
-        }
-        
-        console.log('활동 통계 업데이트 완료:', stats);
-    } else {
-        console.log('저장된 활동 통계가 없습니다.');
+        if (contestElement) contestElement.textContent = stats.contestCount;
+        if (clubElement) clubElement.textContent = stats.clubCount;
+        if (externalElement) externalElement.textContent = stats.externalCount;
     }
 }
 
 // 활동 공지 업데이트 함수
 function updateActivityNotices() {
-    // 알림 컨테이너 찾기
-    const noticesContainer = document.querySelector('.activity-summary-notices');
-    if (!noticesContainer) return;
-    
     const urgentActivitiesJSON = localStorage.getItem('urgentActivities');
     const urgentActivities = urgentActivitiesJSON ? JSON.parse(urgentActivitiesJSON) : [];
     
-    // HTML 내용 초기화
+    const noticesContainer = document.querySelector('.activity-summary-notices');
+    if (!noticesContainer) return;
+    
     let noticesHTML = '';
     
-    // 마감 임박한 활동이 있는지 확인
-    if (urgentActivities && Array.isArray(urgentActivities) && urgentActivities.length > 0) {
-        // 활동이 있는 경우 각 활동 표시
+    if (urgentActivities && urgentActivities.length > 0) {
         urgentActivities.forEach(activity => {
             noticesHTML += `
                 <div class="activity-notice-item">
@@ -4951,23 +4922,15 @@ function updateActivityNotices() {
             `;
         });
     } else {
-        // 마감 임박한 활동이 없는 경우 안내 메시지 표시
         noticesHTML = `
             <div class="activity-notice-item">
                 <span class="activity-notice-icon">📌</span>
                 <span class="activity-notice-text">현재 마감 임박한 활동이 없습니다.</span>
             </div>
-            <div class="activity-notice-item">
-                <span class="activity-notice-icon">✨</span>
-                <span class="activity-notice-text">새로운 활동을 등록하시려면 교내/대외활동 페이지로 이동하세요.</span>
-            </div>
         `;
     }
     
-    // 내용 업데이트
     noticesContainer.innerHTML = noticesHTML;
-    
-    console.log('활동 공지 업데이트 완료', urgentActivities ? urgentActivities.length : 0, '개의 마감 임박 활동');
 }
 
 
