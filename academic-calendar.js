@@ -1031,7 +1031,7 @@ function changeSemester() {
     renderSummaryCards();
 }
 
-// 캘린더 렌더링
+// 캘린더 렌더링 - 1일부터 시작하도록 수정
 function renderCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -1045,24 +1045,16 @@ function renderCalendar() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    const lastDayOfWeek = lastDay.getDay(); // 마지막 날의 요일
+    const lastDayOfWeek = lastDay.getDay();
     
     const calendarBody = document.getElementById('calendarBody');
     calendarBody.innerHTML = '';
     
-    // 이전 달의 빈 날짜들 - 첫째 날이 일요일이 아닌 경우에만
-    if (startingDayOfWeek > 0) {
-        const prevMonth = new Date(year, month - 1, 0);
-        const prevMonthDays = prevMonth.getDate();
-        
-        for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-            const dayElement = createDayElement(
-                prevMonthDays - i, 
-                new Date(year, month - 1, prevMonthDays - i), 
-                true
-            );
-            calendarBody.appendChild(dayElement);
-        }
+    // 현재 달의 1일이 일요일이 아닌 경우, 빈 셀 추가
+    for (let i = 0; i < startingDayOfWeek; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty-cell';
+        calendarBody.appendChild(emptyCell);
     }
     
     // 현재 달의 날짜들
@@ -1076,7 +1068,55 @@ function renderCalendar() {
     }
     
     // 다음 달의 빈 날짜들 - 마지막 날이 토요일이 아닌 경우에만
-    if (lastDayOfWeek !== 6) { // 토요일(6)이 아닌 경우
+    if (lastDayOfWeek !== 6) {
+        const nextMonthDaysToShow = 6 - lastDayOfWeek;
+        for (let day = 1; day <= nextMonthDaysToShow; day++) {
+            const dayElement = createDayElement(
+                day, 
+                new Date(year, month + 1, day), 
+                true
+            );
+            calendarBody.appendChild(dayElement);
+        }
+    }
+}// 캘린더 렌더링 - 1일부터 시작하도록 수정
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // 현재 월 표시
+    document.getElementById('currentMonth').textContent = 
+        `${year}년 ${monthNames[month]}`;
+    
+    // 달력 생성
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    const lastDayOfWeek = lastDay.getDay();
+    
+    const calendarBody = document.getElementById('calendarBody');
+    calendarBody.innerHTML = '';
+    
+    // 현재 달의 1일이 일요일이 아닌 경우, 빈 셀 추가
+    for (let i = 0; i < startingDayOfWeek; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty-cell';
+        calendarBody.appendChild(emptyCell);
+    }
+    
+    // 현재 달의 날짜들
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = createDayElement(
+            day, 
+            new Date(year, month, day), 
+            false
+        );
+        calendarBody.appendChild(dayElement);
+    }
+    
+    // 다음 달의 빈 날짜들 - 마지막 날이 토요일이 아닌 경우에만
+    if (lastDayOfWeek !== 6) {
         const nextMonthDaysToShow = 6 - lastDayOfWeek;
         for (let day = 1; day <= nextMonthDaysToShow; day++) {
             const dayElement = createDayElement(
@@ -1110,9 +1150,14 @@ function createDayElement(dayNumber, date, isOtherMonth) {
         dayElement.classList.add('saturday');
     }
     
+    // 공휴일 체크
+    const dateString = formatDate(date);
+    const dayEvents = getEventsForDate(dateString);
+    const hasHoliday = dayEvents.some(event => event.type === 'holiday');
+    
     dayElement.innerHTML = `
-        <div class="day-number">${dayNumber}</div>
-        <div class="day-events" id="events-${formatDate(date)}"></div>
+        <div class="day-number ${hasHoliday ? 'holiday-date' : ''}">${dayNumber}</div>
+        <div class="day-events" id="events-${dateString}"></div>
     `;
     
     // 해당 날짜의 이벤트 표시

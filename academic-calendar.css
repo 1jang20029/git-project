@@ -112,12 +112,13 @@ body {
     gap: 20px;
 }
 
+/* 주요 일정 요약 카드 배경색 - 연성대학교 브랜드 컬러로 변경 */
 .summary-card {
     background: white;
     border-radius: 15px;
     padding: 25px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    border-left: 5px solid #667eea;
+    border-left: 5px solid #B8E985;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -136,11 +137,19 @@ body {
 }
 
 .summary-card.registration {
+    border-left-color: #6AC1C5;
+}
+
+.summary-card.registration {
     border-left-color: #f39c12;
 }
 
 .summary-card.event {
     border-left-color: #9b59b6;
+}
+
+.summary-card.academic {
+    border-left-color: #B8E985;
 }
 
 .summary-card h4 {
@@ -172,8 +181,10 @@ body {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
+
+/* 네비게이션 버튼 색상 업데이트 */
 .nav-btn, .today-btn {
-    background: #667eea;
+    background: #B8E985;
     color: white;
     border: none;
     padding: 15px 20px;
@@ -188,9 +199,9 @@ body {
 }
 
 .nav-btn:hover, .today-btn:hover {
-    background: #5a6fd8;
+    background: #6AC1C5;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(184, 233, 133, 0.4);
 }
 
 .current-month {
@@ -209,10 +220,11 @@ body {
     margin-bottom: 30px;
 }
 
+/* 캘린더 헤더 색상 업데이트 */
 .calendar-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #B8E985 0%, #6AC1C5 100%);
     color: white;
 }
 
@@ -369,14 +381,16 @@ body {
 }
 
 .filter-btn:hover {
-    border-color: #667eea;
-    color: #667eea;
+    border-color: #B8E985;
+    color: #B8E985;
 }
 
+
+/* 필터 버튼 활성화 색상 */
 .filter-btn.active {
-    background: #667eea;
+    background: #B8E985;
     color: white;
-    border-color: #667eea;
+    border-color: #B8E985;
 }
 
 .events-list {
@@ -384,6 +398,7 @@ body {
     gap: 15px;
 }
 
+/* 이벤트 카드 테두리 색상 업데이트 */
 .event-card {
     background: #f8f9ff;
     border: 1px solid #e0e6ed;
@@ -391,7 +406,7 @@ body {
     padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border-left: 5px solid #667eea;
+    border-left: 5px solid #B8E985;
 }
 
 .event-card:hover {
@@ -400,8 +415,8 @@ body {
 }
 
 .event-card.academic {
-    border-left-color: #3498db;
-    background: #ebf3fd;
+    border-left-color: #B8E985;
+    background: #f0fdf4;
 }
 
 .event-card.exam {
@@ -417,6 +432,11 @@ body {
 .event-card.event {
     border-left-color: #9b59b6;
     background: #f4ecf7;
+}
+
+.event-card.registration {
+    border-left-color: #6AC1C5;
+    background: #f0fdfa;
 }
 
 .event-card.registration {
@@ -462,9 +482,10 @@ body {
     font-weight: 600;
 }
 
+/* 이벤트 타입 라벨 색상 */
 .event-type.academic {
-    background: #d6eaf8;
-    color: #2471a3;
+    background: #e8f5e8;
+    color: #2e7d32;
 }
 
 .event-type.exam {
@@ -483,8 +504,8 @@ body {
 }
 
 .event-type.registration {
-    background: #fdeaa7;
-    color: #b7950b;
+    background: #e0f2f1;
+    color: #00695c;
 }
 
 /* 범례 */
@@ -582,8 +603,9 @@ body {
     }
 }
 
+/* 모달 헤더 색상 업데이트 */
 .modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #B8E985 0%, #6AC1C5 100%);
     color: white;
     padding: 25px;
     border-radius: 20px 20px 0 0;
@@ -744,4 +766,17 @@ body {
         align-items: flex-start;
         gap: 8px;
     }
+}
+
+/* 빈 셀 스타일 */
+.calendar-day.empty-cell {
+    background: transparent;
+    border: none;
+    min-height: 140px;
+}
+
+/* 공휴일 날짜 빨간색 */
+.day-number.holiday-date {
+    color: #e74c3c !important;
+    font-weight: bold;
 }
