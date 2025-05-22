@@ -1,61 +1,328 @@
 // 전역 변수
 let currentDate = new Date();
-let currentEvent = null;
-let editingEventId = null;
+let currentSemester = '1';
+let currentFilter = 'all';
 
-// 기본 학사 일정 데이터
-let events = [
-    {
-        id: 1,
-        title: '신입생 오리엔테이션',
-        date: '2025-03-02',
-        type: 'orientation',
-        description: '2025학년도 신입생 오리엔테이션'
-    },
-    {
-        id: 2,
-        title: '개강',
-        date: '2025-03-03',
-        type: 'semester',
-        description: '2025학년도 1학기 개강'
-    },
-    {
-        id: 3,
-        title: '중간고사',
-        date: '2025-04-15',
-        type: 'exam',
-        description: '2025학년도 1학기 중간고사'
-    },
-    {
-        id: 4,
-        title: '어린이날',
-        date: '2025-05-05',
-        type: 'holiday',
-        description: '어린이날 공휴일'
-    },
-    {
-        id: 5,
-        title: '기말고사',
-        date: '2025-06-10',
-        type: 'exam',
-        description: '2025학년도 1학기 기말고사'
-    },
-    {
-        id: 6,
-        title: '여름방학',
-        date: '2025-06-20',
-        type: 'semester',
-        description: '2025학년도 1학기 종료 및 여름방학 시작'
-    }
-];
+// 2025학년도 학사일정 데이터
+const academicSchedule = {
+    '1': [ // 1학기
+        {
+            id: 1,
+            title: '신입생 예비대학',
+            date: '2025-02-10',
+            endDate: '2025-02-14',
+            type: 'academic',
+            description: '신입생 대상 대학생활 적응 프로그램',
+            location: '대학 본관',
+            important: true
+        },
+        {
+            id: 2,
+            title: '재학생 수강신청',
+            date: '2025-02-17',
+            endDate: '2025-02-19',
+            type: 'registration',
+            description: '2025학년도 1학기 재학생 수강신청 기간',
+            location: '온라인',
+            important: true
+        },
+        {
+            id: 3,
+            title: '신입생 수강신청',
+            date: '2025-02-20',
+            endDate: '2025-02-21',
+            type: 'registration',
+            description: '2025학년도 1학기 신입생 수강신청 기간',
+            location: '온라인',
+            important: true
+        },
+        {
+            id: 4,
+            title: '개강',
+            date: '2025-03-03',
+            type: 'academic',
+            description: '2025학년도 1학기 수업 시작',
+            important: true
+        },
+        {
+            id: 5,
+            title: '삼일절',
+            date: '2025-03-01',
+            type: 'holiday',
+            description: '3·1절 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 6,
+            title: '입학식',
+            date: '2025-03-05',
+            type: 'event',
+            description: '2025학년도 신입생 입학식',
+            location: '대강당',
+            important: true
+        },
+        {
+            id: 7,
+            title: '수강변경 기간',
+            date: '2025-03-10',
+            endDate: '2025-03-14',
+            type: 'registration',
+            description: '1학기 수강변경 및 추가신청 기간',
+            location: '온라인',
+            important: false
+        },
+        {
+            id: 8,
+            title: '어린이날',
+            date: '2025-05-05',
+            type: 'holiday',
+            description: '어린이날 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 9,
+            title: '어버이날',
+            date: '2025-05-08',
+            type: 'holiday',
+            description: '어버이날 (수업진행)',
+            important: false
+        },
+        {
+            id: 10,
+            title: '석가탄신일',
+            date: '2025-05-12',
+            type: 'holiday',
+            description: '석가탄신일 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 11,
+            title: '중간고사',
+            date: '2025-04-21',
+            endDate: '2025-04-25',
+            type: 'exam',
+            description: '2025학년도 1학기 중간고사 기간',
+            important: true
+        },
+        {
+            id: 12,
+            title: '개교기념일',
+            date: '2025-05-15',
+            type: 'holiday',
+            description: '한국대학교 개교기념일 (휴강)',
+            important: false
+        },
+        {
+            id: 13,
+            title: '기말고사',
+            date: '2025-06-16',
+            endDate: '2025-06-20',
+            type: 'exam',
+            description: '2025학년도 1학기 기말고사 기간',
+            important: true
+        },
+        {
+            id: 14,
+            title: '여름방학',
+            date: '2025-06-23',
+            endDate: '2025-08-31',
+            type: 'holiday',
+            description: '2025학년도 여름방학',
+            important: true
+        },
+        {
+            id: 15,
+            title: '성적공지',
+            date: '2025-06-27',
+            type: 'academic',
+            description: '1학기 성적 공지',
+            location: '온라인',
+            important: false
+        }
+    ],
+    'summer': [ // 여름학기
+        {
+            id: 21,
+            title: '여름학기 수강신청',
+            date: '2025-06-02',
+            endDate: '2025-06-06',
+            type: 'registration',
+            description: '2025학년도 여름학기 수강신청',
+            location: '온라인',
+            important: true
+        },
+        {
+            id: 22,
+            title: '여름학기 개강',
+            date: '2025-07-01',
+            type: 'academic',
+            description: '2025학년도 여름학기 수업 시작',
+            important: true
+        },
+        {
+            id: 23,
+            title: '광복절',
+            date: '2025-08-15',
+            type: 'holiday',
+            description: '광복절 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 24,
+            title: '여름학기 기말고사',
+            date: '2025-08-18',
+            endDate: '2025-08-22',
+            type: 'exam',
+            description: '2025학년도 여름학기 기말고사',
+            important: true
+        }
+    ],
+    '2': [ // 2학기
+        {
+            id: 31,
+            title: '2학기 수강신청',
+            date: '2025-08-12',
+            endDate: '2025-08-16',
+            type: 'registration',
+            description: '2025학년도 2학기 수강신청 기간',
+            location: '온라인',
+            important: true
+        },
+        {
+            id: 32,
+            title: '2학기 개강',
+            date: '2025-09-01',
+            type: 'academic',
+            description: '2025학년도 2학기 수업 시작',
+            important: true
+        },
+        {
+            id: 33,
+            title: '추석연휴',
+            date: '2025-10-05',
+            endDate: '2025-10-09',
+            type: 'holiday',
+            description: '추석 연휴 (휴강)',
+            important: true
+        },
+        {
+            id: 34,
+            title: '개천절',
+            date: '2025-10-03',
+            type: 'holiday',
+            description: '개천절 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 35,
+            title: '한글날',
+            date: '2025-10-09',
+            type: 'holiday',
+            description: '한글날 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 36,
+            title: '대학축제',
+            date: '2025-10-20',
+            endDate: '2025-10-22',
+            type: 'event',
+            description: '한국대학교 대학축제',
+            location: '대학 전체',
+            important: true
+        },
+        {
+            id: 37,
+            title: '2학기 중간고사',
+            date: '2025-10-27',
+            endDate: '2025-10-31',
+            type: 'exam',
+            description: '2025학년도 2학기 중간고사 기간',
+            important: true
+        },
+        {
+            id: 38,
+            title: '졸업논문 제출마감',
+            date: '2025-11-15',
+            type: 'academic',
+            description: '2025년 졸업예정자 논문 제출 마감',
+            location: '학과사무실',
+            important: true
+        },
+        {
+            id: 39,
+            title: '2학기 기말고사',
+            date: '2025-12-16',
+            endDate: '2025-12-20',
+            type: 'exam',
+            description: '2025학년도 2학기 기말고사 기간',
+            important: true
+        },
+        {
+            id: 40,
+            title: '겨울방학',
+            date: '2025-12-23',
+            endDate: '2026-02-28',
+            type: 'holiday',
+            description: '2025학년도 겨울방학',
+            important: true
+        },
+        {
+            id: 41,
+            title: '성탄절',
+            date: '2025-12-25',
+            type: 'holiday',
+            description: '성탄절 공휴일',
+            important: false
+        }
+    ],
+    'winter': [ // 겨울학기
+        {
+            id: 51,
+            title: '겨울학기 수강신청',
+            date: '2025-12-02',
+            endDate: '2025-12-06',
+            type: 'registration',
+            description: '2025학년도 겨울학기 수강신청',
+            location: '온라인',
+            important: true
+        },
+        {
+            id: 52,
+            title: '겨울학기 개강',
+            date: '2026-01-06',
+            type: 'academic',
+            description: '2025학년도 겨울학기 수업 시작',
+            important: true
+        },
+        {
+            id: 53,
+            title: '설날연휴',
+            date: '2026-01-28',
+            endDate: '2026-01-30',
+            type: 'holiday',
+            description: '설날 연휴 (휴강)',
+            important: true
+        },
+        {
+            id: 54,
+            title: '겨울학기 기말고사',
+            date: '2026-02-16',
+            endDate: '2026-02-20',
+            type: 'exam',
+            description: '2025학년도 겨울학기 기말고사',
+            important: true
+        }
+    ]
+};
 
 // 이벤트 타입 라벨
 const eventTypeLabels = {
-    orientation: '오리엔테이션',
-    semester: '학기',
+    academic: '학사일정',
     exam: '시험',
-    holiday: '공휴일',
-    general: '일반'
+    holiday: '공휴일/방학',
+    event: '행사',
+    registration: '수강신청'
 };
 
 // 월 이름 배열
@@ -68,23 +335,23 @@ const monthNames = [
 document.addEventListener('DOMContentLoaded', function() {
     renderCalendar();
     renderEventsList();
-    
-    // 폼 제출 이벤트 리스너
-    document.getElementById('eventForm').addEventListener('submit', handleFormSubmit);
+    renderSummaryCards();
     
     // 모달 외부 클릭 시 닫기
-    document.getElementById('eventModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
-    
     document.getElementById('eventDetailModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeDetailModal();
         }
     });
 });
+
+// 학기 변경
+function changeSemester() {
+    currentSemester = document.getElementById('semesterSelect').value;
+    renderCalendar();
+    renderEventsList();
+    renderSummaryCards();
+}
 
 // 캘린더 렌더링
 function renderCalendar() {
@@ -154,15 +421,18 @@ function createDayElement(dayNumber, date, isOtherMonth) {
         dayElement.classList.add('today');
     }
     
+    // 주말 표시
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0) {
+        dayElement.classList.add('sunday');
+    } else if (dayOfWeek === 6) {
+        dayElement.classList.add('saturday');
+    }
+    
     dayElement.innerHTML = `
         <div class="day-number">${dayNumber}</div>
         <div class="day-events" id="events-${formatDate(date)}"></div>
     `;
-    
-    // 날짜 클릭 이벤트
-    dayElement.addEventListener('click', function() {
-        openAddModal(formatDate(date));
-    });
     
     // 해당 날짜의 이벤트 표시
     if (!isOtherMonth) {
@@ -198,17 +468,65 @@ function renderDayEvents(date) {
     }
 }
 
+// 주요 일정 요약 카드 렌더링
+function renderSummaryCards() {
+    const summaryCards = document.getElementById('summaryCards');
+    const events = academicSchedule[currentSemester] || [];
+    
+    // 중요한 일정만 필터링하고 날짜순 정렬
+    const importantEvents = events
+        .filter(event => event.important)
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(0, 4); // 최대 4개만 표시
+    
+    summaryCards.innerHTML = '';
+    
+    importantEvents.forEach(event => {
+        const card = document.createElement('div');
+        card.className = `summary-card ${event.type}`;
+        
+        const dateText = event.endDate ? 
+            `${formatDateKorean(event.date)} ~ ${formatDateKorean(event.endDate)}` :
+            formatDateKorean(event.date);
+        
+        card.innerHTML = `
+            <h4>${event.title}</h4>
+            <div class="date">${dateText}</div>
+            <div class="description">${event.description}</div>
+        `;
+        
+        card.addEventListener('click', function() {
+            showEventDetail(event);
+        });
+        
+        summaryCards.appendChild(card);
+    });
+}
+
 // 일정 목록 렌더링
 function renderEventsList() {
     const eventsList = document.getElementById('eventsList');
+    const monthlyTitle = document.getElementById('monthlyTitle');
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     
-    // 현재 월의 이벤트만 필터링
-    const monthEvents = events.filter(event => {
+    monthlyTitle.textContent = `${year}년 ${monthNames[month]} 학사일정`;
+    
+    // 현재 학기와 월의 이벤트 필터링
+    const events = academicSchedule[currentSemester] || [];
+    let monthEvents = events.filter(event => {
         const eventDate = new Date(event.date);
-        return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+        const eventEndDate = event.endDate ? new Date(event.endDate) : eventDate;
+        const currentMonthStart = new Date(year, month, 1);
+        const currentMonthEnd = new Date(year, month + 1, 0);
+        
+        return (eventDate <= currentMonthEnd && eventEndDate >= currentMonthStart);
     });
+    
+    // 필터 적용
+    if (currentFilter !== 'all') {
+        monthEvents = monthEvents.filter(event => event.type === currentFilter);
+    }
     
     // 날짜순 정렬
     monthEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -216,20 +534,28 @@ function renderEventsList() {
     eventsList.innerHTML = '';
     
     if (monthEvents.length === 0) {
-        eventsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">이번 달에 등록된 일정이 없습니다.</p>';
+        eventsList.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">해당 조건의 일정이 없습니다.</p>';
         return;
     }
     
     monthEvents.forEach(event => {
         const eventCard = document.createElement('div');
         eventCard.className = `event-card ${event.type}`;
+        
+        const dateText = event.endDate ? 
+            `${formatDateKorean(event.date)} ~ ${formatDateKorean(event.endDate)}` :
+            formatDateKorean(event.date);
+        
         eventCard.innerHTML = `
             <div class="event-card-header">
                 <div class="event-card-title">${event.title}</div>
-                <div class="event-card-date">${formatDateKorean(event.date)}</div>
+                <div class="event-card-date">${dateText}</div>
             </div>
             <div class="event-card-description">${event.description}</div>
-            <span class="event-type ${event.type}">${eventTypeLabels[event.type]}</span>
+            <span class="event-type ${event.type}">
+                ${eventTypeLabels[event.type]}
+                ${event.important ? ' ★' : ''}
+            </span>
         `;
         
         eventCard.addEventListener('click', function() {
@@ -238,6 +564,19 @@ function renderEventsList() {
         
         eventsList.appendChild(eventCard);
     });
+}
+
+// 일정 필터링
+function filterEvents(type) {
+    currentFilter = type;
+    
+    // 필터 버튼 활성화 상태 변경
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-type="${type}"]`).classList.add('active');
+    
+    renderEventsList();
 }
 
 // 유틸리티 함수들
@@ -254,7 +593,7 @@ function formatDateKorean(dateString) {
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
-    return `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+    return `${month}월 ${day}일(${dayOfWeek})`;
 }
 
 function isToday(date) {
@@ -263,11 +602,16 @@ function isToday(date) {
 }
 
 function getEventsForDate(dateString) {
-    return events.filter(event => event.date === dateString);
-}
-
-function generateId() {
-    return Math.max(...events.map(e => e.id), 0) + 1;
+    const events = academicSchedule[currentSemester] || [];
+    return events.filter(event => {
+        if (event.endDate) {
+            // 기간이 있는 이벤트
+            return dateString >= event.date && dateString <= event.endDate;
+        } else {
+            // 단일 날짜 이벤트
+            return event.date === dateString;
+        }
+    });
 }
 
 // 월 네비게이션 함수들
@@ -283,46 +627,45 @@ function nextMonth() {
     renderEventsList();
 }
 
+function goToToday() {
+    currentDate = new Date();
+    renderCalendar();
+    renderEventsList();
+}
+
 // 모달 관리 함수들
-function openAddModal(selectedDate = '') {
-    editingEventId = null;
-    document.getElementById('modalTitle').textContent = '일정 추가';
-    document.getElementById('eventForm').reset();
+function showEventDetail(event) {
+    document.getElementById('detailTitle').textContent = event.title;
     
-    if (selectedDate) {
-        document.getElementById('eventDate').value = selectedDate;
+    const dateText = event.endDate ? 
+        `${formatDateKorean(event.date)} ~ ${formatDateKorean(event.endDate)}` :
+        formatDateKorean(event.date);
+    
+    document.getElementById('detailDate').textContent = dateText;
+    
+    // 기간 정보가 있으면 표시
+    if (event.endDate) {
+        document.getElementById('detailPeriod').style.display = 'flex';
+        const startDate = new Date(event.date);
+        const endDate = new Date(event.endDate);
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        document.getElementById('detailPeriodText').textContent = `${diffDays}일간`;
+    } else {
+        document.getElementById('detailPeriod').style.display = 'none';
     }
     
-    document.getElementById('eventModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-function openEditModal(event) {
-    editingEventId = event.id;
-    document.getElementById('modalTitle').textContent = '일정 편집';
-    
-    document.getElementById('eventTitle').value = event.title;
-    document.getElementById('eventDate').value = event.date;
-    document.getElementById('eventType').value = event.type;
-    document.getElementById('eventDescription').value = event.description;
-    
-    document.getElementById('eventModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-    document.getElementById('eventModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    editingEventId = null;
-}
-
-function showEventDetail(event) {
-    currentEvent = event;
-    document.getElementById('detailTitle').textContent = event.title;
-    document.getElementById('detailDate').textContent = formatDateKorean(event.date);
     document.getElementById('detailType').textContent = eventTypeLabels[event.type];
     document.getElementById('detailType').className = `event-type ${event.type}`;
     document.getElementById('detailDescription').textContent = event.description;
+    
+    // 장소 정보가 있으면 표시
+    if (event.location) {
+        document.getElementById('detailLocation').style.display = 'flex';
+        document.getElementById('detailLocationText').textContent = event.location;
+    } else {
+        document.getElementById('detailLocation').style.display = 'none';
+    }
     
     document.getElementById('eventDetailModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -331,146 +674,12 @@ function showEventDetail(event) {
 function closeDetailModal() {
     document.getElementById('eventDetailModal').style.display = 'none';
     document.body.style.overflow = 'auto';
-    currentEvent = null;
-}
-
-function editCurrentEvent() {
-    if (currentEvent) {
-        closeDetailModal();
-        openEditModal(currentEvent);
-    }
-}
-
-function deleteCurrentEvent() {
-    if (currentEvent && confirm('정말로 이 일정을 삭제하시겠습니까?')) {
-        deleteEvent(currentEvent.id);
-        closeDetailModal();
-    }
-}
-
-// 이벤트 CRUD 함수들
-function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const eventData = {
-        title: formData.get('title').trim(),
-        date: formData.get('date'),
-        type: formData.get('type'),
-        description: formData.get('description').trim()
-    };
-    
-    // 유효성 검사
-    if (!eventData.title) {
-        alert('일정 제목을 입력해주세요.');
-        return;
-    }
-    
-    if (!eventData.date) {
-        alert('날짜를 선택해주세요.');
-        return;
-    }
-    
-    if (editingEventId) {
-        updateEvent(editingEventId, eventData);
-    } else {
-        addEvent(eventData);
-    }
-    
-    closeModal();
-}
-
-function addEvent(eventData) {
-    const newEvent = {
-        id: generateId(),
-        ...eventData
-    };
-    
-    events.push(newEvent);
-    updateCalendarAndList();
-    
-    // 성공 메시지
-    showNotification('일정이 추가되었습니다.', 'success');
-}
-
-function updateEvent(id, eventData) {
-    const eventIndex = events.findIndex(event => event.id === id);
-    if (eventIndex !== -1) {
-        events[eventIndex] = { id, ...eventData };
-        updateCalendarAndList();
-        
-        // 성공 메시지
-        showNotification('일정이 수정되었습니다.', 'success');
-    }
-}
-
-function deleteEvent(id) {
-    const eventIndex = events.findIndex(event => event.id === id);
-    if (eventIndex !== -1) {
-        events.splice(eventIndex, 1);
-        updateCalendarAndList();
-        
-        // 성공 메시지
-        showNotification('일정이 삭제되었습니다.', 'success');
-    }
-}
-
-function updateCalendarAndList() {
-    renderCalendar();
-    renderEventsList();
-}
-
-// 알림 메시지 표시
-function showNotification(message, type = 'info') {
-    // 기존 알림이 있다면 제거
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-    
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
-        color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        z-index: 10000;
-        font-weight: 500;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    // 애니메이션
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // 3초 후 자동 제거
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 300);
-    }, 3000);
 }
 
 // 키보드 이벤트 처리
 document.addEventListener('keydown', function(e) {
     // ESC 키로 모달 닫기
     if (e.key === 'Escape') {
-        if (document.getElementById('eventModal').style.display === 'block') {
-            closeModal();
-        }
         if (document.getElementById('eventDetailModal').style.display === 'block') {
             closeDetailModal();
         }
@@ -486,158 +695,149 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// 로컬 스토리지에 데이터 저장/로드
-function saveToLocalStorage() {
-    localStorage.setItem('academicCalendarEvents', JSON.stringify(events));
-}
-
-function loadFromLocalStorage() {
-    const savedEvents = localStorage.getItem('academicCalendarEvents');
-    if (savedEvents) {
-        events = JSON.parse(savedEvents);
-    }
-}
-
-// 페이지 언로드 시 데이터 저장
-window.addEventListener('beforeunload', saveToLocalStorage);
-
-// 페이지 로드 시 저장된 데이터 불러오기
-window.addEventListener('load', function() {
-    loadFromLocalStorage();
-    updateCalendarAndList();
-});
-
-// 데이터 내보내기/가져오기
-function exportEvents() {
-    const dataStr = JSON.stringify(events, null, 2);
-    const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    const url = URL.createObjectURL(dataBlob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `academic_calendar_${formatDate(new Date())}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    showNotification('일정 데이터가 내보내기되었습니다.', 'success');
-}
-
-function importEvents(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const importedEvents = JSON.parse(e.target.result);
-            if (Array.isArray(importedEvents)) {
-                if (confirm('기존 일정을 모두 삭제하고 새 데이터로 교체하시겠습니까?')) {
-                    events = importedEvents;
-                    updateCalendarAndList();
-                    saveToLocalStorage();
-                    showNotification('일정 데이터가 성공적으로 가져와졌습니다.', 'success');
-                }
-            } else {
-                throw new Error('올바르지 않은 파일 형식입니다.');
-            }
-        } catch (error) {
-            showNotification('파일을 읽는 중 오류가 발생했습니다.', 'error');
-        }
-    };
-    reader.readAsText(file);
-}
-
-// 오늘 날짜로 이동
-function goToToday() {
-    currentDate = new Date();
-    renderCalendar();
-    renderEventsList();
-    showNotification('오늘 날짜로 이동했습니다.', 'info');
-}
-
-// 검색 기능
-function searchEvents(query) {
+// 학사일정 검색 기능
+function searchSchedule(query) {
     if (!query.trim()) {
-        updateCalendarAndList();
+        renderEventsList();
         return;
     }
     
+    const events = academicSchedule[currentSemester] || [];
     const filteredEvents = events.filter(event => 
         event.title.toLowerCase().includes(query.toLowerCase()) ||
         event.description.toLowerCase().includes(query.toLowerCase())
     );
     
-    // 검색 결과를 캘린더에 표시
-    const calendarBody = document.getElementById('calendarBody');
-    const dayElements = calendarBody.querySelectorAll('.calendar-day');
+    // 검색 결과를 리스트에 표시
+    const eventsList = document.getElementById('eventsList');
+    eventsList.innerHTML = '';
     
-    dayElements.forEach(dayElement => {
-        const eventsContainer = dayElement.querySelector('.day-events');
-        if (eventsContainer) {
-            eventsContainer.innerHTML = '';
-        }
-    });
+    if (filteredEvents.length === 0) {
+        eventsList.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">검색 결과가 없습니다.</p>';
+        return;
+    }
     
     filteredEvents.forEach(event => {
-        const eventDate = new Date(event.date);
-        const dateString = formatDate(eventDate);
-        const eventsContainer = document.getElementById(`events-${dateString}`);
+        const eventCard = document.createElement('div');
+        eventCard.className = `event-card ${event.type}`;
         
-        if (eventsContainer) {
-            const eventElement = document.createElement('div');
-            eventElement.className = `event-item ${event.type}`;
-            eventElement.textContent = event.title;
-            eventElement.title = event.description;
-            
-            eventElement.addEventListener('click', function(e) {
-                e.stopPropagation();
-                showEventDetail(event);
-            });
-            
-            eventsContainer.appendChild(eventElement);
-        }
+        const dateText = event.endDate ? 
+            `${formatDateKorean(event.date)} ~ ${formatDateKorean(event.endDate)}` :
+            formatDateKorean(event.date);
+        
+        eventCard.innerHTML = `
+            <div class="event-card-header">
+                <div class="event-card-title">${event.title}</div>
+                <div class="event-card-date">${dateText}</div>
+            </div>
+            <div class="event-card-description">${event.description}</div>
+            <span class="event-type ${event.type}">
+                ${eventTypeLabels[event.type]}
+                ${event.important ? ' ★' : ''}
+            </span>
+        `;
+        
+        eventCard.addEventListener('click', function() {
+            showEventDetail(event);
+        });
+        
+        eventsList.appendChild(eventCard);
     });
-    
-    showNotification(`${filteredEvents.length}개의 일정을 찾았습니다.`, 'info');
 }
 
-// 인쇄 기능
-function printCalendar() {
+// 학사일정 출력 기능
+function printSchedule() {
     const printWindow = window.open('', '_blank');
-    const year = currentDate.getFullYear();
-    const month = monthNames[currentDate.getMonth()];
+    const semesterText = {
+        '1': '1학기',
+        'summer': '여름학기',
+        '2': '2학기',
+        'winter': '겨울학기'
+    }[currentSemester];
     
-    const monthEvents = events.filter(event => {
-        const eventDate = new Date(event.date);
-        return eventDate.getFullYear() === year && eventDate.getMonth() === currentDate.getMonth();
-    });
+    const events = academicSchedule[currentSemester] || [];
     
     let eventsList = '';
-    monthEvents.forEach(event => {
+    events.forEach(event => {
+        const dateText = event.endDate ? 
+            `${formatDateKorean(event.date)} ~ ${formatDateKorean(event.endDate)}` :
+            formatDateKorean(event.date);
+        
         eventsList += `
-            <li>
-                <strong>${event.title}</strong> - ${formatDateKorean(event.date)}
-                <br><small>${event.description}</small>
-            </li>
+            <tr>
+                <td>${dateText}</td>
+                <td>${event.title}</td>
+                <td>${eventTypeLabels[event.type]}</td>
+                <td>${event.description}</td>
+                <td>${event.location || '-'}</td>
+            </tr>
         `;
     });
     
     printWindow.document.write(`
         <html>
         <head>
-            <title>${year}년 ${month} 학사일정</title>
+            <title>2025학년도 ${semesterText} 학사일정</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                h1 { color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
-                ul { list-style-type: none; padding: 0; }
-                li { margin: 10px 0; padding: 10px; background: #f9f9f9; border-radius: 5px; }
+                body { 
+                    font-family: 'Malgun Gothic', sans-serif; 
+                    margin: 20px; 
+                    font-size: 12px;
+                }
+                h1 { 
+                    color: #1e3c72; 
+                    border-bottom: 3px solid #667eea; 
+                    padding-bottom: 10px; 
+                    text-align: center;
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-top: 20px;
+                }
+                th, td { 
+                    border: 1px solid #ddd; 
+                    padding: 8px; 
+                    text-align: left;
+                }
+                th { 
+                    background: #f8f9ff; 
+                    font-weight: bold;
+                }
+                tr:nth-child(even) { 
+                    background: #f9f9f9; 
+                }
+                .footer {
+                    margin-top: 30px;
+                    text-align: center;
+                    color: #666;
+                    font-size: 10px;
+                }
                 @media print {
                     body { margin: 0; }
                 }
             </style>
         </head>
         <body>
-            <h1>${year}년 ${month} 학사일정</h1>
-            <ul>${eventsList}</ul>
+            <h1>한국대학교 2025학년도 ${semesterText} 학사일정</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>일정명</th>
+                        <th>구분</th>
+                        <th>상세내용</th>
+                        <th>장소</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${eventsList}
+                </tbody>
+            </table>
+            <div class="footer">
+                <p>한국대학교 학사팀 | 문의: 02-1234-5678</p>
+                <p>출력일: ${new Date().toLocaleDateString('ko-KR')}</p>
+            </div>
         </body>
         </html>
     `);
@@ -645,3 +845,376 @@ function printCalendar() {
     printWindow.document.close();
     printWindow.print();
 }
+
+// 오늘의 일정 알림
+function showTodaySchedule() {
+    const today = formatDate(new Date());
+    const todayEvents = getEventsForDate(today);
+    
+    if (todayEvents.length > 0) {
+        let message = '오늘의 학사일정:\n\n';
+        todayEvents.forEach(event => {
+            message += `• ${event.title}\n  ${event.description}\n\n`;
+        });
+        alert(message);
+    } else {
+        alert('오늘은 예정된 학사일정이 없습니다.');
+    }
+}
+
+// 다가오는 일정 알림 (일주일 내)
+function showUpcomingSchedule() {
+    const today = new Date();
+    const oneWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const events = academicSchedule[currentSemester] || [];
+    
+    const upcomingEvents = events.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate >= today && eventDate <= oneWeekLater;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    if (upcomingEvents.length > 0) {
+        let message = '다가오는 일주일 일정:\n\n';
+        upcomingEvents.forEach(event => {
+            const daysUntil = Math.ceil((new Date(event.date) - today) / (1000 * 60 * 60 * 24));
+            message += `• ${event.title}\n  날짜: ${formatDateKorean(event.date)}\n  ${daysUntil}일 후\n\n`;
+        });
+        alert(message);
+    } else {
+        alert('다가오는 일주일 내 예정된 학사일정이 없습니다.');
+    }
+}
+
+// 학기별 통계 정보
+function getSemesterStats() {
+    const events = academicSchedule[currentSemester] || [];
+    const stats = {
+        total: events.length,
+        academic: events.filter(e => e.type === 'academic').length,
+        exam: events.filter(e => e.type === 'exam').length,
+        holiday: events.filter(e => e.type === 'holiday').length,
+        event: events.filter(e => e.type === 'event').length,
+        registration: events.filter(e => e.type === 'registration').length,
+        important: events.filter(e => e.important).length
+    };
+    return stats;
+}
+
+// 캘린더 스타일 테마 변경
+function changeTheme(theme) {
+    const body = document.body;
+    body.className = body.className.replace(/theme-\w+/g, '');
+    body.classList.add(`theme-${theme}`);
+    localStorage.setItem('calendarTheme', theme);
+}
+
+// 저장된 테마 로드
+function loadTheme() {
+    const savedTheme = localStorage.getItem('calendarTheme');
+    if (savedTheme) {
+        changeTheme(savedTheme);
+    }
+}
+
+// 즐겨찾기 일정 관리
+let favoriteEvents = JSON.parse(localStorage.getItem('favoriteEvents')) || [];
+
+function toggleFavorite(eventId) {
+    const index = favoriteEvents.indexOf(eventId);
+    if (index > -1) {
+        favoriteEvents.splice(index, 1);
+    } else {
+        favoriteEvents.push(eventId);
+    }
+    localStorage.setItem('favoriteEvents', JSON.stringify(favoriteEvents));
+    renderEventsList();
+}
+
+function isFavorite(eventId) {
+    return favoriteEvents.includes(eventId);
+}
+
+// 월별 이벤트 개수 표시
+function updateMonthEventCount() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const events = academicSchedule[currentSemester] || [];
+    
+    const monthEvents = events.filter(event => {
+        const eventDate = new Date(event.date);
+        const eventEndDate = event.endDate ? new Date(event.endDate) : eventDate;
+        const currentMonthStart = new Date(year, month, 1);
+        const currentMonthEnd = new Date(year, month + 1, 0);
+        
+        return (eventDate <= currentMonthEnd && eventEndDate >= currentMonthStart);
+    });
+    
+    // 월 제목 옆에 이벤트 개수 표시
+    const currentMonthElement = document.getElementById('currentMonth');
+    const eventCount = monthEvents.length;
+    currentMonthElement.innerHTML = `
+        ${year}년 ${monthNames[month]}
+        <span style="font-size: 0.6em; color: #667eea; margin-left: 10px;">
+            (${eventCount}개 일정)
+        </span>
+    `;
+}
+
+// 달력 렌더링 함수 수정 (월별 이벤트 개수 추가)
+const originalRenderCalendar = renderCalendar;
+renderCalendar = function() {
+    originalRenderCalendar();
+    updateMonthEventCount();
+};
+
+// 반응형 네비게이션 처리
+function handleResponsiveNavigation() {
+    const calendarNav = document.querySelector('.calendar-nav');
+    const currentMonth = document.getElementById('currentMonth');
+    
+    if (window.innerWidth <= 768) {
+        // 모바일에서는 버튼을 더 작게
+        document.querySelectorAll('.nav-btn, .today-btn').forEach(btn => {
+            btn.style.padding = '10px 15px';
+            btn.style.fontSize = '0.9rem';
+        });
+        
+        // 월 제목도 더 작게
+        currentMonth.style.fontSize = '1.5rem';
+    } else {
+        // 데스크톱에서는 원래 크기
+        document.querySelectorAll('.nav-btn, .today-btn').forEach(btn => {
+            btn.style.padding = '15px 20px';
+            btn.style.fontSize = '1.1rem';
+        });
+        
+        currentMonth.style.fontSize = '2.2rem';
+    }
+}
+
+// 윈도우 리사이즈 이벤트
+window.addEventListener('resize', handleResponsiveNavigation);
+
+// 스크롤 시 헤더 고정
+function handleScrollHeader() {
+    const header = document.querySelector('.header');
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    if (scrollTop > 100) {
+        header.style.position = 'sticky';
+        header.style.top = '0';
+        header.style.zIndex = '100';
+        header.style.marginBottom = '20px';
+    } else {
+        header.style.position = 'relative';
+        header.style.marginBottom = '30px';
+    }
+}
+
+window.addEventListener('scroll', handleScrollHeader);
+
+// 캘린더 애니메이션 효과
+function animateCalendar() {
+    const calendarDays = document.querySelectorAll('.calendar-day');
+    calendarDays.forEach((day, index) => {
+        day.style.opacity = '0';
+        day.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            day.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            day.style.opacity = '1';
+            day.style.transform = 'translateY(0)';
+        }, index * 20);
+    });
+}
+
+// 데이터 내보내기 (JSON 형식)
+function exportScheduleData() {
+    const dataStr = JSON.stringify(academicSchedule, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `academic_schedule_2025.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    alert('학사일정 데이터가 내보내기되었습니다.');
+}
+
+// CSV 형식으로 일정 내보내기
+function exportScheduleCSV() {
+    const events = academicSchedule[currentSemester] || [];
+    let csvContent = '날짜,종료날짜,제목,구분,설명,장소,중요도\n';
+    
+    events.forEach(event => {
+        const row = [
+            event.date,
+            event.endDate || '',
+            `"${event.title}"`,
+            eventTypeLabels[event.type],
+            `"${event.description}"`,
+            event.location || '',
+            event.important ? '중요' : '일반'
+        ].join(',');
+        csvContent += row + '\n';
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `academic_schedule_${currentSemester}_2025.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    alert('학사일정이 CSV 파일로 내보내기되었습니다.');
+}
+
+// iCal 형식으로 일정 내보내기
+function exportScheduleICal() {
+    const events = academicSchedule[currentSemester] || [];
+    let icalContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//한국대학교//학사일정//KO'
+    ].join('\n');
+    
+    events.forEach(event => {
+        const startDate = event.date.replace(/-/g, '');
+        const endDate = event.endDate ? event.endDate.replace(/-/g, '') : startDate;
+        
+        icalContent += '\n' + [
+            'BEGIN:VEVENT',
+            `DTSTART:${startDate}`,
+            `DTEND:${endDate}`,
+            `SUMMARY:${event.title}`,
+            `DESCRIPTION:${event.description}`,
+            `LOCATION:${event.location || ''}`,
+            `CATEGORIES:${eventTypeLabels[event.type]}`,
+            `UID:${event.id}@university.ac.kr`,
+            'END:VEVENT'
+        ].join('\n');
+    });
+    
+    icalContent += '\nEND:VCALENDAR';
+    
+    const blob = new Blob([icalContent], { type: 'text/calendar;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `academic_schedule_${currentSemester}_2025.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    alert('학사일정이 iCal 파일로 내보내기되었습니다.');
+}
+
+// 접근성 향상을 위한 키보드 네비게이션
+document.addEventListener('keydown', function(e) {
+    if (e.altKey) {
+        switch(e.key) {
+            case '1':
+                document.getElementById('semesterSelect').value = '1';
+                changeSemester();
+                break;
+            case '2':
+                document.getElementById('semesterSelect').value = '2';
+                changeSemester();
+                break;
+            case 's':
+                document.getElementById('semesterSelect').value = 'summer';
+                changeSemester();
+                break;
+            case 'w':
+                document.getElementById('semesterSelect').value = 'winter';
+                changeSemester();
+                break;
+            case 't':
+                goToToday();
+                break;
+            case 'p':
+                printSchedule();
+                break;
+        }
+    }
+});
+
+// 초기화 함수들을 페이지 로드 시 실행
+window.addEventListener('load', function() {
+    loadTheme();
+    handleResponsiveNavigation();
+    setTimeout(animateCalendar, 100);
+});
+
+// 페이지 가시성 API를 사용한 자동 새로고침
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        // 페이지가 다시 보일 때 오늘 날짜로 업데이트
+        const today = new Date();
+        if (today.toDateString() !== currentDate.toDateString()) {
+            currentDate = today;
+            renderCalendar();
+            renderEventsList();
+        }
+    }
+});
+
+// 서비스 워커 등록 (PWA 지원)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+            console.log('ServiceWorker registration successful');
+        }, function(err) {
+            console.log('ServiceWorker registration failed');
+        });
+    });
+}
+
+// 알림 권한 요청 및 중요 일정 알림
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                console.log('알림 권한이 승인되었습니다.');
+                checkImportantEvents();
+            }
+        });
+    }
+}
+
+// 중요한 일정 확인 및 알림
+function checkImportantEvents() {
+    if (Notification.permission === 'granted') {
+        const today = new Date();
+        const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        const events = academicSchedule[currentSemester] || [];
+        
+        const importantTomorrowEvents = events.filter(event => {
+            const eventDate = new Date(event.date);
+            return event.important && 
+                   eventDate.toDateString() === tomorrow.toDateString();
+        });
+        
+        importantTomorrowEvents.forEach(event => {
+            new Notification(`내일 중요 일정: ${event.title}`, {
+                body: event.description,
+                icon: '/icon-192x192.png'
+            });
+        });
+    }
+}
+
+// 페이지 로드 시 알림 권한 요청
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(requestNotificationPermission, 2000);
+});

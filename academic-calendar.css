@@ -6,65 +6,158 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
+    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
     color: #333;
     line-height: 1.6;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
 }
 
 /* 헤더 스타일 */
 .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     color: white;
-    padding: 30px;
-    border-radius: 15px;
+    padding: 40px;
+    border-radius: 20px;
     margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 15px 35px rgba(30, 60, 114, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
-.title {
-    font-size: 2.5rem;
+.university-info .title {
+    font-size: 2.8rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: 15px;
+    margin-bottom: 10px;
 }
 
-.title i {
-    font-size: 2.2rem;
+.university-info .subtitle {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    font-weight: 300;
 }
 
-.btn-add {
+.semester-selector select {
     background: rgba(255, 255, 255, 0.2);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-size: 1.1rem;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
-.btn-add:hover {
+.semester-selector select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
     background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
+}
+
+.semester-selector select option {
+    background: #1e3c72;
+    color: white;
+}
+
+/* 주요 일정 요약 */
+.schedule-summary {
+    margin-bottom: 30px;
+}
+
+.summary-title {
+    font-size: 1.8rem;
+    color: #1e3c72;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #667eea;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card.exam {
+    border-left-color: #e74c3c;
+}
+
+.summary-card.holiday {
+    border-left-color: #27ae60;
+}
+
+.summary-card.registration {
+    border-left-color: #f39c12;
+}
+
+.summary-card.event {
+    border-left-color: #9b59b6;
+}
+
+.summary-card h4 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.summary-card .date {
+    color: #7f8c8d;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.summary-card .description {
+    color: #5a6c7d;
+    font-size: 0.95rem;
 }
 
 /* 캘린더 네비게이션 */
@@ -72,56 +165,70 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
-.nav-btn {
+.nav-btn, .today-btn {
     background: #667eea;
     color: white;
     border: none;
-    padding: 12px 16px;
-    border-radius: 8px;
+    padding: 15px 20px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.nav-btn:hover {
+.nav-btn:hover, .today-btn:hover {
     background: #5a6fd8;
-    transform: scale(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .current-month {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #333;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    text-align: center;
 }
 
 /* 캘린더 스타일 */
 .calendar {
     background: white;
-    border-radius: 12px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
 }
 
 .calendar-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
 }
 
 .day-header {
-    padding: 20px;
+    padding: 25px;
     text-align: center;
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.day-header.sunday {
+    color: #ffcccb;
+}
+
+.day-header.saturday {
+    color: #add8e6;
 }
 
 .calendar-body {
@@ -130,9 +237,9 @@ body {
 }
 
 .calendar-day {
-    min-height: 120px;
-    border: 1px solid #e0e6ed;
-    padding: 8px;
+    min-height: 140px;
+    border: 1px solid #f0f2f5;
+    padding: 10px;
     position: relative;
     background: white;
     transition: all 0.3s ease;
@@ -141,91 +248,135 @@ body {
 
 .calendar-day:hover {
     background: #f8f9ff;
+    transform: scale(1.02);
+    z-index: 2;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-day.other-month {
-    background: #f8f9fa;
-    color: #999;
+    background: #fafbfc;
+    color: #aaa;
 }
 
 .calendar-day.today {
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
+    font-weight: bold;
+}
+
+.calendar-day.sunday .day-number {
+    color: #e74c3c;
+}
+
+.calendar-day.saturday .day-number {
+    color: #3498db;
 }
 
 .calendar-day.today .day-number {
     color: white;
-    font-weight: bold;
 }
 
 .day-number {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #333;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #2c3e50;
 }
 
 .day-events {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
 }
 
 .event-item {
-    background: #667eea;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: white;
 }
 
 .event-item:hover {
     transform: scale(1.05);
     z-index: 10;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* 이벤트 타입별 색상 */
-.event-item.orientation {
-    background: #9c27b0;
-}
-
-.event-item.semester {
-    background: #2196f3;
+.event-item.academic {
+    background: linear-gradient(135deg, #3498db, #2980b9);
 }
 
 .event-item.exam {
-    background: #f44336;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
 }
 
 .event-item.holiday {
-    background: #4caf50;
+    background: linear-gradient(135deg, #27ae60, #229954);
 }
 
-.event-item.general {
-    background: #666;
+.event-item.event {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
 }
 
-/* 일정 목록 섹션 */
+.event-item.registration {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+}
+
+/* 일정 필터 및 목록 */
 .events-section {
     background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
 }
 
 .events-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #333;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     border-bottom: 3px solid #667eea;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
+}
+
+.events-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 12px 20px;
+    border: 2px solid #e0e6ed;
+    background: white;
+    color: #666;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.filter-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
 }
 
 .events-list {
@@ -236,93 +387,163 @@ body {
 .event-card {
     background: #f8f9ff;
     border: 1px solid #e0e6ed;
-    border-radius: 8px;
-    padding: 15px;
+    border-radius: 12px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border-left: 4px solid #667eea;
+    border-left: 5px solid #667eea;
 }
 
 .event-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-.event-card.orientation {
-    border-left-color: #9c27b0;
-}
-
-.event-card.semester {
-    border-left-color: #2196f3;
+.event-card.academic {
+    border-left-color: #3498db;
+    background: #ebf3fd;
 }
 
 .event-card.exam {
-    border-left-color: #f44336;
+    border-left-color: #e74c3c;
+    background: #fdf2f2;
 }
 
 .event-card.holiday {
-    border-left-color: #4caf50;
+    border-left-color: #27ae60;
+    background: #eafaf1;
 }
 
-.event-card.general {
-    border-left-color: #666;
+.event-card.event {
+    border-left-color: #9b59b6;
+    background: #f4ecf7;
+}
+
+.event-card.registration {
+    border-left-color: #f39c12;
+    background: #fef9e7;
 }
 
 .event-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+    align-items: flex-start;
+    margin-bottom: 12px;
 }
 
 .event-card-title {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #333;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    line-height: 1.4;
 }
 
 .event-card-date {
-    color: #666;
-    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .event-card-description {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
+    color: #5a6c7d;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
 }
 
 .event-type {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
-.event-type.orientation {
-    background: #f3e5f5;
-    color: #7b1fa2;
-}
-
-.event-type.semester {
-    background: #e3f2fd;
-    color: #1976d2;
+.event-type.academic {
+    background: #d6eaf8;
+    color: #2471a3;
 }
 
 .event-type.exam {
-    background: #ffebee;
-    color: #d32f2f;
+    background: #fadbd8;
+    color: #a93226;
 }
 
 .event-type.holiday {
-    background: #e8f5e8;
-    color: #388e3c;
+    background: #d5f4e6;
+    color: #196f3d;
 }
 
-.event-type.general {
-    background: #f5f5f5;
-    color: #424242;
+.event-type.event {
+    background: #e8daef;
+    color: #6c3483;
+}
+
+.event-type.registration {
+    background: #fdeaa7;
+    color: #b7950b;
+}
+
+/* 범례 */
+.legend {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.legend-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-color.academic {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.legend-color.exam {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.legend-color.holiday {
+    background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.legend-color.event {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.legend-color.registration {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+}
+
+.legend-text {
+    font-weight: 600;
+    color: #2c3e50;
 }
 
 /* 모달 스타일 */
@@ -334,7 +555,7 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
 }
 
@@ -343,182 +564,165 @@ body {
     margin: 5% auto;
     padding: 0;
     border: none;
-    border-radius: 15px;
+    border-radius: 20px;
     width: 90%;
-    max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: modalSlideIn 0.3s ease;
+    max-width: 600px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.4s ease;
 }
 
 @keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: translateY(-50px);
+        transform: translateY(-50px) scale(0.9);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
 .modal-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 20px;
-    border-radius: 15px 15px 0 0;
+    padding: 25px;
+    border-radius: 20px 20px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .modal-header h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .modal-close {
     background: none;
     border: none;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     cursor: pointer;
-    padding: 5px;
+    padding: 8px;
     border-radius: 50%;
     transition: all 0.3s ease;
 }
 
 .modal-close:hover {
     background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
 }
 
-.modal-form {
-    padding: 25px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #333;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.modal-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-end;
-    margin-top: 25px;
-}
-
-.btn-cancel,
-.btn-save,
-.btn-edit,
-.btn-delete {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-cancel {
-    background: #f5f5f5;
-    color: #666;
-}
-
-.btn-cancel:hover {
-    background: #e0e0e0;
-}
-
-.btn-save {
-    background: #667eea;
-    color: white;
-}
-
-.btn-save:hover {
-    background: #5a6fd8;
-    transform: translateY(-2px);
-}
-
-.btn-edit {
-    background: #ff9800;
-    color: white;
-}
-
-.btn-edit:hover {
-    background: #f57c00;
-}
-
-.btn-delete {
-    background: #f44336;
-    color: white;
-}
-
-.btn-delete:hover {
-    background: #d32f2f;
-}
-
-/* 이벤트 상세보기 */
 .event-detail {
-    padding: 25px;
+    padding: 30px;
 }
 
 .detail-item {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.detail-item i {
+    color: #667eea;
+    font-size: 1.2rem;
+    margin-top: 2px;
+    min-width: 20px;
 }
 
 .detail-item strong {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
+    min-width: 80px;
+    color: #2c3e50;
+    font-weight: 700;
 }
 
 .detail-item span,
 .detail-item p {
-    color: #666;
+    color: #5a6c7d;
+    flex: 1;
+}
+
+/* 푸터 */
+.footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 30px;
+    margin-top: 50px;
+    border-radius: 20px 20px 0 0;
+}
+
+.footer-content p {
+    margin-bottom: 5px;
+    opacity: 0.9;
 }
 
 /* 반응형 디자인 */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .container {
-        padding: 10px;
+        padding: 15px;
     }
     
+    .summary-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
     .header-content {
         flex-direction: column;
         gap: 20px;
         text-align: center;
     }
     
-    .title {
-        font-size: 2rem;
+    .university-info .title {
+        font-size: 2.2rem;
+    }
+    
+    .calendar-nav {
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    .current-month {
+        order: -1;
+        width: 100%;
+        font-size: 1.8rem;
+    }
+    
+    .calendar-day {
+        min-height: 100px;
+        padding: 8px;
+    }
+    
+    .day-number {
+        font-size: 1.2rem;
+    }
+    
+    .event-item {
+        font-size: 0.75rem;
+        padding: 2px 6px;
+    }
+    
+    .events-filter {
+        justify-content: center;
+    }
+    
+    .legend-items {
+        justify-content: center;
+    }
+    
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .university-info .title {
+        font-size: 1.8rem;
     }
     
     .calendar-day {
@@ -526,40 +730,18 @@ body {
         padding: 5px;
     }
     
-    .day-number {
-        font-size: 1rem;
-    }
-    
-    .event-item {
-        font-size: 0.7rem;
-    }
-    
-    .modal-content {
-        margin: 10% auto;
-        width: 95%;
-    }
-    
-    .current-month {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .title {
-        font-size: 1.5rem;
-    }
-    
-    .calendar-day {
-        min-height: 60px;
-        padding: 3px;
-    }
-    
     .day-events {
         gap: 1px;
     }
     
     .event-item {
+        font-size: 0.7rem;
         padding: 1px 4px;
-        font-size: 0.6rem;
+    }
+    
+    .event-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 }
