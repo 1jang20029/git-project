@@ -4,6 +4,7 @@ let currentSemester = '1';
 let currentFilter = 'all';
 
 // 2025학년도 연성대학교 학사일정 데이터
+// 연성대학교 완전한 학사일정 데이터 - 이미지 기반 업데이트
 const academicSchedule = {
     '1': [ // 1학기
         // 12-1월 겨울방학 기간
@@ -393,7 +394,7 @@ const academicSchedule = {
             important: false
         }
     ],
-    'summer': [ // 여름학기
+    'summer': [ // 여름학기 - 이미지 기반 완전 업데이트
         {
             id: 101,
             title: '하계 융합학기',
@@ -543,7 +544,7 @@ const academicSchedule = {
             important: true
         }
     ],
-    '2': [ // 2학기
+    '2': [ // 2학기 - 이미지 기반 완전 업데이트
         {
             id: 201,
             title: '2025학년도 2학기 개강',
@@ -784,7 +785,7 @@ const academicSchedule = {
             important: false
         }
     ],
-    'winter': [ // 겨울학기
+    'winter': [ // 겨울학기 - 이미지 기반 완전 업데이트
         {
             id: 301,
             title: '동계 융합학기',
@@ -887,7 +888,8 @@ const academicSchedule = {
             description: '겨울학기 성적처리',
             important: false
         },
-        {
+
+         {
             id: 313,
             title: '동계계절학기 성적열람 및 이의신청',
             date: '2026-01-21',
@@ -896,103 +898,59 @@ const academicSchedule = {
             description: '겨울학기 성적확인',
             important: false
         },
+
         {
             id: 314,
             title: '2026학년도 정시 면접/실기고사',
             date: '2026-01-21',
             endDate: '2026-01-25',
             type: 'academic',
-            description: '정시모집 면접 및 실기고사',
+            description: '신입생 정시모집',
             important: true
         },
         {
             id: 315,
-            title: '일반후학·전과·재입학 접수기간',
+            title: '2026학년도 	일반휴학·전과·재입학 접수기간',
             date: '2026-01-26',
             endDate: '2026-01-30',
             type: 'registration',
-            description: '일반후학 및 전과, 재입학 신청',
+            description: '후학 및 전과, 재입학 신청',
+            important: false
+        },
+
+        {
+            id: 316,
+            title: '2026학년도 	일반휴학·전과·재입학 접수기간',
+            date: '2026-01-26',
+            endDate: '2026-01-30',
+            type: 'registration',
+            description: '후학 및 전과, 재입학 신청',
             important: false
         },
         {
-            id: 316,
+            id: 317,
             title: '전기진급 및 졸업사정회',
             date: '2026-01-28',
             type: 'academic',
             description: '진급 및 졸업 심사',
             important: true
         },
+
         {
-            id: 317,
+            id: 318,
             title: '2026학년도 정시 합격자 발표',
             date: '2026-01-30',
             type: 'academic',
             description: '정시모집 합격자 발표',
             important: true
-        },
-        {
-            id: 318,
-            title: '복학 접수기간',
-            date: '2026-02-02',
-            endDate: '2026-02-06',
-            type: 'registration',
-            description: '복학생 등록',
-            important: false
-        },
-        {
-            id: 319,
-            title: '재학생(복학생) 수강신청 기간',
-            date: '2026-02-02',
-            endDate: '2026-02-10',
-            type: 'registration',
-            description: '재학생 및 복학생 수강신청',
-            important: true
-        },
-        {
-            id: 320,
-            title: '2026학년도 정시 합격자 등록기간',
-            date: '2026-02-03',
-            endDate: '2026-02-05',
-            type: 'registration',
-            description: '정시합격자 등록',
-            important: true
-        },
-        {
-            id: 321,
-            title: '1학기 재학생 등록기간',
-            date: '2026-02-09',
-            endDate: '2026-02-13',
-            type: 'registration',
-            description: '1학기 등록금 납부',
-            important: true
-        },
-        {
-            id: 322,
-            title: '제48회 학위수여식',
-            date: '2026-02-11',
-            type: 'event',
-            description: '졸업식',
-            important: true
-        },
-        {
-            id: 323,
-            title: '설날 연휴',
-            date: '2026-02-16',
-            endDate: '2026-02-18',
-            type: 'holiday',
-            description: '설날 연휴 (휴강)',
-            important: true
-        },
-        {
-            id: 324,
-            title: '2026학년도 입학식',
-            date: '2026-02-24',
-            type: 'event',
-            description: '신입생 입학식',
-            important: true
         }
     ]
-};
+}
+
+        
+
+
+
 
 
 // 일정별 세분화된 색상 매핑
