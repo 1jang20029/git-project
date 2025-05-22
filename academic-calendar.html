@@ -3,79 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025-2026 학사일정</title>
+    <title>연성대 학사일정</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="hero-section">
+            <h1>연성대 학사일정 관리</h1>
+            <p>체계적인 학사, 효율적인 대학 생활</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
     <div class="container">
-        <header class="header">
-            <h1>2025-2026학년도 학사일정</h1>
-            <div class="controls">
-                <select id="semesterFilter">
-                    <option value="all">전체 학기</option>
-                    <option value="2025-1">2025년 1학기</option>
-                    <option value="2025-summer">2025년 여름학기</option>
-                    <option value="2025-2">2025년 2학기</option>
-                    <option value="2026-winter">2026년 겨울학기</option>
-                    <option value="2026-1">2026년 1학기</option>
-                </select>
-                <input type="text" id="searchInput" placeholder="일정 검색...">
-                <button id="todayBtn">오늘</button>
+        <div class="nav-section">
+            <div class="brand">
+                <h2>Academic Calendar</h2>
             </div>
-        </header>
-
-        <div class="calendar-navigation">
-            <button id="prevMonth">&lt;</button>
-            <h2 id="currentMonth">2025년 1월</h2>
-            <button id="nextMonth">&gt;</button>
-        </div>
-
-        <div class="main-content">
-            <div class="calendar-container">
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Calendar will be generated here -->
-                </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" data-category="all">전체</button>
+                <button class="nav-btn" data-category="academic">학사</button>
+                <button class="nav-btn" data-category="exam">시험</button>
+                <button class="nav-btn" data-category="vacation">방학</button>
+                <button class="nav-btn" data-category="holiday">공휴일</button>
+                <button class="nav-btn" data-category="registration">등록</button>
             </div>
-
-            <div class="sidebar">
-                <div class="upcoming-events">
-                    <h3>다가오는 일정</h3>
-                    <div id="upcomingList"></div>
-                </div>
-
-                <div class="legend">
-                    <h3>범례</h3>
-                    <div class="legend-item">
-                        <span class="legend-color academic"></span>
-                        <span>학사일정</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color exam"></span>
-                        <span>시험기간</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color vacation"></span>
-                        <span>방학</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color holiday"></span>
-                        <span>공휴일</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color registration"></span>
-                        <span>등록/수강신청</span>
-                    </div>
-                </div>
+            <div class="top-controls">
+                <button class="control-btn">📚 학사일정 관리</button>
+                <button class="control-btn">📝 일정 등록</button>
+                <button class="control-btn">🏠 홈으로</button>
             </div>
         </div>
 
-        <div class="event-details" id="eventDetails" style="display: none;">
-            <h3 id="eventTitle"></h3>
-            <p id="eventDate"></p>
-            <p id="eventDescription"></p>
-            <button id="closeDetails">닫기</button>
+        <div class="calendar-section">
+            <div class="calendar-controls">
+                <button id="prevMonth" class="month-btn">‹</button>
+                <span id="currentMonth" class="month-title">2025년 1월</span>
+                <button id="nextMonth" class="month-btn">›</button>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Calendar will be generated here -->
+            </div>
+        </div>
+
+        <div class="events-section">
+            <h3 id="eventsTitle">전체 일정 (0개)</h3>
+            <div class="pagination">
+                <button class="page-btn" id="prevPage">‹</button>
+                <span id="pageInfo">0 / 0</span>
+                <button class="page-btn" id="nextPage">›</button>
+            </div>
+
+            <div class="events-container" id="eventsContainer">
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <p>해당 카테고리의 일정이 없습니다.</p>
+                    <small>다른 카테고리를 선택하거나 일정을 등록해 보세요!</small>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 연성대 학사일정 시스템 | 모든 권리 보유</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
