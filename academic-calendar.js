@@ -134,22 +134,25 @@ const academicEvents = [
     { date: '2026-02-24', title: '2026학년도 입학식', type: 'academic' }
 ];
 
-// 현재 날짜
+// 전역 변수
 let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth();
+let currentCategory = 'all';
+let currentPage = 1;
+const eventsPerPage = 12;
 
-// DOM 요소들
+// DOM 요소
 const calendarGrid = document.getElementById('calendarGrid');
 const currentMonthElement = document.getElementById('currentMonth');
 const prevMonthBtn = document.getElementById('prevMonth');
 const nextMonthBtn = document.getElementById('nextMonth');
-const todayBtn = document.getElementById('todayBtn');
-const semesterFilter = document.getElementById('semesterFilter');
-const searchInput = document.getElementById('searchInput');
-const upcomingList = document.getElementById('upcomingList');
-const eventDetails = document.getElementById('eventDetails');
-const closeDetailsBtn = document.getElementById('closeDetails');
+const navButtons = document.querySelectorAll('.nav-btn');
+const eventsContainer = document.getElementById('eventsContainer');
+const eventsTitle = document.getElementById('eventsTitle');
+const pageInfo = document.getElementById('pageInfo');
+const prevPageBtn = document.getElementById('prevPage');
+const nextPageBtn = document.getElementById('nextPage');
 
 // 요일 배열
 const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -159,6 +162,16 @@ const monthNames = [
     '1월', '2월', '3월', '4월', '5월', '6월',
     '7월', '8월', '9월', '10월', '11월', '12월'
 ];
+
+// 카테고리 이름 매핑
+const categoryNames = {
+    'all': '전체',
+    'academic': '학사',
+    'exam': '시험',
+    'vacation': '방학',
+    'holiday': '공휴일',
+    'registration': '등록'
+};
 
 // 이벤트 리스너 등록
 prevMonthBtn.addEventListener('click', () => {
@@ -181,30 +194,47 @@ nextMonthBtn.addEventListener('click', () => {
     renderCalendar();
 });
 
-todayBtn.addEventListener('click', () => {
-    const today = new Date();
-    currentYear = today.getFullYear();
-    currentMonth = today.getMonth();
-    renderCalendar();
+navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // 활성 버튼 변경
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // 카테고리 변경
+        currentCategory = btn.dataset.category;
+        currentPage = 1;
+        
+        // 화면 업데이트
+        renderCalendar();
+        renderEvents();
+    });
 });
 
-semesterFilter.addEventListener('change', renderCalendar);
-searchInput.addEventListener('input', renderCalendar);
-closeDetailsBtn.addEventListener('click', () => {
-    eventDetails.style.display = 'none';
+prevPageBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        renderEvents();
+    }
 });
 
-// 날짜 문자열을 Date 객체로 변환
+nextPageBtn.addEventListener('click', () => {
+    const filteredEvents = getFilteredEvents();
+    const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderEvents();
+    }
+});
+
+// 유틸리티 함수들
 function parseDate(dateString) {
     return new Date(dateString + 'T00:00:00');
 }
 
-// 날짜 포맷팅
 function formatDate(date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-// 날짜가 범위 내에 있는지 확인
 function isDateInRange(checkDate, startDate, endDate) {
     const check = parseDate(checkDate);
     const start = parseDate(startDate);
@@ -213,48 +243,35 @@ function isDateInRange(checkDate, startDate, endDate) {
     return check >= start && check <= end;
 }
 
-// 특정 날짜의 이벤트 가져오기
 function getEventsForDate(date) {
     const dateString = formatDate(date);
-    const searchTerm = searchInput.value.toLowerCase();
-    const semesterFilterValue = semesterFilter.value;
-    
     return academicEvents.filter(event => {
-        // 날짜 필터링
-        const isInDateRange = isDateInRange(dateString, event.date, event.endDate);
-        
-        // 검색 필터링
-        const matchesSearch = !searchTerm || event.title.toLowerCase().includes(searchTerm);
-        
-        // 학기 필터링
-        let matchesSemester = true;
-        if (semesterFilterValue !== 'all') {
-            const eventDate = parseDate(event.date);
-            const eventYear = eventDate.getFullYear();
-            const eventMonth = eventDate.getMonth();
-            
-            switch (semesterFilterValue) {
-                case '2025-1':
-                    matchesSemester = eventYear === 2025 && eventMonth >= 2 && eventMonth <= 6;
-                    break;
-                case '2025-summer':
-                    matchesSemester = eventYear === 2025 && eventMonth >= 6 && eventMonth <= 8;
-                    break;
-                case '2025-2':
-                    matchesSemester = eventYear === 2025 && eventMonth >= 8 && eventMonth <= 11;
-                    break;
-                case '2026-winter':
-                    matchesSemester = (eventYear === 2025 && eventMonth === 11) || 
-                                     (eventYear === 2026 && eventMonth <= 1);
-                    break;
-                case '2026-1':
-                    matchesSemester = eventYear === 2026 && eventMonth >= 1 && eventMonth <= 5;
-                    break;
-            }
-        }
-        
-        return isInDateRange && matchesSearch && matchesSemester;
+        const matchesDate = isDateInRange(dateString, event.date, event.endDate);
+        const matchesCategory = currentCategory === 'all' || event.type === currentCategory;
+        return matchesDate && matchesCategory;
     });
+}
+
+function getFilteredEvents() {
+    return academicEvents.filter(event => {
+        return currentCategory === 'all' || event.type === currentCategory;
+    }).sort((a, b) => parseDate(a.date) - parseDate(b.date));
+}
+
+function formatEventDate(event) {
+    const startDate = parseDate(event.date);
+    let dateText = `${startDate.getMonth() + 1}월 ${startDate.getDate()}일`;
+    
+    if (event.endDate) {
+        const endDate = parseDate(event.endDate);
+        if (startDate.getMonth() === endDate.getMonth()) {
+            dateText += ` ~ ${endDate.getDate()}일`;
+        } else {
+            dateText += ` ~ ${endDate.getMonth() + 1}월 ${endDate.getDate()}일`;
+        }
+    }
+    
+    return dateText;
 }
 
 // 캘린더 렌더링
@@ -315,10 +332,7 @@ function renderCalendar() {
                 const eventElement = document.createElement('div');
                 eventElement.className = `event-item ${event.type}`;
                 eventElement.textContent = event.title;
-                eventElement.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    showEventDetails(event);
-                });
+                eventElement.title = event.title; // 툴팁
                 dayCell.appendChild(eventElement);
             });
             
@@ -327,105 +341,101 @@ function renderCalendar() {
                 const moreElement = document.createElement('div');
                 moreElement.className = 'event-item';
                 moreElement.textContent = `+${dayEvents.length - 3}개 더`;
-                moreElement.style.background = '#666';
+                moreElement.style.background = '#6c757d';
                 dayCell.appendChild(moreElement);
             }
         }
         
         calendarGrid.appendChild(dayCell);
     }
-    
-    // 다가오는 일정 업데이트
-    updateUpcomingEvents();
 }
 
-// 다가오는 일정 업데이트
-function updateUpcomingEvents() {
-    const today = new Date();
-    const nextMonth = new Date(today);
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
+// 이벤트 목록 렌더링
+function renderEvents() {
+    const filteredEvents = getFilteredEvents();
+    const totalEvents = filteredEvents.length;
+    const totalPages = Math.ceil(totalEvents / eventsPerPage);
     
-    const upcomingEvents = academicEvents.filter(event => {
-        const eventDate = parseDate(event.date);
-        return eventDate >= today && eventDate <= nextMonth;
-    }).sort((a, b) => parseDate(a.date) - parseDate(b.date));
+    // 제목 업데이트
+    eventsTitle.textContent = `${categoryNames[currentCategory]} 일정 (${totalEvents}개)`;
     
-    upcomingList.innerHTML = '';
+    // 페이지 정보 업데이트
+    pageInfo.textContent = totalEvents > 0 ? `${currentPage} / ${totalPages}` : '0 / 0';
     
-    if (upcomingEvents.length === 0) {
-        upcomingList.innerHTML = '<p style="color: #666; text-align: center;">다가오는 일정이 없습니다.</p>';
+    // 페이지 버튼 상태 업데이트
+    prevPageBtn.disabled = currentPage <= 1;
+    nextPageBtn.disabled = currentPage >= totalPages || totalPages === 0;
+    
+    // 이벤트 컨테이너 내용 업데이트
+    if (totalEvents === 0) {
+        eventsContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <p>해당 카테고리의 일정이 없습니다.</p>
+                <small>다른 카테고리를 선택해 보세요!</small>
+            </div>
+        `;
         return;
     }
     
-    upcomingEvents.slice(0, 5).forEach(event => {
-        const eventElement = document.createElement('div');
-        eventElement.className = 'upcoming-item';
-        eventElement.addEventListener('click', () => showEventDetails(event));
+    // 현재 페이지의 이벤트들
+    const startIndex = (currentPage - 1) * eventsPerPage;
+    const endIndex = startIndex + eventsPerPage;
+    const pageEvents = filteredEvents.slice(startIndex, endIndex);
+    
+    // 이벤트 카드 생성
+    const eventList = document.createElement('div');
+    eventList.className = 'event-list';
+    
+    pageEvents.forEach(event => {
+        const eventCard = document.createElement('div');
+        eventCard.className = 'event-card';
         
-        const eventDate = parseDate(event.date);
-        const dateString = `${eventDate.getMonth() + 1}월 ${eventDate.getDate()}일`;
-        
-        eventElement.innerHTML = `
-            <div class="upcoming-date">${dateString}</div>
-            <div class="upcoming-title">${event.title}</div>
+        eventCard.innerHTML = `
+            <div class="event-card-date">${formatEventDate(event)}</div>
+            <div class="event-card-title">${event.title}</div>
+            <span class="event-card-category ${event.type}">${categoryNames[event.type]}</span>
         `;
         
-        upcomingList.appendChild(eventElement);
+        eventList.appendChild(eventCard);
     });
+    
+    eventsContainer.innerHTML = '';
+    eventsContainer.appendChild(eventList);
 }
 
-// 이벤트 상세 정보 표시
-function showEventDetails(event) {
-    const eventTitle = document.getElementById('eventTitle');
-    const eventDate = document.getElementById('eventDate');
-    const eventDescription = document.getElementById('eventDescription');
-    
-    eventTitle.textContent = event.title;
-    
-    const startDate = parseDate(event.date);
-    let dateText = `${startDate.getFullYear()}년 ${startDate.getMonth() + 1}월 ${startDate.getDate()}일`;
-    
-    if (event.endDate) {
-        const endDate = parseDate(event.endDate);
-        dateText += ` ~ ${endDate.getFullYear()}년 ${endDate.getMonth() + 1}월 ${endDate.getDate()}일`;
-    }
-    
-    eventDate.textContent = dateText;
-    
-    // 이벤트 타입에 따른 설명
-    const typeDescriptions = {
-        'academic': '학사 일정',
-        'exam': '시험 기간',
-        'vacation': '방학 기간',
-        'holiday': '공휴일',
-        'registration': '등록/수강신청'
-    };
-    
-    eventDescription.textContent = `분류: ${typeDescriptions[event.type] || '기타'}`;
-    
-    eventDetails.style.display = 'block';
+// 특정 월로 이동하는 함수 (퀵 액션용)
+function goToMonth(year, month) {
+    currentYear = year;
+    currentMonth = month - 1; // JavaScript의 월은 0부터 시작
+    renderCalendar();
 }
 
-// 페이지 로드 시 캘린더 렌더링
+// 초기 로드
 document.addEventListener('DOMContentLoaded', () => {
     renderCalendar();
+    renderEvents();
 });
 
 // 키보드 단축키
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        eventDetails.style.display = 'none';
-    } else if (e.key === 'ArrowLeft' && e.ctrlKey) {
-        prevMonthBtn.click();
-    } else if (e.key === 'ArrowRight' && e.ctrlKey) {
-        nextMonthBtn.click();
-    } else if (e.key === 'Home' && e.ctrlKey) {
-        todayBtn.click();
+    if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+            case 'ArrowLeft':
+                e.preventDefault();
+                prevMonthBtn.click();
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                nextMonthBtn.click();
+                break;
+            case 'Home':
+                e.preventDefault();
+                const today = new Date();
+                currentYear = today.getFullYear();
+                currentMonth = today.getMonth();
+                renderCalendar();
+                break;
+        }
     }
-});
-
-// 반응형 디자인을 위한 윈도우 리사이즈 이벤트
-window.addEventListener('resize', () => {
-    // 필요한 경우 캘린더 다시 렌더링
-    renderCalendar();
 });
