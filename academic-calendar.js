@@ -930,6 +930,67 @@ const academicSchedule = {
             type: 'academic',
             description: '정시모집 합격자 발표',
             important: true
+        },
+         {
+            id: 318,
+            title: '복학 접수기간',
+            date: '2026-02-02',
+            endDate: '2026-02-06',
+            type: 'registration',
+            description: '복학 접수기간',
+            important: false
+        },
+        {
+            id: 319,
+            title: '재학생(복학생) 수강신청 기간',
+            date: '2026-02-02',
+            endDate: '2026-02-10',
+            type: 'registration',
+            description: '재학생(복학생) 수강신청 기간',
+            important: true
+        },
+        {
+            id: 320,
+            title: '2026학년도 정시 합격자 등록기간',
+            date: '2026-02-03',
+            endDate: '2026-02-05',
+            type: 'registration',
+            description: '2026학년도 정시 합격자 등록기간',
+            important: true
+        },
+        {
+            id: 321,
+            title: '1학기 재학생 등록기간',
+            date: '2026-02-09',
+            endDate: '2026-02-13',
+            type: 'registration',
+            description: '1학기 재학생 등록기간',
+            important: true
+        },
+        {
+            id: 322,
+            title: '제48회 학위수여식',
+            date: '2026-02-11',
+            type: 'event',
+            description: '제48회 학위수여식',
+            important: true
+        },
+        {
+            id: 323,
+            title: '설날 연휴',
+            date: '2026-02-16',
+            endDate: '2026-02-18',
+            type: 'holiday',
+            description: '설날 연휴',
+            important: true
+        },
+        {
+            id: 324,
+            title: '2026학년도 입학식',
+            date: '2026-02-24',
+            type: 'event',
+            description: '2026학년도 입학식',
+            important: true
         }
     ]
 };
