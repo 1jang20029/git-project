@@ -3,74 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연성대 학사일정</title>
-    <link rel="stylesheet" href="style.css">
+    <title>학사 일정 관리 시스템</title>
+    <link rel="stylesheet" href="academic-calendar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="hero-section">
-            <h1>연성대 학사일정 관리</h1>
-            <p>체계적인 학사, 효율적인 대학 생활</p>
-        </div>
-    </header>
-
-    <!-- Main Content -->
     <div class="container">
-        <div class="nav-section">
-            <div class="brand">
-                <h2>Academic Calendar</h2>
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <i class="fas fa-calendar-alt"></i>
+                    학사 일정 관리
+                </h1>
+                <button class="btn-add" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i>
+                    일정 추가
+                </button>
             </div>
-            <div class="nav-buttons">
-                <button class="nav-btn active" data-category="all">전체</button>
-                <button class="nav-btn" data-category="academic">학사</button>
-                <button class="nav-btn" data-category="exam">시험</button>
-                <button class="nav-btn" data-category="vacation">방학</button>
-                <button class="nav-btn" data-category="holiday">공휴일</button>
-                <button class="nav-btn" data-category="registration">등록</button>
+        </header>
+
+        <!-- 캘린더 네비게이션 -->
+        <div class="calendar-nav">
+            <button class="nav-btn" onclick="prevMonth()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h2 class="current-month" id="currentMonth"></h2>
+            <button class="nav-btn" onclick="nextMonth()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- 캘린더 -->
+        <div class="calendar">
+            <div class="calendar-header">
+                <div class="day-header">일</div>
+                <div class="day-header">월</div>
+                <div class="day-header">화</div>
+                <div class="day-header">수</div>
+                <div class="day-header">목</div>
+                <div class="day-header">금</div>
+                <div class="day-header">토</div>
             </div>
-            <div class="top-controls">
-                <button class="control-btn">📚 학사일정 관리</button>
-                <button class="control-btn">📝 일정 등록</button>
-                <button class="control-btn">🏠 홈으로</button>
+            <div class="calendar-body" id="calendarBody">
+                <!-- 캘린더 날짜들이 JavaScript로 동적 생성됩니다 -->
             </div>
         </div>
 
-        <div class="calendar-section">
-            <div class="calendar-controls">
-                <button id="prevMonth" class="month-btn">‹</button>
-                <span id="currentMonth" class="month-title">2025년 1월</span>
-                <button id="nextMonth" class="month-btn">›</button>
-            </div>
-
-            <div class="calendar-grid" id="calendarGrid">
-                <!-- Calendar will be generated here -->
-            </div>
-        </div>
-
+        <!-- 일정 목록 -->
         <div class="events-section">
-            <h3 id="eventsTitle">전체 일정 (0개)</h3>
-            <div class="pagination">
-                <button class="page-btn" id="prevPage">‹</button>
-                <span id="pageInfo">0 / 0</span>
-                <button class="page-btn" id="nextPage">›</button>
+            <h3 class="events-title">이번 달 일정</h3>
+            <div class="events-list" id="eventsList">
+                <!-- 일정 목록이 JavaScript로 동적 생성됩니다 -->
             </div>
+        </div>
+    </div>
 
-            <div class="events-container" id="eventsContainer">
-                <div class="empty-state">
-                    <div class="empty-icon">📅</div>
-                    <p>해당 카테고리의 일정이 없습니다.</p>
-                    <small>다른 카테고리를 선택하거나 일정을 등록해 보세요!</small>
+    <!-- 일정 추가/편집 모달 -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">일정 추가</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="modal-form" id="eventForm">
+                <div class="form-group">
+                    <label for="eventTitle">일정 제목</label>
+                    <input type="text" id="eventTitle" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventDate">날짜</label>
+                    <input type="date" id="eventDate" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventType">분류</label>
+                    <select id="eventType" name="type">
+                        <option value="general">일반</option>
+                        <option value="orientation">오리엔테이션</option>
+                        <option value="semester">학기</option>
+                        <option value="exam">시험</option>
+                        <option value="holiday">공휴일</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventDescription">설명</label>
+                    <textarea id="eventDescription" name="description" rows="3"></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">취소</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        저장
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 일정 상세보기 모달 -->
+    <div class="modal" id="eventDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="detailTitle"></h3>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="event-detail">
+                <div class="detail-item">
+                    <strong>날짜:</strong>
+                    <span id="detailDate"></span>
+                </div>
+                <div class="detail-item">
+                    <strong>분류:</strong>
+                    <span id="detailType" class="event-type"></span>
+                </div>
+                <div class="detail-item">
+                    <strong>설명:</strong>
+                    <p id="detailDescription"></p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-edit" onclick="editCurrentEvent()">
+                        <i class="fas fa-edit"></i>
+                        편집
+                    </button>
+                    <button class="btn-delete" onclick="deleteCurrentEvent()">
+                        <i class="fas fa-trash"></i>
+                        삭제
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>© 2025 연성대 학사일정 시스템 | 모든 권리 보유</p>
-    </footer>
-
-    <script src="script.js"></script>
+    <script src="academic-calendar.js"></script>
 </body>
 </html>
