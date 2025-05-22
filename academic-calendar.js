@@ -1381,22 +1381,35 @@ function renderEventsList() {
         return (eventDate <= currentMonthEnd && eventEndDate >= currentMonthStart);
     });
     
+    // 중복 제거: 같은 제목과 날짜의 이벤트는 하나만 남기기
+    const uniqueEvents = [];
+    const seen = new Set();
+    
+    monthEvents.forEach(event => {
+        const key = `${event.title}-${event.date}-${event.endDate || ''}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            uniqueEvents.push(event);
+        }
+    });
+    
     // 필터 적용
+    let filteredEvents = uniqueEvents;
     if (currentFilter !== 'all') {
-        monthEvents = monthEvents.filter(event => event.type === currentFilter);
+        filteredEvents = uniqueEvents.filter(event => event.type === currentFilter);
     }
     
     // 날짜순 정렬
-    monthEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     
     eventsList.innerHTML = '';
     
-    if (monthEvents.length === 0) {
+    if (filteredEvents.length === 0) {
         eventsList.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">해당 조건의 일정이 없습니다.</p>';
         return;
     }
     
-    monthEvents.forEach(event => {
+    filteredEvents.forEach(event => {
         const eventCard = document.createElement('div');
         eventCard.className = 'event-card';
         
@@ -1475,7 +1488,7 @@ function getEventsForDate(dateString) {
         allEvents = allEvents.concat(academicSchedule[semester]);
     });
     
-    return allEvents.filter(event => {
+    const filteredEvents = allEvents.filter(event => {
         if (event.endDate) {
             // 기간이 있는 이벤트 - 해당 날짜가 시작일과 종료일 사이에 있는지 확인
             return dateString >= event.date && dateString <= event.endDate;
@@ -1484,6 +1497,20 @@ function getEventsForDate(dateString) {
             return event.date === dateString;
         }
     });
+    
+    // 중복 제거: 같은 제목과 날짜의 이벤트는 하나만 남기기
+    const uniqueEvents = [];
+    const seen = new Set();
+    
+    filteredEvents.forEach(event => {
+        const key = `${event.title}-${event.date}-${event.endDate || ''}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            uniqueEvents.push(event);
+        }
+    });
+    
+    return uniqueEvents;
 }
 
 // 월 네비게이션 함수들
@@ -1847,9 +1874,21 @@ function updateMonthEventCount() {
         return (eventDate <= currentMonthEnd && eventEndDate >= currentMonthStart);
     });
     
+    // 중복 제거
+    const uniqueEvents = [];
+    const seen = new Set();
+    
+    monthEvents.forEach(event => {
+        const key = `${event.title}-${event.date}-${event.endDate || ''}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            uniqueEvents.push(event);
+        }
+    });
+    
     // 월 제목 옆에 이벤트 개수 표시
     const currentMonthElement = document.getElementById('currentMonth');
-    const eventCount = monthEvents.length;
+    const eventCount = uniqueEvents.length;
     currentMonthElement.innerHTML = `
         ${year}년 ${monthNames[month]}
         <span style="font-size: 0.6em; color: #667eea; margin-left: 10px;">
