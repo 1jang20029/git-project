@@ -5504,12 +5504,10 @@ function displayPopularRestaurantsOnMainPage() {
 }
 
 
-
 function displayUpcomingAcademicSchedule() {
     console.log('다가오는 학사일정 업데이트 시작');
     
-    // HTML의 실제 클래스명에 맞게 수정
-    const scheduleContainer = document.querySelector('.calendar-list');
+    const scheduleContainer = document.querySelector('.schedule-list');
     if (!scheduleContainer) {
         console.error('학사일정 컨테이너를 찾을 수 없습니다.');
         return;
@@ -5554,21 +5552,22 @@ function displayUpcomingAcademicSchedule() {
     
     if (eventsToShow.length === 0) {
         scheduleContainer.innerHTML = `
-            <li class="calendar-item">
-                <div class="calendar-date">
-                    <div class="calendar-day">--</div>
-                    <div class="calendar-month">--</div>
+            <div class="schedule-item">
+                <div class="schedule-date">
+                    <div class="date-number">--</div>
+                    <div class="date-month">--</div>
                 </div>
-                <div class="calendar-info">
-                    <div class="calendar-title">예정된 중요 일정이 없습니다</div>
-                    <div class="calendar-desc">새로운 학사일정이 업데이트되면 표시됩니다</div>
+                <div class="schedule-content">
+                    <div class="schedule-title">예정된 중요 일정이 없습니다</div>
+                    <div class="schedule-description">새로운 학사일정이 업데이트되면 표시됩니다</div>
                 </div>
-            </li>
+                <div class="schedule-type ${getEventTypeClass('academic')}">${getEventTypeLabel('academic')}</div>
+            </div>
         `;
         return;
     }
     
-    // 각 일정을 HTML로 변환하여 표시 (기존 HTML 구조에 맞춤)
+    // 각 일정을 HTML로 변환하여 표시
     eventsToShow.forEach(event => {
         const eventDate = new Date(event.date);
         const day = eventDate.getDate();
@@ -5580,42 +5579,45 @@ function displayUpcomingAcademicSchedule() {
         
         let dDayText = '';
         if (diffDays === 0) {
-            dDayText = ' (D-Day)';
+            dDayText = 'D-Day';
         } else if (diffDays > 0) {
-            dDayText = ` (D-${diffDays})`;
+            dDayText = `D-${diffDays}`;
         } else {
-            dDayText = ' (진행중)';
+            dDayText = `진행중`;
         }
         
         // 날짜 텍스트 생성
-        let dateText = event.description;
+        let dateText = `${month}월 ${day}일`;
         if (event.endDate) {
             const endDate = new Date(event.endDate);
             const endDay = endDate.getDate();
             const endMonth = endDate.getMonth() + 1;
             
             if (month === endMonth) {
-                dateText = `${month}월 ${day}일 ~ ${endDay}일`;
+                dateText = `${month}월 ${day}일~${endDay}일`;
             } else {
-                dateText = `${month}월 ${day}일 ~ ${endMonth}월 ${endDay}일`;
+                dateText = `${month}월 ${day}일~${endMonth}월 ${endDay}일`;
             }
         }
         
-        const scheduleItem = document.createElement('li');
-        scheduleItem.className = 'calendar-item';
+        const scheduleItem = document.createElement('div');
+        scheduleItem.className = 'schedule-item';
         scheduleItem.onclick = function() {
             goToPage('academic-calendar');
         };
         
         scheduleItem.innerHTML = `
-            <div class="calendar-date">
-                <div class="calendar-day">${day}</div>
-                <div class="calendar-month">${month}월</div>
+            <div class="schedule-date">
+                <div class="date-number">${day}</div>
+                <div class="date-month">${month}월</div>
+                <div class="d-day">${dDayText}</div>
             </div>
-            <div class="calendar-info">
-                <div class="calendar-title">${event.title}${dDayText}</div>
-                <div class="calendar-desc">${dateText}</div>
+            <div class="schedule-content">
+                <div class="schedule-title">${event.title}</div>
+                <div class="schedule-description">${event.description}</div>
+                <div class="schedule-full-date">${dateText}</div>
             </div>
+            <div class="schedule-type ${getEventTypeClass(event.type)}">${getEventTypeLabel(event.type)}</div>
         `;
         
         scheduleContainer.appendChild(scheduleItem);
@@ -5623,8 +5625,6 @@ function displayUpcomingAcademicSchedule() {
     
     console.log('다가오는 학사일정 업데이트 완료');
 }
-
-
 
 // 이벤트 타입에 따른 CSS 클래스 반환
 function getEventTypeClass(type) {
