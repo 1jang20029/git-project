@@ -45,13 +45,73 @@ const safeStorage = {
     }
 };
 
+// 사용자 역할 정의
+const USER_ROLES = {
+    STUDENT: 'student',
+    PROFESSOR: 'professor',
+    STAFF: 'staff',
+    ADMIN: 'admin'
+};
+
+// 학번 패턴으로 역할 자동 감지
+function detectUserRole(studentId) {
+    // 교수: P로 시작 (예: P2024001)
+    if (studentId.toUpperCase().startsWith('P')) {
+        return USER_ROLES.PROFESSOR;
+    }
+    
+    // 교직원: S로 시작 (예: S2024001)
+    if (studentId.toUpperCase().startsWith('S')) {
+        return USER_ROLES.STAFF;
+    }
+    
+    // 관리자: A로 시작 (예: A2024001)
+    if (studentId.toUpperCase().startsWith('A')) {
+        return USER_ROLES.ADMIN;
+    }
+    
+    // 그 외는 모두 학생
+    return USER_ROLES.STUDENT;
+}
+
+// 역할별 리디렉션 페이지 결정
+function getRedirectPage(userRole, isFirstLogin) {
+    if (isFirstLogin) {
+        // 첫 로그인 시
+        if (userRole === USER_ROLES.STUDENT) {
+            return 'widget-settings.html';
+        } else {
+            // 교수/교직원/관리자는 바로 관리 대시보드로
+            return 'admin-dashboard.html';
+        }
+    } else {
+        // 재로그인 시
+        if (userRole === USER_ROLES.STUDENT) {
+            return 'index.html';
+        } else {
+            return 'admin-dashboard.html';
+        }
+    }
+}
+
+// 역할 표시명 반환
+function getRoleDisplayName(role) {
+    const roleNames = {
+        [USER_ROLES.STUDENT]: '학생',
+        [USER_ROLES.PROFESSOR]: '교수',
+        [USER_ROLES.STAFF]: '교직원',
+        [USER_ROLES.ADMIN]: '관리자'
+    };
+    return roleNames[role] || '사용자';
+}
+
 // 로그아웃 함수 - 로그아웃 버튼에 연결하세요
 function logout() {
     // 현재 로그인된 사용자 아이디 가져오기
     const currentUser = safeStorage.getItem('currentLoggedInUser');
     
     // 아이디 저장 옵션 확인
-    const isSaveIdEnabled = document.getElementById('saveId').checked;
+    const isSaveIdEnabled = document.getElementById('saveId') ? document.getElementById('saveId').checked : false;
     
     // 아이디 저장이 활성화되어 있으면 현재 사용자 아이디 저장
     if (isSaveIdEnabled && currentUser) {
@@ -82,6 +142,9 @@ function saveRegistrationStatus(studentId) {
 
 // 회원가입 시 사용자 정보 저장 함수 (register.html 파일에 필요)
 function registerUser(studentId, password, name, department, grade, email, phone) {
+    // 학번으로 역할 자동 감지
+    const userRole = detectUserRole(studentId);
+    
     // 회원 정보 저장
     safeStorage.setItem(`user_${studentId}_registered`, 'true');
     safeStorage.setItem(`user_${studentId}_password`, password);
@@ -90,12 +153,20 @@ function registerUser(studentId, password, name, department, grade, email, phone
     safeStorage.setItem(`user_${studentId}_grade`, grade);
     safeStorage.setItem(`user_${studentId}_email`, email);
     safeStorage.setItem(`user_${studentId}_phone`, phone);
+    safeStorage.setItem(`user_${studentId}_role`, userRole);
     
     // 최초 로그인 상태를 true로 설정
     safeStorage.setItem(`user_${studentId}_first_login`, 'true');
     
+    // 권한별 추가 설정
+    if (userRole !== USER_ROLES.STUDENT) {
+        // 교수/교직원/관리자는 승인 상태 설정
+        safeStorage.setItem(`user_${studentId}_approved`, 'true');
+        safeStorage.setItem(`user_${studentId}_approvedDate`, new Date().toISOString());
+    }
+    
     // 회원가입 완료 후 로그인 페이지로 리디렉션
-    window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+    window.location.href = `login.html?newRegistration=true&studentId=${studentId}&role=${userRole}`;
 }
 
 // 뒤로가기 함수
@@ -103,7 +174,7 @@ function goBack() {
     window.location.href = "index.html";
 }
 
-// 일반 로그인 처리 함수
+// 일반 로그인 처리 함수 (수정됨)
 function login() {
     const studentId = document.getElementById('studentId').value;
     const password = document.getElementById('password').value;
@@ -130,6 +201,23 @@ function login() {
         return;
     }
     
+    // 사용자 역할 확인
+    let userRole = safeStorage.getItem(`user_${studentId}_role`);
+    if (!userRole) {
+        // 기존 사용자의 경우 학번으로 역할 자동 감지
+        userRole = detectUserRole(studentId);
+        safeStorage.setItem(`user_${studentId}_role`, userRole);
+    }
+    
+    // 교수/교직원/관리자 승인 상태 확인
+    if (userRole !== USER_ROLES.STUDENT) {
+        const isApproved = safeStorage.getItem(`user_${studentId}_approved`) === 'true';
+        if (!isApproved) {
+            alert('계정 승인이 필요합니다. 관리자에게 문의해주세요.');
+            return;
+        }
+    }
+    
     // 아이디 저장 옵션 처리
     const saveIdChecked = document.getElementById('saveId').checked;
     
@@ -150,21 +238,25 @@ function login() {
     // 최초 로그인 여부 확인
     const isFirstLogin = safeStorage.getItem(`user_${studentId}_first_login`) === 'true';
     
+    // 로그인 성공 메시지
+    const userName = safeStorage.getItem(`user_${studentId}_name`) || '사용자';
+    const roleDisplayName = getRoleDisplayName(userRole);
+    
     if (isFirstLogin) {
-        // 최초 로그인이면 위젯 설정 페이지로 이동
-        // 다음 로그인 때는 위젯 페이지로 이동하지 않도록 설정
+        // 최초 로그인이면 해당 설정
         safeStorage.setItem(`user_${studentId}_first_login`, 'false');
         
-        alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
-        window.location.href = "widget-settings.html";
+        alert(`${roleDisplayName} ${userName}님, 환영합니다! 초기 설정을 진행합니다.`);
     } else {
-        // 이미 로그인한 적이 있는 경우 메인 페이지로 이동
-        alert('로그인이 완료되었습니다.');
-        window.location.href = "index.html";
+        alert(`${roleDisplayName} ${userName}님, 로그인이 완료되었습니다.`);
     }
+    
+    // 역할별 리디렉션
+    const redirectPage = getRedirectPage(userRole, isFirstLogin);
+    window.location.href = redirectPage;
 }
 
-// URL 파라미터에서 새로 회원가입했는지 확인
+// URL 파라미터에서 새로 회원가입했는지 확인 (수정됨)
 function checkNewRegistration() {
     // localStorage 사용 가능 여부 확인
     if (!isLocalStorageAvailable()) {
@@ -174,6 +266,7 @@ function checkNewRegistration() {
     const urlParams = new URLSearchParams(window.location.search);
     const newRegistration = urlParams.get('newRegistration');
     const studentId = urlParams.get('studentId');
+    const role = urlParams.get('role');
 
     if (newRegistration === 'true' && studentId) {
         // 새로 회원가입한 경우 회원가입 상태 저장
@@ -181,13 +274,19 @@ function checkNewRegistration() {
     
         // 학번 자동 입력
         document.getElementById('studentId').value = studentId;
+        
+        // 역할별 환영 메시지
+        if (role && role !== USER_ROLES.STUDENT) {
+            const roleDisplayName = getRoleDisplayName(role);
+            alert(`${roleDisplayName} 계정으로 회원가입이 완료되었습니다. 로그인해주세요.`);
+        }
     
         // 포커스를 비밀번호 필드로 이동
         document.getElementById('password').focus();
     }
 }
 
-// 네이버 로그인 처리 (개선됨)
+// 네이버 로그인 처리 (수정됨)
 function naverLogin() {
     // 기존 네이버 사용자인지 확인
     const existingNaverUsers = Object.keys(safeStorage.memoryStorage || {})
@@ -259,7 +358,7 @@ function setupModalEvents() {
     });
 }
 
-// 네이버 모달 로그인 처리 (이어서)
+// 네이버 모달 로그인 처리 (수정됨)
 function processNaverLogin() {
     const naverId = document.getElementById('naverId').value;
     const naverPw = document.getElementById('naverPw').value;
@@ -288,6 +387,7 @@ function processNaverLogin() {
             safeStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
             safeStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
             safeStorage.setItem(`user_${tempStudentId}_first_login`, 'true');
+            safeStorage.setItem(`user_${tempStudentId}_role`, USER_ROLES.STUDENT); // 소셜 로그인은 기본적으로 학생
             
             // 소셜 로그인 사용자 표시
             safeStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
@@ -324,7 +424,7 @@ function processNaverLogin() {
     }
 }
 
-// 구글 로그인 처리 - 동의 화면 최적화
+// 구글 로그인 처리 (수정됨)
 function googleLogin() {
     // 기존 구글 사용자인지 확인
     const existingGoogleUsers = Object.keys(safeStorage.memoryStorage || {})
@@ -360,13 +460,52 @@ function googleLogin() {
     window.location.href = authUrl;
 }
 
+// 권한 신청 페이지로 이동
+function requestRoleUpgrade() {
+    const currentUser = safeStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        return;
+    }
+    
+    const currentRole = safeStorage.getItem(`user_${currentUser}_role`) || USER_ROLES.STUDENT;
+    
+    if (currentRole !== USER_ROLES.STUDENT) {
+        alert('이미 승인된 계정입니다.');
+        return;
+    }
+    
+    // 권한 신청 페이지로 이동
+    window.location.href = 'role-request.html';
+}
+
+// 관리자 페이지 접근 (헤더 메뉴용)
+function goToAdminPage() {
+    const currentUser = safeStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    const userRole = safeStorage.getItem(`user_${currentUser}_role`) || USER_ROLES.STUDENT;
+    
+    if (userRole === USER_ROLES.STUDENT) {
+        alert('관리자 권한이 필요합니다.');
+        return;
+    }
+    
+    // 권한이 있으면 관리자 페이지로 이동
+    window.location.href = 'admin-notices.html';
+}
+
 // 엔터 키로 로그인 처리
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         const modal = document.getElementById('naverLoginModal');
         
         // 네이버 로그인 모달이 열려있고 입력 필드에 포커스가 있을 때
-        if (modal.style.display === 'block') {
+        if (modal && modal.style.display === 'block') {
             const naverId = document.getElementById('naverId');
             const naverPw = document.getElementById('naverPw');
             
@@ -418,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     // 비밀번호 필드와 토글 버튼 찾기
     const passwordField = document.querySelector('input[type="password"]');
-    const passwordToggle = document.querySelector('.password-toggle, [id$="passwordToggle"]'); // 다양한 선택자로 시도
+    const passwordToggle = document.querySelector('.password-toggle, [id$="passwordToggle"]');
     
     // 아이콘 요소가 이미 있기 때문에 기존 요소를 사용합니다
     if (passwordField && passwordToggle) {

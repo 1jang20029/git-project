@@ -3915,11 +3915,18 @@ function checkLoginStatus() {
     // 로그인 버튼과 프로필 드롭다운 컨테이너
     const loginButton = document.querySelector('.login-button');
     const profileDropdownContainer = document.querySelector('.profile-dropdown-container');
+    const adminNoticeBtn = document.getElementById('admin-notice-btn');
     
     if (currentUser) {
         // 로그인 상태: 로그인 버튼 숨기고 프로필 드롭다운 표시
         if (loginButton) loginButton.style.display = 'none';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'block';
+        
+        // 사용자 권한 확인
+        const userRole = localStorage.getItem(`user_${currentUser}_role`) || 'student';
+        
+        // 관리자 권한에 따른 UI 표시
+        updateAdminUI(userRole);
         
         // 드롭다운 내 프로필 정보 업데이트
         updateDropdownProfileInfo(currentUser);
@@ -3930,10 +3937,97 @@ function checkLoginStatus() {
         // 비로그인 상태: 로그인 버튼 표시, 프로필 드롭다운 숨김
         if (loginButton) loginButton.style.display = 'block';
         if (profileDropdownContainer) profileDropdownContainer.style.display = 'none';
+        if (adminNoticeBtn) adminNoticeBtn.style.display = 'none';
         
         // 프로필 탭도 로그인 필요 상태로 초기화
         resetProfileInfo();
     }
+}
+
+
+// 관리자 UI 업데이트 함수
+function updateAdminUI(userRole) {
+    const adminNoticeBtn = document.getElementById('admin-notice-btn');
+    const adminMenuSection = document.getElementById('admin-menu-section');
+    
+    // 교수, 교직원, 관리자에게만 공지사항 작성 버튼 표시
+    if (['professor', 'staff', 'admin'].includes(userRole)) {
+        if (adminNoticeBtn) {
+            adminNoticeBtn.style.display = 'flex';
+        }
+        if (adminMenuSection) {
+            adminMenuSection.style.display = 'block';
+        }
+        
+        // 드롭다운에 권한 배지 추가
+        addRoleBadgeToDropdown(userRole);
+    } else {
+        if (adminNoticeBtn) {
+            adminNoticeBtn.style.display = 'none';
+        }
+        if (adminMenuSection) {
+            adminMenuSection.style.display = 'none';
+        }
+    }
+}
+
+
+
+// 드롭다운에 권한 배지 추가
+function addRoleBadgeToDropdown(userRole) {
+    const profileName = document.querySelector('.dropdown-profile-name');
+    if (!profileName) return;
+    
+    // 기존 배지 제거
+    const existingBadge = profileName.querySelector('.role-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+    
+    // 새 배지 추가
+    const roleNames = {
+        'professor': '교수',
+        'staff': '교직원',
+        'admin': '관리자'
+    };
+    
+    const roleName = roleNames[userRole];
+    if (roleName) {
+        const badge = document.createElement('span');
+        badge.className = `role-badge ${userRole}`;
+        badge.textContent = roleName;
+        profileName.appendChild(badge);
+    }
+}
+
+// 공지사항 관리 페이지로 이동
+function goToAdminNotices() {
+    // 권한 재확인
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    const userRole = localStorage.getItem(`user_${currentUser}_role`) || 'student';
+    
+    if (!['professor', 'staff', 'admin'].includes(userRole)) {
+        alert('공지사항 작성 권한이 없습니다.');
+        return;
+    }
+    
+    window.location.href = 'admin-notices.html';
+}
+
+
+// 권한 관리 페이지로 이동 (관리자만)
+function goToRoleManagement() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    const userRole = localStorage.getItem(`user_${currentUser}_role`) || 'student';
+    
+    if (userRole !== 'admin') {
+        alert('권한 관리는 관리자만 접근할 수 있습니다.');
+        return;
+    }
+    
+    // 권한 관리 페이지로 이동 (다음 단계에서 구현)
+    alert('권한 관리 페이지는 다음 단계에서 구현됩니다.');
+    // window.location.href = 'role-management.html';
 }
 
 // 드롭다운 프로필 정보 업데이트
@@ -3951,81 +4045,20 @@ function updateDropdownProfileInfo(studentId) {
     const name = localStorage.getItem(`user_${studentId}_name`) || '사용자';
     const department = localStorage.getItem(`user_${studentId}_department`) || 'business';
     const grade = localStorage.getItem(`user_${studentId}_grade`) || '3';
+    const userRole = localStorage.getItem(`user_${studentId}_role`) || 'student';
     
     // 이름 업데이트
     const nameElement = dropdown.querySelector('.dropdown-profile-name');
-    if (nameElement) nameElement.textContent = name;
+    if (nameElement) {
+        nameElement.textContent = name;
+        // 권한 배지 추가
+        addRoleBadgeToDropdown(userRole);
+    }
     
     // 학과 및 학년 정보 업데이트
     const detailElement = dropdown.querySelector('.dropdown-profile-detail');
     if (detailElement && department) {
-        let departmentText = '';
-        
-        switch(department) {
-            case 'computerScience':
-                departmentText = '컴퓨터정보학과';
-                break;
-            case 'business':
-                departmentText = '경영학과';
-                break;
-            case 'nursing':
-                departmentText = '간호학과';
-                break;
-            case 'engineering':
-                departmentText = '공학계열';
-                break;
-            case 'arts':
-                departmentText = '예술계열';
-                break;
-            // 소셜 로그인에서 선택한 학과들 추가
-            case '전자공학과':
-            case '정보통신과':
-            case '전기과':
-            case '컴퓨터소프트웨어과':
-            case '건축과':
-            case '실내건축과':
-            case '패션디자인비즈니스과':
-            case '뷰티스타일리스트과_헤어디자인전공':
-            case '뷰티스타일리스트과_메이크업전공':
-            case '뷰티스타일리스트과_스킨케어전공':
-            case '게임콘텐츠과':
-            case '웹툰만화콘텐츠과':
-            case '영상콘텐츠과_영상콘텐츠제작전공':
-            case '영상콘텐츠과_뉴미디어콘텐츠전공':
-            case '시각디자인과':
-            case 'K-POP과':
-            case '유통물류과':
-            case '경영학과':
-            case '세무회계과':
-            case '국방군사학과':
-            case '경찰경호보안과':
-            case '사회복지과':
-            case '사회복지경영과':
-            case '유아교육과':
-            case '유아특수재활과':
-            case '사회복지과_아동심리보육전공':
-            case '치위생과':
-            case '치기공과':
-            case '작업치료과':
-            case '응급구조과':
-            case '보건의료행정과':
-            case '스포츠재활과':
-            case '식품영양학과':
-            case '반려동물보건과':
-            case '반려동물산업과':
-            case '항공서비스과':
-            case '관광영어과':
-            case '호텔관광과':
-            case '호텔외식조리과':
-            case '카페·베이커리과':
-            case '호텔외식경영전공':
-            case '자유전공학과':
-                departmentText = department;
-                break;
-            default:
-                departmentText = department;
-        }
-        
+        let departmentText = getDepartmentDisplayName(department);
         detailElement.textContent = `${departmentText} | ${grade}학년`;
     }
     
@@ -4035,6 +4068,68 @@ function updateDropdownProfileInfo(studentId) {
         studentIdElement.textContent = `학번: ${actualStudentId}`;
     }
 }
+
+
+// 학과 코드를 표시명으로 변환하는 함수
+function getDepartmentDisplayName(deptCode) {
+    const deptMap = {
+        'computerScience': '컴퓨터소프트웨어과',
+        'business': '경영학과',
+        'nursing': '간호학과',
+        'engineering': '공학계열',
+        'arts': '예술계열',
+        // 실제 학과명들 추가
+        '전자공학과': '전자공학과',
+        '정보통신과': '정보통신과',
+        '전기과': '전기과',
+        '컴퓨터소프트웨어과': '컴퓨터소프트웨어과',
+        '경영학과': '경영학과'
+    };
+    return deptMap[deptCode] || deptCode;
+}
+
+
+
+// 공지사항 작성 권한 확인 함수
+function hasNoticeWritePermission() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) return false;
+    
+    const userRole = localStorage.getItem(`user_${currentUser}_role`) || 'student';
+    return ['professor', 'staff', 'admin'].includes(userRole);
+}
+
+
+
+// 관리자 권한 확인 함수
+function hasAdminPermission() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) return false;
+    
+    const userRole = localStorage.getItem(`user_${currentUser}_role`) || 'student';
+    return userRole === 'admin';
+}
+
+
+// 사용자 권한 설정 함수 (테스트용 - 실제로는 관리자 승인 필요)
+function setUserRole(userId, role) {
+    if (!['student', 'professor', 'staff', 'admin'].includes(role)) {
+        console.error('유효하지 않은 권한:', role);
+        return false;
+    }
+    
+    localStorage.setItem(`user_${userId}_role`, role);
+    console.log(`사용자 ${userId}의 권한이 ${role}로 설정되었습니다.`);
+    
+    // 현재 로그인된 사용자의 권한이 변경된 경우 UI 업데이트
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (currentUser === userId) {
+        checkLoginStatus();
+    }
+    
+    return true;
+}
+
 
 // 로그아웃 진행 중 플래그
 let isLoggingOut = false;
@@ -5634,59 +5729,17 @@ window.addEventListener('unhandledrejection', function(event) {
 
 // 개발 환경 전용 디버깅 함수들
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    window.debugUtils = {
-        // 로컬 스토리지 전체 출력
-        dumpLocalStorage: function() {
-            const storage = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                storage[key] = localStorage.getItem(key);
-            }
-            console.table(storage);
-        },
-        
-        // 현재 사용자 정보 출력
-        getCurrentUser: function() {
-            const user = localStorage.getItem('currentLoggedInUser');
-            if (user) {
-                const userInfo = {};
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith(`user_${user}_`)) {
-                        userInfo[key] = localStorage.getItem(key);
-                    }
-                }
-                console.table(userInfo);
-            } else {
-                console.log('로그인된 사용자가 없습니다.');
-            }
-        },
-        
-        // 셔틀버스 정보 출력
-        getBusInfo: function() {
-            const info = shuttleBusTimeTable.getNextBusInfo();
-            console.log('다음 셔틀버스 정보:', info);
-            console.log('다음 3개 버스:', shuttleBusTimeTable.getUpcomingBuses(3));
-        },
-        
-        // 지도 상태 확인
-        checkMapStatus: function() {
-            console.log('지도 초기화 상태:', !!naverMap);
-            console.log('마커 개수:', mapMarkers.length);
-            console.log('사용자 위치:', userLocation);
-            console.log('위치 추적 상태:', isTrackingUser);
-        },
-        
-        // 시간표 데이터 확인
-        checkTimetableData: function() {
-            const data = loadTimetableData();
-            console.log('시간표 데이터:', data);
-            console.log('오늘의 수업:', getTodaysClasses(data));
+    window.testSetRole = function(role) {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+        if (currentUser) {
+            setUserRole(currentUser, role);
+            alert(`현재 사용자의 권한이 ${role}로 설정되었습니다.`);
+        } else {
+            alert('로그인이 필요합니다.');
         }
     };
     
-    console.log('🔧 디버그 유틸리티가 window.debugUtils로 등록되었습니다.');
-    console.log('사용 가능한 함수들:', Object.keys(window.debugUtils));
+    console.log('🔧 테스트 함수 등록: window.testSetRole("professor"), window.testSetRole("admin") 등을 사용하여 권한을 변경할 수 있습니다.');
 }
 
 // 컴포넌트별 초기화 상태 추적
@@ -6032,6 +6085,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // ===== 학사일정 갱신 코드 추가 끝 =====
             displayPopularRestaurantsOnMainPage(); // 맛집 정보 갱신
         }
+
+
     });
     
     // 활동 통계 업데이트 이벤트 리스너 추가
@@ -6084,6 +6139,12 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('🔧 개발 모드: 디버그 유틸리티 사용 가능');
         console.log('window.debugUtils 객체를 통해 디버깅 함수들을 사용할 수 있습니다.');
     }
+
+        // 권한별 UI 업데이트
+        checkLoginStatus();
+
+        // 5초마다 로그인 상태 확인 (권한 변경 감지)
+        setInterval(checkLoginStatus, 5000);
 });
 
 
