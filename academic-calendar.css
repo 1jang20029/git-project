@@ -11,7 +11,6 @@ body {
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
-    padding-top: 200px; /* 고정 주요 일정 높이만큼 패딩 추가 */
 }
 
 .container {
@@ -123,20 +122,16 @@ body {
     color: white;
 }
 
-/* 주요 일정 요약 - 고정 */
+/* 주요 일정 요약 */
 .schedule-summary {
     margin-bottom: 30px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background: white;
     border-radius: 15px;
     padding: 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    position: fixed; /* 고정 위치 */
-    top: 20px; /* 상단에서 20px */
-    left: 50%; /* 화면 중앙 */
-    transform: translateX(-50%); /* 중앙 정렬 */
-    max-width: 1360px; /* 컨테이너 너비에서 패딩 제외 */
-    width: calc(100% - 40px); /* 양쪽 여백 고려 */
-    z-index: 1001; /* 헤더보다 위에 표시 */
 }
 
 .summary-title {
@@ -952,13 +947,8 @@ body {
 
 /* 반응형 디자인 개선 */
 @media (max-width: 1024px) {
-    body {
-        padding-top: 180px; /* 태블릿에서 고정 주요일정 높이 조정 */
-    }
-    
-    .schedule-summary {
-        width: calc(100% - 30px); /* 태블릿에서 여백 조정 */
-        max-width: 1370px;
+    .container {
+        padding: 15px;
     }
     
     .header {
@@ -967,10 +957,6 @@ body {
     
     .university-info .title {
         font-size: 2.4rem;
-    }
-    
-    .container {
-        padding: 15px;
     }
     
     .summary-cards {
@@ -1007,15 +993,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    body {
-        padding-top: 160px; /* 모바일에서 고정 주요일정 높이 */
-    }
-    
-    .schedule-summary {
-        width: calc(100% - 30px); /* 모바일에서 여백 조정 */
-        padding: 20px;
-    }
-    
     .header {
         padding: 20px;
     }
@@ -1101,15 +1078,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    body {
-        padding-top: 140px; /* 작은 모바일 화면에서 고정 주요일정 높이 */
-    }
-    
-    .schedule-summary {
-        width: calc(100% - 20px); /* 작은 모바일에서 여백 조정 */
-        padding: 15px;
-    }
-    
     .header {
         padding: 15px;
     }
