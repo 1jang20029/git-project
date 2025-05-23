@@ -4309,8 +4309,6 @@ function initSearchFunctionality() {
 
 
 
-
-
 // 시간표 페이지로 이동하는 함수
 function navigateToTimetable() {
     window.location.href = 'timetable.html';
@@ -4792,7 +4790,6 @@ function updateActivityNotices() {
     
     noticesContainer.innerHTML = noticesHTML;
 }
-
 
 
 
@@ -5388,89 +5385,248 @@ function addRestaurantStyles() {
     document.head.appendChild(styleElement);
 }
 
+// 통합된 DOMContentLoaded 이벤트 리스너
 document.addEventListener('DOMContentLoaded', function() {
-    // 1) Placeholder 이미지 URL 문제 해결
+    console.log('=== 메인 페이지 초기화 시작 ===');
+    
+    // ========================================
+    // 1. 셔틀버스 시스템 초기화
+    // ========================================
+    console.log('셔틀버스 시스템 초기화 중...');
+    
+    // 기본으로 노선 1 선택
+    selectedShuttleRoute = 1;
+    
+    // 초기 셔틀버스 정보 업데이트
+    updateShuttleBusInfo();
+    
+    // 주기적 업데이트 (30초마다)
+    setInterval(updateShuttleBusInfo, 30000);
+    
+    console.log('셔틀버스 시스템 초기화 완료');
+    
+    // ========================================
+    // 2. 프로필 및 사용자 인터페이스 초기화
+    // ========================================
+    console.log('프로필 및 UI 초기화 중...');
+    
+    // 프로필 이미지 업데이트
+    setTimeout(updateAllProfileImages, 100);
+    
+    // 카테고리 필터 기능 초기화
+    initCategoryFilter();
+    
+    // 로그인 상태 체크 및 UI 업데이트
+    checkLoginStatus();
+    
+    // 저장된 위젯 설정 불러오기
+    loadWidgetSettings();
+    
+    console.log('프로필 및 UI 초기화 완료');
+    
+    // ========================================
+    // 3. 지도 및 시설 관련 초기화
+    // ========================================
+    console.log('지도 및 시설 초기화 중...');
+    
+    // 시설 탭 초기화 (페이지네이션 포함)
+    initFacilityTab();
+    
+    // 네이버 지도 초기화
+    initNaverMapWithFix();
+    
+    // 검색 기능 초기화
+    initSearchFunctionality();
+    
+    console.log('지도 및 시설 초기화 완료');
+    
+    // ========================================
+    // 4. 이미지 URL 수정 및 시간표 초기화
+    // ========================================
+    console.log('이미지 및 시간표 초기화 중...');
+    
+    // Placeholder 이미지 URL 문제 해결
     function fixPlaceholderImages() {
         console.log('Placeholder 이미지 URL 수정 중...');
+
+        // 모든 img 태그 중 placeholder를 사용하는 것 찾기
         document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
             const src = img.getAttribute('src');
-            const dims = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
-            if (dims) {
-                const [ , w, h ] = dims;
-                const alt = img.getAttribute('alt') || 'Image';
-                const newSrc = `https://placehold.co/${w}x${h}/gray/white?text=${encodeURIComponent(alt)}`;
+            const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+            
+            if (dimensions && dimensions.length === 3) {
+                const width = dimensions[1];
+                const height = dimensions[2];
+                const altText = img.getAttribute('alt') || 'Image';
+                
+                // placehold.co 서비스로 대체
+                const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
                 console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
                 img.src = newSrc;
             }
         });
+
         console.log('Placeholder 이미지 URL 수정 완료');
+
+        // 시간표 미리보기 초기화 (다른 초기화 완료 후)
         setTimeout(() => {
             console.log('시간표 미리보기 초기화');
             updateTimetablePreview();
+            
+            // 1분마다 시간표 미리보기 업데이트
             setInterval(updateTimetablePreview, 60000);
         }, 1000);
     }
+
+    // 즉시 실행하여 모든 이미지 URL 수정
     fixPlaceholderImages();
-
-    // 2) 프로필 이미지 초기 업데이트
-    setTimeout(updateAllProfileImages, 100);
-
-    // 3) localStorage 변경 감지 (프로필 관련)
+    
+    console.log('이미지 및 시간표 초기화 완료');
+    
+    // ========================================
+    // 5. 과제 링크 수정
+    // ========================================
+    console.log('과제 링크 수정 중...');
+    
+    // 과제 링크 href 속성 수정
+    const assignmentLinks = document.querySelectorAll('a[onclick*="goToPage(\'assignments\')"]');
+    assignmentLinks.forEach(link => {
+        link.href = 'assignments.html';
+        link.onclick = function(e) {
+            e.preventDefault();
+            window.location.href = 'assignments.html';
+        };
+    });
+    
+    console.log('과제 링크 수정 완료');
+    
+    // ========================================
+    // 6. 활동 통계 및 공지사항 초기화
+    // ========================================
+    console.log('활동 통계 초기화 중...');
+    
+    // 활동 통계 표시
+    displayActivityStats();
+    updateActivityNotices();
+    
+    // 5분마다 자동 갱신 (선택적)
+    setInterval(displayActivityStats, 300000);
+    
+    console.log('활동 통계 초기화 완료');
+    
+    // ========================================
+    // 7. 맛집 정보 초기화
+    // ========================================
+    console.log('맛집 정보 초기화 중...');
+    
+    // 맛집 스타일 추가
+    addRestaurantStyles();
+    
+    // 인기 맛집 정보 표시
+    displayPopularRestaurantsOnMainPage();
+    
+    // 5분마다 새로고침 (선택사항)
+    setInterval(displayPopularRestaurantsOnMainPage, 300000);
+    
+    console.log('맛집 정보 초기화 완료');
+    
+    // ========================================
+    // 8. 이벤트 리스너 등록
+    // ========================================
+    console.log('이벤트 리스너 등록 중...');
+    
+    // localStorage 변경 감지를 위한 이벤트 리스너
     window.addEventListener('storage', function(event) {
-        if (
-            event.key === 'profileUpdated' ||
-            event.key === 'profileImageUpdated' ||
-            event.key.includes('_profileImage') ||
-            event.key.includes('_customProfileImage')
-        ) {
+        console.log('Storage 변경 감지:', event.key);
+        
+        // 프로필 관련 변경사항 감지
+        if (event.key === 'profileUpdated' || 
+            event.key === 'profileImageUpdated' || 
+            event.key.includes('_profileImage') || 
+            event.key.includes('_customProfileImage')) {
+            console.log('프로필 정보 업데이트');
             updateAllProfileImages();
+        }
+        
+        // 활동 데이터 변경 감지
+        if (event.key === 'activityStats' || event.key === 'urgentActivities') {
+            console.log('활동 데이터가 다른 탭에서 변경됨:', event.key);
+            displayActivityStats();
+            updateActivityNotices();
+        }
+        
+        // 맛집 데이터 변경 감지
+        if (event.key === 'restaurants') {
+            console.log('맛집 데이터 변경 감지');
+            displayPopularRestaurantsOnMainPage();
         }
     });
 
-    // 4) 카테고리 필터 초기화
-    initCategoryFilter();
-
-    // 5) 로그인 상태 체크 및 UI 업데이트
-    checkLoginStatus();
-
-    // 6) 저장된 위젯 설정 불러오기
-    loadWidgetSettings();
-
-    // 7) 시설 탭 초기화 (페이지네이션 포함)
-    initFacilityTab();
-
-    // 8) 네이버 지도 초기화 (회색 영역 수정 포함)
-    initNaverMapWithFix();
-
-    // 9) 인기 맛집 할인 정보 초기화
-    initDiscountOffers();  // ← 여기에 할인 정보 로딩 함수 호출
-
-    // 10) 검색 기능 초기화
-    initSearchFunctionality();
-
-    // 11) bfcache 복원 시 재초기화
+    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
     window.addEventListener('pageshow', function(event) {
+        console.log('페이지 복원 감지:', event.persisted);
+        
+        // bfcache에서 페이지가 복원된 경우에도 실행
         if (event.persisted) {
-            checkLoginStatus();
-            updateAllProfileImages();
-            fixPlaceholderImages();
+            checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+            updateAllProfileImages(); // 프로필 이미지도 다시 확인
+            updateShuttleBusInfo(); // 뒤로가기 시에도 셔틀버스 정보 갱신
+            displayActivityStats(); // 활동 통계 갱신
+            displayPopularRestaurantsOnMainPage(); // 맛집 정보 갱신
         }
     });
-
-    // 12) 페이지 언로드 시 위치 추적 중지
-    window.addEventListener('beforeunload', function() {
-        if (isTrackingUser) stopUserTracking();
+    
+    // 활동 통계 업데이트 이벤트 리스너 추가
+    window.addEventListener('activityStatsUpdated', function() {
+        console.log('활동 통계 업데이트 이벤트 수신');
+        displayActivityStats();
+        updateActivityNotices();
     });
-
-    // 13) 탭 비활성화 시(visibilityhidden) 위치 추적 중지
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'hidden' && isTrackingUser) {
-            stopUserTracking();
-        }
+    
+    // 맛집 업데이트 이벤트 리스너 등록
+    window.addEventListener('restaurantUpdated', function() {
+        console.log('맛집 업데이트 이벤트 수신');
+        displayPopularRestaurantsOnMainPage();
     });
+    
+    // 맛집 반응 업데이트 이벤트 리스너
+    window.addEventListener('restaurantsUpdated', function(event) {
+        console.log('맛집 반응 업데이트 이벤트 수신:', event.detail);
+        displayPopularRestaurantsOnMainPage();
+    });
+    
+    console.log('이벤트 리스너 등록 완료');
+    
+    // ========================================
+    // 9. 초기화 상태 업데이트 및 완료 처리
+    // ========================================
+    console.log('초기화 상태 업데이트 중...');
+    
+    // 컴포넌트별 초기화 상태 업데이트
+    initializationStatus.map = true;
+    initializationStatus.busSystem = true;
+    initializationStatus.timetable = true;
+    initializationStatus.profile = true;
+    initializationStatus.search = true;
+    
+    // 초기화 완료 체크
+    checkInitializationComplete();
+    
+    console.log('=== 메인 페이지 초기화 완료 ===');
+    console.log('초기화된 컴포넌트:', {
+        셔틀버스: initializationStatus.busSystem,
+        지도: initializationStatus.map,
+        시간표: initializationStatus.timetable,
+        프로필: initializationStatus.profile,
+        검색: initializationStatus.search
+    });
+    
+    // 디버그 모드에서 추가 정보 출력
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('🔧 개발 모드: 디버그 유틸리티 사용 가능');
+        console.log('window.debugUtils 객체를 통해 디버깅 함수들을 사용할 수 있습니다.');
+    }
 });
-
-
 
 
 // 좋아요 업데이트 후 메인 페이지 업데이트를 위한 이벤트 발생 함수
