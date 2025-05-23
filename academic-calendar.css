@@ -11,7 +11,6 @@ body {
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
-    padding-top: 200px; /* 고정 헤더 높이만큼 패딩 추가 */
 }
 
 .container {
@@ -31,13 +30,9 @@ body {
     border-radius: 20px;
     margin-bottom: 30px;
     box-shadow: 0 15px 35px rgba(46, 139, 87, 0.3);
-    position: fixed; /* 완전히 고정 */
+    position: sticky; /* 스크롤 시 상단 고정 */
     top: 0; /* 상단에서 0px 위치에 고정 */
-    left: 50%; /* 화면 중앙 */
-    transform: translateX(-50%); /* 중앙 정렬 */
-    max-width: 1360px; /* 컨테이너 너비에서 패딩 제외 */
-    width: calc(100% - 40px); /* 양쪽 여백 고려 */
-    z-index: 1000; /* 다른 요소들보다 위에 표시 */
+    z-index: 100; /* 다른 요소들보다 위에 표시 */
     overflow: hidden;
 }
 
@@ -130,13 +125,6 @@ body {
 /* 주요 일정 요약 */
 .schedule-summary {
     margin-bottom: 30px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .summary-title {
@@ -700,7 +688,7 @@ body {
 .modal {
     display: none;
     position: fixed;
-    z-index: 2000; /* 고정 헤더보다 위에 표시 */
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
@@ -956,14 +944,6 @@ body {
         padding: 15px;
     }
     
-    .header {
-        padding: 30px;
-    }
-    
-    .university-info .title {
-        font-size: 2.4rem;
-    }
-    
     .summary-cards {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
@@ -998,10 +978,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    .header {
-        padding: 20px;
-    }
-    
     .header-content {
         flex-direction: column;
         gap: 15px;
@@ -1083,10 +1059,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    .header {
-        padding: 15px;
-    }
-    
     .back-button span {
         display: none; /* 작은 화면에서는 텍스트 숨김 */
     }
