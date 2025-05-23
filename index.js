@@ -1310,49 +1310,7 @@ let ny = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
 return { nx, ny };
 }
 
-// 페이지 로드 시 날씨 정보 호출
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('메인 페이지 초기화 시작');
-    
-    // 기본으로 노선 1 선택
-    selectedShuttleRoute = 1;
-    
-    // 초기 셔틀버스 정보 업데이트
-    updateShuttleBusInfo();
-    
-    // 주기적 업데이트 (30초마다)
-    setInterval(updateShuttleBusInfo, 30000);
-    
-    // 기존의 다른 초기화 코드들도 여기에 유지...
-    setTimeout(updateAllProfileImages, 100);
-    
-    // 카테고리 필터 기능
-    initCategoryFilter();
-    
-    // 로그인 상태 체크 및 UI 업데이트
-    checkLoginStatus();
-    
-    // 저장된 위젯 설정 불러오기
-    loadWidgetSettings();
-    
-    // 시설 탭 초기화 (페이지네이션 포함)
-    initFacilityTab();
-    
-    // 네이버 지도 초기화
-    initNaverMapWithFix();
-    
-    // 검색 기능 초기화
-    initSearchFunctionality();
-    
-    // pageshow 이벤트 리스너 추가
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-            checkLoginStatus();
-            updateAllProfileImages();
-            updateShuttleBusInfo(); // 뒤로가기 시에도 셔틀버스 정보 갱신
-        }
-    });
-});
+
 
 // 페이지네이션 컨트롤 업데이트
 function updatePaginationControls() {
@@ -4344,99 +4302,12 @@ function initSearchFunctionality() {
     });
 }
 
-// 페이지 로드시 custom 텍스트를 실제 이미지로 변경하는 기능
-document.addEventListener('DOMContentLoaded', function() {
-    // Placeholder 이미지 URL 문제 해결을 위한 코드
-    function fixPlaceholderImages() {
-        console.log('Placeholder 이미지 URL 수정 중...');
-
-        // 모든 img 태그 중 placeholder를 사용하는 것 찾기
-        document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
-            const src = img.getAttribute('src');
-            const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
-            
-            if (dimensions && dimensions.length === 3) {
-                const width = dimensions[1];
-                const height = dimensions[2];
-                const altText = img.getAttribute('alt') || 'Image';
-                
-                // placehold.co 서비스로 대체
-                const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
-                console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
-                img.src = newSrc;
-            }
-        });
-
-        console.log('Placeholder 이미지 URL 수정 완료');
-
-        // 시간표 미리보기 초기화 (다른 초기화 완료 후)
-        setTimeout(() => {
-            console.log('시간표 미리보기 초기화');
-            updateTimetablePreview();
-            
-            // 1분마다 시간표 미리보기 업데이트
-            setInterval(updateTimetablePreview, 60000);
-        }, 1000);
-    }
-
-    // 즉시 실행하여 모든 이미지 URL 수정
-    fixPlaceholderImages();
-
-    // 기존 초기화 코드 실행
-    setTimeout(updateAllProfileImages, 100);
-
-    // localStorage 변경 감지를 위한 이벤트 리스너
-    window.addEventListener('storage', function(event) {
-        // 프로필 관련 변경사항 감지
-        if (event.key === 'profileUpdated' || 
-            event.key === 'profileImageUpdated' || 
-            event.key.includes('_profileImage') || 
-            event.key.includes('_customProfileImage')) {
-            updateAllProfileImages();
-        }
-    });
-
-    // 카테고리 필터 기능
-    initCategoryFilter();
-
-    // 로그인 상태 체크 및 UI 업데이트
-    checkLoginStatus();
-
-    // 저장된 위젯 설정 불러오기
-    loadWidgetSettings();
-
-    // 시설 탭 초기화 (페이지네이션 포함)
-    initFacilityTab();
-
-    // 네이버 지도 초기화 - 수정된 함수로 교체
-    initNaverMapWithFix();
-
-    // 검색 기능 초기화
-    initSearchFunctionality();
-
-    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
-    window.addEventListener('pageshow', function(event) {
-        // bfcache에서 페이지가 복원된 경우에도 실행
-        if (event.persisted) {
-            checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
-            updateAllProfileImages(); // 프로필 이미지도 다시 확인
-            fixPlaceholderImages(); // 이미지 URL도 다시 확인
-        }
-    });
-});
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 또는 직접 href 속성 수정
-    const assignmentLinks = document.querySelectorAll('a[onclick*="goToPage(\'assignments\')"]');
-    assignmentLinks.forEach(link => {
-        link.href = 'assignments.html';
-        link.onclick = function(e) {
-            e.preventDefault();
-            window.location.href = 'assignments.html';
-        };
-    });
-});
+
+
+
+
 
 
 
@@ -4923,29 +4794,8 @@ function updateActivityNotices() {
 }
 
 
-// 페이지 로드 시 통계 표시
-document.addEventListener('DOMContentLoaded', function() {
-    displayActivityStats();
-    updateActivityNotices();
-    
-    // 5분마다 자동 갱신 (선택적)
-    setInterval(displayActivityStats, 300000);
-    
-    // 활동 통계 업데이트 이벤트 리스너 추가
-    window.addEventListener('activityStatsUpdated', function() {
-        displayActivityStats();
-        updateActivityNotices();
-    });
-    
-    // localStorage 변경 감지
-    window.addEventListener('storage', function(event) {
-        if (event.key === 'activityStats' || event.key === 'urgentActivities') {
-            console.log('활동 데이터가 다른 탭에서 변경됨:', event.key);
-            displayActivityStats();
-            updateActivityNotices();
-        }
-    });
-});
+
+
 
 
 // 인기 맛집 정보 로드 함수
@@ -5538,24 +5388,99 @@ function addRestaurantStyles() {
     document.head.appendChild(styleElement);
 }
 
-// 페이지 로드 시 인기 맛집 정보 표시
 document.addEventListener('DOMContentLoaded', function() {
-    // 스타일 추가
-    addRestaurantStyles();
-    
-    // 인기 맛집 정보 표시
-    displayPopularRestaurantsOnMainPage();
-    
-    // 5분마다 새로고침 (선택사항)
-    setInterval(displayPopularRestaurantsOnMainPage, 300000);
-    
-    // localStorage 변경 이벤트 감지
+    // Placeholder 이미지 URL 문제 해결을 위한 코드
+    function fixPlaceholderImages() {
+        console.log('Placeholder 이미지 URL 수정 중...');
+
+        // 모든 img 태그 중 placeholder를 사용하는 것 찾기
+        document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
+            const src = img.getAttribute('src');
+            const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+            
+            if (dimensions && dimensions.length === 3) {
+                const width = dimensions[1];
+                const height = dimensions[2];
+                const altText = img.getAttribute('alt') || 'Image';
+                
+                // placehold.co 서비스로 대체
+                const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
+                console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
+                img.src = newSrc;
+            }
+        });
+
+        console.log('Placeholder 이미지 URL 수정 완료');
+
+        // 시간표 미리보기 초기화 (다른 초기화 완료 후)
+        setTimeout(() => {
+            console.log('시간표 미리보기 초기화');
+            updateTimetablePreview();
+            
+            // 1분마다 시간표 미리보기 업데이트
+            setInterval(updateTimetablePreview, 60000);
+        }, 1000);
+    }
+
+    // 1) placeholder 수정
+    fixPlaceholderImages();
+
+    // 2) 프로필 이미지 업데이트 (헤더 등)
+    setTimeout(updateAllProfileImages, 100);
+
+    // 3) localStorage 변경 감지 — 프로필 관련
     window.addEventListener('storage', function(event) {
-        if (event.key === 'restaurants') {
-            displayPopularRestaurantsOnMainPage();
+        if (event.key === 'profileUpdated' ||
+            event.key === 'profileImageUpdated' ||
+            event.key.includes('_profileImage') ||
+            event.key.includes('_customProfileImage')) {
+            updateAllProfileImages();
+        }
+    });
+
+    // 4) 카테고리 필터 초기화
+    initCategoryFilter();
+
+    // 5) 로그인 상태 체크 및 UI 업데이트
+    checkLoginStatus();
+
+    // 6) 저장된 위젯 설정 불러오기
+    loadWidgetSettings();
+
+    // 7) 시설 탭 초기화 (페이지네이션 포함)
+    initFacilityTab();
+
+    // 8) 네이버 지도 초기화 (회색 영역 수정 포함)
+    initNaverMapWithFix();
+
+    // 9) 검색 기능 초기화
+    initSearchFunctionality();
+
+    // 10) pageshow 이벤트 — bfcache 복원 시 다시 초기화
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            checkLoginStatus();
+            updateAllProfileImages();
+            fixPlaceholderImages();
+        }
+    });
+
+    // 11) 페이지 언로드 시 위치 추적 중지
+    window.addEventListener('beforeunload', function() {
+        if (isTrackingUser) {
+            stopUserTracking();
+        }
+    });
+
+    // 12) 탭 전환(숨김) 시 위치 추적 중지
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden' && isTrackingUser) {
+            stopUserTracking();
         }
     });
 });
+
+
 
 
 // 좋아요 업데이트 후 메인 페이지 업데이트를 위한 이벤트 발생 함수
