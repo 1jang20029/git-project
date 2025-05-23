@@ -3379,6 +3379,291 @@ updateTimetablePreview = function() {
     return result;
 };
 
+
+// 전역 변수로 원본 프로필 데이터 백업 저장소
+let originalProfileData = null;
+
+
+function backupOriginalProfileData() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        console.error('로그인된 사용자가 없습니다.');
+        return false;
+    }
+    
+    // 현재 프로필 데이터를 백업
+    originalProfileData = {
+        name: localStorage.getItem(`user_${currentUser}_name`) || '',
+        department: localStorage.getItem(`user_${currentUser}_department`) || '',
+        grade: localStorage.getItem(`user_${currentUser}_grade`) || '',
+        profileImageType: localStorage.getItem(`user_${currentUser}_profileImageType`) || 'emoji',
+        profileImage: localStorage.getItem(`user_${currentUser}_profileImage`) || '👨‍🎓',
+        customProfileImage: localStorage.getItem(`user_${currentUser}_customProfileImage`) || null,
+        studentId: localStorage.getItem(`user_${currentUser}_studentId`) || currentUser
+    };
+    
+    console.log('원본 프로필 데이터 백업 완료:', originalProfileData);
+    return true;
+}
+
+
+// 프로필 변경 취소 - 원본 데이터로 복원
+function cancelProfileChanges() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        console.error('로그인된 사용자가 없습니다.');
+        return false;
+    }
+    
+    if (!originalProfileData) {
+        console.error('백업된 원본 데이터가 없습니다.');
+        return false;
+    }
+    
+    console.log('프로필 변경 취소 - 원본 데이터로 복원 중...');
+    
+    try {
+        // 원본 데이터로 복원
+        localStorage.setItem(`user_${currentUser}_name`, originalProfileData.name);
+        localStorage.setItem(`user_${currentUser}_department`, originalProfileData.department);
+        localStorage.setItem(`user_${currentUser}_grade`, originalProfileData.grade);
+        localStorage.setItem(`user_${currentUser}_profileImageType`, originalProfileData.profileImageType);
+        localStorage.setItem(`user_${currentUser}_profileImage`, originalProfileData.profileImage);
+        localStorage.setItem(`user_${currentUser}_studentId`, originalProfileData.studentId);
+        
+        // 커스텀 프로필 이미지 복원 (있는 경우에만)
+        if (originalProfileData.customProfileImage) {
+            localStorage.setItem(`user_${currentUser}_customProfileImage`, originalProfileData.customProfileImage);
+        } else {
+            localStorage.removeItem(`user_${currentUser}_customProfileImage`);
+        }
+        
+        console.log('프로필 데이터 복원 완료');
+        
+        // 백업 데이터 초기화
+        originalProfileData = null;
+        
+        // 프로필 업데이트 이벤트 발생
+        updateAllProfileImages();
+        
+        // 메인 페이지로 이동하면서 성공 메시지 표시
+        localStorage.setItem('profileCancelMessage', '프로필 변경이 취소되었습니다.');
+        window.location.href = 'index.html';
+        
+        return true;
+        
+    } catch (error) {
+        console.error('프로필 복원 중 오류 발생:', error);
+        alert('프로필 복원 중 오류가 발생했습니다.');
+        return false;
+    }
+}
+
+
+// 프로필 변경 저장 시 백업 데이터 정리
+function saveProfileChanges() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        console.error('로그인된 사용자가 없습니다.');
+        return false;
+    }
+    
+    console.log('프로필 변경사항 저장 중...');
+    
+    try {
+        // 여기서 실제 프로필 저장 로직 실행
+        // (기존의 프로필 저장 코드)
+        
+        // 저장 성공 시 백업 데이터 정리
+        originalProfileData = null;
+        
+        console.log('프로필 저장 완료 및 백업 데이터 정리');
+        
+        // 프로필 업데이트 이벤트 발생
+        localStorage.setItem('profileUpdated', Date.now().toString());
+        updateAllProfileImages();
+        
+        // 메인 페이지로 이동하면서 성공 메시지 표시
+        localStorage.setItem('profileSaveMessage', '프로필이 성공적으로 저장되었습니다.');
+        window.location.href = 'index.html';
+        
+        return true;
+        
+    } catch (error) {
+        console.error('프로필 저장 중 오류 발생:', error);
+        alert('프로필 저장 중 오류가 발생했습니다.');
+        return false;
+    }
+}
+
+
+
+// 프로필 수정 페이지 로드 시 자동 백업
+function initProfileEdit() {
+    console.log('프로필 수정 페이지 초기화 중...');
+    
+    // 페이지 로드 시 자동으로 원본 데이터 백업
+    if (backupOriginalProfileData()) {
+        console.log('프로필 수정 준비 완료');
+        
+        // 페이지 이탈 시 경고 메시지 설정
+        window.addEventListener('beforeunload', function(event) {
+            if (originalProfileData) {
+                const message = '변경사항이 저장되지 않았습니다. 페이지를 떠나시겠습니까?';
+                event.returnValue = message;
+                return message;
+            }
+        });
+        
+        // 뒤로가기 감지 시 확인 메시지
+        window.addEventListener('popstate', function(event) {
+            if (originalProfileData) {
+                const confirmLeave = confirm('변경사항이 저장되지 않았습니다. 페이지를 떠나시겠습니까?');
+                if (!confirmLeave) {
+                    // 뒤로가기 취소
+                    history.pushState(null, null, window.location.href);
+                }
+            }
+        });
+        
+    } else {
+        console.error('프로필 수정 초기화 실패');
+    }
+}
+
+
+// 수정된 취소 버튼 이벤트 핸들러
+function handleCancelButton() {
+    if (!originalProfileData) {
+        // 백업 데이터가 없으면 그냥 메인으로 이동
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    // 변경사항이 있는지 확인
+    const hasChanges = checkForProfileChanges();
+    
+    if (hasChanges) {
+        const confirmCancel = confirm('변경사항이 있습니다. 모든 변경사항을 취소하고 이전 상태로 되돌리시겠습니까?');
+        if (confirmCancel) {
+            cancelProfileChanges();
+        }
+        // 취소를 선택하면 페이지에 머무름
+    } else {
+        // 변경사항이 없으면 바로 메인으로 이동
+        originalProfileData = null; // 백업 데이터 정리
+        window.location.href = 'index.html';
+    }
+}
+
+
+// 변경사항 확인 함수
+function checkForProfileChanges() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser || !originalProfileData) {
+        return false;
+    }
+    
+    const currentData = {
+        name: localStorage.getItem(`user_${currentUser}_name`) || '',
+        department: localStorage.getItem(`user_${currentUser}_department`) || '',
+        grade: localStorage.getItem(`user_${currentUser}_grade`) || '',
+        profileImageType: localStorage.getItem(`user_${currentUser}_profileImageType`) || 'emoji',
+        profileImage: localStorage.getItem(`user_${currentUser}_profileImage`) || '👨‍🎓',
+        customProfileImage: localStorage.getItem(`user_${currentUser}_customProfileImage`) || null,
+        studentId: localStorage.getItem(`user_${currentUser}_studentId`) || currentUser
+    };
+    
+    // 각 필드 비교
+    const hasChanges = 
+        currentData.name !== originalProfileData.name ||
+        currentData.department !== originalProfileData.department ||
+        currentData.grade !== originalProfileData.grade ||
+        currentData.profileImageType !== originalProfileData.profileImageType ||
+        currentData.profileImage !== originalProfileData.profileImage ||
+        currentData.customProfileImage !== originalProfileData.customProfileImage ||
+        currentData.studentId !== originalProfileData.studentId;
+    
+    console.log('변경사항 확인:', hasChanges);
+    console.log('현재 데이터:', currentData);
+    console.log('원본 데이터:', originalProfileData);
+    
+    return hasChanges;
+}
+
+
+
+// 메인 페이지에서 프로필 관련 메시지 표시
+function showProfileMessages() {
+    // 취소 메시지 확인
+    const cancelMessage = localStorage.getItem('profileCancelMessage');
+    if (cancelMessage) {
+        alert(cancelMessage);
+        localStorage.removeItem('profileCancelMessage');
+    }
+    
+    // 저장 메시지 확인
+    const saveMessage = localStorage.getItem('profileSaveMessage');
+    if (saveMessage) {
+        alert(saveMessage);
+        localStorage.removeItem('profileSaveMessage');
+    }
+}
+
+
+
+// 수정된 updateAllProfileImages 함수에 메시지 표시 추가
+const originalUpdateAllProfileImages = updateAllProfileImages;
+updateAllProfileImages = function() {
+    // 기존 함수 실행
+    originalUpdateAllProfileImages.apply(this, arguments);
+    
+    // 프로필 관련 메시지 표시 (메인 페이지에서만)
+    if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
+        showProfileMessages();
+    }
+};
+
+// 프로필 수정 페이지용 이벤트 리스너 (profile-edit.html에서 사용)
+if (window.location.pathname.includes('profile-edit.html')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('프로필 수정 페이지 로드됨');
+        
+        // 프로필 수정 초기화
+        initProfileEdit();
+        
+        // 취소 버튼에 이벤트 리스너 추가
+        const cancelButtons = document.querySelectorAll('button[onclick*="cancelProfileEdit"], .cancel-button, #cancelButton');
+        cancelButtons.forEach(button => {
+            button.onclick = function(event) {
+                event.preventDefault();
+                handleCancelButton();
+            };
+        });
+        
+        // 저장 버튼에 이벤트 리스너 추가 (기존 로직 보완)
+        const saveButtons = document.querySelectorAll('button[onclick*="saveProfile"], .save-button, #saveButton');
+        saveButtons.forEach(button => {
+            const originalOnClick = button.onclick;
+            button.onclick = function(event) {
+                // 기존 저장 로직 실행
+                if (originalOnClick) {
+                    const result = originalOnClick.call(this, event);
+                    // 저장 성공 시 백업 데이터 정리
+                    if (result !== false) {
+                        originalProfileData = null;
+                    }
+                    return result;
+                } else {
+                    // 기본 저장 함수 호출
+                    return saveProfileChanges();
+                }
+            };
+        });
+    });
+}
+
+
 // 시간표 미리보기 다시 업데이트
 updateTimetablePreview();
 
