@@ -31,7 +31,7 @@ body {
     margin-bottom: 30px;
     box-shadow: 0 15px 35px rgba(46, 139, 87, 0.3);
     position: sticky; /* 스크롤 시 상단 고정 */
-    top: 0; /* 상단에서 0px 위치에 고정 */
+    top: 20px; /* 상단에서 20px 위치에 고정 */
     z-index: 100; /* 다른 요소들보다 위에 표시 */
     overflow: hidden;
 }
