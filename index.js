@@ -1156,107 +1156,63 @@ const academicSchedule = {
     ]
 };
 
-function displayUpcomingSchedule() {
-    const upcomingList = document.getElementById('upcomingScheduleList');
-    if (!upcomingList) return;
+// 기존 DOMContentLoaded 이벤트 수정 (이 부분을 기존 코드에서 찾아서 수정)
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('메인 페이지 초기화 시작');
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // 기본으로 노선 1 선택
+    selectedShuttleRoute = 1;
     
-    const allEvents = [];
+    // 초기 셔틀버스 정보 업데이트
+    updateShuttleBusInfo();
     
-    // 모든 학기의 일정을 합치기
-    Object.keys(academicScheduleData).forEach(semester => {
-        allEvents.push(...academicScheduleData[semester]);
-    });
+    // 주기적 업데이트 (30초마다)
+    setInterval(updateShuttleBusInfo, 30000);
     
-    // 오늘 날짜 이후의 일정만 필터링 (진행 중인 일정도 포함)
-    const upcomingEvents = allEvents.filter(event => {
-        const eventStartDate = new Date(event.date);
-        const eventEndDate = event.endDate ? new Date(event.endDate) : eventStartDate;
-        
-        eventStartDate.setHours(0, 0, 0, 0);
-        eventEndDate.setHours(23, 59, 59, 999);
-        
-        // 이벤트가 오늘 이후에 시작하거나, 현재 진행 중인 경우 포함
-        return eventEndDate >= today;
-    });
+    // 기존의 다른 초기화 코드들도 여기에 유지...
+    setTimeout(updateAllProfileImages, 100);
     
-    // 날짜순으로 정렬 (가까운 날짜부터)
-    upcomingEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // 카테고리 필터 기능
+    initCategoryFilter();
     
-    // 상위 3개 일정만 표시
-    const eventsToShow = upcomingEvents.slice(0, 3);
+    // 로그인 상태 체크 및 UI 업데이트
+    checkLoginStatus();
     
-    if (eventsToShow.length === 0) {
-        upcomingList.innerHTML = `
-            <li class="calendar-item">
-                <div class="calendar-date">
-                    <div class="calendar-day">--</div>
-                    <div class="calendar-month">--</div>
-                </div>
-                <div class="calendar-info">
-                    <div class="calendar-title">예정된 학사일정이 없습니다</div>
-                    <div class="calendar-desc">새로운 일정이 업데이트될 예정입니다</div>
-                </div>
-            </li>
-        `;
-        return;
-    }
+    // 저장된 위젯 설정 불러오기
+    loadWidgetSettings();
     
-    upcomingList.innerHTML = '';
+    // 시설 탭 초기화 (페이지네이션 포함)
+    initFacilityTab();
     
-    eventsToShow.forEach(event => {
-        const eventDate = new Date(event.date);
-        const day = eventDate.getDate();
-        const month = eventDate.getMonth() + 1;
-        
-        let dateRange = '';
-        if (event.endDate) {
-            const endDate = new Date(event.endDate);
-            const endDay = endDate.getDate();
-            const endMonth = endDate.getMonth() + 1;
-            
-            if (month === endMonth) {
-                dateRange = `${month}월 ${day}일 ~ ${endDay}일`;
-            } else {
-                dateRange = `${month}월 ${day}일 ~ ${endMonth}월 ${endDay}일`;
-            }
-        } else {
-            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-            const dayOfWeek = dayNames[eventDate.getDay()];
-            dateRange = `${month}월 ${day}일(${dayOfWeek})`;
+    // 네이버 지도 초기화
+    initNaverMapWithFix();
+    
+    // 검색 기능 초기화
+    initSearchFunctionality();
+    
+    // 학사일정 자동 업데이트 추가
+    displayUpcomingSchedule();
+    
+    // 학사일정 자동 갱신 설정 (1시간마다)
+    setInterval(displayUpcomingSchedule, 60 * 60 * 1000);
+    
+    // 페이지가 다시 보일 때 학사일정 업데이트
+    window.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            displayUpcomingSchedule();
         }
-        
-        const listItem = document.createElement('li');
-        listItem.className = 'calendar-item';
-        listItem.style.cursor = 'pointer';
-        listItem.onclick = function() {
-            window.location.href = 'academic-calendar.html';
-        };
-        
-        // 호버 효과 추가
-        listItem.onmouseover = function() {
-            this.style.backgroundColor = '#f9f9f9';
-        };
-        listItem.onmouseout = function() {
-            this.style.backgroundColor = '';
-        };
-        
-        listItem.innerHTML = `
-            <div class="calendar-date">
-                <div class="calendar-day">${day}</div>
-                <div class="calendar-month">${month}월</div>
-            </div>
-            <div class="calendar-info">
-                <div class="calendar-title">${event.title}</div>
-                <div class="calendar-desc">${dateRange} | ${event.description}</div>
-            </div>
-        `;
-        
-        upcomingList.appendChild(listItem);
     });
-}
+    
+    // pageshow 이벤트 리스너 추가
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            checkLoginStatus();
+            updateAllProfileImages();
+            updateShuttleBusInfo(); // 뒤로가기 시에도 셔틀버스 정보 갱신
+            displayUpcomingSchedule(); // 뒤로가기 시 학사일정도 갱신
+        }
+    });
+});
 
 
 
@@ -2404,9 +2360,6 @@ let ny = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
 
 return { nx, ny };
 }
-
-
-
 
 // 페이지 로드 시 날씨 정보 호출
 document.addEventListener('DOMContentLoaded', function() {
