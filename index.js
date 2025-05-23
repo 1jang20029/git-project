@@ -1026,6 +1026,13 @@ let routePolyline = null; // 경로 폴리라인
 let currentPage = 1;
 const buildingsPerPage = 5;
 
+// 전역 변수 선언 (파일 상단에 추가)
+let timeInterval = null;
+let shuttleBusInterval = null;
+let timetableInterval = null;
+let activityStatsInterval = null;
+let restaurantInterval = null;
+
 // 시설 탭 초기화 함수 (페이지네이션 포함)
 function initFacilityTab() {
 loadBuildingsByPage(currentPage);
@@ -4803,7 +4810,7 @@ function updateActivityNotices() {
 }
 
 
- document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     console.log('=== 메인 페이지 초기화 시작 ===');
     
     // ========================================
@@ -4817,8 +4824,8 @@ function updateActivityNotices() {
     // 초기 셔틀버스 정보 업데이트
     updateShuttleBusInfo();
     
-    // 주기적 업데이트 (30초마다)
-    setInterval(updateShuttleBusInfo, 30000);
+    // 주기적 업데이트 (30초마다) - 인터벌 변수에 저장
+    shuttleBusInterval = setInterval(updateShuttleBusInfo, 30000);
     
     console.log('셔틀버스 시스템 초기화 완료');
     
@@ -4890,8 +4897,8 @@ function updateActivityNotices() {
             console.log('시간표 미리보기 초기화');
             updateTimetablePreview();
             
-            // 1분마다 시간표 미리보기 업데이트
-            setInterval(updateTimetablePreview, 60000);
+            // 1분마다 시간표 미리보기 업데이트 - 인터벌 변수에 저장
+            timetableInterval = setInterval(updateTimetablePreview, 60000);
         }, 1000);
     }
 
@@ -4926,8 +4933,8 @@ function updateActivityNotices() {
     displayActivityStats();
     updateActivityNotices();
     
-    // 5분마다 자동 갱신 (선택적)
-    setInterval(displayActivityStats, 300000);
+    // 5분마다 자동 갱신 (선택적) - 인터벌 변수에 저장
+    activityStatsInterval = setInterval(displayActivityStats, 300000);
     
     console.log('활동 통계 초기화 완료');
     
@@ -4942,8 +4949,8 @@ function updateActivityNotices() {
     // 인기 맛집 정보 표시
     displayPopularRestaurantsOnMainPage();
     
-    // 5분마다 새로고침 (선택사항)
-    setInterval(displayPopularRestaurantsOnMainPage, 300000);
+    // 5분마다 새로고침 (선택사항) - 인터벌 변수에 저장
+    restaurantInterval = setInterval(displayPopularRestaurantsOnMainPage, 300000);
     
     console.log('맛집 정보 초기화 완료');
     
@@ -5044,6 +5051,56 @@ function updateActivityNotices() {
         console.log('window.debugUtils 객체를 통해 디버깅 함수들을 사용할 수 있습니다.');
     }
 });
+
+// 수정된 페이지 언로드 시 정리 작업
+window.addEventListener('beforeunload', function(event) {
+    console.log('페이지 언로드 시작: 정리 작업 수행 중...');
+    
+    // 위치 추적 중지
+    if (typeof isTrackingUser !== 'undefined' && isTrackingUser) {
+        stopUserTracking();
+        console.log('위치 추적 중지 완료');
+    }
+    
+    // 모든 인터벌 정리
+    const intervals = [
+        { name: 'timeInterval', ref: timeInterval },
+        { name: 'shuttleBusInterval', ref: shuttleBusInterval },
+        { name: 'timetableInterval', ref: timetableInterval },
+        { name: 'activityStatsInterval', ref: activityStatsInterval },
+        { name: 'restaurantInterval', ref: restaurantInterval }
+    ];
+    
+    intervals.forEach(interval => {
+        if (interval.ref) {
+            clearInterval(interval.ref);
+            console.log(`${interval.name} 정리 완료`);
+        }
+    });
+    
+    // 기타 정리 작업
+    console.log('페이지 언로드: 모든 정리 작업 완료');
+});
+
+// 전역 함수: 모든 타이머 정리 (디버깅용)
+function clearAllIntervals() {
+    const intervals = [timeInterval, shuttleBusInterval, timetableInterval, activityStatsInterval, restaurantInterval];
+    intervals.forEach((interval, index) => {
+        if (interval) {
+            clearInterval(interval);
+            console.log(`인터벌 ${index + 1} 정리 완료`);
+        }
+    });
+    
+    // 변수 초기화
+    timeInterval = null;
+    shuttleBusInterval = null;
+    timetableInterval = null;
+    activityStatsInterval = null;
+    restaurantInterval = null;
+    
+    console.log('모든 타이머 정리 완료');
+}
 
 // 인기 맛집 정보 로드 함수
 function loadPopularRestaurants() {
