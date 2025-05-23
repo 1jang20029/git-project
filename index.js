@@ -3838,7 +3838,6 @@ function goToPage(pageName) {
 
 // 공지사항 상세 페이지로 이동 (알림 없이 바로 이동)
 function goToNoticeDetail(noticeId) {
-    // 알림창 없이 직접 상세 페이지로 이동
     window.location.href = `notice-detail.html?id=${noticeId}`;
 }
 

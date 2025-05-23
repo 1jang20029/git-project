@@ -698,19 +698,8 @@ function openNoticeDetail(noticeId) {
     // 조회수 증가
     noticeManager.incrementViews(noticeId);
     
-    // 실제 구현에서는 상세 페이지로 이동하거나 모달을 열 수 있습니다
-    const notice = noticeManager.notices.find(n => n.id === noticeId);
-    if (notice) {
-        // 여기서는 alert로 간단히 표시 (실제로는 상세 페이지나 모달 구현)
-        const content = notice.content.length > 200 ? 
-            notice.content.substring(0, 200) + '...' : 
-            notice.content;
-            
-        alert(`제목: ${notice.title}\n\n내용:\n${content}\n\n작성자: ${notice.author}\n조회수: ${notice.views || 0}`);
-        
-        // 실제 구현 시에는 아래와 같이 상세 페이지로 이동
-        // window.location.href = `notice-detail.html?id=${noticeId}`;
-    }
+    // 상세 페이지로 이동
+    window.location.href = `notice-detail.html?id=${noticeId}`;
 }
 
 // 공지사항 작성 모달 열기
