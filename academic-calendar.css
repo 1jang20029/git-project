@@ -11,7 +11,6 @@ body {
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
-    padding-top: 140px; /* 고정 헤더 높이만큼 패딩 추가 */
 }
 
 .container {
@@ -28,16 +27,13 @@ body {
     background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%);
     color: white;
     padding: 40px;
-    border-radius: 0; /* 고정된 헤더는 모서리 둥글게 하지 않음 */
-    margin-bottom: 0; /* 고정된 헤더는 마진 제거 */
+    border-radius: 20px;
+    margin-bottom: 30px;
     box-shadow: 0 15px 35px rgba(46, 139, 87, 0.3);
-    position: fixed; /* 완전히 고정 */
+    position: sticky; /* 스크롤 시 상단 고정 */
     top: 0; /* 상단에서 0px 위치에 고정 */
-    left: 0; /* 좌측에서 0px */
-    right: 0; /* 우측에서 0px */
-    z-index: 1000; /* 다른 요소들보다 위에 표시 */
+    z-index: 100; /* 다른 요소들보다 위에 표시 */
     overflow: hidden;
-    width: 100%; /* 전체 너비 */
 }
 
 .header::before {
@@ -57,8 +53,6 @@ body {
     align-items: center;
     position: relative;
     z-index: 1;
-    max-width: 1400px; /* 컨테이너와 동일한 최대 너비 */
-    margin: 0 auto; /* 중앙 정렬 */
 }
 
 /* 뒤로 가기 버튼 스타일 */
@@ -131,7 +125,6 @@ body {
 /* 주요 일정 요약 */
 .schedule-summary {
     margin-bottom: 30px;
-    margin-top: 30px; /* 고정 헤더 아래 여백 추가 */
 }
 
 .summary-title {
@@ -695,7 +688,7 @@ body {
 .modal {
     display: none;
     position: fixed;
-    z-index: 2000; /* 고정 헤더보다 위에 표시 */
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
@@ -947,18 +940,6 @@ body {
 
 /* 반응형 디자인 개선 */
 @media (max-width: 1024px) {
-    body {
-        padding-top: 120px; /* 태블릿에서 헤더 높이 조정 */
-    }
-    
-    .header {
-        padding: 30px;
-    }
-    
-    .university-info .title {
-        font-size: 2.4rem;
-    }
-    
     .container {
         padding: 15px;
     }
@@ -997,14 +978,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    body {
-        padding-top: 160px; /* 모바일에서 헤더가 더 높아질 수 있음 */
-    }
-    
-    .header {
-        padding: 20px;
-    }
-    
     .header-content {
         flex-direction: column;
         gap: 15px;
@@ -1086,14 +1059,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    body {
-        padding-top: 140px; /* 작은 모바일 화면에서 헤더 높이 */
-    }
-    
-    .header {
-        padding: 15px;
-    }
-    
     .back-button span {
         display: none; /* 작은 화면에서는 텍스트 숨김 */
     }
