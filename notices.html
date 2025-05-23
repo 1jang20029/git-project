@@ -3,65 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>공지사항 - 연성대학교</title>
+    <title>주요 공지사항 - 연성대학교</title>
     <link rel="stylesheet" href="notices.css">
 </head>
 <body>
     <div class="container">
         <!-- 헤더 -->
         <header class="header">
-            <button class="back-btn" onclick="goBack()">
-                <span>←</span>
-            </button>
-            <h1 class="header-title">공지사항</h1>
-            <div class="header-spacer"></div>
+            <button class="back-button" onclick="goBack()">←</button>
+            <h1 class="header-title">주요 공지사항</h1>
+            <div class="header-right"></div>
         </header>
-
-        <!-- 검색 영역 -->
-        <div class="search-section">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="제목, 내용으로 검색..." class="search-input">
-                <button class="search-btn" onclick="performSearch()">
-                    <span>🔍</span>
-                </button>
-            </div>
-        </div>
 
         <!-- 카테고리 필터 -->
         <div class="category-section">
-            <div class="category-tabs">
-                <button class="category-tab active" data-category="all" onclick="filterByCategory('all')">전체</button>
-                <button class="category-tab" data-category="academic" onclick="filterByCategory('academic')">학사</button>
-                <button class="category-tab" data-category="scholarship" onclick="filterByCategory('scholarship')">장학</button>
-                <button class="category-tab" data-category="job" onclick="filterByCategory('job')">취업</button>
-                <button class="category-tab" data-category="event" onclick="filterByCategory('event')">행사</button>
-                <button class="category-tab" data-category="department" onclick="filterByCategory('department')">학과</button>
+            <div class="category-filter">
+                <button class="category-tag active" data-category="전체" onclick="filterNotices('전체')">전체</button>
+                <button class="category-tag" data-category="학사" onclick="filterNotices('학사')">학사</button>
+                <button class="category-tag" data-category="장학" onclick="filterNotices('장학')">장학</button>
+                <button class="category-tag" data-category="취업" onclick="filterNotices('취업')">취업</button>
+                <button class="category-tag" data-category="행사" onclick="filterNotices('행사')">행사</button>
+                <button class="category-tag" data-category="학과" onclick="filterNotices('학과')">학과</button>
+            </div>
+        </div>
+
+        <!-- 검색 영역 -->
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="공지사항 제목이나 내용을 검색하세요..." onkeypress="handleSearchKeyPress(event)">
+                <button class="search-button" onclick="searchNotices()">🔍</button>
             </div>
         </div>
 
         <!-- 공지사항 목록 -->
-        <div class="notices-section">
-            <div class="notices-header">
-                <span class="notices-count" id="noticesCount">전체 0건</span>
-                <select class="sort-select" id="sortSelect" onchange="sortNotices()">
-                    <option value="latest">최신순</option>
-                    <option value="oldest">오래된순</option>
-                    <option value="views">조회수순</option>
-                </select>
-            </div>
-            
-            <div class="notices-list" id="noticesList">
-                <div class="loading-message">
-                    <div class="loading-spinner"></div>
-                    <p>공지사항을 불러오는 중...</p>
+        <div class="notices-container">
+            <!-- 중요 공지사항 -->
+            <div class="important-notices-section">
+                <h2 class="section-title">
+                    <span class="title-icon">📌</span>
+                    중요 공지사항
+                </h2>
+                <div id="important-notices-list" class="notices-list">
+                    <!-- 중요 공지사항이 여기에 동적으로 추가됩니다 -->
                 </div>
             </div>
 
-            <!-- 페이지네이션 -->
-            <div class="pagination" id="pagination">
-                <!-- 동적으로 생성 -->
+            <!-- 일반 공지사항 -->
+            <div class="general-notices-section">
+                <h2 class="section-title">
+                    <span class="title-icon">📋</span>
+                    전체 공지사항
+                </h2>
+                <div id="general-notices-list" class="notices-list">
+                    <!-- 일반 공지사항이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
+            <!-- 로딩 인디케이터 -->
+            <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>공지사항을 불러오는 중...</p>
+            </div>
+
+            <!-- 검색 결과 없음 -->
+            <div id="no-results" class="no-results" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>검색 결과가 없습니다</h3>
+                <p>다른 검색어로 다시 시도해보세요.</p>
+            </div>
+
+            <!-- 더 보기 버튼 -->
+            <div class="load-more-section">
+                <button id="load-more-btn" class="load-more-btn" onclick="loadMoreNotices()">
+                    더 많은 공지사항 보기
+                </button>
             </div>
         </div>
+
+        <!-- 하단 여백 -->
+        <div class="bottom-padding"></div>
     </div>
 
     <script src="notices.js"></script>

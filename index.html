@@ -253,56 +253,58 @@
             </div>
         </div>
            
-           <!-- 공지사항 섹션 -->
-           <div class="content-section">
-               <div class="section-title">
-                   <span>주요 공지사항</span>
-                   <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
-               </div>
-               
-               <div class="category-filter">
-                   <div class="category-tag active" onclick="filterNotices('all')">전체</div>
-                   <div class="category-tag" onclick="filterNotices('academic')">학사</div>
-                   <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
-                   <div class="category-tag" onclick="filterNotices('job')">취업</div>
-                   <div class="category-tag" onclick="filterNotices('event')">행사</div>
-                   <div class="category-tag" onclick="filterNotices('department')">학과</div>
-               </div>
-               
-               <ul class="notice-list">
-                   <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
-                   <li class="notice-item" onclick="goToNoticeDetail('notice1')">
-                       <div class="notice-header">
-                           <span class="notice-category">학사</span>
-                           <span class="notice-date">2025.04.08</span>
-                       </div>
-                       <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
-                       <div class="notice-summary">
-                           4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
-                       </div>
-                   </li>
-                   <li class="notice-item" onclick="goToNoticeDetail('notice2')">
-                       <div class="notice-header">
-                           <span class="notice-category">장학</span>
-                           <span class="notice-date">2025.04.07</span>
-                       </div>
-                       <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
-                       <div class="notice-summary">
-                           국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
-                       </div>
-                   </li>
-                   <li class="notice-item" onclick="goToNoticeDetail('notice3')">
-                       <div class="notice-header">
-                           <span class="notice-category">취업</span>
-                           <span class="notice-date">2025.04.06</span>
-                       </div>
-                       <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
-                       <div class="notice-summary">
-                           4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
-                       </div>
-                   </li>
-               </ul>
-           </div>
+            <!-- 공지사항 섹션 -->
+            <div class="content-section">
+                <div class="section-title">
+                    <span>주요 공지사항</span>
+                    <!-- onclick에서 goToPage('notices') 호출 -->
+                    <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
+                </div>
+                
+                <div class="category-filter">
+                    <!-- 각 카테고리 클릭 시 해당 카테고리로 필터링된 공지사항 페이지로 이동 -->
+                    <div class="category-tag active" onclick="goToPage('notices')">전체</div>
+                    <div class="category-tag" onclick="goToNoticesWithCategory('학사')">학사</div>
+                    <div class="category-tag" onclick="goToNoticesWithCategory('장학')">장학</div>
+                    <div class="category-tag" onclick="goToNoticesWithCategory('취업')">취업</div>
+                    <div class="category-tag" onclick="goToNoticesWithCategory('행사')">행사</div>
+                    <div class="category-tag" onclick="goToNoticesWithCategory('학과')">학과</div>
+                </div>
+                
+                <ul class="notice-list">
+                    <!-- 각 공지사항 항목 클릭 시 공지사항 상세로 이동 -->
+                    <li class="notice-item" onclick="goToNoticeDetail('notice1')">
+                        <div class="notice-header">
+                            <span class="notice-category">학사</span>
+                            <span class="notice-date">2025.04.08</span>
+                        </div>
+                        <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+                        <div class="notice-summary">
+                            4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
+                        </div>
+                    </li>
+                    <li class="notice-item" onclick="goToNoticeDetail('notice2')">
+                        <div class="notice-header">
+                            <span class="notice-category">장학</span>
+                            <span class="notice-date">2025.04.07</span>
+                        </div>
+                        <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
+                        <div class="notice-summary">
+                            국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
+                        </div>
+                    </li>
+                    <li class="notice-item" onclick="goToNoticeDetail('notice3')">
+                        <div class="notice-header">
+                            <span class="notice-category">취업</span>
+                            <span class="notice-date">2025.04.06</span>
+                        </div>
+                        <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
+                        <div class="notice-summary">
+                            4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
+                        </div>
+                    </li>
+                </ul>
+            </div>
            
            <div class="content-pad"></div>
        </div>

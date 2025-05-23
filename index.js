@@ -3812,11 +3812,12 @@ function goToPage(pageName) {
             break;
             
         case 'academic-calendar':
-            window.location.href = 'academic-calendar.html';  // 이 줄만 수정
+            window.location.href = 'academic-calendar.html';
             break;
             
         case 'notices':
-            alert('전체 공지사항 페이지로 이동합니다.');
+            // 🔥 수정된 부분: 공지사항 전체보기 페이지로 이동
+            window.location.href = 'notices.html';
             break;
             
         case 'club-activities':
@@ -3831,6 +3832,11 @@ function goToPage(pageName) {
             window.location.href = 'activities.html';
             break;
             
+        case 'everytime-board':
+            alert('커뮤니티 게시판 페이지로 이동합니다.');
+            // window.location.href = 'community.html';
+            break;
+            
         default:
             alert(`${pageName} 페이지로 이동합니다.`);
     }
@@ -3838,8 +3844,18 @@ function goToPage(pageName) {
 
 // 공지사항 상세 페이지로 이동 (알림 없이 바로 이동)
 function goToNoticeDetail(noticeId) {
-    // 알림창 없이 직접 상세 페이지로 이동
-    window.location.href = `notice-detail.html?id=${noticeId}`;
+    // 공지사항 상세 페이지로 이동 (실제로는 notices.html에서 해당 공지사항으로 이동)
+    window.location.href = `notices.html?id=${noticeId}`;
+}
+
+// 특정 카테고리 공지사항 보기
+function goToNoticesWithCategory(category) {
+    window.location.href = `notices.html?category=${category}`;
+}
+
+// 검색 결과와 함께 공지사항 페이지로 이동
+function goToNoticesWithSearch(searchTerm) {
+    window.location.href = `notices.html?search=${encodeURIComponent(searchTerm)}`;
 }
 
 // 강의 상세 보기
