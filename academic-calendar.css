@@ -349,7 +349,7 @@ body {
 
 .calendar-day:hover {
     background: #f8f9ff;
-    transform: scale(1.02);
+    transform: scale(00.85rem);
     z-index: 2;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
@@ -436,7 +436,7 @@ body {
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     filter: brightness(1.1);
-    transform: scale(1.02);
+    transform: scale(0.85);
 }
 
 /* 이벤트 타입별 색상 */
@@ -924,7 +924,7 @@ body {
 .calendar-day:hover .event-item.multi-day-start,
 .calendar-day:hover .event-item.multi-day-middle,
 .calendar-day:hover .event-item.multi-day-end {
-    transform: scale(1.02);
+    transform: scale(0.85);
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
