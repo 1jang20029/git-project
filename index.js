@@ -4933,6 +4933,19 @@ document.addEventListener('DOMContentLoaded', function() {
     displayActivityStats();
     updateActivityNotices();
     
+    // ===== 정확히 이 위치에 학사일정 코드를 추가하세요 =====
+    // 다가오는 학사일정 표시
+    displayUpcomingAcademicSchedule();
+    
+    // 학사일정을 주기적으로 업데이트 (하루에 한 번, 자정 이후)
+    const scheduleUpdateInterval = setInterval(() => {
+        const now = new Date();
+        if (now.getHours() === 0 && now.getMinutes() === 0) {
+            displayUpcomingAcademicSchedule();
+        }
+    }, 60000); // 1분마다 체크
+    // ===== 학사일정 코드 추가 끝 =====
+    
     // 5분마다 자동 갱신 (선택적) - 인터벌 변수에 저장
     activityStatsInterval = setInterval(displayActivityStats, 300000);
     
@@ -4984,9 +4997,17 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('맛집 데이터 변경 감지');
             displayPopularRestaurantsOnMainPage();
         }
+        
+        // ===== 정확히 이 위치에 학사일정 변경 감지 코드를 추가하세요 =====
+        // 학사일정 데이터 변경 감지 (필요시)
+        if (event.key === 'academicScheduleUpdated') {
+            console.log('학사일정 데이터 변경 감지');
+            displayUpcomingAcademicSchedule();
+        }
+        // ===== 학사일정 변경 감지 코드 추가 끝 =====
     });
 
-    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+     // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
     window.addEventListener('pageshow', function(event) {
         console.log('페이지 복원 감지:', event.persisted);
         
@@ -4996,6 +5017,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateAllProfileImages(); // 프로필 이미지도 다시 확인
             updateShuttleBusInfo(); // 뒤로가기 시에도 셔틀버스 정보 갱신
             displayActivityStats(); // 활동 통계 갱신
+            // ===== 정확히 이 위치에 학사일정 갱신 코드를 추가하세요 =====
+            displayUpcomingAcademicSchedule(); // 학사일정 갱신
+            // ===== 학사일정 갱신 코드 추가 끝 =====
             displayPopularRestaurantsOnMainPage(); // 맛집 정보 갱신
         }
     });
@@ -5051,6 +5075,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('window.debugUtils 객체를 통해 디버깅 함수들을 사용할 수 있습니다.');
     }
 });
+
+
+
 
 // 수정된 페이지 언로드 시 정리 작업
 window.addEventListener('beforeunload', function(event) {
@@ -5476,6 +5503,153 @@ function displayPopularRestaurantsOnMainPage() {
     });
 }
 
+
+function displayUpcomingAcademicSchedule() {
+    console.log('다가오는 학사일정 업데이트 시작');
+    
+    const scheduleContainer = document.querySelector('.schedule-list');
+    if (!scheduleContainer) {
+        console.error('학사일정 컨테이너를 찾을 수 없습니다.');
+        return;
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정하여 날짜만 비교
+    
+    // 모든 학기의 일정을 하나의 배열로 합치기
+    let allEvents = [];
+    Object.keys(academicScheduleData).forEach(semester => {
+        allEvents = allEvents.concat(academicScheduleData[semester]);
+    });
+    
+    // 오늘 이후의 일정만 필터링 (중요한 일정만)
+    const upcomingEvents = allEvents.filter(event => {
+        if (!event.important) return false;
+        
+        const eventDate = new Date(event.date);
+        eventDate.setHours(0, 0, 0, 0);
+        
+        // 기간이 있는 이벤트의 경우 종료일 기준으로 판단
+        if (event.endDate) {
+            const eventEndDate = new Date(event.endDate);
+            eventEndDate.setHours(23, 59, 59, 999);
+            return eventEndDate >= today;
+        } else {
+            return eventDate >= today;
+        }
+    });
+    
+    // 날짜순으로 정렬
+    upcomingEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    // 상위 5개만 표시
+    const eventsToShow = upcomingEvents.slice(0, 5);
+    
+    console.log('표시할 학사일정:', eventsToShow);
+    
+    // 컨테이너 초기화
+    scheduleContainer.innerHTML = '';
+    
+    if (eventsToShow.length === 0) {
+        scheduleContainer.innerHTML = `
+            <div class="schedule-item">
+                <div class="schedule-date">
+                    <div class="date-number">--</div>
+                    <div class="date-month">--</div>
+                </div>
+                <div class="schedule-content">
+                    <div class="schedule-title">예정된 중요 일정이 없습니다</div>
+                    <div class="schedule-description">새로운 학사일정이 업데이트되면 표시됩니다</div>
+                </div>
+                <div class="schedule-type ${getEventTypeClass('academic')}">${getEventTypeLabel('academic')}</div>
+            </div>
+        `;
+        return;
+    }
+    
+    // 각 일정을 HTML로 변환하여 표시
+    eventsToShow.forEach(event => {
+        const eventDate = new Date(event.date);
+        const day = eventDate.getDate();
+        const month = eventDate.getMonth() + 1;
+        
+        // D-Day 계산
+        const diffTime = eventDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let dDayText = '';
+        if (diffDays === 0) {
+            dDayText = 'D-Day';
+        } else if (diffDays > 0) {
+            dDayText = `D-${diffDays}`;
+        } else {
+            dDayText = `진행중`;
+        }
+        
+        // 날짜 텍스트 생성
+        let dateText = `${month}월 ${day}일`;
+        if (event.endDate) {
+            const endDate = new Date(event.endDate);
+            const endDay = endDate.getDate();
+            const endMonth = endDate.getMonth() + 1;
+            
+            if (month === endMonth) {
+                dateText = `${month}월 ${day}일~${endDay}일`;
+            } else {
+                dateText = `${month}월 ${day}일~${endMonth}월 ${endDay}일`;
+            }
+        }
+        
+        const scheduleItem = document.createElement('div');
+        scheduleItem.className = 'schedule-item';
+        scheduleItem.onclick = function() {
+            goToPage('academic-calendar');
+        };
+        
+        scheduleItem.innerHTML = `
+            <div class="schedule-date">
+                <div class="date-number">${day}</div>
+                <div class="date-month">${month}월</div>
+                <div class="d-day">${dDayText}</div>
+            </div>
+            <div class="schedule-content">
+                <div class="schedule-title">${event.title}</div>
+                <div class="schedule-description">${event.description}</div>
+                <div class="schedule-full-date">${dateText}</div>
+            </div>
+            <div class="schedule-type ${getEventTypeClass(event.type)}">${getEventTypeLabel(event.type)}</div>
+        `;
+        
+        scheduleContainer.appendChild(scheduleItem);
+    });
+    
+    console.log('다가오는 학사일정 업데이트 완료');
+}
+
+// 이벤트 타입에 따른 CSS 클래스 반환
+function getEventTypeClass(type) {
+    const typeClasses = {
+        'academic': 'type-academic',
+        'exam': 'type-exam',
+        'holiday': 'type-holiday',
+        'event': 'type-event',
+        'registration': 'type-registration'
+    };
+    return typeClasses[type] || 'type-academic';
+}
+
+// 이벤트 타입에 따른 라벨 반환
+function getEventTypeLabel(type) {
+    const typeLabels = {
+        'academic': '학사',
+        'exam': '시험',
+        'holiday': '휴일',
+        'event': '행사',
+        'registration': '등록'
+    };
+    return typeLabels[type] || '학사';
+}
+
 // 카테고리에 따른 이모지 반환 함수
 function getCategoryEmoji(category) {
     switch(category) {
@@ -5705,3 +5879,5 @@ window.addEventListener('restaurantUpdated', function() {
     // 인기 맛집 정보 다시 로드
     displayPopularRestaurantsOnMainPage();
 });
+
+
