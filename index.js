@@ -166,7 +166,7 @@ const buildingData = [
 
 
 // 2025학년도 연성대학교 학사일정 데이터
-const academicSchedule = {
+const academicScheduleData = {
     '1': [ // 1학기
         // 12-1월 겨울방학 기간
         {
