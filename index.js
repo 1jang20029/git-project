@@ -3502,14 +3502,21 @@ function updateTimetablePreview() {
         dateEl.textContent = dateStr;
     }
     
-    // 2. 컨테이너 확인
+    // 2. 현재 시간 정보 (디버깅용)
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTotalMinutes = currentHour * 60 + currentMinute;
+    console.log(`현재 시간: ${currentHour}:${currentMinute.toString().padStart(2, '0')} (총 ${currentTotalMinutes}분)`);
+    
+    // 3. 컨테이너 확인
     const classContainer = document.getElementById('timetable-preview-content');
     if (!classContainer) {
         console.error('시간표 컨테이너를 찾을 수 없습니다.');
         return;
     }
     
-    // 3. 로그인 상태 확인
+    // 4. 로그인 상태 확인
     const currentUser = localStorage.getItem('currentLoggedInUser');
     const statusEl = document.querySelector('.timetable-now');
     
@@ -3530,16 +3537,6 @@ function updateTimetablePreview() {
             </div>
         `;
         return;
-    }
-    
-    // 4. 디버깅: 모든 시간표 관련 키 찾기
-    console.log('현재 로그인 사용자:', currentUser);
-    console.log('=== localStorage의 모든 키 확인 ===');
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.includes('courses_') || key.includes('currentTimetable')) {
-            console.log(`키: ${key}, 값: ${localStorage.getItem(key)}`);
-        }
     }
     
     // 5. 시간표 데이터 로드
@@ -3576,7 +3573,6 @@ function updateTimetablePreview() {
         if (!Array.isArray(courses) || courses.length === 0) {
             console.log('기본 키로 데이터를 찾지 못함. 다른 키들 시도...');
             
-            // 가능한 다른 키 형식들 시도
             const alternativeKeys = [
                 `courses_${currentYear}_${semester}_1_user_${currentUser}`,
                 `courses_${currentYear}_${semester}_${currentUser}`,
@@ -3638,14 +3634,9 @@ function updateTimetablePreview() {
             return;
         }
         
-        // 8. 오늘의 수업 찾기
-        const now = new Date();
+        // 8. 오늘의 수업 찾기 (수정된 로직)
         const currentDay = now.getDay(); // 0(일) ~ 6(토)
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const currentTotalMinutes = currentHour * 60 + currentMinute;
-        
-        console.log('현재 요일:', currentDay, '현재 시간:', `${currentHour}:${currentMinute.toString().padStart(2, '0')}`, '총 분:', currentTotalMinutes);
+        console.log('현재 요일:', currentDay);
         
         const todaysClasses = [];
         
@@ -3661,17 +3652,21 @@ function updateTimetablePreview() {
                 if (time.day === currentDay) {
                     console.log('오늘 수업 발견:', course.name);
                     
-                    // periodTimes 정의
+                    // 수정된 periodTimes 정의 (연성대학교 실제 시간표)
                     const periods = {
-                        1: { start: "09:00", end: "10:20" },
-                        2: { start: "10:30", end: "11:50" },
-                        3: { start: "12:00", end: "13:20" },
-                        4: { start: "13:30", end: "14:50" },
-                        5: { start: "15:00", end: "16:20" },
-                        6: { start: "16:30", end: "17:50" },
-                        7: { start: "18:00", end: "19:20" },
-                        8: { start: "19:30", end: "20:50" },
-                        9: { start: "21:00", end: "22:20" }
+                        1: { start: "09:30", end: "10:20" },
+                        2: { start: "10:30", end: "11:20" },
+                        3: { start: "11:30", end: "12:20" },
+                        4: { start: "12:30", end: "13:20" },
+                        5: { start: "13:30", end: "14:20" },
+                        6: { start: "14:30", end: "15:20" },
+                        7: { start: "15:30", end: "16:20" },
+                        8: { start: "16:30", end: "17:20" },
+                        9: { start: "17:30", end: "18:20" },
+                        10: { start: "18:30", end: "19:20" },
+                        11: { start: "19:30", end: "20:20" },
+                        12: { start: "20:30", end: "21:20" },
+                        13: { start: "21:30", end: "22:20" }
                     };
                     
                     const startTime = periods[time.start].start;
@@ -3735,53 +3730,65 @@ function updateTimetablePreview() {
             return;
         }
         
-        // 9. 현재 수업 상태 확인 (더 정확한 로직)
+        // 9. 현재 수업 상태 확인 (수정된 로직)
         let currentClass = null;
+        let nextClass = null;
         let hasUpcomingClass = false;
         let allClassesEnded = true;
         
+        // 현재 진행 중인 수업 찾기
         for (let cls of todaysClasses) {
-            // 수업 시작 5분 전부터 "수강 예정"으로 표시
-            const earlyStartMinutes = cls.startMinutes - 5;
+            console.log(`수업 ${cls.course.name} 상태 확인:`);
+            console.log(`- 시작: ${cls.startMinutes}분 (${cls.startTime})`);
+            console.log(`- 종료: ${cls.endMinutes}분 (${cls.endTime})`);
+            console.log(`- 현재: ${currentTotalMinutes}분`);
             
-            console.log(`수업 ${cls.course.name} 검사: ${cls.startMinutes} <= ${currentTotalMinutes} < ${cls.endMinutes}`);
-            
+            // 수업이 진행 중인지 확인 (현재시간이 시작시간 이상, 종료시간 미만)
             if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
                 currentClass = cls;
                 allClassesEnded = false;
-                console.log('현재 수강 중인 강의:', currentClass.course.name);
+                console.log(`✅ 현재 수강 중: ${cls.course.name}`);
                 break;
-            } else if (cls.startMinutes > currentTotalMinutes) {
+            }
+            // 수업이 아직 시작하지 않았는지 확인
+            else if (cls.startMinutes > currentTotalMinutes) {
+                if (!nextClass) {
+                    nextClass = cls;
+                }
                 hasUpcomingClass = true;
                 allClassesEnded = false;
+                console.log(`⏰ 수강 예정: ${cls.course.name} (${cls.startMinutes - currentTotalMinutes}분 후)`);
+            }
+            // 수업이 이미 끝났는지 확인
+            else if (cls.endMinutes <= currentTotalMinutes) {
+                console.log(`✔️ 수강 종료: ${cls.course.name}`);
             }
         }
         
-        // 상태 배지 업데이트
+        // 상태 배지 업데이트 (수정된 로직)
         if (statusEl) {
             if (currentClass) {
                 const remainingMinutes = currentClass.endMinutes - currentTotalMinutes;
                 statusEl.textContent = `수강 중 (${remainingMinutes}분 남음)`;
                 statusEl.style.backgroundColor = '#4caf50';
-            } else if (hasUpcomingClass) {
-                const nextClass = todaysClasses.find(cls => cls.startMinutes > currentTotalMinutes);
-                if (nextClass) {
-                    const minutesToStart = nextClass.startMinutes - currentTotalMinutes;
-                    statusEl.textContent = `수강 예정 (${minutesToStart}분 후)`;
-                } else {
-                    statusEl.textContent = '수강 예정';
-                }
+                console.log(`📚 상태: 수강 중 (${remainingMinutes}분 남음)`);
+            } else if (nextClass) {
+                const minutesToStart = nextClass.startMinutes - currentTotalMinutes;
+                statusEl.textContent = `수강 예정 (${minutesToStart}분 후)`;
                 statusEl.style.backgroundColor = '#ff9800';
+                console.log(`⏰ 상태: 수강 예정 (${minutesToStart}분 후)`);
             } else if (allClassesEnded) {
                 statusEl.textContent = '수강 종료';
                 statusEl.style.backgroundColor = '#888';
+                console.log(`✔️ 상태: 수강 종료`);
             } else {
                 statusEl.textContent = '수업 없음';
                 statusEl.style.backgroundColor = '#888';
+                console.log(`❌ 상태: 수업 없음`);
             }
         }
         
-        // 10. 수업 목록 렌더링
+        // 10. 수업 목록 렌더링 (수정된 로직)
         classContainer.innerHTML = '';
         todaysClasses.forEach(cls => {
             const classDiv = document.createElement('div');
@@ -3790,15 +3797,19 @@ function updateTimetablePreview() {
             let statusText = '';
             let statusColor = '#888';
             
+            // 수업 상태 정확히 계산
             if (currentTotalMinutes >= cls.startMinutes && currentTotalMinutes < cls.endMinutes) {
+                // 현재 수강 중
                 const remainingMinutes = cls.endMinutes - currentTotalMinutes;
                 statusText = `수강 중 (${remainingMinutes}분 남음)`;
                 statusColor = '#4caf50';
             } else if (cls.startMinutes > currentTotalMinutes) {
+                // 수강 예정
                 const minutesToStart = cls.startMinutes - currentTotalMinutes;
                 statusText = `수강 예정 (${minutesToStart}분 후)`;
                 statusColor = '#ff9800';
             } else {
+                // 수강 종료
                 statusText = '수강 종료';
                 statusColor = '#888';
             }
