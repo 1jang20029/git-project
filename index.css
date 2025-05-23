@@ -1417,10 +1417,21 @@ header {
     list-style: none;
 }
 
+/* 학사일정 항목 개선된 스타일 */
 .calendar-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
     display: flex;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
+    align-items: center;
+}
+
+
+.calendar-item:hover {
+    background-color: #f9f9f9;
+    transform: translateX(5px);
 }
 
 .calendar-item:last-child {
@@ -1428,35 +1439,82 @@ header {
 }
 
 .calendar-date {
-    width: 50px;
-    text-align: center;
-    margin-right: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+    margin-right: 16px;
 }
 
 .calendar-day {
-    font-size: 16px;
+    font-size: 24px;
     font-weight: bold;
     color: #c62917;
+    line-height: 1;
 }
 
 .calendar-month {
     font-size: 12px;
-    color: #888;
+    color: #666;
+    margin-top: 2px;
 }
+
+.d-day {
+    font-size: 10px;
+    background-color: #c62917;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-top: 4px;
+    font-weight: bold;
+}
+
+
 
 .calendar-info {
     flex: 1;
 }
 
 .calendar-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    color: #333;
 }
 
 .calendar-desc {
-    font-size: 13px;
+    font-size: 14px;
     color: #666;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.calendar-full-date {
+    font-size: 12px;
+    color: #888;
+}
+
+
+/* 이벤트 타입별 색상 */
+.type-academic .calendar-day {
+    color: #3498db;
+}
+
+
+.type-exam .calendar-day {
+    color: #e74c3c;
+}
+
+.type-holiday .calendar-day {
+    color: #27ae60;
+}
+
+.type-event .calendar-day {
+    color: #9b59b6;
+}
+
+.type-registration .calendar-day {
+    color: #f39c12;
 }
 
 /* 도서관 상태 카드 */

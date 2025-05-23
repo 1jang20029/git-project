@@ -1,167 +1,1161 @@
 // 건물 데이터 (배열로 정의) - 이미지에서 확인된 건물 이름으로 수정
 const buildingData = [
-{
-    id: '공학1관',
-    name: '공학1관',
-    description: '공학계열 강의실, 실험실',
-    image: 'https://placehold.co/80x60/gray/white?text=공학1관',
+    {
+        id: '공학1관',
+        name: '공학1관',
+        description: '공학계열 강의실, 실험실',
+        image: 'https://placehold.co/80x60/gray/white?text=공학1관',
+        type: 'building',
+        position: { lat: 37.39632767479923, lng: 126.90699348692698 }
+    },
+    {
+        id: '자연과학관',
+        name: '자연과학관',
+        description: '반려동물보건학, 반려동물산업학',
+        image: 'https://placehold.co/80x60/gray/white?text=자연과학관',
+        type: 'building',
+        position: { lat:  37.39669466288283, lng: 126.90676716508685 }
+    },
+    {
+        id: '식품과학관',
+        name: '식품과학관',
+        description: '식품영양학과, 조리실습실',
+        image: 'https://placehold.co/80x60/gray/white?text=식품과학관',
+        type: 'building',
+        position: { lat: 37.39714809720343, lng: 126.90762208499473 }
+    },
+    {
+        id: '도의관',
+        name: '도의관',
+        description: '교양 수업, 강당',
+        image: 'https://placehold.co/80x60/gray/white?text=도의관',
+        type: 'building',
+        position: { lat: 37.39679932128769, lng: 126.90809683728425 }
+    },
+    {
+        id: '공학2관',
+        name: '공학2관',
+        description: '공학계열 실습실, 연구실',
+        image: 'https://placehold.co/80x60/gray/white?text=공학2관',
+        type: 'building',
+        position: { lat: 37.396789747114205, lng: 126.90737406929797 }
+    },
+    {
+        id: '문화1관',
+        name: '문화1관',
+        description: '인문사회계열 강의실',
+        image: 'https://placehold.co/80x60/gray/white?text=문화1관',
+        type: 'building',
+        position: { lat:  37.39576992475254, lng: 126.90812350405056 }
+    },
+    {
+        id: '연곡문화센터',
+        name: '연곡문화센터',
+        description: '기숙사, 컨벤션홀, 평생교육원',
+        image: 'https://placehold.co/80x60/gray/white?text=연곡문화센터',
+        type: 'building',
+        position: { lat: 37.398046192024914, lng: 126.90966512810492 }
+    },
+    {
+        id: '창조관',
+        name: '창조관',
+        description: '학과 사무실, 강의실',
+        image: 'https://placehold.co/80x60/gray/white?text=창조관',
+        type: 'building',
+    position: { lat: 37.39730791148064, lng: 126.91039726900274 }
+    },
+    {
+    id: '운동장',
+    name: '운동장',
+    description: '체육활동, 행사장',
+    image: 'https://placehold.co/80x60/gray/white?text=운동장',
     type: 'building',
-    position: { lat: 37.39632767479923, lng: 126.90699348692698 }
-},
-{
-    id: '자연과학관',
-    name: '자연과학관',
-    description: '반려동물보건학, 반려동물산업학',
-    image: 'https://placehold.co/80x60/gray/white?text=자연과학관',
+    position: { lat: 37.39673944839101, lng: 126.90932224700094 }
+    },
+    {
+    id: '농구장',
+    name: '농구장',
+    description: '체육활동',
+    image: 'https://placehold.co/80x60/gray/white?text=농구장',
     type: 'building',
-    position: { lat:  37.39669466288283, lng: 126.90676716508685 }
-},
-{
-    id: '식품과학관',
-    name: '식품과학관',
-    description: '식품영양학과, 조리실습실',
-    image: 'https://placehold.co/80x60/gray/white?text=식품과학관',
+    position: { lat: 37.39667684947615, lng: 126.90994063692402 }
+    },
+    {
+    id: '학생복지센터',
+    name: '학생복지센터',
+    description: '학생지원 시설',
+    image: 'https://placehold.co/80x60/gray/white?text=학생복지센터',
     type: 'building',
-    position: { lat: 37.39714809720343, lng: 126.90762208499473 }
-},
-{
-    id: '도의관',
-    name: '도의관',
-    description: '교양 수업, 강당',
-    image: 'https://placehold.co/80x60/gray/white?text=도의관',
+    position: { lat:  37.3962916630711, lng: 126.90994109780426 }
+    },
+    {
+    id: '창의교육센터',
+    name: '창의교육센터',
+    description: '항공서비스과 항공실습실, 카페',
+    image: 'https://placehold.co/80x60/gray/white?text=창의교육센터',
     type: 'building',
-    position: { lat: 37.39679932128769, lng: 126.90809683728425 }
-},
-{
-    id: '공학2관',
-    name: '공학2관',
-    description: '공학계열 실습실, 연구실',
-    image: 'https://placehold.co/80x60/gray/white?text=공학2관',
+    position: { lat:  37.39737971014044, lng: 126.91002449732869 }
+    },
+    {
+    id: '문화2관',
+    name: '문화2관',
+    description: ' 문화콘텐츠계열 강의실',
+    image: 'https://placehold.co/80x60/gray/white?text=문화2관',
     type: 'building',
-    position: { lat: 37.396789747114205, lng: 126.90737406929797 }
-},
-{
-    id: '문화1관',
-    name: '문화1관',
-    description: '인문사회계열 강의실',
-    image: 'https://placehold.co/80x60/gray/white?text=문화1관',
+    position: { lat:  37.396035307891026, lng: 126.90758674745014 }
+    },
+    {
+    id: '대학본관',
+    name: '대학본관',
+    description: '유통물류학과, 총장실',
+    image: 'https://placehold.co/80x60/gray/white?text=대학본관',
     type: 'building',
-    position: { lat:  37.39576992475254, lng: 126.90812350405056 }
-},
-{
-    id: '연곡문화센터',
-    name: '연곡문화센터',
-    description: '기숙사, 컨벤션홀, 평생교육원',
-    image: 'https://placehold.co/80x60/gray/white?text=연곡문화센터',
+    position: { lat:  37.397467068076345, lng: 126.90938066144557 }
+    },
+    {
+    id: '학술정보관',
+    name: '학술정보관',
+    description: '독서실',
+    image: 'https://placehold.co/80x60/gray/white?text=학술정보관',
     type: 'building',
-    position: { lat: 37.398046192024914, lng: 126.90966512810492 }
-},
-{
-    id: '창조관',
-    name: '창조관',
-    description: '학과 사무실, 강의실',
-    image: 'https://placehold.co/80x60/gray/white?text=창조관',
-    type: 'building',
-position: { lat: 37.39730791148064, lng: 126.91039726900274 }
-},
-{
-id: '운동장',
-name: '운동장',
-description: '체육활동, 행사장',
-image: 'https://placehold.co/80x60/gray/white?text=운동장',
-type: 'building',
-position: { lat: 37.39673944839101, lng: 126.90932224700094 }
-},
-{
-id: '농구장',
-name: '농구장',
-description: '체육활동',
-image: 'https://placehold.co/80x60/gray/white?text=농구장',
-type: 'building',
-position: { lat: 37.39667684947615, lng: 126.90994063692402 }
-},
-{
-id: '학생복지센터',
-name: '학생복지센터',
-description: '학생지원 시설',
-image: 'https://placehold.co/80x60/gray/white?text=학생복지센터',
-type: 'building',
-position: { lat:  37.3962916630711, lng: 126.90994109780426 }
-},
-{
-id: '창의교육센터',
-name: '창의교육센터',
-description: '항공서비스과 항공실습실, 카페',
-image: 'https://placehold.co/80x60/gray/white?text=창의교육센터',
-type: 'building',
-position: { lat:  37.39737971014044, lng: 126.91002449732869 }
-},
-{
-id: '문화2관',
-name: '문화2관',
-description: ' 문화콘텐츠계열 강의실',
-image: 'https://placehold.co/80x60/gray/white?text=문화2관',
-type: 'building',
-position: { lat:  37.396035307891026, lng: 126.90758674745014 }
-},
-{
-id: '대학본관',
-name: '대학본관',
-description: '유통물류학과, 총장실',
-image: 'https://placehold.co/80x60/gray/white?text=대학본관',
-type: 'building',
-position: { lat:  37.397467068076345, lng: 126.90938066144557 }
-},
-{
-id: '학술정보관',
-name: '학술정보관',
-description: '독서실',
-image: 'https://placehold.co/80x60/gray/white?text=학술정보관',
-type: 'building',
-position: { lat:  37.39637467129301, lng: 126.906603807587 }
-}
+    position: { lat:  37.39637467129301, lng: 126.906603807587 }
+    }
+    ];
+
+    // 편의시설 데이터 정의
+    const facilityData = [
+    {
+    id: 'cafeteria',
+    name: '학생식당',
+    description: '학생복지센터 2층',
+    image: 'https://placehold.co/150x100/gray/white?text=학생식당',
+    type: 'facility',
+    position: { lat: 37.377100, lng: 126.663600 },
+    relatedBuilding: '학생복지센터'
+    },
+    {
+    id: 'cafe',
+    name: '카페 연성',
+    description: '문화1관 1층',
+    image: 'https://placehold.co/150x100/gray/white?text=카페',
+    type: 'facility',
+    position: { lat: 37.378300, lng: 126.662700 },
+    relatedBuilding: '문화1관'
+    },
+    {
+    id: 'convenience',
+    name: 'CU 편의점',
+    description: '학생복지센터 1층',
+    image: 'https://placehold.co/150x100/gray/white?text=편의점',
+    type: 'facility',
+    position: { lat: 37.377100, lng: 126.663700 },
+    relatedBuilding: '학생복지센터'
+    },
+    {
+    id: 'atm',
+    name: 'ATM',
+    description: '학생복지센터 1층',
+    image: 'https://placehold.co/150x100/gray/white?text=ATM',
+    type: 'facility',
+    position: { lat: 37.377100, lng: 126.663800 },
+    relatedBuilding: '학생복지센터'
+    },
+
 ];
 
-// 편의시설 데이터 정의
-const facilityData = [
-{
-id: 'cafeteria',
-name: '학생식당',
-description: '학생복지센터 2층',
-image: 'https://placehold.co/150x100/gray/white?text=학생식당',
-type: 'facility',
-position: { lat: 37.377100, lng: 126.663600 },
-relatedBuilding: '학생복지센터'
-},
-{
-id: 'cafe',
-name: '카페 연성',
-description: '문화1관 1층',
-image: 'https://placehold.co/150x100/gray/white?text=카페',
-type: 'facility',
-position: { lat: 37.378300, lng: 126.662700 },
-relatedBuilding: '문화1관'
-},
-{
-id: 'convenience',
-name: 'CU 편의점',
-description: '학생복지센터 1층',
-image: 'https://placehold.co/150x100/gray/white?text=편의점',
-type: 'facility',
-position: { lat: 37.377100, lng: 126.663700 },
-relatedBuilding: '학생복지센터'
-},
-{
-id: 'atm',
-name: 'ATM',
-description: '학생복지센터 1층',
-image: 'https://placehold.co/150x100/gray/white?text=ATM',
-type: 'facility',
-position: { lat: 37.377100, lng: 126.663800 },
-relatedBuilding: '학생복지센터'
-},
 
-];
+
+// 2025학년도 연성대학교 학사일정 데이터
+const academicSchedule = {
+    '1': [ // 1학기
+        // 12-1월 겨울방학 기간
+        {
+            id: 1,
+            title: '성적열람 및 이의신청기간',
+            date: '2024-12-30',
+            endDate: '2025-01-03',
+            type: 'academic',
+            description: '전기 성적열람 및 이의신청 기간',
+            important: false
+        },
+        {
+            id: 2,
+            title: '신정',
+            date: '2025-01-01',
+            type: 'holiday',
+            description: '신정 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 3,
+            title: '업무개시일',
+            date: '2025-01-02',
+            type: 'academic',
+            description: '2025년 업무 시작',
+            important: false
+        },
+        {
+            id: 4,
+            title: '시무식',
+            date: '2025-01-03',
+            type: 'event',
+            description: '새해 시무식',
+            important: false
+        },
+        {
+            id: 5,
+            title: '동계 계절학기',
+            date: '2025-01-06',
+            endDate: '2025-01-17',
+            type: 'academic',
+            description: '겨울학기 집중강의',
+            important: false
+        },
+        {
+            id: 6,
+            title: '2학기 성적확정',
+            date: '2025-01-07',
+            type: 'academic',
+            description: '전기 성적 최종 확정',
+            important: false
+        },
+        {
+            id: 7,
+            title: '전기 졸업유예 접수기간',
+            date: '2025-01-08',
+            endDate: '2025-01-15',
+            type: 'academic',
+            description: '졸업유예 신청 기간',
+            important: false
+        },
+        {
+            id: 8,
+            title: '교직원세미나',
+            date: '2025-01-09',
+            type: 'event',
+            description: '교직원 연수',
+            important: false
+        },
+        {
+            id: 9,
+            title: '국고사업 성과보고 및 협류 워크숍',
+            date: '2025-01-10',
+            type: 'event',
+            description: '국고사업 성과발표',
+            important: false
+        },
+        {
+            id: 10,
+            title: '동계계절학기 성적입력',
+            date: '2025-01-17',
+            endDate: '2025-01-20',
+            type: 'academic',
+            description: '동계학기 성적처리',
+            important: false
+        },
+        {
+            id: 11,
+            title: '동계계절학기 성적열람 및 이의신청',
+            date: '2025-01-21',
+            endDate: '2025-01-22',
+            type: 'academic',
+            description: '동계학기 성적확인',
+            important: false
+        },
+        {
+            id: 12,
+            title: '2025학년도 정시 면접/실기고사',
+            date: '2025-01-22',
+            endDate: '2025-01-26',
+            type: 'academic',
+            description: '신입생 정시모집',
+            important: true
+        },
+        {
+            id: 13,
+            title: '입시공휴일',
+            date: '2025-01-27',
+            type: 'holiday',
+            description: '입시 관련 휴무',
+            important: false
+        },
+        {
+            id: 14,
+            title: '설날 연휴',
+            date: '2025-01-28',
+            endDate: '2025-01-30',
+            type: 'holiday',
+            description: '설날 연휴 (휴강)',
+            important: true
+        },
+        // 2월 신학기 준비
+        {
+            id: 15,
+            title: '전기진급 및 졸업사정회',
+            date: '2025-02-03',
+            type: 'academic',
+            description: '진급 및 졸업 심사',
+            important: true
+        },
+        {
+            id: 16,
+            title: '일반후학·전과·재입학 접수기간',
+            date: '2025-02-03',
+            endDate: '2025-02-07',
+            type: 'registration',
+            description: '일반후학 및 전과, 재입학 신청',
+            important: false
+        },
+        {
+            id: 17,
+            title: '2025학년도 정시 합격자 발표',
+            date: '2025-02-06',
+            type: 'academic',
+            description: '정시모집 합격자 발표',
+            important: true
+        },
+        {
+            id: 18,
+            title: '2025학년도 정시 합격자 등록기간',
+            date: '2025-02-10',
+            endDate: '2025-02-12',
+            type: 'registration',
+            description: '정시합격자 등록 기간',
+            important: true
+        },
+        {
+            id: 19,
+            title: '복학 접수기간',
+            date: '2025-02-10',
+            endDate: '2025-02-14',
+            type: 'registration',
+            description: '복학생 등록',
+            important: false
+        },
+        {
+            id: 20,
+            title: '재학생(복학생) 수강신청 기간',
+            date: '2025-02-10',
+            endDate: '2025-02-18',
+            type: 'registration',
+            description: '재학생 및 복학생 수강신청',
+            important: true
+        },
+        {
+            id: 21,
+            title: '제47회 학위수여식',
+            date: '2025-02-12',
+            type: 'event',
+            description: '졸업식',
+            important: true
+        },
+        {
+            id: 22,
+            title: '1학기 재학생 등록기간',
+            date: '2025-02-17',
+            endDate: '2025-02-21',
+            type: 'registration',
+            description: '재학생 등록금 납부',
+            important: true
+        },
+        {
+            id: 23,
+            title: '2025학년도 입학식',
+            date: '2025-02-21',
+            type: 'event',
+            description: '신입생 입학식',
+            important: true
+        },
+        // 3월 개강
+        {
+            id: 24,
+            title: '삼일절',
+            date: '2025-03-01',
+            type: 'holiday',
+            description: '3·1절 공휴일 (휴강)',
+            important: false
+        },
+        {
+            id: 25,
+            title: '대체공휴일',
+            date: '2025-03-03',
+            type: 'holiday',
+            description: '3·1절 대체공휴일',
+            important: false
+        },
+        {
+            id: 26,
+            title: '2025학년도 1학기 개강',
+            date: '2025-03-04',
+            type: 'academic',
+            description: '1학기 수업 시작',
+            important: true
+        },
+        {
+            id: 27,
+            title: '신입생 수강신청기간',
+            date: '2025-03-04',
+            endDate: '2025-03-07',
+            type: 'registration',
+            description: '신입생 수강신청',
+            important: true
+        },
+        {
+            id: 28,
+            title: '대학생활 적응력 향상 프로그램',
+            date: '2025-03-10',
+            endDate: '2025-03-14',
+            type: 'event',
+            description: '신입생 적응 프로그램',
+            important: false
+        },
+        {
+            id: 29,
+            title: '개교 48주년 기념일',
+            date: '2025-03-15',
+            type: 'holiday',
+            description: '연성대학교 개교기념일',
+            important: false
+        },
+        {
+            id: 30,
+            title: '수업일수 1/4선',
+            date: '2025-03-28',
+            type: 'academic',
+            description: '수업 진도 체크포인트',
+            important: false
+        },
+        // 4-5월 중간고사 및 행사
+        {
+            id: 31,
+            title: '중간고사 평가 권장기간',
+            date: '2025-04-21',
+            endDate: '2025-05-02',
+            type: 'exam',
+            description: '1학기 중간고사 기간',
+            important: true
+        },
+        {
+            id: 32,
+            title: '수업일수 2/4선',
+            date: '2025-04-24',
+            type: 'academic',
+            description: '수업 진도 체크포인트',
+            important: false
+        },
+        {
+            id: 33,
+            title: '근로자의날(임시휴일)',
+            date: '2025-05-01',
+            type: 'holiday',
+            description: '근로자의날 휴강',
+            important: false
+        },
+        {
+            id: 34,
+            title: '어린이날/부처님오신날',
+            date: '2025-05-05',
+            type: 'holiday',
+            description: '어린이날 및 부처님오신날',
+            important: false
+        },
+        {
+            id: 35,
+            title: '대체공휴일',
+            date: '2025-05-06',
+            type: 'holiday',
+            description: '어린이날 대체공휴일',
+            important: false
+        },
+        {
+            id: 36,
+            title: '제49회 양지체육대회(자율보강)',
+            date: '2025-05-08',
+            endDate: '2025-05-09',
+            type: 'event',
+            description: '체육대회',
+            important: true
+        },
+        {
+            id: 37,
+            title: '수업일수 3/4선',
+            date: '2025-05-26',
+            type: 'academic',
+            description: '수업 진도 체크포인트',
+            important: false
+        },
+        // 6월 기말고사 및 방학
+        {
+            id: 38,
+            title: '현충일',
+            date: '2025-06-06',
+            type: 'holiday',
+            description: '현충일 공휴일',
+            important: false
+        },
+        {
+            id: 39,
+            title: '공휴일 보강기간',
+            date: '2025-06-10',
+            endDate: '2025-06-13',
+            type: 'academic',
+            description: '공휴일 보강수업',
+            important: false
+        },
+        {
+            id: 40,
+            title: '기말고사 권장기간',
+            date: '2025-06-16',
+            endDate: '2025-06-20',
+            type: 'exam',
+            description: '1학기 기말고사',
+            important: true
+        },
+        {
+            id: 41,
+            title: '성적입력 기간',
+            date: '2025-06-17',
+            endDate: '2025-06-25',
+            type: 'academic',
+            description: '기말고사 성적 입력',
+            important: false
+        },
+        {
+            id: 42,
+            title: '수업일수 4/4선',
+            date: '2025-06-20',
+            type: 'academic',
+            description: '수업 완료',
+            important: false
+        },
+        {
+            id: 43,
+            title: '하계방학 시작',
+            date: '2025-06-23',
+            type: 'holiday',
+            description: '여름방학 시작',
+            important: true
+        },
+        {
+            id: 44,
+            title: '하계 융합학기',
+            date: '2025-06-23',
+            endDate: '2025-07-01',
+            type: 'academic',
+            description: '여름 집중강의',
+            important: false
+        },
+        {
+            id: 45,
+            title: '성적열람 및 이의신청기간',
+            date: '2025-06-27',
+            endDate: '2025-07-02',
+            type: 'academic',
+            description: '1학기 성적 확인',
+            important: false
+        }
+    ],
+    'summer': [ // 여름학기
+        {
+            id: 101,
+            title: '하계 융합학기',
+            date: '2025-06-23',
+            endDate: '2025-07-01',
+            type: 'academic',
+            description: '여름학기 집중강의',
+            important: false
+        },
+        {
+            id: 102,
+            title: '성적열람 및 이의신청기간',
+            date: '2025-06-27',
+            endDate: '2025-07-02',
+            type: 'academic',
+            description: '1학기 성적확인',
+            important: false
+        },
+        {
+            id: 103,
+            title: '하계 계절학기',
+            date: '2025-07-03',
+            endDate: '2025-07-16',
+            type: 'academic',
+            description: '여름 계절학기',
+            important: true
+        },
+        {
+            id: 104,
+            title: '교직원세미나',
+            date: '2025-07-03',
+            type: 'event',
+            description: '교직원 연수',
+            important: false
+        },
+        {
+            id: 105,
+            title: '1학기 성적확정/국고사업 성과보고 및 협류 워크숍',
+            date: '2025-07-04',
+            type: 'academic',
+            description: '성적 확정 및 국고사업 보고',
+            important: false
+        },
+        {
+            id: 106,
+            title: '후기 졸업유예 접수기간',
+            date: '2025-07-07',
+            endDate: '2025-07-11',
+            type: 'academic',
+            description: '졸업유예 신청',
+            important: false
+        },
+        {
+            id: 107,
+            title: '진로박람회',
+            date: '2025-07-10',
+            endDate: '2025-07-11',
+            type: 'event',
+            description: '취업 진로박람회',
+            important: true
+        },
+        {
+            id: 108,
+            title: '하계 계절학기 성적입력',
+            date: '2025-07-16',
+            endDate: '2025-07-17',
+            type: 'academic',
+            description: '여름학기 성적처리',
+            important: false
+        },
+        {
+            id: 109,
+            title: '하계 계절학기 성적열람 및 성적이의신청',
+            date: '2025-07-18',
+            endDate: '2025-07-21',
+            type: 'academic',
+            description: '여름학기 성적확인',
+            important: false
+        },
+        {
+            id: 110,
+            title: '하계방학 전체 휴무',
+            date: '2025-07-28',
+            endDate: '2025-08-01',
+            type: 'holiday',
+            description: '여름방학 휴무',
+            important: false
+        },
+        {
+            id: 111,
+            title: '일반후학·전과·재입학 접수기간',
+            date: '2025-08-04',
+            endDate: '2025-08-08',
+            type: 'registration',
+            description: '후학 및 전과, 재입학 신청',
+            important: false
+        },
+        {
+            id: 112,
+            title: '후기 졸업사정회',
+            date: '2025-08-06',
+            type: 'academic',
+            description: '졸업심사',
+            important: false
+        },
+        {
+            id: 113,
+            title: '복학 접수기간',
+            date: '2025-08-11',
+            endDate: '2025-08-14',
+            type: 'registration',
+            description: '복학 신청',
+            important: false
+        },
+        {
+            id: 114,
+            title: '재학생(복학생) 수강신청 기간',
+            date: '2025-08-11',
+            endDate: '2025-08-19',
+            type: 'registration',
+            description: '2학기 수강신청',
+            important: true
+        },
+        {
+            id: 115,
+            title: '광복절',
+            date: '2025-08-15',
+            type: 'holiday',
+            description: '광복절 공휴일',
+            important: false
+        },
+        {
+            id: 116,
+            title: '2학기 재학생 등록기간',
+            date: '2025-08-18',
+            endDate: '2025-08-22',
+            type: 'registration',
+            description: '2학기 등록금 납부',
+            important: true
+        },
+        {
+            id: 117,
+            title: '2024학년도 후기 학위수여',
+            date: '2025-08-20',
+            type: 'event',
+            description: '후기 졸업식',
+            important: true
+        }
+    ],
+    '2': [ // 2학기
+        {
+            id: 201,
+            title: '2025학년도 2학기 개강',
+            date: '2025-09-01',
+            type: 'academic',
+            description: '2학기 수업 시작',
+            important: true
+        },
+        {
+            id: 202,
+            title: '2026학년도 수시1차 원서접수기간',
+            date: '2025-09-08',
+            endDate: '2025-09-30',
+            type: 'academic',
+            description: '수시모집 접수',
+            important: false
+        },
+        {
+            id: 203,
+            title: '수업일수 1/4선',
+            date: '2025-09-25',
+            type: 'academic',
+            description: '수업 진도 체크포인트',
+            important: false
+        },
+        {
+            id: 204,
+            title: '개천절',
+            date: '2025-10-03',
+            type: 'holiday',
+            description: '개천절 공휴일',
+            important: false
+        },
+        {
+            id: 205,
+            title: '추석연휴',
+            date: '2025-10-05',
+            endDate: '2025-10-07',
+            type: 'holiday',
+            description: '추석 연휴 (휴강)',
+            important: true
+        },
+        {
+            id: 206,
+            title: '대체공휴일',
+            date: '2025-10-08',
+            type: 'holiday',
+            description: '추석 대체공휴일',
+            important: false
+        },
+        {
+            id: 207,
+            title: '한글날',
+            date: '2025-10-09',
+            type: 'holiday',
+            description: '한글날 공휴일',
+            important: false
+        },
+        {
+            id: 208,
+            title: '임시휴업',
+            date: '2025-10-10',
+            type: 'holiday',
+            description: '임시휴업일',
+            important: false
+        },
+        {
+            id: 209,
+            title: '제49회 양지대축제',
+            date: '2025-10-16',
+            endDate: '2025-10-17',
+            type: 'event',
+            description: '대학축제',
+            important: true
+        },
+        {
+            id: 210,
+            title: '2026학년도 수시1차 면접/실기고사',
+            date: '2025-10-22',
+            endDate: '2025-10-26',
+            type: 'academic',
+            description: '수시모집 면접 및 실기고사',
+            important: true
+        },
+        {
+            id: 211,
+            title: '중간고사 평가 관찰기간',
+            date: '2025-10-27',
+            endDate: '2025-11-07',
+            type: 'exam',
+            description: '2학기 중간고사 기간',
+            important: true
+        },
+        {
+            id: 212,
+            title: '수업일수 2/4선',
+            date: '2025-10-30',
+            type: 'academic',
+            description: '수업 진도 체크포인트',
+            important: false
+        },
+        {
+            id: 213,
+            title: '2026학년도 수시1차 합격자 발표',
+            date: '2025-11-04',
+            type: 'academic',
+            description: '수시모집 합격자 발표',
+            important: true
+        },
+        {
+            id: 214,
+            title: '2026학년도 수시2차 원서접수기간',
+            date: '2025-11-07',
+            endDate: '2025-11-21',
+            type: 'academic',
+            description: '수시 2차 모집',
+            important: false
+        },
+        {
+            id: 215,
+            title: 'Gem-Festival',
+            date: '2025-11-20',
+            endDate: '2025-11-21',
+            type: 'event',
+            description: '보석축제',
+            important: true
+        },
+        {
+            id: 216,
+            title: '수업일수 3/4선',
+            date: '2025-11-26',
+            type: 'academic',
+            description: '수업 진도 체크포인트',
+            important: false
+        },
+        {
+            id: 217,
+            title: '2026학년도 수시2차 면접/실기고사',
+            date: '2025-11-29',
+            endDate: '2025-12-03',
+            type: 'academic',
+            description: '수시 2차 면접 및 실기고사',
+            important: true
+        },
+        {
+            id: 218,
+            title: '공휴일 보강기간',
+            date: '2025-12-08',
+            endDate: '2025-12-15',
+            type: 'academic',
+            description: '공휴일 보강수업',
+            important: false
+        },
+        {
+            id: 219,
+            title: '2026학년도 수시2차 합격자 발표',
+            date: '2025-12-11',
+            type: 'academic',
+            description: '수시 2차 합격자 발표',
+            important: true
+        },
+        {
+            id: 220,
+            title: '2026학년도 수시 합격자 등록기간',
+            date: '2025-12-15',
+            endDate: '2025-12-17',
+            type: 'registration',
+            description: '수시합격자 등록',
+            important: true
+        },
+        {
+            id: 221,
+            title: '기말고사 기간',
+            date: '2025-12-16',
+            endDate: '2025-12-22',
+            type: 'exam',
+            description: '2학기 기말고사',
+            important: true
+        },
+        {
+            id: 222,
+            title: '성적입력 기간',
+            date: '2025-12-17',
+            endDate: '2025-12-26',
+            type: 'academic',
+            description: '기말고사 성적 입력',
+            important: false
+        },
+        {
+            id: 223,
+            title: '수업일수 4/4선',
+            date: '2025-12-22',
+            type: 'academic',
+            description: '수업 완료',
+            important: false
+        },
+        {
+            id: 224,
+            title: '동계방학 시작',
+            date: '2025-12-23',
+            type: 'holiday',
+            description: '겨울방학 시작',
+            important: true
+        },
+        {
+            id: 225,
+            title: '동계 융합학기',
+            date: '2025-12-23',
+            endDate: '2026-01-02',
+            type: 'academic',
+            description: '겨울 융합학기',
+            important: false
+        },
+        {
+            id: 226,
+            title: '성탄절',
+            date: '2025-12-25',
+            type: 'holiday',
+            description: '성탄절 공휴일',
+            important: false
+        },
+        {
+            id: 227,
+            title: '2026학년도 정시 원서접수기간',
+            date: '2025-12-29',
+            endDate: '2026-01-14',
+            type: 'academic',
+            description: '정시모집 접수',
+            important: true
+        },
+        {
+            id: 228,
+            title: '성적열람 및 이의신청기간',
+            date: '2025-12-30',
+            endDate: '2026-01-05',
+            type: 'academic',
+            description: '2학기 성적 확인',
+            important: false
+        }
+    ],
+    'winter': [ // 겨울학기
+        {
+            id: 301,
+            title: '동계 융합학기',
+            date: '2025-12-23',
+            endDate: '2026-01-02',
+            type: 'academic',
+            description: '겨울 융합학기',
+            important: false
+        },
+        {
+            id: 302,
+            title: '2026학년도 정시 원서접수기간',
+            date: '2025-12-29',
+            endDate: '2026-01-14',
+            type: 'academic',
+            description: '정시모집 접수',
+            important: true
+        },
+        {
+            id: 303,
+            title: '성적열람 및 이의신청기간',
+            date: '2025-12-30',
+            endDate: '2026-01-05',
+            type: 'academic',
+            description: '2학기 성적확인',
+            important: false
+        },
+        {
+            id: 304,
+            title: '신정',
+            date: '2026-01-01',
+            type: 'holiday',
+            description: '신정 공휴일',
+            important: false
+        },
+        {
+            id: 305,
+            title: '2026년 업무개시일',
+            date: '2026-01-02',
+            type: 'academic',
+            description: '새해 업무 시작',
+            important: false
+        },
+        {
+            id: 306,
+            title: '시무식',
+            date: '2026-01-06',
+            type: 'event',
+            description: '신년 시무식',
+            important: false
+        },
+        {
+            id: 307,
+            title: '동계 계절학기',
+            date: '2026-01-06',
+            endDate: '2026-01-19',
+            type: 'academic',
+            description: '겨울 계절학기',
+            important: true
+        },
+        {
+            id: 308,
+            title: '2학기 성적확정',
+            date: '2026-01-07',
+            type: 'academic',
+            description: '후기 성적 확정',
+            important: false
+        },
+        {
+            id: 309,
+            title: '전기 졸업유예 접수기간',
+            date: '2026-01-08',
+            endDate: '2026-01-15',
+            type: 'academic',
+            description: '졸업유예 신청',
+            important: false
+        },
+        {
+            id: 310,
+            title: '교직원세미나',
+            date: '2026-01-08',
+            type: 'event',
+            description: '교직원 연수',
+            important: false
+        },
+        {
+            id: 311,
+            title: '국고사업 성과보고 및 협류 워크숍',
+            date: '2026-01-09',
+            type: 'event',
+            description: '국고사업 성과발표',
+            important: false
+        },
+        {
+            id: 312,
+            title: '동계계절학기 성적입력',
+            date: '2026-01-19',
+            endDate: '2026-01-20',
+            type: 'academic',
+            description: '겨울학기 성적처리',
+            important: false
+        },
+        {
+            id: 313,
+            title: '동계계절학기 성적열람 및 이의신청',
+            date: '2026-01-21',
+            endDate: '2026-01-22',
+            type: 'academic',
+            description: '겨울학기 성적확인',
+            important: false
+        },
+        {
+            id: 314,
+            title: '2026학년도 정시 면접/실기고사',
+            date: '2026-01-21',
+            endDate: '2026-01-25',
+            type: 'academic',
+            description: '신입생 정시모집',
+            important: true
+        },
+        {
+            id: 315,
+            title: '2026학년도 일반휴학·전과·재입학 접수기간',
+            date: '2026-01-26',
+            endDate: '2026-01-30',
+            type: 'registration',
+            description: '후학 및 전과, 재입학 신청',
+            important: false
+        },
+        {
+            id: 316,
+            title: '전기진급 및 졸업사정회',
+            date: '2026-01-28',
+            type: 'academic',
+            description: '진급 및 졸업 심사',
+            important: true
+        },
+        {
+            id: 317,
+            title: '2026학년도 정시 합격자 발표',
+            date: '2026-01-30',
+            type: 'academic',
+            description: '정시모집 합격자 발표',
+            important: true
+        },
+        // 2026년 2월 일정 추가
+        {
+            id: 318,
+            title: '복학 접수기간',
+            date: '2026-02-02',
+            endDate: '2026-02-06',
+            type: 'registration',
+            description: '복학 접수기간',
+            important: false
+        },
+        {
+            id: 319,
+            title: '재학생(복학생) 수강신청 기간',
+            date: '2026-02-02',
+            endDate: '2026-02-10',
+            type: 'registration',
+            description: '재학생(복학생) 수강신청 기간',
+            important: true
+        },
+        {
+            id: 320,
+            title: '2026학년도 정시 합격자 등록기간',
+            date: '2026-02-03',
+            endDate: '2026-02-05',
+            type: 'registration',
+            description: '2026학년도 정시 합격자 등록기간',
+            important: true
+        },
+        {
+            id: 321,
+            title: '1학기 재학생 등록기간',
+            date: '2026-02-09',
+            endDate: '2026-02-13',
+            type: 'registration',
+            description: '1학기 재학생 등록기간',
+            important: true
+        },
+        {
+            id: 322,
+            title: '제48회 학위수여식',
+            date: '2026-02-11',
+            type: 'event',
+            description: '제48회 학위수여식',
+            important: true
+        },
+        {
+            id: 323,
+            title: '설날 연휴',
+            date: '2026-02-16',
+            endDate: '2026-02-18',
+            type: 'holiday',
+            description: '설날 연휴',
+            important: true
+        },
+        {
+            id: 324,
+            title: '2026학년도 입학식',
+            date: '2026-02-24',
+            type: 'event',
+            description: '2026학년도 입학식',
+            important: true
+        }
+    ]
+};
 
 
 
@@ -5507,7 +6501,7 @@ function displayPopularRestaurantsOnMainPage() {
 function displayUpcomingAcademicSchedule() {
     console.log('다가오는 학사일정 업데이트 시작');
     
-    const scheduleContainer = document.querySelector('.schedule-list');
+    const scheduleContainer = document.querySelector('.calendar-list');
     if (!scheduleContainer) {
         console.error('학사일정 컨테이너를 찾을 수 없습니다.');
         return;
@@ -5552,17 +6546,16 @@ function displayUpcomingAcademicSchedule() {
     
     if (eventsToShow.length === 0) {
         scheduleContainer.innerHTML = `
-            <div class="schedule-item">
-                <div class="schedule-date">
-                    <div class="date-number">--</div>
-                    <div class="date-month">--</div>
+            <li class="calendar-item">
+                <div class="calendar-date">
+                    <div class="calendar-day">--</div>
+                    <div class="calendar-month">--</div>
                 </div>
-                <div class="schedule-content">
-                    <div class="schedule-title">예정된 중요 일정이 없습니다</div>
-                    <div class="schedule-description">새로운 학사일정이 업데이트되면 표시됩니다</div>
+                <div class="calendar-info">
+                    <div class="calendar-title">예정된 중요 일정이 없습니다</div>
+                    <div class="calendar-desc">새로운 학사일정이 업데이트되면 표시됩니다</div>
                 </div>
-                <div class="schedule-type ${getEventTypeClass('academic')}">${getEventTypeLabel('academic')}</div>
-            </div>
+            </li>
         `;
         return;
     }
@@ -5600,27 +6593,26 @@ function displayUpcomingAcademicSchedule() {
             }
         }
         
-        const scheduleItem = document.createElement('div');
-        scheduleItem.className = 'schedule-item';
-        scheduleItem.onclick = function() {
+        const listItem = document.createElement('li');
+        listItem.className = 'calendar-item';
+        listItem.onclick = function() {
             goToPage('academic-calendar');
         };
         
-        scheduleItem.innerHTML = `
-            <div class="schedule-date">
-                <div class="date-number">${day}</div>
-                <div class="date-month">${month}월</div>
+        listItem.innerHTML = `
+            <div class="calendar-date">
+                <div class="calendar-day">${day}</div>
+                <div class="calendar-month">${month}월</div>
                 <div class="d-day">${dDayText}</div>
             </div>
-            <div class="schedule-content">
-                <div class="schedule-title">${event.title}</div>
-                <div class="schedule-description">${event.description}</div>
-                <div class="schedule-full-date">${dateText}</div>
+            <div class="calendar-info">
+                <div class="calendar-title">${event.title}</div>
+                <div class="calendar-desc">${event.description}</div>
+                <div class="calendar-full-date">${dateText}</div>
             </div>
-            <div class="schedule-type ${getEventTypeClass(event.type)}">${getEventTypeLabel(event.type)}</div>
         `;
         
-        scheduleContainer.appendChild(scheduleItem);
+        scheduleContainer.appendChild(listItem);
     });
     
     console.log('다가오는 학사일정 업데이트 완료');
