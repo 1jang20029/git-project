@@ -1428,7 +1428,6 @@ header {
     align-items: center;
 }
 
-
 .calendar-item:hover {
     background-color: #f9f9f9;
     transform: translateX(5px);
@@ -1469,8 +1468,6 @@ header {
     font-weight: bold;
 }
 
-
-
 .calendar-info {
     flex: 1;
 }
@@ -1494,12 +1491,10 @@ header {
     color: #888;
 }
 
-
 /* 이벤트 타입별 색상 */
 .type-academic .calendar-day {
     color: #3498db;
 }
-
 
 .type-exam .calendar-day {
     color: #e74c3c;
@@ -1517,7 +1512,7 @@ header {
     color: #f39c12;
 }
 
-/* 도서관 상태 카드 */
+/* 동아리 활동 카드 */
 .club-activity-card {
     background-color: white;
     border-radius: 12px;
@@ -1716,7 +1711,6 @@ header {
     }
 }
 
-
 /* 교내/대외활동 요약 카드 */
 .activity-summary-card {
     background-color: white;
@@ -1907,7 +1901,6 @@ header {
     color: #888;
 }
 
-
 /* 학생 할인 맛집 카드 스타일 */
 .student-deals-card {
     background-color: white;
@@ -1923,19 +1916,15 @@ header {
     flex-direction: column;
 }
 
-
 .popular-restaurant-item {
     display: flex;
     padding: 12px 0;
     border-bottom: 1px solid #f0f0f0;
 }
 
-
 .popular-restaurant-item:last-child {
     border-bottom: none;
 }
-
-
 
 .restaurant-image {
     width: 92px;
@@ -1951,14 +1940,11 @@ header {
     font-size: 28px;
 }
 
-
 .restaurant-content {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
-
-
 
 .restaurant-category {
     font-size: 14px;
@@ -1966,13 +1952,11 @@ header {
     margin-bottom: 4px;
 }
 
-
 .restaurant-name {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 6px;
 }
-
 
 .restaurant-discount {
     font-size: 14px;
@@ -1982,12 +1966,10 @@ header {
     align-items: center;
 }
 
-
 .restaurant-discount .discount-icon {
     margin-right: 4px;
     color: #c62917;
 }
-
 
 .restaurant-location {
     font-size: 14px;
@@ -1997,7 +1979,6 @@ header {
     align-items: center;
 }
 
-
 .restaurant-likes {
     margin-left: auto;
     margin-top: auto;
@@ -2006,7 +1987,6 @@ header {
     color: #c62917;
     font-weight: bold;
 }
-
 
 .detail-button {
     background-color: #c62917;
@@ -2020,8 +2000,6 @@ header {
     margin-top: 8px;
     width: fit-content;
 }
-
-
 
 .deals-list {
     display: flex;
@@ -2119,10 +2097,10 @@ header {
 }
 
 .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-        border-radius: 4px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
 }
 
 .restaurant-image.skeleton {
