@@ -8,58 +8,142 @@
 </head>
 <body>
     <div class="container">
-        <!-- 헤더 -->
-        <header class="header">
-            <button class="back-btn" onclick="goBack()">
-                <span>←</span>
-            </button>
-            <h1 class="header-title">공지사항</h1>
-            <div class="header-spacer"></div>
+        <header>
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="header-title">공지사항</div>
+            <div class="header-icons">
+                <div class="search-icon" onclick="toggleSearch()">🔍</div>
+            </div>
         </header>
 
-        <!-- 검색 영역 -->
-        <div class="search-section">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="제목, 내용으로 검색..." class="search-input">
-                <button class="search-btn" onclick="performSearch()">
-                    <span>🔍</span>
-                </button>
-            </div>
+        <!-- 검색바 (숨김/표시 토글) -->
+        <div class="search-container" id="searchContainer" style="display: none;">
+            <input type="text" class="search-input" id="searchInput" placeholder="공지사항 검색" 
+                   oninput="searchNotices()" onkeypress="handleSearchKeyPress(event)">
+            <button class="search-clear" onclick="clearSearch()">✕</button>
+        </div>
+
+        <!-- 관리자 로그인 상태일 때만 표시되는 작성 버튼 -->
+        <div class="admin-controls" id="adminControls" style="display: none;">
+            <button class="write-notice-btn" onclick="showNoticeForm()">📝 공지사항 작성</button>
+        </div>
+
+        <!-- 긴급 공지사항 배너 -->
+        <div class="urgent-notices" id="urgentNotices">
+            <!-- 긴급 공지사항이 동적으로 추가됩니다 -->
         </div>
 
         <!-- 카테고리 필터 -->
-        <div class="category-section">
-            <div class="category-tabs">
-                <button class="category-tab active" data-category="all" onclick="filterByCategory('all')">전체</button>
-                <button class="category-tab" data-category="academic" onclick="filterByCategory('academic')">학사</button>
-                <button class="category-tab" data-category="scholarship" onclick="filterByCategory('scholarship')">장학</button>
-                <button class="category-tab" data-category="job" onclick="filterByCategory('job')">취업</button>
-                <button class="category-tab" data-category="event" onclick="filterByCategory('event')">행사</button>
-                <button class="category-tab" data-category="department" onclick="filterByCategory('department')">학과</button>
-            </div>
+        <div class="category-filter">
+            <div class="category-tag active" onclick="filterNotices('all')">전체</div>
+            <div class="category-tag" onclick="filterNotices('academic')">학사</div>
+            <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
+            <div class="category-tag" onclick="filterNotices('job')">취업</div>
+            <div class="category-tag" onclick="filterNotices('event')">행사</div>
+            <div class="category-tag" onclick="filterNotices('department')">학과</div>
+            <div class="category-tag" onclick="filterNotices('dormitory')">기숙사</div>
+            <div class="category-tag" onclick="filterNotices('library')">도서관</div>
+        </div>
+
+        <!-- 정렬 옵션 -->
+        <div class="sort-options">
+            <select class="sort-select" id="sortSelect" onchange="sortNotices()">
+                <option value="latest">최신순</option>
+                <option value="oldest">오래된순</option>
+                <option value="views">조회수순</option>
+                <option value="important">중요도순</option>
+            </select>
         </div>
 
         <!-- 공지사항 목록 -->
-        <div class="notices-section">
-            <div class="notices-header">
-                <span class="notices-count" id="noticesCount">전체 0건</span>
-                <select class="sort-select" id="sortSelect" onchange="sortNotices()">
-                    <option value="latest">최신순</option>
-                    <option value="oldest">오래된순</option>
-                    <option value="views">조회수순</option>
-                </select>
-            </div>
-            
-            <div class="notices-list" id="noticesList">
-                <div class="loading-message">
-                    <div class="loading-spinner"></div>
-                    <p>공지사항을 불러오는 중...</p>
-                </div>
-            </div>
+        <div class="notices-list" id="noticesList">
+            <!-- 공지사항이 동적으로 추가됩니다 -->
+        </div>
 
-            <!-- 페이지네이션 -->
-            <div class="pagination" id="pagination">
-                <!-- 동적으로 생성 -->
+        <!-- 페이지네이션 -->
+        <div class="pagination" id="pagination">
+            <!-- 페이지네이션이 동적으로 추가됩니다 -->
+        </div>
+
+        <!-- 로딩 인디케이터 -->
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>공지사항을 불러오는 중...</p>
+        </div>
+
+        <!-- 검색 결과 없음 메시지 -->
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-icon">📭</div>
+            <h3>검색 결과가 없습니다</h3>
+            <p>다른 검색어로 다시 시도해보세요</p>
+        </div>
+    </div>
+
+    <!-- 공지사항 작성/수정 모달 -->
+    <div class="modal" id="noticeModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">공지사항 작성</h2>
+                <span class="close" onclick="closeNoticeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="noticeForm">
+                    <input type="hidden" id="noticeId" value="">
+                    
+                    <div class="form-group">
+                        <label for="noticeTitle">제목</label>
+                        <input type="text" id="noticeTitle" required maxlength="100">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="noticeCategory">카테고리</label>
+                            <select id="noticeCategory" required>
+                                <option value="">카테고리 선택</option>
+                                <option value="academic">학사</option>
+                                <option value="scholarship">장학</option>
+                                <option value="job">취업</option>
+                                <option value="event">행사</option>
+                                <option value="department">학과</option>
+                                <option value="dormitory">기숙사</option>
+                                <option value="library">도서관</option>
+                                <option value="general">일반</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="noticeAuthor">작성자</label>
+                            <input type="text" id="noticeAuthor" required maxlength="50">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="isImportant"> 중요 공지사항
+                        </label>
+                        <label>
+                            <input type="checkbox" id="isUrgent"> 긴급 공지사항
+                        </label>
+                        <label>
+                            <input type="checkbox" id="isPinned"> 상단 고정
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="noticeContent">내용</label>
+                        <textarea id="noticeContent" rows="10" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="noticeFiles">첨부파일</label>
+                        <input type="file" id="noticeFiles" multiple accept=".pdf,.doc,.docx,.hwp,.jpg,.png,.gif">
+                        <div class="file-info">최대 5개, 각 파일당 10MB 이하</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeNoticeModal()">취소</button>
+                <button type="button" class="btn-save" onclick="saveNotice()">저장</button>
             </div>
         </div>
     </div>
