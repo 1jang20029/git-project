@@ -11,6 +11,7 @@ body {
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
+    padding-top: 340px; /* 고정 헤더 + 주요 일정 높이만큼 패딩 추가 */
 }
 
 .container {
@@ -27,13 +28,16 @@ body {
     background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%);
     color: white;
     padding: 40px;
-    border-radius: 20px;
-    margin-bottom: 30px;
+    border-radius: 0; /* 고정된 헤더는 모서리 둥글게 하지 않음 */
+    margin-bottom: 0; /* 고정된 헤더는 마진 제거 */
     box-shadow: 0 15px 35px rgba(46, 139, 87, 0.3);
-    position: sticky; /* 스크롤 시 상단 고정 */
+    position: fixed; /* 완전히 고정 */
     top: 0; /* 상단에서 0px 위치에 고정 */
-    z-index: 100; /* 다른 요소들보다 위에 표시 */
+    left: 0; /* 좌측에서 0px */
+    right: 0; /* 우측에서 0px */
+    z-index: 1000; /* 다른 요소들보다 위에 표시 */
     overflow: hidden;
+    width: 100%; /* 전체 너비 */
 }
 
 .header::before {
@@ -53,6 +57,8 @@ body {
     align-items: center;
     position: relative;
     z-index: 1;
+    max-width: 1400px; /* 컨테이너와 동일한 최대 너비 */
+    margin: 0 auto; /* 중앙 정렬 */
 }
 
 /* 뒤로 가기 버튼 스타일 */
@@ -122,9 +128,21 @@ body {
     color: white;
 }
 
-/* 주요 일정 요약 */
+/* 주요 일정 요약 - 고정 */
 .schedule-summary {
     margin-bottom: 30px;
+    margin-top: 0; /* 고정된 요소는 마진 제거 */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 0 0 20px 20px; /* 아래쪽만 둥글게 */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: fixed; /* 고정 위치 */
+    top: 140px; /* 헤더 바로 아래 */
+    left: 0;
+    right: 0;
+    z-index: 999; /* 헤더보다 아래, 다른 요소보다 위 */
+    width: 100%;
 }
 
 .summary-title {
@@ -134,12 +152,18 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    max-width: 1400px; /* 컨테이너와 동일한 최대 너비 */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
 }
 
 /* 스와이프 컨테이너 스타일 */
 .summary-cards {
     overflow: hidden;
     position: relative;
+    max-width: 1400px; /* 컨테이너와 동일한 최대 너비 */
+    margin: 0 auto; /* 중앙 정렬 */
 }
 
 .swipe-container {
@@ -688,7 +712,7 @@ body {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 2000; /* 고정 헤더보다 위에 표시 */
     left: 0;
     top: 0;
     width: 100%;
@@ -940,6 +964,23 @@ body {
 
 /* 반응형 디자인 개선 */
 @media (max-width: 1024px) {
+    body {
+        padding-top: 300px; /* 태블릿에서 헤더 + 주요일정 높이 조정 */
+    }
+    
+    .schedule-summary {
+        top: 120px; /* 태블릿에서 헤더 높이에 맞춤 */
+        padding: 15px;
+    }
+    
+    .header {
+        padding: 30px;
+    }
+    
+    .university-info .title {
+        font-size: 2.4rem;
+    }
+    
     .container {
         padding: 15px;
     }
@@ -978,6 +1019,19 @@ body {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding-top: 280px; /* 모바일에서 헤더 + 주요일정 높이 */
+    }
+    
+    .schedule-summary {
+        top: 160px; /* 모바일에서 헤더 높이에 맞춤 */
+        padding: 15px;
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
     .header-content {
         flex-direction: column;
         gap: 15px;
@@ -1059,6 +1113,19 @@ body {
 }
 
 @media (max-width: 480px) {
+    body {
+        padding-top: 240px; /* 작은 모바일 화면에서 헤더 + 주요일정 높이 */
+    }
+    
+    .schedule-summary {
+        top: 140px; /* 작은 모바일에서 헤더 높이에 맞춤 */
+        padding: 10px;
+    }
+    
+    .header {
+        padding: 15px;
+    }
+    
     .back-button span {
         display: none; /* 작은 화면에서는 텍스트 숨김 */
     }
