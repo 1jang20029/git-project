@@ -2853,7 +2853,7 @@ function goToPage(pageName) {
             break;
             
         case 'academic-calendar':
-            alert('학사일정 페이지로 이동합니다.');
+            window.location.href = 'academic-calendar.html';  // 이 줄만 수정
             break;
             
         case 'notices':
