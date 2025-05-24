@@ -18,6 +18,16 @@
                 미리보기 환경에서는 데이터 저장 기능이 제한됩니다. 실제 환경에서 테스트해주세요.
             </div>
             
+            <!-- 권한 승인 알림 -->
+            <div id="approvalNotification" class="approval-notification" style="display: none;">
+                <div class="notification-icon">✅</div>
+                <div class="notification-content">
+                    <div class="notification-title">권한 승인 완료</div>
+                    <div class="notification-text">교수/교직원 권한이 승인되었습니다!</div>
+                </div>
+                <button class="notification-close" onclick="closeNotification()">&times;</button>
+            </div>
+            
             <div class="logo-container">
                 <div class="university-logo">연성대학교</div>
                 <div class="slogan">Campus Guide</div>
@@ -25,8 +35,11 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                    <label class="form-label">아이디 (학번)</label>
-                    <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
+                    <label class="form-label">아이디 (학번/교번/직번)</label>
+                    <input type="text" class="form-input" id="studentId" placeholder="학번, 교번 또는 직번을 입력하세요">
+                    <div class="id-hint">
+                        학생: 8자리 숫자 | 교수: P+7자리 숫자 | 교직원: S+7자리 숫자
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -63,6 +76,9 @@
                 
                 <!-- 로그인 버튼 -->
                 <button type="button" class="login-button" onclick="login()">로그인</button>
+                
+                <!-- 관리자 로그인 버튼 -->
+                <button type="button" class="admin-login-button" onclick="showAdminLogin()">관리자 로그인</button>
             </form>
             
             <div class="separator">
@@ -122,7 +138,37 @@
             </div>
         </div>
     </div>
+
+    <!-- 관리자 로그인 모달 -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header admin-header">
+                <div class="modal-title">관리자 로그인</div>
+                <span class="close-modal" onclick="closeModal('adminLoginModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="admin-notice">
+                    <div class="notice-icon">🛡️</div>
+                    <div class="notice-text">
+                        관리자 권한으로 로그인하여 사용자 권한 승인 및 시스템 관리를 수행할 수 있습니다.
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label class="form-label">관리자 ID</label>
+                    <input type="text" class="form-input" id="adminId" placeholder="관리자 ID를 입력하세요">
+                </div>
+                <div class="modal-form-group">
+                    <label class="form-label">관리자 비밀번호</label>
+                    <input type="password" class="form-input" id="adminPassword" placeholder="관리자 비밀번호를 입력하세요">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button cancel" onclick="closeModal('adminLoginModal')">취소</button>
+                <button class="modal-button login admin-login" onclick="processAdminLogin()">관리자 로그인</button>
+            </div>
+        </div>
+    </div>
     
     <script src="login.js"></script>
-    </body>
+</body>
 </html>
