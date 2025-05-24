@@ -10,223 +10,193 @@
     <div class="container">
         <!-- 헤더 -->
         <header class="header">
-            <button class="back-btn" onclick="goBack()">
-                <span>←</span>
-            </button>
-            <h1 class="header-title" id="headerTitle">공지사항 작성</h1>
-            <div class="header-actions">
-                <button class="header-btn" onclick="saveDraft()" id="draftBtn">
-                    <span>💾</span> 임시저장
-                </button>
-                <button class="header-btn primary" onclick="publishNotice()" id="publishBtn">
-                    <span>📢</span> 게시
-                </button>
+            <button class="back-button" onclick="goBack()">←</button>
+            <h1 class="header-title">공지사항 관리</h1>
+            <div class="header-right">
+                <span class="user-role" id="userRole">교수</span>
             </div>
         </header>
 
-        <!-- 권한 확인 -->
-        <div class="permission-check">
-            <div class="user-info">
-                <div>
-                    <span class="user-role" id="userRole">사용자</span>
-                    <span id="userDepartment" style="margin-left: 8px; color: #666;"></span>
-                </div>
-                <div id="currentTime" style="font-size: 12px; color: #666;"></div>
-            </div>
-            <div class="permission-warning" id="permissionWarning">
-                교수 및 교직원만 공지사항을 작성할 수 있습니다.
-            </div>
+        <!-- 탭 메뉴 -->
+        <div class="tab-menu">
+            <button class="tab-button active" data-tab="write" onclick="switchTab('write')">
+                ✏️ 공지사항 작성
+            </button>
+            <button class="tab-button" data-tab="manage" onclick="switchTab('manage')">
+                📋 내 공지사항 관리
+            </button>
         </div>
 
-        <!-- 탭 네비게이션 -->
-        <div class="tab-navigation">
-            <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('write')" id="writeTab">
-                    ✏️ 새 공지 작성
-                </button>
-                <button class="tab-btn" onclick="switchTab('manage')" id="manageTab">
-                    📋 내 공지 관리
-                </button>
-            </div>
-        </div>
-
-        <!-- 작성 탭 -->
-        <div class="tab-content active" id="writeContent">
-            <form class="write-form" id="noticeForm">
-                <!-- 기본 정보 -->
-                <div class="form-section">
-                    <div class="section-title">
-                        📝 기본 정보 <span class="required">*</span>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label class="form-label">카테고리 <span class="required">*</span></label>
-                                <select class="form-select" id="category" required>
-                                    <option value="">카테고리를 선택하세요</option>
-                                    <option value="academic">📚 학사</option>
-                                    <option value="scholarship">💰 장학</option>
-                                    <option value="job">💼 취업</option>
-                                    <option value="event">🎉 행사</option>
-                                    <option value="department">🏢 학과</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-col small">
-                            <div class="form-group">
-                                <label class="form-label">게시일</label>
-                                <input type="date" class="form-input" id="publishDate" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">제목 <span class="required">*</span></label>
-                        <input type="text" class="form-input" id="title" placeholder="공지사항 제목을 입력하세요" required maxlength="100">
-                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                            <span id="titleCount">0</span>/100
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">요약 <span class="required">*</span></label>
-                        <textarea class="form-textarea" id="summary" placeholder="공지사항의 간단한 요약을 입력하세요" required maxlength="200"></textarea>
-                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                            <span id="summaryCount">0</span>/200
-                        </div>
-                    </div>
+        <!-- 공지사항 작성 탭 -->
+        <div id="write-tab" class="tab-content active">
+            <div class="write-container">
+                <h2 class="section-title">새 공지사항 작성</h2>
+                
+                <!-- 권한 안내 -->
+                <div id="permission-notice" class="permission-notice">
+                    <span class="notice-icon">ℹ️</span>
+                    <span id="permission-text">교수 권한으로 학과 공지사항을 작성할 수 있습니다.</span>
                 </div>
 
-                <!-- 내용 -->
-                <div class="form-section">
-                    <div class="section-title">
-                        📄 내용 <span class="required">*</span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <textarea class="form-textarea content-textarea" id="content" placeholder="공지사항의 상세 내용을 입력하세요" required></textarea>
-                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                            글자 수: <span id="contentCount">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 옵션 설정 -->
-                <div class="form-section">
-                    <div class="section-title">
-                        ⚙️ 옵션 설정
-                    </div>
-                    
-                    <div class="important-switch">
-                        <label class="switch">
-                            <input type="checkbox" id="important">
-                            <span class="slider"></span>
-                        </label>
-                        <div>
-                            <strong>중요 공지로 설정</strong>
-                            <div style="font-size: 12px; color: #666;">중요 공지는 목록 상단에 고정되며 "중요" 배지가 표시됩니다.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 대상 설정 -->
-                <div class="form-section">
-                    <div class="section-title">
-                        🎯 대상 설정
-                    </div>
-                    
-                    <div class="target-settings">
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="targetAll" name="target" value="all" checked>
-                                <label for="targetAll">전체 공지</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="targetDepartment" name="target" value="department">
-                                <label for="targetDepartment">특정 학과</label>
-                            </div>
-                        </div>
+                <form id="noticeForm" class="notice-form">
+                    <!-- 기본 정보 -->
+                    <div class="form-section">
+                        <h3>기본 정보</h3>
                         
-                        <div class="department-grid" id="departmentGrid" style="display: none;">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dept_computer" value="computerScience">
-                                <label for="dept_computer">컴퓨터정보학과</label>
+                        <div class="form-group">
+                            <label class="form-label">카테고리 *</label>
+                            <select class="form-input" id="category" required>
+                                <option value="">카테고리를 선택하세요</option>
+                                <!-- 권한에 따라 동적으로 생성 -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">제목 *</label>
+                            <input type="text" class="form-input" id="title" placeholder="공지사항 제목을 입력하세요" required maxlength="100">
+                            <div class="char-count">
+                                <span id="title-count">0</span>/100자
                             </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dept_business" value="business">
-                                <label for="dept_business">경영학과</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dept_nursing" value="nursing">
-                                <label for="dept_nursing">간호학과</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dept_engineering" value="engineering">
-                                <label for="dept_engineering">공학계열</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dept_arts" value="arts">
-                                <label for="dept_arts">예술계열</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">요약 (미리보기용)</label>
+                            <textarea class="form-input" id="summary" placeholder="공지사항의 간단한 요약을 입력하세요 (선택사항)" rows="2" maxlength="200"></textarea>
+                            <div class="char-count">
+                                <span id="summary-count">0</span>/200자
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 버튼 그룹 -->
-                <div class="btn-group">
-                    <button type="button" class="btn btn-outline" onclick="previewNotice()">
-                        <span>👁</span> 미리보기
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">
-                        <span>💾</span> 임시저장
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="publishNotice()">
-                        <span>📢</span> 게시하기
-                    </button>
-                </div>
-            </form>
+                    <!-- 내용 -->
+                    <div class="form-section">
+                        <h3>내용</h3>
+                        <div class="form-group">
+                            <label class="form-label">공지사항 내용 *</label>
+                            <textarea class="form-input content-textarea" id="content" placeholder="공지사항 내용을 자세히 입력하세요" required rows="10"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 고급 설정 -->
+                    <div class="form-section">
+                        <h3>게시 설정</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">중요도</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="importance" value="normal" checked>
+                                    <span>일반</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="importance" value="important">
+                                    <span>중요</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="importance" value="urgent">
+                                    <span>긴급</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">대상 학과</label>
+                            <select class="form-input" id="targetAudience">
+                                <option value="전체">전체 학과</option>
+                                <!-- 권한에 따라 동적으로 생성 -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">게시 기간</label>
+                            <div class="date-range">
+                                <input type="date" class="form-input date-input" id="publishDate">
+                                <span>~</span>
+                                <input type="date" class="form-input date-input" id="expireDate">
+                            </div>
+                            <div class="form-hint">설정하지 않으면 즉시 게시되며 만료되지 않습니다.</div>
+                        </div>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">임시저장</button>
+                        <button type="button" class="btn btn-primary" onclick="previewNotice()">미리보기</button>
+                        <button type="submit" class="btn btn-primary">게시하기</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <!-- 관리 탭 -->
-        <div class="tab-content" id="manageContent">
-            <div class="manage-filters">
-                <div class="filter-group">
-                    <select class="form-select" id="statusFilter" onchange="filterMyNotices()">
-                        <option value="all">전체 상태</option>
-                        <option value="published">게시됨</option>
-                        <option value="draft">임시저장</option>
-                    </select>
-                    <select class="form-select" id="categoryFilter" onchange="filterMyNotices()">
-                        <option value="all">전체 카테고리</option>
-                        <option value="academic">학사</option>
-                        <option value="scholarship">장학</option>
-                        <option value="job">취업</option>
-                        <option value="event">행사</option>
-                        <option value="department">학과</option>
-                    </select>
+        <!-- 공지사항 관리 탭 -->
+        <div id="manage-tab" class="tab-content">
+            <div class="manage-container">
+                <div class="manage-header">
+                    <h2 class="section-title">내 공지사항 관리</h2>
+                    <div class="manage-controls">
+                        <select class="filter-select" id="statusFilter" onchange="filterNotices()">
+                            <option value="all">전체</option>
+                            <option value="published">게시중</option>
+                            <option value="draft">임시저장</option>
+                            <option value="expired">만료됨</option>
+                        </select>
+                        <button class="btn btn-small" onclick="refreshManageList()">새로고침</button>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <span id="noticeCountDisplay">총 0건</span>
-                </div>
-            </div>
 
-            <div class="notice-list" id="myNoticesList">
-                <!-- 동적으로 생성됨 -->
+                <!-- 공지사항 목록 -->
+                <div id="manage-list" class="manage-list">
+                    <div class="loading-indicator">
+                        <div class="loading-spinner"></div>
+                        <p>공지사항을 불러오는 중...</p>
+                    </div>
+                </div>
+
+                <!-- 빈 상태 -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📝</div>
+                    <h3>작성한 공지사항이 없습니다</h3>
+                    <p>새로운 공지사항을 작성해보세요.</p>
+                    <button class="btn btn-primary" onclick="switchTab('write')">공지사항 작성하기</button>
+                </div>
             </div>
         </div>
 
         <!-- 미리보기 모달 -->
-        <div id="previewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 600px; max-height: 80%; overflow-y: auto; background: white; border-radius: 12px;">
-                <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                    <h3>미리보기</h3>
-                    <button onclick="closePreview()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        <div id="preview-modal" class="modal">
+            <div class="modal-overlay" onclick="closePreview()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>공지사항 미리보기</h3>
+                    <button class="close-btn" onclick="closePreview()">×</button>
                 </div>
-                <div style="padding: 20px;">
-                    <div id="previewContent">
-                        <!-- 미리보기 내용 -->
+                <div class="modal-body">
+                    <div id="preview-content" class="preview-content">
+                        <!-- 미리보기 내용이 여기에 표시됩니다 -->
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closePreview()">닫기</button>
+                    <button class="btn btn-primary" onclick="submitNotice()">게시하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 편집 모달 -->
+        <div id="edit-modal" class="modal">
+            <div class="modal-overlay" onclick="closeEditModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>공지사항 수정</h3>
+                    <button class="close-btn" onclick="closeEditModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- 편집 폼이 여기에 복사됩니다 -->
+                    <div id="edit-form-container"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeEditModal()">취소</button>
+                    <button class="btn btn-primary" onclick="updateNotice()">수정 완료</button>
                 </div>
             </div>
         </div>
