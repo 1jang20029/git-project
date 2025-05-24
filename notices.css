@@ -58,6 +58,81 @@ body {
     width: 36px;
 }
 
+/* 권한별 메뉴 */
+.admin-controls {
+    background: linear-gradient(135deg, #e8f5e8, #f0f8ff);
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    display: none; /* 기본적으로 숨김 */
+}
+
+.admin-controls.visible {
+    display: block;
+}
+
+.admin-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.user-role {
+    font-size: 14px;
+    color: #666;
+    background-color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.user-role.professor {
+    background-color: #e3f2fd;
+    border-color: #1976d2;
+    color: #1976d2;
+}
+
+.user-role.staff {
+    background-color: #f3e5f5;
+    border-color: #7b1fa2;
+    color: #7b1fa2;
+}
+
+.admin-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.admin-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.write-btn {
+    background-color: #c62917;
+    color: white;
+}
+
+.write-btn:hover {
+    background-color: #a52312;
+    transform: translateY(-1px);
+}
+
+.manage-btn {
+    background-color: #666;
+    color: white;
+}
+
+.manage-btn:hover {
+    background-color: #555;
+    transform: translateY(-1px);
+}
+
 /* 검색 영역 */
 .search-section {
     padding: 16px;
@@ -191,6 +266,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: relative;
 }
 
 .notice-item:hover {
@@ -302,6 +378,64 @@ body {
     gap: 4px;
 }
 
+/* 권한 표시 */
+.author-role {
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin-left: 4px;
+}
+
+.author-role.professor {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.author-role.staff {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* 편집 버튼 (작성자만 보임) */
+.edit-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: none;
+    gap: 4px;
+}
+
+.notice-item:hover .edit-controls {
+    display: flex;
+}
+
+.edit-btn {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-btn.edit {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.edit-btn.edit:hover {
+    background-color: #dee2e6;
+}
+
+.edit-btn.delete {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.edit-btn.delete:hover {
+    background-color: #f5c6cb;
+}
+
 /* 로딩 메시지 */
 .loading-message {
     text-align: center;
@@ -411,4 +545,29 @@ body {
         padding: 6px 12px;
         font-size: 13px;
     }
+
+    .admin-buttons {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .admin-btn {
+        padding: 10px 16px;
+    }
+}
+
+/* 권한 확인 알림 */
+.permission-notice {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px;
+    font-size: 14px;
+    color: #856404;
+    display: none;
+}
+
+.permission-notice.visible {
+    display: block;
 }
