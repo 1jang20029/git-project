@@ -16,80 +16,6 @@ function formatPhoneNumber(input) {
     input.value = phoneNumber;
 }
 
-// 역할별 ID 패턴 검증 함수
-function validateIdPattern(role, id) {
-    switch(role) {
-        case 'student':
-            // 학생: 숫자만 (예: 20241234)
-            return /^\d{8}$/.test(id);
-        case 'professor':
-            // 교수: P로 시작하는 패턴 (예: P2024001)
-            return /^P\d{7}$/.test(id);
-        case 'staff':
-            // 교직원: S로 시작하는 패턴 (예: S2024001)
-            return /^S\d{7}$/.test(id);
-        default:
-            return false;
-    }
-}
-
-// 역할 변경 시 UI 업데이트
-function updateUIByRole(role) {
-    const idLabel = document.getElementById('idLabel');
-    const idInput = document.getElementById('studentId');
-    const idHint = document.getElementById('idHint');
-    const gradeGroup = document.getElementById('gradeGroup');
-    const approvalNotice = document.getElementById('approvalNotice');
-    const departmentSelect = document.getElementById('department');
-    const staffOptions = document.querySelectorAll('.staff-option');
-    const staffDepartments = document.getElementById('staffDepartments');
-    
-    // 기존 에러 메시지 숨기기
-    document.getElementById('studentId-error').style.display = 'none';
-    
-    switch(role) {
-        case 'student':
-            idLabel.textContent = '학번';
-            idInput.placeholder = '학번을 입력하세요';
-            idHint.textContent = '예: 20241234';
-            gradeGroup.style.display = 'block';
-            approvalNotice.style.display = 'none';
-            
-            // 교직원 부서 옵션 숨기기
-            staffOptions.forEach(option => option.style.display = 'none');
-            staffDepartments.style.display = 'none';
-            break;
-            
-        case 'professor':
-            idLabel.textContent = '교번';
-            idInput.placeholder = '교번을 입력하세요';
-            idHint.textContent = '예: P2024001';
-            gradeGroup.style.display = 'none';
-            approvalNotice.style.display = 'block';
-            
-            // 교직원 부서 옵션 숨기기
-            staffOptions.forEach(option => option.style.display = 'none');
-            staffDepartments.style.display = 'none';
-            break;
-            
-        case 'staff':
-            idLabel.textContent = '직번';
-            idInput.placeholder = '직번을 입력하세요';
-            idHint.textContent = '예: S2024001';
-            gradeGroup.style.display = 'none';
-            approvalNotice.style.display = 'block';
-            
-            // 교직원 부서 옵션 표시
-            staffOptions.forEach(option => option.style.display = 'block');
-            staffDepartments.style.display = 'block';
-            break;
-    }
-    
-    // 입력값 초기화
-    idInput.value = '';
-    departmentSelect.selectedIndex = 0;
-}
-
 // 학년 드롭다운 기능
 document.addEventListener('DOMContentLoaded', function() {
     const dropdownBtn = document.getElementById('gradeDropdownBtn');
@@ -126,14 +52,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 역할 선택 라디오 버튼 이벤트
-    const roleRadios = document.querySelectorAll('input[name="userRole"]');
-    roleRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            updateUIByRole(this.value);
-        });
-    });
-    
     // URL 파라미터 확인하여 소셜 로그인 여부 판단
     const urlParams = new URLSearchParams(window.location.search);
     const socialType = urlParams.get('social');
@@ -156,20 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
             socialIconElem.className = `social-icon ${socialType}-icon`;
         }
     }
-    
-    // ID 입력 실시간 검증
-    const idInput = document.getElementById('studentId');
-    idInput.addEventListener('input', function() {
-        const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
-        const errorDiv = document.getElementById('studentId-error');
-        
-        if (this.value && !validateIdPattern(selectedRole, this.value)) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = getIdErrorMessage(selectedRole);
-        } else {
-            errorDiv.style.display = 'none';
-        }
-    });
 });
 
 // 소셜 타입명 변환 함수
@@ -182,28 +86,11 @@ function getSocialTypeName(type) {
     }
 }
 
-// 역할별 에러 메시지 반환
-function getIdErrorMessage(role) {
-    switch(role) {
-        case 'student':
-            return '8자리 숫자로 입력해주세요 (예: 20241234)';
-        case 'professor':
-            return 'P와 7자리 숫자로 입력해주세요 (예: P2024001)';
-        case 'staff':
-            return 'S와 7자리 숫자로 입력해주세요 (예: S2024001)';
-        default:
-            return '올바른 형식으로 입력해주세요';
-    }
-}
-
 function goBack() {
     window.location.href = "login.html";
 }
 
 function register() {
-    // 선택된 역할 가져오기
-    const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
-    
     // 입력값 가져오기
     const studentId = document.getElementById('studentId').value;
     const name = document.getElementById('name').value;
@@ -242,109 +129,73 @@ function register() {
         }
     }
     
-    // ID 패턴 검증
-    if (!validateIdPattern(selectedRole, studentId)) {
-        document.getElementById('studentId-error').style.display = 'block';
-        document.getElementById('studentId-error').textContent = getIdErrorMessage(selectedRole);
-        return;
-    }
+    // 간단한 유효성 검사
+    let isValid = true;
     
     // 필수 필드 검사
-    if (!studentId || !name || !department || !phone || !email) {
+    if (!studentId || !name || !department || !selectedGrade || !phone || !email) {
         alert('모든 필수 항목을 입력해주세요.');
-        return;
-    }
-    
-    // 학생인 경우 학년 필수
-    if (selectedRole === 'student' && !selectedGrade) {
-        alert('학년을 선택해주세요.');
+        isValid = false;
         return;
     }
     
     // 약관 동의 검사
     if (!agreeTerms || !agreePrivacy) {
         alert('필수 약관에 동의해주세요.');
+        isValid = false;
         return;
     }
     
-    // 소셜 로그인 정보 가져오기
-    let userId = studentId;
-    
-    if (isSocialLogin) {
-        const socialId = sessionStorage.getItem('temp_social_id');
-        if (socialId) {
-            userId = socialId;
+    // 유효성 검사 통과
+    if (isValid) {
+        // 소셜 로그인 정보 가져오기
+        let userId = studentId;
+        
+        if (isSocialLogin) {
+            const socialId = sessionStorage.getItem('temp_social_id');
+            if (socialId) {
+                userId = socialId;
+            }
         }
-    }
-    
-    // 권한 설정 (교수/교직원은 승인 대기 상태로 설정)
-    let userRole = selectedRole;
-    let roleStatus = 'approved'; // 기본은 승인됨
-    
-    if (selectedRole === 'professor' || selectedRole === 'staff') {
-        roleStatus = 'pending'; // 승인 대기
-        userRole = 'student'; // 승인 전까지는 학생 권한으로 설정
-    }
-    
-    // 로컬 스토리지에 저장
-    localStorage.setItem(`user_${userId}_registered`, 'true');
-    localStorage.setItem(`user_${userId}_first_login`, 'true');
-    localStorage.setItem(`user_${userId}_studentId`, studentId);
-    localStorage.setItem(`user_${userId}_name`, name);
-    localStorage.setItem(`user_${userId}_department`, department);
-    localStorage.setItem(`user_${userId}_phone`, phone);
-    localStorage.setItem(`user_${userId}_email`, email);
-    localStorage.setItem(`user_${userId}_role`, userRole);
-    localStorage.setItem(`user_${userId}_requested_role`, selectedRole);
-    localStorage.setItem(`user_${userId}_role_status`, roleStatus);
-    
-    // 학생인 경우에만 학년 저장
-    if (selectedRole === 'student') {
+        
+        // 로컬 스토리지에 저장
+        localStorage.setItem(`user_${userId}_registered`, 'true');
+        // 항상 첫 로그인으로 설정 (새 계정이므로)
+        localStorage.setItem(`user_${userId}_first_login`, 'true');
+        
+        localStorage.setItem(`user_${userId}_studentId`, studentId);
+        localStorage.setItem(`user_${userId}_name`, name);
+        localStorage.setItem(`user_${userId}_department`, department);
         localStorage.setItem(`user_${userId}_grade`, selectedGrade);
-    }
-    
-    // 소셜 로그인이 아닌 경우에만 비밀번호 저장
-    if (!isSocialLogin) {
-        localStorage.setItem(`user_${userId}_password`, password);
-    } else {
-        // 소셜 로그인 타입 저장
-        localStorage.setItem(`user_${userId}_socialType`, socialType);
-    }
-    
-    // 권한 승인 요청이 있는 경우 관리자 승인 목록에 추가
-    if (selectedRole === 'professor' || selectedRole === 'staff') {
-        let pendingApprovals = JSON.parse(localStorage.getItem('pending_role_approvals') || '[]');
-        pendingApprovals.push({
-            userId: userId,
-            studentId: studentId,
-            name: name,
-            requestedRole: selectedRole,
-            department: department,
-            requestDate: new Date().toISOString(),
-            status: 'pending'
-        });
-        localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
+        localStorage.setItem(`user_${userId}_phone`, phone);
+        localStorage.setItem(`user_${userId}_email`, email);
         
-        alert('회원가입이 완료되었습니다!\n교수/교직원 권한은 관리자 승인 후 활성화됩니다.\n승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
-    } else {
+        // 소셜 로그인이 아닌 경우에만 비밀번호 저장
+        if (!isSocialLogin) {
+            localStorage.setItem(`user_${userId}_password`, password);
+        } else {
+            // 소셜 로그인 타입 저장
+            localStorage.setItem(`user_${userId}_socialType`, socialType);
+        }
+        
         alert('회원가입이 완료되었습니다!');
-    }
-    
-    // 소셜 로그인 세션 데이터 정리
-    if (isSocialLogin) {
-        sessionStorage.removeItem('temp_social_id');
-        sessionStorage.removeItem('temp_social_type');
-        sessionStorage.removeItem('temp_social_name');
-        sessionStorage.removeItem('temp_social_email');
-        sessionStorage.removeItem('temp_social_profile_image');
         
-        // 현재 로그인 사용자로 설정
-        localStorage.setItem('currentLoggedInUser', userId);
-        
-        // 첫 로그인이므로 위젯 설정 페이지로 이동
-        window.location.href = "widget-settings.html";
-    } else {
-        // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
-        window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+        // 소셜 로그인 세션 데이터 정리
+        if (isSocialLogin) {
+            sessionStorage.removeItem('temp_social_id');
+            sessionStorage.removeItem('temp_social_type');
+            sessionStorage.removeItem('temp_social_name');
+            sessionStorage.removeItem('temp_social_email');
+            sessionStorage.removeItem('temp_social_profile_image');
+            
+            // 현재 로그인 사용자로 설정
+            localStorage.setItem('currentLoggedInUser', userId);
+            
+            // 첫 로그인이므로 위젯 설정 페이지로 이동
+            window.location.href = "widget-settings.html";
+        } else {
+            // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
+            window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+        }
     }
 }
