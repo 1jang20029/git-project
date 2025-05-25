@@ -3,48 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>네이버 지도</title>
+    <title>연성대학교 길찾기</title>
     <style>
         body {
             margin: 0;
             padding: 20px;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .control-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
         }
         #map {
             width: 100%;
-            height: 500px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            height: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .info {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 4px;
+        .info-panel {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .route-info {
+            display: none;
+            padding: 15px;
+            background: #e8f5e8;
+            border-left: 4px solid #4CAF50;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .building-info {
+            margin-top: 10px;
+            padding: 15px;
+            background: #f0f8ff;
+            border-left: 4px solid #2196F3;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="info">
-        <h2>네이버 지도</h2>
-        <p>서울 중심부를 기본 위치로 설정했습니다.</p>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 연성대학교 길찾기</h1>
+            <p>캠퍼스 내 건물 위치를 확인하고 길찾기를 이용해보세요</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="startSelect">출발지</label>
+                <select id="startSelect">
+                    <option value="">출발지를 선택하세요</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="endSelect">도착지</label>
+                <select id="endSelect">
+                    <option value="">도착지를 선택하세요</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="findRouteBtn" disabled>길찾기</button>
+                <button id="clearRouteBtn" style="margin-left: 10px; background: #f44336;">경로 지우기</button>
+            </div>
+        </div>
+        
+        <div id="map"></div>
+        
+        <div class="info-panel">
+            <h3>📍 캠퍼스 안내</h3>
+            <div class="route-info" id="routeInfo"></div>
+            <div class="building-info" id="buildingInfo">
+                <p>건물을 선택하면 상세 정보가 표시됩니다.</p>
+            </div>
+        </div>
     </div>
-    
-    <div id="map"></div>
 
     <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction"></script>
     <script>
-        // 지도 초기화
-        var map = new naver.maps.Map('map', {
-            center: new naver.maps.LatLng(37.5665, 126.9780), // 서울 시청 좌표
-            zoom: 10,
-            mapTypeControl: true
+        // 연성대학교 건물 데이터
+        const buildings = [
+            { name: '공학1관', description: '공학계열 강의실, 실험실', coords: { lat: 37.39632767479923, lng: 126.90699348692698 } },
+            { name: '자연과학관', description: '반려동물보건학, 반려동물산업학', coords: { lat: 37.39669466288283, lng: 126.90676716508685 } },
+            { name: '식품과학관', description: '식품영양학과, 조리실습실', coords: { lat: 37.39714809720343, lng: 126.90762208499473 } },
+            { name: '도의관', description: '교양 수업, 강당', coords: { lat: 37.39679932128769, lng: 126.90809683728425 } },
+            { name: '공학2관', description: '공학계열 실습실, 연구실', coords: { lat: 37.396789747114205, lng: 126.90737406929797 } },
+            { name: '문화1관', description: '인문사회계열 강의실', coords: { lat: 37.39576992475254, lng: 126.90812350405056 } },
+            { name: '연곡문화센터', description: '기숙사, 컨벤션홀, 평생교육원', coords: { lat: 37.398046192024914, lng: 126.90966512810492 } },
+            { name: '창조관', description: '학과 사무실, 강의실', coords: { lat: 37.39730791148064, lng: 126.91039726900274 } },
+            { name: '운동장', description: '체육활동, 행사장', coords: { lat: 37.39673944839101, lng: 126.90932224700094 } },
+            { name: '농구장', description: '체육활동', coords: { lat: 37.39667684947615, lng: 126.90994063692402 } },
+            { name: '학생복지센터', description: '학생지원 시설', coords: { lat: 37.3962916630711, lng: 126.90994109780426 } },
+            { name: '창의교육센터', description: '항공서비스과 항공실습실, 카페', coords: { lat: 37.39737971014044, lng: 126.91002449732869 } },
+            { name: '문화2관', description: '문화콘텐츠계열 강의실', coords: { lat: 37.396035307891026, lng: 126.90758674745014 } },
+            { name: '대학본관', description: '유통물류학과, 총장실', coords: { lat: 37.397467068076345, lng: 126.90938066144557 } },
+            { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
+        ];
+
+        console.log('건물 데이터:', buildings); // 디버깅용
+
+        // 페이지 로드 완료 후 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
         });
 
-        // 지도가 로드되었을 때 메시지 출력
-        naver.maps.Event.addListener(map, 'idle', function() {
-            console.log('지도가 로드되었습니다.');
-        });
+        function initializeApp() {
+            // 셀렉트 박스 초기화
+            const startSelect = document.getElementById('startSelect');
+            const endSelect = document.getElementById('endSelect');
+            
+            console.log('셀렉트 요소:', startSelect, endSelect); // 디버깅용
+            
+            if (!startSelect || !endSelect) {
+                console.error('셀렉트 요소를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 건물 옵션들 추가
+            buildings.forEach((building, index) => {
+                console.log('옵션 추가:', building.name, index); // 디버깅용
+                
+                // 출발지 옵션 추가
+                const startOption = document.createElement('option');
+                startOption.value = index;
+                startOption.textContent = building.name;
+                startSelect.appendChild(startOption);
+                
+                // 도착지 옵션 추가
+                const endOption = document.createElement('option');
+                endOption.value = index;
+                endOption.textContent = building.name;
+                endSelect.appendChild(endOption);
+            });
+
+            console.log('옵션 추가 완료. 출발지 옵션 수:', startSelect.options.length);
+            console.log('도착지 옵션 수:', endSelect.options.length);
+
+            // 지도 초기화
+            initializeMap();
+        }
+
+        function initializeMap() {
+            // 지도 초기화
+            const map = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
+                zoom: 16,
+                mapTypeControl: true
+            });
+
+            // 마커와 경로를 저장할 배열
+            const markers = [];
+            let routeLine = null;
+
+            // 모든 건물에 마커 추가
+            buildings.forEach((building, index) => {
+                const marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(building.coords.lat, building.coords.lng),
+                    map: map,
+                    title: building.name,
+                    icon: {
+                        content: `<div style="background: #4CAF50; color: white; padding: 5px 8px; border-radius: 15px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">${building.name}</div>`,
+                        anchor: new naver.maps.Point(0, 0)
+                    }
+                });
+
+                // 마커 클릭 이벤트
+                naver.maps.Event.addListener(marker, 'click', function() {
+                    showBuildingInfo(building);
+                });
+
+                markers.push(marker);
+            });
+
+            // 이벤트 리스너 설정
+            setupEventListeners(map, routeLine);
+
+            // 초기 건물 정보 표시
+            showBuildingInfo(buildings[0]);
+        }
+
+        function setupEventListeners(map, routeLine) {
+            const startSelect = document.getElementById('startSelect');
+            const endSelect = document.getElementById('endSelect');
+
+            // 출발지/도착지 선택 시 길찾기 버튼 활성화
+            function checkSelections() {
+                const findRouteBtn = document.getElementById('findRouteBtn');
+                
+                console.log('출발지 값:', startSelect.value);
+                console.log('도착지 값:', endSelect.value);
+                console.log('값이 같은가?', startSelect.value === endSelect.value);
+                
+                if (startSelect.value && endSelect.value && startSelect.value !== endSelect.value) {
+                    findRouteBtn.disabled = false;
+                    findRouteBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    console.log('길찾기 버튼 활성화됨');
+                } else {
+                    findRouteBtn.disabled = true;
+                    findRouteBtn.style.background = '#ccc';
+                    console.log('길찾기 버튼 비활성화됨 - 이유:', {
+                        출발지있음: !!startSelect.value,
+                        도착지있음: !!endSelect.value,
+                        서로다름: startSelect.value !== endSelect.value
+                    });
+                }
+            }
+
+            startSelect.addEventListener('change', checkSelections);
+            endSelect.addEventListener('change', checkSelections);
+
+            // 길찾기 기능
+            document.getElementById('findRouteBtn').addEventListener('click', function() {
+                const startIndex = parseInt(startSelect.value);
+                const endIndex = parseInt(endSelect.value);
+                
+                if (startIndex >= 0 && endIndex >= 0) {
+                    findRoute(buildings[startIndex], buildings[endIndex], map, routeLine);
+                }
+            });
+
+            // 경로 지우기
+            document.getElementById('clearRouteBtn').addEventListener('click', function() {
+                if (window.currentRouteLine) {
+                    window.currentRouteLine.setMap(null);
+                    window.currentRouteLine = null;
+                }
+                document.getElementById('routeInfo').style.display = 'none';
+            });
+        }
+
+        // 건물 정보 표시
+        function showBuildingInfo(building) {
+            const buildingInfo = document.getElementById('buildingInfo');
+            buildingInfo.innerHTML = `
+                <h4>🏢 ${building.name}</h4>
+                <p><strong>용도:</strong> ${building.description}</p>
+                <p><strong>좌표:</strong> ${building.coords.lat.toFixed(6)}, ${building.coords.lng.toFixed(6)}</p>
+            `;
+        }
+
+        // 캠퍼스 내 보행로 정의 (주요 통로들)
+        const campusWalkways = {
+            // 각 건물에서 연결 가능한 주요 경유점들
+            waypoints: [
+                { name: 'main_entrance', coords: { lat: 37.39661657434427, lng: 126.90772437800818 } }, // 정문
+                { name: 'central_plaza', coords: { lat: 37.39677, lng: 126.90780 } }, // 중앙광장
+                { name: 'library_front', coords: { lat: 37.39650, lng: 126.90680 } }, // 도서관 앞
+                { name: 'engineering_path', coords: { lat: 37.39655, lng: 126.90720 } }, // 공학관 통로
+                { name: 'dormitory_path', coords: { lat: 37.39780, lng: 126.90900 } }, // 기숙사 통로
+                { name: 'sports_area', coords: { lat: 37.39670, lng: 126.90950 } } // 운동시설 구역
+            ]
+        };
+
+        // 길찾기 구현 (캠퍼스 특화 + API 백업)
+        function findRoute(start, end, map, routeLine) {
+            // 기존 경로 제거
+            if (window.currentRouteLine) {
+                window.currentRouteLine.setMap(null);
+            }
+
+            // 로딩 표시
+            const routeInfo = document.getElementById('routeInfo');
+            routeInfo.innerHTML = `
+                <h4>🗺️ 경로 검색 중...</h4>
+                <p>최적 경로를 계산하고 있습니다...</p>
+            `;
+            routeInfo.style.display = 'block';
+
+            // 캠퍼스 내 거리가 가까운 경우 직접 경로 계산
+            const straightDistance = calculateDistance(start.coords, end.coords);
+            
+            if (straightDistance < 200) {
+                // 200m 이내는 직선 경로 (건물이 가까움)
+                setTimeout(() => drawCampusRoute(start, end, map, 'direct'), 500);
+            } else {
+                // 거리가 먼 경우 경유점을 통한 경로
+                setTimeout(() => drawCampusRoute(start, end, map, 'waypoint'), 500);
+            }
+        }
+
+        // 캠퍼스 경로 그리기
+        function drawCampusRoute(start, end, map, routeType) {
+            let path = [];
+            let totalDistance = 0;
+            let routeDescription = '';
+
+            if (routeType === 'direct') {
+                // 직접 경로
+                path = [
+                    new naver.maps.LatLng(start.coords.lat, start.coords.lng),
+                    new naver.maps.LatLng(end.coords.lat, end.coords.lng)
+                ];
+                totalDistance = calculateDistance(start.coords, end.coords);
+                routeDescription = '직접 경로';
+            } else {
+                // 경유점을 통한 경로
+                const waypoint = findBestWaypoint(start.coords, end.coords);
+                path = [
+                    new naver.maps.LatLng(start.coords.lat, start.coords.lng),
+                    new naver.maps.LatLng(waypoint.coords.lat, waypoint.coords.lng),
+                    new naver.maps.LatLng(end.coords.lat, end.coords.lng)
+                ];
+                
+                totalDistance = calculateDistance(start.coords, waypoint.coords) + 
+                               calculateDistance(waypoint.coords, end.coords);
+                routeDescription = `${waypoint.name} 경유`;
+            }
+
+            // 경로 선 그리기
+            window.currentRouteLine = new naver.maps.Polyline({
+                map: map,
+                path: path,
+                strokeColor: '#4CAF50',
+                strokeWeight: 5,
+                strokeOpacity: 0.8
+            });
+
+            // 경유점 마커 추가 (경유점이 있는 경우)
+            if (routeType === 'waypoint' && path.length > 2) {
+                new naver.maps.Marker({
+                    position: path[1],
+                    map: map,
+                    icon: {
+                        content: '<div style="background: #FF9800; color: white; padding: 3px 6px; border-radius: 10px; font-size: 10px;">경유</div>',
+                        anchor: new naver.maps.Point(15, 15)
+                    }
+                });
+            }
+
+            // 예상 시간 계산 (평균 보행속도 4km/h)
+            const walkingTime = Math.ceil(totalDistance / 67); // 67m/분
+
+            // 경로 정보 표시
+            const routeInfo = document.getElementById('routeInfo');
+            routeInfo.innerHTML = `
+                <h4>🗺️ 캠퍼스 보행 경로</h4>
+                <p><strong>출발:</strong> ${start.name}</p>
+                <p><strong>도착:</strong> ${end.name}</p>
+                <p><strong>경로:</strong> ${routeDescription}</p>
+                <p><strong>거리:</strong> 약 ${totalDistance}m</p>
+                <p><strong>예상 시간:</strong> 약 ${walkingTime}분</p>
+                <div style="margin-top: 10px; padding: 10px; background: #e8f5e8; border-radius: 5px; font-size: 12px;">
+                    <strong>🚶‍♂️ 보행 안내:</strong><br>
+                    ${getWalkingInstructions(start, end, routeType)}
+                </div>
+            `;
+
+            // 지도 범위 조정
+            const bounds = new naver.maps.LatLngBounds();
+            path.forEach(point => bounds.extend(point));
+            map.fitBounds(bounds, { padding: 80 });
+        }
+
+        // 최적 경유점 찾기
+        function findBestWaypoint(startCoords, endCoords) {
+            let bestWaypoint = campusWalkways.waypoints[0];
+            let minTotalDistance = Infinity;
+
+            campusWalkways.waypoints.forEach(waypoint => {
+                const distToWaypoint = calculateDistance(startCoords, waypoint.coords);
+                const distFromWaypoint = calculateDistance(waypoint.coords, endCoords);
+                const totalDist = distToWaypoint + distFromWaypoint;
+
+                if (totalDist < minTotalDistance) {
+                    minTotalDistance = totalDist;
+                    bestWaypoint = waypoint;
+                }
+            });
+
+            return bestWaypoint;
+        }
+
+        // 보행 안내 메시지 생성
+        function getWalkingInstructions(start, end, routeType) {
+            const instructions = [];
+            
+            // 출발지별 안내
+            if (start.name.includes('공학')) {
+                instructions.push("공학관에서 나와 중앙 통로를 이용하세요.");
+            } else if (start.name.includes('문화')) {
+                instructions.push("문화관에서 나와 메인 보행로로 이동하세요.");
+            } else if (start.name === '연곡문화센터') {
+                instructions.push("기숙사에서 나와 캠퍼스 중앙으로 향하세요.");
+            }
+
+            // 경로 타입별 안내
+            if (routeType === 'direct') {
+                instructions.push("목적지까지 직접 이동 가능합니다.");
+            } else {
+                instructions.push("중앙 통로를 경유하여 이동하는 것이 효율적입니다.");
+            }
+
+            // 도착지별 안내
+            if (end.name.includes('관')) {
+                instructions.push(`${end.name} 입구는 건물 정면에 위치합니다.`);
+            }
+
+            instructions.push("보행로를 이용하시고, 차량 통행에 주의하세요.");
+
+            return instructions.join('<br>');
+        }
+
+        // 두 좌표 간 거리 계산 (미터)
+        function calculateDistance(coord1, coord2) {
+            const R = 6371e3; // 지구 반지름 (미터)
+            const φ1 = coord1.lat * Math.PI/180;
+            const φ2 = coord2.lat * Math.PI/180;
+            const Δφ = (coord2.lat-coord1.lat) * Math.PI/180;
+            const Δλ = (coord2.lng-coord1.lng) * Math.PI/180;
+
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            return Math.round(R * c);
+        }
     </script>
 </body>
 </html>
