@@ -248,121 +248,154 @@
             `;
         }
 
-        // 건물 사이에 도로가 있는지 확인하고 우회 경로 생성
-        function createRoadPath(start, end) {
-            // 1. 출발지와 도착지가 같은 구역인지 확인
-            const directDistance = calculateDistance(start, end);
-            
-            // 가까우면 바로 직선으로 (100m 이하)
-            if (directDistance < 100) {
-                return [start, end];
-            }
-            
-            // 2. 건물 사이에 장애물이 있는지 확인
-            if (!hasObstacles(start, end)) {
-                return [start, end]; // 바로 직선
-            }
-            
-            // 3. 장애물이 있으면 도로를 따라 우회
-            return createRoadBasedPath(start, end);
-        }
+        // 실제 캠퍼스 도로 좌표 (사용자 제공)
+        const actualRoadPoints = [
+            { lat: 37.39704195324743, lng: 126.90727211769182 },
+            { lat: 37.396851600210965, lng: 126.9087037959461 },
+            { lat: 37.3972728099521, lng: 126.90868069801854 },
+            { lat: 37.397060910737764, lng: 126.90847484922628 },
+            { lat: 37.39709445821731, lng: 126.90816423778105 },
+            { lat: 37.39707149279806, lng: 126.90759959206545 },
+            { lat: 37.397057592579856, lng: 126.90710834307171 },
+            { lat: 37.39687963655845, lng: 126.90710291597584 },
+            { lat: 37.396814299247666, lng: 126.90708605646316 },
+            { lat: 37.39674438356982, lng: 126.90697603187141 },
+            { lat: 37.39667230635419, lng: 126.90698176765989 },
+            { lat: 37.3966294189764, lng: 126.90686888657832 },
+            { lat: 37.396406376304526, lng: 126.90681834236797 },
+            { lat: 37.39640418157648, lng: 126.90689175201939 },
+            { lat: 37.39628009309623, lng: 126.90664062835005 },
+            { lat: 37.39609101235396, lng: 126.90681026278799 },
+            { lat: 37.39624889319532, lng: 126.90706699105739 },
+            { lat: 37.39677416478986, lng: 126.90761125050587 },
+            { lat: 37.39630371376626, lng: 126.9080381522887 },
+            { lat: 37.39597921660104, lng: 126.90787197241569 },
+            { lat: 37.39609609369216, lng: 126.90754432283778 },
+            { lat: 37.39588033709394, lng: 126.90817136578619 },
+            { lat: 37.39599500645956, lng: 126.90790018637229 },
+            { lat: 37.39630822765274, lng: 126.90804944013392 },
+            { lat: 37.396286181323816, lng: 126.90866777835905 },
+            { lat: 37.39660606333328, lng: 126.90761406556607 },
+            { lat: 37.39735444265566, lng: 126.9093836204253 },
+            { lat: 37.396134179816, lng: 126.91019820958716 },
+            { lat: 37.396580167984176, lng: 126.91017509068021 },
+            { lat: 37.39690479876616, lng: 126.9105219768465 },
+            { lat: 37.397715790015916, lng: 126.91061700807168 },
+            { lat: 37.39788681084341, lng: 126.91038810962444 },
+            { lat: 37.397886684483254, lng: 126.91022152921539 },
+            { lat: 37.39773118120773, lng: 126.91012007254065 },
+            { lat: 37.39665000996463, lng: 126.91019194744786 },
+            { lat: 37.398464946216144, lng: 126.90937663655166 },
+            { lat: 37.39845125758169, lng: 126.90915077939637 },
+            { lat: 37.39812890806764, lng: 126.90884624039552 },
+            { lat: 37.397890370118056, lng: 126.90914863303216 },
+            { lat: 37.397885932231105, lng: 126.90923616376625 },
+            { lat: 37.397665579803316, lng: 126.90975593344025 },
+            { lat: 37.39760481475807, lng: 126.9098265910169 },
+            { lat: 37.39661536760741, lng: 126.91205257751353 },
+            { lat: 37.39667835922218, lng: 126.91194521645733 },
+            { lat: 37.397092797253485, lng: 126.91190238106158 },
+            { lat: 37.397229901428446, lng: 126.91149847800096 },
+            { lat: 37.39738753355225, lng: 126.91143617827507 },
+            { lat: 37.39763022079195, lng: 126.91065381375805 },
+            { lat: 37.39803081990744, lng: 126.91018465302236 },
+            { lat: 37.39818401913767, lng: 126.91021835112844 },
+            { lat: 37.39833537814251, lng: 126.91079697088244 }
+        ];
 
-        // 건물 사이에 장애물이 있는지 확인
-        function hasObstacles(start, end) {
-            // 주요 건물들의 위치
-            const obstacles = [
-                // 중앙 잔디광장 (사람들이 안 다니는 곳)
-                { lat: 37.39675, lng: 126.90850, radius: 50 },
-                // 운동장 (관통 금지)
-                { lat: 37.39673, lng: 126.90932, radius: 80 }
-            ];
+        // 출발지와 도착지에서 가장 가까운 도로 지점 찾기
+        function findNearestRoadPoint(buildingCoord) {
+            let nearest = actualRoadPoints[0];
+            let minDistance = calculateDistance(buildingCoord, nearest);
             
-            // 직선 경로가 장애물을 지나는지 확인
-            for (const obstacle of obstacles) {
-                if (linePassesThroughCircle(start, end, obstacle)) {
-                    return true;
+            for (const roadPoint of actualRoadPoints) {
+                const distance = calculateDistance(buildingCoord, roadPoint);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = roadPoint;
                 }
             }
-            
-            return false;
+            return nearest;
         }
 
-        function linePassesThroughCircle(start, end, circle) {
-            const distance = distanceFromPointToLine(circle, start, end);
-            return distance < circle.radius;
-        }
-
-        function distanceFromPointToLine(point, lineStart, lineEnd) {
-            const A = point.lat - lineStart.lat;
-            const B = point.lng - lineStart.lng;
-            const C = lineEnd.lat - lineStart.lat;
-            const D = lineEnd.lng - lineStart.lng;
+        // 두 도로 지점 사이의 실제 도로 경로 찾기
+        function findRoadPath(startRoad, endRoad) {
+            const path = [startRoad];
             
-            const dot = A * C + B * D;
-            const lenSq = C * C + D * D;
-            let param = -1;
+            // 시작점에서 끝점까지 도로를 따라 연결
+            const visited = new Set();
+            let currentPoint = startRoad;
             
-            if (lenSq !== 0) {
-                param = dot / lenSq;
-            }
-            
-            let xx, yy;
-            
-            if (param < 0) {
-                xx = lineStart.lat;
-                yy = lineStart.lng;
-            } else if (param > 1) {
-                xx = lineEnd.lat;
-                yy = lineEnd.lng;
-            } else {
-                xx = lineStart.lat + param * C;
-                yy = lineStart.lng + param * D;
-            }
-            
-            const dx = point.lat - xx;
-            const dy = point.lng - yy;
-            
-            return Math.sqrt(dx * dx + dy * dy) * 111000; // 대략적인 미터 변환
-        }
-
-        // 도로를 따라 가는 경로 생성 (진짜 간단하게)
-        function createRoadBasedPath(start, end) {
-            const path = [start];
-            
-            // 동서남북 4방향 중에서 장애물 피해서 가기
-            const midLat = (start.lat + end.lat) / 2;
-            const midLng = (start.lng + end.lng) / 2;
-            
-            // 동쪽으로 이동이 주요하면
-            if (Math.abs(end.lng - start.lng) > Math.abs(end.lat - start.lat)) {
-                if (start.lat > 37.3968) { // 북쪽 건물들
-                    // 북쪽 도로 이용
-                    path.push({ lat: 37.39720, lng: start.lng });
-                    path.push({ lat: 37.39720, lng: end.lng });
-                    path.push({ lat: end.lat, lng: end.lng });
-                } else { // 남쪽 건물들
-                    // 남쪽 도로 이용
-                    path.push({ lat: 37.39580, lng: start.lng });
-                    path.push({ lat: 37.39580, lng: end.lng });
-                    path.push({ lat: end.lat, lng: end.lng });
+            while (calculateDistance(currentPoint, endRoad) > 20) {
+                visited.add(`${currentPoint.lat},${currentPoint.lng}`);
+                
+                let nextPoint = null;
+                let minDistance = Infinity;
+                
+                // 현재 지점에서 가장 가까운 다음 도로 지점 찾기 (목적지 방향으로)
+                for (const roadPoint of actualRoadPoints) {
+                    const pointKey = `${roadPoint.lat},${roadPoint.lng}`;
+                    if (visited.has(pointKey)) continue;
+                    
+                    const distanceToCurrent = calculateDistance(currentPoint, roadPoint);
+                    const distanceToEnd = calculateDistance(roadPoint, endRoad);
+                    
+                    // 현재 지점에서 가깝고, 목적지에도 더 가까워지는 점 선택
+                    if (distanceToCurrent < 100 && distanceToEnd < calculateDistance(currentPoint, endRoad)) {
+                        if (distanceToCurrent < minDistance) {
+                            minDistance = distanceToCurrent;
+                            nextPoint = roadPoint;
+                        }
+                    }
                 }
-            } else {
-                // 남북 이동이 주요하면
-                if (start.lng < 126.9075) { // 서쪽 건물들
-                    // 서쪽 도로 이용
-                    path.push({ lat: start.lat, lng: 126.90650 });
-                    path.push({ lat: end.lat, lng: 126.90650 });
-                    path.push({ lat: end.lat, lng: end.lng });
-                } else { // 동쪽 건물들
-                    // 동쪽 도로 이용
-                    path.push({ lat: start.lat, lng: 126.90950 });
-                    path.push({ lat: end.lat, lng: 126.90950 });
-                    path.push({ lat: end.lat, lng: end.lng });
+                
+                if (nextPoint) {
+                    path.push(nextPoint);
+                    currentPoint = nextPoint;
+                } else {
+                    break;
                 }
+                
+                // 무한루프 방지
+                if (path.length > 20) break;
             }
             
-            path.push(end);
+            path.push(endRoad);
             return path;
+        }
+
+        // 건물 사이에 도로 경로 생성
+        function createActualRoadPath(start, end) {
+            // 1. 출발지에서 가장 가까운 도로 지점 찾기
+            const startRoadPoint = findNearestRoadPoint(start);
+            
+            // 2. 도착지에서 가장 가까운 도로 지점 찾기  
+            const endRoadPoint = findNearestRoadPoint(end);
+            
+            // 3. 실제 도로를 따라 경로 생성
+            const roadPath = findRoadPath(startRoadPoint, endRoadPoint);
+            
+            // 4. 건물 → 도로 → 도로 → 건물 순서로 전체 경로 구성
+            const fullPath = [start];
+            
+            // 출발 건물에서 도로까지
+            if (calculateDistance(start, startRoadPoint) > 10) {
+                fullPath.push(startRoadPoint);
+            }
+            
+            // 도로 경로 추가
+            for (let i = 1; i < roadPath.length - 1; i++) {
+                fullPath.push(roadPath[i]);
+            }
+            
+            // 도로에서 도착 건물까지
+            if (calculateDistance(endRoadPoint, end) > 10) {
+                fullPath.push(endRoadPoint);
+            }
+            
+            fullPath.push(end);
+            
+            return fullPath;
         }
 
         // 부드러운 곡선으로 만들기
@@ -404,8 +437,8 @@
         }
 
         function drawDirectRoute(start, end, map) {
-            // 바로 가는 경로 (도로 따라)
-            const routePath = createRoadPath(start.coords, end.coords);
+            // 실제 캠퍼스 도로를 따라 경로 생성
+            const routePath = createActualRoadPath(start.coords, end.coords);
             
             // 부드러운 곡선으로
             const smoothPath = makeSmoothCurve(routePath);
