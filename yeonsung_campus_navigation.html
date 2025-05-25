@@ -298,17 +298,68 @@
             `;
         }
 
-        // 캠퍼스 내 보행로 정의 (주요 통로들)
+        // 캠퍼스 내 상세 보행로 네트워크 정의
         const campusWalkways = {
-            // 각 건물에서 연결 가능한 주요 경유점들
-            waypoints: [
-                { name: 'main_entrance', coords: { lat: 37.39661657434427, lng: 126.90772437800818 } }, // 정문
-                { name: 'central_plaza', coords: { lat: 37.39677, lng: 126.90780 } }, // 중앙광장
-                { name: 'library_front', coords: { lat: 37.39650, lng: 126.90680 } }, // 도서관 앞
-                { name: 'engineering_path', coords: { lat: 37.39655, lng: 126.90720 } }, // 공학관 통로
-                { name: 'dormitory_path', coords: { lat: 37.39780, lng: 126.90900 } }, // 기숙사 통로
-                { name: 'sports_area', coords: { lat: 37.39670, lng: 126.90950 } } // 운동시설 구역
-            ]
+            // 주요 인도 및 보행로 노드들
+            nodes: {
+                // 정문 및 입구 구역
+                'main_gate': { lat: 37.39661657434427, lng: 126.90772437800818, name: '정문' },
+                'main_entrance': { lat: 37.39665, lng: 126.90775, name: '메인 출입구' },
+                
+                // 중앙 보행로
+                'central_walkway_1': { lat: 37.39670, lng: 126.90780, name: '중앙보행로1' },
+                'central_walkway_2': { lat: 37.39675, lng: 126.90785, name: '중앙보행로2' },
+                'central_plaza': { lat: 37.39680, lng: 126.90800, name: '중앙광장' },
+                
+                // 공학 구역 보행로
+                'engineering_junction': { lat: 37.39650, lng: 126.90720, name: '공학구역 교차로' },
+                'eng1_front': { lat: 37.39640, lng: 126.90705, name: '공학1관 앞' },
+                'eng2_path': { lat: 37.39675, lng: 126.90745, name: '공학2관 연결로' },
+                
+                // 자연과학 구역
+                'science_walkway': { lat: 37.39665, lng: 126.90685, name: '자연과학관 보행로' },
+                'library_junction': { lat: 37.39645, lng: 126.90665, name: '도서관 앞 교차로' },
+                
+                // 문화 구역 보행로
+                'culture_walkway_1': { lat: 37.39585, lng: 126.90790, name: '문화관 보행로1' },
+                'culture_walkway_2': { lat: 37.39595, lng: 126.90770, name: '문화관 보행로2' },
+                
+                // 기숙사 및 북쪽 구역
+                'north_walkway_1': { lat: 37.39720, lng: 126.90850, name: '북쪽 보행로1' },
+                'north_walkway_2': { lat: 37.39750, lng: 126.90900, name: '북쪽 보행로2' },
+                'dormitory_main': { lat: 37.39800, lng: 126.90950, name: '기숙사 메인로' },
+                
+                // 운동시설 구역
+                'sports_junction': { lat: 37.39670, lng: 126.90920, name: '운동시설 교차로' },
+                'sports_walkway': { lat: 37.39675, lng: 126.90940, name: '운동시설 보행로' },
+                
+                // 동쪽 구역 (창조관 등)
+                'east_walkway_1': { lat: 37.39720, lng: 126.90980, name: '동쪽 보행로1' },
+                'east_walkway_2': { lat: 37.39735, lng: 126.91020, name: '동쪽 보행로2' }
+            },
+            
+            // 보행로 연결 관계 (인도로 직접 연결된 노드들)
+            connections: {
+                'main_gate': ['main_entrance', 'central_walkway_1'],
+                'main_entrance': ['main_gate', 'central_walkway_1', 'engineering_junction'],
+                'central_walkway_1': ['main_entrance', 'central_walkway_2', 'culture_walkway_2'],
+                'central_walkway_2': ['central_walkway_1', 'central_plaza', 'eng2_path'],
+                'central_plaza': ['central_walkway_2', 'north_walkway_1', 'sports_junction'],
+                'engineering_junction': ['main_entrance', 'eng1_front', 'science_walkway'],
+                'eng1_front': ['engineering_junction', 'science_walkway'],
+                'eng2_path': ['central_walkway_2', 'north_walkway_1'],
+                'science_walkway': ['engineering_junction', 'eng1_front', 'library_junction'],
+                'library_junction': ['science_walkway'],
+                'culture_walkway_1': ['culture_walkway_2'],
+                'culture_walkway_2': ['culture_walkway_1', 'central_walkway_1'],
+                'north_walkway_1': ['central_plaza', 'eng2_path', 'north_walkway_2'],
+                'north_walkway_2': ['north_walkway_1', 'dormitory_main', 'east_walkway_1'],
+                'dormitory_main': ['north_walkway_2', 'east_walkway_1'],
+                'sports_junction': ['central_plaza', 'sports_walkway'],
+                'sports_walkway': ['sports_junction', 'east_walkway_1'],
+                'east_walkway_1': ['north_walkway_2', 'dormitory_main', 'sports_walkway', 'east_walkway_2'],
+                'east_walkway_2': ['east_walkway_1']
+            }
         };
 
         // 길찾기 구현 (캠퍼스 특화 + API 백업)
