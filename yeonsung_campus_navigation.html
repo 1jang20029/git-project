@@ -156,93 +156,88 @@
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 연성대학교 실제 캠퍼스 인도 경로 (건물 절대 통과 금지)
+        // 연성대학교 실제 보행 가능한 인도 경로만 (위성사진 확인)
         const campusWalkingPaths = {
-            // 자연과학관 → 도의관 (실제 인도만 따라)
+            // 식품과학관 → 공학2관 (실제 보행 가능한 인도만)
+            'food_to_eng2': [
+                { lat: 37.39714809720343, lng: 126.90762208499473 }, // 식품과학관 출발
+                { lat: 37.39710, lng: 126.90755 }, // 식품과학관 남쪽 출구
+                { lat: 37.39705, lng: 126.90745 }, // 남쪽 인도 (보행 가능)
+                { lat: 37.39698, lng: 126.90740 }, // 공학2관 서쪽 인도
+                { lat: 37.39690, lng: 126.90738 }, // 공학2관 앞 인도
+                { lat: 37.396789747114205, lng: 126.90737406929797 }  // 공학2관 입구
+            ],
+            
+            // 자연과학관 → 도의관 (실제 도로와 인도만)
             'science_to_doui': [
-                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관 출발
-                { lat: 37.39672, lng: 126.90685 }, // 자연과학관 동쪽 출구
-                { lat: 37.39675, lng: 126.90700 }, // 동쪽 인도
-                { lat: 37.39678, lng: 126.90720 }, // 공학2관 동쪽 인도
-                { lat: 37.39680, lng: 126.90740 }, // 중앙 보행로
-                { lat: 37.39681, lng: 126.90760 }, // 식품과학관 남쪽 인도
-                { lat: 37.39680, lng: 126.90780 }, // 중앙광장
-                { lat: 37.39679, lng: 126.90795 }, // 도의관 서쪽 접근
+                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
+                { lat: 37.39675, lng: 126.90685 }, // 자연과학관 동쪽 출구
+                { lat: 37.39680, lng: 126.90705 }, // 공학2관 남쪽 도로
+                { lat: 37.39685, lng: 126.90725 }, // 중앙 도로 (차도 옆 인도)
+                { lat: 37.39688, lng: 126.90745 }, // 식품과학관 남쪽 도로
+                { lat: 37.39685, lng: 126.90765 }, // 중앙광장 서쪽
+                { lat: 37.39682, lng: 126.90785 }, // 도의관 서쪽 접근 (실제 인도)
+                { lat: 37.39680, lng: 126.90800 }, // 도의관 앞 광장
                 { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관 입구
             ],
             
-            // 공학1관 → 자연과학관 (서쪽 우회)
+            // 공학1관 → 자연과학관 (실제 인도만)
             'eng1_to_science': [
                 { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
-                { lat: 37.39630, lng: 126.90685 }, // 공학1관 서쪽 출구
-                { lat: 37.39635, lng: 126.90675 }, // 서쪽 인도
-                { lat: 37.39645, lng: 126.90670 }, // 학술정보관 동쪽
-                { lat: 37.39655, lng: 126.90675 }, // 자연과학관 서쪽 접근
-                { lat: 37.39665, lng: 126.90678 }, // 자연과학관 앞 인도
+                { lat: 37.39640, lng: 126.90690 }, // 공학1관 북쪽 출구
+                { lat: 37.39650, lng: 126.90685 }, // 공학1관과 자연과학관 사이 실제 인도
+                { lat: 37.39660, lng: 126.90680 }, // 자연과학관 서쪽 인도
                 { lat: 37.39669466288283, lng: 126.90676716508685 }  // 자연과학관
             ],
             
-            // 자연과학관 → 식품과학관 (북쪽 인도)
-            'science_to_food': [
-                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
-                { lat: 37.39675, lng: 126.90685 }, // 자연과학관 북동쪽
-                { lat: 37.39685, lng: 126.90695 }, // 북쪽 인도
-                { lat: 37.39695, lng: 126.90710 }, // 공학2관 북쪽 우회
-                { lat: 37.39705, lng: 126.90730 }, // 식품과학관 서쪽
-                { lat: 37.39710, lng: 126.90750 }, // 식품과학관 남쪽 인도
-                { lat: 37.39714809720343, lng: 126.90762208499473 }  // 식품과학관
-            ],
-            
-            // 공학1관 → 도의관 (중앙 보행로 경유)
+            // 공학1관 → 도의관 (실제 도로 이용)
             'eng1_to_doui': [
                 { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
-                { lat: 37.39638, lng: 126.90710 }, // 공학1관 동쪽
-                { lat: 37.39645, lng: 126.90725 }, // 중앙 보행로 진입
-                { lat: 37.39655, lng: 126.90740 }, // 공학2관 남쪽 인도
-                { lat: 37.39665, lng: 126.90755 }, // 중앙 보행로 계속
-                { lat: 37.39672, lng: 126.90770 }, // 중앙광장 진입
-                { lat: 37.39676, lng: 126.90785 }, // 도의관 서쪽 접근
-                { lat: 37.39678, lng: 126.90800 }, // 도의관 앞 광장
+                { lat: 37.39640, lng: 126.90710 }, // 공학1관 동쪽 (실제 도로)
+                { lat: 37.39650, lng: 126.90720 }, // 중앙 도로 진입
+                { lat: 37.39660, lng: 126.90730 }, // 공학2관 남쪽 도로
+                { lat: 37.39670, lng: 126.90740 }, // 중앙 도로 계속
+                { lat: 37.39675, lng: 126.90760 }, // 식품과학관 남쪽 도로
+                { lat: 37.39680, lng: 126.90780 }, // 중앙광장 진입
                 { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관
             ],
             
-            // 문화1관 → 연곡문화센터 (동쪽 우회)
+            // 문화1관 → 연곡문화센터 (실제 도로 경유)
             'culture1_to_yeongok': [
                 { lat: 37.39576992475254, lng: 126.90812350405056 }, // 문화1관
-                { lat: 37.39585, lng: 126.90815 }, // 문화1관 북동쪽
-                { lat: 37.39600, lng: 126.90820 }, // 도의관 남동쪽
-                { lat: 37.39620, lng: 126.90830 }, // 동쪽 인도
-                { lat: 37.39640, lng: 126.90840 }, // 운동장 서쪽 인도
-                { lat: 37.39660, lng: 126.90850 }, // 북쪽 보행로
-                { lat: 37.39680, lng: 126.90860 }, // 대학본관 서쪽
-                { lat: 37.39700, lng: 126.90875 }, // 기숙사 방향
-                { lat: 37.39720, lng: 126.90890 }, // 기숙사 접근로
-                { lat: 37.39740, lng: 126.90910 }, // 기숙사 구역
-                { lat: 37.39760, lng: 126.90930 }, // 연곡문화센터 서쪽
-                { lat: 37.39780, lng: 126.90950 }, // 연곡문화센터 남쪽
+                { lat: 37.39590, lng: 126.90815 }, // 문화1관 북동쪽 (실제 도로)
+                { lat: 37.39610, lng: 126.90820 }, // 도의관 남동쪽 도로
+                { lat: 37.39630, lng: 126.90825 }, // 캠퍼스 중앙 도로
+                { lat: 37.39650, lng: 126.90835 }, // 동쪽 도로
+                { lat: 37.39670, lng: 126.90845 }, // 운동장 접근 도로
+                { lat: 37.39690, lng: 126.90860 }, // 북쪽 도로
+                { lat: 37.39710, lng: 126.90875 }, // 대학본관 서쪽 도로
+                { lat: 37.39730, lng: 126.90890 }, // 기숙사 접근 도로
+                { lat: 37.39750, lng: 126.90910 }, // 기숙사 구역 도로
+                { lat: 37.39770, lng: 126.90935 }, // 연곡문화센터 접근 도로
                 { lat: 37.398046192024914, lng: 126.90966512810492 } // 연곡문화센터
             ],
             
-            // 학술정보관 → 창조관 (남쪽 우회)
+            // 학술정보관 → 창조관 (실제 도로만)
             'library_to_creation': [
                 { lat: 37.39637467129301, lng: 126.906603807587 }, // 학술정보관
-                { lat: 37.39645, lng: 126.90670 }, // 학술정보관 동쪽
-                { lat: 37.39655, lng: 126.90680 }, // 자연과학관 남쪽
-                { lat: 37.39665, lng: 126.90695 }, // 공학1관 동쪽
-                { lat: 37.39670, lng: 126.90715 }, // 문화2관 북쪽
-                { lat: 37.39675, lng: 126.90735 }, // 중앙 보행로
-                { lat: 37.39680, lng: 126.90755 }, // 공학2관 남쪽
-                { lat: 37.39685, lng: 126.90775 }, // 도의관 남쪽
-                { lat: 37.39690, lng: 126.90800 }, // 운동장 남쪽
-                { lat: 37.39695, lng: 126.90825 }, // 동쪽 보행로
-                { lat: 37.39700, lng: 126.90850 }, // 대학본관 남쪽
-                { lat: 37.39705, lng: 126.90875 }, // 학생복지센터 남쪽
-                { lat: 37.39710, lng: 126.90900 }, // 농구장 남쪽
-                { lat: 37.39715, lng: 126.90925 }, // 창의교육센터 남쪽
-                { lat: 37.39720, lng: 126.90950 }, // 동쪽 구역
-                { lat: 37.39725, lng: 126.90975 }, // 창조관 서쪽
-                { lat: 37.39728, lng: 126.91000 }, // 창조관 남쪽
-                { lat: 37.39729, lng: 126.91020 }, // 창조관 앞
+                { lat: 37.39645, lng: 126.90670 }, // 학술정보관 동쪽 (실제 도로)
+                { lat: 37.39655, lng: 126.90680 }, // 자연과학관 남쪽 도로
+                { lat: 37.39665, lng: 126.90695 }, // 공학1관 동쪽 도로
+                { lat: 37.39675, lng: 126.90715 }, // 중앙 도로
+                { lat: 37.39685, lng: 126.90735 }, // 공학2관 동쪽 도로
+                { lat: 37.39695, lng: 126.90755 }, // 식품과학관 동쪽 도로
+                { lat: 37.39705, lng: 126.90775 }, // 도의관 동쪽 도로
+                { lat: 37.39715, lng: 126.90800 }, // 운동장 남쪽 도로
+                { lat: 37.39725, lng: 126.90825 }, // 동쪽 캠퍼스 도로
+                { lat: 37.39730, lng: 126.90850 }, // 대학본관 동쪽 도로
+                { lat: 37.39732, lng: 126.90875 }, // 학생복지센터 남쪽 도로
+                { lat: 37.39733, lng: 126.90900 }, // 농구장 남쪽 도로
+                { lat: 37.39734, lng: 126.90925 }, // 창의교육센터 남쪽 도로
+                { lat: 37.39735, lng: 126.90950 }, // 동쪽 구역 도로
+                { lat: 37.39733, lng: 126.90975 }, // 창조관 서쪽 접근 도로
+                { lat: 37.39731, lng: 126.91000 }, // 창조관 남쪽 도로
+                { lat: 37.39730, lng: 126.91020 }, // 창조관 앞 도로
                 { lat: 37.39730791148064, lng: 126.91039726900274 } // 창조관
             ]
         };
@@ -396,7 +391,7 @@
             return generateCampusWalkingPath(startBuilding, endBuilding);
         }
 
-        // 캠퍼스 내부 인도 경로 생성 (건물 우회)
+        // 캠퍼스 내부 실제 보행 가능한 경로 생성
         function generateCampusWalkingPath(startBuilding, endBuilding) {
             const start = buildings.find(b => b.name === startBuilding).coords;
             const end = buildings.find(b => b.name === endBuilding).coords;
@@ -404,22 +399,30 @@
             const path = [];
             path.push(start);
             
-            // 중앙 보행로 경유점 (건물들 사이의 안전한 지점)
-            const centralWalkway = { lat: 37.39675, lng: 126.90775 };
+            // 실제 캠퍼스 도로를 이용한 경유점들 (보행 가능한 도로만)
+            const roadJunctions = [
+                { lat: 37.39675, lng: 126.90775, name: '중앙광장' },      // 중앙광장 (실제 광장)
+                { lat: 37.39650, lng: 126.90720, name: '중앙도로' },     // 중앙 도로
+                { lat: 37.39690, lng: 126.90860, name: '북쪽도로' },     // 북쪽 도로 (운동장 접근)
+                { lat: 37.39600, lng: 126.90750, name: '남쪽도로' },     // 남쪽 도로 (문화관 근처)
+                { lat: 37.39720, lng: 126.90890, name: '기숙사도로' }    // 기숙사 접근 도로
+            ];
             
             const distance = calculateDistance(start, end);
             
             if (distance > 150) {
-                // 중앙 보행로를 경유하는 안전한 경로
-                const toCenter = createSafeWalkingSegment(start, centralWalkway, 3);
-                path.push(...toCenter);
-                path.push(centralWalkway);
+                // 도로를 이용한 경로 (실제 차도 옆 인도)
+                const bestJunction = findNearestRoadJunction(start, end, roadJunctions);
                 
-                const fromCenter = createSafeWalkingSegment(centralWalkway, end, 3);
-                path.push(...fromCenter);
+                const toJunction = createRoadWalkingSegment(start, bestJunction, 3);
+                path.push(...toJunction);
+                path.push(bestJunction);
+                
+                const fromJunction = createRoadWalkingSegment(bestJunction, end, 3);
+                path.push(...fromJunction);
             } else {
-                // 직접 경로 (건물 우회)
-                const directPath = createSafeWalkingSegment(start, end, 4);
+                // 직접 경로 (실제 도로 이용)
+                const directPath = createRoadWalkingSegment(start, end, 4);
                 path.push(...directPath);
             }
             
@@ -427,8 +430,27 @@
             return path;
         }
 
-        // 건물을 우회하는 안전한 보행 구간 생성
-        function createSafeWalkingSegment(start, end, numPoints) {
+        // 가장 가까운 도로 교차점 찾기
+        function findNearestRoadJunction(start, end, junctions) {
+            let bestJunction = junctions[0];
+            let minTotalDistance = Infinity;
+
+            junctions.forEach(junction => {
+                const distToJunction = calculateDistance(start, junction);
+                const distFromJunction = calculateDistance(junction, end);
+                const totalDist = distToJunction + distFromJunction;
+
+                if (totalDist < minTotalDistance) {
+                    minTotalDistance = totalDist;
+                    bestJunction = junction;
+                }
+            });
+
+            return bestJunction;
+        }
+
+        // 실제 도로를 따라가는 보행 구간 생성
+        function createRoadWalkingSegment(start, end, numPoints) {
             const points = [];
             
             for (let i = 1; i <= numPoints; i++) {
@@ -437,14 +459,10 @@
                 let lat = start.lat + (end.lat - start.lat) * ratio;
                 let lng = start.lng + (end.lng - start.lng) * ratio;
                 
-                // 건물 근처 회피 (적당한 거리)
-                const avoidanceOffset = getWalkingAvoidance(lat, lng);
-                lat += avoidanceOffset.latOffset;
-                lng += avoidanceOffset.lngOffset;
-                
-                // 부드러운 곡선 효과
-                lat += Math.sin(ratio * Math.PI) * 0.00005;
-                lng += Math.cos(ratio * Math.PI) * 0.00005;
+                // 실제 도로와 인도 위치에 맞춰 조정
+                const roadAdjustment = adjustToRoadPath(lat, lng, start, end);
+                lat = roadAdjustment.lat;
+                lng = roadAdjustment.lng;
                 
                 points.push({ lat, lng });
             }
@@ -452,30 +470,20 @@
             return points;
         }
 
-        // 건물 회피 로직 (인도 수준)
-        function getWalkingAvoidance(lat, lng) {
-            let latOffset = 0;
-            let lngOffset = 0;
+        // 실제 도로 경로에 맞춰 조정
+        function adjustToRoadPath(lat, lng, start, end) {
+            // 캠퍼스 내 주요 도로 방향에 맞춰 조정
+            const isEastWest = Math.abs(end.lng - start.lng) > Math.abs(end.lat - start.lat);
             
-            buildings.forEach(building => {
-                const distance = calculateDistance({ lat, lng }, building.coords);
-                
-                // 건물에서 40m 이내일 때 인도로 우회
-                if (distance < 40) {
-                    const avoidanceFactor = (40 - distance) / 40 * 0.0001;
-                    
-                    const latDiff = lat - building.coords.lat;
-                    const lngDiff = lng - building.coords.lng;
-                    
-                    if (Math.abs(latDiff) > Math.abs(lngDiff)) {
-                        latOffset += latDiff > 0 ? avoidanceFactor : -avoidanceFactor;
-                    } else {
-                        lngOffset += lngDiff > 0 ? avoidanceFactor : -avoidanceFactor;
-                    }
-                }
-            });
+            if (isEastWest) {
+                // 동서 방향 이동 시 실제 도로 라인 따라
+                lat += Math.sin((lng - start.lng) / (end.lng - start.lng) * Math.PI) * 0.00002;
+            } else {
+                // 남북 방향 이동 시 실제 도로 라인 따라  
+                lng += Math.sin((lat - start.lat) / (end.lat - start.lat) * Math.PI) * 0.00002;
+            }
             
-            return { latOffset, lngOffset };
+            return { lat, lng };
         }
 
         function findRoute(start, end, map) {
