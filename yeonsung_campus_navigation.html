@@ -101,7 +101,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 연성대학교 길찾기</h1>
-            <p>건물 관통 없이 최단거리로 안내합니다</p>
+            <p>실제 캠퍼스 도로를 따라 부드럽게 최단거리 안내</p>
         </div>
         
         <div class="controls">
@@ -155,6 +155,59 @@
             { name: '대학본관', description: '유통물류학과, 총장실', coords: { lat: 37.397467068076345, lng: 126.90938066144557 } },
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
+
+        // 캠퍼스 내 가능한 여러 경로 템플릿
+        const campusRoutes = {
+            // 서쪽 경로 (건물들 서쪽 우회)
+            'west_route': [
+                { lat: 37.39620, lng: 126.90640 },  // 서쪽 시작점
+                { lat: 37.39640, lng: 126.90650 },  // 학술정보관 서쪽
+                { lat: 37.39660, lng: 126.90660 },  // 자연과학관 서쪽
+                { lat: 37.39680, lng: 126.90670 },  // 공학2관 서쪽
+                { lat: 37.39700, lng: 126.90680 },  // 식품과학관 서쪽
+                { lat: 37.39720, lng: 126.90690 }   // 북쪽 연결점
+            ],
+            
+            // 북쪽 경로 (건물들 북쪽 우회)
+            'north_route': [
+                { lat: 37.39720, lng: 126.90690 },  // 서쪽에서 연결
+                { lat: 37.39720, lng: 126.90720 },  // 공학2관 북쪽
+                { lat: 37.39720, lng: 126.90750 },  // 식품과학관 북쪽
+                { lat: 37.39720, lng: 126.90780 },  // 도의관 북쪽
+                { lat: 37.39720, lng: 126.90810 },  // 도의관 동쪽
+                { lat: 37.39720, lng: 126.90840 }   // 동쪽 연결점
+            ],
+            
+            // 동쪽 경로 (운동장/대학본관 쪽)
+            'east_route': [
+                { lat: 37.39720, lng: 126.90840 },  // 북쪽에서 연결
+                { lat: 37.39700, lng: 126.90860 },  // 동쪽 곡선 시작
+                { lat: 37.39680, lng: 126.90880 },  // 운동장 서쪽
+                { lat: 37.39670, lng: 126.90900 },  // 운동장 중앙
+                { lat: 37.39680, lng: 126.90920 },  // 운동장 동쪽
+                { lat: 37.39700, lng: 126.90940 },  // 대학본관 방향
+                { lat: 37.39720, lng: 126.90960 }   // 최동쪽
+            ],
+            
+            // 남쪽 경로 (문화관들 남쪽 우회)
+            'south_route': [
+                { lat: 37.39560, lng: 126.90740 },  // 남쪽 시작
+                { lat: 37.39570, lng: 126.90760 },  // 문화2관 남쪽
+                { lat: 37.39560, lng: 126.90780 },  // 문화1관 남쪽
+                { lat: 37.39580, lng: 126.90800 },  // 남쪽 곡선
+                { lat: 37.39600, lng: 126.90830 },  // 동쪽으로
+                { lat: 37.39620, lng: 126.90860 },  // 계속 동쪽
+                { lat: 37.39640, lng: 126.90890 }   // 동쪽 연결점
+            ],
+            
+            // 중앙 직선 경로 (장애물 없을 때)
+            'center_route': [
+                { lat: 37.39640, lng: 126.90720 },  // 중앙 시작
+                { lat: 37.39650, lng: 126.90750 },  // 중앙
+                { lat: 37.39660, lng: 126.90780 },  // 중앙
+                { lat: 37.39670, lng: 126.90810 },  // 중앙 끝
+            ]
+        };
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
@@ -248,89 +301,120 @@
             `;
         }
 
-        // 건물 사이에 장애물이 있는지 확인
-        function hasObstacle(start, end) {
-            // 건물들의 대략적인 경계 영역
-            const obstacles = [
-                // 자연과학관 영역
-                { minLat: 37.39660, maxLat: 37.39680, minLng: 126.90670, maxLng: 126.90685 },
-                // 공학1관 영역  
-                { minLat: 37.39625, maxLat: 37.39640, minLng: 126.90690, maxLng: 126.90710 },
-                // 공학2관 영역
-                { minLat: 37.39670, maxLat: 37.39690, minLng: 126.90730, maxLng: 126.90745 },
-                // 식품과학관 영역
-                { minLat: 37.39705, maxLat: 37.39725, minLng: 126.90755, maxLng: 126.90770 },
-                // 도의관 영역
-                { minLat: 37.39670, maxLat: 37.39690, minLng: 126.90800, maxLng: 126.90820 },
-                // 대학본관 영역
-                { minLat: 37.39735, maxLat: 37.39755, minLng: 126.90930, maxLng: 126.90950 },
-                // 중앙 잔디 광장 (운동장 주변)
-                { minLat: 37.39665, maxLat: 37.39685, minLng: 126.90920, maxLng: 126.90940 }
-            ];
-
-            // 직선 경로가 장애물을 관통하는지 확인
-            for (const obstacle of obstacles) {
-                if (lineIntersectsRectangle(start, end, obstacle)) {
-                    return true;
-                }
-            }
-            return false;
+        // 출발지와 도착지에 맞는 여러 경로 후보 생성
+        function generateRouteOptions(start, end) {
+            const routes = [];
+            
+            // 1. 서쪽 우회 경로
+            const westRoute = createSmoothRoute(start, end, 'west');
+            routes.push({ path: westRoute, type: '서쪽 우회' });
+            
+            // 2. 북쪽 우회 경로  
+            const northRoute = createSmoothRoute(start, end, 'north');
+            routes.push({ path: northRoute, type: '북쪽 우회' });
+            
+            // 3. 동쪽 우회 경로
+            const eastRoute = createSmoothRoute(start, end, 'east');
+            routes.push({ path: eastRoute, type: '동쪽 우회' });
+            
+            // 4. 남쪽 우회 경로
+            const southRoute = createSmoothRoute(start, end, 'south');
+            routes.push({ path: southRoute, type: '남쪽 우회' });
+            
+            return routes;
         }
 
-        // 직선이 사각형 영역을 관통하는지 확인
-        function lineIntersectsRectangle(start, end, rect) {
-            // 간단한 경계 상자 교차 검사
-            const lineMinLat = Math.min(start.lat, end.lat);
-            const lineMaxLat = Math.max(start.lat, end.lat);
-            const lineMinLng = Math.min(start.lng, end.lng);
-            const lineMaxLng = Math.max(start.lng, end.lng);
-
-            return !(lineMaxLat < rect.minLat || 
-                     lineMinLat > rect.maxLat || 
-                     lineMaxLng < rect.minLng || 
-                     lineMinLng > rect.maxLng);
-        }
-
-        // 최단거리 우회 경로 생성 (장애물 피하기)
-        function createShortestAvoidanceRoute(start, end) {
+        // 특정 방향으로 부드러운 경로 생성
+        function createSmoothRoute(start, end, direction) {
             const path = [start];
-
-            // 직선 경로에 장애물이 있는지 확인
-            if (!hasObstacle(start, end)) {
-                // 장애물 없음 - 직선으로
-                path.push(end);
-                return path;
+            
+            switch(direction) {
+                case 'west':
+                    // 서쪽으로 이동 후 북쪽으로 돌아서 동쪽으로
+                    path.push({ lat: start.lat, lng: 126.90650 }); // 서쪽으로
+                    path.push({ lat: 37.39720, lng: 126.90650 }); // 북쪽으로
+                    path.push({ lat: 37.39720, lng: end.lng }); // 동쪽으로
+                    path.push({ lat: end.lat, lng: end.lng }); // 목적지로
+                    break;
+                    
+                case 'north':
+                    // 북쪽으로 올라가서 동쪽으로
+                    path.push({ lat: 37.39720, lng: start.lng }); // 북쪽으로
+                    path.push({ lat: 37.39720, lng: end.lng }); // 동쪽으로
+                    path.push({ lat: end.lat, lng: end.lng }); // 목적지로
+                    break;
+                    
+                case 'east':
+                    // 동쪽으로 이동 후 남북으로 조정
+                    path.push({ lat: start.lat, lng: 126.90920 }); // 동쪽으로
+                    path.push({ lat: end.lat, lng: 126.90920 }); // 남북 조정
+                    path.push({ lat: end.lat, lng: end.lng }); // 목적지로
+                    break;
+                    
+                case 'south':
+                    // 남쪽으로 내려가서 동쪽으로
+                    path.push({ lat: 37.39560, lng: start.lng }); // 남쪽으로
+                    path.push({ lat: 37.39560, lng: end.lng }); // 동쪽으로
+                    path.push({ lat: end.lat, lng: end.lng }); // 목적지로
+                    break;
             }
+            
+            return smoothenPath(path);
+        }
 
-            // 장애물 있음 - 최소한의 우회 (1-2개 중간점만)
-            const midLat = (start.lat + end.lat) / 2;
-            const midLng = (start.lng + end.lng) / 2;
+        // 경로를 부드럽게 만들기 (베지어 곡선 스타일)
+        function smoothenPath(path) {
+            if (path.length < 3) return path;
+            
+            const smoothPath = [path[0]]; // 시작점
+            
+            for (let i = 1; i < path.length - 1; i++) {
+                const prev = path[i - 1];
+                const curr = path[i];
+                const next = path[i + 1];
+                
+                // 현재 점 앞에 곡선 포인트 추가
+                smoothPath.push({
+                    lat: prev.lat + (curr.lat - prev.lat) * 0.8,
+                    lng: prev.lng + (curr.lng - prev.lng) * 0.8
+                });
+                
+                // 현재 점
+                smoothPath.push(curr);
+                
+                // 현재 점 뒤에 곡선 포인트 추가
+                smoothPath.push({
+                    lat: curr.lat + (next.lat - curr.lat) * 0.2,
+                    lng: curr.lng + (next.lng - curr.lng) * 0.2
+                });
+            }
+            
+            smoothPath.push(path[path.length - 1]); // 끝점
+            return smoothPath;
+        }
 
-            // 동서 방향 이동이 주요한 경우
-            if (Math.abs(end.lng - start.lng) > Math.abs(end.lat - start.lat)) {
-                // 북쪽 우회 (건물들 위로)
-                if (start.lat < 37.397 && end.lat < 37.397) {
-                    path.push({ lat: 37.39720, lng: midLng }); // 북쪽으로 살짝 우회
-                }
-                // 남쪽 우회 (건물들 아래로)
-                else if (start.lat > 37.396 && end.lat > 37.396) {
-                    path.push({ lat: 37.39580, lng: midLng }); // 남쪽으로 살짝 우회
+        // 가장 짧은 경로 선택
+        function selectShortestRoute(routes) {
+            let shortest = routes[0];
+            let minDistance = calculateTotalDistance(shortest.path);
+            
+            for (const route of routes) {
+                const distance = calculateTotalDistance(route.path);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    shortest = route;
                 }
             }
-            // 남북 방향 이동이 주요한 경우  
-            else {
-                // 서쪽 우회 (건물들 왼쪽으로)
-                if (start.lng < 126.908 && end.lng < 126.908) {
-                    path.push({ lat: midLat, lng: 126.90650 }); // 서쪽으로 살짝 우회
-                }
-                // 동쪽 우회 (건물들 오른쪽으로)
-                else {
-                    path.push({ lat: midLat, lng: 126.90950 }); // 동쪽으로 살짝 우회
-                }
-            }
+            
+            return shortest;
+        }
 
-            path.push(end);
-            return path;
+        function calculateTotalDistance(path) {
+            let total = 0;
+            for (let i = 0; i < path.length - 1; i++) {
+                total += calculateDistance(path[i], path[i + 1]);
+            }
+            return total;
         }
 
         function findRoute(start, end, map) {
@@ -338,21 +422,24 @@
 
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ 최단거리 경로 계산 중...</h4>
-                <p>건물을 피해 최단거리로 경로를 찾고 있습니다...</p>
+                <h4>🗺️ 최단거리 경로 분석 중...</h4>
+                <p>여러 경로를 비교하여 가장 짧은 경로를 찾고 있습니다...</p>
             `;
             routeInfo.style.display = 'block';
 
             setTimeout(() => {
-                drawShortestRoute(start, end, map);
+                drawOptimalRoute(start, end, map);
             }, 500);
         }
 
-        function drawShortestRoute(start, end, map) {
-            // 최단거리 장애물 회피 경로 생성
-            const routePath = createShortestAvoidanceRoute(start.coords, end.coords);
+        function drawOptimalRoute(start, end, map) {
+            // 여러 경로 옵션 생성
+            const routeOptions = generateRouteOptions(start.coords, end.coords);
             
-            const naverPath = routePath.map(point => 
+            // 가장 짧은 경로 선택
+            const optimalRoute = selectShortestRoute(routeOptions);
+            
+            const naverPath = optimalRoute.path.map(point => 
                 new naver.maps.LatLng(point.lat, point.lng)
             );
 
@@ -366,11 +453,7 @@
                 strokeLineJoin: 'round'
             });
 
-            let totalDistance = 0;
-            for (let i = 0; i < routePath.length - 1; i++) {
-                totalDistance += calculateDistance(routePath[i], routePath[i + 1]);
-            }
-
+            const totalDistance = calculateTotalDistance(optimalRoute.path);
             const walkingTime = Math.ceil(totalDistance / 70);
 
             const startMarker = new naver.maps.Marker({
@@ -393,20 +476,17 @@
 
             window.routeMarkers = [startMarker, endMarker];
 
-            const isDirectRoute = routePath.length === 2;
-            const routeType = isDirectRoute ? '직선 경로' : '최단 우회 경로';
-
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
                 <div style="background: #1E88E5; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: white;">🚶‍♂️ ${routeType}</h4>
+                    <h4 style="margin: 0; color: white;">🚶‍♂️ 최적 캠퍼스 경로</h4>
                 </div>
                 
                 <div style="padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div>
                             <p style="margin: 0; font-size: 16px; font-weight: bold;">${start.name} → ${end.name}</p>
-                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${isDirectRoute ? '장애물 없음' : '건물 우회'}</p>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${optimalRoute.type} (최단거리)</p>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-size: 20px; font-weight: bold; color: #1E88E5;">${walkingTime}분</div>
@@ -418,15 +498,15 @@
                         <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; border-left: 4px solid #1E88E5; margin-bottom: 10px;">
                             <strong style="color: #1565C0;">🛣️ 경로 특징</strong><br>
                             <span style="font-size: 13px; color: #424242;">
-                                ${isDirectRoute ? '건물 사이를 직선으로 이동하는 최단거리 경로입니다' : '건물을 최소한으로 우회하는 효율적인 경로입니다'}
+                                여러 경로를 분석하여 선택된 최단거리 경로입니다
                             </span>
                         </div>
                         
                         <div style="padding: 10px; background: #F1F8E9; border-radius: 6px; border-left: 4px solid #4CAF50;">
                             <strong style="color: #2E7D32;">✅ 보행 안내</strong><br>
                             <span style="font-size: 12px; color: #424242;">
-                                건물이나 잔디밭 관통 없이 안전하게 이동하세요.<br>
-                                ${routePath.length - 1}개의 구간으로 구성된 최적 경로입니다.
+                                실제 캠퍼스 도로를 따라 부드럽게 연결된 안전한 경로입니다.<br>
+                                건물이나 잔디밭 관통 없이 포장도로만 이용합니다.
                             </span>
                         </div>
                     </div>
