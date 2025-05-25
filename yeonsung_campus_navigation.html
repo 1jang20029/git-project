@@ -156,112 +156,129 @@
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 연성대학교 실제 인도 경로 데이터 (위성 이미지 기반, 건물 우회)
+        // 연성대학교 위성 이미지 기반 실제 인도 경로 데이터
         const campusWalkingPaths = {
-            // 공학1관 → 자연과학관 (건물 사이 인도)
-            'eng1_to_science': [
-                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관 출발
-                { lat: 37.39625, lng: 126.90695 }, // 공학1관 남쪽 출구
-                { lat: 37.39620, lng: 126.90690 }, // 남쪽 인도
-                { lat: 37.39625, lng: 126.90685 }, // 서쪽으로 우회
-                { lat: 37.39635, lng: 126.90680 }, // 자연과학관 서쪽 접근
-                { lat: 37.39650, lng: 126.90675 }, // 자연과학관 남쪽 인도
-                { lat: 37.39660, lng: 126.90677 }, // 건물 앞 인도
-                { lat: 37.39669466288283, lng: 126.90676716508685 }  // 자연과학관 입구
-            ],
-            
-            // 자연과학관 → 식품과학관 (건물 우회, 실제 인도)
-            'science_to_food': [
-                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
-                { lat: 37.39665, lng: 126.90685 }, // 자연과학관 동쪽 출구
-                { lat: 37.39670, lng: 126.90695 }, // 동쪽 인도
-                { lat: 37.39680, lng: 126.90710 }, // 중앙 인도로
-                { lat: 37.39690, lng: 126.90725 }, // 북쪽 인도
-                { lat: 37.39700, lng: 126.90740 }, // 식품과학관 방향 인도
-                { lat: 37.39708, lng: 126.90750 }, // 식품과학관 서쪽 접근
-                { lat: 37.39712, lng: 126.90758 }, // 건물 앞 인도
-                { lat: 37.39714809720343, lng: 126.90762208499473 }  // 식품과학관 입구
-            ],
-            
-            // 공학1관 → 도의관 (중앙 보행로, 건물 우회)
-            'eng1_to_doui': [
-                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
-                { lat: 37.39625, lng: 126.90705 }, // 공학1관 동쪽 출구
-                { lat: 37.39630, lng: 126.90715 }, // 동쪽 인도
-                { lat: 37.39635, lng: 126.90730 }, // 중앙 보행로 진입
-                { lat: 37.39645, lng: 126.90745 }, // 중앙 보행로
-                { lat: 37.39655, lng: 126.90760 }, // 공학2관 우회
-                { lat: 37.39665, lng: 126.90775 }, // 계속 중앙로
-                { lat: 37.39670, lng: 126.90790 }, // 중앙광장
-                { lat: 37.39673, lng: 126.90800 }, // 도의관 서쪽 접근
-                { lat: 37.39677, lng: 126.90805 }, // 도의관 앞 인도
+            // 자연과학관 → 도의관 (실제 인도만 따라)
+            'science_to_doui': [
+                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관 출발
+                { lat: 37.39672, lng: 126.90680 }, // 자연과학관 동쪽 출구
+                { lat: 37.39675, lng: 126.90690 }, // 동쪽 인도 (건물 앞)
+                { lat: 37.39678, lng: 126.90705 }, // 공학2관 동쪽 인도
+                { lat: 37.39680, lng: 126.90720 }, // 공학2관 북동쪽
+                { lat: 37.39682, lng: 126.90735 }, // 중앙 광장 진입
+                { lat: 37.39683, lng: 126.90750 }, // 중앙 광장 통과
+                { lat: 37.39684, lng: 126.90765 }, // 중앙 광장 북쪽
+                { lat: 37.39682, lng: 126.90780 }, // 도의관 방향 인도
+                { lat: 37.39680, lng: 126.90795 }, // 도의관 서쪽 접근
+                { lat: 37.39679, lng: 126.90805 }, // 도의관 앞 인도
                 { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관 입구
             ],
             
-            // 문화1관 → 연곡문화센터 (건물들 우회하며 북쪽으로)
+            // 공학1관 → 자연과학관 (인도 우회)
+            'eng1_to_science': [
+                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관 출발
+                { lat: 37.39630, lng: 126.90695 }, // 공학1관 남쪽 출구
+                { lat: 37.39635, lng: 126.90690 }, // 남쪽 인도
+                { lat: 37.39645, lng: 126.90685 }, // 서쪽 인도 (건물 우회)
+                { lat: 37.39655, lng: 126.90680 }, // 자연과학관 서쪽
+                { lat: 37.39665, lng: 126.90678 }, // 자연과학관 앞 인도
+                { lat: 37.39669466288283, lng: 126.90676716508685 }  // 자연과학관 입구
+            ],
+            
+            // 자연과학관 → 식품과학관 (북쪽 인도)
+            'science_to_food': [
+                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
+                { lat: 37.39675, lng: 126.90680 }, // 자연과학관 북쪽 출구
+                { lat: 37.39685, lng: 126.90685 }, // 북쪽 인도
+                { lat: 37.39695, lng: 126.90695 }, // 계속 북쪽
+                { lat: 37.39705, lng: 126.90710 }, // 식품과학관 서쪽 접근
+                { lat: 37.39710, lng: 126.90730 }, // 식품과학관 남쪽 인도
+                { lat: 37.39712, lng: 126.90750 }, // 식품과학관 앞
+                { lat: 37.39714809720343, lng: 126.90762208499473 }  // 식품과학관 입구
+            ],
+            
+            // 공학1관 → 도의관 (중앙 광장 경유)
+            'eng1_to_doui': [
+                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
+                { lat: 37.39635, lng: 126.90705 }, // 공학1관 동쪽 출구
+                { lat: 37.39645, lng: 126.90715 }, // 동쪽 인도
+                { lat: 37.39655, lng: 126.90725 }, // 공학2관 남쪽 우회
+                { lat: 37.39665, lng: 126.90735 }, // 중앙 광장 서쪽
+                { lat: 37.39675, lng: 126.90745 }, // 중앙 광장 진입
+                { lat: 37.39680, lng: 126.90760 }, // 중앙 광장 중심
+                { lat: 37.39682, lng: 126.90775 }, // 중앙 광장 북쪽
+                { lat: 37.39681, lng: 126.90790 }, // 도의관 서쪽 접근
+                { lat: 37.39680, lng: 126.90800 }, // 도의관 앞 인도
+                { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관 입구
+            ],
+            
+            // 문화1관 → 연곡문화센터 (모든 건물 우회)
             'culture1_to_yeongok': [
                 { lat: 37.39576992475254, lng: 126.90812350405056 }, // 문화1관
-                { lat: 37.39580, lng: 126.90808 }, // 문화1관 북쪽 출구
-                { lat: 37.39590, lng: 126.90800 }, // 북쪽 인도
-                { lat: 37.39600, lng: 126.90795 }, // 도의관 동쪽 우회
-                { lat: 37.39615, lng: 126.90805 }, // 중앙 보행로
-                { lat: 37.39630, lng: 126.90815 }, // 계속 북쪽
-                { lat: 37.39650, lng: 126.90830 }, // 공학2관 동쪽 우회
-                { lat: 37.39670, lng: 126.90845 }, // 북쪽 보행로
-                { lat: 37.39690, lng: 126.90860 }, // 운동장 서쪽
-                { lat: 37.39710, lng: 126.90875 }, // 계속 북쪽
-                { lat: 37.39730, lng: 126.90895 }, // 대학본관 동쪽
-                { lat: 37.39750, lng: 126.90915 }, // 기숙사 접근로
-                { lat: 37.39770, lng: 126.90935 }, // 기숙사 구역
-                { lat: 37.39785, lng: 126.90950 }, // 연곡문화센터 서쪽
+                { lat: 37.39585, lng: 126.90815 }, // 문화1관 동쪽 출구
+                { lat: 37.39595, lng: 126.90810 }, // 도의관 남쪽 인도
+                { lat: 37.39605, lng: 126.90805 }, // 도의관 동쪽 우회
+                { lat: 37.39620, lng: 126.90810 }, // 중앙 광장 남쪽
+                { lat: 37.39635, lng: 126.90820 }, // 공학2관 동쪽 우회
+                { lat: 37.39650, lng: 126.90830 }, // 식품과학관 동쪽
+                { lat: 37.39665, lng: 126.90840 }, // 북쪽 인도 진입
+                { lat: 37.39680, lng: 126.90850 }, // 운동장 서쪽
+                { lat: 37.39695, lng: 126.90860 }, // 계속 북쪽
+                { lat: 37.39710, lng: 126.90870 }, // 대학본관 서쪽
+                { lat: 37.39725, lng: 126.90885 }, // 기숙사 방향
+                { lat: 37.39740, lng: 126.90900 }, // 기숙사 접근로
+                { lat: 37.39755, lng: 126.90920 }, // 기숙사 구역
+                { lat: 37.39770, lng: 126.90935 }, // 연곡문화센터 서쪽
+                { lat: 37.39785, lng: 126.90950 }, // 연곡문화센터 남쪽
                 { lat: 37.39795, lng: 126.90960 }, // 연곡문화센터 앞
                 { lat: 37.398046192024914, lng: 126.90966512810492 } // 연곡문화센터
             ],
             
-            // 학술정보관 → 창조관 (건물들 우회, 동쪽 경로)
+            // 학술정보관 → 창조관 (최대한 건물 우회)
             'library_to_creation': [
                 { lat: 37.39637467129301, lng: 126.906603807587 }, // 학술정보관
-                { lat: 37.39640, lng: 126.90665 }, // 학술정보관 동쪽 출구
+                { lat: 37.39640, lng: 126.90665 }, // 학술정보관 동쪽
                 { lat: 37.39645, lng: 126.90675 }, // 동쪽 인도
                 { lat: 37.39650, lng: 126.90690 }, // 자연과학관 남쪽 우회
-                { lat: 37.39660, lng: 126.90705 }, // 공학1관 동쪽 우회
-                { lat: 37.39670, lng: 126.90720 }, // 중앙 보행로
-                { lat: 37.39680, lng: 126.90740 }, // 공학2관 남쪽 우회
-                { lat: 37.39690, lng: 126.90760 }, // 식품과학관 남쪽
-                { lat: 37.39700, lng: 126.90780 }, // 도의관 남쪽 우회
-                { lat: 37.39710, lng: 126.90800 }, // 동쪽 보행로
-                { lat: 37.39715, lng: 126.90825 }, // 운동장 남쪽
-                { lat: 37.39720, lng: 126.90850 }, // 계속 동쪽
-                { lat: 37.39722, lng: 126.90875 }, // 대학본관 남쪽
-                { lat: 37.39725, lng: 126.90900 }, // 동쪽 구역 진입
-                { lat: 37.39727, lng: 126.90925 }, // 학생복지센터 남쪽
-                { lat: 37.39728, lng: 126.90950 }, // 농구장 남쪽
-                { lat: 37.39729, lng: 126.90980 }, // 창의교육센터 남쪽
-                { lat: 37.39730, lng: 126.91010 }, // 창조관 서쪽 접근
-                { lat: 37.39730, lng: 126.91030 }, // 창조관 앞 인도
-                { lat: 37.39730791148064, lng: 126.91039726900274 } // 창조관 입구
+                { lat: 37.39655, lng: 126.90710 }, // 공학1관 남쪽 우회
+                { lat: 37.39660, lng: 126.90730 }, // 공학2관 남쪽 우회
+                { lat: 37.39665, lng: 126.90750 }, // 식품과학관 남쪽 우회
+                { lat: 37.39670, lng: 126.90770 }, // 도의관 남쪽 우회
+                { lat: 37.39675, lng: 126.90790 }, // 중앙 광장 남쪽
+                { lat: 37.39680, lng: 126.90810 }, // 동쪽 인도 진입
+                { lat: 37.39685, lng: 126.90830 }, // 운동장 남쪽
+                { lat: 37.39690, lng: 126.90850 }, // 계속 동쪽
+                { lat: 37.39695, lng: 126.90870 }, // 대학본관 남쪽
+                { lat: 37.39700, lng: 126.90890 }, // 학생복지센터 남쪽
+                { lat: 37.39705, lng: 126.90910 }, // 농구장 남쪽
+                { lat: 37.39710, lng: 126.90930 }, // 창의교육센터 남쪽
+                { lat: 37.39715, lng: 126.90950 }, // 동쪽 구역
+                { lat: 37.39720, lng: 126.90980 }, // 창조관 서쪽 접근
+                { lat: 37.39725, lng: 126.91010 }, // 창조관 남쪽
+                { lat: 37.39728, lng: 126.91030 }, // 창조관 앞
+                { lat: 37.39730791148064, lng: 126.91039726900274 } // 창조관
             ],
             
-            // 추가 주요 경로들 (건물 우회)
+            // 공학1관 → 문화1관 (남쪽 우회)
             'eng1_to_culture1': [
                 { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
-                { lat: 37.39625, lng: 126.90705 }, // 공학1관 동쪽
-                { lat: 37.39620, lng: 126.90720 }, // 남쪽 인도
-                { lat: 37.39610, lng: 126.90740 }, // 문화2관 서쪽 우회
-                { lat: 37.39600, lng: 126.90760 }, // 계속 남쪽
-                { lat: 37.39590, lng: 126.90780 }, // 문화1관 서쪽 접근
-                { lat: 37.39585, lng: 126.90795 }, // 문화1관 북쪽
-                { lat: 37.39580, lng: 126.90805 }, // 문화1관 앞 인도
+                { lat: 37.39625, lng: 126.90705 }, // 공학1관 남동쪽
+                { lat: 37.39615, lng: 126.90720 }, // 남쪽 인도
+                { lat: 37.39605, lng: 126.90740 }, // 문화2관 서쪽 우회
+                { lat: 37.39595, lng: 126.90760 }, // 계속 남쪽
+                { lat: 37.39585, lng: 126.90780 }, // 문화1관 서쪽 접근
+                { lat: 37.39580, lng: 126.90795 }, // 문화1관 북쪽
+                { lat: 37.39578, lng: 126.90805 }, // 문화1관 앞
                 { lat: 37.39576992475254, lng: 126.90812350405056 } // 문화1관
             ],
             
-            'science_to_library': [
-                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
-                { lat: 37.39665, lng: 126.90670 }, // 자연과학관 서쪽
-                { lat: 37.39655, lng: 126.90668 }, // 서쪽 인도
-                { lat: 37.39645, lng: 126.90665 }, // 학술정보관 동쪽 접근
-                { lat: 37.39640, lng: 126.90663 }, // 학술정보관 앞
-                { lat: 37.39637467129301, lng: 126.906603807587 } // 학술정보관
+            // 학술정보관 → 자연과학관 (서쪽 인도)
+            'library_to_science': [
+                { lat: 37.39637467129301, lng: 126.906603807587 }, // 학술정보관
+                { lat: 37.39645, lng: 126.90665 }, // 학술정보관 동쪽
+                { lat: 37.39655, lng: 126.90670 }, // 동쪽 인도
+                { lat: 37.39665, lng: 126.90675 }, // 자연과학관 서쪽 접근
+                { lat: 37.39669466288283, lng: 126.90676716508685 } // 자연과학관
             ]
         };
 
@@ -450,31 +467,40 @@
             return generateCurvedPath(startBuilding, endBuilding);
         }
 
-        // 자연스러운 곡선 경로 생성
+        // 자연스러운 곡선 경로 생성 (건물 우회)
         function generateCurvedPath(startBuilding, endBuilding) {
             const start = buildings.find(b => b.name === startBuilding).coords;
             const end = buildings.find(b => b.name === endBuilding).coords;
             
-            // 중앙 보행로 포인트
-            const centralPoint = { lat: 37.39670, lng: 126.90780 };
+            // 캠퍼스 내 주요 안전한 보행로 포인트들 (건물들 사이)
+            const safeWalkwayPoints = [
+                { lat: 37.39670, lng: 126.90780, name: '중앙광장' },      // 중앙 광장
+                { lat: 37.39645, lng: 126.90745, name: '중앙보행로' },    // 중앙 보행로
+                { lat: 37.39690, lng: 126.90860, name: '북쪽보행로' },    // 북쪽 보행로 (운동장 서쪽)
+                { lat: 37.39620, lng: 126.90720, name: '남쪽보행로' },    // 남쪽 보행로 (문화관 북쪽)
+                { lat: 37.39720, lng: 126.90850, name: '동쪽보행로' }     // 동쪽 보행로 (기숙사 남쪽)
+            ];
             
             const path = [];
             path.push(start);
             
-            // 거리가 멀면 중앙 보행로 경유
             const distance = calculateDistance(start, end);
-            if (distance > 150) {
-                // 출발지에서 중앙까지 곡선 생성
-                const midPoints1 = createSmoothCurve(start, centralPoint, 3);
-                path.push(...midPoints1);
-                path.push(centralPoint);
+            
+            if (distance > 200) {
+                // 장거리: 안전한 보행로 경유 (건물 우회)
+                const bestWaypoint = findSafeWaypoint(start, end, safeWalkwayPoints);
                 
-                // 중앙에서 도착지까지 곡선 생성
-                const midPoints2 = createSmoothCurve(centralPoint, end, 3);
+                // 출발지에서 안전한 경유점까지 (건물 우회)
+                const midPoints1 = createBuildingAvoidingPath(start, bestWaypoint, 4);
+                path.push(...midPoints1);
+                path.push(bestWaypoint);
+                
+                // 경유점에서 도착지까지 (건물 우회)
+                const midPoints2 = createBuildingAvoidingPath(bestWaypoint, end, 4);
                 path.push(...midPoints2);
             } else {
-                // 가까우면 직접 곡선 경로
-                const midPoints = createSmoothCurve(start, end, 4);
+                // 단거리: 직접 경로지만 건물 우회
+                const midPoints = createBuildingAvoidingPath(start, end, 5);
                 path.push(...midPoints);
             }
             
@@ -482,23 +508,102 @@
             return path;
         }
 
-        // 부드러운 곡선 생성
-        function createSmoothCurve(start, end, numPoints) {
+        // 안전한 경유점 찾기 (건물들과 충돌하지 않는 지점)
+        function findSafeWaypoint(start, end, waypoints) {
+            let bestWaypoint = waypoints[0];
+            let minTotalDistance = Infinity;
+
+            waypoints.forEach(waypoint => {
+                const distToWaypoint = calculateDistance(start, waypoint);
+                const distFromWaypoint = calculateDistance(waypoint, end);
+                const totalDist = distToWaypoint + distFromWaypoint;
+
+                // 건물과의 충돌 여부 확인 (단순화된 버전)
+                if (totalDist < minTotalDistance && !isPathThroughBuilding(start, waypoint, end)) {
+                    minTotalDistance = totalDist;
+                    bestWaypoint = waypoint;
+                }
+            });
+
+            return bestWaypoint;
+        }
+
+        // 건물을 우회하는 곡선 생성
+        function createBuildingAvoidingPath(start, end, numPoints) {
             const points = [];
             
             for (let i = 1; i <= numPoints; i++) {
                 const ratio = i / (numPoints + 1);
                 
-                // 베지어 곡선 효과
-                const lat = start.lat + (end.lat - start.lat) * ratio + 
-                           Math.sin(ratio * Math.PI) * 0.0002;
-                const lng = start.lng + (end.lng - start.lng) * ratio + 
-                           Math.cos(ratio * Math.PI) * 0.0002;
+                // 기본 직선 보간
+                let lat = start.lat + (end.lat - start.lat) * ratio;
+                let lng = start.lng + (end.lng - start.lng) * ratio;
+                
+                // 건물 위치를 고려한 우회 경로 생성
+                const buildingAvoidanceOffset = getBuildingAvoidanceOffset(lat, lng, ratio);
+                
+                lat += buildingAvoidanceOffset.latOffset;
+                lng += buildingAvoidanceOffset.lngOffset;
+                
+                // 부드러운 곡선 효과 추가
+                lat += Math.sin(ratio * Math.PI) * 0.0001;
+                lng += Math.cos(ratio * Math.PI) * 0.0001;
                 
                 points.push({ lat, lng });
             }
             
             return points;
+        }
+
+        // 건물 우회를 위한 오프셋 계산
+        function getBuildingAvoidanceOffset(lat, lng, ratio) {
+            let latOffset = 0;
+            let lngOffset = 0;
+            
+            // 주요 건물들의 위치를 피하도록 오프셋 적용
+            buildings.forEach(building => {
+                const distanceToBuilding = calculateDistance({ lat, lng }, building.coords);
+                
+                // 건물에 너무 가까우면 우회 경로 생성
+                if (distanceToBuilding < 50) { // 50m 이내
+                    const avoidanceFactor = (50 - distanceToBuilding) / 50 * 0.0002;
+                    
+                    // 건물 반대 방향으로 밀어내기
+                    if (lat < building.coords.lat) latOffset -= avoidanceFactor;
+                    else latOffset += avoidanceFactor;
+                    
+                    if (lng < building.coords.lng) lngOffset -= avoidanceFactor;
+                    else lngOffset += avoidanceFactor;
+                }
+            });
+            
+            return { latOffset, lngOffset };
+        }
+
+        // 경로가 건물을 통과하는지 간단히 확인
+        function isPathThroughBuilding(start, waypoint, end) {
+            // 단순화된 건물 충돌 검사
+            // 실제로는 더 정교한 알고리즘이 필요하지만, 기본적인 검사만 수행
+            
+            const midPoint1 = {
+                lat: (start.lat + waypoint.lat) / 2,
+                lng: (start.lng + waypoint.lng) / 2
+            };
+            
+            const midPoint2 = {
+                lat: (waypoint.lat + end.lat) / 2,
+                lng: (waypoint.lng + end.lng) / 2
+            };
+            
+            // 중간 지점들이 건물들과 너무 가깝지 않은지 확인
+            for (let building of buildings) {
+                if (calculateDistance(midPoint1, building.coords) < 30 || 
+                    calculateDistance(midPoint2, building.coords) < 30) {
+                    return true; // 건물과 충돌 가능성
+                }
+            }
+            
+            return false;
         }
 
         // 길찾기 구현
