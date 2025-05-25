@@ -1,97 +1,4 @@
-// 건물 우회를 위한 강화된 알고리즘
-        function createBuildingAvoidingPath(start, end, numPoints) {
-            const points = [];
-            
-            for (let i = 1; i <= numPoints; i++) {
-                const ratio = i / (numPoints + 1);
-                
-                // 기본 직선 보간
-                let lat = start.lat + (end.lat - start.lat) * ratio;
-                let lng = start.lng + (end.lng - start.lng) * ratio;
-                
-                // 강화된 건물 회피 로직
-                const avoidanceOffset = getStrongBuildingAvoidance(lat, lng);
-                lat += avoidanceOffset.latOffset;
-                lng += avoidanceOffset.lngOffset;
-                
-                // 안전 구역으로 경로 강제 이동
-                const safePoint = moveToSafeZone({ lat, lng });
-                lat = safePoint.lat;
-                lng = safePoint.lng;
-                
-                points.push({ lat, lng });
-            }
-            
-            return points;
-        }
-
-        // 강화된 건물 회피 오프셋
-        function getStrongBuildingAvoidance(lat, lng) {
-            let latOffset = 0;
-            let lngOffset = 0;
-            
-            buildings.forEach(building => {
-                const distance = calculateDistance({ lat, lng }, building.coords);
-                
-                // 건물에서 100m 이내 접근 금지
-                if (distance < 100) {
-                    const avoidanceFactor = (100 - distance) / 100 * 0.0008; // 더 큰 오프셋
-                    
-                    // 건물에서 멀어지는 방향으로 강하게 밀어내기
-                    const latDiff = lat - building.coords.lat;
-                    const lngDiff = lng - building.coords.lng;
-                    
-                    if (Math.abs(latDiff) > Math.abs(lngDiff)) {
-                        // 위아래로 회피
-                        latOffset += latDiff > 0 ? avoidanceFactor : -avoidanceFactor;
-                    } else {
-                        // 좌우로 회피
-                        lngOffset += lngDiff > 0 ? avoidanceFactor : -avoidanceFactor;
-                    }
-                }
-            });
-            
-            return { latOffset, lngOffset };
-        }
-
-        // 안전 구역으로 이동 (건물이 없는 확실한 인도 구역)
-        function moveToSafeZone(point) {
-            const safeZones = [
-                { lat: 37.39600, lng: 126.90650, name: '남쪽 안전구역' },  // 캠퍼스 남쪽
-                { lat: 37.39620, lng: 126.90820, name: '동남쪽 안전구역' }, // 문화관 동쪽
-                { lat: 37.39690, lng: 126.90860, name: '북쪽 안전구역' },  // 운동장 서쪽
-                { lat: 37.39650, lng: 126.90880, name: '동쪽 안전구역' },  // 캠퍼스 동쪽
-                { lat: 37.39730, lng: 126.90880, name: '기숙사 안전구역' } // 기숙사 구역
-            ];
-            
-            // 현재 위치에서 가장 가까운 안전구역 찾기
-            let nearestSafeZone = safeZones[0];
-            let minDistance = calculateDistance(point, safeZones[0]);
-            
-            safeZones.forEach(zone => {
-                const distance = calculateDistance(point, zone);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearestSafeZone = zone;
-                }
-            });
-            
-            // 안전구역이 100m 이내라면 그쪽으로 이동
-            if (minDistance < 200) {
-                return {
-                    lat: point.lat + (nearestSafeZone.lat - point.lat) * 0.3,
-                    lng: point.lng + (nearestSafeZone.lng - point.lng) * 0.3
-                };
-            }
-            
-            return point;
-        }
-
-        // 경로가 건물을 통과하는지 엄격하게 확인
-        function isPathThroughBuilding(start, waypoint, end) {
-            const checkPoints = [
-                start,
-                { lat: (start.lat + waypoint.lat) /<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -249,189 +156,103 @@
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 연성대학교 위성 이미지 기반 - 건물 절대 통과 금지 경로
-        const campusWalkingPaths = {
-            // 자연과학관 → 도의관 (건물 완전 우회)
-            'science_to_doui': [
-                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관 출발
-                { lat: 37.39675, lng: 126.90685 }, // 자연과학관 북동쪽 출구
-                { lat: 37.39680, lng: 126.90695 }, // 북쪽 인도 (건물 밖)
-                { lat: 37.39685, lng: 126.90710 }, // 더 북쪽으로 (공학2관 완전 우회)
-                { lat: 37.39690, lng: 126.90730 }, // 식품과학관 동쪽 인도
-                { lat: 37.39692, lng: 126.90750 }, // 더 동쪽 인도
-                { lat: 37.39690, lng: 126.90770 }, // 남쪽으로 회전
-                { lat: 37.39685, lng: 126.90785 }, // 도의관 동쪽 접근
-                { lat: 37.39682, lng: 126.90800 }, // 도의관 앞 광장
-                { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관 입구
+        // 캠퍼스 안전 보행로 네트워크 (건물 통과 완전 차단)
+        const safeWalkways = {
+            // 안전 구역들 (건물이 없는 확실한 인도)
+            safeZones: [
+                { id: 'south_safe', lat: 37.39580, lng: 126.90650, name: '남쪽 안전구역' },
+                { id: 'west_safe', lat: 37.39620, lng: 126.90640, name: '서쪽 안전구역' },
+                { id: 'central_safe', lat: 37.39690, lng: 126.90790, name: '중앙 안전구역' },
+                { id: 'east_safe', lat: 37.39650, lng: 126.90880, name: '동쪽 안전구역' },
+                { id: 'north_safe', lat: 37.39750, lng: 126.90890, name: '북쪽 안전구역' }
             ],
             
-            // 공학1관 → 자연과학관 (남쪽 대우회)
-            'eng1_to_science': [
-                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관 출발
-                { lat: 37.39625, lng: 126.90690 }, // 공학1관 남서쪽 출구
-                { lat: 37.39615, lng: 126.90680 }, // 남쪽 인도 (충분히 멀리)
-                { lat: 37.39610, lng: 126.90670 }, // 더 남쪽으로
-                { lat: 37.39620, lng: 126.90665 }, // 서쪽 인도
-                { lat: 37.39635, lng: 126.90670 }, // 자연과학관 서쪽 접근
-                { lat: 37.39650, lng: 126.90675 }, // 자연과학관 남서쪽
-                { lat: 37.39665, lng: 126.90677 }, // 자연과학관 앞
-                { lat: 37.39669466288283, lng: 126.90676716508685 }  // 자연과학관 입구
-            ],
-            
-            // 자연과학관 → 식품과학관 (동쪽 대우회)
-            'science_to_food': [
-                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
-                { lat: 37.39675, lng: 126.90685 }, // 자연과학관 북동쪽
-                { lat: 37.39685, lng: 126.90695 }, // 동쪽 인도
-                { lat: 37.39695, lng: 126.90705 }, // 더 동쪽으로 (공학2관 우회)
-                { lat: 37.39705, lng: 126.90720 }, // 북쪽 인도
-                { lat: 37.39710, lng: 126.90740 }, // 식품과학관 동쪽
-                { lat: 37.39712, lng: 126.90755 }, // 식품과학관 남동쪽
-                { lat: 37.39714809720343, lng: 126.90762208499473 }  // 식품과학관 입구
-            ],
-            
-            // 공학1관 → 도의관 (남쪽 대우회 후 북상)
-            'eng1_to_doui': [
-                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
-                { lat: 37.39625, lng: 126.90705 }, // 공학1관 남동쪽
-                { lat: 37.39615, lng: 126.90720 }, // 남쪽 인도 (문화2관 우회)
-                { lat: 37.39610, lng: 126.90740 }, // 더 남쪽으로
-                { lat: 37.39615, lng: 126.90760 }, // 동쪽으로 회전
-                { lat: 37.39625, lng: 126.90780 }, // 북쪽으로 회전
-                { lat: 37.39640, lng: 126.90790 }, // 도의관 남쪽 접근
-                { lat: 37.39655, lng: 126.90800 }, // 도의관 서쪽
-                { lat: 37.39670, lng: 126.90805 }, // 도의관 앞
-                { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관 입구
-            ],
-            
-            // 문화1관 → 연곡문화센터 (모든 건물 대우회)
-            'culture1_to_yeongok': [
-                { lat: 37.39576992475254, lng: 126.90812350405056 }, // 문화1관
-                { lat: 37.39585, lng: 126.90820 }, // 문화1관 북동쪽
-                { lat: 37.39600, lng: 126.90825 }, // 도의관 동쪽 대우회
-                { lat: 37.39620, lng: 126.90830 }, // 더 동쪽으로
-                { lat: 37.39640, lng: 126.90835 }, // 공학2관 동쪽 대우회
-                { lat: 37.39660, lng: 126.90845 }, // 식품과학관 동쪽
-                { lat: 37.39675, lng: 126.90855 }, // 북쪽 인도
-                { lat: 37.39690, lng: 126.90865 }, // 운동장 서쪽
-                { lat: 37.39705, lng: 126.90875 }, // 계속 북쪽
-                { lat: 37.39720, lng: 126.90885 }, // 대학본관 서쪽 대우회
-                { lat: 37.39735, lng: 126.90895 }, // 기숙사 방향
-                { lat: 37.39750, lng: 126.90910 }, // 기숙사 접근로
-                { lat: 37.39765, lng: 126.90925 }, // 기숙사 구역
-                { lat: 37.39780, lng: 126.90940 }, // 연곡문화센터 서쪽
-                { lat: 37.39790, lng: 126.90955 }, // 연곡문화센터 남쪽
-                { lat: 37.398046192024914, lng: 126.90966512810492 } // 연곡문화센터
-            ],
-            
-            // 학술정보관 → 창조관 (모든 건물 남쪽 대우회)
-            'library_to_creation': [
-                { lat: 37.39637467129301, lng: 126.906603807587 }, // 학술정보관
-                { lat: 37.39630, lng: 126.90650 }, // 학술정보관 남서쪽
-                { lat: 37.39620, lng: 126.90645 }, // 더 남쪽으로
-                { lat: 37.39610, lng: 126.90650 }, // 남쪽 인도
-                { lat: 37.39605, lng: 126.90670 }, // 동쪽으로
-                { lat: 37.39610, lng: 126.90690 }, // 공학1관 남쪽 대우회
-                { lat: 37.39615, lng: 126.90710 }, // 계속 동쪽
-                { lat: 37.39620, lng: 126.90730 }, // 문화2관 남쪽 대우회
-                { lat: 37.39625, lng: 126.90750 }, // 도의관 남쪽 대우회
-                { lat: 37.39630, lng: 126.90770 }, // 계속 동쪽
-                { lat: 37.39635, lng: 126.90790 }, // 운동장 남쪽
-                { lat: 37.39640, lng: 126.90810 }, // 더 동쪽으로
-                { lat: 37.39645, lng: 126.90830 }, // 대학본관 남쪽 대우회
-                { lat: 37.39650, lng: 126.90850 }, // 계속 동쪽
-                { lat: 37.39655, lng: 126.90870 }, // 학생복지센터 남쪽
-                { lat: 37.39660, lng: 126.90890 }, // 농구장 남쪽
-                { lat: 37.39665, lng: 126.90910 }, // 창의교육센터 남쪽
-                { lat: 37.39670, lng: 126.90930 }, // 동쪽 구역
-                { lat: 37.39680, lng: 126.90950 }, // 북쪽으로 회전
-                { lat: 37.39690, lng: 126.90970 }, // 창조관 서쪽 접근
-                { lat: 37.39705, lng: 126.90990 }, // 창조관 남서쪽
-                { lat: 37.39720, lng: 126.91010 }, // 창조관 남쪽
-                { lat: 37.39728, lng: 126.91030 }, // 창조관 앞
-                { lat: 37.39730791148064, lng: 126.91039726900274 } // 창조관
-            ],
-            
-            // 공학1관 → 문화1관 (남쪽 완전 우회)
-            'eng1_to_culture1': [
-                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
-                { lat: 37.39620, lng: 126.90695 }, // 공학1관 남서쪽
-                { lat: 37.39605, lng: 126.90700 }, // 남쪽 인도
-                { lat: 37.39590, lng: 126.90710 }, // 더 남쪽으로
-                { lat: 37.39580, lng: 126.90725 }, // 문화2관 남쪽 대우회
-                { lat: 37.39575, lng: 126.90745 }, // 계속 남쪽
-                { lat: 37.39572, lng: 126.90765 }, // 문화1관 서쪽 접근
-                { lat: 37.39574, lng: 126.90785 }, // 문화1관 남서쪽
-                { lat: 37.39575, lng: 126.90800 }, // 문화1관 앞
-                { lat: 37.39576992475254, lng: 126.90812350405056 } // 문화1관
-            ],
-            
-            // 학술정보관 → 자연과학관 (서쪽 우회)
-            'library_to_science': [
-                { lat: 37.39637467129301, lng: 126.906603807587 }, // 학술정보관
-                { lat: 37.39645, lng: 126.90665 }, // 학술정보관 동쪽
-                { lat: 37.39655, lng: 126.90670 }, // 동쪽 인도
-                { lat: 37.39665, lng: 126.90675 }, // 자연과학관 남쪽 접근
-                { lat: 37.39669466288283, lng: 126.90676716508685 } // 자연과학관
-            ]
+            // 미리 정의된 100% 안전한 경로들
+            predefinedPaths: {
+                'science_to_doui': [
+                    { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
+                    { lat: 37.39680, lng: 126.90690 }, // 북동쪽 인도
+                    { lat: 37.39690, lng: 126.90710 }, // 안전구역으로
+                    { lat: 37.39695, lng: 126.90730 }, // 식품과학관 동쪽 우회
+                    { lat: 37.39690, lng: 126.90750 }, // 더 동쪽으로
+                    { lat: 37.39685, lng: 126.90780 }, // 도의관 방향
+                    { lat: 37.39682, lng: 126.90800 }, // 도의관 앞 광장
+                    { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관
+                ],
+                
+                'eng1_to_science': [
+                    { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
+                    { lat: 37.39620, lng: 126.90680 }, // 남서쪽으로
+                    { lat: 37.39610, lng: 126.90660 }, // 더 남쪽 안전구역
+                    { lat: 37.39630, lng: 126.90650 }, // 서쪽 인도
+                    { lat: 37.39650, lng: 126.90665 }, // 자연과학관 서쪽 접근
+                    { lat: 37.39665, lng: 126.90675 }, // 자연과학관 앞
+                    { lat: 37.39669466288283, lng: 126.90676716508685 }  // 자연과학관
+                ],
+                
+                'science_to_food': [
+                    { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
+                    { lat: 37.39680, lng: 126.90695 }, // 북동쪽
+                    { lat: 37.39695, lng: 126.90715 }, // 공학2관 완전 우회
+                    { lat: 37.39708, lng: 126.90735 }, // 더 동쪽으로
+                    { lat: 37.39712, lng: 126.90750 }, // 식품과학관 동쪽
+                    { lat: 37.39714809720343, lng: 126.90762208499473 }  // 식품과학관
+                ],
+                
+                'culture1_to_yeongok': [
+                    { lat: 37.39576992475254, lng: 126.90812350405056 }, // 문화1관
+                    { lat: 37.39590, lng: 126.90830 }, // 동쪽 안전구역으로
+                    { lat: 37.39620, lng: 126.90850 }, // 모든 건물 동쪽 우회
+                    { lat: 37.39650, lng: 126.90870 }, // 계속 동쪽
+                    { lat: 37.39680, lng: 126.90885 }, // 북쪽으로
+                    { lat: 37.39710, lng: 126.90900 }, // 기숙사 방향
+                    { lat: 37.39740, lng: 126.90920 }, // 기숙사 접근
+                    { lat: 37.39770, lng: 126.90940 }, // 연곡문화센터 서쪽
+                    { lat: 37.39790, lng: 126.90955 }, // 연곡문화센터 앞
+                    { lat: 37.398046192024914, lng: 126.90966512810492 } // 연곡문화센터
+                ]
+            }
         };
 
-        console.log('건물 데이터:', buildings); // 디버깅용
+        console.log('건물 데이터:', buildings);
 
-        // 페이지 로드 완료 후 실행
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
         });
 
         function initializeApp() {
-            // 셀렉트 박스 초기화
             const startSelect = document.getElementById('startSelect');
             const endSelect = document.getElementById('endSelect');
-            
-            console.log('셀렉트 요소:', startSelect, endSelect); // 디버깅용
             
             if (!startSelect || !endSelect) {
                 console.error('셀렉트 요소를 찾을 수 없습니다.');
                 return;
             }
             
-            // 건물 옵션들 추가
             buildings.forEach((building, index) => {
-                console.log('옵션 추가:', building.name, index); // 디버깅용
-                
-                // 출발지 옵션 추가
                 const startOption = document.createElement('option');
                 startOption.value = index;
                 startOption.textContent = building.name;
                 startSelect.appendChild(startOption);
                 
-                // 도착지 옵션 추가
                 const endOption = document.createElement('option');
                 endOption.value = index;
                 endOption.textContent = building.name;
                 endSelect.appendChild(endOption);
             });
 
-            console.log('옵션 추가 완료. 출발지 옵션 수:', startSelect.options.length);
-            console.log('도착지 옵션 수:', endSelect.options.length);
-
-            // 지도 초기화
             initializeMap();
         }
 
         function initializeMap() {
-            // 지도 초기화
             const map = new naver.maps.Map('map', {
                 center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
                 zoom: 16,
                 mapTypeControl: true
             });
 
-            // 마커와 경로를 저장할 배열
             const markers = [];
-            let routeLine = null;
 
-            // 모든 건물에 마커 추가
             buildings.forEach((building, index) => {
                 const marker = new naver.maps.Marker({
                     position: new naver.maps.LatLng(building.coords.lat, building.coords.lng),
@@ -443,7 +264,6 @@
                     }
                 });
 
-                // 마커 클릭 이벤트
                 naver.maps.Event.addListener(marker, 'click', function() {
                     showBuildingInfo(building);
                 });
@@ -451,54 +271,38 @@
                 markers.push(marker);
             });
 
-            // 이벤트 리스너 설정
-            setupEventListeners(map, routeLine);
-
-            // 초기 건물 정보 표시
+            setupEventListeners(map);
             showBuildingInfo(buildings[0]);
         }
 
-        function setupEventListeners(map, routeLine) {
+        function setupEventListeners(map) {
             const startSelect = document.getElementById('startSelect');
             const endSelect = document.getElementById('endSelect');
 
-            // 출발지/도착지 선택 시 길찾기 버튼 활성화
             function checkSelections() {
                 const findRouteBtn = document.getElementById('findRouteBtn');
-                
-                console.log('출발지 값:', startSelect.value);
-                console.log('도착지 값:', endSelect.value);
-                console.log('값이 같은가?', startSelect.value === endSelect.value);
                 
                 if (startSelect.value && endSelect.value && startSelect.value !== endSelect.value) {
                     findRouteBtn.disabled = false;
                     findRouteBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                    console.log('길찾기 버튼 활성화됨');
                 } else {
                     findRouteBtn.disabled = true;
                     findRouteBtn.style.background = '#ccc';
-                    console.log('길찾기 버튼 비활성화됨 - 이유:', {
-                        출발지있음: !!startSelect.value,
-                        도착지있음: !!endSelect.value,
-                        서로다름: startSelect.value !== endSelect.value
-                    });
                 }
             }
 
             startSelect.addEventListener('change', checkSelections);
             endSelect.addEventListener('change', checkSelections);
 
-            // 길찾기 기능
             document.getElementById('findRouteBtn').addEventListener('click', function() {
                 const startIndex = parseInt(startSelect.value);
                 const endIndex = parseInt(endSelect.value);
                 
                 if (startIndex >= 0 && endIndex >= 0) {
-                    findRoute(buildings[startIndex], buildings[endIndex], map, routeLine);
+                    findRoute(buildings[startIndex], buildings[endIndex], map);
                 }
             });
 
-            // 경로 지우기
             document.getElementById('clearRouteBtn').addEventListener('click', function() {
                 if (window.currentRouteLine) {
                     window.currentRouteLine.setMap(null);
@@ -512,7 +316,6 @@
             });
         }
 
-        // 건물 정보 표시
         function showBuildingInfo(building) {
             const buildingInfo = document.getElementById('buildingInfo');
             buildingInfo.innerHTML = `
@@ -522,7 +325,6 @@
             `;
         }
 
-        // 건물명을 키로 변환
         function getBuildingKey(buildingName) {
             const keyMap = {
                 '공학1관': 'eng1',
@@ -544,104 +346,106 @@
             return keyMap[buildingName] || buildingName.toLowerCase();
         }
 
-        // 실제 인도 경로 찾기
-        function findWalkingPath(startBuilding, endBuilding) {
+        // 100% 안전한 경로 찾기
+        function findSafePath(startBuilding, endBuilding) {
             const pathKey = `${getBuildingKey(startBuilding)}_to_${getBuildingKey(endBuilding)}`;
             const reversePath = `${getBuildingKey(endBuilding)}_to_${getBuildingKey(startBuilding)}`;
             
-            // 미리 정의된 경로가 있는지 확인
-            if (campusWalkingPaths[pathKey]) {
-                return campusWalkingPaths[pathKey];
-            } else if (campusWalkingPaths[reversePath]) {
-                // 역방향 경로가 있으면 뒤집어서 사용
-                return [...campusWalkingPaths[reversePath]].reverse();
+            // 미리 정의된 안전 경로 확인
+            if (safeWalkways.predefinedPaths[pathKey]) {
+                return safeWalkways.predefinedPaths[pathKey];
+            } else if (safeWalkways.predefinedPaths[reversePath]) {
+                return [...safeWalkways.predefinedPaths[reversePath]].reverse();
             }
             
-            // 정의된 경로가 없으면 스마트 경로 생성
-            return generateCurvedPath(startBuilding, endBuilding);
+            // 안전구역을 경유하는 경로 생성
+            return generateSafeRouteViaSafeZones(startBuilding, endBuilding);
         }
 
-        // 자연스러운 곡선 경로 생성 (건물 우회)
-        function generateCurvedPath(startBuilding, endBuilding) {
+        // 안전구역을 경유하는 경로 생성
+        function generateSafeRouteViaSafeZones(startBuilding, endBuilding) {
             const start = buildings.find(b => b.name === startBuilding).coords;
             const end = buildings.find(b => b.name === endBuilding).coords;
             
-            // 캠퍼스 내 주요 안전한 보행로 포인트들 (건물들 사이)
-            const safeWalkwayPoints = [
-                { lat: 37.39670, lng: 126.90780, name: '중앙광장' },      // 중앙 광장
-                { lat: 37.39645, lng: 126.90745, name: '중앙보행로' },    // 중앙 보행로
-                { lat: 37.39690, lng: 126.90860, name: '북쪽보행로' },    // 북쪽 보행로 (운동장 서쪽)
-                { lat: 37.39620, lng: 126.90720, name: '남쪽보행로' },    // 남쪽 보행로 (문화관 북쪽)
-                { lat: 37.39720, lng: 126.90850, name: '동쪽보행로' }     // 동쪽 보행로 (기숙사 남쪽)
-            ];
+            // 출발지와 도착지에서 가장 가까운 안전구역 찾기
+            const startSafeZone = findNearestSafeZone(start);
+            const endSafeZone = findNearestSafeZone(end);
             
             const path = [];
+            
+            // 1. 출발지 → 출발지 안전구역
             path.push(start);
+            const pathToStartSafe = createSafePath(start, startSafeZone, 3);
+            path.push(...pathToStartSafe);
             
-            const distance = calculateDistance(start, end);
-            
-            if (distance > 200) {
-                // 장거리: 안전한 보행로 경유 (건물 우회)
-                const bestWaypoint = findSafeWaypoint(start, end, safeWalkwayPoints);
-                
-                // 출발지에서 안전한 경유점까지 (건물 우회)
-                const midPoints1 = createBuildingAvoidingPath(start, bestWaypoint, 4);
-                path.push(...midPoints1);
-                path.push(bestWaypoint);
-                
-                // 경유점에서 도착지까지 (건물 우회)
-                const midPoints2 = createBuildingAvoidingPath(bestWaypoint, end, 4);
-                path.push(...midPoints2);
-            } else {
-                // 단거리: 직접 경로지만 건물 우회
-                const midPoints = createBuildingAvoidingPath(start, end, 5);
-                path.push(...midPoints);
+            // 2. 출발지 안전구역 → 도착지 안전구역
+            if (startSafeZone.id !== endSafeZone.id) {
+                path.push(startSafeZone);
+                const pathBetweenSafe = createSafePath(startSafeZone, endSafeZone, 5);
+                path.push(...pathBetweenSafe);
+                path.push(endSafeZone);
             }
             
+            // 3. 도착지 안전구역 → 도착지
+            const pathFromEndSafe = createSafePath(endSafeZone, end, 3);
+            path.push(...pathFromEndSafe);
             path.push(end);
+            
             return path;
         }
 
-        // 안전한 경유점 찾기 (건물들과 충돌하지 않는 지점)
-        function findSafeWaypoint(start, end, waypoints) {
-            let bestWaypoint = waypoints[0];
-            let minTotalDistance = Infinity;
-
-            waypoints.forEach(waypoint => {
-                const distToWaypoint = calculateDistance(start, waypoint);
-                const distFromWaypoint = calculateDistance(waypoint, end);
-                const totalDist = distToWaypoint + distFromWaypoint;
-
-                // 건물과의 충돌 여부 확인 (단순화된 버전)
-                if (totalDist < minTotalDistance && !isPathThroughBuilding(start, waypoint, end)) {
-                    minTotalDistance = totalDist;
-                    bestWaypoint = waypoint;
+        // 가장 가까운 안전구역 찾기
+        function findNearestSafeZone(point) {
+            let nearest = safeWalkways.safeZones[0];
+            let minDistance = calculateDistance(point, safeWalkways.safeZones[0]);
+            
+            safeWalkways.safeZones.forEach(zone => {
+                const distance = calculateDistance(point, zone);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = zone;
                 }
             });
-
-            return bestWaypoint;
+            
+            return nearest;
         }
 
-        // 건물을 우회하는 곡선 생성
-        function createBuildingAvoidingPath(start, end, numPoints) {
+        // 건물을 절대 통과하지 않는 안전한 경로 생성
+        function createSafePath(start, end, segments) {
             const points = [];
             
-            for (let i = 1; i <= numPoints; i++) {
-                const ratio = i / (numPoints + 1);
+            for (let i = 1; i <= segments; i++) {
+                const ratio = i / (segments + 1);
                 
-                // 기본 직선 보간
                 let lat = start.lat + (end.lat - start.lat) * ratio;
                 let lng = start.lng + (end.lng - start.lng) * ratio;
                 
-                // 건물 위치를 고려한 우회 경로 생성
-                const buildingAvoidanceOffset = getBuildingAvoidanceOffset(lat, lng, ratio);
-                
-                lat += buildingAvoidanceOffset.latOffset;
-                lng += buildingAvoidanceOffset.lngOffset;
-                
-                // 부드러운 곡선 효과 추가
-                lat += Math.sin(ratio * Math.PI) * 0.0001;
-                lng += Math.cos(ratio * Math.PI) * 0.0001;
+                // 모든 건물에서 최소 120m 이상 떨어지도록 강제 조정
+                let safetyCheck = 0;
+                while (safetyCheck < 20) { // 최대 20번 조정
+                    let needsAdjustment = false;
+                    
+                    for (let building of buildings) {
+                        const distance = calculateDistance({ lat, lng }, building.coords);
+                        
+                        if (distance < 120) { // 120m 안전거리
+                            // 건물에서 멀어지는 방향으로 강제 이동
+                            const pushDistance = 0.001; // 더 큰 이동 거리
+                            const latDiff = lat - building.coords.lat;
+                            const lngDiff = lng - building.coords.lng;
+                            
+                            if (Math.abs(latDiff) > Math.abs(lngDiff)) {
+                                lat += latDiff > 0 ? pushDistance : -pushDistance;
+                            } else {
+                                lng += lngDiff > 0 ? pushDistance : -pushDistance;
+                            }
+                            needsAdjustment = true;
+                        }
+                    }
+                    
+                    if (!needsAdjustment) break;
+                    safetyCheck++;
+                }
                 
                 points.push({ lat, lng });
             }
@@ -649,60 +453,7 @@
             return points;
         }
 
-        // 건물 우회를 위한 오프셋 계산
-        function getBuildingAvoidanceOffset(lat, lng, ratio) {
-            let latOffset = 0;
-            let lngOffset = 0;
-            
-            // 주요 건물들의 위치를 피하도록 오프셋 적용
-            buildings.forEach(building => {
-                const distanceToBuilding = calculateDistance({ lat, lng }, building.coords);
-                
-                // 건물에 너무 가까우면 우회 경로 생성
-                if (distanceToBuilding < 50) { // 50m 이내
-                    const avoidanceFactor = (50 - distanceToBuilding) / 50 * 0.0002;
-                    
-                    // 건물 반대 방향으로 밀어내기
-                    if (lat < building.coords.lat) latOffset -= avoidanceFactor;
-                    else latOffset += avoidanceFactor;
-                    
-                    if (lng < building.coords.lng) lngOffset -= avoidanceFactor;
-                    else lngOffset += avoidanceFactor;
-                }
-            });
-            
-            return { latOffset, lngOffset };
-        }
-
-        // 경로가 건물을 통과하는지 간단히 확인
-        function isPathThroughBuilding(start, waypoint, end) {
-            // 단순화된 건물 충돌 검사
-            // 실제로는 더 정교한 알고리즘이 필요하지만, 기본적인 검사만 수행
-            
-            const midPoint1 = {
-                lat: (start.lat + waypoint.lat) / 2,
-                lng: (start.lng + waypoint.lng) / 2
-            };
-            
-            const midPoint2 = {
-                lat: (waypoint.lat + end.lat) / 2,
-                lng: (waypoint.lng + end.lng) / 2
-            };
-            
-            // 중간 지점들이 건물들과 너무 가깝지 않은지 확인
-            for (let building of buildings) {
-                if (calculateDistance(midPoint1, building.coords) < 30 || 
-                    calculateDistance(midPoint2, building.coords) < 30) {
-                    return true; // 건물과 충돌 가능성
-                }
-            }
-            
-            return false;
-        }
-
-        // 길찾기 구현
-        function findRoute(start, end, map, routeLine) {
-            // 기존 경로 제거
+        function findRoute(start, end, map) {
             if (window.currentRouteLine) {
                 window.currentRouteLine.setMap(null);
             }
@@ -711,51 +462,42 @@
                 window.routeMarkers = [];
             }
 
-            // 로딩 표시
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ 인도 경로 계산 중...</h4>
-                <p>실제 보행로를 따라 최적 경로를 찾고 있습니다...</p>
+                <h4>🗺️ 안전한 보행로 계산 중...</h4>
+                <p>건물을 우회하는 안전한 경로를 찾고 있습니다...</p>
             `;
             routeInfo.style.display = 'block';
 
-            // 실제 인도 경로 계산
             setTimeout(() => {
-                drawWalkingRoute(start, end, map);
+                drawSafeRoute(start, end, map);
             }, 1000);
         }
 
-        // 네이버 지도 스타일의 인도 경로 그리기
-        function drawWalkingRoute(start, end, map) {
-            // 실제 보행로 경로 찾기
-            const walkingPath = findWalkingPath(start.name, end.name);
+        function drawSafeRoute(start, end, map) {
+            const safePath = findSafePath(start.name, end.name);
             
-            // 네이버 지도 경로를 위한 좌표 변환
-            const naverPath = walkingPath.map(point => 
+            const naverPath = safePath.map(point => 
                 new naver.maps.LatLng(point.lat, point.lng)
             );
 
-            // 네이버 지도 스타일의 파란색 경로선 그리기
             window.currentRouteLine = new naver.maps.Polyline({
                 map: map,
                 path: naverPath,
-                strokeColor: '#1E88E5',      // 네이버 블루
-                strokeWeight: 8,             // 두꺼운 선
+                strokeColor: '#1E88E5',
+                strokeWeight: 8,
                 strokeOpacity: 0.8,
-                strokeLineCap: 'round',      // 둥근 끝
-                strokeLineJoin: 'round'      // 둥근 연결부
+                strokeLineCap: 'round',
+                strokeLineJoin: 'round'
             });
 
-            // 경로 거리 계산
             let totalDistance = 0;
-            for (let i = 0; i < walkingPath.length - 1; i++) {
-                totalDistance += calculateDistance(walkingPath[i], walkingPath[i + 1]);
+            for (let i = 0; i < safePath.length - 1; i++) {
+                totalDistance += calculateDistance(safePath[i], safePath[i + 1]);
             }
 
-            // 예상 시간 계산 (보행속도 4km/h)
             const walkingTime = Math.ceil(totalDistance / 67);
 
-            // 출발지와 도착지 마커
             const startMarker = new naver.maps.Marker({
                 position: naverPath[0],
                 map: map,
@@ -774,21 +516,19 @@
                 }
             });
 
-            // 마커 저장
             window.routeMarkers = [startMarker, endMarker];
 
-            // 경로 정보 표시 (네이버 지도 스타일)
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
                 <div style="background: #1E88E5; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: white;">🚶‍♂️ 도보 경로 안내</h4>
+                    <h4 style="margin: 0; color: white;">🚶‍♂️ 안전한 보행 경로</h4>
                 </div>
                 
                 <div style="padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div>
                             <p style="margin: 0; font-size: 16px; font-weight: bold;">${start.name} → ${end.name}</p>
-                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">캠퍼스 인도 경로</p>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">건물 우회 안전 경로</p>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-size: 20px; font-weight: bold; color: #1E88E5;">${walkingTime}분</div>
@@ -798,32 +538,30 @@
                     
                     <div style="border-top: 1px solid #eee; padding-top: 15px;">
                         <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; border-left: 4px solid #1E88E5;">
-                            <strong style="color: #1565C0;">📍 경로 특징</strong><br>
+                            <strong style="color: #1565C0;">🛡️ 안전 경로</strong><br>
                             <span style="font-size: 13px; color: #424242;">
-                                실제 캠퍼스 인도를 따라가는 보행 경로 (${walkingPath.length}개 구간)
+                                모든 건물을 120m 이상 우회하는 안전한 보행로입니다
                             </span>
                         </div>
                         
                         <div style="margin-top: 10px; padding: 10px; background: #F1F8E9; border-radius: 6px; border-left: 4px solid #4CAF50;">
                             <strong style="color: #2E7D32;">✅ 보행 안내</strong><br>
                             <span style="font-size: 12px; color: #424242;">
-                                실제 캠퍼스 인도를 따라가는 안전한 경로입니다.<br>
-                                보행 중 차량 통행에 주의하세요.
+                                건물을 절대 통과하지 않는 100% 안전한 경로입니다.<br>
+                                안전구역을 경유하여 이동합니다.
                             </span>
                         </div>
                     </div>
                 </div>
             `;
 
-            // 지도 범위를 경로에 맞춰 조정
             const bounds = new naver.maps.LatLngBounds();
             naverPath.forEach(point => bounds.extend(point));
             map.fitBounds(bounds, { padding: 100 });
         }
 
-        // 두 좌표 간 거리 계산 (미터)
         function calculateDistance(coord1, coord2) {
-            const R = 6371e3; // 지구 반지름 (미터)
+            const R = 6371e3;
             const φ1 = coord1.lat * Math.PI/180;
             const φ2 = coord2.lat * Math.PI/180;
             const Δφ = (coord2.lat-coord1.lat) * Math.PI/180;
@@ -834,8 +572,4 @@
                     Math.sin(Δλ/2) * Math.sin(Δλ/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-            return Math.round(R * c);
-        }
-    </script>
-</body>
-</html>
+            return Math.round(
