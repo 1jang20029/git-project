@@ -101,7 +101,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 연성대학교 길찾기</h1>
-            <p>실제 캠퍼스 도로를 정확히 따라 안내합니다</p>
+            <p>바로바로 최단거리로 안내합니다</p>
         </div>
         
         <div class="controls">
@@ -155,58 +155,6 @@
             { name: '대학본관', description: '유통물류학과, 총장실', coords: { lat: 37.397467068076345, lng: 126.90938066144557 } },
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
-
-        // 실제 캠퍼스 간단한 도로 네트워크 (자연스러운 보행 경로)
-        const roadNetwork = {
-            // 주요 교차로만 (핵심 지점들)
-            'main_entrance': { lat: 37.39630, lng: 126.90650 },        // 정문
-            'library_front': { lat: 37.39640, lng: 126.90665 },        // 학술정보관 앞
-            'science_front': { lat: 37.39670, lng: 126.90680 },        // 자연과학관 앞  
-            'central_plaza': { lat: 37.39660, lng: 126.90770 },        // 중앙 광장
-            'eng2_front': { lat: 37.39680, lng: 126.90740 },           // 공학2관 앞
-            'food_front': { lat: 37.39715, lng: 126.90760 },           // 식품과학관 앞
-            'doui_front': { lat: 37.39680, lng: 126.90810 },           // 도의관 앞
-            'sports_area': { lat: 37.39675, lng: 126.90920 },          // 운동장 구역
-            'main_building': { lat: 37.39745, lng: 126.90940 },        // 대학본관
-            'east_area': { lat: 37.39740, lng: 126.91000 },            // 동쪽 구역
-            'south_road': { lat: 37.39580, lng: 126.90800 },           // 남쪽 도로
-            'welfare_area': { lat: 37.39630, lng: 126.90990 }          // 복지센터 구역
-        };
-
-        // 간단하고 직관적인 도로 연결 (실제 보행 패턴)
-        const roadConnections = {
-            'main_entrance': ['library_front'],
-            'library_front': ['main_entrance', 'science_front'],
-            'science_front': ['library_front', 'central_plaza', 'eng2_front', 'sports_area', 'east_area'], // 직접 연결 추가!
-            'central_plaza': ['science_front', 'eng2_front', 'doui_front', 'south_road', 'sports_area'],
-            'eng2_front': ['science_front', 'central_plaza', 'food_front', 'sports_area'],
-            'food_front': ['eng2_front', 'doui_front', 'sports_area'],
-            'doui_front': ['food_front', 'central_plaza', 'sports_area'],
-            'sports_area': ['science_front', 'central_plaza', 'eng2_front', 'food_front', 'doui_front', 'main_building', 'welfare_area', 'east_area'], // 모든 곳과 연결
-            'main_building': ['sports_area', 'east_area'],
-            'east_area': ['science_front', 'sports_area', 'main_building'], // 직접 연결 추가!
-            'south_road': ['central_plaza', 'welfare_area'],
-            'welfare_area': ['south_road', 'sports_area', 'east_area']
-        };
-
-        // 건물별 가장 가까운 도로 (직관적 매핑)
-        const buildingToRoad = {
-            '학술정보관': 'library_front',
-            '자연과학관': 'science_front', 
-            '공학1관': 'science_front',        // 자연과학관과 가까움
-            '공학2관': 'eng2_front',
-            '식품과학관': 'food_front',
-            '도의관': 'doui_front',
-            '문화2관': 'central_plaza',
-            '문화1관': 'south_road',
-            '운동장': 'sports_area',
-            '대학본관': 'main_building',
-            '학생복지센터': 'welfare_area',
-            '농구장': 'welfare_area',
-            '창의교육센터': 'east_area',
-            '창조관': 'east_area',
-            '연곡문화센터': 'main_building'
-        };
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
@@ -300,109 +248,144 @@
             `;
         }
 
-        // A* 알고리즘으로 최단 경로 찾기
-        function findOptimalPath(startNode, endNode) {
-            const openSet = [startNode];
-            const closedSet = new Set();
-            const gScore = { [startNode]: 0 };
-            const fScore = { [startNode]: heuristic(startNode, endNode) };
-            const cameFrom = {};
-
-            while (openSet.length > 0) {
-                // f값이 가장 낮은 노드 선택
-                openSet.sort((a, b) => (fScore[a] || Infinity) - (fScore[b] || Infinity));
-                const current = openSet.shift();
-
-                if (current === endNode) {
-                    // 경로 복원
-                    const path = [];
-                    let node = endNode;
-                    while (node) {
-                        path.unshift(node);
-                        node = cameFrom[node];
-                    }
-                    return path;
-                }
-
-                closedSet.add(current);
-
-                const neighbors = roadConnections[current] || [];
-                for (const neighbor of neighbors) {
-                    if (closedSet.has(neighbor)) continue;
-
-                    const tentativeGScore = gScore[current] + getDistance(current, neighbor);
-                    
-                    if (!openSet.includes(neighbor)) {
-                        openSet.push(neighbor);
-                    } else if (tentativeGScore >= (gScore[neighbor] || Infinity)) {
-                        continue;
-                    }
-
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    fScore[neighbor] = gScore[neighbor] + heuristic(neighbor, endNode);
-                }
+        // 건물 사이에 도로가 있는지 확인하고 우회 경로 생성
+        function createRoadPath(start, end) {
+            // 1. 출발지와 도착지가 같은 구역인지 확인
+            const directDistance = calculateDistance(start, end);
+            
+            // 가까우면 바로 직선으로 (100m 이하)
+            if (directDistance < 100) {
+                return [start, end];
             }
-
-            return []; // 경로 없음
-        }
-
-        function heuristic(node1, node2) {
-            const pos1 = roadNetwork[node1];
-            const pos2 = roadNetwork[node2];
-            return calculateDistance(pos1, pos2);
-        }
-
-        function getDistance(node1, node2) {
-            const pos1 = roadNetwork[node1];
-            const pos2 = roadNetwork[node2];
-            return calculateDistance(pos1, pos2);
-        }
-
-        // 부드러운 곡선 경로 생성
-        function createSmoothPath(waypoints) {
-            if (waypoints.length < 3) return waypoints;
             
-            const smoothPath = [waypoints[0]];
+            // 2. 건물 사이에 장애물이 있는지 확인
+            if (!hasObstacles(start, end)) {
+                return [start, end]; // 바로 직선
+            }
             
-            for (let i = 1; i < waypoints.length - 1; i++) {
-                const prev = waypoints[i - 1];
-                const curr = waypoints[i];
-                const next = waypoints[i + 1];
-                
-                // 곡선 제어점 추가
-                const cp1 = {
-                    lat: prev.lat + (curr.lat - prev.lat) * 0.8,
-                    lng: prev.lng + (curr.lng - prev.lng) * 0.8
-                };
-                
-                const cp2 = {
-                    lat: curr.lat + (next.lat - curr.lat) * 0.2,
-                    lng: curr.lng + (next.lng - curr.lng) * 0.2
-                };
-                
-                // 베지어 곡선 포인트들
-                for (let t = 0; t <= 1; t += 0.25) {
-                    const point = bezierPoint(prev, cp1, curr, cp2, t);
-                    smoothPath.push(point);
+            // 3. 장애물이 있으면 도로를 따라 우회
+            return createRoadBasedPath(start, end);
+        }
+
+        // 건물 사이에 장애물이 있는지 확인
+        function hasObstacles(start, end) {
+            // 주요 건물들의 위치
+            const obstacles = [
+                // 중앙 잔디광장 (사람들이 안 다니는 곳)
+                { lat: 37.39675, lng: 126.90850, radius: 50 },
+                // 운동장 (관통 금지)
+                { lat: 37.39673, lng: 126.90932, radius: 80 }
+            ];
+            
+            // 직선 경로가 장애물을 지나는지 확인
+            for (const obstacle of obstacles) {
+                if (linePassesThroughCircle(start, end, obstacle)) {
+                    return true;
                 }
             }
             
-            smoothPath.push(waypoints[waypoints.length - 1]);
-            return smoothPath;
+            return false;
         }
 
-        function bezierPoint(p0, p1, p2, p3, t) {
-            const mt = 1 - t;
-            const mt2 = mt * mt;
-            const mt3 = mt2 * mt;
-            const t2 = t * t;
-            const t3 = t2 * t;
+        function linePassesThroughCircle(start, end, circle) {
+            const distance = distanceFromPointToLine(circle, start, end);
+            return distance < circle.radius;
+        }
+
+        function distanceFromPointToLine(point, lineStart, lineEnd) {
+            const A = point.lat - lineStart.lat;
+            const B = point.lng - lineStart.lng;
+            const C = lineEnd.lat - lineStart.lat;
+            const D = lineEnd.lng - lineStart.lng;
             
-            return {
-                lat: mt3 * p0.lat + 3 * mt2 * t * p1.lat + 3 * mt * t2 * p2.lat + t3 * p3.lat,
-                lng: mt3 * p0.lng + 3 * mt2 * t * p1.lng + 3 * mt * t2 * p2.lng + t3 * p3.lng
-            };
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            
+            if (lenSq !== 0) {
+                param = dot / lenSq;
+            }
+            
+            let xx, yy;
+            
+            if (param < 0) {
+                xx = lineStart.lat;
+                yy = lineStart.lng;
+            } else if (param > 1) {
+                xx = lineEnd.lat;
+                yy = lineEnd.lng;
+            } else {
+                xx = lineStart.lat + param * C;
+                yy = lineStart.lng + param * D;
+            }
+            
+            const dx = point.lat - xx;
+            const dy = point.lng - yy;
+            
+            return Math.sqrt(dx * dx + dy * dy) * 111000; // 대략적인 미터 변환
+        }
+
+        // 도로를 따라 가는 경로 생성 (진짜 간단하게)
+        function createRoadBasedPath(start, end) {
+            const path = [start];
+            
+            // 동서남북 4방향 중에서 장애물 피해서 가기
+            const midLat = (start.lat + end.lat) / 2;
+            const midLng = (start.lng + end.lng) / 2;
+            
+            // 동쪽으로 이동이 주요하면
+            if (Math.abs(end.lng - start.lng) > Math.abs(end.lat - start.lat)) {
+                if (start.lat > 37.3968) { // 북쪽 건물들
+                    // 북쪽 도로 이용
+                    path.push({ lat: 37.39720, lng: start.lng });
+                    path.push({ lat: 37.39720, lng: end.lng });
+                    path.push({ lat: end.lat, lng: end.lng });
+                } else { // 남쪽 건물들
+                    // 남쪽 도로 이용
+                    path.push({ lat: 37.39580, lng: start.lng });
+                    path.push({ lat: 37.39580, lng: end.lng });
+                    path.push({ lat: end.lat, lng: end.lng });
+                }
+            } else {
+                // 남북 이동이 주요하면
+                if (start.lng < 126.9075) { // 서쪽 건물들
+                    // 서쪽 도로 이용
+                    path.push({ lat: start.lat, lng: 126.90650 });
+                    path.push({ lat: end.lat, lng: 126.90650 });
+                    path.push({ lat: end.lat, lng: end.lng });
+                } else { // 동쪽 건물들
+                    // 동쪽 도로 이용
+                    path.push({ lat: start.lat, lng: 126.90950 });
+                    path.push({ lat: end.lat, lng: 126.90950 });
+                    path.push({ lat: end.lat, lng: end.lng });
+                }
+            }
+            
+            path.push(end);
+            return path;
+        }
+
+        // 부드러운 곡선으로 만들기
+        function makeSmoothCurve(points) {
+            if (points.length <= 2) return points;
+            
+            const smoothPoints = [points[0]];
+            
+            for (let i = 1; i < points.length - 1; i++) {
+                const prev = points[i - 1];
+                const curr = points[i];
+                const next = points[i + 1];
+                
+                // 중간 점들 추가해서 부드럽게
+                for (let t = 0; t <= 1; t += 0.2) {
+                    const lat = prev.lat + (curr.lat - prev.lat) * t;
+                    const lng = prev.lng + (curr.lng - prev.lng) * t;
+                    smoothPoints.push({ lat, lng });
+                }
+            }
+            
+            smoothPoints.push(points[points.length - 1]);
+            return smoothPoints;
         }
 
         function findRoute(start, end, map) {
@@ -410,50 +393,22 @@
 
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ 실제 도로 경로 계산 중...</h4>
-                <p>캠퍼스 도로 네트워크를 분석하여 최적 경로를 찾고 있습니다...</p>
+                <h4>🗺️ 바로 가는 길 찾는 중...</h4>
+                <p>최단거리로 직접 안내합니다...</p>
             `;
             routeInfo.style.display = 'block';
 
             setTimeout(() => {
-                drawPreciseRoute(start, end, map);
-            }, 800);
+                drawDirectRoute(start, end, map);
+            }, 500);
         }
 
-        function drawPreciseRoute(start, end, map) {
-            const startRoad = buildingToRoad[start.name];
-            const endRoad = buildingToRoad[end.name];
+        function drawDirectRoute(start, end, map) {
+            // 바로 가는 경로 (도로 따라)
+            const routePath = createRoadPath(start.coords, end.coords);
             
-            if (!startRoad || !endRoad) {
-                const routeInfo = document.getElementById('routeInfo');
-                routeInfo.innerHTML = `
-                    <h4>❌ 경로를 찾을 수 없습니다</h4>
-                    <p>해당 건물의 도로 연결 정보가 없습니다.</p>
-                `;
-                return;
-            }
-
-            // A* 알고리즘으로 최적 경로 찾기
-            const roadPath = findOptimalPath(startRoad, endRoad);
-            
-            if (roadPath.length === 0) {
-                const routeInfo = document.getElementById('routeInfo');
-                routeInfo.innerHTML = `
-                    <h4>❌ 경로를 찾을 수 없습니다</h4>
-                    <p>출발지와 도착지 사이에 연결된 도로가 없습니다.</p>
-                `;
-                return;
-            }
-
-            // 실제 좌표로 변환
-            const waypoints = [start.coords];
-            roadPath.forEach(roadNode => {
-                waypoints.push(roadNetwork[roadNode]);
-            });
-            waypoints.push(end.coords);
-
-            // 부드러운 곡선 경로 생성
-            const smoothPath = createSmoothPath(waypoints);
+            // 부드러운 곡선으로
+            const smoothPath = makeSmoothCurve(routePath);
             
             const naverPath = smoothPath.map(point => 
                 new naver.maps.LatLng(point.lat, point.lng)
@@ -470,8 +425,8 @@
             });
 
             let totalDistance = 0;
-            for (let i = 0; i < waypoints.length - 1; i++) {
-                totalDistance += calculateDistance(waypoints[i], waypoints[i + 1]);
+            for (let i = 0; i < routePath.length - 1; i++) {
+                totalDistance += calculateDistance(routePath[i], routePath[i + 1]);
             }
 
             const walkingTime = Math.ceil(totalDistance / 70);
@@ -496,17 +451,19 @@
 
             window.routeMarkers = [startMarker, endMarker];
 
+            const isDirect = routePath.length === 2;
+
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
                 <div style="background: #1E88E5; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: white;">🚶‍♂️ 정밀 캠퍼스 경로</h4>
+                    <h4 style="margin: 0; color: white;">🚶‍♂️ ${isDirect ? '직접 경로' : '도로 경유 경로'}</h4>
                 </div>
                 
                 <div style="padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div>
                             <p style="margin: 0; font-size: 16px; font-weight: bold;">${start.name} → ${end.name}</p>
-                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">실제 도로 네트워크 기반</p>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${isDirect ? '바로 직진' : '도로 경유'}</p>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-size: 20px; font-weight: bold; color: #1E88E5;">${walkingTime}분</div>
@@ -518,15 +475,15 @@
                         <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; border-left: 4px solid #1E88E5; margin-bottom: 10px;">
                             <strong style="color: #1565C0;">🛣️ 경로 특징</strong><br>
                             <span style="font-size: 13px; color: #424242;">
-                                A* 알고리즘으로 계산된 최적 경로이며, 베지어 곡선으로 부드럽게 처리되었습니다
+                                ${isDirect ? '장애물 없이 바로 가는 최단 경로입니다' : '필요한 곳만 최소한 경유하는 효율적 경로입니다'}
                             </span>
                         </div>
                         
                         <div style="padding: 10px; background: #F1F8E9; border-radius: 6px; border-left: 4px solid #4CAF50;">
                             <strong style="color: #2E7D32;">✅ 보행 안내</strong><br>
                             <span style="font-size: 12px; color: #424242;">
-                                실제 캠퍼스 도로망을 따라 안전하고 정확하게 안내합니다.<br>
-                                ${roadPath.length}개의 주요 도로 구간을 경유합니다.
+                                불필요한 경유 없이 목적지까지 바로 안내합니다.<br>
+                                실제 캠퍼스 도로를 따라 안전하게 이동하세요.
                             </span>
                         </div>
                     </div>
