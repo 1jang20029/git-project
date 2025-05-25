@@ -177,14 +177,14 @@
         const roadConnections = {
             'main_entrance': ['library_front'],
             'library_front': ['main_entrance', 'science_front'],
-            'science_front': ['library_front', 'central_plaza', 'eng2_front'],
-            'central_plaza': ['science_front', 'eng2_front', 'doui_front', 'south_road'],
-            'eng2_front': ['science_front', 'central_plaza', 'food_front'],
-            'food_front': ['eng2_front', 'doui_front'],
+            'science_front': ['library_front', 'central_plaza', 'eng2_front', 'sports_area', 'east_area'], // 직접 연결 추가!
+            'central_plaza': ['science_front', 'eng2_front', 'doui_front', 'south_road', 'sports_area'],
+            'eng2_front': ['science_front', 'central_plaza', 'food_front', 'sports_area'],
+            'food_front': ['eng2_front', 'doui_front', 'sports_area'],
             'doui_front': ['food_front', 'central_plaza', 'sports_area'],
-            'sports_area': ['doui_front', 'main_building', 'welfare_area'],
+            'sports_area': ['science_front', 'central_plaza', 'eng2_front', 'food_front', 'doui_front', 'main_building', 'welfare_area', 'east_area'], // 모든 곳과 연결
             'main_building': ['sports_area', 'east_area'],
-            'east_area': ['main_building'],
+            'east_area': ['science_front', 'sports_area', 'main_building'], // 직접 연결 추가!
             'south_road': ['central_plaza', 'welfare_area'],
             'welfare_area': ['south_road', 'sports_area', 'east_area']
         };
