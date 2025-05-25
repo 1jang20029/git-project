@@ -101,7 +101,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 연성대학교 길찾기</h1>
-            <p>실제 캠퍼스 보행로를 따라 정확히 안내합니다</p>
+            <p>실제 캠퍼스 인도를 따라 정확히 안내합니다</p>
         </div>
         
         <div class="controls">
@@ -156,82 +156,101 @@
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 실제 캠퍼스 보행로 경로 (위성사진 기준으로 정확한 도로)
-        const actualWalkingPaths = {
-            // 문화2관에서 도의관까지 (실제 보행로)
-            'culture2_to_doui': [
-                { lat: 37.396035307891026, lng: 126.90758674745014 }, // 문화2관
-                { lat: 37.39610, lng: 126.90765 }, // 문화2관 북쪽 출구
-                { lat: 37.39625, lng: 126.90775 }, // 건물간 보행로
-                { lat: 37.39640, lng: 126.90785 }, // 중앙 보행로
-                { lat: 37.39655, lng: 126.90795 }, // 도의관 남쪽 접근
-                { lat: 37.39670, lng: 126.90805 }, // 도의관 앞 광장
-                { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관
-            ],
+        // 실제 캠퍼스 인도 네트워크 (위성사진의 검은 선 기준)
+        const sidewalkNetwork = {
+            // 인도 노드들 (주요 교차점과 건물 접점)
+            nodes: {
+                // 서쪽 구역
+                'library_node': { lat: 37.39635, lng: 126.90665 },      // 학술정보관 인근
+                'science_node': { lat: 37.39665, lng: 126.90680 },      // 자연과학관 인근
+                'eng1_node': { lat: 37.39630, lng: 126.90700 },         // 공학1관 인근
+                'west_junction1': { lat: 37.39610, lng: 126.90720 },    // 서쪽 교차로1
+                'west_junction2': { lat: 37.39590, lng: 126.90740 },    // 서쪽 교차로2
+                'culture2_node': { lat: 37.39605, lng: 126.90760 },     // 문화2관 인근
+                
+                // 중앙 구역
+                'central_junction1': { lat: 37.39640, lng: 126.90780 }, // 중앙 교차로1
+                'central_junction2': { lat: 37.39660, lng: 126.90800 }, // 중앙 교차로2
+                'eng2_node': { lat: 37.39680, lng: 126.90740 },         // 공학2관 인근
+                'food_node': { lat: 37.39710, lng: 126.90765 },         // 식품과학관 인근
+                'doui_node': { lat: 37.39680, lng: 126.90810 },         // 도의관 인근
+                
+                // 남쪽 구역
+                'culture1_node': { lat: 37.39575, lng: 126.90815 },     // 문화1관 인근
+                'south_junction1': { lat: 37.39600, lng: 126.90840 },   // 남쪽 교차로1
+                'south_junction2': { lat: 37.39620, lng: 126.90870 },   // 남쪽 교차로2
+                
+                // 동쪽 구역
+                'east_junction1': { lat: 37.39670, lng: 126.90850 },    // 동쪽 교차로1
+                'east_junction2': { lat: 37.39680, lng: 126.90880 },    // 동쪽 교차로2
+                'east_junction3': { lat: 37.39690, lng: 126.90910 },    // 동쪽 교차로3
+                'sports_node': { lat: 37.39675, lng: 126.90930 },       // 운동장 인근
+                'main_node': { lat: 37.39745, lng: 126.90940 },         // 대학본관 인근
+                
+                // 최동쪽 구역
+                'northeast_junction1': { lat: 37.39720, lng: 126.90960 }, // 북동쪽 교차로1
+                'northeast_junction2': { lat: 37.39740, lng: 126.90980 }, // 북동쪽 교차로2
+                'northeast_junction3': { lat: 37.39760, lng: 126.91000 }, // 북동쪽 교차로3
+                'welfare_node': { lat: 37.39630, lng: 126.90995 },        // 학생복지센터 인근
+                'basketball_node': { lat: 37.39665, lng: 126.90995 },    // 농구장 인근
+                'creative_node': { lat: 37.39735, lng: 126.91005 },      // 창의교육센터 인근
+                'creation_node': { lat: 37.39730, lng: 126.91040 },      // 창조관 인근
+                'yeongok_node': { lat: 37.39800, lng: 126.90970 }        // 연곡문화센터 인근
+            },
+            
+            // 인도 연결 관계 (실제 검은 선 인도)
+            connections: {
+                'library_node': ['science_node', 'eng1_node'],
+                'science_node': ['library_node', 'eng1_node', 'eng2_node'],
+                'eng1_node': ['library_node', 'science_node', 'west_junction1'],
+                'west_junction1': ['eng1_node', 'west_junction2', 'central_junction1'],
+                'west_junction2': ['west_junction1', 'culture2_node', 'south_junction1'],
+                'culture2_node': ['west_junction2', 'central_junction1'],
+                
+                'central_junction1': ['west_junction1', 'culture2_node', 'central_junction2', 'eng2_node'],
+                'central_junction2': ['central_junction1', 'doui_node', 'east_junction1'],
+                'eng2_node': ['science_node', 'central_junction1', 'food_node'],
+                'food_node': ['eng2_node', 'doui_node'],
+                'doui_node': ['food_node', 'central_junction2', 'east_junction1'],
+                
+                'culture1_node': ['south_junction1'],
+                'south_junction1': ['west_junction2', 'culture1_node', 'south_junction2'],
+                'south_junction2': ['south_junction1', 'east_junction1'],
+                
+                'east_junction1': ['central_junction2', 'doui_node', 'south_junction2', 'east_junction2'],
+                'east_junction2': ['east_junction1', 'east_junction3', 'sports_node'],
+                'east_junction3': ['east_junction2', 'main_node', 'northeast_junction1'],
+                'sports_node': ['east_junction2', 'basketball_node', 'welfare_node'],
+                'main_node': ['east_junction3', 'northeast_junction1', 'creative_node'],
+                
+                'northeast_junction1': ['east_junction3', 'main_node', 'northeast_junction2'],
+                'northeast_junction2': ['northeast_junction1', 'northeast_junction3', 'creative_node'],
+                'northeast_junction3': ['northeast_junction2', 'creation_node', 'yeongok_node'],
+                'welfare_node': ['sports_node', 'basketball_node'],
+                'basketball_node': ['sports_node', 'welfare_node', 'creative_node'],
+                'creative_node': ['main_node', 'northeast_junction2', 'basketball_node', 'creation_node'],
+                'creation_node': ['creative_node', 'northeast_junction3'],
+                'yeongok_node': ['northeast_junction3']
+            }
+        };
 
-            // 도의관에서 연곡문화센터까지 (동쪽 우회로)
-            'doui_to_yeongok': [
-                { lat: 37.39679932128769, lng: 126.90809683728425 }, // 도의관
-                { lat: 37.39685, lng: 126.90820 }, // 도의관 동쪽
-                { lat: 37.39690, lng: 126.90835 }, // 운동장 서쪽 보행로
-                { lat: 37.39695, lng: 126.90850 }, // 운동장 북쪽
-                { lat: 37.39705, lng: 126.90865 }, // 대학본관 남쪽
-                { lat: 37.39720, lng: 126.90880 }, // 대학본관 동쪽
-                { lat: 37.39735, lng: 126.90895 }, // 북쪽 보행로
-                { lat: 37.39750, lng: 126.90915 }, // 연곡문화센터 서쪽
-                { lat: 37.39770, lng: 126.90935 }, // 연곡문화센터 접근로
-                { lat: 37.39785, lng: 126.90950 }, // 연곡문화센터 앞
-                { lat: 37.398046192024914, lng: 126.90966512810492 } // 연곡문화센터
-            ],
-
-            // 자연과학관에서 공학1관까지 (서쪽 보행로)
-            'science_to_eng1': [
-                { lat: 37.39669466288283, lng: 126.90676716508685 }, // 자연과학관
-                { lat: 37.39665, lng: 126.90685 }, // 자연과학관 남동쪽
-                { lat: 37.39655, lng: 126.90690 }, // 건물간 보행로
-                { lat: 37.39645, lng: 126.90695 }, // 공학1관 북쪽 접근
-                { lat: 37.39635, lng: 126.90700 }, // 공학1관 앞
-                { lat: 37.39632767479923, lng: 126.90699348692698 } // 공학1관
-            ],
-
-            // 공학1관에서 학술정보관까지 (서쪽 보행로)
-            'eng1_to_library': [
-                { lat: 37.39632767479923, lng: 126.90699348692698 }, // 공학1관
-                { lat: 37.39630, lng: 126.90690 }, // 공학1관 서쪽
-                { lat: 37.39635, lng: 126.90680 }, // 서쪽 보행로
-                { lat: 37.39635, lng: 126.90670 }, // 학술정보관 동쪽
-                { lat: 37.39637467129301, lng: 126.906603807587 } // 학술정보관
-            ],
-
-            // 공학2관에서 식품과학관까지 (북쪽 보행로)
-            'eng2_to_food': [
-                { lat: 37.396789747114205, lng: 126.90737406929797 }, // 공학2관
-                { lat: 37.39685, lng: 126.90745 }, // 공학2관 동쪽
-                { lat: 37.39695, lng: 126.90750 }, // 건물간 보행로
-                { lat: 37.39705, lng: 126.90755 }, // 식품과학관 서쪽
-                { lat: 37.39714809720343, lng: 126.90762208499473 } // 식품과학관
-            ],
-
-            // 식품과학관에서 도의관까지 (동쪽 보행로)
-            'food_to_doui': [
-                { lat: 37.39714809720343, lng: 126.90762208499473 }, // 식품과학관
-                { lat: 37.39710, lng: 126.90770 }, // 식품과학관 남동쪽
-                { lat: 37.39700, lng: 126.90780 }, // 중앙 광장 북쪽
-                { lat: 37.39690, lng: 126.90790 }, // 중앙 광장
-                { lat: 37.39685, lng: 126.90800 }, // 도의관 서쪽 접근
-                { lat: 37.39679932128769, lng: 126.90809683728425 } // 도의관
-            ],
-
-            // 문화1관에서 운동장까지 (북동쪽 보행로)
-            'culture1_to_sports': [
-                { lat: 37.39576992475254, lng: 126.90812350405056 }, // 문화1관
-                { lat: 37.39590, lng: 126.90825 }, // 문화1관 북동쪽
-                { lat: 37.39610, lng: 126.90840 }, // 도의관 남동쪽
-                { lat: 37.39630, lng: 126.90855 }, // 중간 보행로
-                { lat: 37.39650, lng: 126.90870 }, // 운동장 서쪽
-                { lat: 37.39665, lng: 126.90890 }, // 운동장 남쪽
-                { lat: 37.39673944839101, lng: 126.90932224700094 } // 운동장
-            ]
+        // 건물별 가장 가까운 인도 노드 매핑
+        const buildingToSidewalkNode = {
+            '학술정보관': 'library_node',
+            '자연과학관': 'science_node',
+            '공학1관': 'eng1_node',
+            '문화2관': 'culture2_node',
+            '공학2관': 'eng2_node',
+            '식품과학관': 'food_node',
+            '도의관': 'doui_node',
+            '문화1관': 'culture1_node',
+            '운동장': 'sports_node',
+            '대학본관': 'main_node',
+            '학생복지센터': 'welfare_node',
+            '농구장': 'basketball_node',
+            '창의교육센터': 'creative_node',
+            '창조관': 'creation_node',
+            '연곡문화센터': 'yeongok_node'
         };
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -334,82 +353,57 @@
             `;
         }
 
-        // 건물명을 키로 변환
-        function getBuildingKey(buildingName) {
-            const keyMap = {
-                '공학1관': 'eng1',
-                '자연과학관': 'science',
-                '도의관': 'doui',
-                '문화1관': 'culture1',
-                '연곡문화센터': 'yeongok',
-                '학술정보관': 'library',
-                '창조관': 'creation',
-                '공학2관': 'eng2',
-                '식품과학관': 'food',
-                '문화2관': 'culture2',
-                '대학본관': 'main',
-                '운동장': 'sports',
-                '농구장': 'basketball',
-                '학생복지센터': 'welfare',
-                '창의교육센터': 'creative'
-            };
-            return keyMap[buildingName] || buildingName.toLowerCase();
-        }
+        // Dijkstra 알고리즘으로 인도 네트워크에서 최단 경로 찾기
+        function findSidewalkRoute(startNode, endNode) {
+            const distances = {};
+            const previous = {};
+            const visited = new Set();
+            const queue = [];
 
-        // 실제 보행로 경로 찾기
-        function findActualWalkingPath(startBuilding, endBuilding) {
-            const startKey = getBuildingKey(startBuilding);
-            const endKey = getBuildingKey(endBuilding);
-            const pathKey = `${startKey}_to_${endKey}`;
-            const reversePathKey = `${endKey}_to_${startKey}`;
-            
-            // 미리 정의된 경로가 있는지 확인
-            if (actualWalkingPaths[pathKey]) {
-                return actualWalkingPaths[pathKey];
-            } else if (actualWalkingPaths[reversePathKey]) {
-                return [...actualWalkingPaths[reversePathKey]].reverse();
+            // 초기화
+            for (const node in sidewalkNetwork.nodes) {
+                distances[node] = Infinity;
+                previous[node] = null;
+                queue.push(node);
             }
-            
-            // 정의되지 않은 경로는 건물 주변 보행로를 따라 생성
-            return createActualPath(startBuilding, endBuilding);
-        }
+            distances[startNode] = 0;
 
-        // 실제 보행로를 따라 경로 생성
-        function createActualPath(startBuilding, endBuilding) {
-            const start = buildings.find(b => b.name === startBuilding).coords;
-            const end = buildings.find(b => b.name === endBuilding).coords;
-            
-            const path = [start];
-            
-            // 건물 주변 실제 보행로 패턴에 따라 경로 생성
-            if (start.lng < end.lng) {
-                // 동쪽으로 이동하는 경우 - 건물 북쪽 또는 남쪽 우회
-                if (start.lat < end.lat) {
-                    // 북동쪽: 북쪽 보행로 경유
-                    path.push({ lat: start.lat + 0.0003, lng: start.lng + 0.0001 });
-                    path.push({ lat: start.lat + 0.0004, lng: end.lng - 0.0001 });
-                    path.push({ lat: end.lat - 0.0001, lng: end.lng });
-                } else {
-                    // 남동쪽: 남쪽 보행로 경유
-                    path.push({ lat: start.lat - 0.0001, lng: start.lng + 0.0002 });
-                    path.push({ lat: end.lat + 0.0001, lng: end.lng - 0.0002 });
-                    path.push({ lat: end.lat, lng: end.lng - 0.0001 });
-                }
-            } else {
-                // 서쪽으로 이동하는 경우 - 건물 서쪽 보행로 경유
-                if (start.lat < end.lat) {
-                    // 북서쪽
-                    path.push({ lat: start.lat + 0.0002, lng: start.lng - 0.0001 });
-                    path.push({ lat: end.lat - 0.0001, lng: end.lng + 0.0001 });
-                } else {
-                    // 남서쪽
-                    path.push({ lat: start.lat - 0.0002, lng: start.lng - 0.0001 });
-                    path.push({ lat: end.lat + 0.0001, lng: end.lng + 0.0001 });
+            while (queue.length > 0) {
+                // 가장 짧은 거리의 노드 선택
+                queue.sort((a, b) => distances[a] - distances[b]);
+                const current = queue.shift();
+                
+                if (visited.has(current)) continue;
+                visited.add(current);
+
+                if (current === endNode) break;
+
+                // 인접 노드들 확인
+                const neighbors = sidewalkNetwork.connections[current] || [];
+                for (const neighbor of neighbors) {
+                    if (visited.has(neighbor)) continue;
+
+                    const currentPos = sidewalkNetwork.nodes[current];
+                    const neighborPos = sidewalkNetwork.nodes[neighbor];
+                    const distance = calculateDistance(currentPos, neighborPos);
+                    const newDistance = distances[current] + distance;
+
+                    if (newDistance < distances[neighbor]) {
+                        distances[neighbor] = newDistance;
+                        previous[neighbor] = current;
+                    }
                 }
             }
-            
-            path.push(end);
-            return path;
+
+            // 경로 복원
+            const path = [];
+            let current = endNode;
+            while (current !== null) {
+                path.unshift(current);
+                current = previous[current];
+            }
+
+            return path[0] === startNode ? path : [];
         }
 
         function findRoute(start, end, map) {
@@ -423,20 +417,55 @@
 
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ 실제 보행로 계산 중...</h4>
-                <p>캠퍼스 포장도로를 따라 경로를 찾고 있습니다...</p>
+                <h4>🗺️ 인도 경로 계산 중...</h4>
+                <p>실제 캠퍼스 인도를 따라 최적 경로를 찾고 있습니다...</p>
             `;
             routeInfo.style.display = 'block';
 
             setTimeout(() => {
-                drawRealWalkingRoute(start, end, map);
+                drawSidewalkRoute(start, end, map);
             }, 800);
         }
 
-        function drawRealWalkingRoute(start, end, map) {
-            const walkingPath = findActualWalkingPath(start.name, end.name);
+        function drawSidewalkRoute(start, end, map) {
+            const startNode = buildingToSidewalkNode[start.name];
+            const endNode = buildingToSidewalkNode[end.name];
             
-            const naverPath = walkingPath.map(point => 
+            if (!startNode || !endNode) {
+                const routeInfo = document.getElementById('routeInfo');
+                routeInfo.innerHTML = `
+                    <h4>❌ 경로를 찾을 수 없습니다</h4>
+                    <p>해당 건물의 인도 연결 정보가 없습니다.</p>
+                `;
+                return;
+            }
+
+            const sidewalkPath = findSidewalkRoute(startNode, endNode);
+            
+            if (sidewalkPath.length === 0) {
+                const routeInfo = document.getElementById('routeInfo');
+                routeInfo.innerHTML = `
+                    <h4>❌ 경로를 찾을 수 없습니다</h4>
+                    <p>출발지와 도착지 사이에 연결된 인도가 없습니다.</p>
+                `;
+                return;
+            }
+
+            // 실제 경로 좌표 생성
+            const actualPath = [];
+            
+            // 출발 건물 위치
+            actualPath.push(start.coords);
+            
+            // 인도 네트워크 노드들
+            sidewalkPath.forEach(nodeName => {
+                actualPath.push(sidewalkNetwork.nodes[nodeName]);
+            });
+            
+            // 도착 건물 위치
+            actualPath.push(end.coords);
+
+            const naverPath = actualPath.map(point => 
                 new naver.maps.LatLng(point.lat, point.lng)
             );
 
@@ -451,8 +480,8 @@
             });
 
             let totalDistance = 0;
-            for (let i = 0; i < walkingPath.length - 1; i++) {
-                totalDistance += calculateDistance(walkingPath[i], walkingPath[i + 1]);
+            for (let i = 0; i < actualPath.length - 1; i++) {
+                totalDistance += calculateDistance(actualPath[i], actualPath[i + 1]);
             }
 
             const walkingTime = Math.ceil(totalDistance / 70);
@@ -480,14 +509,14 @@
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
                 <div style="background: #1E88E5; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: white;">🚶‍♂️ 실제 캠퍼스 보행로</h4>
+                    <h4 style="margin: 0; color: white;">🚶‍♂️ 실제 캠퍼스 인도</h4>
                 </div>
                 
                 <div style="padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div>
                             <p style="margin: 0; font-size: 16px; font-weight: bold;">${start.name} → ${end.name}</p>
-                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">포장된 보행로 이용</p>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">캠퍼스 인도 네트워크</p>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-size: 20px; font-weight: bold; color: #1E88E5;">${walkingTime}분</div>
@@ -499,15 +528,15 @@
                         <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; border-left: 4px solid #1E88E5; margin-bottom: 10px;">
                             <strong style="color: #1565C0;">🛣️ 경로 특징</strong><br>
                             <span style="font-size: 13px; color: #424242;">
-                                캠퍼스 내 실제 포장도로와 보행로만을 이용한 안전한 경로입니다
+                                위성사진 기준 실제 캠퍼스 인도만을 이용한 안전한 경로입니다
                             </span>
                         </div>
                         
                         <div style="padding: 10px; background: #F1F8E9; border-radius: 6px; border-left: 4px solid #4CAF50;">
                             <strong style="color: #2E7D32;">✅ 보행 안내</strong><br>
                             <span style="font-size: 12px; color: #424242;">
-                                건물간 포장된 보행로를 따라 이동하세요.<br>
-                                잔디밭이나 건물을 관통하지 않는 안전한 경로입니다.
+                                검은 선으로 표시된 실제 인도를 따라 안전하게 이동하세요.<br>
+                                ${sidewalkPath.length - 1}개의 인도 교차점을 경유합니다.
                             </span>
                         </div>
                     </div>
