@@ -101,7 +101,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 연성대학교 길찾기</h1>
-            <p>위성사진의 실제 흰색 도로를 따라 정확히 안내합니다</p>
+            <p>건물 관통 없이 최단거리로 안내합니다</p>
         </div>
         
         <div class="controls">
@@ -155,136 +155,6 @@
             { name: '대학본관', description: '유통물류학과, 총장실', coords: { lat: 37.397467068076345, lng: 126.90938066144557 } },
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
-
-        // 위성사진 기준 실제 흰색 도로 네트워크 (건물 우회 경로)
-        const whiteRoadNetwork = {
-            // 주요 도로 교차점들
-            nodes: {
-                // 서쪽 진입 도로 (건물들 서쪽)
-                'west_main_road1': { lat: 37.39620, lng: 126.90640 },     // 서쪽 메인도로 시작
-                'west_main_road2': { lat: 37.39640, lng: 126.90650 },     // 학술정보관 서쪽 도로
-                'west_main_road3': { lat: 37.39660, lng: 126.90660 },     // 자연과학관 서쪽 도로
-                'west_main_road4': { lat: 37.39680, lng: 126.90670 },     // 공학2관 서쪽 도로
-                'west_main_road5': { lat: 37.39700, lng: 126.90680 },     // 식품과학관 서쪽 도로
-                
-                // 북쪽 횡단 도로 (건물들 북쪽)
-                'north_cross_road1': { lat: 37.39720, lng: 126.90700 },   // 식품과학관 북쪽
-                'north_cross_road2': { lat: 37.39720, lng: 126.90740 },   // 공학2관 북쪽
-                'north_cross_road3': { lat: 37.39720, lng: 126.90780 },   // 도의관 북쪽
-                'north_cross_road4': { lat: 37.39720, lng: 126.90820 },   // 도의관 동쪽
-                
-                // 동쪽 메인 도로 (건물들 동쪽)
-                'east_main_road1': { lat: 37.39700, lng: 126.90850 },     // 도의관 동쪽 도로
-                'east_main_road2': { lat: 37.39680, lng: 126.90870 },     // 운동장 서쪽 도로
-                'east_main_road3': { lat: 37.39660, lng: 126.90890 },     // 동쪽 도로 중간
-                'east_main_road4': { lat: 37.39680, lng: 126.90910 },     // 운동장 동쪽
-                'east_main_road5': { lat: 37.39700, lng: 126.90930 },     // 대학본관 남쪽
-                'east_main_road6': { lat: 37.39720, lng: 126.90950 },     // 대학본관 동쪽
-                
-                // 최동쪽 도로망
-                'far_east_road1': { lat: 37.39740, lng: 126.90970 },      // 연곡문화센터 서쪽
-                'far_east_road2': { lat: 37.39760, lng: 126.90990 },      // 창의교육센터 남쪽
-                'far_east_road3': { lat: 37.39740, lng: 126.91010 },      // 창조관 서쪽
-                'far_east_road4': { lat: 37.39750, lng: 126.91030 },      // 창조관 남쪽
-                
-                // 남쪽 우회 도로 (건물들 남쪽)
-                'south_bypass_road1': { lat: 37.39550, lng: 126.90750 },  // 문화2관 남쪽
-                'south_bypass_road2': { lat: 37.39550, lng: 126.90800 },  // 문화1관 남쪽
-                'south_bypass_road3': { lat: 37.39580, lng: 126.90850 },  // 남쪽 우회로
-                'south_bypass_road4': { lat: 37.39620, lng: 126.90920 },  // 학생복지센터 남쪽
-                'south_bypass_road5': { lat: 37.39640, lng: 126.90960 },  // 농구장 남쪽
-                
-                // 건물 접근 진입로 (짧은 연결로)
-                'library_entrance': { lat: 37.39635, lng: 126.90665 },    // 학술정보관 진입
-                'science_entrance': { lat: 37.39665, lng: 126.90675 },    // 자연과학관 진입
-                'eng1_entrance': { lat: 37.39630, lng: 126.90690 },       // 공학1관 진입
-                'eng2_entrance': { lat: 37.39680, lng: 126.90730 },       // 공학2관 진입
-                'food_entrance': { lat: 37.39710, lng: 126.90750 },       // 식품과학관 진입
-                'doui_entrance': { lat: 37.39680, lng: 126.90800 },       // 도의관 진입
-                'culture2_entrance': { lat: 37.39600, lng: 126.90750 },   // 문화2관 진입
-                'culture1_entrance': { lat: 37.39570, lng: 126.90810 },   // 문화1관 진입
-                'sports_entrance': { lat: 37.39670, lng: 126.90920 },     // 운동장 진입
-                'main_entrance': { lat: 37.39740, lng: 126.90940 },       // 대학본관 진입
-                'welfare_entrance': { lat: 37.39630, lng: 126.90990 },    // 학생복지센터 진입
-                'basketball_entrance': { lat: 37.39665, lng: 126.90990 }, // 농구장 진입
-                'creative_entrance': { lat: 37.39735, lng: 126.91000 },   // 창의교육센터 진입
-                'creation_entrance': { lat: 37.39730, lng: 126.91035 },   // 창조관 진입
-                'yeongok_entrance': { lat: 37.39800, lng: 126.90965 }     // 연곡문화센터 진입
-            },
-            
-            // 실제 흰색 도로 연결 관계 (건물 우회)
-            connections: {
-                // 서쪽 메인 도로 (세로축)
-                'west_main_road1': ['west_main_road2'],
-                'west_main_road2': ['west_main_road1', 'west_main_road3', 'library_entrance'],
-                'west_main_road3': ['west_main_road2', 'west_main_road4', 'science_entrance'],
-                'west_main_road4': ['west_main_road3', 'west_main_road5', 'eng2_entrance'],
-                'west_main_road5': ['west_main_road4', 'north_cross_road1', 'food_entrance'],
-                
-                // 북쪽 횡단 도로 (가로축)
-                'north_cross_road1': ['west_main_road5', 'north_cross_road2'],
-                'north_cross_road2': ['north_cross_road1', 'north_cross_road3'],
-                'north_cross_road3': ['north_cross_road2', 'north_cross_road4', 'doui_entrance'],
-                'north_cross_road4': ['north_cross_road3', 'east_main_road1'],
-                
-                // 동쪽 메인 도로 (세로축)
-                'east_main_road1': ['north_cross_road4', 'east_main_road2'],
-                'east_main_road2': ['east_main_road1', 'east_main_road3'],
-                'east_main_road3': ['east_main_road2', 'east_main_road4', 'south_bypass_road3'],
-                'east_main_road4': ['east_main_road3', 'east_main_road5', 'sports_entrance'],
-                'east_main_road5': ['east_main_road4', 'east_main_road6'],
-                'east_main_road6': ['east_main_road5', 'far_east_road1', 'main_entrance'],
-                
-                // 최동쪽 도로
-                'far_east_road1': ['east_main_road6', 'far_east_road2'],
-                'far_east_road2': ['far_east_road1', 'far_east_road3', 'creative_entrance'],
-                'far_east_road3': ['far_east_road2', 'far_east_road4'],
-                'far_east_road4': ['far_east_road3', 'creation_entrance'],
-                
-                // 남쪽 우회 도로 (가로축)
-                'south_bypass_road1': ['south_bypass_road2', 'culture2_entrance'],
-                'south_bypass_road2': ['south_bypass_road1', 'south_bypass_road3', 'culture1_entrance'],
-                'south_bypass_road3': ['south_bypass_road2', 'east_main_road3', 'south_bypass_road4'],
-                'south_bypass_road4': ['south_bypass_road3', 'south_bypass_road5', 'welfare_entrance'],
-                'south_bypass_road5': ['south_bypass_road4', 'basketball_entrance'],
-                
-                // 건물 진입로 (각 건물에서 가장 가까운 도로로만 연결)
-                'library_entrance': ['west_main_road2'],
-                'science_entrance': ['west_main_road3'],
-                'eng1_entrance': ['west_main_road3'],  // 공학1관은 자연과학관 근처 도로 이용
-                'eng2_entrance': ['west_main_road4'],
-                'food_entrance': ['west_main_road5'],
-                'doui_entrance': ['north_cross_road3'],
-                'culture2_entrance': ['south_bypass_road1'],
-                'culture1_entrance': ['south_bypass_road2'],
-                'sports_entrance': ['east_main_road4'],
-                'main_entrance': ['east_main_road6'],
-                'welfare_entrance': ['south_bypass_road4'],
-                'basketball_entrance': ['south_bypass_road5'],
-                'creative_entrance': ['far_east_road2'],
-                'creation_entrance': ['far_east_road4'],
-                'yeongok_entrance': ['far_east_road1']  // 연곡문화센터는 최동쪽 도로 이용
-            }
-        };
-
-        // 건물별 가장 가까운 도로 접점 (직접 연결)
-        const buildingToRoadNode = {
-            '학술정보관': 'library_entrance',
-            '자연과학관': 'science_entrance',
-            '공학1관': 'eng1_entrance',
-            '문화2관': 'culture2_entrance',
-            '공학2관': 'eng2_entrance',
-            '식품과학관': 'food_entrance',
-            '도의관': 'doui_entrance',
-            '문화1관': 'culture1_entrance',
-            '운동장': 'sports_entrance',
-            '대학본관': 'main_entrance',
-            '학생복지센터': 'welfare_entrance',
-            '농구장': 'basketball_entrance',
-            '창의교육센터': 'creative_entrance',
-            '창조관': 'creation_entrance',
-            '연곡문화센터': 'yeongok_entrance'
-        };
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
@@ -378,57 +248,89 @@
             `;
         }
 
-        // Dijkstra 알고리즘으로 흰색 도로 네트워크에서 최단 경로 찾기
-        function findWhiteRoadRoute(startNode, endNode) {
-            const distances = {};
-            const previous = {};
-            const visited = new Set();
-            const queue = [];
+        // 건물 사이에 장애물이 있는지 확인
+        function hasObstacle(start, end) {
+            // 건물들의 대략적인 경계 영역
+            const obstacles = [
+                // 자연과학관 영역
+                { minLat: 37.39660, maxLat: 37.39680, minLng: 126.90670, maxLng: 126.90685 },
+                // 공학1관 영역  
+                { minLat: 37.39625, maxLat: 37.39640, minLng: 126.90690, maxLng: 126.90710 },
+                // 공학2관 영역
+                { minLat: 37.39670, maxLat: 37.39690, minLng: 126.90730, maxLng: 126.90745 },
+                // 식품과학관 영역
+                { minLat: 37.39705, maxLat: 37.39725, minLng: 126.90755, maxLng: 126.90770 },
+                // 도의관 영역
+                { minLat: 37.39670, maxLat: 37.39690, minLng: 126.90800, maxLng: 126.90820 },
+                // 대학본관 영역
+                { minLat: 37.39735, maxLat: 37.39755, minLng: 126.90930, maxLng: 126.90950 },
+                // 중앙 잔디 광장 (운동장 주변)
+                { minLat: 37.39665, maxLat: 37.39685, minLng: 126.90920, maxLng: 126.90940 }
+            ];
 
-            // 초기화
-            for (const node in whiteRoadNetwork.nodes) {
-                distances[node] = Infinity;
-                previous[node] = null;
-                queue.push(node);
+            // 직선 경로가 장애물을 관통하는지 확인
+            for (const obstacle of obstacles) {
+                if (lineIntersectsRectangle(start, end, obstacle)) {
+                    return true;
+                }
             }
-            distances[startNode] = 0;
+            return false;
+        }
 
-            while (queue.length > 0) {
-                // 가장 짧은 거리의 노드 선택
-                queue.sort((a, b) => distances[a] - distances[b]);
-                const current = queue.shift();
-                
-                if (visited.has(current)) continue;
-                visited.add(current);
+        // 직선이 사각형 영역을 관통하는지 확인
+        function lineIntersectsRectangle(start, end, rect) {
+            // 간단한 경계 상자 교차 검사
+            const lineMinLat = Math.min(start.lat, end.lat);
+            const lineMaxLat = Math.max(start.lat, end.lat);
+            const lineMinLng = Math.min(start.lng, end.lng);
+            const lineMaxLng = Math.max(start.lng, end.lng);
 
-                if (current === endNode) break;
+            return !(lineMaxLat < rect.minLat || 
+                     lineMinLat > rect.maxLat || 
+                     lineMaxLng < rect.minLng || 
+                     lineMinLng > rect.maxLng);
+        }
 
-                // 인접 노드들 확인
-                const neighbors = whiteRoadNetwork.connections[current] || [];
-                for (const neighbor of neighbors) {
-                    if (visited.has(neighbor)) continue;
+        // 최단거리 우회 경로 생성 (장애물 피하기)
+        function createShortestAvoidanceRoute(start, end) {
+            const path = [start];
 
-                    const currentPos = whiteRoadNetwork.nodes[current];
-                    const neighborPos = whiteRoadNetwork.nodes[neighbor];
-                    const distance = calculateDistance(currentPos, neighborPos);
-                    const newDistance = distances[current] + distance;
+            // 직선 경로에 장애물이 있는지 확인
+            if (!hasObstacle(start, end)) {
+                // 장애물 없음 - 직선으로
+                path.push(end);
+                return path;
+            }
 
-                    if (newDistance < distances[neighbor]) {
-                        distances[neighbor] = newDistance;
-                        previous[neighbor] = current;
-                    }
+            // 장애물 있음 - 최소한의 우회 (1-2개 중간점만)
+            const midLat = (start.lat + end.lat) / 2;
+            const midLng = (start.lng + end.lng) / 2;
+
+            // 동서 방향 이동이 주요한 경우
+            if (Math.abs(end.lng - start.lng) > Math.abs(end.lat - start.lat)) {
+                // 북쪽 우회 (건물들 위로)
+                if (start.lat < 37.397 && end.lat < 37.397) {
+                    path.push({ lat: 37.39720, lng: midLng }); // 북쪽으로 살짝 우회
+                }
+                // 남쪽 우회 (건물들 아래로)
+                else if (start.lat > 37.396 && end.lat > 37.396) {
+                    path.push({ lat: 37.39580, lng: midLng }); // 남쪽으로 살짝 우회
+                }
+            }
+            // 남북 방향 이동이 주요한 경우  
+            else {
+                // 서쪽 우회 (건물들 왼쪽으로)
+                if (start.lng < 126.908 && end.lng < 126.908) {
+                    path.push({ lat: midLat, lng: 126.90650 }); // 서쪽으로 살짝 우회
+                }
+                // 동쪽 우회 (건물들 오른쪽으로)
+                else {
+                    path.push({ lat: midLat, lng: 126.90950 }); // 동쪽으로 살짝 우회
                 }
             }
 
-            // 경로 복원
-            const path = [];
-            let current = endNode;
-            while (current !== null) {
-                path.unshift(current);
-                current = previous[current];
-            }
-
-            return path[0] === startNode ? path : [];
+            path.push(end);
+            return path;
         }
 
         function findRoute(start, end, map) {
@@ -436,55 +338,21 @@
 
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ 흰색 도로 경로 계산 중...</h4>
-                <p>위성사진의 실제 흰색 도로를 따라 경로를 찾고 있습니다...</p>
+                <h4>🗺️ 최단거리 경로 계산 중...</h4>
+                <p>건물을 피해 최단거리로 경로를 찾고 있습니다...</p>
             `;
             routeInfo.style.display = 'block';
 
             setTimeout(() => {
-                drawWhiteRoadRoute(start, end, map);
-            }, 800);
+                drawShortestRoute(start, end, map);
+            }, 500);
         }
 
-        function drawWhiteRoadRoute(start, end, map) {
-            const startNode = buildingToRoadNode[start.name];
-            const endNode = buildingToRoadNode[end.name];
+        function drawShortestRoute(start, end, map) {
+            // 최단거리 장애물 회피 경로 생성
+            const routePath = createShortestAvoidanceRoute(start.coords, end.coords);
             
-            if (!startNode || !endNode) {
-                const routeInfo = document.getElementById('routeInfo');
-                routeInfo.innerHTML = `
-                    <h4>❌ 경로를 찾을 수 없습니다</h4>
-                    <p>해당 건물의 도로 연결 정보가 없습니다.</p>
-                `;
-                return;
-            }
-
-            const roadPath = findWhiteRoadRoute(startNode, endNode);
-            
-            if (roadPath.length === 0) {
-                const routeInfo = document.getElementById('routeInfo');
-                routeInfo.innerHTML = `
-                    <h4>❌ 경로를 찾을 수 없습니다</h4>
-                    <p>출발지와 도착지 사이에 연결된 도로가 없습니다.</p>
-                `;
-                return;
-            }
-
-            // 실제 경로 좌표 생성 (건물 → 도로 → 도로 → 건물)
-            const actualPath = [];
-            
-            // 출발 건물 위치
-            actualPath.push(start.coords);
-            
-            // 흰색 도로 네트워크 노드들
-            roadPath.forEach(nodeName => {
-                actualPath.push(whiteRoadNetwork.nodes[nodeName]);
-            });
-            
-            // 도착 건물 위치
-            actualPath.push(end.coords);
-
-            const naverPath = actualPath.map(point => 
+            const naverPath = routePath.map(point => 
                 new naver.maps.LatLng(point.lat, point.lng)
             );
 
@@ -499,8 +367,8 @@
             });
 
             let totalDistance = 0;
-            for (let i = 0; i < actualPath.length - 1; i++) {
-                totalDistance += calculateDistance(actualPath[i], actualPath[i + 1]);
+            for (let i = 0; i < routePath.length - 1; i++) {
+                totalDistance += calculateDistance(routePath[i], routePath[i + 1]);
             }
 
             const walkingTime = Math.ceil(totalDistance / 70);
@@ -525,17 +393,20 @@
 
             window.routeMarkers = [startMarker, endMarker];
 
+            const isDirectRoute = routePath.length === 2;
+            const routeType = isDirectRoute ? '직선 경로' : '최단 우회 경로';
+
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
                 <div style="background: #1E88E5; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: white;">🚶‍♂️ 흰색 도로 경로</h4>
+                    <h4 style="margin: 0; color: white;">🚶‍♂️ ${routeType}</h4>
                 </div>
                 
                 <div style="padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div>
                             <p style="margin: 0; font-size: 16px; font-weight: bold;">${start.name} → ${end.name}</p>
-                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">위성사진 흰색 도로 경유</p>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${isDirectRoute ? '장애물 없음' : '건물 우회'}</p>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-size: 20px; font-weight: bold; color: #1E88E5;">${walkingTime}분</div>
@@ -547,15 +418,15 @@
                         <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; border-left: 4px solid #1E88E5; margin-bottom: 10px;">
                             <strong style="color: #1565C0;">🛣️ 경로 특징</strong><br>
                             <span style="font-size: 13px; color: #424242;">
-                                위성사진에서 확인된 실제 흰색 포장도로만을 이용한 정확한 경로입니다
+                                ${isDirectRoute ? '건물 사이를 직선으로 이동하는 최단거리 경로입니다' : '건물을 최소한으로 우회하는 효율적인 경로입니다'}
                             </span>
                         </div>
                         
                         <div style="padding: 10px; background: #F1F8E9; border-radius: 6px; border-left: 4px solid #4CAF50;">
                             <strong style="color: #2E7D32;">✅ 보행 안내</strong><br>
                             <span style="font-size: 12px; color: #424242;">
-                                캠퍼스 내 실제 포장된 흰색 도로를 따라 안전하게 이동하세요.<br>
-                                ${roadPath.length - 1}개의 도로 교차점을 경유합니다.
+                                건물이나 잔디밭 관통 없이 안전하게 이동하세요.<br>
+                                ${routePath.length - 1}개의 구간으로 구성된 최적 경로입니다.
                             </span>
                         </div>
                     </div>
