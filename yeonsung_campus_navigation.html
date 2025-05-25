@@ -156,118 +156,134 @@
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 위성사진 기준 실제 흰색 도로 네트워크
+        // 위성사진 기준 실제 흰색 도로 네트워크 (건물 우회 경로)
         const whiteRoadNetwork = {
             // 주요 도로 교차점들
             nodes: {
-                // 서쪽 진입부
-                'west_entrance': { lat: 37.39620, lng: 126.90640 },      // 서쪽 진입로
-                'library_access': { lat: 37.39635, lng: 126.90665 },     // 학술정보관 접근로
-                'science_road': { lat: 37.39665, lng: 126.90680 },       // 자연과학관 도로
+                // 서쪽 진입 도로 (건물들 서쪽)
+                'west_main_road1': { lat: 37.39620, lng: 126.90640 },     // 서쪽 메인도로 시작
+                'west_main_road2': { lat: 37.39640, lng: 126.90650 },     // 학술정보관 서쪽 도로
+                'west_main_road3': { lat: 37.39660, lng: 126.90660 },     // 자연과학관 서쪽 도로
+                'west_main_road4': { lat: 37.39680, lng: 126.90670 },     // 공학2관 서쪽 도로
+                'west_main_road5': { lat: 37.39700, lng: 126.90680 },     // 식품과학관 서쪽 도로
                 
-                // 중앙 메인 도로
-                'central_road1': { lat: 37.39650, lng: 126.90720 },      // 중앙도로 1구간
-                'central_road2': { lat: 37.39640, lng: 126.90750 },      // 중앙도로 2구간
-                'central_road3': { lat: 37.39630, lng: 126.90780 },      // 중앙도로 3구간
-                'central_junction': { lat: 37.39620, lng: 126.90810 },   // 중앙 대형 교차로
+                // 북쪽 횡단 도로 (건물들 북쪽)
+                'north_cross_road1': { lat: 37.39720, lng: 126.90700 },   // 식품과학관 북쪽
+                'north_cross_road2': { lat: 37.39720, lng: 126.90740 },   // 공학2관 북쪽
+                'north_cross_road3': { lat: 37.39720, lng: 126.90780 },   // 도의관 북쪽
+                'north_cross_road4': { lat: 37.39720, lng: 126.90820 },   // 도의관 동쪽
                 
-                // 북쪽 도로망
-                'north_road1': { lat: 37.39680, lng: 126.90740 },        // 공학2관 앞 도로
-                'north_road2': { lat: 37.39700, lng: 126.90760 },        // 식품과학관 앞 도로
-                'north_road3': { lat: 37.39690, lng: 126.90800 },        // 도의관 앞 도로
-                'north_junction': { lat: 37.39680, lng: 126.90840 },     // 북쪽 교차로
+                // 동쪽 메인 도로 (건물들 동쪽)
+                'east_main_road1': { lat: 37.39700, lng: 126.90850 },     // 도의관 동쪽 도로
+                'east_main_road2': { lat: 37.39680, lng: 126.90870 },     // 운동장 서쪽 도로
+                'east_main_road3': { lat: 37.39660, lng: 126.90890 },     // 동쪽 도로 중간
+                'east_main_road4': { lat: 37.39680, lng: 126.90910 },     // 운동장 동쪽
+                'east_main_road5': { lat: 37.39700, lng: 126.90930 },     // 대학본관 남쪽
+                'east_main_road6': { lat: 37.39720, lng: 126.90950 },     // 대학본관 동쪽
                 
-                // 동쪽 순환도로
-                'east_road1': { lat: 37.39650, lng: 126.90860 },         // 동쪽 도로 1구간
-                'east_road2': { lat: 37.39670, lng: 126.90890 },         // 동쪽 도로 2구간
-                'east_road3': { lat: 37.39690, lng: 126.90920 },         // 운동장 앞 도로
-                'east_road4': { lat: 37.39710, lng: 126.90950 },         // 대학본관 앞 도로
+                // 최동쪽 도로망
+                'far_east_road1': { lat: 37.39740, lng: 126.90970 },      // 연곡문화센터 서쪽
+                'far_east_road2': { lat: 37.39760, lng: 126.90990 },      // 창의교육센터 남쪽
+                'far_east_road3': { lat: 37.39740, lng: 126.91010 },      // 창조관 서쪽
+                'far_east_road4': { lat: 37.39750, lng: 126.91030 },      // 창조관 남쪽
                 
-                // 최동쪽 도로
-                'northeast_road1': { lat: 37.39730, lng: 126.90970 },    // 북동쪽 도로 1구간
-                'northeast_road2': { lat: 37.39750, lng: 126.90990 },    // 북동쪽 도로 2구간
-                'northeast_road3': { lat: 37.39770, lng: 126.91010 },    // 창의교육센터 도로
-                'northeast_end': { lat: 37.39790, lng: 126.90970 },      // 연곡문화센터 도로
+                // 남쪽 우회 도로 (건물들 남쪽)
+                'south_bypass_road1': { lat: 37.39550, lng: 126.90750 },  // 문화2관 남쪽
+                'south_bypass_road2': { lat: 37.39550, lng: 126.90800 },  // 문화1관 남쪽
+                'south_bypass_road3': { lat: 37.39580, lng: 126.90850 },  // 남쪽 우회로
+                'south_bypass_road4': { lat: 37.39620, lng: 126.90920 },  // 학생복지센터 남쪽
+                'south_bypass_road5': { lat: 37.39640, lng: 126.90960 },  // 농구장 남쪽
                 
-                // 남쪽 연결로
-                'south_road1': { lat: 37.39590, lng: 126.90820 },        // 문화1관 연결로
-                'south_road2': { lat: 37.39610, lng: 126.90850 },        // 남쪽 연결로
-                'south_road3': { lat: 37.39630, lng: 126.90880 },        // 학생복지센터 연결로
-                
-                // 건물별 접근로
-                'eng1_access': { lat: 37.39632, lng: 126.90700 },         // 공학1관 접근
-                'culture2_access': { lat: 37.39605, lng: 126.90760 },     // 문화2관 접근
-                'doui_access': { lat: 37.39680, lng: 126.90810 },         // 도의관 접근
-                'culture1_access': { lat: 37.39575, lng: 126.90815 },     // 문화1관 접근
-                'sports_access': { lat: 37.39675, lng: 126.90930 },       // 운동장 접근
-                'welfare_access': { lat: 37.39630, lng: 126.90995 },      // 학생복지센터 접근
-                'basketball_access': { lat: 37.39665, lng: 126.90995 },   // 농구장 접근
-                'creative_access': { lat: 37.39735, lng: 126.91005 },     // 창의교육센터 접근
-                'creation_access': { lat: 37.39730, lng: 126.91040 },     // 창조관 접근
-                'yeongok_access': { lat: 37.39800, lng: 126.90970 }       // 연곡문화센터 접근
+                // 건물 접근 진입로 (짧은 연결로)
+                'library_entrance': { lat: 37.39635, lng: 126.90665 },    // 학술정보관 진입
+                'science_entrance': { lat: 37.39665, lng: 126.90675 },    // 자연과학관 진입
+                'eng1_entrance': { lat: 37.39630, lng: 126.90690 },       // 공학1관 진입
+                'eng2_entrance': { lat: 37.39680, lng: 126.90730 },       // 공학2관 진입
+                'food_entrance': { lat: 37.39710, lng: 126.90750 },       // 식품과학관 진입
+                'doui_entrance': { lat: 37.39680, lng: 126.90800 },       // 도의관 진입
+                'culture2_entrance': { lat: 37.39600, lng: 126.90750 },   // 문화2관 진입
+                'culture1_entrance': { lat: 37.39570, lng: 126.90810 },   // 문화1관 진입
+                'sports_entrance': { lat: 37.39670, lng: 126.90920 },     // 운동장 진입
+                'main_entrance': { lat: 37.39740, lng: 126.90940 },       // 대학본관 진입
+                'welfare_entrance': { lat: 37.39630, lng: 126.90990 },    // 학생복지센터 진입
+                'basketball_entrance': { lat: 37.39665, lng: 126.90990 }, // 농구장 진입
+                'creative_entrance': { lat: 37.39735, lng: 126.91000 },   // 창의교육센터 진입
+                'creation_entrance': { lat: 37.39730, lng: 126.91035 },   // 창조관 진입
+                'yeongok_entrance': { lat: 37.39800, lng: 126.90965 }     // 연곡문화센터 진입
             },
             
-            // 실제 흰색 도로 연결 관계
+            // 실제 흰색 도로 연결 관계 (건물 우회)
             connections: {
-                'west_entrance': ['library_access'],
-                'library_access': ['west_entrance', 'science_road'],
-                'science_road': ['library_access', 'central_road1', 'north_road1'],
+                // 서쪽 메인 도로 (세로축)
+                'west_main_road1': ['west_main_road2'],
+                'west_main_road2': ['west_main_road1', 'west_main_road3', 'library_entrance'],
+                'west_main_road3': ['west_main_road2', 'west_main_road4', 'science_entrance'],
+                'west_main_road4': ['west_main_road3', 'west_main_road5', 'eng2_entrance'],
+                'west_main_road5': ['west_main_road4', 'north_cross_road1', 'food_entrance'],
                 
-                'central_road1': ['science_road', 'eng1_access', 'central_road2'],
-                'central_road2': ['central_road1', 'culture2_access', 'central_road3'],
-                'central_road3': ['central_road2', 'central_junction'],
-                'central_junction': ['central_road3', 'culture1_access', 'doui_access', 'south_road1'],
+                // 북쪽 횡단 도로 (가로축)
+                'north_cross_road1': ['west_main_road5', 'north_cross_road2'],
+                'north_cross_road2': ['north_cross_road1', 'north_cross_road3'],
+                'north_cross_road3': ['north_cross_road2', 'north_cross_road4', 'doui_entrance'],
+                'north_cross_road4': ['north_cross_road3', 'east_main_road1'],
                 
-                'north_road1': ['science_road', 'north_road2'],
-                'north_road2': ['north_road1', 'north_road3'],
-                'north_road3': ['north_road2', 'doui_access', 'north_junction'],
-                'north_junction': ['north_road3', 'east_road1'],
+                // 동쪽 메인 도로 (세로축)
+                'east_main_road1': ['north_cross_road4', 'east_main_road2'],
+                'east_main_road2': ['east_main_road1', 'east_main_road3'],
+                'east_main_road3': ['east_main_road2', 'east_main_road4', 'south_bypass_road3'],
+                'east_main_road4': ['east_main_road3', 'east_main_road5', 'sports_entrance'],
+                'east_main_road5': ['east_main_road4', 'east_main_road6'],
+                'east_main_road6': ['east_main_road5', 'far_east_road1', 'main_entrance'],
                 
-                'east_road1': ['north_junction', 'south_road2', 'east_road2'],
-                'east_road2': ['east_road1', 'sports_access', 'east_road3'],
-                'east_road3': ['east_road2', 'east_road4'],
-                'east_road4': ['east_road3', 'northeast_road1'],
+                // 최동쪽 도로
+                'far_east_road1': ['east_main_road6', 'far_east_road2'],
+                'far_east_road2': ['far_east_road1', 'far_east_road3', 'creative_entrance'],
+                'far_east_road3': ['far_east_road2', 'far_east_road4'],
+                'far_east_road4': ['far_east_road3', 'creation_entrance'],
                 
-                'northeast_road1': ['east_road4', 'creative_access', 'northeast_road2'],
-                'northeast_road2': ['northeast_road1', 'northeast_road3'],
-                'northeast_road3': ['northeast_road2', 'creation_access', 'northeast_end'],
-                'northeast_end': ['northeast_road3', 'yeongok_access'],
+                // 남쪽 우회 도로 (가로축)
+                'south_bypass_road1': ['south_bypass_road2', 'culture2_entrance'],
+                'south_bypass_road2': ['south_bypass_road1', 'south_bypass_road3', 'culture1_entrance'],
+                'south_bypass_road3': ['south_bypass_road2', 'east_main_road3', 'south_bypass_road4'],
+                'south_bypass_road4': ['south_bypass_road3', 'south_bypass_road5', 'welfare_entrance'],
+                'south_bypass_road5': ['south_bypass_road4', 'basketball_entrance'],
                 
-                'south_road1': ['central_junction', 'culture1_access', 'south_road2'],
-                'south_road2': ['south_road1', 'east_road1', 'south_road3'],
-                'south_road3': ['south_road2', 'welfare_access', 'basketball_access'],
-                
-                // 건물 접근로 연결
-                'eng1_access': ['central_road1'],
-                'culture2_access': ['central_road2'],
-                'doui_access': ['central_junction', 'north_road3'],
-                'culture1_access': ['central_junction', 'south_road1'],
-                'sports_access': ['east_road2'],
-                'welfare_access': ['south_road3'],
-                'basketball_access': ['south_road3', 'creative_access'],
-                'creative_access': ['basketball_access', 'northeast_road1'],
-                'creation_access': ['northeast_road3'],
-                'yeongok_access': ['northeast_end']
+                // 건물 진입로 (각 건물에서 가장 가까운 도로로만 연결)
+                'library_entrance': ['west_main_road2'],
+                'science_entrance': ['west_main_road3'],
+                'eng1_entrance': ['west_main_road3'],  // 공학1관은 자연과학관 근처 도로 이용
+                'eng2_entrance': ['west_main_road4'],
+                'food_entrance': ['west_main_road5'],
+                'doui_entrance': ['north_cross_road3'],
+                'culture2_entrance': ['south_bypass_road1'],
+                'culture1_entrance': ['south_bypass_road2'],
+                'sports_entrance': ['east_main_road4'],
+                'main_entrance': ['east_main_road6'],
+                'welfare_entrance': ['south_bypass_road4'],
+                'basketball_entrance': ['south_bypass_road5'],
+                'creative_entrance': ['far_east_road2'],
+                'creation_entrance': ['far_east_road4'],
+                'yeongok_entrance': ['far_east_road1']  // 연곡문화센터는 최동쪽 도로 이용
             }
         };
 
-        // 건물별 가장 가까운 도로 접점
+        // 건물별 가장 가까운 도로 접점 (직접 연결)
         const buildingToRoadNode = {
-            '학술정보관': 'library_access',
-            '자연과학관': 'science_road',
-            '공학1관': 'eng1_access',
-            '문화2관': 'culture2_access',
-            '공학2관': 'north_road1',
-            '식품과학관': 'north_road2',
-            '도의관': 'doui_access',
-            '문화1관': 'culture1_access',
-            '운동장': 'sports_access',
-            '대학본관': 'east_road4',
-            '학생복지센터': 'welfare_access',
-            '농구장': 'basketball_access',
-            '창의교육센터': 'creative_access',
-            '창조관': 'creation_access',
-            '연곡문화센터': 'yeongok_access'
+            '학술정보관': 'library_entrance',
+            '자연과학관': 'science_entrance',
+            '공학1관': 'eng1_entrance',
+            '문화2관': 'culture2_entrance',
+            '공학2관': 'eng2_entrance',
+            '식품과학관': 'food_entrance',
+            '도의관': 'doui_entrance',
+            '문화1관': 'culture1_entrance',
+            '운동장': 'sports_entrance',
+            '대학본관': 'main_entrance',
+            '학생복지센터': 'welfare_entrance',
+            '농구장': 'basketball_entrance',
+            '창의교육센터': 'creative_entrance',
+            '창조관': 'creation_entrance',
+            '연곡문화센터': 'yeongok_entrance'
         };
 
         document.addEventListener('DOMContentLoaded', function() {
