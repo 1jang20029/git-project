@@ -569,12 +569,13 @@
             }
 
             const walkingTime = Math.ceil(totalDistance / 70); // 분당 70m 보행속도
+            const isDirectRoute = routePath.length === 2; // 직선 경로인지 확인
 
             // 경로 정보 표시
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
                 <div style="background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 15px;">
-                    <h4 style="margin: 0; font-size: 1.2em;">🗺️ 경로 안내</h4>
+                    <h4 style="margin: 0; font-size: 1.2em;">🗺️ ${isDirectRoute ? '직선 경로' : '도로 경유 경로'}</h4>
                     <p style="margin: 8px 0 0 0; opacity: 0.9;">${start.name} → ${end.name}</p>
                 </div>
                 
@@ -588,17 +589,18 @@
                         <div style="font-size: 0.9em; color: #2196F3;">예상 시간</div>
                     </div>
                     <div style="text-align: center; padding: 15px; background: #FFF3E0; border-radius: 10px; border-left: 4px solid #FF9800;">
-                        <div style="font-size: 1.5em; font-weight: bold; color: #E65100;">실제</div>
-                        <div style="font-size: 0.9em; color: #FF9800;">좌표 기반</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #E65100;">${isDirectRoute ? '직선' : '도로'}</div>
+                        <div style="font-size: 0.9em; color: #FF9800;">경로 타입</div>
                     </div>
                 </div>
                 
                 <div style="background: #F8F9FA; padding: 15px; border-radius: 10px; border-left: 4px solid #6C757D;">
                     <h5 style="margin: 0 0 10px 0; color: #343A40;">📍 경로 특징</h5>
                     <ul style="margin: 0; padding-left: 20px; color: #6C757D; font-size: 14px;">
-                        <li>제공해주신 실제 GPS 좌표를 순서대로 정확히 따라가는 경로</li>
-                        <li>캠퍼스 내 실제 도로와 보행로를 따라 안전한 이동</li>
-                        <li>건물 간 최단거리가 아닌 실제 이용 가능한 경로</li>
+                        ${isDirectRoute ? 
+                            '<li>가까운 거리로 건물 통과 가능한 직선 경로</li><li>최단거리 이동으로 시간 절약</li><li>150m 이하의 근거리 최적화</li>' :
+                            '<li>제공된 실제 GPS 좌표를 따라가는 도로 경로</li><li>건물을 우회하여 안전한 이동</li><li>150m 이상의 원거리 최적화</li>'
+                        }
                     </ul>
                 </div>
             `;
@@ -610,31 +612,78 @@
         }
 
         function createRoadBasedPath(start, end) {
-            // 제공된 실제 좌표를 순서대로 따라가는 경로 생성
-            const path = [start];
+            const directDistance = calculateDistance(start, end);
             
-            // 출발지에서 가장 가까운 도로 좌표 찾기
+            // 가까운 거리 (150m 이하)는 직선으로, 먼 거리는 도로를 따라
+            if (directDistance <= 150) {
+                // 가까운 거리: 건물 통과 가능, 직선 경로
+                return [start, end];
+            } else {
+                // 먼 거리: 도로를 따라 이동
+                return createActualRoadPath(start, end);
+            }
+        }
+
+        function createActualRoadPath(start, end) {
+            // 출발지와 도착지에서 가장 가까운 도로 좌표 찾기
             const startRoadIndex = findNearestRoadIndex(start);
             const endRoadIndex = findNearestRoadIndex(end);
             
-            // 시작점부터 끝점까지 순서대로 도로 좌표 추가
-            const startIndex = Math.min(startRoadIndex, endRoadIndex);
-            const endIndex = Math.max(startRoadIndex, endRoadIndex);
+            const path = [start];
             
-            // 실제 도로 좌표를 순서대로 따라가기
-            for (let i = startIndex; i <= endIndex; i++) {
-                path.push(roadCoords[i]);
+            // 출발지에서 도로까지 (20m 이상 떨어져 있을 때만)
+            if (calculateDistance(start, roadCoords[startRoadIndex]) > 20) {
+                path.push(roadCoords[startRoadIndex]);
             }
             
-            // 만약 역순이라면 뒤집기
-            if (startRoadIndex > endRoadIndex) {
-                const roadPath = path.slice(1, -1);
-                path.splice(1, roadPath.length, ...roadPath.reverse());
+            // 도로를 따라 이동하는 경로 생성
+            const roadPath = findOptimalRoadPath(startRoadIndex, endRoadIndex);
+            path.push(...roadPath);
+            
+            // 도로에서 도착지까지 (20m 이상 떨어져 있을 때만)
+            if (calculateDistance(roadCoords[endRoadIndex], end) > 20) {
+                path.push(roadCoords[endRoadIndex]);
             }
             
             path.push(end);
             
-            return path;
+            // 중복 제거
+            return removeDuplicatePoints(path);
+        }
+
+        function findOptimalRoadPath(startIndex, endIndex) {
+            // 시작과 끝 인덱스 사이의 도로 경로 찾기
+            const roadPath = [];
+            
+            if (startIndex === endIndex) {
+                return [roadCoords[startIndex]];
+            }
+            
+            // 더 효율적인 경로를 위해 방향 결정
+            const step = startIndex < endIndex ? 1 : -1;
+            
+            for (let i = startIndex; i !== endIndex; i += step) {
+                roadPath.push(roadCoords[i]);
+            }
+            roadPath.push(roadCoords[endIndex]);
+            
+            return roadPath;
+        }
+
+        function removeDuplicatePoints(path) {
+            const filtered = [path[0]];
+            
+            for (let i = 1; i < path.length; i++) {
+                const prev = filtered[filtered.length - 1];
+                const current = path[i];
+                
+                // 10m 이상 떨어진 점만 추가 (중복 제거)
+                if (calculateDistance(prev, current) > 10) {
+                    filtered.push(current);
+                }
+            }
+            
+            return filtered;
         }
 
         function findNearestRoadIndex(coords) {
