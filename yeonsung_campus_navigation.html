@@ -614,12 +614,12 @@
         function createRoadBasedPath(start, end) {
             const directDistance = calculateDistance(start, end);
             
-            // 가까운 거리 (150m 이하)는 직선으로, 먼 거리는 도로를 따라
-            if (directDistance <= 150) {
+            // 가까운 거리 (100m 이하)는 직선으로, 먼 거리는 도로를 따라
+            if (directDistance <= 100) {
                 // 가까운 거리: 건물 통과 가능, 직선 경로
                 return [start, end];
             } else {
-                // 먼 거리: 도로를 따라 이동
+                // 먼 거리: 반드시 도로를 따라 이동
                 return createActualRoadPath(start, end);
             }
         }
@@ -684,16 +684,16 @@
                 visited.add(currentKey);
                 
                 // 목적지에 가까우면 경로 완성
-                if (calculateDistance(current, endRoad) < 30) {
+                if (calculateDistance(current, endRoad) < 20) {
                     return [...path, endRoad];
                 }
                 
-                // 현재 지점에서 가까운 실제 좌표들 찾기 (30m 이내)
+                // 현재 지점에서 가까운 실제 좌표들 찾기 (20m 이내)
                 const nearbyPoints = roadCoords.filter(point => {
                     const pointKey = `${point.lat.toFixed(8)},${point.lng.toFixed(8)}`;
                     const distance = calculateDistance(current, point);
                     return !visited.has(pointKey) && 
-                           distance > 5 && distance < 30; // 5m~30m 사이
+                           distance > 3 && distance < 20; // 3m~20m 사이
                 });
                 
                 // 목적지 방향으로 가는 점들 우선순위
@@ -711,8 +711,8 @@
                     });
                 });
                 
-                // 경로가 너무 길어지면 중단
-                if (path.length > 15) break;
+                // 경로가 너무 길어지거나 큐가 너무 커지면 중단
+                if (path.length > 20 || queue.length > 100) break;
             }
             
             // 경로를 못 찾으면 직선
