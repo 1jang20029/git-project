@@ -1411,6 +1411,16 @@
                 return route;
             }
 
+            // 식품과학관 ↔ 창조관 양방향 경로
+            if ((startBuildingName === '식품과학관' && endBuildingName === '운동장') ||
+                (startBuildingName === '운동장' && endBuildingName === '식품과학관')) {
+                const route = [...campusRoadNetwork[33]];
+                if (startBuildingName === '운동장') {
+                    return route.reverse();
+                }
+                return route;
+            }
+
             // 다른 경로는 직선으로 처리
             return [start, end];
         }
