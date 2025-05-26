@@ -324,23 +324,29 @@
         }
 
         function hasObstacle(start, end) {
-            // 출발지와 목적지를 잇는 직선상에 건물이 있는지 확인
-            const tolerance = 50; // 50m 반경 내에 건물이 있으면 장애물로 간주
+            // 더 엄격하게 장애물 감지
+            const tolerance = 100; // 100m 반경으로 확대
             
             for (const building of buildings) {
                 const distanceToLine = distanceFromPointToLine(building.coords, start, end);
                 if (distanceToLine < tolerance) {
-                    // 건물이 출발지와 목적지 사이에 실제로 위치하는지 확인
                     const distToStart = calculateDistance(start, building.coords);
                     const distToEnd = calculateDistance(end, building.coords);
                     const directDist = calculateDistance(start, end);
                     
                     // 건물이 출발지와 목적지 사이에 있으면 장애물
-                    if (distToStart + distToEnd <= directDist + 20) {
+                    if (distToStart + distToEnd <= directDist + 50) {
                         return true;
                     }
                 }
             }
+            
+            // 거리 기준으로도 체크 - 200m 이상이면 무조건 우회
+            const directDistance = calculateDistance(start, end);
+            if (directDistance > 200) {
+                return true;
+            }
+            
             return false;
         }
 
