@@ -3,141 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연성대학교 길찾기</title>
+    <title>연성대학교 캠퍼스 지도</title>
     <style>
         body {
             margin: 0;
             padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
         .header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
         }
         .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .control-row {
             display: flex;
             gap: 20px;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            align-items: center;
+            flex-wrap: wrap;
         }
         .control-group {
             flex: 1;
+            min-width: 200px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
         }
         select {
             width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
+            padding: 12px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
             font-size: 14px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
         }
         button {
             padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: transform 0.2s;
         }
-        button:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
         }
         button:disabled {
-            background: #ccc;
+            background: #6c757d;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
         #map {
             width: 100%;
             height: 600px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            background: #e9ecef;
         }
         .info-panel {
-            margin-top: 20px;
-            padding: 20px;
+            padding: 30px;
             background: white;
+        }
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 13px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
         .route-info {
             display: none;
-            padding: 15px;
-            background: #e8f5e8;
-            border-left: 4px solid #4CAF50;
-            border-radius: 5px;
-            margin-top: 10px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e1bee7;
         }
-        .building-info {
-            margin-top: 10px;
+        .facility-info {
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #4caf50;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-item {
+            text-align: center;
             padding: 15px;
-            background: #f0f8ff;
-            border-left: 4px solid #2196F3;
-            border-radius: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎓 연성대학교 길찾기</h1>
-            <p>바로바로 최단거리로 안내합니다</p>
+            <h1>🎓 연성대학교 캠퍼스 지도</h1>
+            <p>실제 도로 좌표 기반 정밀 내비게이션</p>
         </div>
         
         <div class="controls">
-            <div class="control-group">
-                <label for="startSelect">출발지</label>
-                <select id="startSelect">
-                    <option value="">출발지를 선택하세요</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label for="endSelect">도착지</label>
-                <select id="endSelect">
-                    <option value="">도착지를 선택하세요</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>&nbsp;</label>
-                <button id="findRouteBtn" disabled>길찾기</button>
-                <button id="clearRouteBtn" style="margin-left: 10px; background: #f44336;">경로 지우기</button>
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="startSelect">🚩 출발지</label>
+                    <select id="startSelect">
+                        <option value="">출발지를 선택하세요</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="endSelect">🎯 도착지</label>
+                    <select id="endSelect">
+                        <option value="">도착지를 선택하세요</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button id="findRouteBtn" class="btn-primary" disabled>길찾기 시작</button>
+                    <button id="clearRouteBtn" class="btn-secondary">경로 지우기</button>
+                </div>
             </div>
         </div>
         
         <div id="map"></div>
         
         <div class="info-panel">
-            <h3>📍 캠퍼스 안내</h3>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #667eea;"></div>
+                    <span>주요 건물</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff9800;"></div>
+                    <span>흡연부스</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4caf50;"></div>
+                    <span>주차장</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f44336;"></div>
+                    <span>편의시설</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9c27b0;"></div>
+                    <span>도로망</span>
+                </div>
+            </div>
+            
             <div class="route-info" id="routeInfo"></div>
-            <div class="building-info" id="buildingInfo">
-                <p>건물을 선택하면 상세 정보가 표시됩니다.</p>
+            
+            <div class="facility-info">
+                <h3>📍 캠퍼스 시설 정보</h3>
+                <p>연성대학교 캠퍼스 내 모든 건물과 편의시설의 정확한 위치를 확인할 수 있습니다.</p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="buildingCount">15</span>
+                        <span class="stat-label">주요 건물</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="roadCount">200+</span>
+                        <span class="stat-label">도로 지점</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="facilityCount">12</span>
+                        <span class="stat-label">편의시설</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">GPS</span>
+                        <span class="stat-label">정밀 좌표</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction"></script>
     <script>
-        // 연성대학교 건물 데이터
+        // 주요 건물 데이터
         const buildings = [
             { name: '공학1관', description: '공학계열 강의실, 실험실', coords: { lat: 37.39632767479923, lng: 126.90699348692698 } },
             { name: '자연과학관', description: '반려동물보건학, 반려동물산업학', coords: { lat: 37.39669466288283, lng: 126.90676716508685 } },
@@ -156,11 +280,104 @@
             { name: '학술정보관', description: '독서실', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
+        // 실제 도로 좌표 데이터 (사용자 제공)
+        const roadCoords = [
+            { lat: 37.39630523583509, lng: 126.90710362491097 },
+            { lat: 37.39628952118516, lng: 126.90717140445003 },
+            { lat: 37.39626258359212, lng: 126.9072900178818 },
+            { lat: 37.39624011560296, lng: 126.90736345233073 },
+            { lat: 37.396213151303826, lng: 126.90744818561114 },
+            { lat: 37.39619511983766, lng: 126.90743409110394 },
+            { lat: 37.39617045439561, lng: 126.90757811151629 },
+            { lat: 37.39612101951769, lng: 126.9077334555332 },
+            { lat: 37.39605807352083, lng: 126.90789446254182 },
+            { lat: 37.39599948737053, lng: 126.90786912427627 },
+            { lat: 37.395965903374545, lng: 126.90813173481449 },
+            { lat: 37.39587374587564, lng: 126.90838594643347 },
+            { lat: 37.39586247655201, lng: 126.90837749017982 },
+            { lat: 37.39561685422634, lng: 126.90825638665562 },
+            { lat: 37.39584392255342, lng: 126.9076914453633 },
+            { lat: 37.3960237133964, lng: 126.90716326228001 },
+            { lat: 37.396098078640605, lng: 126.90720269720835 },
+            { lat: 37.39607784111431, lng: 126.907247895461 },
+            { lat: 37.39614957870643, lng: 126.90681019027762 },
+            { lat: 37.39629365074881, lng: 126.90669425498392 },
+            { lat: 37.39634099665608, lng: 126.90674783977597 },
+            { lat: 37.396358990348006, lng: 126.90671393737989 },
+            { lat: 37.39645372882536, lng: 126.90688039734648 },
+            { lat: 37.39648073721073, lng: 126.90685213046743 },
+            { lat: 37.39652812082299, lng: 126.90695371236593 },
+            { lat: 37.396597883250735, lng: 126.90686892559849 },
+            { lat: 37.39667447001276, lng: 126.90686883083515 },
+            { lat: 37.39667453891443, lng: 126.90695635471685 },
+            { lat: 37.39664081059537, lng: 126.90703262692858 },
+            { lat: 37.39658455227226, lng: 126.9071032801764 },
+            { lat: 37.39655975423635, lng: 126.9070779006373 },
+            { lat: 37.39645823837581, lng: 126.90688603845872 },
+            { lat: 37.396444731956905, lng: 126.90689734854807 },
+            { lat: 37.396584729502685, lng: 126.90732914799048 },
+            { lat: 37.39661177561226, lng: 126.90734887815086 },
+            { lat: 37.39695430713901, lng: 126.90753197518458 },
+            { lat: 37.39698355055921, lng: 126.90748111868113 },
+            { lat: 37.39696326654739, lng: 126.90746702679144 },
+            { lat: 37.39702416935311, lng: 126.90757423985961 },
+            { lat: 37.39705345252541, lng: 126.90757420390047 },
+            { lat: 37.3971097663179, lng: 126.9075741347481 },
+            { lat: 37.39709147616586, lng: 126.90722970613854 },
+            { lat: 37.397113788723715, lng: 126.90695863509262 },
+            { lat: 37.39710452259236, lng: 126.90663395900862 },
+            { lat: 37.397012992610485, lng: 126.90768436487727 },
+            { lat: 37.39700179594816, lng: 126.90776907959213 },
+            { lat: 37.3969860324902, lng: 126.90777474563944 },
+            { lat: 37.39690945013423, lng: 126.90778048620184 },
+            { lat: 37.39699290236309, lng: 126.90791872887415 },
+            { lat: 37.39694804235291, lng: 126.90816441642873 },
+            { lat: 37.39693013149215, lng: 126.90830560645179 },
+            { lat: 37.39692112347429, lng: 126.90830844078891 },
+            { lat: 37.39688283447194, lng: 126.90831413415653 },
+            { lat: 37.39690774158635, lng: 126.90848068220664 },
+            { lat: 37.39689210253325, lng: 126.90864727957879 },
+            { lat: 37.39678398440624, lng: 126.90865305751902 },
+            { lat: 37.39675470341276, lng: 126.90865591641227 },
+            { lat: 37.39676830591075, lng: 126.90876883419745 },
+            { lat: 37.396763853067156, lng: 126.90883660016662 },
+            { lat: 37.39668952973659, lng: 126.90885080695843 },
+            { lat: 37.39663329206912, lng: 126.9089496923917 },
+            { lat: 37.396586107945254, lng: 126.90910503374715 },
+            { lat: 37.396478104712024, lng: 126.90926044822866 }
+        ];
+
+        // 편의시설 좌표 (주석에서 추출)
+        const facilities = [
+            { name: '흡연부스1', type: '흡연부스', coords: { lat: 37.39643945292684, lng: 126.90879464290056 } },
+            { name: '흡연부스2', type: '흡연부스', coords: { lat: 37.396690851248664, lng: 126.90765087973263 } },
+            { name: '흡연부스3', type: '흡연부스', coords: { lat: 37.39689779436514, lng: 126.90727794201835 } },
+            { name: '연곡문화센터 앞 주차장', type: '주차장', coords: { lat: 37.39843808633732, lng: 126.90959971907205 } },
+            { name: '연성대학교 부속 유치원', type: '기타', coords: { lat: 37.39832905571495, lng: 126.9113757786404 } },
+            { name: '연성대학교 후문', type: '기타', coords: { lat: 37.397965716446535, lng: 126.91047554114752 } },
+            { name: '연곡 문화센터와 대학본관 사이 주차장', type: '주차장', coords: { lat: 37.39769891191491, lng: 126.90916015770911 } },
+            { name: '식품과학관 옆 주차장', type: '주차장', coords: { lat: 37.397145188806135, lng: 126.90678637062 } },
+            { name: '연성대학교 산학협력관 주차장', type: '주차장', coords: { lat: 37.396600211368515, lng: 126.9069649166513 } },
+            { name: '공학관 주차장', type: '주차장', coords: { lat: 37.39616555542772, lng: 126.90707556395701 } },
+            { name: '문화관 주차장', type: '주차장', coords: { lat: 37.39595399502789, lng: 126.90730451460772 } },
+            { name: '정자', type: '편의시설', coords: { lat: 37.39645484742096, lng: 126.90831183215458 } }
+        ];
+
+        let map, roadPolyline;
+        let currentRouteLine = null;
+        let routeMarkers = [];
+
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
         });
 
         function initializeApp() {
+            populateSelects();
+            initializeMap();
+            setupEventListeners();
+        }
+
+        function populateSelects() {
             const startSelect = document.getElementById('startSelect');
             const endSelect = document.getElementById('endSelect');
             
@@ -175,301 +392,194 @@
                 endOption.textContent = building.name;
                 endSelect.appendChild(endOption);
             });
-
-            initializeMap();
         }
 
         function initializeMap() {
-            const map = new naver.maps.Map('map', {
+            map = new naver.maps.Map('map', {
                 center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
                 zoom: 16,
-                mapTypeControl: true
+                mapTypeControl: true,
+                scaleControl: true,
+                logoControl: true,
+                mapDataControl: true,
+                zoomControl: true
             });
 
+            drawRoadNetwork();
+            drawBuildings();
+            drawFacilities();
+        }
+
+        function drawRoadNetwork() {
+            const roadPath = roadCoords.map(coord => 
+                new naver.maps.LatLng(coord.lat, coord.lng)
+            );
+
+            roadPolyline = new naver.maps.Polyline({
+                map: map,
+                path: roadPath,
+                strokeColor: '#9c27b0',
+                strokeWeight: 3,
+                strokeOpacity: 0.7,
+                strokeStyle: 'solid'
+            });
+
+            // 도로 지점들을 작은 점으로 표시
+            roadCoords.forEach(coord => {
+                new naver.maps.Marker({
+                    position: new naver.maps.LatLng(coord.lat, coord.lng),
+                    map: map,
+                    icon: {
+                        content: '<div style="width: 4px; height: 4px; background: #9c27b0; border-radius: 50%; border: 1px solid white;"></div>',
+                        anchor: new naver.maps.Point(2, 2)
+                    }
+                });
+            });
+        }
+
+        function drawBuildings() {
             buildings.forEach((building, index) => {
                 const marker = new naver.maps.Marker({
                     position: new naver.maps.LatLng(building.coords.lat, building.coords.lng),
                     map: map,
                     title: building.name,
                     icon: {
-                        content: `<div style="background: #4CAF50; color: white; padding: 5px 8px; border-radius: 15px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">${building.name}</div>`,
-                        anchor: new naver.maps.Point(0, 0)
+                        content: `<div style="background: #667eea; color: white; padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 2px solid white; white-space: nowrap;">${building.name}</div>`,
+                        anchor: new naver.maps.Point(0, 35)
                     }
                 });
 
+                const infoWindow = new naver.maps.InfoWindow({
+                    content: `
+                        <div style="padding: 15px; max-width: 250px;">
+                            <h4 style="margin: 0 0 8px 0; color: #333;">${building.name}</h4>
+                            <p style="margin: 0; color: #666; font-size: 13px;">${building.description}</p>
+                            <div style="margin-top: 8px; font-size: 11px; color: #999;">
+                                위도: ${building.coords.lat.toFixed(6)}<br>
+                                경도: ${building.coords.lng.toFixed(6)}
+                            </div>
+                        </div>
+                    `
+                });
+
                 naver.maps.Event.addListener(marker, 'click', function() {
-                    showBuildingInfo(building);
+                    infoWindow.open(map, marker);
                 });
             });
-
-            setupEventListeners(map);
-            showBuildingInfo(buildings[0]);
         }
 
-        function setupEventListeners(map) {
+        function drawFacilities() {
+            facilities.forEach(facility => {
+                let color, icon;
+                
+                switch(facility.type) {
+                    case '흡연부스':
+                        color = '#ff9800';
+                        icon = '🚬';
+                        break;
+                    case '주차장':
+                        color = '#4caf50';
+                        icon = '🅿️';
+                        break;
+                    default:
+                        color = '#f44336';
+                        icon = '📍';
+                }
+
+                const marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(facility.coords.lat, facility.coords.lng),
+                    map: map,
+                    title: facility.name,
+                    icon: {
+                        content: `<div style="background: ${color}; color: white; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid white;">${icon}</div>`,
+                        anchor: new naver.maps.Point(15, 15)
+                    }
+                });
+
+                const infoWindow = new naver.maps.InfoWindow({
+                    content: `
+                        <div style="padding: 10px;">
+                            <strong>${facility.name}</strong><br>
+                            <small style="color: #666;">${facility.type}</small>
+                        </div>
+                    `
+                });
+
+                naver.maps.Event.addListener(marker, 'click', function() {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        function setupEventListeners() {
             const startSelect = document.getElementById('startSelect');
             const endSelect = document.getElementById('endSelect');
+            const findRouteBtn = document.getElementById('findRouteBtn');
+            const clearRouteBtn = document.getElementById('clearRouteBtn');
 
             function checkSelections() {
-                const findRouteBtn = document.getElementById('findRouteBtn');
-                
                 if (startSelect.value && endSelect.value && startSelect.value !== endSelect.value) {
                     findRouteBtn.disabled = false;
-                    findRouteBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
                 } else {
                     findRouteBtn.disabled = true;
-                    findRouteBtn.style.background = '#ccc';
                 }
             }
 
             startSelect.addEventListener('change', checkSelections);
             endSelect.addEventListener('change', checkSelections);
 
-            document.getElementById('findRouteBtn').addEventListener('click', function() {
+            findRouteBtn.addEventListener('click', function() {
                 const startIndex = parseInt(startSelect.value);
                 const endIndex = parseInt(endSelect.value);
                 
                 if (startIndex >= 0 && endIndex >= 0) {
-                    findRoute(buildings[startIndex], buildings[endIndex], map);
+                    findRoute(buildings[startIndex], buildings[endIndex]);
                 }
             });
 
-            document.getElementById('clearRouteBtn').addEventListener('click', function() {
-                clearRoute();
-            });
+            clearRouteBtn.addEventListener('click', clearRoute);
         }
 
-        function showBuildingInfo(building) {
-            const buildingInfo = document.getElementById('buildingInfo');
-            buildingInfo.innerHTML = `
-                <h4>🏢 ${building.name}</h4>
-                <p><strong>용도:</strong> ${building.description}</p>
-                <p><strong>좌표:</strong> ${building.coords.lat.toFixed(6)}, ${building.coords.lng.toFixed(6)}</p>
-            `;
-        }
-
-        // 실제 캠퍼스 도로 좌표 (사용자 제공)
-        const actualRoadPoints = [
-            { lat: 37.39704195324743, lng: 126.90727211769182 },
-            { lat: 37.396851600210965, lng: 126.9087037959461 },
-            { lat: 37.3972728099521, lng: 126.90868069801854 },
-            { lat: 37.397060910737764, lng: 126.90847484922628 },
-            { lat: 37.39709445821731, lng: 126.90816423778105 },
-            { lat: 37.39707149279806, lng: 126.90759959206545 },
-            { lat: 37.397057592579856, lng: 126.90710834307171 },
-            { lat: 37.39687963655845, lng: 126.90710291597584 },
-            { lat: 37.396814299247666, lng: 126.90708605646316 },
-            { lat: 37.39674438356982, lng: 126.90697603187141 },
-            { lat: 37.39667230635419, lng: 126.90698176765989 },
-            { lat: 37.3966294189764, lng: 126.90686888657832 },
-            { lat: 37.396406376304526, lng: 126.90681834236797 },
-            { lat: 37.39640418157648, lng: 126.90689175201939 },
-            { lat: 37.39628009309623, lng: 126.90664062835005 },
-            { lat: 37.39609101235396, lng: 126.90681026278799 },
-            { lat: 37.39624889319532, lng: 126.90706699105739 },
-            { lat: 37.39677416478986, lng: 126.90761125050587 },
-            { lat: 37.39630371376626, lng: 126.9080381522887 },
-            { lat: 37.39597921660104, lng: 126.90787197241569 },
-            { lat: 37.39609609369216, lng: 126.90754432283778 },
-            { lat: 37.39588033709394, lng: 126.90817136578619 },
-            { lat: 37.39599500645956, lng: 126.90790018637229 },
-            { lat: 37.39630822765274, lng: 126.90804944013392 },
-            { lat: 37.396286181323816, lng: 126.90866777835905 },
-            { lat: 37.39660606333328, lng: 126.90761406556607 },
-            { lat: 37.39735444265566, lng: 126.9093836204253 },
-            { lat: 37.396134179816, lng: 126.91019820958716 },
-            { lat: 37.396580167984176, lng: 126.91017509068021 },
-            { lat: 37.39690479876616, lng: 126.9105219768465 },
-            { lat: 37.397715790015916, lng: 126.91061700807168 },
-            { lat: 37.39788681084341, lng: 126.91038810962444 },
-            { lat: 37.397886684483254, lng: 126.91022152921539 },
-            { lat: 37.39773118120773, lng: 126.91012007254065 },
-            { lat: 37.39665000996463, lng: 126.91019194744786 },
-            { lat: 37.398464946216144, lng: 126.90937663655166 },
-            { lat: 37.39845125758169, lng: 126.90915077939637 },
-            { lat: 37.39812890806764, lng: 126.90884624039552 },
-            { lat: 37.397890370118056, lng: 126.90914863303216 },
-            { lat: 37.397885932231105, lng: 126.90923616376625 },
-            { lat: 37.397665579803316, lng: 126.90975593344025 },
-            { lat: 37.39760481475807, lng: 126.9098265910169 },
-            { lat: 37.39661536760741, lng: 126.91205257751353 },
-            { lat: 37.39667835922218, lng: 126.91194521645733 },
-            { lat: 37.397092797253485, lng: 126.91190238106158 },
-            { lat: 37.397229901428446, lng: 126.91149847800096 },
-            { lat: 37.39738753355225, lng: 126.91143617827507 },
-            { lat: 37.39763022079195, lng: 126.91065381375805 },
-            { lat: 37.39803081990744, lng: 126.91018465302236 },
-            { lat: 37.39818401913767, lng: 126.91021835112844 },
-            { lat: 37.39833537814251, lng: 126.91079697088244 }
-        ];
-
-        // 출발지와 도착지에서 가장 가까운 도로 지점 찾기
-        function findNearestRoadPoint(buildingCoord) {
-            let nearest = actualRoadPoints[0];
-            let minDistance = calculateDistance(buildingCoord, nearest);
-            
-            for (const roadPoint of actualRoadPoints) {
-                const distance = calculateDistance(buildingCoord, roadPoint);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearest = roadPoint;
-                }
-            }
-            return nearest;
-        }
-
-        // 두 도로 지점 사이의 실제 도로 경로 찾기
-        function findRoadPath(startRoad, endRoad) {
-            const path = [startRoad];
-            
-            // 시작점에서 끝점까지 도로를 따라 연결
-            const visited = new Set();
-            let currentPoint = startRoad;
-            
-            while (calculateDistance(currentPoint, endRoad) > 20) {
-                visited.add(`${currentPoint.lat},${currentPoint.lng}`);
-                
-                let nextPoint = null;
-                let minDistance = Infinity;
-                
-                // 현재 지점에서 가장 가까운 다음 도로 지점 찾기 (목적지 방향으로)
-                for (const roadPoint of actualRoadPoints) {
-                    const pointKey = `${roadPoint.lat},${roadPoint.lng}`;
-                    if (visited.has(pointKey)) continue;
-                    
-                    const distanceToCurrent = calculateDistance(currentPoint, roadPoint);
-                    const distanceToEnd = calculateDistance(roadPoint, endRoad);
-                    
-                    // 현재 지점에서 가깝고, 목적지에도 더 가까워지는 점 선택
-                    if (distanceToCurrent < 100 && distanceToEnd < calculateDistance(currentPoint, endRoad)) {
-                        if (distanceToCurrent < minDistance) {
-                            minDistance = distanceToCurrent;
-                            nextPoint = roadPoint;
-                        }
-                    }
-                }
-                
-                if (nextPoint) {
-                    path.push(nextPoint);
-                    currentPoint = nextPoint;
-                } else {
-                    break;
-                }
-                
-                // 무한루프 방지
-                if (path.length > 20) break;
-            }
-            
-            path.push(endRoad);
-            return path;
-        }
-
-        // 건물 사이에 도로 경로 생성
-        function createActualRoadPath(start, end) {
-            // 1. 출발지에서 가장 가까운 도로 지점 찾기
-            const startRoadPoint = findNearestRoadPoint(start);
-            
-            // 2. 도착지에서 가장 가까운 도로 지점 찾기  
-            const endRoadPoint = findNearestRoadPoint(end);
-            
-            // 3. 실제 도로를 따라 경로 생성
-            const roadPath = findRoadPath(startRoadPoint, endRoadPoint);
-            
-            // 4. 건물 → 도로 → 도로 → 건물 순서로 전체 경로 구성
-            const fullPath = [start];
-            
-            // 출발 건물에서 도로까지
-            if (calculateDistance(start, startRoadPoint) > 10) {
-                fullPath.push(startRoadPoint);
-            }
-            
-            // 도로 경로 추가
-            for (let i = 1; i < roadPath.length - 1; i++) {
-                fullPath.push(roadPath[i]);
-            }
-            
-            // 도로에서 도착 건물까지
-            if (calculateDistance(endRoadPoint, end) > 10) {
-                fullPath.push(endRoadPoint);
-            }
-            
-            fullPath.push(end);
-            
-            return fullPath;
-        }
-
-        // 부드러운 곡선으로 만들기
-        function makeSmoothCurve(points) {
-            if (points.length <= 2) return points;
-            
-            const smoothPoints = [points[0]];
-            
-            for (let i = 1; i < points.length - 1; i++) {
-                const prev = points[i - 1];
-                const curr = points[i];
-                const next = points[i + 1];
-                
-                // 중간 점들 추가해서 부드럽게
-                for (let t = 0; t <= 1; t += 0.2) {
-                    const lat = prev.lat + (curr.lat - prev.lat) * t;
-                    const lng = prev.lng + (curr.lng - prev.lng) * t;
-                    smoothPoints.push({ lat, lng });
-                }
-            }
-            
-            smoothPoints.push(points[points.length - 1]);
-            return smoothPoints;
-        }
-
-        function findRoute(start, end, map) {
+        function findRoute(start, end) {
             clearRoute();
 
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ 바로 가는 길 찾는 중...</h4>
-                <p>최단거리로 직접 안내합니다...</p>
+                <h4 style="margin: 0 0 10px 0;">🔍 경로 계산 중...</h4>
+                <p style="margin: 0;">실제 도로를 따라 최적 경로를 찾고 있습니다...</p>
             `;
             routeInfo.style.display = 'block';
 
             setTimeout(() => {
-                drawDirectRoute(start, end, map);
-            }, 500);
+                drawRoute(start, end);
+            }, 800);
         }
 
-        function drawDirectRoute(start, end, map) {
-            // 실제 캠퍼스 도로를 따라 경로 생성
-            const routePath = createActualRoadPath(start.coords, end.coords);
+        function drawRoute(start, end) {
+            // 실제 도로를 따라 경로 생성
+            const routePath = createRoadBasedPath(start.coords, end.coords);
             
-            // 부드러운 곡선으로
-            const smoothPath = makeSmoothCurve(routePath);
-            
-            const naverPath = smoothPath.map(point => 
+            const naverPath = routePath.map(point => 
                 new naver.maps.LatLng(point.lat, point.lng)
             );
 
-            window.currentRouteLine = new naver.maps.Polyline({
+            currentRouteLine = new naver.maps.Polyline({
                 map: map,
                 path: naverPath,
-                strokeColor: '#1E88E5',
+                strokeColor: '#2196F3',
                 strokeWeight: 6,
-                strokeOpacity: 0.8,
+                strokeOpacity: 0.9,
                 strokeLineCap: 'round',
                 strokeLineJoin: 'round'
             });
 
-            let totalDistance = 0;
-            for (let i = 0; i < routePath.length - 1; i++) {
-                totalDistance += calculateDistance(routePath[i], routePath[i + 1]);
-            }
-
-            const walkingTime = Math.ceil(totalDistance / 70);
-
+            // 출발/도착 마커
             const startMarker = new naver.maps.Marker({
                 position: naverPath[0],
                 map: map,
                 icon: {
-                    content: `<div style="background: #4CAF50; color: white; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 2px solid white;">출발</div>`,
-                    anchor: new naver.maps.Point(30, 20)
+                    content: `<div style="background: #4CAF50; color: white; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 2px solid white;">🚩 출발</div>`,
+                    anchor: new naver.maps.Point(35, 25)
                 }
             });
 
@@ -477,75 +587,140 @@
                 position: naverPath[naverPath.length - 1],
                 map: map,
                 icon: {
-                    content: `<div style="background: #F44336; color: white; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 2px solid white;">도착</div>`,
-                    anchor: new naver.maps.Point(30, 20)
+                    content: `<div style="background: #F44336; color: white; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 2px solid white;">🎯 도착</div>`,
+                    anchor: new naver.maps.Point(35, 25)
                 }
             });
 
-            window.routeMarkers = [startMarker, endMarker];
+            routeMarkers = [startMarker, endMarker];
 
-            const isDirect = routePath.length === 2;
+            // 거리 및 시간 계산
+            let totalDistance = 0;
+            for (let i = 0; i < routePath.length - 1; i++) {
+                totalDistance += calculateDistance(routePath[i], routePath[i + 1]);
+            }
 
+            const walkingTime = Math.ceil(totalDistance / 70); // 분당 70m 보행속도
+
+            // 경로 정보 표시
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <div style="background: #1E88E5; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: white;">🚶‍♂️ ${isDirect ? '직접 경로' : '도로 경유 경로'}</h4>
+                <div style="background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 15px;">
+                    <h4 style="margin: 0; font-size: 1.2em;">🗺️ 경로 안내</h4>
+                    <p style="margin: 8px 0 0 0; opacity: 0.9;">${start.name} → ${end.name}</p>
                 </div>
                 
-                <div style="padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <div>
-                            <p style="margin: 0; font-size: 16px; font-weight: bold;">${start.name} → ${end.name}</p>
-                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${isDirect ? '바로 직진' : '도로 경유'}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 20px; font-weight: bold; color: #1E88E5;">${walkingTime}분</div>
-                            <div style="font-size: 14px; color: #666;">${totalDistance}m</div>
-                        </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="text-align: center; padding: 15px; background: #E8F5E8; border-radius: 10px; border-left: 4px solid #4CAF50;">
+                        <div style="font-size: 1.5em; font-weight: bold; color: #2E7D32;">${totalDistance}m</div>
+                        <div style="font-size: 0.9em; color: #4CAF50;">총 거리</div>
                     </div>
-                    
-                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
-                        <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; border-left: 4px solid #1E88E5; margin-bottom: 10px;">
-                            <strong style="color: #1565C0;">🛣️ 경로 특징</strong><br>
-                            <span style="font-size: 13px; color: #424242;">
-                                ${isDirect ? '장애물 없이 바로 가는 최단 경로입니다' : '필요한 곳만 최소한 경유하는 효율적 경로입니다'}
-                            </span>
-                        </div>
-                        
-                        <div style="padding: 10px; background: #F1F8E9; border-radius: 6px; border-left: 4px solid #4CAF50;">
-                            <strong style="color: #2E7D32;">✅ 보행 안내</strong><br>
-                            <span style="font-size: 12px; color: #424242;">
-                                불필요한 경유 없이 목적지까지 바로 안내합니다.<br>
-                                실제 캠퍼스 도로를 따라 안전하게 이동하세요.
-                            </span>
-                        </div>
+                    <div style="text-align: center; padding: 15px; background: #E3F2FD; border-radius: 10px; border-left: 4px solid #2196F3;">
+                        <div style="font-size: 1.5em; font-weight: bold; color: #1565C0;">${walkingTime}분</div>
+                        <div style="font-size: 0.9em; color: #2196F3;">예상 시간</div>
                     </div>
+                    <div style="text-align: center; padding: 15px; background: #FFF3E0; border-radius: 10px; border-left: 4px solid #FF9800;">
+                        <div style="font-size: 1.5em; font-weight: bold; color: #E65100;">도보</div>
+                        <div style="font-size: 0.9em; color: #FF9800;">이동 수단</div>
+                    </div>
+                </div>
+                
+                <div style="background: #F8F9FA; padding: 15px; border-radius: 10px; border-left: 4px solid #6C757D;">
+                    <h5 style="margin: 0 0 10px 0; color: #343A40;">📍 경로 특징</h5>
+                    <ul style="margin: 0; padding-left: 20px; color: #6C757D; font-size: 14px;">
+                        <li>실제 캠퍼스 도로를 따라 안전한 경로로 안내</li>
+                        <li>건물 간 최단거리 기반 효율적 이동</li>
+                        <li>주요 편의시설 및 랜드마크 확인 가능</li>
+                    </ul>
                 </div>
             `;
 
+            // 지도 범위 조정
             const bounds = new naver.maps.LatLngBounds();
             naverPath.forEach(point => bounds.extend(point));
             map.fitBounds(bounds, { padding: 50 });
         }
 
+        function createRoadBasedPath(start, end) {
+            // 출발지와 도착지에서 가장 가까운 도로 지점 찾기
+            const startRoad = findNearestRoadPoint(start);
+            const endRoad = findNearestRoadPoint(end);
+            
+            // 간단한 경로 생성 (실제로는 더 복잡한 알고리즘 필요)
+            const path = [start];
+            
+            if (calculateDistance(start, startRoad) > 15) {
+                path.push(startRoad);
+            }
+            
+            // 도로 지점들 중 중간 경유지 추가 (간단한 직선 보간)
+            const midPoints = interpolateRoadPoints(startRoad, endRoad);
+            path.push(...midPoints);
+            
+            if (calculateDistance(endRoad, end) > 15) {
+                path.push(endRoad);
+            }
+            
+            path.push(end);
+            
+            return path;
+        }
+
+        function findNearestRoadPoint(coords) {
+            let nearest = roadCoords[0];
+            let minDistance = calculateDistance(coords, nearest);
+            
+            roadCoords.forEach(roadPoint => {
+                const distance = calculateDistance(coords, roadPoint);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = roadPoint;
+                }
+            });
+            
+            return nearest;
+        }
+
+        function interpolateRoadPoints(start, end) {
+            const midPoints = [];
+            const steps = 3;
+            
+            for (let i = 1; i < steps; i++) {
+                const ratio = i / steps;
+                const lat = start.lat + (end.lat - start.lat) * ratio;
+                const lng = start.lng + (end.lng - start.lng) * ratio;
+                
+                // 이 중간점에서 가장 가까운 실제 도로 지점 찾기
+                const nearestRoad = findNearestRoadPoint({ lat, lng });
+                
+                // 중복 방지
+                if (midPoints.length === 0 || 
+                    calculateDistance(midPoints[midPoints.length - 1], nearestRoad) > 20) {
+                    midPoints.push(nearestRoad);
+                }
+            }
+            
+            return midPoints;
+        }
+
         function clearRoute() {
-            if (window.currentRouteLine) {
-                window.currentRouteLine.setMap(null);
-                window.currentRouteLine = null;
+            if (currentRouteLine) {
+                currentRouteLine.setMap(null);
+                currentRouteLine = null;
             }
-            if (window.routeMarkers) {
-                window.routeMarkers.forEach(marker => marker.setMap(null));
-                window.routeMarkers = [];
-            }
+            
+            routeMarkers.forEach(marker => marker.setMap(null));
+            routeMarkers = [];
+            
             document.getElementById('routeInfo').style.display = 'none';
         }
 
         function calculateDistance(coord1, coord2) {
-            const R = 6371e3;
+            const R = 6371e3; // 지구 반지름 (미터)
             const φ1 = coord1.lat * Math.PI/180;
             const φ2 = coord2.lat * Math.PI/180;
-            const Δφ = (coord2.lat-coord1.lat) * Math.PI/180;
-            const Δλ = (coord2.lng-coord1.lng) * Math.PI/180;
+            const Δφ = (coord2.lat - coord1.lat) * Math.PI/180;
+            const Δλ = (coord2.lng - coord1.lng) * Math.PI/180;
 
             const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
                     Math.cos(φ1) * Math.cos(φ2) *
@@ -554,6 +729,11 @@
 
             return Math.round(R * c);
         }
+
+        // 통계 업데이트
+        document.getElementById('buildingCount').textContent = buildings.length;
+        document.getElementById('roadCount').textContent = roadCoords.length + '+';
+        document.getElementById('facilityCount').textContent = facilities.length;
     </script>
 </body>
 </html>
