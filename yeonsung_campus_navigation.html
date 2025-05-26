@@ -322,14 +322,26 @@
                 Math.abs(b.coords.lng - end.lng) < 0.0001
             )?.name;
 
-            // 공학1관에서 대학본관으로 가는 경우
-            if (startBuildingName === '공학1관' && endBuildingName === '대학본관') {
-                return campusRoadNetwork[0];
+            // 공학1관 ↔ 대학본관 양방향 경로
+            if ((startBuildingName === '공학1관' && endBuildingName === '대학본관') ||
+                (startBuildingName === '대학본관' && endBuildingName === '공학1관')) {
+                const route = [...campusRoadNetwork[0]];
+                // 대학본관에서 공학1관으로 갈 때는 경로를 뒤집기
+                if (startBuildingName === '대학본관') {
+                    return route.reverse();
+                }
+                return route;
             }
 
-            // 공학1관에서 자연과학관으로 가는 경우
-            if (startBuildingName === '공학1관' && endBuildingName === '자연과학관') {
-                return campusRoadNetwork[1];
+            // 공학1관 ↔ 자연과학관 양방향 경로
+            if ((startBuildingName === '공학1관' && endBuildingName === '자연과학관') ||
+                (startBuildingName === '자연과학관' && endBuildingName === '공학1관')) {
+                const route = [...campusRoadNetwork[1]];
+                // 자연과학관에서 공학1관으로 갈 때는 경로를 뒤집기
+                if (startBuildingName === '자연과학관') {
+                    return route.reverse();
+                }
+                return route;
             }
 
             // 다른 경로는 직선으로 처리
