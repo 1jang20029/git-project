@@ -142,51 +142,31 @@
             { name: '학술정보관', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 실제 캠퍼스 도로 네트워크 (실제 GPS 좌표 기반 + 추가 좌표)
+        // 공학1관에서 대학본관으로 가는 실제 경로 (유지)
         const campusRoadNetwork = [
-            // 공학1관에서 대학본관으로 가는 실제 경로 (GPS 좌표 + 추가)
             [
                 { lat: 37.39630071520312, lng: 126.90708386711204 },
                 { lat: 37.39629399081752, lng: 126.90712622550558 },
                 { lat: 37.396253573384136, lng: 126.90729002897986 },
                 { lat: 37.396465410602055, lng: 126.90741399527548 },
                 { lat: 37.39667501499809, lng: 126.90756337519487 },
-                { lat: 37.396679528929646, lng: 126.90757466306717 }, // 추가 좌표
+                { lat: 37.396679528929646, lng: 126.90757466306717 },
                 { lat: 37.396733662962575, lng: 126.90766776734095 },
-                { lat: 37.39673589567023, lng: 126.90764235439723 }, // 추가 좌표
-                { lat: 37.39672931641579, lng: 126.90778351654723 }, // 수정된 좌표 (lat 추가)
+                { lat: 37.39673589567023, lng: 126.90764235439723 },
+                { lat: 37.39672931641579, lng: 126.90778351654723 },
                 { lat: 37.39672931641579, lng: 126.90787105429385 },
-                { lat: 37.39669343818289, lng: 126.90808002644286 }, // 추가 좌표 (. → , 수정)
+                { lat: 37.39669343818289, lng: 126.90808002644286 },
                 { lat: 37.39661501247113, lng: 126.90807155088504 },
-                { lat: 37.39668226096784, lng: 126.90819015090241 }, // 추가 좌표
-                { lat: 37.39663742006341, lng: 126.90846124742978 }, // 추가 좌표
+                { lat: 37.39668226096784, lng: 126.90819015090241 },
+                { lat: 37.39663742006341, lng: 126.90846124742978 },
                 { lat: 37.39660825263326, lng: 126.90861092052249 },
-                { lat: 37.39661500374254, lng: 126.90860244227066 }, // 추가 좌표
+                { lat: 37.39661500374254, lng: 126.90860244227066 },
                 { lat: 37.396583590117274, lng: 126.9087605880385 },
                 { lat: 37.39691471524679, lng: 126.90876018664615 },
                 { lat: 37.39724133961127, lng: 126.90876543745331 },
                 { lat: 37.397308951008505, lng: 126.90881052953897 },
                 { lat: 37.39731164633666, lng: 126.90938649532777 },
                 { lat: 37.39736796662003, lng: 126.90939489766241 }
-            ],
-
-            // 다른 경로들을 위한 기본 도로 네트워크
-            [
-                { lat: 37.39616555542772, lng: 126.90707556395701 }, // 공학관 주차장
-                { lat: 37.39630523583509, lng: 126.90710362491097 }, // 공학1관 앞
-                { lat: 37.396789747114205, lng: 126.90737406929797 } // 공학2관
-            ],
-            [
-                { lat: 37.396789747114205, lng: 126.90737406929797 }, // 공학2관
-                { lat: 37.39679932128769, lng: 126.90809683728425 }  // 도의관
-            ],
-            [
-                { lat: 37.39679932128769, lng: 126.90809683728425 }, // 도의관
-                { lat: 37.39673944839101, lng: 126.90932224700094 }  // 운동장
-            ],
-            [
-                { lat: 37.397467068076345, lng: 126.90938066144557 }, // 대학본관
-                { lat: 37.398046192024914, lng: 126.90966512810492 } // 연곡문화센터
             ]
         ];
 
@@ -325,119 +305,23 @@
         }
 
         function createWalkablePath(start, end) {
-            // 실제 도로 네트워크를 따라 경로 생성
-            const route = findRoadNetworkRoute(start, end);
-            return route;
-        }
+            // 공학1관에서 대학본관으로 가는 경우에만 실제 도로 경로 사용
+            const startBuildingName = buildings.find(b => 
+                Math.abs(b.coords.lat - start.lat) < 0.0001 && 
+                Math.abs(b.coords.lng - start.lng) < 0.0001
+            )?.name;
+            
+            const endBuildingName = buildings.find(b => 
+                Math.abs(b.coords.lat - end.lat) < 0.0001 && 
+                Math.abs(b.coords.lng - end.lng) < 0.0001
+            )?.name;
 
-        function findRoadNetworkRoute(start, end) {
-            // 출발지에서 가장 가까운 도로 진입점 찾기
-            let startRoadConnection = findNearestRoadConnection(start);
-            let endRoadConnection = findNearestRoadConnection(end);
-            
-            if (!startRoadConnection || !endRoadConnection) {
-                return [start, end]; // 도로 연결 실패시 직선
+            if (startBuildingName === '공학1관' && endBuildingName === '대학본관') {
+                return campusRoadNetwork[0];
             }
-            
-            // 도로 네트워크를 따라 경로 계산
-            const roadPath = calculateRoadPath(startRoadConnection, endRoadConnection);
-            
-            // 전체 경로 구성: 출발지 → 도로 진입 → 도로 경로 → 도로 진출 → 목적지
-            const fullPath = [start];
-            
-            if (calculateDistance(start, startRoadConnection.point) > 20) {
-                fullPath.push(startRoadConnection.point);
-            }
-            
-            roadPath.forEach(point => {
-                if (calculateDistance(fullPath[fullPath.length - 1], point) > 15) {
-                    fullPath.push(point);
-                }
-            });
-            
-            if (calculateDistance(endRoadConnection.point, end) > 20) {
-                fullPath.push(endRoadConnection.point);
-            }
-            
-            fullPath.push(end);
-            
-            return fullPath;
-        }
 
-        function findNearestRoadConnection(coords) {
-            let nearest = null;
-            let minDistance = Infinity;
-            
-            campusRoadNetwork.forEach((road, roadIndex) => {
-                road.forEach((point, pointIndex) => {
-                    const distance = calculateDistance(coords, point);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        nearest = {
-                            point: point,
-                            roadIndex: roadIndex,
-                            pointIndex: pointIndex
-                        };
-                    }
-                });
-            });
-            
-            return nearest;
-        }
-
-        function calculateRoadPath(startConnection, endConnection) {
-            // 같은 도로에 있는 경우
-            if (startConnection.roadIndex === endConnection.roadIndex) {
-                const road = campusRoadNetwork[startConnection.roadIndex];
-                const start = Math.min(startConnection.pointIndex, endConnection.pointIndex);
-                const end = Math.max(startConnection.pointIndex, endConnection.pointIndex);
-                return road.slice(start, end + 1);
-            }
-            
-            // 다른 도로에 있는 경우 - 연결 경로 찾기
-            return findConnectedRoadPath(startConnection, endConnection);
-        }
-
-        function findConnectedRoadPath(startConnection, endConnection) {
-            const startRoad = campusRoadNetwork[startConnection.roadIndex];
-            const endRoad = campusRoadNetwork[endConnection.roadIndex];
-            
-            // 시작 도로의 모든 지점 추가
-            const path = [...startRoad.slice(startConnection.pointIndex)];
-            
-            // 도로 연결점 찾기
-            let connectionPoint = findRoadConnectionPoint(startRoad, endRoad);
-            
-            if (connectionPoint && calculateDistance(path[path.length - 1], connectionPoint) > 15) {
-                path.push(connectionPoint);
-            }
-            
-            // 끝 도로의 지점들 추가
-            const endRoadSegment = endRoad.slice(0, endConnection.pointIndex + 1);
-            endRoadSegment.forEach(point => {
-                if (calculateDistance(path[path.length - 1], point) > 15) {
-                    path.push(point);
-                }
-            });
-            
-            return path;
-        }
-
-        function findRoadConnectionPoint(road1, road2) {
-            let minDistance = Infinity;
-            let connection = null;
-            
-            road1.forEach(p1 => {
-                road2.forEach(p2 => {
-                    const distance = calculateDistance(p1, p2);
-                    if (distance < minDistance && distance < 100) { // 100m 이내 연결점
-                        minDistance = distance;
-                        connection = p1;
-                    }
-                });
-            });
-            
-            return connection;
+            // 다른 경로는 직선으로 처리
+            return [start, end];
         }
 
         function clearRoute() {
