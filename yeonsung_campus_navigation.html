@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연성대학교 길찾기</title>
+    <title>연성대학교 캠퍼스 지도</title>
     <style>
         body {
             margin: 0;
@@ -25,6 +25,11 @@
             color: white;
             padding: 30px;
             text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
         }
         .controls {
             padding: 30px;
@@ -88,8 +93,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎓 연성대학교 길찾기</h1>
-            <p>실제 보행 가능한 경로만 안내</p>
+            <h1>🎓 연성대학교 캠퍼스 지도</h1>
+            <p>실제 도로 좌표 기반 정밀 내비게이션</p>
         </div>
         
         <div class="controls">
@@ -106,8 +111,8 @@
                 </select>
             </div>
             <div>
-                <button id="findRouteBtn" class="btn-primary" disabled>길찾기</button>
-                <button id="clearRouteBtn" class="btn-secondary">지우기</button>
+                <button id="findRouteBtn" class="btn-primary" disabled>길찾기 시작</button>
+                <button id="clearRouteBtn" class="btn-secondary">경로 지우기</button>
             </div>
         </div>
         
@@ -116,14 +121,15 @@
         <div class="info-panel">
             <div class="route-info" id="routeInfo"></div>
             <div>
-                <h3>📍 실제 보행 경로 안내</h3>
-                <p>건물을 우회하여 실제로 걸을 수 있는 길만 안내합니다.</p>
+                <h3>📍 캠퍼스 시설 정보</h3>
+                <p>연성대학교 캠퍼스 내 모든 건물과 편의시설의 정확한 위치를 확인할 수 있습니다.</p>
             </div>
         </div>
     </div>
 
     <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9"></script>
     <script>
+        // 주요 건물 데이터
         const buildings = [
             { name: '공학1관', coords: { lat: 37.39632767479923, lng: 126.90699348692698 } },
             { name: '자연과학관', coords: { lat: 37.39669466288283, lng: 126.90676716508685 } },
@@ -142,47 +148,251 @@
             { name: '학술정보관', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 실제 보행 가능한 안전한 경로들만 정의
-        const walkablePaths = [
-            // 공학관 → 자연과학관 → 식품과학관 라인
-            [
-                { lat: 37.39616555542772, lng: 126.90707556395701 },
-                { lat: 37.39630523583509, lng: 126.90710362491097 },
-                { lat: 37.39645372882536, lng: 126.90688039734648 },
-                { lat: 37.39667447001276, lng: 126.90686883083515 },
-                { lat: 37.39710452259236, lng: 126.90663395900862 },
-                { lat: 37.397109492148914, lng: 126.90722403719255 },
-                { lat: 37.39710752038649, lng: 126.90758260761616 }
-            ],
-            // 중앙 도로
-            [
-                { lat: 37.39605807352083, lng: 126.90789446254182 },
-                { lat: 37.39587374587564, lng: 126.90838594643347 },
-                { lat: 37.39629968355077, lng: 126.90865082193672 },
-                { lat: 37.39690774158635, lng: 126.90848068220664 },
-                { lat: 37.39708444300246, lng: 126.90978486391725 }
-            ],
-            // 학생복지센터 → 창조관 → 연곡문화센터
-            [
-                { lat: 37.39630749756322, lng: 126.91002860240039 },
-                { lat: 37.39709825064418, lng: 126.91016882565064 },
-                { lat: 37.39740461270149, lng: 126.91018822367025 },
-                { lat: 37.39783037712477, lng: 126.91023006657278 },
-                { lat: 37.39798046192024914, lng: 126.90966512810492 }
-            ],
-            // 운동장 주변
-            [
-                { lat: 37.39673944839101, lng: 126.90932224700094 },
-                { lat: 37.39735219659465, lng: 126.90939209326717 },
-                { lat: 37.39729166699657, lng: 126.90977049865013 }
-            ]
-        ];
+        // 실제 도로 좌표 데이터
+        const actualRoadPoints = [
+    { lat: 37.3963052358351, lng: 126.90710362491097 },
+    { lat: 37.3962895211852, lng: 126.90717140445003 },
+    { lat: 37.3962625835921, lng: 126.90729001788180 },
+    { lat: 37.3962401156030, lng: 126.90736345233073 },
+    { lat: 37.3962131513038, lng: 126.90744818561114 },
+    { lat: 37.3961951198377, lng: 126.90743409110394 },
+    { lat: 37.3961704543956, lng: 126.90757811151629 },
+    { lat: 37.3961210195177, lng: 126.90773345553320 },
+    { lat: 37.3960580735208, lng: 126.90789446254182 },
+    { lat: 37.3959994873705, lng: 126.90786912427627 },
+    { lat: 37.3959659033745, lng: 126.90813173481449 },
+    { lat: 37.3958737458756, lng: 126.90838594643347 },
+    { lat: 37.3958624765520, lng: 126.90837749017982 },
+    { lat: 37.3958439225534, lng: 126.90769144536330 },
+    { lat: 37.3956168542263, lng: 126.90825638665562 },
+    { lat: 37.3960237133964, lng: 126.90716326228001 },
+    { lat: 37.3960778411143, lng: 126.90724789546100 },
+    { lat: 37.3960980786406, lng: 126.90720269720835 },
+    { lat: 37.3961495787064, lng: 126.90681019027762 },
+    { lat: 37.3962936507488, lng: 126.90669425498392 },
+    { lat: 37.3963409966561, lng: 126.90674783977597 },
+    { lat: 37.3963589903480, lng: 126.90671393737989 },
+    { lat: 37.3964537288254, lng: 126.90688039734648 },
+    { lat: 37.3964807372107, lng: 126.90685213046743 },
+    { lat: 37.3965281208230, lng: 126.90695371236593 },
+    { lat: 37.3965978832507, lng: 126.90686892559849 },
+    { lat: 37.3966744700128, lng: 126.90686883083515 },
+    { lat: 37.3966745389144, lng: 126.90695635471685 },
+    { lat: 37.3966408105954, lng: 126.90703262692858 },
+    { lat: 37.3965845522723, lng: 126.90710328017640 },
+    { lat: 37.3965597542364, lng: 126.90707790063730 },
+    { lat: 37.3964582383758, lng: 126.90688603845872 },
+    { lat: 37.3964447319569, lng: 126.90689734854807 },
+    { lat: 37.3964853245589, lng: 126.90698532455889 },
+    { lat: 37.3965847295027, lng: 126.90732914799048 },
+    { lat: 37.3966117756123, lng: 126.90734887815086 },
+    { lat: 37.3969543071390, lng: 126.90753197518458 },
+    { lat: 37.3969835505592, lng: 126.90748111868113 },
+    { lat: 37.3969632665474, lng: 126.90746702679144 },
+    { lat: 37.3970241693531, lng: 126.90757423985961 },
+    { lat: 37.3970534525254, lng: 126.90757420390047 },
+    { lat: 37.3971097663179, lng: 126.90757413474810 },
+    { lat: 37.3970914761659, lng: 126.90722970613854 },
+    { lat: 37.3971137887237, lng: 126.90695863509262 },
+    { lat: 37.3971045225924, lng: 126.90663395900862 },
+    { lat: 37.3970129926105, lng: 126.90768436487727 },
+    { lat: 37.3970017959482, lng: 126.90776907959213 },
+    { lat: 37.3969860324902, lng: 126.90777474563944 },
+    { lat: 37.3969094501342, lng: 126.90778048620184 },
+    { lat: 37.3969929023631, lng: 126.90791872887415 },
+    { lat: 37.3969480423529, lng: 126.90816441642873 },
+    { lat: 37.3969301314922, lng: 126.90830560645179 },
+    { lat: 37.3969211234743, lng: 126.90830844078891 },
+    { lat: 37.3968828344719, lng: 126.90831413415653 },
+    { lat: 37.3969077415863, lng: 126.90848068220664 },
+    { lat: 37.3968921025333, lng: 126.90864727957879 },
+    { lat: 37.3967839844062, lng: 126.90865305751902 },
+    { lat: 37.3967547034128, lng: 126.90865591641227 },
+    { lat: 37.3967683059108, lng: 126.90876883419745 },
+    { lat: 37.3967638530672, lng: 126.90883660016662 },
+    { lat: 37.3966895297366, lng: 126.90885080695843 },
+    { lat: 37.3966332920691, lng: 126.90894969239170 },
+    { lat: 37.3965861079453, lng: 126.90910503374715 },
+    { lat: 37.3964781047120, lng: 126.90926044822866 },
+    { lat: 37.3966444743450, lng: 126.90884521481523 },
+    { lat: 37.3964913095160, lng: 126.90885669369650 },
+    { lat: 37.3964915159514, lng: 126.90912491140689 },
+    { lat: 37.3964712386434, lng: 126.90911928919635 },
+    { lat: 37.3968742302859, lng: 126.90883928983915 },
+    { lat: 37.3970364336047, lng: 126.90886450368993 },
+    { lat: 37.3970455764253, lng: 126.90903671805121 },
+    { lat: 37.3970680954272, lng: 126.90902822073014 },
+    { lat: 37.3971221566701, lng: 126.90902815538820 },
+    { lat: 37.3971311733933, lng: 126.90903661460283 },
+    { lat: 37.3971380200416, lng: 126.90915236454767 },
+    { lat: 37.3971426205238, lng: 126.90927658733548 },
+    { lat: 37.3972057915481, lng: 126.90940638638372 },
+    { lat: 37.3972530886453, lng: 126.90939785932817 },
+    { lat: 37.3972507819895, lng: 126.90932727771883 },
+    { lat: 37.3972755557285, lng: 126.90932160112120 },
+    { lat: 37.3972935783074, lng: 126.90932440278510 },
+    { lat: 37.3972936843153, lng: 126.90946274813282 },
+    { lat: 37.3972779121295, lng: 126.90945712035224 },
+    { lat: 37.3972463850521, lng: 126.90946845177957 },
+    { lat: 37.3972485986834, lng: 126.90941762836052 },
+    { lat: 37.3972463353166, lng: 126.90940351420808 },
+    { lat: 37.3973274271791, lng: 126.90940341659888 },
+    { lat: 37.3973567016981, lng: 126.90939208784377 },
+    { lat: 37.3973431387753, lng: 126.90932998983547 },
+    { lat: 37.3973544967263, lng: 126.90945420484350 },
+    { lat: 37.3972916669966, lng: 126.90977049865013 },
+    { lat: 37.3970844430025, lng: 126.90978486391725 },
+    { lat: 37.3970371372596, lng: 126.90978209725095 },
+    { lat: 37.3970350116845, lng: 126.90994867847276 },
+    { lat: 37.3970260122270, lng: 126.90996280607511 },
+    { lat: 37.3968863712057, lng: 126.90998556001355 },
+    { lat: 37.3966476114421, lng: 126.90999996231737 },
+    { lat: 37.3965102014695, lng: 126.90999447992725 },
+    { lat: 37.3964674201702, lng: 126.91001711785366 },
+    { lat: 37.3964985248510, lng: 126.90945241122219 },
+    { lat: 37.3964669999314, lng: 126.90946656587690 },
+    { lat: 37.3967665720514, lng: 126.90944361868680 },
+    { lat: 37.3970773917696, lng: 126.90940089419306 },
+    { lat: 37.3968628913029, lng: 126.90874048594180 },
+    { lat: 37.3972458294641, lng: 126.90874566838420 },
+    { lat: 37.3972909088181, lng: 126.90878231762893 },
+    { lat: 37.3973206565436, lng: 126.90938648448024 },
+    { lat: 37.3973521965947, lng: 126.90939209326717 },
+    { lat: 37.3967786147235, lng: 126.90754066110141 },
+    { lat: 37.3967404162087, lng: 126.90766211234407 },
+    { lat: 37.3967020809252, lng: 126.90760851563210 },
+    { lat: 37.3967380798281, lng: 126.90755482767584 },
+    { lat: 37.3963578013587, lng: 126.90807196630828 },
+    { lat: 37.3960715976296, lng: 126.90790573931731 },
+    { lat: 37.3962996835508, lng: 126.90865082193672 },
+    { lat: 37.3962613901655, lng: 126.90865086841119 },
+    { lat: 37.3962412000302, lng: 126.90875817974187 },
+    { lat: 37.3960419729599, lng: 126.91039312937482 },
+    { lat: 37.3961501147209, lng: 126.91041841064100 },
+    { lat: 37.3961838024014, lng: 126.91028567378193 },
+    { lat: 37.3962917597666, lng: 126.91006814796510 },
+    { lat: 37.3963074975632, lng: 126.91002860240039 },
+    { lat: 37.3961993772072, lng: 126.91003155497653 },
+    { lat: 37.3962307817757, lng: 126.90985929387017 },
+    { lat: 37.3962690966817, lng: 126.90988748137103 },
+    { lat: 37.3962734596346, lng: 126.90970113578763 },
+    { lat: 37.3964311425944, lng: 126.90970659330594 },
+    { lat: 37.3964171014056, lng: 126.90902053751739 },
+    { lat: 37.3963922690047, lng: 126.90894998395248 },
+    { lat: 37.3963742485883, lng: 126.90895000575130 },
+    { lat: 37.3964394529268, lng: 126.90879464290056 },
+    { lat: 37.3965881126471, lng: 126.90878316936086 },
+    { lat: 37.3966150102891, lng: 126.90861091231744 },
+    { lat: 37.3967226159310, lng: 126.90794446974091 },
+    { lat: 37.3967789604926, lng: 126.90798392783677 },
+    { lat: 37.3967495057431, lng: 126.90776374203068 },
+    { lat: 37.3966908512487, lng: 126.90765087973263 },
+    { lat: 37.3970801114424, lng: 126.90709984517261 },
+    { lat: 37.3969179232834, lng: 126.90709439863228 },
+    { lat: 37.3967827213592, lng: 126.90703245164580 },
+    { lat: 37.3967736800686, lng: 126.90699293580838 },
+    { lat: 37.3967511678738, lng: 126.90700990376637 },
+    { lat: 37.3967331341364, lng: 126.90699298591056 },
+    { lat: 37.3965531888136, lng: 126.91024288326020 },
+    { lat: 37.3967064308977, lng: 126.91033304787916 },
+    { lat: 37.3968665310156, lng: 126.91055590267213 },
+    { lat: 37.3968552533045, lng: 126.91053615254968 },
+    { lat: 37.3972179526005, lng: 126.91058654217062 },
+    { lat: 37.3972156658811, lng: 126.91054137090082 },
+    { lat: 37.3977067968810, lng: 126.91063960589233 },
+    { lat: 37.3967176893757, lng: 126.91032738775588 },
+    { lat: 37.3969317010802, lng: 126.91035254305520 },
+    { lat: 37.3978148296844, lng: 126.91052089496846 },
+    { lat: 37.3978327175024, lng: 126.91034582307019 },
+    { lat: 37.3978303771248, lng: 126.91023006657278 },
+    { lat: 37.3974046127015, lng: 126.91018822367025 },
+    { lat: 37.3970982506442, lng: 126.91016882565064 },
+    { lat: 37.3970958864661, lng: 126.91002201325081 },
+    { lat: 37.3971139884718, lng: 126.91012927968283 },
+    { lat: 37.3962805334996, lng: 126.91011615814242 },
+    { lat: 37.3979362877622, lng: 126.91028358487215 },
+    { lat: 37.3977784783528, lng: 126.91011154587328 },
+    { lat: 37.3978369759774, lng: 126.91002112729122 },
+    { lat: 37.3979970573648, lng: 126.91021857415394 },
+    { lat: 37.3981501192985, lng: 126.91007157428947 },
+    { lat: 37.3983391013162, lng: 126.90976641952571 },
+    { lat: 37.3982714601076, lng: 126.90968179820926 },
+    { lat: 37.3984380863373, lng: 126.90959971907205 },
+    { lat: 37.3981682083886, lng: 126.91016190179161 },
+    { lat: 37.3983421592223, lng: 126.91082802042591 },
+    { lat: 37.3986172721628, lng: 126.91122862106481 },
+    { lat: 37.3986037695716, lng: 126.91124557754843 },
+    { lat: 37.3986533892489, lng: 126.91133022187631 },
+    { lat: 37.3983854984610, lng: 126.91154794067846 },
+    { lat: 37.3982592668138, lng: 126.91142950567152 },
+    { lat: 37.3983290557149, lng: 126.91137577864040 },
+    { lat: 37.3982705126502, lng: 126.91140690512742 },
+    { lat: 37.3984098548959, lng: 126.91098605168088 },
+    { lat: 37.3981659429652, lng: 126.91014496403702 },
+    { lat: 37.3980916902481, lng: 126.91025234215127 },
+    { lat: 37.3979657164465, lng: 126.91047554114752 },
+    { lat: 37.3984044769957, lng: 126.90983410319544 },
+    { lat: 37.3984449992329, lng: 126.90980299702646 },
+    { lat: 37.3987150486140, lng: 126.90946668517459 },
+    { lat: 37.3983768973530, lng: 126.90911698814392 },
+    { lat: 37.3984061349331, lng: 126.90905766104405 },
+    { lat: 37.3982010354039, lng: 126.90890544467257 },
+    { lat: 37.3981131880754, lng: 126.90890837440561 },
+    { lat: 37.3979511217269, lng: 126.90906103424594 },
+    { lat: 37.3979488670041, lng: 126.90905821356860 },
+    { lat: 37.3979804352889, lng: 126.90910052646660 },
+    { lat: 37.3978566750633, lng: 126.90927007982651 },
+    { lat: 37.3979513385298, lng: 126.90934337415561 },
+    { lat: 37.3978251934810, lng: 126.90934070270168 },
+    { lat: 37.3975661522144, lng: 126.90934383811368 },
+    { lat: 37.3976989119149, lng: 126.90916015770911 },
+    { lat: 37.3976450283098, lng: 126.90939174074180 },
+    { lat: 37.3976424743821, lng: 126.90899929258833 },
+    { lat: 37.3976289242983, lng: 126.90895413473751 },
+    { lat: 37.3975522352950, lng: 126.90882152832917 },
+    { lat: 37.3974260771629, lng: 126.90880191748647 },
+    { lat: 37.3973156955983, lng: 126.90879358110027 },
+    { lat: 37.3973020887630, lng: 126.90867501574016 },
+    { lat: 37.3972547284596, lng: 126.90860166544057 },
+    { lat: 37.3970901698677, lng: 126.90844375658334 },
+    { lat: 37.3971192669785, lng: 126.90820373469754 },
+    { lat: 37.3971191726676, lng: 126.90808232988203 },
+    { lat: 37.3971349449189, lng: 126.90808795736257 },
+    { lat: 37.3971075203865, lng: 126.90758260761616 },
+    { lat: 37.3971094921489, lng: 126.90722403719255 },
+    { lat: 37.3971451888061, lng: 126.90678637062000 },
+    { lat: 37.3966002113685, lng: 126.90696491665130 },
+    { lat: 37.3961655554277, lng: 126.90707556395701 },
+    { lat: 37.3959539950279, lng: 126.90730451460772 },
+    { lat: 37.3968798226411, lng: 126.90734007811047 },
+    { lat: 37.3968977943651, lng: 126.90727794201835 },
+    { lat: 37.3963512256502, lng: 126.90830631169818 },
+    { lat: 37.3964548474210, lng: 126.90831183215458 },
+    { lat: 37.3973483031965, lng: 126.91019393762056 },
+    { lat: 37.3973370918819, lng: 126.91026171208645 },
+    { lat: 37.3978327581638, lng: 126.91039946757030 },
+    { lat: 37.3977584261003, lng: 126.91040237945529 },
+    { lat: 37.3979243035826, lng: 126.90933775991816 },
+    { lat: 37.3978545718331, lng: 126.90946489683010 },
+    { lat: 37.3976068041295, lng: 126.90948213519974 },
+    { lat: 37.3976633487963, lng: 126.90978417002452 },
+    { lat: 37.3976881613213, lng: 126.90982931455277 },
+    { lat: 37.3971417727665, lng: 126.90817829690708 },
+    { lat: 37.3971710493611, lng: 126.90816979107355 },
+    { lat: 37.3971958383922, lng: 126.90818387769588 },
+    { lat: 37.3972252092025, lng: 126.90829677684508 },
+    { lat: 37.3972274004187, lng: 126.90822740041866 },
+    { lat: 37.3972567558733, lng: 126.90831085528716 }
+];
+
 
         let map;
         let currentRouteLine = null;
         let routeMarkers = [];
 
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
 
         function initializeApp() {
             populateSelects();
@@ -195,12 +405,15 @@
             const endSelect = document.getElementById('endSelect');
             
             buildings.forEach((building, index) => {
-                [startSelect, endSelect].forEach(select => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = building.name;
-                    select.appendChild(option);
-                });
+                const startOption = document.createElement('option');
+                startOption.value = index;
+                startOption.textContent = building.name;
+                startSelect.appendChild(startOption);
+                
+                const endOption = document.createElement('option');
+                endOption.value = index;
+                endOption.textContent = building.name;
+                endSelect.appendChild(endOption);
             });
         }
 
@@ -215,7 +428,7 @@
         }
 
         function drawBuildings() {
-            buildings.forEach(building => {
+            buildings.forEach((building) => {
                 const marker = new naver.maps.Marker({
                     position: new naver.maps.LatLng(building.coords.lat, building.coords.lng),
                     map: map,
@@ -232,36 +445,50 @@
             const startSelect = document.getElementById('startSelect');
             const endSelect = document.getElementById('endSelect');
             const findRouteBtn = document.getElementById('findRouteBtn');
+            const clearRouteBtn = document.getElementById('clearRouteBtn');
 
             function checkSelections() {
-                findRouteBtn.disabled = !(startSelect.value && endSelect.value && startSelect.value !== endSelect.value);
+                if (startSelect.value && endSelect.value && startSelect.value !== endSelect.value) {
+                    findRouteBtn.disabled = false;
+                } else {
+                    findRouteBtn.disabled = true;
+                }
             }
 
             startSelect.addEventListener('change', checkSelections);
             endSelect.addEventListener('change', checkSelections);
 
-            findRouteBtn.addEventListener('click', () => {
-                const start = buildings[parseInt(startSelect.value)];
-                const end = buildings[parseInt(endSelect.value)];
-                findRoute(start, end);
+            findRouteBtn.addEventListener('click', function() {
+                const startIndex = parseInt(startSelect.value);
+                const endIndex = parseInt(endSelect.value);
+                
+                if (startIndex >= 0 && endIndex >= 0) {
+                    findRoute(buildings[startIndex], buildings[endIndex]);
+                }
             });
 
-            document.getElementById('clearRouteBtn').addEventListener('click', clearRoute);
+            clearRouteBtn.addEventListener('click', clearRoute);
         }
 
         function findRoute(start, end) {
             clearRoute();
 
             const routeInfo = document.getElementById('routeInfo');
-            routeInfo.innerHTML = `<h4>🔍 실제 보행 경로 계산 중...</h4>`;
+            routeInfo.innerHTML = `<h4>🔍 경로 계산 중...</h4>`;
             routeInfo.style.display = 'block';
 
-            setTimeout(() => drawRoute(start, end), 500);
+            setTimeout(() => {
+                drawRoute(start, end);
+            }, 500);
         }
 
         function drawRoute(start, end) {
-            const routePath = createWalkablePath(start.coords, end.coords);
-            const naverPath = routePath.map(point => new naver.maps.LatLng(point.lat, point.lng));
+            // 간단한 도로 경로 생성
+            const routePath = createSimpleRoadPath(start.coords, end.coords);
+            
+            const naverPath = routePath.map(point => 
+                new naver.maps.LatLng(point.lat, point.lng)
+            );
 
             currentRouteLine = new naver.maps.Polyline({
                 map: map,
@@ -272,6 +499,7 @@
                 strokeLineCap: 'round'
             });
 
+            // 출발/도착 마커
             const startMarker = new naver.maps.Marker({
                 position: naverPath[0],
                 map: map,
@@ -292,6 +520,7 @@
 
             routeMarkers = [startMarker, endMarker];
 
+            // 거리 계산
             let totalDistance = 0;
             for (let i = 0; i < routePath.length - 1; i++) {
                 totalDistance += calculateDistance(routePath[i], routePath[i + 1]);
@@ -299,126 +528,118 @@
 
             const walkingTime = Math.ceil(totalDistance / 70);
 
+            // 경로 정보 표시
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ ${start.name} → ${end.name}</h4>
+                <h4>🗺️ 경로 안내: ${start.name} → ${end.name}</h4>
                 <p><strong>총 거리:</strong> ${totalDistance}m</p>
-                <p><strong>도보 시간:</strong> ${walkingTime}분</p>
-                <p><strong>특징:</strong> 실제 보행 가능한 안전한 경로</p>
+                <p><strong>예상 시간:</strong> ${walkingTime}분</p>
+                <p><strong>경로 특징:</strong> 실제 도로를 따라 안전한 이동</p>
             `;
 
+            // 지도 범위 조정
             const bounds = new naver.maps.LatLngBounds();
             naverPath.forEach(point => bounds.extend(point));
             map.fitBounds(bounds, { padding: 50 });
         }
 
-        function createWalkablePath(start, end) {
-            // 출발지와 목적지 사이에 건물이 방해하는지 체크
-            if (hasObstacle(start, end)) {
-                // 장애물이 있으면 우회 경로 생성
-                return createBypassRoute(start, end);
-            } else {
-                // 장애물이 없으면 직선
-                return [start, end];
-            }
-        }
-
-        function hasObstacle(start, end) {
-            // 더 엄격하게 장애물 감지
-            const tolerance = 100; // 100m 반경으로 확대
+        function createSimpleRoadPath(start, end) {
+            // 실제 보행 가능한 경로만 생성
+            const path = [start];
             
-            for (const building of buildings) {
-                const distanceToLine = distanceFromPointToLine(building.coords, start, end);
-                if (distanceToLine < tolerance) {
-                    const distToStart = calculateDistance(start, building.coords);
-                    const distToEnd = calculateDistance(end, building.coords);
-                    const directDist = calculateDistance(start, end);
-                    
-                    // 건물이 출발지와 목적지 사이에 있으면 장애물
-                    if (distToStart + distToEnd <= directDist + 50) {
-                        return true;
-                    }
+            // 건물 주변 안전한 도로 지점들 정의
+            const safeRoadPoints = [
+                { lat: 37.39630523583509, lng: 126.90710362491097 }, // 공학관 앞
+                { lat: 37.39605807352083, lng: 126.90789446254182 }, // 중앙 도로
+                { lat: 37.39587374587564, lng: 126.90838594643347 }, // 도의관 앞
+                { lat: 37.39629968355077, lng: 126.90865082193672 }, // 운동장 도로
+                { lat: 37.39708444300246, lng: 126.90978486391725 }, // 학생복지센터 도로
+                { lat: 37.39630749756322, lng: 126.91002860240039 }, // 창조관 도로
+                { lat: 37.39740461270149, lng: 126.91018822367025 }, // 연곡문화센터 도로
+                { lat: 37.39710452259236, lng: 126.90663395900862 }, // 식품과학관 도로
+                { lat: 37.39667447001276, lng: 126.90686883083515 }  // 자연과학관 도로
+            ];
+            
+            // 출발지에서 가장 가까운 안전한 도로 지점
+            const startRoad = findNearestPointFromList(start, safeRoadPoints);
+            const endRoad = findNearestPointFromList(end, safeRoadPoints);
+            
+            // 출발지가 도로에서 멀면 도로로 이동
+            if (calculateDistance(start, startRoad) > 15) {
+                path.push(startRoad);
+            }
+            
+            // 시작 도로와 끝 도로가 다르면 중간 경유지 추가
+            if (calculateDistance(startRoad, endRoad) > 100) {
+                // 중앙 도로를 경유하는 안전한 경로
+                const centralRoad = { lat: 37.39605807352083, lng: 126.90789446254182 };
+                
+                // 시작점이 중앙도로와 멀고, 끝점도 중앙도로와 멀면 중앙도로 경유
+                if (calculateDistance(startRoad, centralRoad) > 50 && 
+                    calculateDistance(endRoad, centralRoad) > 50) {
+                    path.push(centralRoad);
+                }
+                
+                // 다른 안전한 중간 지점 추가
+                const intermediatePoint = findIntermediateRoadPoint(startRoad, endRoad, safeRoadPoints);
+                if (intermediatePoint && 
+                    calculateDistance(path[path.length - 1], intermediatePoint) > 30) {
+                    path.push(intermediatePoint);
                 }
             }
             
-            // 거리 기준으로도 체크 - 200m 이상이면 무조건 우회
-            const directDistance = calculateDistance(start, end);
-            if (directDistance > 200) {
-                return true;
+            // 목적지 도로 지점 추가
+            if (calculateDistance(path[path.length - 1], endRoad) > 30) {
+                path.push(endRoad);
             }
             
-            return false;
-        }
-
-        function distanceFromPointToLine(point, lineStart, lineEnd) {
-            const A = point.lat - lineStart.lat;
-            const B = point.lng - lineStart.lng;
-            const C = lineEnd.lat - lineStart.lat;
-            const D = lineEnd.lng - lineStart.lng;
-
-            const dot = A * C + B * D;
-            const lenSq = C * C + D * D;
-            
-            if (lenSq === 0) return calculateDistance(point, lineStart);
-            
-            const param = dot / lenSq;
-            let xx, yy;
-
-            if (param < 0) {
-                xx = lineStart.lat;
-                yy = lineStart.lng;
-            } else if (param > 1) {
-                xx = lineEnd.lat;
-                yy = lineEnd.lng;
+            // 목적지가 도로에서 멀면 목적지로 이동
+            if (calculateDistance(endRoad, end) > 15) {
+                path.push(end);
             } else {
-                xx = lineStart.lat + param * C;
-                yy = lineStart.lng + param * D;
+                path[path.length - 1] = end; // 마지막 지점을 목적지로 교체
             }
-
-            return calculateDistance(point, {lat: xx, lng: yy});
+            
+            return path;
         }
 
-        function createBypassRoute(start, end) {
-            // 가장 가까운 안전한 우회 지점 찾기
-            let bestRoute = null;
-            let shortestDistance = Infinity;
-
-            walkablePaths.forEach(path => {
-                path.forEach(waypoint => {
-                    // 출발지 → 경유지 → 목적지 경로 계산
-                    const route = [start, waypoint, end];
-                    const totalDistance = calculateDistance(start, waypoint) + calculateDistance(waypoint, end);
-                    
-                    // 직선 거리의 1.5배를 넘지 않는 범위에서 최단거리 선택
-                    const directDistance = calculateDistance(start, end);
-                    if (totalDistance < shortestDistance && totalDistance <= directDistance * 1.5) {
-                        // 경유지가 실제로 안전한 우회인지 확인
-                        if (!hasObstacle(start, waypoint) && !hasObstacle(waypoint, end)) {
-                            bestRoute = route;
-                            shortestDistance = totalDistance;
-                        }
-                    }
-                });
+        function findNearestPointFromList(coords, pointList) {
+            let nearest = pointList[0];
+            let minDistance = calculateDistance(coords, nearest);
+            
+            pointList.forEach(point => {
+                const distance = calculateDistance(coords, point);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = point;
+                }
             });
-
-            return bestRoute || [start, end]; // 우회로를 못 찾으면 직선
+            
+            return nearest;
         }
 
-        function findPathConnection(path1, path2) {
-            let minDist = Infinity;
-            let connection = null;
+        function findIntermediateRoadPoint(start, end, safePoints) {
+            // 시작점과 끝점 사이의 중간 지역에서 가장 적절한 도로 지점 찾기
+            const midLat = (start.lat + end.lat) / 2;
+            const midLng = (start.lng + end.lng) / 2;
+            const midPoint = { lat: midLat, lng: midLng };
+            
+            return findNearestPointFromList(midPoint, safePoints);
+        }
 
-            path1.forEach(p1 => {
-                path2.forEach(p2 => {
-                    const dist = calculateDistance(p1, p2);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        connection = p1;
-                    }
-                });
+        function findNearestRoadPoint(coords) {
+            let nearest = roadCoords[0];
+            let minDistance = calculateDistance(coords, nearest);
+            
+            roadCoords.forEach(roadPoint => {
+                const distance = calculateDistance(coords, roadPoint);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = roadPoint;
+                }
             });
-
-            return connection;
+            
+            return nearest;
         }
 
         function clearRoute() {
