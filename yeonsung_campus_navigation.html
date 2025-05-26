@@ -359,6 +359,17 @@
                 ],
                 landmarks: ["문화2관", "학생복지센터", "연곡문화센터"],
                 specialNote: "🏢 캠퍼스 동쪽 끝 건물까지의 긴 경로"
+            },
+            '공학1관-운동장': {
+                steps: [
+                    "공학1관 정문에서 출발하세요",
+                    "우측 보도를 따라 직진하세요",
+                    "문화2관 방향으로 이동하세요",
+                    "도의관 앞을 지나세요",
+                    "운동장 입구에 도착합니다"
+                ],
+                landmarks: ["문화2관", "도의관"],
+                specialNote: "⚽ 캠퍼스 중앙 운동시설로의 직접 경로"
             }
         };
 
@@ -610,6 +621,16 @@
                 (startBuildingName === '창조관' && endBuildingName === '공학1관')) {
                 const route = [...campusRoadNetwork[7]];
                 if (startBuildingName === '창조관') {
+                    return route.reverse();
+                }
+                return route;
+            }
+
+            // 공학1관 ↔ 운동장 양방향 경로
+            if ((startBuildingName === '공학1관' && endBuildingName === '운동장') ||
+                (startBuildingName === '운동장' && endBuildingName === '공학1관')) {
+                const route = [...campusRoadNetwork[8]];
+                if (startBuildingName === '운동장') {
                     return route.reverse();
                 }
                 return route;
