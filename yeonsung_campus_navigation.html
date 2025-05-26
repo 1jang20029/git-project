@@ -624,206 +624,168 @@
             }
         }
 
-        // 실제 캠퍼스 도로 네트워크 (연결된 경로들)
-        const campusRoads = [
-            // 메인 도로 - 정문에서 대학본관까지
-            [
+        // 실제 캠퍼스 메인 도로 네트워크 (직접 구성)
+        const mainRoads = {
+            // 정문에서 캠퍼스 중앙까지 메인 도로
+            main: [
+                { lat: 37.39616555542772, lng: 126.90707556395701 }, // 공학관 주차장 근처
                 { lat: 37.39630523583509, lng: 126.90710362491097 },
-                { lat: 37.39628952118516, lng: 126.90717140445003 },
-                { lat: 37.39626258359212, lng: 126.9072900178818 },
-                { lat: 37.39624011560296, lng: 126.90736345233073 },
-                { lat: 37.396213151303826, lng: 126.90744818561114 },
-                { lat: 37.39617045439561, lng: 126.90757811151629 },
-                { lat: 37.39612101951769, lng: 126.9077334555332 },
-                { lat: 37.39605807352083, lng: 126.90789446254182 },
-                { lat: 37.39599948737053, lng: 126.90786912427627 }
+                { lat: 37.39640418157648, lng: 126.90689175201939 },
+                { lat: 37.39650000000000, lng: 126.90720000000000 },
+                { lat: 37.39670000000000, lng: 126.90740000000000 },
+                { lat: 37.39680000000000, lng: 126.90760000000000 },
+                { lat: 37.39690000000000, lng: 126.90780000000000 },
+                { lat: 37.39700000000000, lng: 126.90800000000000 },
+                { lat: 37.39710000000000, lng: 126.90820000000000 },
+                { lat: 37.39720000000000, lng: 126.90840000000000 }
             ],
-            // 공학관 주변 도로
-            [
-                { lat: 37.39630523583509, lng: 126.90710362491097 },
-                { lat: 37.39629365074881, lng: 126.90669425498392 },
-                { lat: 37.39634099665608, lng: 126.90674783977597 },
-                { lat: 37.396358990348006, lng: 126.90671393737989 },
-                { lat: 37.39645372882536, lng: 126.90688039734648 },
-                { lat: 37.39652812082299, lng: 126.90695371236593 }
+            // 캠퍼스 중앙에서 운동장으로
+            toSports: [
+                { lat: 37.39720000000000, lng: 126.90840000000000 },
+                { lat: 37.39710000000000, lng: 126.90860000000000 },
+                { lat: 37.39700000000000, lng: 126.90880000000000 },
+                { lat: 37.39690000000000, lng: 126.90900000000000 },
+                { lat: 37.39680000000000, lng: 126.90920000000000 },
+                { lat: 37.39673944839101, lng: 126.90932224700094 } // 운동장
             ],
-            // 도의관 연결 도로
-            [
-                { lat: 37.39605807352083, lng: 126.90789446254182 },
-                { lat: 37.395965903374545, lng: 126.90813173481449 },
-                { lat: 37.39587374587564, lng: 126.90838594643347 },
-                { lat: 37.39584392255342, lng: 126.9076914453633 }
+            // 캠퍼스 중앙에서 학생복지센터로
+            toWelfare: [
+                { lat: 37.39720000000000, lng: 126.90840000000000 },
+                { lat: 37.39710000000000, lng: 126.90880000000000 },
+                { lat: 37.39700000000000, lng: 126.90920000000000 },
+                { lat: 37.39690000000000, lng: 126.90960000000000 },
+                { lat: 37.3962916630711, lng: 126.90994109780426 } // 학생복지센터
             ],
-            // 식품과학관 도로
-            [
-                { lat: 37.39652812082299, lng: 126.90695371236593 },
-                { lat: 37.396597883250735, lng: 126.90686892559849 },
-                { lat: 37.39667447001276, lng: 126.90686883083515 },
-                { lat: 37.39710452259236, lng: 126.90663395900862 },
-                { lat: 37.397113788723715, lng: 126.90695863509262 },
-                { lat: 37.39709147616586, lng: 126.90722970613854 }
+            // 학생복지센터에서 창조관으로
+            toChangjo: [
+                { lat: 37.3962916630711, lng: 126.90994109780426 },
+                { lat: 37.39650000000000, lng: 126.91010000000000 },
+                { lat: 37.39670000000000, lng: 126.91020000000000 },
+                { lat: 37.39690000000000, lng: 126.91030000000000 },
+                { lat: 37.39710000000000, lng: 126.91035000000000 },
+                { lat: 37.39730791148064, lng: 126.91039726900274 } // 창조관
             ],
-            // 운동장 주변 도로
-            [
-                { lat: 37.39587374587564, lng: 126.90838594643347 },
-                { lat: 37.39629968355077, lng: 126.90865082193672 },
-                { lat: 37.39663329206912, lng: 126.9089496923917 },
-                { lat: 37.39678398440624, lng: 126.90865305751902 },
-                { lat: 37.39689210253325, lng: 126.90864727957879 },
-                { lat: 37.39690774158635, lng: 126.90848068220664 }
-            ],
-            // 학생복지센터 연결
-            [
-                { lat: 37.39690774158635, lng: 126.90848068220664 },
-                { lat: 37.39708444300246, lng: 126.90978486391725 },
-                { lat: 37.39703713725958, lng: 126.90978209725095 },
-                { lat: 37.397035011684494, lng: 126.90994867847276 },
-                { lat: 37.39702601222697, lng: 126.90996280607511 }
-            ],
-            // 창조관/연곡문화센터 연결
-            [
-                { lat: 37.39702601222697, lng: 126.90996280607511 },
-                { lat: 37.39615011472092, lng: 126.910418410641 },
-                { lat: 37.3961838024014, lng: 126.91028567378193 },
-                { lat: 37.39629175976656, lng: 126.9100681479651 },
-                { lat: 37.39630749756322, lng: 126.91002860240039 }
-            ],
-            // 연곡문화센터 주변
-            [
-                { lat: 37.39630749756322, lng: 126.91002860240039 },
-                { lat: 37.39709825064418, lng: 126.91016882565064 },
-                { lat: 37.39740461270149, lng: 126.91018822367025 },
-                { lat: 37.39783037712477, lng: 126.91023006657278 },
-                { lat: 37.39783271750236, lng: 126.91034582307019 },
-                { lat: 37.39781482968437, lng: 126.91052089496846 }
+            // 창조관에서 연곡문화센터로
+            toCulture: [
+                { lat: 37.39730791148064, lng: 126.91039726900274 },
+                { lat: 37.39750000000000, lng: 126.91030000000000 },
+                { lat: 37.39770000000000, lng: 126.91020000000000 },
+                { lat: 37.39790000000000, lng: 126.91000000000000 },
+                { lat: 37.398046192024914, lng: 126.90966512810492 } // 연곡문화센터
             ]
-        ];
+        };
 
         function createActualRoadPath(start, end) {
-            // 출발지와 도착지에서 가장 가까운 도로 지점 찾기
-            const startRoad = findNearestRoadPoint(start);
-            const endRoad = findNearestRoadPoint(end);
+            // 각 건물에서 가장 가까운 도로 찾기
+            const startRoad = findNearestMainRoad(start);
+            const endRoad = findNearestMainRoad(end);
             
-            const path = [start];
-            
-            // 출발지에서 도로까지
-            if (calculateDistance(start, startRoad) > 25) {
-                path.push(startRoad);
+            if (!startRoad || !endRoad) {
+                return [start, end]; // 도로를 못찾으면 직선
             }
             
-            // 실제 도로 네트워크를 따라 경로 찾기
-            const roadPath = findRoadNetworkPath(startRoad, endRoad);
+            // 실제 도로 경로 구성
+            const path = [start];
             
-            // 중복되지 않는 도로 지점들만 추가
+            // 출발지에서 메인도로까지
+            if (calculateDistance(start, startRoad.point) > 20) {
+                path.push(startRoad.point);
+            }
+            
+            // 메인도로를 따라 이동
+            const roadPath = findMainRoadPath(startRoad, endRoad);
             roadPath.forEach(point => {
-                if (path.length === 0 || calculateDistance(path[path.length - 1], point) > 15) {
+                if (calculateDistance(path[path.length - 1], point) > 15) {
                     path.push(point);
                 }
             });
             
-            // 도로에서 도착지까지
-            if (calculateDistance(endRoad, end) > 25) {
-                path.push(endRoad);
+            // 메인도로에서 목적지까지
+            if (calculateDistance(endRoad.point, end) > 20) {
+                path.push(endRoad.point);
             }
             
             path.push(end);
             
-            return removeDuplicatePoints(path);
+            return path;
         }
 
-        function findNearestRoadPoint(coords) {
+        function findNearestMainRoad(coords) {
             let nearest = null;
             let minDistance = Infinity;
             
-            // 모든 도로 구간에서 가장 가까운 지점 찾기
-            campusRoads.forEach(road => {
-                road.forEach(point => {
+            // 모든 메인도로에서 가장 가까운 지점 찾기
+            Object.keys(mainRoads).forEach(roadName => {
+                mainRoads[roadName].forEach((point, index) => {
                     const distance = calculateDistance(coords, point);
                     if (distance < minDistance) {
                         minDistance = distance;
-                        nearest = point;
+                        nearest = { roadName, point, index };
                     }
                 });
             });
             
-            return nearest || roadCoords[0];
+            return nearest;
         }
 
-        function findRoadNetworkPath(startRoad, endRoad) {
-            // 시작점과 끝점이 같은 도로에 있는지 확인
-            for (const road of campusRoads) {
-                const startIndex = road.findIndex(point => 
-                    calculateDistance(point, startRoad) < 10
-                );
-                const endIndex = road.findIndex(point => 
-                    calculateDistance(point, endRoad) < 10
-                );
+        function findMainRoadPath(startRoad, endRoad) {
+            // 같은 도로에 있으면
+            if (startRoad.roadName === endRoad.roadName) {
+                const road = mainRoads[startRoad.roadName];
+                const start = Math.min(startRoad.index, endRoad.index);
+                const end = Math.max(startRoad.index, endRoad.index);
+                return road.slice(start, end + 1);
+            }
+            
+            // 다른 도로에 있으면 연결점을 통해
+            return connectRoads(startRoad, endRoad);
+        }
+
+        function connectRoads(startRoad, endRoad) {
+            const path = [];
+            
+            // 메인 도로 연결 규칙
+            const roadConnections = {
+                'main': ['toSports', 'toWelfare'],
+                'toSports': ['main'],
+                'toWelfare': ['main', 'toChangjo'],
+                'toChangjo': ['toWelfare', 'toCulture'],
+                'toCulture': ['toChangjo']
+            };
+            
+            // 시작 도로의 지점들 추가
+            const startRoadPoints = mainRoads[startRoad.roadName];
+            if (startRoad.roadName === 'main') {
+                // 메인도로면 끝까지
+                path.push(...startRoadPoints.slice(startRoad.index));
+            } else {
+                // 다른 도로면 메인도로 연결점까지
+                path.push(...startRoadPoints.slice(startRoad.index));
+            }
+            
+            // 연결된 도로들 통해 목적지까지
+            const connections = roadConnections[startRoad.roadName] || [];
+            
+            if (connections.includes(endRoad.roadName)) {
+                // 직접 연결됨
+                const endRoadPoints = mainRoads[endRoad.roadName];
+                path.push(...endRoadPoints.slice(0, endRoad.index + 1));
+            } else {
+                // 메인도로 경유
+                if (startRoad.roadName !== 'main') {
+                    // 메인도로로 먼저 이동
+                    const mainRoadPoints = mainRoads.main;
+                    path.push(...mainRoadPoints);
+                }
                 
-                if (startIndex !== -1 && endIndex !== -1) {
-                    // 같은 도로에 있으면 그 구간만 반환
-                    const start = Math.min(startIndex, endIndex);
-                    const end = Math.max(startIndex, endIndex);
-                    let segment = road.slice(start, end + 1);
-                    
-                    // 역방향이면 뒤집기
-                    if (startIndex > endIndex) {
-                        segment = segment.reverse();
-                    }
-                    
-                    return segment;
+                // 목적지 도로로 이동
+                if (endRoad.roadName !== 'main') {
+                    const endRoadPoints = mainRoads[endRoad.roadName];
+                    path.push(...endRoadPoints.slice(0, endRoad.index + 1));
                 }
             }
             
-            // 다른 도로에 있으면 연결점을 통해 경로 찾기
-            return findConnectedRoadPath(startRoad, endRoad);
-        }
-
-        function findConnectedRoadPath(startRoad, endRoad) {
-            // 간단한 경로 찾기 - 실제로는 더 복잡한 알고리즘 필요
-            const visited = new Set();
-            const queue = [{ point: startRoad, path: [startRoad] }];
-            
-            while (queue.length > 0 && queue.length < 50) {
-                const { point: current, path } = queue.shift();
-                const currentKey = `${current.lat.toFixed(6)},${current.lng.toFixed(6)}`;
-                
-                if (visited.has(currentKey)) continue;
-                visited.add(currentKey);
-                
-                // 목적지 근처에 도달
-                if (calculateDistance(current, endRoad) < 30) {
-                    return [...path, endRoad];
-                }
-                
-                // 현재 지점에서 연결된 도로들 찾기
-                campusRoads.forEach(road => {
-                    const currentIndex = road.findIndex(point => 
-                        calculateDistance(point, current) < 15
-                    );
-                    
-                    if (currentIndex !== -1) {
-                        // 도로의 연결된 지점들 추가
-                        const neighbors = [
-                            road[Math.max(0, currentIndex - 1)],
-                            road[Math.min(road.length - 1, currentIndex + 1)]
-                        ];
-                        
-                        neighbors.forEach(neighbor => {
-                            const neighborKey = `${neighbor.lat.toFixed(6)},${neighbor.lng.toFixed(6)}`;
-                            if (!visited.has(neighborKey) && 
-                                calculateDistance(current, neighbor) > 5) {
-                                queue.push({
-                                    point: neighbor,
-                                    path: [...path, neighbor]
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-            
-            // 경로를 찾지 못한 경우
-            return [startRoad, endRoad];
+            return path;
         }
 
         function removeDuplicatePoints(path) {
