@@ -187,6 +187,40 @@
             ]
         ];
 
+        // 상세 경로 안내 정보
+        const routeGuides = {
+            '공학1관-대학본관': {
+                steps: [
+                    "공학1관 정문에서 출발하세요",
+                    "우측 보도를 따라 직진하세요",
+                    "도의관 앞 삼거리에서 우회전하세요",
+                    "운동장을 지나 직진하세요", 
+                    "대학본관 정문에 도착합니다"
+                ],
+                landmarks: ["도의관", "운동장", "연곡문화센터"]
+            },
+            '공학1관-자연과학관': {
+                steps: [
+                    "공학1관 정문에서 출발하세요",
+                    "좌측 보도를 따라 이동하세요",
+                    "자연과학관 입구에 도착합니다"
+                ],
+                landmarks: ["학술정보관"]
+            },
+            '공학1관-식품과학관': {
+                steps: [
+                    "공학1관 1층에서 출발하세요",
+                    "공학1관과 공학2관을 연결하는 연결다리를 이용하세요 (1층→2층)",
+                    "공학2관 2층 연결다리를 건너세요",
+                    "공학2관 2층 출입구를 통해 밖으로 나가세요",
+                    "식품과학관 방향으로 직진하세요",
+                    "식품과학관 입구에 도착합니다"
+                ],
+                landmarks: ["공학2관 연결다리", "공학2관 2층 출입구"],
+                specialNote: "🌉 공학1관(1층) → 연결다리 → 공학2관(2층) → 식품과학관"
+            }
+        };
+
         let map;
         let currentRouteLine = null;
         let routeMarkers = [];
@@ -308,13 +342,40 @@
 
             const walkingTime = Math.ceil(totalDistance / 70);
 
-            const routeInfo = document.getElementById('routeInfo');
-            routeInfo.innerHTML = `
+            // 상세 경로 안내 정보 가져오기
+            const routeKey = `${start.name}-${end.name}`;
+            const reverseRouteKey = `${end.name}-${start.name}`;
+            const guide = routeGuides[routeKey] || routeGuides[reverseRouteKey];
+
+            let routeInfoHtml = `
                 <h4>🗺️ ${start.name} → ${end.name}</h4>
                 <p><strong>총 거리:</strong> ${totalDistance}m</p>
                 <p><strong>도보 시간:</strong> ${walkingTime}분</p>
-                <p><strong>특징:</strong> 실제 캠퍼스 도로를 따라 안전한 이동</p>
             `;
+
+            if (guide) {
+                if (guide.specialNote) {
+                    routeInfoHtml += `<p><strong>${guide.specialNote}</strong></p>`;
+                }
+                
+                routeInfoHtml += `<div style="margin-top: 15px;"><strong>📍 상세 경로 안내:</strong><ol style="margin: 10px 0; padding-left: 20px;">`;
+                
+                const steps = routeKey === `${start.name}-${end.name}` ? guide.steps : [...guide.steps].reverse();
+                steps.forEach(step => {
+                    routeInfoHtml += `<li style="margin: 5px 0;">${step}</li>`;
+                });
+                
+                routeInfoHtml += `</ol></div>`;
+                
+                if (guide.landmarks && guide.landmarks.length > 0) {
+                    routeInfoHtml += `<p><strong>🏛️ 주요 경유지:</strong> ${guide.landmarks.join(', ')}</p>`;
+                }
+            } else {
+                routeInfoHtml += `<p><strong>특징:</strong> 실제 캠퍼스 도로를 따라 안전한 이동</p>`;
+            }
+
+            const routeInfo = document.getElementById('routeInfo');
+            routeInfo.innerHTML = routeInfoHtml;
 
             const bounds = new naver.maps.LatLngBounds();
             naverPath.forEach(point => bounds.extend(point));
@@ -337,7 +398,6 @@
             if ((startBuildingName === '공학1관' && endBuildingName === '대학본관') ||
                 (startBuildingName === '대학본관' && endBuildingName === '공학1관')) {
                 const route = [...campusRoadNetwork[0]];
-                // 대학본관에서 공학1관으로 갈 때는 경로를 뒤집기
                 if (startBuildingName === '대학본관') {
                     return route.reverse();
                 }
@@ -348,7 +408,6 @@
             if ((startBuildingName === '공학1관' && endBuildingName === '자연과학관') ||
                 (startBuildingName === '자연과학관' && endBuildingName === '공학1관')) {
                 const route = [...campusRoadNetwork[1]];
-                // 자연과학관에서 공학1관으로 갈 때는 경로를 뒤집기
                 if (startBuildingName === '자연과학관') {
                     return route.reverse();
                 }
@@ -359,7 +418,6 @@
             if ((startBuildingName === '공학1관' && endBuildingName === '식품과학관') ||
                 (startBuildingName === '식품과학관' && endBuildingName === '공학1관')) {
                 const route = [...campusRoadNetwork[2]];
-                // 식품과학관에서 공학1관으로 갈 때는 경로를 뒤집기
                 if (startBuildingName === '식품과학관') {
                     return route.reverse();
                 }
