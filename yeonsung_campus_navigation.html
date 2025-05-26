@@ -544,15 +544,7 @@
                 { lat: 37.39687534659981, lng: 126.91029896631062 },
                 { lat: 37.39693391509195, lng: 126.91030171987386 }
             ],
-
-            // 식품과학관에서 운동장으로 가는 실제 경로
-            [
-                {lat : 37.39710977073148, lng : 126.90757978148294},
-                {lat : 37.39687643275721, lng : 126.90877434985973},
-                {lat : 37.39703544314513, lng : 126.90758834285226},
-                {lat : 37.3967412731096, lng : 126.90876604360744},
-                {lat : 37.396752592484305, lng : 126.9088394371621},
-            ]
+            
         ];
 
         // 상세 경로 안내 정보
@@ -1406,16 +1398,6 @@
                 (startBuildingName === '창조관' && endBuildingName === '식품과학관')) {
                 const route = [...campusRoadNetwork[32]];
                 if (startBuildingName === '창조관') {
-                    return route.reverse();
-                }
-                return route;
-            }
-
-            // 식품과학관 ↔ 창조관 양방향 경로
-            if ((startBuildingName === '식품과학관' && endBuildingName === '운동장') ||
-                (startBuildingName === '운동장' && endBuildingName === '식품과학관')) {
-                const route = [...campusRoadNetwork[33]];
-                if (startBuildingName === '운동장') {
                     return route.reverse();
                 }
                 return route;
