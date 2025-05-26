@@ -313,49 +313,14 @@
         }
 
         function createWalkablePath(start, end) {
-            // 무조건 도로를 경유하도록 강제
-            const route = [start];
-            
-            // 출발지에서 가장 가까운 도로 지점
-            let nearestRoadStart = null;
-            let minDistStart = Infinity;
-            
-            walkablePaths.forEach(path => {
-                path.forEach(point => {
-                    const dist = calculateDistance(start, point);
-                    if (dist < minDistStart) {
-                        minDistStart = dist;
-                        nearestRoadStart = point;
-                    }
-                });
-            });
-            
-            // 목적지에서 가장 가까운 도로 지점
-            let nearestRoadEnd = null;
-            let minDistEnd = Infinity;
-            
-            walkablePaths.forEach(path => {
-                path.forEach(point => {
-                    const dist = calculateDistance(end, point);
-                    if (dist < minDistEnd) {
-                        minDistEnd = dist;
-                        nearestRoadEnd = point;
-                    }
-                });
-            });
-            
-            // 출발지 → 시작 도로 → 끝 도로 → 목적지
-            if (nearestRoadStart && minDistStart > 30) {
-                route.push(nearestRoadStart);
+            // 출발지와 목적지 사이에 건물이 방해하는지 체크
+            if (hasObstacle(start, end)) {
+                // 장애물이 있으면 우회 경로 생성
+                return createBypassRoute(start, end);
+            } else {
+                // 장애물이 없으면 직선
+                return [start, end];
             }
-            
-            if (nearestRoadEnd && nearestRoadStart !== nearestRoadEnd && 
-                calculateDistance(nearestRoadStart || start, nearestRoadEnd) > 50) {
-                route.push(nearestRoadEnd);
-            }
-            
-            route.push(end);
-            return route;
         }
 
         function hasObstacle(start, end) {
