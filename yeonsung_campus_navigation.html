@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연성대학교 캠퍼스 지도</title>
+    <title>연성대학교 길찾기</title>
     <style>
         body {
             margin: 0;
@@ -25,11 +25,6 @@
             color: white;
             padding: 30px;
             text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            font-weight: 300;
         }
         .controls {
             padding: 30px;
@@ -93,8 +88,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎓 연성대학교 캠퍼스 지도</h1>
-            <p>실제 도로 좌표 기반 정밀 내비게이션</p>
+            <h1>🎓 연성대학교 길찾기</h1>
+            <p>실제 보행 가능한 경로만 안내</p>
         </div>
         
         <div class="controls">
@@ -111,8 +106,8 @@
                 </select>
             </div>
             <div>
-                <button id="findRouteBtn" class="btn-primary" disabled>길찾기 시작</button>
-                <button id="clearRouteBtn" class="btn-secondary">경로 지우기</button>
+                <button id="findRouteBtn" class="btn-primary" disabled>길찾기</button>
+                <button id="clearRouteBtn" class="btn-secondary">지우기</button>
             </div>
         </div>
         
@@ -121,15 +116,14 @@
         <div class="info-panel">
             <div class="route-info" id="routeInfo"></div>
             <div>
-                <h3>📍 캠퍼스 시설 정보</h3>
-                <p>연성대학교 캠퍼스 내 모든 건물과 편의시설의 정확한 위치를 확인할 수 있습니다.</p>
+                <h3>📍 실제 보행 경로 안내</h3>
+                <p>건물을 우회하여 실제로 걸을 수 있는 길만 안내합니다.</p>
             </div>
         </div>
     </div>
 
     <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9"></script>
     <script>
-        // 주요 건물 데이터
         const buildings = [
             { name: '공학1관', coords: { lat: 37.39632767479923, lng: 126.90699348692698 } },
             { name: '자연과학관', coords: { lat: 37.39669466288283, lng: 126.90676716508685 } },
@@ -148,61 +142,47 @@
             { name: '학술정보관', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 실제 도로 좌표 데이터
-        const roadCoords = [
-            { lat: 37.39630523583509, lng: 126.90710362491097 },
-            { lat: 37.39628952118516, lng: 126.90717140445003 },
-            { lat: 37.39626258359212, lng: 126.9072900178818 },
-            { lat: 37.39624011560296, lng: 126.90736345233073 },
-            { lat: 37.396213151303826, lng: 126.90744818561114 },
-            { lat: 37.39619511983766, lng: 126.90743409110394 },
-            { lat: 37.39617045439561, lng: 126.90757811151629 },
-            { lat: 37.39612101951769, lng: 126.9077334555332 },
-            { lat: 37.39605807352083, lng: 126.90789446254182 },
-            { lat: 37.39599948737053, lng: 126.90786912427627 },
-            { lat: 37.395965903374545, lng: 126.90813173481449 },
-            { lat: 37.39587374587564, lng: 126.90838594643347 },
-            { lat: 37.39586247655201, lng: 126.90837749017982 },
-            { lat: 37.39561685422634, lng: 126.90825638665562 },
-            { lat: 37.39584392255342, lng: 126.9076914453633 },
-            { lat: 37.3960237133964, lng: 126.90716326228001 },
-            { lat: 37.396098078640605, lng: 126.90720269720835 },
-            { lat: 37.39607784111431, lng: 126.907247895461 },
-            { lat: 37.39614957870643, lng: 126.90681019027762 },
-            { lat: 37.39629365074881, lng: 126.90669425498392 },
-            { lat: 37.39634099665608, lng: 126.90674783977597 },
-            { lat: 37.396358990348006, lng: 126.90671393737989 },
-            { lat: 37.39645372882536, lng: 126.90688039734648 },
-            { lat: 37.39648073721073, lng: 126.90685213046743 },
-            { lat: 37.39652812082299, lng: 126.90695371236593 },
-            { lat: 37.396597883250735, lng: 126.90686892559849 },
-            { lat: 37.39667447001276, lng: 126.90686883083515 },
-            { lat: 37.39667453891443, lng: 126.90695635471685 },
-            { lat: 37.39664081059537, lng: 126.90703262692858 },
-            { lat: 37.39658455227226, lng: 126.9071032801764 },
-            { lat: 37.39655975423635, lng: 126.9070779006373 },
-            { lat: 37.39645823837581, lng: 126.90688603845872 },
-            { lat: 37.396444731956905, lng: 126.90689734854807 },
-            { lat: 37.396584729502685, lng: 126.90732914799048 },
-            { lat: 37.39661177561226, lng: 126.90734887815086 },
-            { lat: 37.39695430713901, lng: 126.90753197518458 },
-            { lat: 37.39698355055921, lng: 126.90748111868113 },
-            { lat: 37.39696326654739, lng: 126.90746702679144 },
-            { lat: 37.39702416935311, lng: 126.90757423985961 },
-            { lat: 37.39705345252541, lng: 126.90757420390047 },
-            { lat: 37.3971097663179, lng: 126.9075741347481 },
-            { lat: 37.39709147616586, lng: 126.90722970613854 },
-            { lat: 37.397113788723715, lng: 126.90695863509262 },
-            { lat: 37.39710452259236, lng: 126.90663395900862 }
+        // 실제 보행 가능한 안전한 경로들만 정의
+        const walkablePaths = [
+            // 공학관 → 자연과학관 → 식품과학관 라인
+            [
+                { lat: 37.39616555542772, lng: 126.90707556395701 },
+                { lat: 37.39630523583509, lng: 126.90710362491097 },
+                { lat: 37.39645372882536, lng: 126.90688039734648 },
+                { lat: 37.39667447001276, lng: 126.90686883083515 },
+                { lat: 37.39710452259236, lng: 126.90663395900862 },
+                { lat: 37.397109492148914, lng: 126.90722403719255 },
+                { lat: 37.39710752038649, lng: 126.90758260761616 }
+            ],
+            // 중앙 도로
+            [
+                { lat: 37.39605807352083, lng: 126.90789446254182 },
+                { lat: 37.39587374587564, lng: 126.90838594643347 },
+                { lat: 37.39629968355077, lng: 126.90865082193672 },
+                { lat: 37.39690774158635, lng: 126.90848068220664 },
+                { lat: 37.39708444300246, lng: 126.90978486391725 }
+            ],
+            // 학생복지센터 → 창조관 → 연곡문화센터
+            [
+                { lat: 37.39630749756322, lng: 126.91002860240039 },
+                { lat: 37.39709825064418, lng: 126.91016882565064 },
+                { lat: 37.39740461270149, lng: 126.91018822367025 },
+                { lat: 37.39783037712477, lng: 126.91023006657278 },
+                { lat: 37.39798046192024914, lng: 126.90966512810492 }
+            ],
+            // 운동장 주변
+            [
+                { lat: 37.39673944839101, lng: 126.90932224700094 },
+                { lat: 37.39735219659465, lng: 126.90939209326717 },
+                { lat: 37.39729166699657, lng: 126.90977049865013 }
+            ]
         ];
 
         let map;
         let currentRouteLine = null;
         let routeMarkers = [];
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
         function initializeApp() {
             populateSelects();
@@ -215,15 +195,12 @@
             const endSelect = document.getElementById('endSelect');
             
             buildings.forEach((building, index) => {
-                const startOption = document.createElement('option');
-                startOption.value = index;
-                startOption.textContent = building.name;
-                startSelect.appendChild(startOption);
-                
-                const endOption = document.createElement('option');
-                endOption.value = index;
-                endOption.textContent = building.name;
-                endSelect.appendChild(endOption);
+                [startSelect, endSelect].forEach(select => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = building.name;
+                    select.appendChild(option);
+                });
             });
         }
 
@@ -238,7 +215,7 @@
         }
 
         function drawBuildings() {
-            buildings.forEach((building) => {
+            buildings.forEach(building => {
                 const marker = new naver.maps.Marker({
                     position: new naver.maps.LatLng(building.coords.lat, building.coords.lng),
                     map: map,
@@ -255,50 +232,36 @@
             const startSelect = document.getElementById('startSelect');
             const endSelect = document.getElementById('endSelect');
             const findRouteBtn = document.getElementById('findRouteBtn');
-            const clearRouteBtn = document.getElementById('clearRouteBtn');
 
             function checkSelections() {
-                if (startSelect.value && endSelect.value && startSelect.value !== endSelect.value) {
-                    findRouteBtn.disabled = false;
-                } else {
-                    findRouteBtn.disabled = true;
-                }
+                findRouteBtn.disabled = !(startSelect.value && endSelect.value && startSelect.value !== endSelect.value);
             }
 
             startSelect.addEventListener('change', checkSelections);
             endSelect.addEventListener('change', checkSelections);
 
-            findRouteBtn.addEventListener('click', function() {
-                const startIndex = parseInt(startSelect.value);
-                const endIndex = parseInt(endSelect.value);
-                
-                if (startIndex >= 0 && endIndex >= 0) {
-                    findRoute(buildings[startIndex], buildings[endIndex]);
-                }
+            findRouteBtn.addEventListener('click', () => {
+                const start = buildings[parseInt(startSelect.value)];
+                const end = buildings[parseInt(endSelect.value)];
+                findRoute(start, end);
             });
 
-            clearRouteBtn.addEventListener('click', clearRoute);
+            document.getElementById('clearRouteBtn').addEventListener('click', clearRoute);
         }
 
         function findRoute(start, end) {
             clearRoute();
 
             const routeInfo = document.getElementById('routeInfo');
-            routeInfo.innerHTML = `<h4>🔍 경로 계산 중...</h4>`;
+            routeInfo.innerHTML = `<h4>🔍 실제 보행 경로 계산 중...</h4>`;
             routeInfo.style.display = 'block';
 
-            setTimeout(() => {
-                drawRoute(start, end);
-            }, 500);
+            setTimeout(() => drawRoute(start, end), 500);
         }
 
         function drawRoute(start, end) {
-            // 간단한 도로 경로 생성
-            const routePath = createSimpleRoadPath(start.coords, end.coords);
-            
-            const naverPath = routePath.map(point => 
-                new naver.maps.LatLng(point.lat, point.lng)
-            );
+            const routePath = createWalkablePath(start.coords, end.coords);
+            const naverPath = routePath.map(point => new naver.maps.LatLng(point.lat, point.lng));
 
             currentRouteLine = new naver.maps.Polyline({
                 map: map,
@@ -309,7 +272,6 @@
                 strokeLineCap: 'round'
             });
 
-            // 출발/도착 마커
             const startMarker = new naver.maps.Marker({
                 position: naverPath[0],
                 map: map,
@@ -330,7 +292,6 @@
 
             routeMarkers = [startMarker, endMarker];
 
-            // 거리 계산
             let totalDistance = 0;
             for (let i = 0; i < routePath.length - 1; i++) {
                 totalDistance += calculateDistance(routePath[i], routePath[i + 1]);
@@ -338,118 +299,121 @@
 
             const walkingTime = Math.ceil(totalDistance / 70);
 
-            // 경로 정보 표시
             const routeInfo = document.getElementById('routeInfo');
             routeInfo.innerHTML = `
-                <h4>🗺️ 경로 안내: ${start.name} → ${end.name}</h4>
+                <h4>🗺️ ${start.name} → ${end.name}</h4>
                 <p><strong>총 거리:</strong> ${totalDistance}m</p>
-                <p><strong>예상 시간:</strong> ${walkingTime}분</p>
-                <p><strong>경로 특징:</strong> 실제 도로를 따라 안전한 이동</p>
+                <p><strong>도보 시간:</strong> ${walkingTime}분</p>
+                <p><strong>특징:</strong> 실제 보행 가능한 안전한 경로</p>
             `;
 
-            // 지도 범위 조정
             const bounds = new naver.maps.LatLngBounds();
             naverPath.forEach(point => bounds.extend(point));
             map.fitBounds(bounds, { padding: 50 });
         }
 
-        function createSimpleRoadPath(start, end) {
-            // 실제 도로 좌표를 사용해서 자연스러운 경로 생성
-            const startRoad = findNearestRoadPoint(start);
-            const endRoad = findNearestRoadPoint(end);
-            
-            const path = [start];
-            
-            // 출발지에서 도로로
-            if (calculateDistance(start, startRoad) > 20) {
-                path.push(startRoad);
-            }
-            
-            // 도로를 따라 이동 - 실제 좌표 사용
-            const roadPath = findConnectedPath(startRoad, endRoad);
-            roadPath.forEach(point => {
-                if (calculateDistance(path[path.length - 1], point) > 15) {
-                    path.push(point);
-                }
-            });
-            
-            // 도로에서 목적지로
-            if (calculateDistance(path[path.length - 1], end) > 20) {
-                path.push(end);
-            } else {
-                path[path.length - 1] = end;
-            }
-            
-            return path;
-        }
+        function createWalkablePath(start, end) {
+            // 출발지와 목적지에서 가장 가까운 안전한 경로 찾기
+            let startPath = null, startPoint = null, startDist = Infinity;
+            let endPath = null, endPoint = null, endDist = Infinity;
 
-        function findConnectedPath(start, end) {
-            // 시작점과 끝점이 가까우면 직접 연결
-            if (calculateDistance(start, end) < 100) {
-                return [start, end];
-            }
-            
-            // BFS로 연결된 도로 경로 찾기
-            const visited = new Set();
-            const queue = [{point: start, path: [start]}];
-            
-            while (queue.length > 0) {
-                const {point: current, path} = queue.shift();
-                const key = `${current.lat.toFixed(6)},${current.lng.toFixed(6)}`;
-                
-                if (visited.has(key)) continue;
-                visited.add(key);
-                
-                // 목적지 근처에 도달
-                if (calculateDistance(current, end) < 50) {
-                    return [...path, end];
-                }
-                
-                // 현재 지점에서 연결된 도로 지점들 찾기
-                const neighbors = roadCoords.filter(point => {
-                    const dist = calculateDistance(current, point);
-                    return dist > 5 && dist < 40; // 5-40m 범위의 연결점
-                }).filter(point => {
-                    const key = `${point.lat.toFixed(6)},${point.lng.toFixed(6)}`;
-                    return !visited.has(key);
-                });
-                
-                // 목적지에 가까워지는 방향 우선
-                neighbors.sort((a, b) => {
-                    return calculateDistance(a, end) - calculateDistance(b, end);
-                });
-                
-                // 최대 3개만 큐에 추가
-                neighbors.slice(0, 3).forEach(neighbor => {
-                    if (path.length < 10) { // 경로가 너무 길어지지 않도록
-                        queue.push({
-                            point: neighbor,
-                            path: [...path, neighbor]
-                        });
+            walkablePaths.forEach(path => {
+                path.forEach(point => {
+                    const distToStart = calculateDistance(start, point);
+                    const distToEnd = calculateDistance(end, point);
+                    
+                    if (distToStart < startDist) {
+                        startDist = distToStart;
+                        startPath = path;
+                        startPoint = point;
+                    }
+                    
+                    if (distToEnd < endDist) {
+                        endDist = distToEnd;
+                        endPath = path;
+                        endPoint = point;
                     }
                 });
-                
-                // 큐 크기 제한
-                if (queue.length > 50) break;
+            });
+
+            const route = [start];
+
+            // 출발지에서 시작 경로로
+            if (startDist > 20) {
+                route.push(startPoint);
             }
-            
-            // 경로를 못 찾으면 직선
-            return [start, end];
+
+            // 같은 경로에 있으면 그 경로만 따라가기
+            if (startPath === endPath) {
+                const startIdx = startPath.indexOf(startPoint);
+                const endIdx = startPath.indexOf(endPoint);
+                
+                if (startIdx !== -1 && endIdx !== -1) {
+                    const pathSegment = startIdx < endIdx ? 
+                        startPath.slice(startIdx, endIdx + 1) :
+                        startPath.slice(endIdx, startIdx + 1).reverse();
+                    
+                    pathSegment.forEach(point => {
+                        if (calculateDistance(route[route.length - 1], point) > 10) {
+                            route.push(point);
+                        }
+                    });
+                }
+            } else {
+                // 다른 경로에 있으면 연결점을 통해 이동
+                const connection = findPathConnection(startPath, endPath);
+                
+                // 시작 경로 따라가기
+                const startIdx = startPath.indexOf(startPoint);
+                if (startIdx !== -1) {
+                    for (let i = startIdx; i < startPath.length; i++) {
+                        if (calculateDistance(route[route.length - 1], startPath[i]) > 10) {
+                            route.push(startPath[i]);
+                        }
+                    }
+                }
+                
+                // 연결점 추가
+                if (connection && calculateDistance(route[route.length - 1], connection) > 10) {
+                    route.push(connection);
+                }
+                
+                // 끝 경로 따라가기
+                const endIdx = endPath.indexOf(endPoint);
+                if (endIdx !== -1) {
+                    for (let i = 0; i <= endIdx; i++) {
+                        if (calculateDistance(route[route.length - 1], endPath[i]) > 10) {
+                            route.push(endPath[i]);
+                        }
+                    }
+                }
+            }
+
+            // 목적지로
+            if (endDist > 20) {
+                route.push(end);
+            } else {
+                route[route.length - 1] = end;
+            }
+
+            return route;
         }
 
-        function findNearestRoadPoint(coords) {
-            let nearest = roadCoords[0];
-            let minDistance = calculateDistance(coords, nearest);
-            
-            roadCoords.forEach(roadPoint => {
-                const distance = calculateDistance(coords, roadPoint);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearest = roadPoint;
-                }
+        function findPathConnection(path1, path2) {
+            let minDist = Infinity;
+            let connection = null;
+
+            path1.forEach(p1 => {
+                path2.forEach(p2 => {
+                    const dist = calculateDistance(p1, p2);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        connection = p1;
+                    }
+                });
             });
-            
-            return nearest;
+
+            return connection;
         }
 
         function clearRoute() {
