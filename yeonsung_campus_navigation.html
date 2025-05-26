@@ -1156,6 +1156,16 @@
                 return route;
             }
 
+            // 자연과학관 ↔ 문화2관 양방향 경로
+            if ((startBuildingName === '자연과학관' && endBuildingName === '문화2관') ||
+                (startBuildingName === '문화2관' && endBuildingName === '자연과학관')) {
+                const route = [...campusRoadNetwork[24]];
+                if (startBuildingName === '문화2관') {
+                    return route.reverse();
+                }
+                return route;
+            }
+
             // 다른 경로는 직선으로 처리
             return [start, end];
         }
