@@ -142,8 +142,9 @@
             { name: '학술정보관', coords: { lat: 37.39637467129301, lng: 126.906603807587 } }
         ];
 
-        // 공학1관에서 대학본관으로 가는 실제 경로 (유지)
+        // 캠퍼스 도로 네트워크
         const campusRoadNetwork = [
+            // 공학1관에서 대학본관으로 가는 실제 경로
             [
                 { lat: 37.39630071520312, lng: 126.90708386711204 },
                 { lat: 37.39629399081752, lng: 126.90712622550558 },
@@ -167,6 +168,13 @@
                 { lat: 37.397308951008505, lng: 126.90881052953897 },
                 { lat: 37.39731164633666, lng: 126.90938649532777 },
                 { lat: 37.39736796662003, lng: 126.90939489766241 }
+            ],
+            // 공학1관에서 자연과학관으로 가는 실제 경로
+            [
+                { lat: 37.39645375105591, lng: 126.9069086307739 },
+                { lat: 37.39655959876348, lng: 126.90688026636684 },
+                { lat: 37.39663620331114, lng: 126.90690275841185 },
+                { lat: 37.39667447001276, lng: 126.90686883083515 }
             ]
         ];
 
@@ -305,7 +313,7 @@
         }
 
         function createWalkablePath(start, end) {
-            // 공학1관에서 대학본관으로 가는 경우에만 실제 도로 경로 사용
+            // 출발지와 도착지 건물명 찾기
             const startBuildingName = buildings.find(b => 
                 Math.abs(b.coords.lat - start.lat) < 0.0001 && 
                 Math.abs(b.coords.lng - start.lng) < 0.0001
@@ -316,8 +324,14 @@
                 Math.abs(b.coords.lng - end.lng) < 0.0001
             )?.name;
 
+            // 공학1관에서 대학본관으로 가는 경우
             if (startBuildingName === '공학1관' && endBuildingName === '대학본관') {
                 return campusRoadNetwork[0];
+            }
+
+            // 공학1관에서 자연과학관으로 가는 경우
+            if (startBuildingName === '공학1관' && endBuildingName === '자연과학관') {
+                return campusRoadNetwork[1];
             }
 
             // 다른 경로는 직선으로 처리
