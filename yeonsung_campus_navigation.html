@@ -225,10 +225,6 @@
                     <div class="legend-color" style="background: #f44336;"></div>
                     <span>편의시설</span>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #9c27b0;"></div>
-                    <span>도로망</span>
-                </div>
             </div>
             
             <div class="route-info" id="routeInfo"></div>
@@ -405,36 +401,8 @@
                 zoomControl: true
             });
 
-            drawRoadNetwork();
             drawBuildings();
             drawFacilities();
-        }
-
-        function drawRoadNetwork() {
-            const roadPath = roadCoords.map(coord => 
-                new naver.maps.LatLng(coord.lat, coord.lng)
-            );
-
-            roadPolyline = new naver.maps.Polyline({
-                map: map,
-                path: roadPath,
-                strokeColor: '#9c27b0',
-                strokeWeight: 3,
-                strokeOpacity: 0.7,
-                strokeStyle: 'solid'
-            });
-
-            // 도로 지점들을 작은 점으로 표시
-            roadCoords.forEach(coord => {
-                new naver.maps.Marker({
-                    position: new naver.maps.LatLng(coord.lat, coord.lng),
-                    map: map,
-                    icon: {
-                        content: '<div style="width: 4px; height: 4px; background: #9c27b0; border-radius: 50%; border: 1px solid white;"></div>',
-                        anchor: new naver.maps.Point(2, 2)
-                    }
-                });
-            });
         }
 
         function drawBuildings() {
@@ -620,17 +588,17 @@
                         <div style="font-size: 0.9em; color: #2196F3;">예상 시간</div>
                     </div>
                     <div style="text-align: center; padding: 15px; background: #FFF3E0; border-radius: 10px; border-left: 4px solid #FF9800;">
-                        <div style="font-size: 1.5em; font-weight: bold; color: #E65100;">도보</div>
-                        <div style="font-size: 0.9em; color: #FF9800;">이동 수단</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #E65100;">실제</div>
+                        <div style="font-size: 0.9em; color: #FF9800;">좌표 기반</div>
                     </div>
                 </div>
                 
                 <div style="background: #F8F9FA; padding: 15px; border-radius: 10px; border-left: 4px solid #6C757D;">
                     <h5 style="margin: 0 0 10px 0; color: #343A40;">📍 경로 특징</h5>
                     <ul style="margin: 0; padding-left: 20px; color: #6C757D; font-size: 14px;">
-                        <li>실제 캠퍼스 도로를 따라 안전한 경로로 안내</li>
-                        <li>건물 간 최단거리 기반 효율적 이동</li>
-                        <li>주요 편의시설 및 랜드마크 확인 가능</li>
+                        <li>제공해주신 실제 GPS 좌표를 순서대로 정확히 따라가는 경로</li>
+                        <li>캠퍼스 내 실제 도로와 보행로를 따라 안전한 이동</li>
+                        <li>건물 간 최단거리가 아닌 실제 이용 가능한 경로</li>
                     </ul>
                 </div>
             `;
@@ -642,23 +610,26 @@
         }
 
         function createRoadBasedPath(start, end) {
-            // 출발지와 도착지에서 가장 가까운 도로 지점 찾기
-            const startRoad = findNearestRoadPoint(start);
-            const endRoad = findNearestRoadPoint(end);
-            
-            // 간단한 경로 생성 (실제로는 더 복잡한 알고리즘 필요)
+            // 제공된 실제 좌표를 순서대로 따라가는 경로 생성
             const path = [start];
             
-            if (calculateDistance(start, startRoad) > 15) {
-                path.push(startRoad);
+            // 출발지에서 가장 가까운 도로 좌표 찾기
+            const startRoadIndex = findNearestRoadIndex(start);
+            const endRoadIndex = findNearestRoadIndex(end);
+            
+            // 시작점부터 끝점까지 순서대로 도로 좌표 추가
+            const startIndex = Math.min(startRoadIndex, endRoadIndex);
+            const endIndex = Math.max(startRoadIndex, endRoadIndex);
+            
+            // 실제 도로 좌표를 순서대로 따라가기
+            for (let i = startIndex; i <= endIndex; i++) {
+                path.push(roadCoords[i]);
             }
             
-            // 도로 지점들 중 중간 경유지 추가 (간단한 직선 보간)
-            const midPoints = interpolateRoadPoints(startRoad, endRoad);
-            path.push(...midPoints);
-            
-            if (calculateDistance(endRoad, end) > 15) {
-                path.push(endRoad);
+            // 만약 역순이라면 뒤집기
+            if (startRoadIndex > endRoadIndex) {
+                const roadPath = path.slice(1, -1);
+                path.splice(1, roadPath.length, ...roadPath.reverse());
             }
             
             path.push(end);
@@ -666,41 +637,19 @@
             return path;
         }
 
-        function findNearestRoadPoint(coords) {
-            let nearest = roadCoords[0];
-            let minDistance = calculateDistance(coords, nearest);
+        function findNearestRoadIndex(coords) {
+            let nearestIndex = 0;
+            let minDistance = calculateDistance(coords, roadCoords[0]);
             
-            roadCoords.forEach(roadPoint => {
+            roadCoords.forEach((roadPoint, index) => {
                 const distance = calculateDistance(coords, roadPoint);
                 if (distance < minDistance) {
                     minDistance = distance;
-                    nearest = roadPoint;
+                    nearestIndex = index;
                 }
             });
             
-            return nearest;
-        }
-
-        function interpolateRoadPoints(start, end) {
-            const midPoints = [];
-            const steps = 3;
-            
-            for (let i = 1; i < steps; i++) {
-                const ratio = i / steps;
-                const lat = start.lat + (end.lat - start.lat) * ratio;
-                const lng = start.lng + (end.lng - start.lng) * ratio;
-                
-                // 이 중간점에서 가장 가까운 실제 도로 지점 찾기
-                const nearestRoad = findNearestRoadPoint({ lat, lng });
-                
-                // 중복 방지
-                if (midPoints.length === 0 || 
-                    calculateDistance(midPoints[midPoints.length - 1], nearestRoad) > 20) {
-                    midPoints.push(nearestRoad);
-                }
-            }
-            
-            return midPoints;
+            return nearestIndex;
         }
 
         function clearRoute() {
