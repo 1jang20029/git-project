@@ -354,34 +354,87 @@
         }
 
         function createSimpleRoadPath(start, end) {
-            // 출발지에서 가장 가까운 도로 지점 찾기
-            const startRoad = findNearestRoadPoint(start);
-            const endRoad = findNearestRoadPoint(end);
-            
-            // 간단한 경로: 출발지 → 시작 도로 → 끝 도로 → 목적지
+            // 실제 보행 가능한 경로만 생성
             const path = [start];
             
-            if (calculateDistance(start, startRoad) > 20) {
+            // 건물 주변 안전한 도로 지점들 정의
+            const safeRoadPoints = [
+                { lat: 37.39630523583509, lng: 126.90710362491097 }, // 공학관 앞
+                { lat: 37.39605807352083, lng: 126.90789446254182 }, // 중앙 도로
+                { lat: 37.39587374587564, lng: 126.90838594643347 }, // 도의관 앞
+                { lat: 37.39629968355077, lng: 126.90865082193672 }, // 운동장 도로
+                { lat: 37.39708444300246, lng: 126.90978486391725 }, // 학생복지센터 도로
+                { lat: 37.39630749756322, lng: 126.91002860240039 }, // 창조관 도로
+                { lat: 37.39740461270149, lng: 126.91018822367025 }, // 연곡문화센터 도로
+                { lat: 37.39710452259236, lng: 126.90663395900862 }, // 식품과학관 도로
+                { lat: 37.39667447001276, lng: 126.90686883083515 }  // 자연과학관 도로
+            ];
+            
+            // 출발지에서 가장 가까운 안전한 도로 지점
+            const startRoad = findNearestPointFromList(start, safeRoadPoints);
+            const endRoad = findNearestPointFromList(end, safeRoadPoints);
+            
+            // 출발지가 도로에서 멀면 도로로 이동
+            if (calculateDistance(start, startRoad) > 15) {
                 path.push(startRoad);
             }
             
-            // 중간에 1-2개 도로 지점 추가
-            const midLat = (startRoad.lat + endRoad.lat) / 2;
-            const midLng = (startRoad.lng + endRoad.lng) / 2;
-            const midRoad = findNearestRoadPoint({ lat: midLat, lng: midLng });
-            
-            if (calculateDistance(startRoad, midRoad) > 30 && 
-                calculateDistance(midRoad, endRoad) > 30) {
-                path.push(midRoad);
+            // 시작 도로와 끝 도로가 다르면 중간 경유지 추가
+            if (calculateDistance(startRoad, endRoad) > 100) {
+                // 중앙 도로를 경유하는 안전한 경로
+                const centralRoad = { lat: 37.39605807352083, lng: 126.90789446254182 };
+                
+                // 시작점이 중앙도로와 멀고, 끝점도 중앙도로와 멀면 중앙도로 경유
+                if (calculateDistance(startRoad, centralRoad) > 50 && 
+                    calculateDistance(endRoad, centralRoad) > 50) {
+                    path.push(centralRoad);
+                }
+                
+                // 다른 안전한 중간 지점 추가
+                const intermediatePoint = findIntermediateRoadPoint(startRoad, endRoad, safeRoadPoints);
+                if (intermediatePoint && 
+                    calculateDistance(path[path.length - 1], intermediatePoint) > 30) {
+                    path.push(intermediatePoint);
+                }
             }
             
-            if (calculateDistance(endRoad, end) > 20) {
+            // 목적지 도로 지점 추가
+            if (calculateDistance(path[path.length - 1], endRoad) > 30) {
                 path.push(endRoad);
             }
             
-            path.push(end);
+            // 목적지가 도로에서 멀면 목적지로 이동
+            if (calculateDistance(endRoad, end) > 15) {
+                path.push(end);
+            } else {
+                path[path.length - 1] = end; // 마지막 지점을 목적지로 교체
+            }
             
             return path;
+        }
+
+        function findNearestPointFromList(coords, pointList) {
+            let nearest = pointList[0];
+            let minDistance = calculateDistance(coords, nearest);
+            
+            pointList.forEach(point => {
+                const distance = calculateDistance(coords, point);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = point;
+                }
+            });
+            
+            return nearest;
+        }
+
+        function findIntermediateRoadPoint(start, end, safePoints) {
+            // 시작점과 끝점 사이의 중간 지역에서 가장 적절한 도로 지점 찾기
+            const midLat = (start.lat + end.lat) / 2;
+            const midLng = (start.lng + end.lng) / 2;
+            const midPoint = { lat: midLat, lng: midLng };
+            
+            return findNearestPointFromList(midPoint, safePoints);
         }
 
         function findNearestRoadPoint(coords) {
