@@ -2964,15 +2964,6 @@
                 return route;
             }
 
-            // 연곡문화센터 ↔ 창의교육센터 양방향 경로
-            if ((startBuildingName === '연곡문화센터' && endBuildingName === '창의교육센터') ||
-                (startBuildingName === '창의교육센터' && endBuildingName === '연곡문화센터')) {
-                const route = [...campusRoadNetwork[78]]; // 올바른 배열의 인덱스
-                if (startBuildingName === '창의교육센터') {
-                    return route.reverse();
-                }
-                return route;
-            }
 
 
             if ((startBuildingName === '연곡문화센터' && endBuildingName === '창의교육센터') ||
