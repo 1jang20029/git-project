@@ -2085,18 +2085,6 @@
                 specialNote: "📖 실제 측정된 캠퍼스 횡단 경로입니다"
             },
 
-
-            '연곡문화센터-운동장': {
-                steps: [
-                    "연곡문화센터에서 출발하세요",
-                    "서쪽으로 이동하세요",
-                    "학생복지센터 근처를 지나세요",
-                    "운동장에 도착합니다"
-                ],
-                landmarks: ["학생복지센터"],
-                specialNote: "⚽ 실제 측정된 정확한 경로입니다"
-            },
-
             '창조관-운동장': {
                 steps: [
                     "창조관에서 출발하세요",
@@ -3176,21 +3164,10 @@
                 return route;
             }
 
-
-            // 연곡문화센터 ↔ 운동장 양방향 경로
-            if ((startBuildingName === '연곡문화센터' && endBuildingName === '운동장') ||
-                (startBuildingName === '운동장' && endBuildingName === '연곡문화센터')) {
-                const route = [...campusRoadNetwork[83]]; // 새로 추가된 배열의 인덱스
-                if (startBuildingName === '운동장') {
-                    return route.reverse();
-                }
-                return route;
-            }
-
             // 창조관 ↔ 운동장 양방향 경로
             if ((startBuildingName === '창조관' && endBuildingName === '운동장') ||
                 (startBuildingName === '운동장' && endBuildingName === '창조관')) {
-                const route = [...campusRoadNetwork[49]]; // 새로 추가된 배열의 인덱스
+                const route = [...campusRoadNetwork[83]]; // 새로 추가된 배열의 인덱스
                 if (startBuildingName === '운동장') {
                     return route.reverse();
                 }
