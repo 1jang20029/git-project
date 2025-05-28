@@ -2918,7 +2918,7 @@ let currentRouteLine = null;
 let routeMarkers = [];
 let selectedStartBuilding = null;
 let selectedEndBuilding = null;
-let isBuildingGridMinimized = false;
+
 
 // DOM 요소
 const startInput = document.getElementById('startInput');
@@ -3010,24 +3010,6 @@ function setupEventListeners() {
     clearRouteBtn.addEventListener('click', clearRoute);
     swapBtn.addEventListener('click', swapLocations);
     closeRouteInfo.addEventListener('click', hideRouteInfo);
-
-
-    document.getElementById('minimizeBuildings').addEventListener('click', function() {
-        const buildingGrid = document.getElementById('buildingGrid');
-        const minimizeBtn = document.getElementById('minimizeBuildings');
-        
-        isBuildingGridMinimized = !isBuildingGridMinimized;
-    
-        if (isBuildingGridMinimized) {
-            buildingGrid.classList.add('minimized');
-            minimizeBtn.textContent = '+';
-            minimizeBtn.title = '건물 목록 보기';
-        } else {
-            buildingGrid.classList.remove('minimized');
-            minimizeBtn.textContent = '−';
-            minimizeBtn.title = '건물 목록 숨기기';
-        }
-    });
 
     // 지도 컨트롤 버튼
     document.getElementById('zoomInBtn').addEventListener('click', () => {
