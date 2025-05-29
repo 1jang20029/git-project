@@ -825,22 +825,21 @@ function renderCoursesOnTimetable() {
     // 1) 기존 블록 제거
     container.querySelectorAll('.class-item').forEach(el => el.remove());
 
-    // 2) 하나의 셀 크기(px) 구하기 (1교시/월요일 셀)
+    // 2) 셀 하나 크기(px) 구하기
     const sampleCell = container.querySelector('.class-cell[data-day="1"][data-period="1"]');
     const cellRect   = sampleCell.getBoundingClientRect();
     const cellH      = cellRect.height;
     const cellW      = cellRect.width;
 
-    // 3) 각 과목·시간마다 블록 생성
+    // 3) 과목별 블록 렌더링
     courses.forEach(course => {
         course.times.forEach(t => {
-            // (A) 시작 좌표: (period-1)*셀높이 + 30분 오프셋
+            // 위치 계산 (9:30 시작, 50분 길이)
             const x = cellRect.left - baseRect.left + t.day * cellW;
             const y = cellRect.top  - baseRect.top  + (t.start - 1) * cellH + cellH * 0.5;
-            // (B) 높이: (end-start)*셀높이 + 50분 높이
             const h = (t.end - t.start) * cellH + (50/60) * cellH;
 
-            // 4) 블록 생성
+            // 블록 생성
             const block = document.createElement('div');
             block.className = `class-item ${course.color}`;
             Object.assign(block.style, {
@@ -858,23 +857,34 @@ function renderCoursesOnTimetable() {
                 zIndex:         5
             });
 
-            // 5) 과목명 + (교수명 | 강의실) 조합
-            let info = '';
-            if (settings.showProfessor && course.professor) {
-                info = course.professor;
-            }
-            if (settings.showRoom && course.room) {
-                info += info ? ` | ${course.room}` : course.room;
-            }
+            // — 여기부터 infoParts 로 변경 —
 
-            block.innerHTML = `
-                <div class="class-name">${course.name}</div>
-                ${info ? `<div class="class-info">${info}</div>` : ''}
-            `;
+            // 과목명
+            const nameHTML = `<div class="class-name">${course.name}</div>`;
+
+            // 교수명/강의실 표시 (미정일 때 기본 문구)
+            const infoParts = [];
+            if (settings.showProfessor) {
+                infoParts.push(course.professor
+                    ? course.professor
+                    : '교수명 미정');
+            }
+            if (settings.showRoom) {
+                infoParts.push(course.room
+                    ? course.room
+                    : '강의실 미정');
+            }
+            const infoHTML = infoParts.length
+                ? `<div class="class-info">${infoParts.join(' | ')}</div>`
+                : '';
+
+            block.innerHTML = nameHTML + infoHTML;
+
             container.appendChild(block);
         });
     });
 }
+
 
 
 
