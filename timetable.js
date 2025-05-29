@@ -843,9 +843,8 @@ function renderCoursesOnTimetable() {
             const endPeriod   = time.end;
             const spanCount   = endPeriod - startPeriod + 1;
 
-            // 블록 높이를 spanCount 에 맞춰 계산 (각 셀 높이 100% 기준)
+            // 셀 높이와 경계 보정
             const heightPercent = spanCount * 100 + (spanCount - 1) * 2; 
-            // (+2px씩 셀 경계 보정)
 
             // 첫 교시 셀에만 블록 생성
             const firstCell = document.querySelector(
@@ -856,17 +855,23 @@ function renderCoursesOnTimetable() {
             const block = document.createElement('div');
             firstCell.appendChild(block);
 
-            // 위치 및 크기
-            block.style.position = 'absolute';
-            block.style.top      = '0';
-            block.style.left     = '-1px';
-            block.style.right    = '-1px';
-            block.style.height   = `calc(${heightPercent}% + ${spanCount - 1}px)`;
-            block.style.zIndex   = '5';
-            block.className      = `class-item ${course.color}`;
-            block.style.overflow = 'visible';
+            // 위치 및 크기 설정
+            block.style.position        = 'absolute';
+            block.style.top             = '0';
+            block.style.left            = '-1px';
+            block.style.right           = '-1px';
+            block.style.height          = `calc(${heightPercent}% + ${spanCount - 1}px)`;
+            block.style.zIndex          = '5';
+            block.className             = `class-item ${course.color}`;
 
-            // 내용: 과목명 + 교수 | 강의실
+            // **가운데 정렬을 위한 flex 설정**
+            block.style.display         = 'flex';
+            block.style.flexDirection   = 'column';
+            block.style.alignItems      = 'center';
+            block.style.justifyContent  = 'center';
+            block.style.textAlign       = 'center';
+
+            // 과목명, 교수명, 강의실 내용
             const prof = course.professor || '';
             const room = course.room      || '';
             const info = prof && room
@@ -880,6 +885,7 @@ function renderCoursesOnTimetable() {
         });
     });
 }
+
 
 
 
