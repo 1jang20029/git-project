@@ -6720,5 +6720,3 @@ window.addEventListener('restaurantUpdated', function() {
     // 인기 맛집 정보 다시 로드
     displayPopularRestaurantsOnMainPage();
 });
-
-
