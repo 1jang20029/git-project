@@ -1,4 +1,3 @@
-
 // 글로벌 변수 선언
 let courses = [];
 let settings = {
@@ -96,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
     applySettingsToUI();
 });
 
-
 // 현재 날짜를 기준으로 학기 설정
 function setCurrentSemester() {
     const now = new Date();
@@ -184,7 +182,6 @@ function setCurrentSemester() {
         console.log(`새로운 연도 추가: ${currentSemester.year}년`);
     }
 }
-
 
 // 커스텀 드롭다운 토글
 function toggleTimetableDropdown() {
@@ -642,701 +639,567 @@ function changeTimetable() {
     // 이 함수는 더 이상 사용되지 않음 (커스텀 드롭다운 사용)
 }
 
-// 시간표 이름 변경
-function renameTimetable() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
-    }
-    
-    const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
-    if (newName && newName.trim() !== "") {
-        // 시간표 이름 업데이트
-        currentTimetable.name = newName.trim();
+    // 시간표 이름 변경
+    function renameTimetable() {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
         
-        // 시간표 목록에서 해당 시간표 업데이트
-        const index = timetables.findIndex(t => t.id === currentTimetable.id);
-        if (index !== -1) {
-            timetables[index] = currentTimetable;
+        if (!currentUser) {
+            alert('로그인이 필요한 서비스입니다.');
+            return;
         }
         
-        // 로컬 스토리지에 저장 (사용자별)
-        localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
-        localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
-        
-        // 시간표 선택기 업데이트
-        updateTimetableSelector();
-        
-        // 페이지 타이틀 업데이트
-        updatePageTitle();
+        const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
+        if (newName && newName.trim() !== "") {
+            // 시간표 이름 업데이트
+            currentTimetable.name = newName.trim();
+            
+            // 시간표 목록에서 해당 시간표 업데이트
+            const index = timetables.findIndex(t => t.id === currentTimetable.id);
+            if (index !== -1) {
+                timetables[index] = currentTimetable;
+            }
+            
+            // 로컬 스토리지에 저장 (사용자별)
+            localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
+            localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
+            
+            // 시간표 선택기 업데이트
+            updateTimetableSelector();
+            
+            // 페이지 타이틀 업데이트
+            updatePageTitle();
+        }
     }
-}
 
-// 새 시간표 추가
-function addNewTimetable() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
+    // 새 시간표 추가
+    function addNewTimetable() {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
+        
+        if (!currentUser) {
+            alert('로그인이 필요한 서비스입니다.');
+            return;
+        }
+        
+        const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
+        if (newName && newName.trim() !== "") {
+            // 새 시간표 ID 생성 (최대 ID + 1)
+            const maxId = timetables.reduce((max, t) => Math.max(max, t.id), 0);
+            const newId = maxId + 1;
+            
+            // 새 시간표 객체 생성
+            const newTimetable = {
+                id: newId,
+                name: newName.trim()
+            };
+            
+            // 시간표 목록에 추가
+            timetables.push(newTimetable);
+            
+            // 현재 시간표로 설정
+            currentTimetable = newTimetable;
+            
+            // 로컬 스토리지에 저장 (사용자별)
+            localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
+            localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
+            
+            // 시간표 선택기 업데이트
+            updateTimetableSelector();
+            
+            // 페이지 타이틀 업데이트
+            updatePageTitle();
+            
+            // 과목 데이터 초기화 및 화면 갱신
+            courses = [];
+            saveCoursesToStorage();
+            renderCoursesOnTimetable();
+            renderCourseList();
+            calculateGrades();
+        }
     }
-    
-    const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
-    if (newName && newName.trim() !== "") {
-        // 새 시간표 ID 생성 (최대 ID + 1)
-        const maxId = timetables.reduce((max, t) => Math.max(max, t.id), 0);
-        const newId = maxId + 1;
+
+    // 학기 변경 함수
+    function changeSemester() {
+        const semesterSelect = document.getElementById('semester-select');
+        const selectedValue = semesterSelect.value;
+        const [year, term] = selectedValue.split('-');
         
-        // 새 시간표 객체 생성
-        const newTimetable = {
-            id: newId,
-            name: newName.trim()
-        };
+        currentSemester.year = parseInt(year);
+        currentSemester.term = parseInt(term);
         
-        // 시간표 목록에 추가
-        timetables.push(newTimetable);
+        // 선택된 학기에 맞는 과목 데이터 로드
+        loadCoursesFromStorage();
         
-        // 현재 시간표로 설정
-        currentTimetable = newTimetable;
-        
-        // 로컬 스토리지에 저장 (사용자별)
-        localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
-        localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
-        
-        // 시간표 선택기 업데이트
-        updateTimetableSelector();
-        
-        // 페이지 타이틀 업데이트
-        updatePageTitle();
-        
-        // 과목 데이터 초기화 및 화면 갱신
-        courses = [];
-        saveCoursesToStorage();
+        // 시간표 갱신
         renderCoursesOnTimetable();
+        
+        // 과목 목록 갱신
         renderCourseList();
+        
+        // 학점 계산 갱신
         calculateGrades();
     }
-}
 
-// 학기 변경 함수
-function changeSemester() {
-    const semesterSelect = document.getElementById('semester-select');
-    const selectedValue = semesterSelect.value;
-    const [year, term] = selectedValue.split('-');
-    
-    currentSemester.year = parseInt(year);
-    currentSemester.term = parseInt(term);
-    
-    // 선택된 학기에 맞는 과목 데이터 로드
-    loadCoursesFromStorage();
-    
-    // 시간표 갱신
-    renderCoursesOnTimetable();
-    
-    // 과목 목록 갱신
-    renderCourseList();
-    
-    // 학점 계산 갱신
-    calculateGrades();
-}
-
-// 로컬 스토리지에서 과목 데이터 로드
-function loadCoursesFromStorage() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (currentUser) {
-        const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
-        const savedCourses = localStorage.getItem(semesterKey);
+    // 로컬 스토리지에서 과목 데이터 로드
+    function loadCoursesFromStorage() {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
         
-        if (savedCourses) {
-            courses = JSON.parse(savedCourses);
+        if (currentUser) {
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
+            const savedCourses = localStorage.getItem(semesterKey);
+            
+            if (savedCourses) {
+                courses = JSON.parse(savedCourses);
+            } else {
+                courses = [];
+            }
         } else {
             courses = [];
         }
-    } else {
-        courses = [];
     }
-}
 
-// 로컬 스토리지에 과목 데이터 저장
-function saveCoursesToStorage() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (currentUser) {
-        const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
-        localStorage.setItem(semesterKey, JSON.stringify(courses));
-    }
-}
-
-// 시간표 생성 함수
-function createTimetable() {
-    const tbody = document.getElementById('timetable-body');
-    tbody.innerHTML = '';
-    
-    // 교시별 행 생성
-    for (let i = 0; i < timeData.length; i++) {
-        const period = timeData[i].period;
-        const startTime = timeData[i].startTime;
+    // 로컬 스토리지에 과목 데이터 저장
+    function saveCoursesToStorage() {
+        const currentUser = localStorage.getItem('currentLoggedInUser');
         
-        const row = document.createElement('tr');
-        
-        // 시간 열
-        const timeCell = document.createElement('td');
-        timeCell.className = 'time-col';
-        
-        // 24시간 형식 처리
-        if (settings.timeFormat24) {
-            timeCell.innerHTML = `${period}교시<br>${startTime}`;
-        } else {
-            const hour = parseInt(startTime.split(':')[0]);
-            const minute = startTime.split(':')[1];
-            const ampm = hour >= 12 ? '오후' : '오전';
-            const displayHour = hour > 12 ? hour - 12 : hour;
-            timeCell.innerHTML = `${period}교시<br>${ampm} ${displayHour}:${minute}`;
+        if (currentUser) {
+            const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
+            localStorage.setItem(semesterKey, JSON.stringify(courses));
         }
-        
-        row.appendChild(timeCell);
-        
-        // 요일별 열 (월~토)
-        const maxDays = settings.showWeekend ? 6 : 5;
-        for (let day = 1; day <= maxDays; day++) {
-            const cell = document.createElement('td');
-            cell.className = 'class-cell';
-            cell.dataset.day = day;
-            cell.dataset.period = period;
-            row.appendChild(cell);
-        }
-        
-        tbody.appendChild(row);
     }
-    
-    // 헤더 업데이트 (주말 표시 여부)
-    const headerCells = document.querySelectorAll('.timetable th');
-    if (!settings.showWeekend && headerCells.length > 6) {
-        headerCells[6].style.display = 'none';
-    } else if (settings.showWeekend && headerCells.length > 6) {
-        headerCells[6].style.display = '';
-    }
-    
-    // 과목 데이터를 시간표에 표시
-    renderCoursesOnTimetable();
-}
 
-// 시간표에 과목 데이터 표시
-function renderCoursesOnTimetable() {
-    // 기존 과목 셀 초기화
-    const classCells = document.querySelectorAll('.class-cell');
-    classCells.forEach(cell => {
-        cell.innerHTML = '';
-        cell.style.position = 'relative';
-    });
-    
-    // 과목별로 시간표에 표시
-    courses.forEach(course => {
-        course.times.forEach(time => {
-            // 요일 열 찾기
-            const day = time.day;
-            const startPeriod = time.start;
-            const endPeriod = time.end;
+    // 시간표 생성 함수
+    function createTimetable() {
+        const tbody = document.getElementById('timetable-body');
+        tbody.innerHTML = '';
+        
+        // 교시별 행 생성
+        for (let i = 0; i < timeData.length; i++) {
+            const period = timeData[i].period;
+            const startTime = timeData[i].startTime;
             
-            // 30분부터 시작하는 수업 (반만 채우기)
-            for (let period = startPeriod; period <= endPeriod; period++) {
-                const cell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${period}"]`);
-                if (!cell) continue;
+            const row = document.createElement('tr');
+            
+            // 시간 열
+            const timeCell = document.createElement('td');
+            timeCell.className = 'time-col';
+            
+            // 24시간 형식 처리
+            if (settings.timeFormat24) {
+                timeCell.innerHTML = `${period}교시<br>${startTime}`;
+            } else {
+                const hour = parseInt(startTime.split(':')[0]);
+                const minute = startTime.split(':')[1];
+                const ampm = hour >= 12 ? '오후' : '오전';
+                const displayHour = hour > 12 ? hour - 12 : hour;
+                timeCell.innerHTML = `${period}교시<br>${ampm} ${displayHour}:${minute}`;
+            }
+            
+            row.appendChild(timeCell);
+            
+            // 요일별 열 (월~토)
+            const maxDays = settings.showWeekend ? 6 : 5;
+            for (let day = 1; day <= maxDays; day++) {
+                const cell = document.createElement('td');
+                cell.className = 'class-cell';
+                cell.dataset.day = day;
+                cell.dataset.period = period;
+                row.appendChild(cell);
+            }
+            
+            tbody.appendChild(row);
+        }
+        
+        // 헤더 업데이트 (주말 표시 여부)
+        const headerCells = document.querySelectorAll('.timetable th');
+        if (!settings.showWeekend && headerCells.length > 6) {
+            headerCells[6].style.display = 'none';
+        } else if (settings.showWeekend && headerCells.length > 6) {
+            headerCells[6].style.display = '';
+        }
+        
+        // 과목 데이터를 시간표에 표시
+        renderCoursesOnTimetable();
+    }
+
+    // 시간표에 과목 데이터 표시
+    function renderCoursesOnTimetable() {
+        // 기존 과목 셀 초기화
+        const classCells = document.querySelectorAll('.class-cell');
+        classCells.forEach(cell => {
+            cell.innerHTML = '';
+            cell.style.position = 'relative';
+        });
+        
+        // 과목별로 시간표에 표시
+        courses.forEach(course => {
+            course.times.forEach(time => {
+                // 요일 열 찾기
+                const day = time.day;
+                const startPeriod = time.start;
+                const endPeriod = time.end;
                 
-                // 수업 블록 생성
-                const courseBlock = document.createElement('div');
-                cell.appendChild(courseBlock);
-                
-                // 블록 포지셔닝 및 스타일링
-                courseBlock.style.position = 'absolute';
-                courseBlock.style.zIndex = '5';
-                courseBlock.className = `class-item ${course.color}`;
-                
-                if (period === startPeriod) {
-                    // 첫 번째 교시 (30분부터 시작)
-                    courseBlock.style.top = '30px';  // 50% 대신 고정값 사용
-                    courseBlock.style.height = 'calc(100% - 30px)';
-                    courseBlock.style.left = '-1px';
-                    courseBlock.style.right = '-1px';
-                    courseBlock.style.bottom = '-1px';
+                for (let period = startPeriod; period <= endPeriod; period++) {
+                    const cell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${period}"]`);
+                    if (!cell) continue;
                     
-                    // 첫 교시에는 과목명과 정보 표시
-                    let classInfo = '';
-                    if (settings.showProfessor && course.professor) {
-                        classInfo += course.professor;
-                    }
-                    if (settings.showRoom && course.room) {
-                        classInfo += (classInfo ? ' ' : '') + course.room;
-                    }
+                    // 수업 블록 생성
+                    const courseBlock = document.createElement('div');
+                    cell.appendChild(courseBlock);
                     
-                    courseBlock.innerHTML = `
-                        <div class="class-name">${course.name}</div>
-                        ${classInfo ? `<div class="class-info">${classInfo}</div>` : ''}
-                    `;
-                } else if (period === endPeriod) {
-                    // 마지막 교시 (20분에 종료)
-                    courseBlock.style.top = '-1px';
-                    courseBlock.style.height = '35%';
-                    courseBlock.style.left = '-1px';
-                    courseBlock.style.right = '-1px';
-                    courseBlock.style.borderTop = 'none';
-                    courseBlock.style.borderRadius = '0';
-                } else {
-                    // 중간 교시 (전체 채우기)
-                    courseBlock.style.top = '-1px';
-                    courseBlock.style.height = 'calc(100% + 2px)';
-                    courseBlock.style.left = '-1px';
-                    courseBlock.style.right = '-1px';
-                    courseBlock.style.borderRadius = '0';
+                    // 블록 포지셔닝 및 스타일링
+                    courseBlock.style.position = 'absolute';
+                    courseBlock.style.zIndex = '5';
+                    courseBlock.className = `class-item ${course.color}`;
+                    
+                    if (period === startPeriod) {
+                        // 첫 번째 교시 (30분부터 시작)
+                        courseBlock.style.top = '30px';
+                        courseBlock.style.height = 'calc(100% - 30px)';
+                        courseBlock.style.left = '-1px';
+                        courseBlock.style.right = '-1px';
+                        courseBlock.style.bottom = '-1px';
+                        
+                        // 첫 교시에는 과목명과 정보 표시
+                        let classInfo = '';
+                        if (settings.showProfessor && course.professor) {
+                            classInfo += course.professor;
+                        }
+                        if (settings.showRoom && course.room) {
+                            classInfo += (classInfo ? ' ' : '') + course.room;
+                        }
+                        
+                        courseBlock.innerHTML = `
+                            <div class="class-name">${course.name}</div>
+                            ${classInfo ? `<div class="class-info">${classInfo}</div>` : ''}
+                        `;
+                    } else if (period === endPeriod) {
+                        // 마지막 교시 (20분에 종료)
+                        courseBlock.style.top = '-1px';
+                        courseBlock.style.height = '35%';
+                        courseBlock.style.left = '-1px';
+                        courseBlock.style.right = '-1px';
+                        courseBlock.style.borderTop = 'none';
+                        courseBlock.style.borderRadius = '0';
+                    } else {
+                        // 중간 교시 (전체 채우기)
+                        courseBlock.style.top = '-1px';
+                        courseBlock.style.height = 'calc(100% + 2px)';
+                        courseBlock.style.left = '-1px';
+                        courseBlock.style.right = '-1px';
+                        courseBlock.style.borderRadius = '0';
+                    }
+                }
+            });
+        });
+    }
+
+    // 과목 목록 표시
+    function renderCourseList() {
+        const courseList = document.getElementById('course-list');
+        courseList.innerHTML = '';
+        
+        if (courses.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'empty-message';
+            emptyMessage.textContent = '등록된 과목이 없습니다.';
+            courseList.appendChild(emptyMessage);
+            return;
+        }
+        
+        courses.forEach(course => {
+            const li = document.createElement('li');
+            li.className = 'class-list-item';
+            
+            const timeStrings = course.times.map(time => {
+                const day = dayData[time.day];
+                const startHour = 8 + time.start;
+                const startMinute = 30;
+                const endHour = 8 + time.end + 1;
+                const endMinute = 20;
+                return `${day} ${time.start}교시(${startHour}:${startMinute.toString().padStart(2, '0')})~${time.end}교시(${endHour}:${endMinute.toString().padStart(2, '0')})`;
+            });
+            
+            const gradeSelect = document.createElement('select');
+            gradeSelect.className = 'class-grade-select';
+            gradeSelect.dataset.courseId = course.id;
+            gradeSelect.innerHTML = `
+                <option value="">학점 미정</option>
+                <option value="A+">A+</option>
+                <option value="A0">A0</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B0">B0</option>
+                <option value="B-">B-</option>
+                <option value="C+">C+</option>
+                <option value="C0">C0</option>
+                <option value="C-">C-</option>
+                <option value="D+">D+</option>
+                <option value="D0">D0</option>
+                <option value="D-">D-</option>
+                <option value="F">F</option>
+                <option value="P">P (Pass)</option>
+                <option value="NP">NP (No Pass)</option>
+            `;
+            if (course.grade) gradeSelect.value = course.grade;
+            gradeSelect.addEventListener('change', function() {
+                const courseId = parseInt(this.dataset.courseId);
+                const gradeValue = this.value;
+                const idx = courses.findIndex(c => c.id === courseId);
+                if (idx !== -1) {
+                    courses[idx].grade = gradeValue;
+                    saveCoursesToStorage();
+                    calculateGrades();
+                }
+            });
+            
+            li.innerHTML = `
+                <div class="class-list-info">
+                    <div class="class-list-title">${course.name}</div>
+                    <div class="class-list-details">${course.professor || '교수명 미정'} | ${course.credits}학점 | ${course.type}</div>
+                    <div class="class-list-time">${timeStrings.join(', ')} | ${course.room || '강의실 미정'}</div>
+                </div>
+                <div class="class-actions">
+                    <button class="class-action-button" onclick="editCourse(${course.id})">
+                        <!-- edit icon -->
+                    </button>
+                    <button class="class-action-button" onclick="deleteCourse(${course.id})">
+                        <!-- delete icon -->
+                    </button>
+                </div>
+            `;
+            
+            const actionsDiv = li.querySelector('.class-actions');
+            gradeSelect.style.marginRight = '10px';
+            actionsDiv.insertBefore(gradeSelect, actionsDiv.firstChild);
+            courseList.appendChild(li);
+        });
+    }
+
+    // 학점 계산 함수
+    function calculateGrades() {
+        let totalCredits = 0, totalPoints = 0;
+        let majorCredits = 0, majorPoints = 0;
+        
+        courses.forEach(course => {
+            if (course.grade && gradePoints[course.grade] !== null) {
+                const c = course.credits;
+                const p = gradePoints[course.grade];
+                totalCredits += c;
+                totalPoints += c * p;
+                if (course.type === '전공필수' || course.type === '전공선택') {
+                    majorCredits += c;
+                    majorPoints += c * p;
                 }
             }
         });
-    });
-}
-
-// 과목 목록 표시
-function renderCourseList() {
-    const courseList = document.getElementById('course-list');
-    courseList.innerHTML = '';
-    
-    if (courses.length === 0) {
-        const emptyMessage = document.createElement('div');
-        emptyMessage.className = 'empty-message';
-        emptyMessage.textContent = '등록된 과목이 없습니다.';
-        courseList.appendChild(emptyMessage);
-        return;
+        
+        document.getElementById('total-credits').textContent = totalCredits;
+        document.getElementById('total-gpa').textContent = totalCredits > 0 ? (totalPoints/totalCredits).toFixed(2) : "0.00";
+        document.getElementById('major-gpa').textContent = majorCredits > 0 ? (majorPoints/majorCredits).toFixed(2) : "0.00";
     }
-    
-    courses.forEach(course => {
-        const li = document.createElement('li');
-        li.className = 'class-list-item';
-        
-        // 과목 시간 정보 문자열 생성 (수정된 부분)
-        const timeStrings = course.times.map(time => {
-            const day = dayData[time.day];
-            
-            // 시작 시간 계산 (30분 시작)
-            const startHour = 8 + time.start; // 1교시는 9:30이므로
-            const startMinute = 30;
-            const startTimeDisplay = `${startHour}:${startMinute.toString().padStart(2, '0')}`;
-            
-            // 종료 시간 계산 (20분 종료)
-            const endHour = 8 + time.end + 1; // 1교시 종료는 10:20이므로
-            const endMinute = 20;
-            const endTimeDisplay = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
-            
-            const startTime = `${time.start}교시(${startTimeDisplay})`;
-            const endTime = `${time.end}교시(${endTimeDisplay})`;
-            
-            return `${day} ${startTime}~${endTime}`;
-        });
-        
-        // 학점 평가 선택 드롭다운 생성
-        const gradeSelect = document.createElement('select');
-        gradeSelect.className = 'class-grade-select';
-        gradeSelect.dataset.courseId = course.id;
-        gradeSelect.innerHTML = `
-            <option value="">학점 미정</option>
-            <option value="A+">A+</option>
-            <option value="A0">A0</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B0">B0</option>
-            <option value="B-">B-</option>
-            <option value="C+">C+</option>
-            <option value="C0">C0</option>
-            <option value="C-">C-</option>
-            <option value="D+">D+</option>
-            <option value="D0">D0</option>
-            <option value="D-">D-</option>
-            <option value="F">F</option>
-            <option value="P">P (Pass)</option>
-            <option value="NP">NP (No Pass)</option>
-        `;
-        
-        // 저장된 학점이 있으면 선택
-        if (course.grade) {
-            gradeSelect.value = course.grade;
-        }
-        
-        // 학점 변경 이벤트
-        gradeSelect.addEventListener('change', function() {
-            const courseId = parseInt(this.dataset.courseId);
-            const gradeValue = this.value;
-            
-            // 해당 과목 찾기
-            const courseIndex = courses.findIndex(c => c.id === courseId);
-            if (courseIndex !== -1) {
-                // 학점 업데이트
-                courses[courseIndex].grade = gradeValue;
-                
-                // 저장 및 학점 계산 갱신
-                saveCoursesToStorage();
-                calculateGrades();
-            }
-        });
 
-        // HTML 구성 수정
-        li.innerHTML = `
-            <div class="class-list-info">
-                <div class="class-list-title">${course.name}</div>
-                <div class="class-list-details">${course.professor || '교수명 미정'} | ${course.credits}학점 | ${course.type}</div>
-                <div class="class-list-time">${timeStrings.join(', ')} | ${course.room || '강의실 미정'}</div>
-            </div>
-            <div class="class-actions">
-                <!-- 학점 드롭다운을 여기에 추가할 것입니다 -->
-                <button class="class-action-button" onclick="editCourse(${course.id})">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
-                </button>
-                <button class="class-action-button" onclick="deleteCourse(${course.id})">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                </button>
-            </div>
-        `;
-
-        // 학점 선택 드롭다운 추가 (액션 버튼 앞에 추가)
-        const actionsDiv = li.querySelector('.class-actions');
-        actionsDiv.insertBefore(gradeSelect, actionsDiv.firstChild);
-
-        // 드롭다운과 다른 버튼 사이 간격 조정
-        gradeSelect.style.marginRight = '10px';
-
-        courseList.appendChild(li);
-    });
-}
-    
-
-
-// 학점 계산 함수 (새로 추가)
-function calculateGrades() {
-    let totalCredits = 0;
-    let totalPoints = 0;
-    let majorCredits = 0;
-    let majorPoints = 0;
-    
-    courses.forEach(course => {
-        // 학점이 부여된 과목만 계산에 포함
-        if (course.grade && gradePoints[course.grade] !== null) {
-            const credits = course.credits;
-            const points = gradePoints[course.grade];
-            
-            // 전체 학점 계산
-            totalCredits += credits;
-            totalPoints += credits * points;
-            
-            // 전공 과목인 경우 전공 학점 계산
-            if (course.type === '전공필수' || course.type === '전공선택') {
-                majorCredits += credits;
-                majorPoints += credits * points;
-            }
-        }
-    });
-    
-    // 평점 계산 (학점이 없는 경우 0으로 표시)
-    const totalGPA = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
-    const majorGPA = majorCredits > 0 ? (majorPoints / majorCredits).toFixed(2) : "0.00";
-    
-    // 화면에 표시
-    document.getElementById('total-credits').textContent = totalCredits;
-    document.getElementById('total-gpa').textContent = totalGPA;
-    document.getElementById('major-gpa').textContent = majorGPA;
-}
-
-// 과목 추가 모달 열기
-function openAddCourseModal() {
-    // 모달 제목 설정
-    document.getElementById('modal-title').textContent = '과목 추가';
-    
-    // 폼 초기화
-    document.getElementById('course-form').reset();
-    document.getElementById('course-id').value = '';
-    document.getElementById('course-grade').value = '';
-    
-    // 기본 색상 선택
-    selectColor(document.querySelector('.color-option'));
-    
-    // 시간 슬롯 초기화
-    const timeSlots = document.getElementById('time-slots');
-    timeSlots.innerHTML = '';
-    addTimeSlot();
-    
-    // 모달 표시
-    document.getElementById('course-modal').style.display = 'flex';
-}
-
-// 과목 수정 모달 열기
-function editCourse(courseId) {
-    // 해당 과목 찾기
-    const course = courses.find(c => c.id === courseId);
-    if (!course) return;
-    
-    // 모달 제목 설정
-    document.getElementById('modal-title').textContent = '과목 수정';
-    
-    // 과목 정보 설정
-    document.getElementById('course-id').value = course.id;
-    document.getElementById('course-name').value = course.name;
-    document.getElementById('course-professor').value = course.professor || '';
-    document.getElementById('course-credits').value = course.credits;
-    document.getElementById('course-type').value = course.type;
-    document.getElementById('course-room').value = course.room || '';
-    document.getElementById('course-color').value = course.color;
-    document.getElementById('course-grade').value = course.grade || '';
-    
-    // 색상 선택
-    selectColor(document.querySelector(`.color-option[data-color="${course.color}"]`));
-    
-    // 시간 슬롯 초기화
-    const timeSlots = document.getElementById('time-slots');
-    timeSlots.innerHTML = '';
-    
-    // 시간 정보 설정
-    course.times.forEach(time => {
-        addTimeSlot(time.day, time.start, time.end);
-    });
-    
-    // 시간 정보가 없는 경우 기본 슬롯 추가
-    if (course.times.length === 0) {
+    // 과목 추가 모달 열기
+    function openAddCourseModal() {
+        document.getElementById('modal-title').textContent = '과목 추가';
+        document.getElementById('course-form').reset();
+        document.getElementById('course-id').value = '';
+        document.getElementById('course-grade').value = '';
+        selectColor(document.querySelector('.color-option'));
+        const timeSlots = document.getElementById('time-slots');
+        timeSlots.innerHTML = '';
         addTimeSlot();
+        document.getElementById('course-modal').style.display = 'flex';
     }
-    
-    // 모달 표시
-    document.getElementById('course-modal').style.display = 'flex';
-}
 
-// 과목 삭제
-function deleteCourse(courseId) {
-    if (!confirm('정말 이 과목을 삭제하시겠습니까?')) return;
-    
+    // 과목 수정 모달 열기
+    function editCourse(courseId) {
+        const course = courses.find(c => c.id === courseId);
+        if (!course) return;
+        document.getElementById('modal-title').textContent = '과목 수정';
+        document.getElementById('course-id').value = course.id;
+        document.getElementById('course-name').value = course.name;
+        document.getElementById('course-professor').value = course.professor || '';
+        document.getElementById('course-credits').value = course.credits;
+        document.getElementById('course-type').value = course.type;
+        document.getElementById('course-room').value = course.room || '';
+        document.getElementById('course-color').value = course.color;
+        document.getElementById('course-grade').value = course.grade || '';
+        selectColor(document.querySelector(`.color-option[data-color="${course.color}"]`));
+        const slots = document.getElementById('time-slots');
+        slots.innerHTML = '';
+        course.times.forEach(t => addTimeSlot(t.day, t.start, t.end));
+        if (course.times.length === 0) addTimeSlot();
+        document.getElementById('course-modal').style.display = 'flex';
+    }
+
     // 과목 삭제
-    courses = courses.filter(course => course.id !== courseId);
-    
-    // 데이터 저장 및 화면 갱신
-    saveCoursesToStorage();
-    renderCourseList();
-    renderCoursesOnTimetable();
-    calculateGrades();
-}
-
-// 모달 닫기
-function closeModal() {
-    document.getElementById('course-modal').style.display = 'none';
-}
-
-// 과목 색상 선택
-function selectColor(element) {
-    // 기존 선택 제거
-    document.querySelectorAll('.color-option').forEach(option => {
-        option.classList.remove('selected');
-    });
-    
-    // 새로운 색상 선택
-    element.classList.add('selected');
-    document.getElementById('course-color').value = element.dataset.color;
-}
-
-// 시간 슬롯 추가
-function addTimeSlot(day = 1, start = 1, end = 1) {
-    const timeSlots = document.getElementById('time-slots');
-    
-    const slotDiv = document.createElement('div');
-    slotDiv.className = 'form-row time-slot';
-    
-    slotDiv.innerHTML = `
-        <div class="form-group">
-            <label class="form-label">요일</label>
-            <select class="form-select day-select">
-                <option value="1">월요일</option>
-                <option value="2">화요일</option>
-                <option value="3">수요일</option>
-                <option value="4">목요일</option>
-                <option value="5">금요일</option>
-                <option value="6">토요일</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label">시작 교시</label>
-            <select class="form-select start-select">
-                <option value="1">1교시 (9:30)</option>
-                <option value="2">2교시 (10:30)</option>
-                <option value="3">3교시 (11:30)</option>
-                <option value="4">4교시 (12:30)</option>
-                <option value="5">5교시 (13:30)</option>
-                <option value="6">6교시 (14:30)</option>
-                <option value="7">7교시 (15:30)</option>
-                <option value="8">8교시 (16:30)</option>
-                <option value="9">9교시 (17:30)</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label">종료 교시</label>
-            <select class="form-select end-select">
-                <option value="1">1교시 (10:20)</option>
-                <option value="2">2교시 (11:20)</option>
-                <option value="3">3교시 (12:20)</option>
-                <option value="4">4교시 (13:20)</option>
-                <option value="5">5교시 (14:20)</option>
-                <option value="6">6교시 (15:20)</option>
-                <option value="7">7교시 (16:20)</option>
-                <option value="8">8교시 (17:20)</option>
-                <option value="9">9교시 (18:20)</option>
-            </select>
-        </div>
-        
-        <div class="form-group" style="flex: 0.2">
-            <label class="form-label">&nbsp;</label>
-            <button type="button" class="form-input" style="background-color: #ff6b6b; color: white; display: flex; align-items: center; justify-content: center;" onclick="removeTimeSlot(this)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        </div>
-    `;
-    
-    timeSlots.appendChild(slotDiv);
-    
-    // 초기값 설정
-    const daySelect = slotDiv.querySelector('.day-select');
-    const startSelect = slotDiv.querySelector('.start-select');
-    const endSelect = slotDiv.querySelector('.end-select');
-    
-    daySelect.value = day;
-    startSelect.value = start;
-    endSelect.value = end;
-    
-    // 시작 교시가 변경될 때 종료 교시 업데이트
-    startSelect.addEventListener('change', function() {
-        const startValue = parseInt(this.value);
-        const endValue = parseInt(endSelect.value);
-        
-        if (endValue < startValue) {
-            endSelect.value = startValue;
-        }
-    });
-}
-
-// 시간 슬롯 제거
-function removeTimeSlot(button) {
-    const timeSlots = document.getElementById('time-slots');
-    const slot = button.closest('.time-slot');
-    
-    // 최소 하나의 슬롯은 유지
-    if (timeSlots.querySelectorAll('.time-slot').length > 1) {
-        timeSlots.removeChild(slot);
+    function deleteCourse(courseId) {
+        if (!confirm('정말 이 과목을 삭제하시겠습니까?')) return;
+        courses = courses.filter(c => c.id !== courseId);
+        saveCoursesToStorage();
+        renderCourseList();
+        renderCoursesOnTimetable();
+        calculateGrades();
     }
-}
 
-// 과목 저장
-function saveCourse(event) {
-    event.preventDefault();
-    
-    // 과목 정보 수집
-    const courseId = document.getElementById('course-id').value;
-    const name = document.getElementById('course-name').value.trim();
-    const professor = document.getElementById('course-professor').value.trim();
-    const credits = parseInt(document.getElementById('course-credits').value);
-    const type = document.getElementById('course-type').value;
-    const room = document.getElementById('course-room').value.trim();
-    const color = document.getElementById('course-color').value;
-    const grade = document.getElementById('course-grade').value;
-    
-    // 시간 정보 수집
-    const times = [];
-    const timeSlots = document.querySelectorAll('.time-slot');
-    
-    timeSlots.forEach(slot => {
-        const day = parseInt(slot.querySelector('.day-select').value);
-        const start = parseInt(slot.querySelector('.start-select').value);
-        const end = parseInt(slot.querySelector('.end-select').value);
-        
-        times.push({ day, start, end });
-    });
-    
-    // 과목 객체 생성
-    const course = {
-        id: courseId ? parseInt(courseId) : Date.now(),
-        name,
-        professor,
-        credits,
-        type,
-        color,
-        room,
-        times,
-        grade: grade || null
-    };
-    
-    // 기존 과목 수정 또는 새 과목 추가
-    if (courseId) {
-        const index = courses.findIndex(c => c.id === parseInt(courseId));
-        if (index !== -1) {
-            courses[index] = course;
-        }
-    } else {
-        courses.push(course);
-    }
-    
-    // 데이터 저장 및 화면 갱신
-    saveCoursesToStorage();
-    renderCourseList();
-    renderCoursesOnTimetable();
-    calculateGrades();
-    
     // 모달 닫기
-    closeModal();
-}
+    function closeModal() {
+        document.getElementById('course-modal').style.display = 'none';
+    }
 
-// 이전 페이지로 이동
-function goToBack() {
-    window.history.back();
-}
+    // 색상 선택
+    function selectColor(element) {
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('course-color').value = element.dataset.color;
+    }
 
-// ESC 키로 모달 닫기
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        // 과목 모달 닫기
-        if (document.getElementById('course-modal').style.display === 'flex') {
-            closeModal();
-        }
-        // 설정 모달 닫기
-        if (document.getElementById('settings-modal').style.display === 'flex') {
-            closeSettings();
+    // 시간 슬롯 추가
+    function addTimeSlot(day = 1, start = 1, end = 1) {
+        const container = document.getElementById('time-slots');
+        const slot = document.createElement('div');
+        slot.className = 'form-row time-slot';
+        slot.innerHTML = `
+            <div class="form-group">
+                <label class="form-label">요일</label>
+                <select class="form-select day-select">
+                    <option value="1">월요일</option>
+                    <option value="2">화요일</option>
+                    <option value="3">수요일</option>
+                    <option value="4">목요일</option>
+                    <option value="5">금요일</option>
+                    <option value="6">토요일</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">시작 교시</label>
+                <select class="form-select start-select">
+                    <option value="1">1교시 (9:30)</option>
+                    <option value="2">2교시 (10:30)</option>
+                    <option value="3">3교시 (11:30)</option>
+                    <option value="4">4교시 (12:30)</option>
+                    <option value="5">5교시 (13:30)</option>
+                    <option value="6">6교시 (14:30)</option>
+                    <option value="7">7교시 (15:30)</option>
+                    <option value="8">8교시 (16:30)</option>
+                    <option value="9">9교시 (17:30)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">종료 교시</label>
+                <select class="form-select end-select">
+                    <option value="1">1교시 (10:20)</option>
+                    <option value="2">2교시 (11:20)</option>
+                    <option value="3">3교시 (12:20)</option>
+                    <option value="4">4교시 (13:20)</option>
+                    <option value="5">5교시 (14:20)</option>
+                    <option value="6">6교시 (15:20)</option>
+                    <option value="7">7교시 (16:20)</option>
+                    <option value="8">8교시 (17:20)</option>
+                    <option value="9">9교시 (18:20)</option>
+                </select>
+            </div>
+            <div class="form-group" style="flex: 0.2">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="form-input" onclick="removeTimeSlot(this)">
+                    <!-- remove icon -->
+                </button>
+            </div>
+        `;
+        container.appendChild(slot);
+        const dayEl = slot.querySelector('.day-select');
+        const startEl = slot.querySelector('.start-select');
+        const endEl = slot.querySelector('.end-select');
+        dayEl.value = day;
+        startEl.value = start;
+        endEl.value = end;
+        startEl.addEventListener('change', () => {
+            if (parseInt(endEl.value) < parseInt(startEl.value)) {
+                endEl.value = startEl.value;
+            }
+        });
+    }
+
+    // 시간 슬롯 제거
+    function removeTimeSlot(btn) {
+        const slots = document.getElementById('time-slots');
+        if (slots.querySelectorAll('.time-slot').length > 1) {
+            slots.removeChild(btn.closest('.time-slot'));
         }
     }
-});
 
-// 모달 외부 클릭 시 닫기
-document.getElementById('course-modal').addEventListener('click', function(event) {
-    if (event.target === this) {
+    // 과목 저장
+    function saveCourse(event) {
+        event.preventDefault();
+        const courseId = document.getElementById('course-id').value;
+        const name = document.getElementById('course-name').value.trim();
+        const professor = document.getElementById('course-professor').value.trim();
+        const credits = parseInt(document.getElementById('course-credits').value);
+        const type = document.getElementById('course-type').value;
+        const room = document.getElementById('course-room').value.trim();
+        const color = document.getElementById('course-color').value;
+        const grade = document.getElementById('course-grade').value;
+        const times = [];
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            times.push({
+                day: parseInt(slot.querySelector('.day-select').value),
+                start: parseInt(slot.querySelector('.start-select').value),
+                end: parseInt(slot.querySelector('.end-select').value)
+            });
+        });
+        const course = { id: courseId ? parseInt(courseId) : Date.now(), name, professor, credits, type, color, room, times, grade: grade || null };
+        if (courseId) {
+            const idx = courses.findIndex(c => c.id === course.id);
+            if (idx !== -1) courses[idx] = course;
+        } else {
+            courses.push(course);
+        }
+        saveCoursesToStorage();
+        renderCourseList();
+        renderCoursesOnTimetable();
+        calculateGrades();
         closeModal();
     }
-});
 
-document.getElementById('settings-modal').addEventListener('click', function(event) {
-    if (event.target === this) {
-        closeSettings();
+    // 이전 페이지로 이동
+    function goToBack() {
+        window.history.back();
     }
-});
 
-// 브라우저 창 크기 변경 시 적응형 레이아웃 조정
-let resizeTimer;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        // 필요한 경우 레이아웃 재조정
-        if (window.innerWidth <= 768) {
-            // 모바일 뷰 조정
-            document.querySelector('.container').style.maxWidth = '100%';
-        } else {
-            // 데스크톱 뷰 복원
-            document.querySelector('.container').style.maxWidth = '768px';
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            if (document.getElementById('course-modal').style.display === 'flex') {
+                closeModal();
+            }
+            if (document.getElementById('settings-modal').style.display === 'flex') {
+                closeSettings();
+            }
         }
-    }, 250);
-});
+    });
 
-// 초기 화면 크기에 따른 레이아웃 설정
-if (window.innerWidth <= 768) {
-    document.querySelector('.container').style.maxWidth = '100%';
-}
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('course-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    document.getElementById('settings-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeSettings();
+    });
+
+    // 창 크기 변경 시 레이아웃 조정
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.container').style.maxWidth = '100%';
+            } else {
+                document.querySelector('.container').style.maxWidth = '768px';
+            }
+        }, 250);
+    });
+
+    // 초기 레이아웃 설정
+    if (window.innerWidth <= 768) {
+        document.querySelector('.container').style.maxWidth = '100%';
+    }
