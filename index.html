@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연성대학교 캠퍼스 가이드</title>
-    <!-- 네이버 지도 API 스크립트 추가 - 새로운 API 키로 업데이트 -->
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x"></script>
+    <!-- 네이버 지도 API 스크립트 추가 - Direction 서브모듈 포함 -->
+    <script
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
+    defer>
+    </script>
+    </script>
     <!-- CSS 파일 연결 -->
     <link rel="stylesheet" href="index.css">
 </head>
@@ -40,7 +44,7 @@
                </div>
            </div>
        </header>
-       
+               
        <!-- 홈 탭 -->
        <div id="home-tab" class="tab-content active">
            <!-- 긴급 알림 배너 -->
