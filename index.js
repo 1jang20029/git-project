@@ -2472,28 +2472,32 @@ function getTodaysClasses() {
 
 // 네이버 지도 초기화 함수 - 수정된 버전
 function initNaverMap() {
-    console.log('네이버 지도 초기화 시작...');
+    console.log('네이버 지도 초기화 시작…');
 
-    // 1) naver.maps 스크립트가 로드되지 않았으면 중단
-    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+    // 1) naver 객체 또는 maps 모듈, LatLng 생성자가 준비되지 않았으면 바로 중단
+    if (
+        typeof naver === 'undefined' ||
+        !naver.maps ||
+        typeof naver.maps.LatLng !== 'function'
+    ) {
         console.error('네이버 지도 API가 로드되지 않았습니다. Client ID 또는 Allowed Origin을 확인하세요.');
         return;
     }
 
-    // 2) mapContainer 요소가 없으면 중단
-    const mapContainer = document.getElementById('naverMap');
-    if (!mapContainer) {
-        console.error('지도 컨테이너(naverMap)를 찾을 수 없습니다.');
-        return;
-    }
-
     try {
-        // 컨테이너 스타일 명시
+        // 2) 지도를 그릴 컨테이너가 문서에 없으면 중단
+        const mapContainer = document.getElementById('naverMap');
+        if (!mapContainer) {
+            console.error('지도 컨테이너 엘리먼트(#naverMap)를 찾을 수 없습니다.');
+            return;
+        }
+
+        // 3) 컨테이너 초기화
         mapContainer.style.width = '100%';
         mapContainer.style.height = '350px';
-        mapContainer.innerHTML = ''; // placeholder 제거
+        mapContainer.innerHTML = '';
 
-        // 지도 옵션
+        // 4) 지도 생성
         const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
         const mapOptions = {
             center: yeonsung,
@@ -2506,24 +2510,24 @@ function initNaverMap() {
             logoControl: true,
             mapDataControl: true
         };
-
-        // 지도 생성
         naverMap = new naver.maps.Map(mapContainer, mapOptions);
-        console.log('네이버 지도 객체 생성 완료');
 
-        // 리사이즈 강제
+        // 5) 지도 리사이즈 강제
         window.dispatchEvent(new Event('resize'));
-        setTimeout(() => naverMap.refresh(), 500);
+        setTimeout(() => {
+            if (naverMap) naverMap.refresh();
+        }, 500);
 
-        // Direction API 동적 로드
+        // 6) Direction API 로드 및 회색 영역 보정
         loadDirectionAPI();
+        setTimeout(fixMapGrayArea, 1000);
 
-        // 마커, 정보창 등 나머지 초기화 코드…
+        // 7) 마커, 정보창, GPS 버튼 등 나머지 초기화
+        //    (여기부터는 기존 initNaverMap 내부 로직 그대로)
+        mapMarkers = [];
+        infoWindows = [];
         buildingData.forEach(building => {
-            if (!building.position || building.position.lat == null || building.position.lng == null) {
-                console.error('유효하지 않은 좌표:', building);
-                return;
-            }
+            if (!building.position) return;
             const marker = new naver.maps.Marker({
                 position: new naver.maps.LatLng(building.position.lat, building.position.lng),
                 map: naverMap,
@@ -2532,10 +2536,12 @@ function initNaverMap() {
             mapMarkers.push(marker);
 
             const infoWindow = new naver.maps.InfoWindow({
-                content: `<div class="map-info-window">
-                            <div class="map-info-title">${building.name}</div>
-                            <div class="map-info-desc">${building.description}</div>
-                          </div>`,
+                content: `
+                    <div class="map-info-window">
+                        <div class="map-info-title">${building.name}</div>
+                        <div class="map-info-desc">${building.description}</div>
+                    </div>
+                `,
                 maxWidth: 250,
                 backgroundColor: "#fff",
                 borderColor: "#ddd",
@@ -2543,35 +2549,42 @@ function initNaverMap() {
                 anchorSize: { width: 12, height: 12 },
                 pixelOffset: new naver.maps.Point(10, -10)
             });
-            naver.maps.Event.addListener(marker, 'click', () => {
-                infoWindows.forEach(w => w.close());
+            naver.maps.Event.addListener(marker, "click", () => {
+                infoWindows.forEach(iw => iw.close());
                 infoWindow.open(naverMap, marker);
             });
             infoWindows.push(infoWindow);
         });
 
-        // GPS 버튼, 리사이즈 핸들러 등…
-        initLocationTracking();
-        window.addEventListener('resize', handleMapResize);
+        // GPS 버튼
+        const gpsButton = document.createElement('div');
+        gpsButton.className = 'gps-button';
+        gpsButton.innerHTML = '📍';
+        gpsButton.onclick = trackUserLocation;
+        mapContainer.appendChild(gpsButton);
 
         console.log('네이버 지도가 성공적으로 초기화되었습니다.');
-    } catch (error) {
+    }
+    catch (error) {
         console.error('네이버 지도 초기화 중 오류:', error);
+        const mapContainer = document.getElementById('naverMap');
         if (mapContainer) {
             mapContainer.innerHTML = `
                 <div style="
-                    display:flex; 
-                    height:100%; 
-                    align-items:center; 
-                    justify-content:center; 
-                    flex-direction:column; 
-                    background-color:#f8f9fa; 
+                    display:flex; height:100%; 
+                    align-items:center; justify-content:center; 
+                    flex-direction:column; background-color:#f8f9fa;
                     border-radius:8px;
                 ">
                     <div style="font-size:24px; margin-bottom:10px;">❌</div>
-                    <div style="font-weight:bold; margin-bottom:5px;">지도 초기화 오류</div>
-                    <div style="font-size:14px; color:#666;">개발자 콘솔을 확인해주세요</div>
-                </div>`;
+                    <div style="font-weight:bold; margin-bottom:5px;">
+                        지도 초기화 오류
+                    </div>
+                    <div style="font-size:14px; color:#666;">
+                        개발자 콘솔을 확인해주세요
+                    </div>
+                </div>
+            `;
         }
     }
 }
@@ -2581,68 +2594,48 @@ function initNaverMap() {
 
 // 회색 영역 문제 해결을 위한 스타일 동적 적용 함수
 function fixMapGrayArea() {
-    // 지도 API가 로드되지 않았거나, 컨테이너가 없으면 바로 리턴
-    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-        console.warn('fixMapGrayArea: 네이버 지도 API가 로드되지 않아 동작을 중단합니다.');
-        return;
-    }
+    // 회색 영역을 가리는 요소가 있는지 확인
     const mapContainer = document.getElementById('naverMap');
-    if (!mapContainer) {
-        console.warn('fixMapGrayArea: #naverMap 컨테이너를 찾을 수 없어 동작을 중단합니다.');
-        return;
+    if (mapContainer) {
+        // 회색 오버레이 요소가 있는지 확인하고 제거
+        const grayOverlays = mapContainer.querySelectorAll('div[style*="background-color: rgb(128, 128, 128)"]');
+        grayOverlays.forEach(overlay => {
+            overlay.style.display = 'none';
+        });
+
+        // 지도 컨테이너 내부의 모든 div 요소 확인
+        const mapDivs = mapContainer.querySelectorAll('div');
+        mapDivs.forEach(div => {
+            // width가 50%로 설정된 요소 찾기
+            const style = getComputedStyle(div);
+            if (style.width === '50%' || style.width.endsWith('50%')) {
+                div.style.width = '100%';
+                console.log('지도 요소 너비 수정: 50% → 100%');
+            }
+
+            // 회색 배경색을 가진 요소 찾기
+            if (
+                style.backgroundColor.includes('128') ||
+                style.backgroundColor.toLowerCase().includes('gray') ||
+                style.backgroundColor.toLowerCase().includes('grey')
+            ) {
+                div.style.backgroundColor = 'transparent';
+                console.log('회색 배경 요소 발견 및 수정');
+            }
+        });
     }
-
-    // 지도 위에 덮여 있는 회색 오버레이 요소 제거
-    const grayOverlays = mapContainer.querySelectorAll('div[style*="background-color: rgb(128, 128, 128)"]');
-    grayOverlays.forEach(overlay => {
-        overlay.style.display = 'none';
-    });
-
-    // 내부 div 들 중 너비가 50%로 잘못 설정된 요소나 배경이 회색인 요소 수정
-    const mapDivs = mapContainer.querySelectorAll('div');
-    mapDivs.forEach(div => {
-        const style = getComputedStyle(div);
-        // 잘못된 너비 50% → 100%
-        if (style.width === '50%' || style.width.endsWith('50%')) {
-            div.style.width = '100%';
-            console.log('fixMapGrayArea: 너비 50% → 100%로 수정');
-        }
-        // 배경색이 회색 계열이면 투명 처리
-        if (/(rgb\(128,\s*128,\s*128\))|(gray)|(grey)/.test(style.backgroundColor)) {
-            div.style.backgroundColor = 'transparent';
-            console.log('fixMapGrayArea: 회색 배경 요소 투명 처리');
-        }
-    });
 }
 
 
 // 지도 초기화 완료 후 회색 영역 수정 함수 호출하는 함수
 function initNaverMapWithFix() {
-    // 1) 기본 초기화 시도
-    initNaverMap();
+// 기본 초기화 함수 호출
+initNaverMap();
 
-    // 2) 회색 오버레이/너비 문제 보정
-    setTimeout(() => {
-        const mapContainer = document.getElementById('naverMap');
-        if (!mapContainer) return;
-
-        // 회색 덮어쓴 요소들 제거
-        const grayOverlays = mapContainer.querySelectorAll('div[style*="background-color: rgb(128, 128, 128)"]');
-        grayOverlays.forEach(ov => ov.style.display = 'none');
-
-        // 내부 div 너비 50% → 100%, 회색 배경 투명화
-        mapContainer.querySelectorAll('div').forEach(div => {
-            const style = getComputedStyle(div);
-            if (style.width.endsWith('50%')) {
-                div.style.width = '100%';
-                console.log('지도 요소 너비 수정: 50% → 100%');
-            }
-            if (/(128,\s*128,\s*128|gray|grey)/.test(style.backgroundColor)) {
-                div.style.backgroundColor = 'transparent';
-                console.log('회색 배경 요소 투명화');
-            }
-        });
-    }, 1000);
+// 지도가 로드된 후 회색 영역 수정
+setTimeout(() => {
+fixMapGrayArea();
+}, 1000);
 }
 
 // 탭 전환 시 지도 크기 조정 및 새로고침을 처리하는 함수
