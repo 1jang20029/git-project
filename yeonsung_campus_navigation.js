@@ -87,7 +87,7 @@ const buildings = [
     { 
         name: '학술정보관', 
         coords: { lat: 37.39637467129301, lng: 126.906603807587 },
-        image: 'images/bookstore.png',
+        image: 'images/YeongokLibrary.png',
         description: '도서관 및 학술 자료실'
     },
     { 
