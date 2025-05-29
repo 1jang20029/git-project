@@ -1231,25 +1231,24 @@ function removeTimeSlot(button) {
 
 // 과목 저장
 
+// 과목 저장
 function saveCourse(event) {
     event.preventDefault();
 
     // 1) 모든 시간 슬롯 요소 수집
     const slotEls = document.querySelectorAll('.time-slot');
-    // 슬롯 데이터를 편하게 다루기 위해 배열로 변환
+    // 슬롯 데이터를 배열로 변환
     const slots = Array.from(slotEls).map(slot => ({
         day:   slot.querySelector('.day-select').value,
-        start: slot.querySelector('.start-select').value,
-        end:   slot.querySelector('.end-select').value
+        start: parseInt(slot.querySelector('.start-select').value, 10),
+        end:   parseInt(slot.querySelector('.end-select').value, 10)
     }));
 
-    // 2) “시작 교시 ≠ 종료 교시” 검사
-    for (let i = 0; i < slots.length; i++) {
-        if (slots[i].start === slots[i].end) {
-            // 기존 경고 메시지 제거
+    // 2) 시작 교시와 종료 교시는 반드시 달라야 합니다.
+    for (let s of slots) {
+        if (s.start === s.end) {
             const old = document.getElementById('time-error');
             if (old) old.remove();
-            // 새 경고 생성
             const form = document.getElementById('course-form');
             const err = document.createElement('div');
             err.id = 'time-error';
@@ -1257,16 +1256,14 @@ function saveCourse(event) {
             err.style.marginBottom = '12px';
             err.textContent = '⚠️ 시작 교시와 종료 교시는 반드시 달라야 합니다.';
             form.prepend(err);
-            return;  // 저장 중단
+            return;
         }
     }
 
-    // 3) “같은 요일 + 시작 OR 종료 교시 중 하나라도 동일” 검사
+    // 3) 같은 요일에 시작 교시 또는 종료 교시가 중복될 수 없습니다.
     for (let i = 0; i < slots.length; i++) {
         for (let j = i + 1; j < slots.length; j++) {
-            // 두 슬롯이 같은 요일이면서
             if (slots[i].day === slots[j].day) {
-                // 시작 시간이 같거나 종료 시간이 같다면 오류
                 if (slots[i].start === slots[j].start || slots[i].end === slots[j].end) {
                     const old = document.getElementById('time-error');
                     if (old) old.remove();
@@ -1277,14 +1274,39 @@ function saveCourse(event) {
                     err.style.marginBottom = '12px';
                     err.textContent = '⚠️ 같은 요일에는 시작 또는 종료 교시가 중복될 수 없습니다.';
                     form.prepend(err);
-                    return;  // 저장 중단
+                    return;
                 }
             }
         }
     }
 
-    // 4) 과목 정보 수집
-    const courseId  = document.getElementById('course-id').value;
+    // 4) 기존 시간표 과목과 겹치는지 검사
+    const courseId = document.getElementById('course-id').value;
+    for (let s of slots) {
+        for (let c of courses) {
+            // 수정 모드인 경우, 자기 자신은 건너뜀
+            if (courseId && c.id === parseInt(courseId, 10)) continue;
+            for (let t of c.times) {
+                if (s.day.toString() === t.day.toString()) {
+                    // 시간대가 실제로 겹치면
+                    if (s.start < t.end && t.start < s.end) {
+                        const old = document.getElementById('time-error');
+                        if (old) old.remove();
+                        const form = document.getElementById('course-form');
+                        const err = document.createElement('div');
+                        err.id = 'time-error';
+                        err.style.color = '#ff6b6b';
+                        err.style.marginBottom = '12px';
+                        err.textContent = '⚠️ 해당 시간대에 이미 다른 과목이 존재합니다.';
+                        form.prepend(err);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    // 5) 과목 정보 수집
     const name      = document.getElementById('course-name').value.trim();
     const professor = document.getElementById('course-professor').value.trim();
     const credits   = parseInt(document.getElementById('course-credits').value, 10);
@@ -1293,40 +1315,39 @@ function saveCourse(event) {
     const color     = document.getElementById('course-color').value;
     const grade     = document.getElementById('course-grade').value;
 
-    // 5) 과목 객체 생성
+    // 6) 과목 객체 생성
     const course = {
         id:        courseId ? parseInt(courseId, 10) : Date.now(),
         name,
         professor,
         credits,
         type,
-        color,
         room,
-        times:     slots.map(s => ({
-                       day:   parseInt(s.day, 10),
-                       start: parseInt(s.start, 10),
-                       end:   parseInt(s.end, 10)
-                   })),
+        color,
+        times:     slots.map(s => ({ day: parseInt(s.day, 10), start: s.start, end: s.end })),
         grade:     grade || null
     };
 
-    // 6) 기존 과목 수정 또는 새 과목 추가
+    // 7) 기존 과목 수정 또는 새 과목 추가
     if (courseId) {
         const idx = courses.findIndex(c => c.id === course.id);
-        if (idx !== -1) courses[idx] = course;
+        if (idx !== -1) {
+            courses[idx] = course;
+        }
     } else {
         courses.push(course);
     }
 
-    // 7) 저장 및 화면 갱신
+    // 8) 저장 및 화면 갱신
     saveCoursesToStorage();
     renderCourseList();
     renderCoursesOnTimetable();
     calculateGrades();
 
-    // 8) 모달 닫기
+    // 9) 모달 닫기
     closeModal();
 }
+
 
 
 // 이전 페이지로 이동
