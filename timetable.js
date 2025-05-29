@@ -413,64 +413,160 @@ function changeWeekendDisplay() {
 }
 
 // 이미지로 내보내기 (실제 시간표를 이미지로 변환)
-// 1) 화면 렌더링용 함수
-function renderCoursesOnTimetable() {
-    const container = document.querySelector('.timetable-container');
-    const table     = container.querySelector('.timetable');
-    const tbody     = table.querySelector('tbody');
-
-    // container 절대 위치 기준 잡기
-    const baseRect = container.getBoundingClientRect();
-
-    // 기존 블록 제거
-    tbody.querySelectorAll('.class-item').forEach(el => el.remove());
-
-    // 한 교시 셀 높이 (px)
-    const sampleCell = tbody.querySelector('.class-cell[data-day="1"][data-period="1"]');
-    const cellH      = sampleCell.getBoundingClientRect().height;
-
-    courses.forEach(course => {
-        course.times.forEach(t => {
-            // 시작 셀 위치
-            const startCell = tbody.querySelector(
-                `.class-cell[data-day="${t.day}"][data-period="${t.start}"]`
-            );
-            const rect = startCell.getBoundingClientRect();
-
-            // 오프셋 y = 셀 상단 + 0.5*cellH  (30분)
-            const offsetY = rect.top - baseRect.top + cellH * 0.5;
-            // 높이 = (end-start)*cellH + (50/60)*cellH
-            const height = (t.end - t.start) * cellH + (50/60) * cellH;
-
-            // 블록 생성
-            const block = document.createElement('div');
-            block.className = `class-item ${course.color}`;
-            block.style.position       = 'absolute';
-            block.style.top            = `${offsetY}px`;
-            block.style.left           = `${rect.left - baseRect.left}px`;
-            block.style.width          = `${rect.width}px`;
-            block.style.height         = `${height}px`;
-            block.style.display        = 'flex';
-            block.style.flexDirection  = 'column';
-            block.style.alignItems     = 'center';
-            block.style.justifyContent = 'center';
-            block.style.textAlign      = 'center';
-            block.style.overflow       = 'hidden';
-
-            // 내용
-            const parts = [ course.name ];
-            if (settings.showProfessor && course.professor) parts.push(course.professor);
-            if (settings.showRoom      && course.room)      parts.push(course.room);
-            block.innerHTML = parts
-                .map((t,i) => `<div class="${i===0?'class-name':'class-info'}">${t}</div>`)
-                .join('');
-
-            container.appendChild(block);
-        });
+function exportToImage() {
+    // 시간표 요소 가져오기
+    const timetableContainer = document.querySelector('.timetable-container');
+    const timetable = document.querySelector('.timetable');
+    
+    // 캔버스 생성
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 고해상도 설정
+    const scale = 2;
+    const rect = timetable.getBoundingClientRect();
+    
+    // 여백 추가로 크기 조정
+    const margin = 40;
+    canvas.width = (rect.width + margin * 2) * scale;
+    canvas.height = (rect.height + margin * 2) * scale;
+    ctx.scale(scale, scale);
+    
+    // 배경 설정
+    ctx.fillStyle = '#1e1e1e';
+    ctx.fillRect(0, 0, rect.width + margin * 2, rect.height + margin * 2);
+    
+    // 폰트 설정
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // 시간표 데이터 렌더링
+    const cellWidth = rect.width / 7; // 시간+요일 6개
+    const cellHeight = rect.height / 10; // 헤더+교시 9개
+    
+    // 헤더 그리기
+    ctx.fillStyle = '#222';
+    ctx.fillRect(margin, margin, rect.width, cellHeight);
+    
+    // 헤더 텍스트
+    ctx.fillStyle = '#f0f0f0';
+    ctx.font = 'bold 14px Arial';
+    const headers = ['시간', '월', '화', '수', '목', '금'];
+    if (settings.showWeekend) headers.push('토');
+    
+    headers.forEach((header, i) => {
+        ctx.fillText(header, margin + (i + 0.5) * cellWidth, margin + cellHeight / 2);
     });
+    
+    // 시간표 셀 그리기
+    for (let row = 0; row < 9; row++) {
+        const period = row + 1;
+        const y = margin + (row + 1) * cellHeight;
+        
+        // 시간 셀 (첫 번째 열)
+        ctx.fillStyle = '#222';
+        ctx.fillRect(margin, y, cellWidth, cellHeight);
+        
+        // 시간 텍스트
+        ctx.fillStyle = '#f0f0f0';
+        ctx.font = 'bold 10px Arial';
+        const timeText = `${period}교시`;
+        ctx.fillText(timeText, margin + cellWidth / 2, y + cellHeight / 3);
+        
+        ctx.font = '9px Arial';
+        const startTime = timeData[row].startTime;
+        ctx.fillText(startTime, margin + cellWidth / 2, y + cellHeight * 2 / 3);
+        
+        // 요일별 셀 그리기
+        const maxDays = settings.showWeekend ? 6 : 5;
+        for (let day = 1; day <= maxDays; day++) {
+            const x = margin + day * cellWidth;
+            
+            // 셀 배경
+            ctx.fillStyle = '#1e1e1e';
+            ctx.fillRect(x, y, cellWidth, cellHeight);
+            
+            // 셀 테두리
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x, y, cellWidth, cellHeight);
+            
+            // 해당 시간에 과목이 있는지 확인
+            const courseWithTime = courses.find(c => 
+                c.times.some(t => t.day === day && period >= t.start && period <= t.end)
+            );
+            
+            if (courseWithTime) {
+                const time = courseWithTime.times.find(t => t.day === day && period >= t.start && period <= t.end);
+                
+                // 과목 색상 적용
+                const colorMap = {
+                    'color-1': '#e57373',
+                    'color-2': '#81c784',
+                    'color-3': '#64b5f6',
+                    'color-4': '#ba68c8',
+                    'color-5': '#ffb74d',
+                    'color-6': '#4db6ac',
+                    'color-7': '#7986cb',
+                    'color-8': '#a1887f'
+                };
+                
+                ctx.fillStyle = colorMap[courseWithTime.color] || '#666';
+                
+                // 첫 번째 교시인 경우
+                if (period === time.start) {
+                    // 30분부터 시작하는 블록
+                    ctx.fillRect(x + 2, y + cellHeight * 0.5, cellWidth - 4, cellHeight * 0.5 - 2);
+                    
+                    // 과목명 텍스트
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 11px Arial';
+                    ctx.fillText(courseWithTime.name, x + cellWidth / 2, y + cellHeight * 0.65);
+                    
+                    // 교수/강의실 정보
+                    let infoText = '';
+                    if (settings.showProfessor && courseWithTime.professor) {
+                        infoText += courseWithTime.professor;
+                    }
+                    if (settings.showRoom && courseWithTime.room) {
+                        infoText += (infoText ? ' ' : '') + courseWithTime.room;
+                    }
+                    
+                    if (infoText) {
+                        ctx.font = '8px Arial';
+                        ctx.fillText(infoText, x + cellWidth / 2, y + cellHeight * 0.85);
+                    }
+                } else if (period === time.end) {
+                    // 마지막 교시는 20분까지
+                    ctx.fillRect(x + 2, y + 2, cellWidth - 4, cellHeight * 0.35 - 2);
+                } else {
+                    // 중간 교시는 전체
+                    ctx.fillRect(x + 2, y + 2, cellWidth - 4, cellHeight - 4);
+                }
+            }
+        }
+    }
+    
+    // 시간표 제목 추가
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(
+        `${currentTimetable.name} - ${currentSemester.year}년 ${currentSemester.term}학기`,
+        margin + rect.width / 2,
+        margin - 10
+    );
+    
+    // 다운로드
+    canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+    }, 'image/png', 1.0);
 }
-
-
 
 // 현재 시간표 초기화 (기본값으로 복원)
 function deleteTimetable() {
@@ -733,66 +829,61 @@ function createTimetable() {
 
 // 시간표에 과목 데이터 표시
 function renderCoursesOnTimetable() {
-    // 1) 기존 셀 초기화
-    const classCells = document.querySelectorAll('.class-cell');
-    classCells.forEach(cell => {
-        cell.innerHTML = '';
-        cell.style.position = 'relative';
-    });
+    const container = document.querySelector('.timetable-container');
+    const baseRect  = container.getBoundingClientRect();
 
-    // 2) 과목별로 시간표에 표시
+    // 1) 기존 블록 제거
+    container.querySelectorAll('.class-item').forEach(el => el.remove());
+
+    // 2) 셀 하나의 크기(높이, 너비) 구하기
+    const sampleCell = container.querySelector('.class-cell[data-day="1"][data-period="1"]');
+    const cellRect   = sampleCell.getBoundingClientRect();
+    const cellH      = cellRect.height;
+    const cellW      = cellRect.width;
+
+    // 3) 과목별 블록 렌더링
     courses.forEach(course => {
-        course.times.forEach(time => {
-            const day         = time.day;
-            const startPeriod = time.start;
-            const endPeriod   = time.end;
-            const spanCount   = endPeriod - startPeriod + 1;
+        course.times.forEach(t => {
+            // (1) 좌표 계산
+            //   - x: 요일 index * cellW
+            //   - y: (period-1)*cellH + 0.5*cellH  → 30분 후
+            const x = cellRect.left - baseRect.left + t.day * cellW;
+            const y = cellRect.top  - baseRect.top  + (t.start - 1) * cellH + cellH * 0.5;
 
-            // 블록 높이 계산 (셀 높이 100% 기준, 셀 간 경계 1px 보정)
-            const heightPercent = spanCount * 100 + (spanCount - 1) * 2; 
+            // (2) 높이: (종료교시-시작교시)*cellH + 50분
+            const height = (t.end - t.start) * cellH + (50/60) * cellH;
 
-            // 첫 교시 셀에만 블록 생성
-            const firstCell = document.querySelector(
-                `.class-cell[data-day="${day}"][data-period="${startPeriod}"]`
-            );
-            if (!firstCell) return;
-
+            // 4) 블록 생성
             const block = document.createElement('div');
-            firstCell.appendChild(block);
+            block.className = `class-item ${course.color}`;
+            Object.assign(block.style, {
+                position:       'absolute',
+                left:           `${x}px`,
+                top:            `${y}px`,
+                width:          `${cellW}px`,
+                height:         `${height}px`,
+                display:        'flex',
+                flexDirection:  'column',
+                alignItems:     'center',
+                justifyContent: 'center',
+                textAlign:      'center',
+                overflow:       'hidden',
+                zIndex:         5
+            });
 
-            // 위치 및 크기
-            block.style.position       = 'absolute';
-            block.style.top            = '0';
-            block.style.left           = '-1px';
-            block.style.right          = '-1px';
-            block.style.height         = `calc(${heightPercent}% + ${spanCount - 1}px)`;
-            block.style.zIndex         = '5';
-            block.className            = `class-item ${course.color}`;
-            block.style.display        = 'flex';
-            block.style.flexDirection  = 'column';
-            block.style.alignItems     = 'center';
-            block.style.justifyContent = 'center';
-            block.style.textAlign      = 'center';
+            // 5) 내용 채우기 (설정에 따라 교수/강의실 포함)
+            const parts = [ course.name ];
+            if (settings.showProfessor && course.professor) parts.push(course.professor);
+            if (settings.showRoom      && course.room)      parts.push(course.room);
+            block.innerHTML = parts
+                .map((txt,i) => `<div class="${i===0?'class-name':'class-info'}">${txt}</div>`)
+                .join('');
 
-            // 과목명
-            const titleHTML = `<div class="class-name">${course.name}</div>`;
-
-            // 교수/강의실 정보 조합 (설정에 따라 표시 여부 결정)
-            const infoParts = [];
-            if (settings.showProfessor && course.professor) {
-                infoParts.push(course.professor);
-            }
-            if (settings.showRoom && course.room) {
-                infoParts.push(course.room);
-            }
-            const infoHTML = infoParts.length
-                ? `<div class="class-info">${infoParts.join(' | ')}</div>`
-                : '';
-
-            block.innerHTML = titleHTML + infoHTML;
+            container.appendChild(block);
         });
     });
 }
+
 
 
 
