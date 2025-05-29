@@ -1132,9 +1132,10 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const targetDate = new Date(navigateToDate);
             if (!isNaN(targetDate.getTime())) {
-                currentDate = targetDate;
-                highlightDate = navigateToDate; // 강조 표시할 날짜 저장
+                currentDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+                highlightDate = navigateToDate; // 강조 표시할 날짜 저장 (YYYY-MM-DD 형식 그대로)
                 console.log('특정 날짜로 캘린더 이동:', navigateToDate);
+                console.log('설정된 highlightDate:', highlightDate);
             }
         } catch (error) {
             console.error('날짜 파싱 오류:', error);
