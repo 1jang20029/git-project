@@ -1123,26 +1123,7 @@ const monthNames = [
 ];
 
 // 페이지 로드 시 초기화
-// 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
-    // 메인 페이지에서 특정 날짜로 이동 요청이 있는지 확인
-    const navigateToDate = localStorage.getItem('navigateToCalendarDate');
-    if (navigateToDate) {
-        // 해당 날짜로 currentDate 설정
-        try {
-            const targetDate = new Date(navigateToDate);
-            if (!isNaN(targetDate.getTime())) {
-                currentDate = targetDate;
-                console.log('특정 날짜로 캘린더 이동:', navigateToDate);
-            }
-        } catch (error) {
-            console.error('날짜 파싱 오류:', error);
-        }
-        
-        // 사용된 정보 삭제
-        localStorage.removeItem('navigateToCalendarDate');
-    }
-    
     renderCalendar();
     renderEventsList();
     renderSummaryCards();
