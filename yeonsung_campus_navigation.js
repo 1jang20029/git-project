@@ -3044,7 +3044,8 @@ function setupBuildingCards() {
             const buildingName = this.dataset.building;
             const building = buildings.find(b => b.name === buildingName);
             if (building) {
-                showBuildingInfo(building);
+                // 기존의 showBuildingInfo 대신 모달 표시
+                showBuildingSelectionModal(building);
                 // 지도를 해당 건물로 이동
                 map.setCenter(new naver.maps.LatLng(building.coords.lat, building.coords.lng));
                 map.setZoom(17);
@@ -3390,14 +3391,23 @@ function clearRouteDisplay() {
 
 // 건물 정보 표시
 function showBuildingInfo(building) {
+    // 기존 InfoWindow가 있다면 닫기
+    if (window.currentInfoWindow) {
+        window.currentInfoWindow.close();
+    }
+
     const infoContent = `
-        <div style="padding: 1rem;">
-            <img src="${building.image}" alt="${building.name}" style="width: 100%; max-width: 200px; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;" onerror="this.style.display='none'">
-            <h3>${building.name}</h3>
-            <p style="color: #666; margin: 0.5rem 0;">${building.description}</p>
-            <div style="margin-top: 1rem;">
-                <button onclick="setAsStart('${building.name}')" style="margin-right: 0.5rem; padding: 0.5rem 1rem; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">출발지 설정</button>
-                <button onclick="setAsEnd('${building.name}')" style="padding: 0.5rem 1rem; background: #F44336; color: white; border: none; border-radius: 4px; cursor: pointer;">도착지 설정</button>
+        <div style="padding: 1rem; min-width: 200px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <img src="${building.image}" alt="${building.name}" style="width: 100%; max-width: 200px; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;" onerror="this.style.display='none'">
+                    <h3 style="margin: 0 0 0.5rem 0; color: #333;">${building.name}</h3>
+                    <p style="color: #666; margin: 0;">${building.description}</p>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button onclick="setAsStart('${building.name}')" style="flex: 1; min-width: 80px; padding: 0.5rem 1rem; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s;">🚩 출발지</button>
+                <button onclick="setAsEnd('${building.name}')" style="flex: 1; min-width: 80px; padding: 0.5rem 1rem; background: #F44336; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s;">🎯 도착지</button>
             </div>
         </div>
     `;
@@ -3405,19 +3415,122 @@ function showBuildingInfo(building) {
     const infoWindow = new naver.maps.InfoWindow({
         content: infoContent,
         backgroundColor: "white",
-        borderColor: "#ccc",
+        borderColor: "#ddd",
         borderWidth: 1,
-        anchorSize: new naver.maps.Size(15, 15)
+        anchorSize: new naver.maps.Size(15, 15),
+        disableAnchor: false,
+        pixelOffset: new naver.maps.Point(0, -10)
     });
 
     infoWindow.open(map, new naver.maps.LatLng(building.coords.lat, building.coords.lng));
+    
+    // 전역 변수에 저장하여 나중에 닫을 수 있도록 함
+    window.currentInfoWindow = infoWindow;
+
+    // InfoWindow 닫기 이벤트 리스너 추가
+    naver.maps.Event.addListener(infoWindow, 'closeclick', function() {
+        window.currentInfoWindow = null;
+    });
 }
+
+
+
+
+// 건물 선택 모달 표시 함수
+function showBuildingSelectionModal(building) {
+    // 기존 모달이 있다면 제거
+    const existingModal = document.getElementById('buildingSelectionModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'buildingSelectionModal';
+    modal.className = 'building-selection-modal';
+    
+    modal.innerHTML = `
+        <div class="building-selection-content">
+            <div class="building-selection-header">
+                <h3 class="building-selection-title">${building.name}</h3>
+                <button class="modal-close-btn" onclick="closeBuildingSelectionModal()">&times;</button>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <img src="${building.image}" alt="${building.name}" style="width: 100%; max-width: 200px; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;" onerror="this.style.display='none'">
+                <p style="color: #666; margin: 0; line-height: 1.5;">${building.description}</p>
+            </div>
+            <div class="building-selection-buttons">
+                <button class="building-selection-btn start-btn" onclick="setAsStartFromModal('${building.name}')">
+                    🚩 출발지 설정
+                </button>
+                <button class="building-selection-btn end-btn" onclick="setAsEndFromModal('${building.name}')">
+                    🎯 도착지 설정
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // 모달 외부 클릭 시 닫기
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeBuildingSelectionModal();
+        }
+    });
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeBuildingSelectionModal();
+        }
+    });
+}
+
+
+
+// 건물 선택 모달 닫기 함수
+function closeBuildingSelectionModal() {
+    const modal = document.getElementById('buildingSelectionModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+
+
+// 모달에서 출발지로 설정
+function setAsStartFromModal(buildingName) {
+    const building = buildings.find(b => b.name === buildingName);
+    if (building) {
+        selectBuilding(building, 'start');
+        closeBuildingSelectionModal();
+    }
+}
+
+
+
+// 모달에서 도착지로 설정
+function setAsEndFromModal(buildingName) {
+    const building = buildings.find(b => b.name === buildingName);
+    if (building) {
+        selectBuilding(building, 'end');
+        closeBuildingSelectionModal();
+    }
+}
+
+
+
 
 // 출발지로 설정
 window.setAsStart = function(buildingName) {
     const building = buildings.find(b => b.name === buildingName);
     if (building) {
         selectBuilding(building, 'start');
+        // InfoWindow 닫기
+        if (window.currentInfoWindow) {
+            window.currentInfoWindow.close();
+            window.currentInfoWindow = null;
+        }
     }
 };
 
@@ -3426,8 +3539,14 @@ window.setAsEnd = function(buildingName) {
     const building = buildings.find(b => b.name === buildingName);
     if (building) {
         selectBuilding(building, 'end');
+        // InfoWindow 닫기
+        if (window.currentInfoWindow) {
+            window.currentInfoWindow.close();
+            window.currentInfoWindow = null;
+        }
     }
 };
+
 
 // 로딩 표시
 function showLoading() {
