@@ -834,10 +834,10 @@ function renderCoursesOnTimetable() {
     // 3) 각 과목·시간마다 블록 생성
     courses.forEach(course => {
         course.times.forEach(t => {
-            // (A) 시작 좌표: 셀 상단 + (period-1)*cellH + 30분 오프셋
+            // (A) 시작 좌표: (period-1)*셀높이 + 30분 오프셋
             const x = cellRect.left - baseRect.left + t.day * cellW;
             const y = cellRect.top  - baseRect.top  + (t.start - 1) * cellH + cellH * 0.5;
-            // (B) 높이: (end-start)*cellH + 50분 높이
+            // (B) 높이: (end-start)*셀높이 + 50분 높이
             const h = (t.end - t.start) * cellH + (50/60) * cellH;
 
             // 4) 블록 생성
@@ -858,18 +858,24 @@ function renderCoursesOnTimetable() {
                 zIndex:         5
             });
 
-            // 5) 과목명 + (교수명 | 강의실)
-            const parts = [ course.name ];
-            if (settings.showProfessor && course.professor) parts.push(course.professor);
-            if (settings.showRoom      && course.room)      parts.push(course.room);
-            block.innerHTML = parts
-                .map((txt, i) => `<div class="${i===0?'class-name':'class-info'}">${txt}</div>`)
-                .join('');
+            // 5) 과목명 + (교수명 | 강의실) 조합
+            let info = '';
+            if (settings.showProfessor && course.professor) {
+                info = course.professor;
+            }
+            if (settings.showRoom && course.room) {
+                info += info ? ` | ${course.room}` : course.room;
+            }
 
+            block.innerHTML = `
+                <div class="class-name">${course.name}</div>
+                ${info ? `<div class="class-info">${info}</div>` : ''}
+            `;
             container.appendChild(block);
         });
     });
 }
+
 
 
 
