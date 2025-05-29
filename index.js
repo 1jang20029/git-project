@@ -6400,6 +6400,7 @@ function displayUpcomingAcademicScheduleInContainer(container) {
             const eventDate = new Date(event.date);
             const day = eventDate.getDate();
             const month = eventDate.getMonth() + 1;
+            const year = eventDate.getFullYear();
             
             // D-Day 계산
             const diffTime = eventDate - today;
@@ -6431,6 +6432,9 @@ function displayUpcomingAcademicScheduleInContainer(container) {
             const listItem = document.createElement('li');
             listItem.className = 'calendar-item';
             listItem.onclick = function() {
+                // 클릭한 이벤트의 날짜를 로컬 스토리지에 저장
+                localStorage.setItem('navigateToCalendarDate', `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
+                
                 try {
                     goToPage('academic-calendar');
                 } catch (error) {
