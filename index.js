@@ -6433,7 +6433,7 @@ function displayUpcomingAcademicScheduleInContainer(container) {
             listItem.className = 'calendar-item';
             listItem.onclick = function() {
                 // 클릭한 이벤트의 날짜를 로컬 스토리지에 저장
-                localStorage.setItem('navigateToCalendarDate', event.date);
+                localStorage.setItem('navigateToCalendarDate', `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
                 
                 try {
                     goToPage('academic-calendar');
