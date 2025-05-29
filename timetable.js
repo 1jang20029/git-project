@@ -825,9 +825,10 @@ function createTimetable() {
 }
 
 
+
 // 시간표에 과목 데이터 표시
 function renderCoursesOnTimetable() {
-    // 1) 기존 과목 셀 초기화
+    // 1) 기존 셀 초기화
     const classCells = document.querySelectorAll('.class-cell');
     classCells.forEach(cell => {
         cell.innerHTML = '';
@@ -840,62 +841,46 @@ function renderCoursesOnTimetable() {
             const day         = time.day;
             const startPeriod = time.start;
             const endPeriod   = time.end;
+            const spanCount   = endPeriod - startPeriod + 1;
 
-            // 해당 과목이 걸치는 모든 교시에 대해
-            for (let period = startPeriod; period <= endPeriod; period++) {
-                const cell = document.querySelector(
-                    `.class-cell[data-day="${day}"][data-period="${period}"]`
-                );
-                if (!cell) continue;
+            // 블록 높이를 spanCount 에 맞춰 계산 (각 셀 높이 100% 기준)
+            const heightPercent = spanCount * 100 + (spanCount - 1) * 2; 
+            // (+2px씩 셀 경계 보정)
 
-                // 수업 블록 생성
-                const courseBlock = document.createElement('div');
-                cell.appendChild(courseBlock);
+            // 첫 교시 셀에만 블록 생성
+            const firstCell = document.querySelector(
+                `.class-cell[data-day="${day}"][data-period="${startPeriod}"]`
+            );
+            if (!firstCell) return;
 
-                // 스타일링
-                courseBlock.style.position = 'absolute';
-                courseBlock.style.zIndex    = '5';
-                courseBlock.className       = `class-item ${course.color}`;
+            const block = document.createElement('div');
+            firstCell.appendChild(block);
 
-                if (period === startPeriod) {
-                    // 첫 교시 블록 (30분부터 시작)
-                    courseBlock.style.top    = '30px';
-                    courseBlock.style.height = 'calc(100% - 30px)';
-                    courseBlock.style.left   = '-1px';
-                    courseBlock.style.right  = '-1px';
-                    courseBlock.style.bottom = '-1px';
+            // 위치 및 크기
+            block.style.position = 'absolute';
+            block.style.top      = '0';
+            block.style.left     = '-1px';
+            block.style.right    = '-1px';
+            block.style.height   = `calc(${heightPercent}% + ${spanCount - 1}px)`;
+            block.style.zIndex   = '5';
+            block.className      = `class-item ${course.color}`;
+            block.style.overflow = 'visible';
 
-                    // 과목명 + 교수명 + 강의실 출력
-                    const prof = course.professor || '';
-                    const room = course.room      || '';
-                    const info = prof + (prof && room ? ' | ' : '') + room;
+            // 내용: 과목명 + 교수 | 강의실
+            const prof = course.professor || '';
+            const room = course.room      || '';
+            const info = prof && room
+                ? `${prof} | ${room}`
+                : prof || room;
 
-                    courseBlock.innerHTML = `
-                        <div class="class-name">${course.name}</div>
-                        <div class="class-info">${info}</div>
-                    `;
-                }
-                else if (period === endPeriod) {
-                    // 마지막 교시 블록 (20분까지)
-                    courseBlock.style.top         = '-1px';
-                    courseBlock.style.height      = '35%';
-                    courseBlock.style.left        = '-1px';
-                    courseBlock.style.right       = '-1px';
-                    courseBlock.style.borderTop   = 'none';
-                    courseBlock.style.borderRadius= '0';
-                }
-                else {
-                    // 중간 교시 블록 (전체 높이)
-                    courseBlock.style.top         = '-1px';
-                    courseBlock.style.height      = 'calc(100% + 2px)';
-                    courseBlock.style.left        = '-1px';
-                    courseBlock.style.right       = '-1px';
-                    courseBlock.style.borderRadius= '0';
-                }
-            }
+            block.innerHTML = `
+                <div class="class-name">${course.name}</div>
+                <div class="class-info">${info}</div>
+            `;
         });
     });
 }
+
 
 
 // 과목 목록 표시
