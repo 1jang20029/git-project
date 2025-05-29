@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연성대학교 캠퍼스 가이드</title>
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j"></script>
+    <!-- 네이버 지도 API 스크립트 추가 - Direction 서브모듈 포함 -->
+    <script
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
+    defer>
+    </script>
+    </script>
+    <!-- CSS 파일 연결 -->
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -12,9 +18,11 @@
        <header>
            <div class="logo" onclick="goToHome()">연성대학교</div>
            <div class="header-icons">
+               <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
                <div class="profile-dropdown-container" style="display: none;">
                    <div class="header-profile-image" onclick="toggleProfileDropdown()">
+                       <!-- 여기에 프로필 이미지가 들어갑니다 -->
                        <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
                    </div>
                    <div class="profile-dropdown">
@@ -37,21 +45,26 @@
            </div>
        </header>
                
+       <!-- 홈 탭 -->
        <div id="home-tab" class="tab-content active">
+           <!-- 긴급 알림 배너 -->
            <div class="notification-banner" onclick="viewNotification('emergency')">
                <span class="urgent-icon">📢</span>
                <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
            </div>
            
+           <!-- 환영 카드 -->
            <div class="welcome-card">
                <div class="welcome-title">안녕하세요, 학우님!</div>
                <div class="welcome-subtitle">오늘도 연성대학교와 함께 멋진 하루 되세요.</div>
            </div>
            
+           <!-- 검색 바 -->
            <div class="search-bar">
                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
            </div>
            
+           <!-- 오늘의 날씨 -->
            <div class="weather-widget">
                <div class="weather-info">
                    <div class="weather-temp">로딩 중...</div>
@@ -60,6 +73,7 @@
                <div class="weather-icon">☀️</div>
            </div>
            
+           <!-- 바로가기 메뉴 -->
            <div class="shortcut-menu">
                <div class="shortcut-item" onclick="goToPage('activities')">
                    <div class="shortcut-icon">🌟</div>
@@ -83,21 +97,25 @@
                </div>
             </div>
            
+            <!-- 오늘의 시간표 -->
             <div class="timetable-preview">
                 <div class="timetable-header">
                     <div class="timetable-date">2025년 4월 8일 (월) 시간표</div>
                     <div class="timetable-now">현재 강의</div>
                 </div>
                 <div id="timetable-preview-content">
+                    <!-- 동적으로 생성될 수업 내용 -->
                 </div>
             </div>
            
+            <!-- 다음 셔틀버스 -->
             <div class="shuttle-card">
                 <div class="shuttle-header">
                     <div class="shuttle-title">다음 셔틀버스</div>
                     <div class="shuttle-icon">🚌</div>
                 </div>
                 
+                <!-- 노선 선택 탭 -->
                 <div class="shuttle-route-tabs">
                     <button class="route-tab active" onclick="selectShuttleRoute(1)" data-route="1">
                         <span class="route-name">노선 1</span>
@@ -113,6 +131,7 @@
                     </button>
                 </div>
                 
+                <!-- 다음 버스 정보 -->
                 <div class="shuttle-next-info">
                     <div class="next-bus-main">
                         <div class="shuttle-time">15분 후 출발</div>
@@ -123,6 +142,7 @@
                     </div>
                 </div>
                 
+                <!-- 운행 시간표 -->
                 <div class="shuttle-schedule">
                     <div class="schedule-header">오늘의 운행 시간</div>
                     <div class="shuttle-time-slots">
@@ -144,6 +164,7 @@
                     </div>
                 </div>
                 
+                <!-- 다음 운행 시간들 -->
                 <div class="shuttle-upcoming">
                     <div class="upcoming-header">다음 운행 시간</div>
                     <div class="shuttle-time-list">
@@ -163,6 +184,7 @@
                 </div>
             </div>
            
+           <!-- 교내/대외활동 현황 -->
            <div class="activity-summary-card">
                <div class="activity-summary-header">
                    <div class="activity-summary-title">🌟 교내/대외활동 현황</div>
@@ -203,21 +225,26 @@
                </div>
             </div>
 
+           <!-- 학사 일정 -->
            <div class="calendar-card">
                 <div class="section-title">
                     <span>다가오는 학사일정</span>
                     <a href="academic-calendar.html" class="see-all" onclick="goToPage('academic-calendar')">전체보기</a>
                 </div>
                 <ul class="calendar-list">
+                    <!-- 동적으로 생성될 학사일정 목록 -->
                 </ul>
             </div>
 
+            <!-- 인기 맛집 할인 정보 -->
             <div class="student-deals-card">
             <div class="everytime-header">
                 <div class="everytime-title">🍽️ 인기 맛집 할인 정보</div>
                 <a href="student-deals.html" class="everytime-view-all">전체보기</a>
             </div>
             <div id="popular-restaurants-list">
+                <!-- 여기에 동적으로 맛집 목록이 추가됩니다 -->
+                <!-- 로딩 표시 -->
                 <div class="popular-restaurant-item loading">
                     <div class="restaurant-image skeleton"></div>
                     <div class="restaurant-content">
@@ -230,6 +257,7 @@
             </div>
         </div>
            
+           <!-- 공지사항 섹션 -->
            <div class="content-section">
                <div class="section-title">
                    <span>주요 공지사항</span>
@@ -246,6 +274,7 @@
                </div>
                
                <ul class="notice-list">
+                   <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
                    <li class="notice-item" onclick="goToNoticeDetail('notice1')">
                        <div class="notice-header">
                            <span class="notice-category">학사</span>
@@ -282,7 +311,9 @@
            <div class="content-pad"></div>
        </div>
 
+        <!-- 시설 탭 -->
         <div id="facility-tab" class="tab-content">
+            <!-- 검색 바 - 새로운 구조로 변경 -->
             <div class="search-bar">
                 <div class="search-container">
                     <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
@@ -290,6 +321,7 @@
                 </div>
             </div>
             
+            <!-- 빠른 검색 버튼 영역 -->
             <div class="quick-search-buttons">
                 <div class="section-title" style="margin-top: 12px; margin-left: 16px; margin-right: 16px;">
                     <span>빠른 검색</span>
@@ -303,28 +335,38 @@
                 </div>
             </div>
             
+            <!-- 검색 결과를 표시할 컨테이너 추가 -->
             <div id="search-results" class="search-results" style="display: none;">
+                <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
             </div>
             
+            <!-- 검색 결과가 없을 때 표시될 내용 -->
             <div id="no-results" class="no-results" style="display: none;">
                 검색 결과가 없습니다.
             </div>
             
+            <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
             <div id="original-content">
+                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
                 <div class="campus-map" id="naverMap">
+                    <!-- 지도가 로드되기 전에 표시할 이미지 삭제 -->
+                    <!-- <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도"> -->
                     <div class="map-control-buttons">
                         <div class="map-button" onclick="zoomIn()">🔍+</div>
                         <div class="map-button" onclick="zoomOut()">🔍-</div>
                         <div class="map-button" onclick="resetMapView()">🏠</div>
                     </div>
 
+                    <!-- 여기에 GPS 버튼 추가 -->
                     <div class="gps-button" onclick="trackUserLocation()">📍</div>
                     
+                    <!-- 경로 정보 로딩 인디케이터 -->
                     <div class="route-loading" id="routeLoading">
                         <span>🔄</span>
                         <span class="route-loading-text">경로를 계산하는 중...</span>
                     </div>
                     
+                    <!-- 경로 정보 박스 -->
                     <div class="route-info-box" id="routeInfoBox">
                         <span class="route-info-close" onclick="closeRouteInfo()">✕</span>
                         <div class="route-info-title">목적지: <span id="routeDestination"></span></div>
@@ -341,9 +383,12 @@
                     </div>
                     
                     <ul class="building-list">
+                        <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
                     </ul>
                     
+                    <!-- 페이지네이션 컨트롤 추가 -->
                     <div id="pagination-controls" class="pagination-controls">
+                        <!-- 페이지 버튼들이 JavaScript로 동적 생성됩니다 -->
                     </div>
                 </div>
                 
@@ -396,11 +441,13 @@
             <div class="content-pad"></div>
         </div>
         
+        <!-- 커뮤니티 탭 -->
         <div id="community-tab" class="tab-content">
             <div class="search-bar">
                 <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
             </div>
             
+            <!-- 실시간 커뮤니티 (에브리타임 스타일) -->
             <div class="everytime-community-card">
                 <div class="everytime-header">
                     <div class="everytime-title">💬 실시간 커뮤니티</div>
@@ -454,6 +501,7 @@
                 </div>
             </div>
             
+            <!-- 인기 강의평가 섹션 (메인 페이지에서 이동됨) -->
             <div class="content-section">
                 <div class="section-title">
                     <span>인기 강의평가</span>
@@ -529,7 +577,9 @@
             <div class="content-pad"></div>
         </div>
         
+        <!-- 내 정보 탭 - 로그인 상태에 따라 동적으로 변경 -->
         <div id="profile-tab" class="tab-content">
+            <!-- 로그인이 필요한 상태 (기본값) -->
             <div id="profile-login-required" class="profile-section">
                 <div class="profile-image">👤</div>
                 <div class="profile-info">
@@ -538,6 +588,7 @@
                 </div>
             </div>
             
+            <!-- 로그인된 상태 (로그인 후 표시) -->
             <div id="profile-logged-in" class="profile-section" style="display: none;">
                 <div class="profile-image">👨‍🎓</div>
                 <div class="profile-info">
@@ -547,6 +598,7 @@
                 </div>
             </div>
             
+            <!-- 메뉴들은 항상 표시 -->
             <div class="content-section">
                 <div class="section-title">
                     <span>내 정보 관리</span>
@@ -633,6 +685,7 @@
             <div class="content-pad"></div>
         </div>
         
+        <!-- 알림 탭 -->
         <div id="alert-tab" class="tab-content">
             <div class="content-section">
                 <div class="section-title">
@@ -670,6 +723,7 @@
             <div class="content-pad"></div>
         </div>
         
+        <!-- 하단 탭 메뉴 -->
         <div class="tab-menu">
             <div class="tab-item active" onclick="switchTab('home')">
                 <span class="tab-icon">🏠</span>
@@ -694,6 +748,7 @@
         </div>
     </div>
     
+    <!-- JavaScript 파일 연결 -->
     <script src="index.js"></script>
 </body>
 </html>
