@@ -2594,47 +2594,63 @@ function initNaverMap() {
 
 // 회색 영역 문제 해결을 위한 스타일 동적 적용 함수
 function fixMapGrayArea() {
-    // 회색 영역을 가리는 요소가 있는지 확인
-    const mapContainer = document.getElementById('naverMap');
-    if (mapContainer) {
-        // 회색 오버레이 요소가 있는지 확인하고 제거
-        const grayOverlays = mapContainer.querySelectorAll('div[style*="background-color: rgb(128, 128, 128)"]');
-        grayOverlays.forEach(overlay => {
-            overlay.style.display = 'none';
-        });
-
-        // 지도 컨테이너 내부의 모든 div 요소 확인
-        const mapDivs = mapContainer.querySelectorAll('div');
-        mapDivs.forEach(div => {
-            // width가 50%로 설정된 요소 찾기
-            const style = getComputedStyle(div);
-            if (style.width === '50%' || style.width.endsWith('50%')) {
-                div.style.width = '100%';
-                console.log('지도 요소 너비 수정: 50% → 100%');
-            }
-
-            // 회색 배경색을 가진 요소 찾기
-            if (
-                style.backgroundColor.includes('128') ||
-                style.backgroundColor.toLowerCase().includes('gray') ||
-                style.backgroundColor.toLowerCase().includes('grey')
-            ) {
-                div.style.backgroundColor = 'transparent';
-                console.log('회색 배경 요소 발견 및 수정');
-            }
-        });
+    // 지도 API가 로드되지 않았거나, 컨테이너가 없으면 바로 리턴
+    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+        console.warn('fixMapGrayArea: 네이버 지도 API가 로드되지 않아 동작을 중단합니다.');
+        return;
     }
+    const mapContainer = document.getElementById('naverMap');
+    if (!mapContainer) {
+        console.warn('fixMapGrayArea: #naverMap 컨테이너를 찾을 수 없어 동작을 중단합니다.');
+        return;
+    }
+
+    // 지도 위에 덮여 있는 회색 오버레이 요소 제거
+    const grayOverlays = mapContainer.querySelectorAll('div[style*="background-color: rgb(128, 128, 128)"]');
+    grayOverlays.forEach(overlay => {
+        overlay.style.display = 'none';
+    });
+
+    // 내부 div 들 중 너비가 50%로 잘못 설정된 요소나 배경이 회색인 요소 수정
+    const mapDivs = mapContainer.querySelectorAll('div');
+    mapDivs.forEach(div => {
+        const style = getComputedStyle(div);
+        // 잘못된 너비 50% → 100%
+        if (style.width === '50%' || style.width.endsWith('50%')) {
+            div.style.width = '100%';
+            console.log('fixMapGrayArea: 너비 50% → 100%로 수정');
+        }
+        // 배경색이 회색 계열이면 투명 처리
+        if (/(rgb\(128,\s*128,\s*128\))|(gray)|(grey)/.test(style.backgroundColor)) {
+            div.style.backgroundColor = 'transparent';
+            console.log('fixMapGrayArea: 회색 배경 요소 투명 처리');
+        }
+    });
 }
 
 
 // 지도 초기화 완료 후 회색 영역 수정 함수 호출하는 함수
 function initNaverMapWithFix() {
-    // 기본 초기화 함수 호출
-    initNaverMap();
+    // 1) 지도 API 로드 확인
+    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+        console.error('initNaverMapWithFix: 네이버 지도 API가 로드되지 않았습니다. Client ID 또는 Allowed Origin 설정을 확인하세요.');
+        return;
+    }
 
-    // 지도가 로드된 후 회색 영역 수정
+    // 2) 원래의 지도 초기화 함수 호출
+    try {
+        initNaverMap();
+    } catch (e) {
+        console.error('initNaverMap 호출 중 예외 발생:', e);
+    }
+
+    // 3) 지도가 렌더링된 뒤, 회색 오버레이가 있으면 제거
     setTimeout(() => {
-        fixMapGrayArea();
+        try {
+            fixMapGrayArea();
+        } catch (e) {
+            console.error('fixMapGrayArea 호출 중 예외 발생:', e);
+        }
     }, 1000);
 }
 
