@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연성대학교 캠퍼스 가이드</title>
-    <!-- Vworld API 스크립트 -->
-    <script type="text/javascript" src="https://map.vworld.kr/js/vworldMapInit.js.do?version=2.0&apiKey=pYssIbeTYxm0I9ZRQemsYHjRdid8ee1VK060ZNd6"></script>
+    <!-- 네이버 지도 API 스크립트 -->
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -236,6 +236,327 @@
         </div>
            
            <div class="content-section">
+               <div class="section-title">
+                   <span>주요 공지사항</span>
+                   <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
+               </div>
+               
+               <div class="category-filter">
+                   <div class="category-tag active" onclick="filterNotices('all')">전체</div>
+                   <div class="category-tag" onclick="filterNotices('academic')">학사</div>
+                   <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
+                   <div class="category-tag" onclick="filterNotices('job')">취업</div>
+                   <div class="category-tag" onclick="filterNotices('event')">행사</div>
+                   <div class="category-tag" onclick="filterNotices('department')">학과</div>
+               </div>
+               
+               <ul class="notice-list">
+                   <li class="notice-item" onclick="goToNoticeDetail('notice1')">
+                       <div class="notice-header">
+                           <span class="notice-category">학사</span>
+                           <span class="notice-date">2025.04.08</span>
+                       </div>
+                       <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+                       <div class="notice-summary">
+                           4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
+                       </div>
+                   </li>
+                   <li class="notice-item" onclick="goToNoticeDetail('notice2')">
+                       <div class="notice-header">
+                           <span class="notice-category">장학</span>
+                           <span class="notice-date">2025.04.07</span>
+                       </div>
+                       <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
+                       <div class="notice-summary">
+                           국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
+                       </div>
+                   </li>
+                   <li class="notice-item" onclick="goToNoticeDetail('notice3')">
+                       <div class="notice-header">
+                           <span class="notice-category">취업</span>
+                           <span class="notice-date">2025.04.06</span>
+                       </div>
+                       <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
+                       <div class="notice-summary">
+                           4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
+                       </div>
+                   </li>
+               </ul>
+           </div>
+           
+           <div class="content-pad"></div>
+       </div>
+
+        <!-- 시설 탭 - 완전히 새로운 구조 -->
+        <div id="facility-tab" class="tab-content">
+            <!-- 검색 바 -->
+            <div class="search-bar">
+                <div class="search-container">
+                    <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
+                    <button class="search-clear" onclick="clearSearch()">✕</button>
+                </div>
+            </div>
+            
+            <!-- 지도 컨테이너 -->
+            <div class="campus-map-container">
+                <div id="naverMap" class="naver-map">
+                    <!-- 네이버 지도가 여기에 로드됩니다 -->
+                </div>
+                
+                <!-- 지도 컨트롤 버튼들 -->
+                <div class="map-controls">
+                    <button class="map-control-btn" onclick="zoomIn()" title="확대">
+                        <span>🔍+</span>
+                    </button>
+                    <button class="map-control-btn" onclick="zoomOut()" title="축소">
+                        <span>🔍-</span>
+                    </button>
+                    <button class="map-control-btn" onclick="resetMapView()" title="초기화">
+                        <span>🏠</span>
+                    </button>
+                    <button class="map-control-btn" onclick="getCurrentLocation()" title="내 위치">
+                        <span>📍</span>
+                    </button>
+                </div>
+                
+                <!-- 경로 안내 정보 -->
+                <div id="route-info" class="route-info" style="display: none;">
+                    <div class="route-info-header">
+                        <span class="route-info-title">경로 안내</span>
+                        <button class="route-info-close" onclick="closeRouteInfo()">✕</button>
+                    </div>
+                    <div class="route-info-content">
+                        <div class="route-detail">
+                            <span>목적지: </span>
+                            <span id="route-destination">-</span>
+                        </div>
+                        <div class="route-detail">
+                            <span>거리: </span>
+                            <span id="route-distance">-</span>
+                        </div>
+                        <div class="route-detail">
+                            <span>예상 시간: </span>
+                            <span id="route-duration">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 건물 목록 -->
+            <div class="facility-content">
+                <div class="section-title">
+                    <span>🏫 캠퍼스 건물</span>
+                    <span class="building-count" id="building-count">0개</span>
+                </div>
+                
+                <!-- 카테고리 필터 -->
+                <div class="category-filter">
+                    <div class="category-tag active" onclick="filterBuildings('all')">전체</div>
+                    <div class="category-tag" onclick="filterBuildings('academic')">강의동</div>
+                    <div class="category-tag" onclick="filterBuildings('facility')">편의시설</div>
+                    <div class="category-tag" onclick="filterBuildings('dormitory')">기숙시설</div>
+                    <div class="category-tag" onclick="filterBuildings('sports')">체육시설</div>
+                </div>
+                
+                <!-- 건물 리스트 -->
+                <div id="building-list" class="building-list">
+                    <!-- 건물 항목들이 동적으로 생성됩니다 -->
+                </div>
+                
+                <!-- 검색 결과가 없을 때 -->
+                <div id="no-buildings" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🏢</div>
+                    <div class="no-results-text">검색 결과가 없습니다</div>
+                    <div class="no-results-desc">다른 검색어를 입력해보세요</div>
+                </div>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 커뮤니티 탭 -->
+        <div id="community-tab" class="tab-content">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
+            </div>
+            
+            <div class="everytime-community-card">
+                <div class="everytime-header">
+                    <div class="everytime-title">💬 실시간 커뮤니티</div>
+                    <div class="everytime-view-all" onclick="goToPage('everytime-board')">게시판</div>
+                </div>
+                <div class="community-posts">
+                    <div class="post-item">
+                        <div class="post-board">[자유게시판]</div>
+                        <div class="post-content">
+                            <div class="post-title">중간고사 스터디 그룹 모집해요!</div>
+                            <div class="post-preview">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
+                            <div class="post-meta">
+                                <span class="post-time">3분 전</span>
+                                <span class="post-stats">👍 12 💬 8</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-item">
+                        <div class="post-board">[정보게시판]</div>
+                        <div class="post-content">
+                            <div class="post-title">김민수 교수님 수업 꿀팁 공유</div>
+                            <div class="post-preview">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
+                            <div class="post-meta">
+                                <span class="post-time">12분 전</span>
+                                <span class="post-stats">👍 24 💬 15</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-item">
+                        <div class="post-board">[취업게시판]</div>
+                        <div class="post-content">
+                            <div class="post-title">삼성전자 채용설명회 후기</div>
+                            <div class="post-preview">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
+                            <div class="post-meta">
+                                <span class="post-time">32분 전</span>
+                                <span class="post-stats">👍 45 💬 23</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-item">
+                        <div class="post-board">[강의평가]</div>
+                        <div class="post-content">
+                            <div class="post-title">이지영 교수님 마케팅 원론 후기</div>
+                            <div class="post-preview">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
+                            <div class="post-meta">
+                                <span class="post-time">1시간 전</span>
+                                <span class="post-stats">👍 18 💬 6</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>인기 강의평가</span>
+                </div>
+                
+                <div class="category-filter">
+                    <div class="category-tag active" onclick="filterLectures('all')">전체</div>
+                    <div class="category-tag" onclick="filterLectures('general')">교양</div>
+                    <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
+                    <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
+                </div>
+                
+                <ul class="lecture-list">
+                    <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">웹 프로그래밍 실습</div>
+                            <div class="lecture-rating">4.8</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">김민수 교수님</span>
+                            <span>컴퓨터정보학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★★</div>
+                        <div class="lecture-reviews">
+                            "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
+                        </div>
+                    </li>
+                    <li class="lecture-item" onclick="viewLectureDetail('marketing')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">마케팅 원론</div>
+                            <div class="lecture-rating">4.5</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">이지영 교수님</span>
+                            <span>경영학과</span>
+                        </div>
+                        <div class="rating-stars">★★★★☆</div>
+                        <div class="lecture-reviews">
+                            "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
+                        </div>
+                    </li>
+                    <li class="lecture-item" onclick="viewLectureDetail('english')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">영어회화</div>
+                            <div class="lecture-rating">4.3</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">John Smith 교수님</span>
+                            <span>교양과정</span>
+                        </div>
+                        <div class="rating-stars">★★★★☆</div>
+                        <div class="lecture-reviews">
+                            "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
+                        </div>
+                    </li>
+                    <li class="lecture-item" onclick="viewLectureDetail('statistics')">
+                        <div class="lecture-header">
+                            <div class="lecture-title">경영통계학</div>
+                            <div class="lecture-rating">3.7</div>
+                        </div>
+                        <div class="lecture-info">
+                            <span class="lecture-professor">박성호 교수님</span>
+                            <span>경영학과</span>
+                        </div>
+                        <div class="rating-stars">★★★☆☆</div>
+                        <div class="lecture-reviews">
+                            "내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-pad"></div>
+        </div>
+        
+        <!-- 내 정보 탭 -->
+        <div id="profile-tab" class="tab-content">
+            <div id="profile-login-required" class="profile-section">
+                <div class="profile-image">👤</div>
+                <div class="profile-info">
+                    <div class="profile-name">로그인이 필요합니다</div>
+                    <div class="profile-detail">내 정보를 확인하려면 로그인해주세요</div>
+                </div>
+            </div>
+            
+            <div id="profile-logged-in" class="profile-section" style="display: none;">
+                <div class="profile-image">👨‍🎓</div>
+                <div class="profile-info">
+                    <div class="profile-name">사용자</div>
+                    <div class="profile-detail">학과 | 학년</div>
+                    <div class="profile-detail">학번: 0000000000</div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>내 정보 관리</span>
+                </div>
+                
+                <ul class="menu-list">
+                    <li class="menu-item" onclick="navigateToProfilePage('timetable')">
+                        <div class="menu-title">내 시간표</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
+                        <div class="menu-title">내 수강 강의</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
+                        <div class="menu-title">즐겨찾는 강의실</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
+                        <div class="menu-title">개인정보 수정</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                    <li class="menu-item" onclick="deleteAccount()">
+                        <div class="menu-title delete-account">회원 탈퇴</div>
+                        <div class="menu-arrow">›</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content-section">
                <div class="section-title">
                    <span>주요 공지사항</span>
                    <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>

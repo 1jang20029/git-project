@@ -1,7 +1,9 @@
-// VWorld 지도 관련 변수
-let vworldMap;
+// 네이버 지도 관련 변수
+let naverMap;
 let mapMarkers = [];
+let infoWindows = [];
 let userLocation = null;
+let userMarker = null;
 let currentRoute = null;
 
 // 연성대학교 건물 데이터
@@ -143,52 +145,56 @@ const buildingData = [
     }
 ];
 
-// 지도 초기화 함수
-function initVWorldMap() {
-    console.log('VWorld 지도 초기화 시작...');
+// 네이버 지도 초기화
+function initNaverMap() {
+    console.log('네이버 지도 초기화 시작...');
     
     try {
-        // VWorld API가 로드되었는지 확인
-        if (typeof vw === 'undefined') {
-            console.error('VWorld API가 로드되지 않았습니다.');
+        // 네이버 지도 API 로드 확인
+        if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+            console.error('네이버 지도 API가 로드되지 않았습니다.');
             showMapError('지도 API 로딩 실패');
             return;
         }
         
         // 지도 컨테이너
-        const mapContainer = document.getElementById('vworldMap');
+        const mapContainer = document.getElementById('naverMap');
         if (!mapContainer) {
             console.error('지도 컨테이너를 찾을 수 없습니다.');
             return;
         }
         
         // 연성대학교 중심 좌표
-        const centerLat = 37.39661657434427;
-        const centerLng = 126.90772437800818;
+        const centerPosition = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
         
-        // 지도 옵션 설정
+        // 지도 옵션
         const mapOptions = {
-            center: new vw.CoordLL(centerLng, centerLat),
+            center: centerPosition,
             zoom: 16,
+            minZoom: 14,
+            maxZoom: 19,
             zoomControl: false,
-            mapTypeControl: false
+            mapTypeControl: false,
+            scaleControl: false,
+            logoControl: false,
+            mapDataControl: false
         };
         
         // 지도 생성
-        vworldMap = new vw.Map(mapContainer, mapOptions);
+        naverMap = new naver.maps.Map(mapContainer, mapOptions);
         
-        console.log('VWorld 지도 생성 완료');
+        console.log('네이버 지도 생성 완료');
         
-        // 마커 추가
+        // 건물 마커 추가
         addBuildingMarkers();
         
-        // 지도 이벤트 리스너 등록
-        setupMapEventListeners();
+        // 지도 이벤트 설정
+        setupMapEvents();
         
-        console.log('VWorld 지도 초기화 완료');
+        console.log('네이버 지도 초기화 완료');
         
     } catch (error) {
-        console.error('VWorld 지도 초기화 중 오류:', error);
+        console.error('네이버 지도 초기화 중 오류:', error);
         showMapError('지도 초기화 실패');
     }
 }
@@ -197,29 +203,46 @@ function initVWorldMap() {
 function addBuildingMarkers() {
     console.log('건물 마커 추가 시작...');
     
-    buildingData.forEach(building => {
+    buildingData.forEach((building, index) => {
         try {
             // 마커 위치
-            const position = new vw.CoordLL(building.position.lng, building.position.lat);
+            const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
             
             // 마커 생성
-            const marker = new vw.Marker({
+            const marker = new naver.maps.Marker({
                 position: position,
-                map: vworldMap,
+                map: naverMap,
                 title: building.name,
-                icon: createCustomIcon(building.icon, building.category)
+                icon: {
+                    content: createMarkerContent(building),
+                    size: new naver.maps.Size(40, 50),
+                    anchor: new naver.maps.Point(20, 50)
+                },
+                zIndex: 100
             });
+            
+            // 정보창 생성
+            const infoWindow = new naver.maps.InfoWindow({
+                content: createInfoWindowContent(building),
+                maxWidth: 300,
+                backgroundColor: "#fff",
+                borderColor: "#ccc",
+                borderWidth: 2,
+                anchorSize: new naver.maps.Size(15, 15),
+                anchorSkew: true,
+                pixelOffset: new naver.maps.Point(0, -10)
+            });
+            
             // 마커 클릭 이벤트
-            marker.addEventListener('click', function() {
-                showBuildingInfo(building);
+            naver.maps.Event.addListener(marker, 'click', function() {
+                closeAllInfoWindows();
+                infoWindow.open(naverMap, marker);
                 highlightBuilding(building.id);
             });
             
-            // 마커 배열에 추가
-            mapMarkers.push({
-                marker: marker,
-                building: building
-            });
+            // 배열에 저장
+            mapMarkers.push(marker);
+            infoWindows.push(infoWindow);
             
         } catch (error) {
             console.error('마커 생성 중 오류:', building.name, error);
@@ -1470,6 +1493,7 @@ if (document.readyState === 'loading') {
     showMapLoading();
     attemptMapInitialization();
 }
+
 
 console.log('🗺️ 시설탭 JavaScript 로드 완료');
 console.log('VWorld 지도 API 버전: 2.0');
