@@ -2706,7 +2706,7 @@ return; // 이미 로드되어 있으면 중복 로드 방지
 // Direction API 스크립트 엘리먼트 생성
 const script = document.createElement('script');
 script.type = 'text/javascript';
-script.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x&submodules=direction';
+script.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction';
 script.async = true;
 script.defer = true;
 
