@@ -312,11 +312,14 @@ document.addEventListener('click', function(event) {
 
 // 설정값을 UI에 적용
 function applySettingsToUI() {
-    document.getElementById('show-professor').checked = settings.showProfessor;
-    document.getElementById('show-room').checked = settings.showRoom;
     document.getElementById('theme-select').value = settings.theme;
+    document.getElementById('show-professor').checked = settings.showProfessor;
+    document.getElementById('show-room').checked      = settings.showRoom;
     document.getElementById('time-format-select').value = settings.timeFormat24 ? '24' : '12';
-    document.getElementById('weekend-select').value = settings.showWeekend.toString();
+    document.getElementById('weekend-select').value      = settings.showWeekend.toString();
+
+    // 테마도 바로 적용
+    applyTheme(settings.theme);
 }
 
 // 설정 로드
@@ -381,19 +384,21 @@ function applySettings() {
 
 // 테마 변경
 function changeTheme() {
-    const theme = document.getElementById('theme-select').value;
+    // 셀렉트에서 테마 값 읽기
+    const theme = document.getElementById('theme-select').value; // 'dark' | 'light' | 'blue' | 'green'
     settings.theme = theme;
+
+    // 적용
     applyTheme(theme);
 }
 
 // 테마 적용
 function applyTheme(theme) {
     const container = document.querySelector('.container');
-    
-    // 모든 테마 클래스 제거
+    // 기존 테마 클래스 제거
     container.classList.remove('theme-light', 'theme-blue', 'theme-green');
-    
-    // 선택된 테마 적용
+
+    // dark 는 기본 테마이므로, light/blue/green 만 추가
     if (theme !== 'dark') {
         container.classList.add(`theme-${theme}`);
     }
