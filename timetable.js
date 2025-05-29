@@ -817,6 +817,7 @@ function createTimetable() {
 
 
 // 시간표에 과목 데이터 표시
+// UI에 과목을 정확히 30분→20분 구간으로 렌더링하는 함수
 function renderCoursesOnTimetable() {
     const container = document.querySelector('.timetable-container');
     const baseRect  = container.getBoundingClientRect();
@@ -824,23 +825,20 @@ function renderCoursesOnTimetable() {
     // 1) 기존 블록 제거
     container.querySelectorAll('.class-item').forEach(el => el.remove());
 
-    // 2) 셀 하나의 크기(높이, 너비) 구하기
+    // 2) 하나의 셀 크기(px) 구하기 (1교시/월요일 셀)
     const sampleCell = container.querySelector('.class-cell[data-day="1"][data-period="1"]');
     const cellRect   = sampleCell.getBoundingClientRect();
     const cellH      = cellRect.height;
     const cellW      = cellRect.width;
 
-    // 3) 과목별 블록 렌더링
+    // 3) 각 과목·시간마다 블록 생성
     courses.forEach(course => {
         course.times.forEach(t => {
-            // (1) 좌표 계산
-            //   - x: 요일 index * cellW
-            //   - y: (period-1)*cellH + 0.5*cellH  → 30분 후
+            // (A) 시작 좌표: 셀 상단 + (period-1)*cellH + 30분 오프셋
             const x = cellRect.left - baseRect.left + t.day * cellW;
             const y = cellRect.top  - baseRect.top  + (t.start - 1) * cellH + cellH * 0.5;
-
-            // (2) 높이: (종료교시-시작교시)*cellH + 50분
-            const height = (t.end - t.start) * cellH + (50/60) * cellH;
+            // (B) 높이: (end-start)*cellH + 50분 높이
+            const h = (t.end - t.start) * cellH + (50/60) * cellH;
 
             // 4) 블록 생성
             const block = document.createElement('div');
@@ -850,7 +848,7 @@ function renderCoursesOnTimetable() {
                 left:           `${x}px`,
                 top:            `${y}px`,
                 width:          `${cellW}px`,
-                height:         `${height}px`,
+                height:         `${h}px`,
                 display:        'flex',
                 flexDirection:  'column',
                 alignItems:     'center',
@@ -860,12 +858,12 @@ function renderCoursesOnTimetable() {
                 zIndex:         5
             });
 
-            // 5) 내용 채우기 (설정에 따라 교수/강의실 포함)
+            // 5) 과목명 + (교수명 | 강의실)
             const parts = [ course.name ];
             if (settings.showProfessor && course.professor) parts.push(course.professor);
             if (settings.showRoom      && course.room)      parts.push(course.room);
             block.innerHTML = parts
-                .map((txt,i) => `<div class="${i===0?'class-name':'class-info'}">${txt}</div>`)
+                .map((txt, i) => `<div class="${i===0?'class-name':'class-info'}">${txt}</div>`)
                 .join('');
 
             container.appendChild(block);
