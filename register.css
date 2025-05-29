@@ -112,6 +112,61 @@ header {
     overflow-y: auto;
 }
 
+/* 학과 검색 및 드롭다운 스타일 */
+.department-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.department-dropdown {
+    display: none;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 2px;
+}
+
+.department-category {
+    background-color: #f5f5f5;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 1px solid #eee;
+}
+
+.department-option {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.department-option:hover {
+    background-color: #f9f9f9;
+}
+
+.department-option:last-child {
+    border-bottom: none;
+}
+
+/* 교직원 부서 옵션 숨기기 (기본값) */
+.staff-option {
+    display: none;
+}
+
+.staff-departments {
+    display: none;
+}
+
+/* 학년 드롭다운 */
 .grade-dropdown {
     position: relative;
     display: inline-block;
@@ -320,15 +375,6 @@ header {
     line-height: 1.4;
 }
 
-/* 교직원 부서 옵션 숨기기 (기본값) */
-.staff-option {
-    display: none;
-}
-
-#staffDepartments {
-    display: none;
-}
-
 /* 반응형 디자인 */
 @media (max-width: 480px) {
     .role-selection {
@@ -337,5 +383,9 @@ header {
     
     .role-option {
         min-width: 100%;
+    }
+    
+    .department-dropdown {
+        max-height: 250px;
     }
 }
