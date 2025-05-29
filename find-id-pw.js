@@ -1,100 +1,159 @@
-// 현재 로그인된 사용자 정보 저장 변수
+// find-id-pw.js
+
+// ──────────────── 알리고 SMS API 설정 ────────────────
+const ALIGO_USER_ID  = 'groria123';
+const ALIGO_API_KEY  = '43b9dx0kx8k9x217sj4euwtyzcil6o2g';
+const ALIGO_SENDER   = '15442525';
+const ALIGO_ENDPOINT = 'https://apis.aligo.in/send/';
+
 let currentUser = null;
 
-// 페이지 로드 시 현재 로그인된 사용자 정보 확인 및 이벤트 설정
+// ──────────────── 공통 헬퍼 함수 ────────────────
+// 휴대폰 번호에서 하이픈 제거
+function normalizePhone(number) {
+    return number.replace(/\D/g, '');
+}
+
+// 알리고 SMS API 실제 호출 함수
+async function sendSMS(phoneNumbers, message) {
+    const receiver = Array.isArray(phoneNumbers)
+        ? phoneNumbers.map(normalizePhone).join(',')
+        : normalizePhone(phoneNumbers);
+
+    const params = new URLSearchParams({
+        user_id:     ALIGO_USER_ID,
+        key:         ALIGO_API_KEY,
+        sender:      ALIGO_SENDER,
+        receiver:    receiver,
+        msg:         message,
+        testmode_yn: 'N'   // 개발 중 'Y', 운영 'N'
+    });
+
+    try {
+        const res  = await fetch(ALIGO_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params
+        });
+        const data = await res.json();
+        if (data.result_code === '1') {
+            console.log('🎉 SMS 발송 성공:', data);
+            return { success: true };
+        } else {
+            console.error('❌ SMS 발송 실패:', data);
+            return { success: false, error: data.message };
+        }
+    } catch (err) {
+        console.error('🚨 SMS API 호출 에러:', err);
+        return { success: false, error: err.message };
+    }
+}
+
+// 타이머 함수 (초를 받아 MM:SS 표시)
+function startTimer(elementId, seconds) {
+    const timerEl = document.getElementById(elementId);
+    let remaining = seconds;
+    if (window[`${elementId}Interval`]) {
+        clearInterval(window[`${elementId}Interval`]);
+    }
+    window[`${elementId}Interval`] = setInterval(() => {
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        timerEl.textContent = `${m}:${s}`;
+        if (--remaining < 0) {
+            clearInterval(window[`${elementId}Interval`]);
+            timerEl.textContent = '인증시간 만료';
+            sessionStorage.removeItem(elementId === 'id-timer' ? 'verificationCode' : 'pwVerificationCode');
+        }
+    }, 1000);
+}
+
+// 페이지 로드 시 초기 설정
 document.addEventListener('DOMContentLoaded', function() {
     checkLoginStatus();
-    console.log("페이지 로드됨: 사용자 정보 확인 중...");
-            
-    // 아이디 찾기 - 휴대폰으로 찾기 필드 이벤트 리스너 설정
-    setupVerificationButtonControl(
-        'name-phone-input',
-        'phone-input',
-        'id-verify-btn'
-    );
-            
-    // 비밀번호 찾기 필드 이벤트 리스너 설정
-    setupVerificationButtonControl(
-        'pw-name-input',
-        'pw-phone-input',
-        'pw-verify-btn',
-        'id-input'  // 추가 필드
-    );
-            
-    // 비밀번호 입력 필드 이벤트 리스너 설정
+    setupVerificationButtonControl('name-phone-input', 'phone-input', 'id-verify-btn');
+    setupVerificationButtonControl('pw-name-input', 'pw-phone-input', 'pw-verify-btn', 'id-input');
     const newPwInput = document.getElementById('new-pw-input');
-    if(newPwInput) {
-        newPwInput.addEventListener('input', validatePassword);
-    }
-            
-    // 비밀번호 확인 필드 이벤트 리스너 설정
+    if (newPwInput) newPwInput.addEventListener('input', validatePassword);
     const confirmPwInput = document.getElementById('new-pw-confirm-input');
-    if(confirmPwInput) {
-        confirmPwInput.addEventListener('input', validatePasswordConfirm);
-    }
+    if (confirmPwInput) confirmPwInput.addEventListener('input', validatePasswordConfirm);
 });
-        
-// 비밀번호 유효성 검사 함수
+
+// ──────────────── 인증번호 전송 (아이디 찾기) ────────────────
+async function sendVerificationCode() {
+    const phoneRaw = document.getElementById('phone-input').value.trim();
+    const phone    = normalizePhone(phoneRaw);
+    const code     = String(Math.floor(100000 + Math.random() * 900000));
+
+    const result = await sendSMS(phone, `아이디 찾기 인증번호는 [${code}] 입니다.`);
+    if (!result.success) {
+        alert('인증번호 전송 실패: ' + (result.error || '알 수 없는 오류'));
+        return;
+    }
+
+    sessionStorage.setItem('verificationCode', code);
+    startTimer('id-timer', 180);
+    alert('인증번호를 전송했습니다.');
+}
+
+// ──────────────── 인증번호 전송 (비밀번호 찾기) ────────────────
+async function sendPwVerificationCode() {
+    const userId   = document.getElementById('id-input').value.trim();
+    const name     = document.getElementById('pw-name-input').value.trim();
+    const phoneRaw = document.getElementById('pw-phone-input').value.trim();
+    const phone    = normalizePhone(phoneRaw);
+
+    const storedName  = localStorage.getItem(`user_${userId}_name`);
+    const storedPhone = normalizePhone(localStorage.getItem(`user_${userId}_phone`) || '');
+    if (storedName !== name || storedPhone !== phone) {
+        alert('입력하신 정보와 일치하는 사용자가 없습니다.');
+        return;
+    }
+
+    const code   = String(Math.floor(100000 + Math.random() * 900000));
+    const result = await sendSMS(phone, `비밀번호 재설정 인증번호는 [${code}] 입니다.`);
+    if (!result.success) {
+        alert('인증번호 전송 실패: ' + (result.error || '알 수 없는 오류'));
+        return;
+    }
+
+    sessionStorage.setItem('pwVerificationCode', code);
+    startTimer('pw-timer', 180);
+    alert('인증번호를 전송했습니다.');
+}
+
+// ──────────────── 비밀번호 유효성 검사 ────────────────
 function validatePassword() {
     const password = document.getElementById('new-pw-input').value;
-            
-    // 비밀번호가 비어있는지 확인
-    if(password.length === 0) {
-        // 빈 경우 모든 검증 상태를 초기화 (중립적 색상으로)
+    if (password.length === 0) {
         resetValidationStatus();
         return;
     }
-            
-    // 길이 검사 (8자 이상)
-    const lengthValid = password.length >= 8;
-    updateValidationStatus('length-validation', lengthValid);
-            
-    // 영문자 검사
-    const letterValid = /[A-Za-z]/.test(password);
-    updateValidationStatus('letter-validation', letterValid);
-            
-    // 숫자 검사
-    const numberValid = /\d/.test(password);
-    updateValidationStatus('number-validation', numberValid);
-            
-    // 특수문자 검사
-    const specialValid = /[@$!%*#?&]/.test(password);
-    updateValidationStatus('special-validation', specialValid);
-            
-    // 비밀번호 확인 필드도 함께 검사 (입력된 경우)
+    updateValidationStatus('length-validation', password.length >= 8);
+    updateValidationStatus('letter-validation', /[A-Za-z]/.test(password));
+    updateValidationStatus('number-validation', /\d/.test(password));
+    updateValidationStatus('special-validation', /[@$!%*#?&]/.test(password));
     const confirmInput = document.getElementById('new-pw-confirm-input');
-    if(confirmInput.value) {
-        validatePasswordConfirm();
-    }
+    if (confirmInput.value) validatePasswordConfirm();
 }
-        
-// 비밀번호 확인 입력 검사
+
 function validatePasswordConfirm() {
-    const password = document.getElementById('new-pw-input').value;
+    const password        = document.getElementById('new-pw-input').value;
     const confirmPassword = document.getElementById('new-pw-confirm-input').value;
-            
-    // 비밀번호 확인이 비어있는지 확인
-    if(confirmPassword.length === 0) {
-    // 일치 검증 상태를 초기화 (중립적 색상으로) 
-    document.getElementById('match-validation').classList.remove('valid');
-        document.getElementById('match-validation').classList.remove('invalid');
-        const icon = document.getElementById('match-validation').querySelector('.validation-icon');
-        icon.classList.remove('valid');
-        icon.classList.remove('invalid');
+    if (confirmPassword.length === 0) {
+        const elem = document.getElementById('match-validation');
+        elem.classList.remove('valid', 'invalid');
+        const icon = elem.querySelector('.validation-icon');
+        icon.classList.remove('valid', 'invalid');
         return;
     }
-            
-    // 일치 여부 검사
-    const matchValid = password === confirmPassword && password.length > 0;
-    updateValidationStatus('match-validation', matchValid);
+    updateValidationStatus('match-validation', password === confirmPassword && password.length > 0);
 }
-        
-// 검증 상태 업데이트 함수
+
 function updateValidationStatus(id, isValid) {
     const element = document.getElementById(id);
-    const icon = element.querySelector('.validation-icon');
-            
-    if(isValid) {
+    const icon    = element.querySelector('.validation-icon');
+    if (isValid) {
         element.classList.add('valid');
         element.classList.remove('invalid');
         icon.classList.add('valid');
@@ -106,104 +165,71 @@ function updateValidationStatus(id, isValid) {
         icon.classList.add('invalid');
     }
 }
-        
-// 인증번호 버튼 활성화/비활성화 제어 함수
+
+// ──────────────── 인증 버튼 활성화 제어 ────────────────
 function setupVerificationButtonControl(nameInputId, phoneInputId, buttonId, extraInputId = null) {
-    const nameInput = document.getElementById(nameInputId);
-    const phoneInput = document.getElementById(phoneInputId);
-    const verifyButton = document.getElementById(buttonId);
-    const extraInput = extraInputId ? document.getElementById(extraInputId) : null;
-            
-    // 입력 필드 변경 감지 함수
+    const nameInput   = document.getElementById(nameInputId);
+    const phoneInput  = document.getElementById(phoneInputId);
+    const verifyBtn   = document.getElementById(buttonId);
+    const extraInput  = extraInputId ? document.getElementById(extraInputId) : null;
+
     function checkInputs() {
-        const nameValue = nameInput.value.trim();
-        const phoneValue = phoneInput.value.trim();
-        const extraValue = extraInput ? extraInput.value.trim() : true;
-                
-        // 모든 필수 입력이 있는지 확인
-        if (nameValue && phoneValue && extraValue) {
-            verifyButton.disabled = false;
-            verifyButton.classList.remove('disabled');
+        const nv = nameInput.value.trim();
+        const pv = phoneInput.value.trim();
+        const ev = extraInput ? extraInput.value.trim() : true;
+        if (nv && pv && ev) {
+            verifyBtn.disabled = false;
+            verifyBtn.classList.remove('disabled');
         } else {
-            verifyButton.disabled = true;
-            verifyButton.classList.add('disabled');
+            verifyBtn.disabled = true;
+            verifyBtn.classList.add('disabled');
         }
     }
-            
-    // 이벤트 리스너 등록
+
     nameInput.addEventListener('input', checkInputs);
     phoneInput.addEventListener('input', checkInputs);
-    if (extraInput) {
-        extraInput.addEventListener('input', checkInputs);
-    }
-            
-    // 초기 상태 설정
+    if (extraInput) extraInput.addEventListener('input', checkInputs);
     checkInputs();
 }
-        
-// 휴대폰 번호 하이픈 자동 입력 함수
+
+// ──────────────── 번호 포맷팅 ────────────────
 function formatPhoneNumber(input) {
-    // 숫자만 남기고 모든 문자 제거
     let value = input.value.replace(/\D/g, '');
-            
-    // 3-4-4 형식으로 하이픈 추가
     if (value.length <= 3) {
-        // 변화 없음
+        // 그대로
     } else if (value.length <= 7) {
-        value = value.slice(0, 3) + '-' + value.slice(3);
+        value = value.slice(0,3) + '-' + value.slice(3);
     } else {
-        value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+        value = value.slice(0,3) + '-' + value.slice(3,7) + '-' + value.slice(7,11);
     }
-            
-    // 값 업데이트
     input.value = value;
 }
-        
-// 사용자 로그인 상태 확인
+
+// ──────────────── 로그인 상태 확인 ────────────────
 function checkLoginStatus() {
-    // 세션 스토리지에서 로그인 정보 확인
     const loggedInUserId = sessionStorage.getItem('loggedInUserId');
-    console.log("로그인된 사용자 ID:", loggedInUserId);
-            
     if (loggedInUserId) {
-        // 로컬 스토리지에서 사용자 정보 가져오기
         findUserInfoByStudentId(loggedInUserId);
-    } else {
-        console.log('로그인된 사용자가 없습니다.');
     }
 }
-        
-// 학번으로 사용자 정보 찾기
+
 function findUserInfoByStudentId(studentId) {
-    // 이름, 휴대폰 번호, 이메일 등 사용자 정보 조회
-    const name = localStorage.getItem(`user_${studentId}_name`);
+    const name  = localStorage.getItem(`user_${studentId}_name`);
     const phone = localStorage.getItem(`user_${studentId}_phone`);
     const email = localStorage.getItem(`user_${studentId}_email`);
-            
     if (name) {
-        currentUser = {
-            studentId: studentId,
-            name: name,
-            phone: phone,
-            email: email
-        };
-                
-        console.log('현재 로그인된 사용자:', currentUser);
+        currentUser = { studentId, name, phone, email };
     }
 }
-        
-// 뒤로가기
+
+// ──────────────── 내비게이션 및 탭 제어 ────────────────
 function goBack() {
-    window.location.href = "login.html";
+    window.location.href = 'login.html';
 }
-        
-// 탭 전환 함수
+
 function switchTab(tabId) {
-    // 모든 탭과 탭 내용 비활성화
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-    // 선택한 탭 활성화
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     if (tabId === 'id-tab') {
         document.querySelectorAll('.tabs > .tab')[0].classList.add('active');
         document.getElementById('id-tab').classList.add('active');
@@ -211,23 +237,16 @@ function switchTab(tabId) {
         document.querySelectorAll('.tabs > .tab')[1].classList.add('active');
         document.getElementById('pw-tab').classList.add('active');
     }
-            
-    // 결과 컨테이너 숨기기
     document.getElementById('id-result').style.display = 'none';
-            
-    // 비밀번호 변경 폼 초기화
     if (tabId === 'pw-tab') {
-        document.getElementById('new-pw-container').style.display = 'none';
+        document.getElementById('new-pw-container').style.display      = 'none';
         document.getElementById('verify-first-container').style.display = 'block';
     }
 }
-        
-// 아이디 찾기 방법 전환
+
 function switchIdMethod(methodId) {
-    // 이름/이메일 또는 휴대폰 방식 탭 전환
     const tabs = document.querySelectorAll('#id-tab .tabs .tab');
-    tabs.forEach(tab => tab.classList.remove('active'));
-            
+    tabs.forEach(t => t.classList.remove('active'));
     if (methodId === 'name-email') {
         tabs[0].classList.add('active');
         document.getElementById('name-email-method').classList.add('active');
@@ -237,17 +256,13 @@ function switchIdMethod(methodId) {
         document.getElementById('name-email-method').classList.remove('active');
         document.getElementById('phone-method').classList.add('active');
     }
-            
-    // 결과 컨테이너 숨기기
     document.getElementById('id-result').style.display = 'none';
 }
-        
-// 이름과 이메일로 아이디 찾기
+
+// ──────────────── 아이디 찾기 로직 ────────────────
 function findIdByNameAndEmail() {
-    const name = document.getElementById('name-input').value.trim();
+    const name  = document.getElementById('name-input').value.trim();
     const email = document.getElementById('email-input').value.trim();
-            
-    // 입력 필드 확인
     if (!name && !email) {
         alert('이름과 이메일을 모두 입력해주세요.');
         return;
@@ -260,16 +275,12 @@ function findIdByNameAndEmail() {
         document.getElementById('email-input').focus();
         return;
     }
-            
-    // API 호출 시뮬레이션 (실제로는 서버에 요청)
     fetchUserIdByNameAndEmail(name, email)
         .then(userId => {
             if (userId) {
-                // 아이디 찾기 성공
                 document.getElementById('found-id').textContent = userId;
                 document.getElementById('id-result').style.display = 'block';
             } else {
-                // 아이디 찾기 실패
                 alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
             }
         })
@@ -278,53 +289,39 @@ function findIdByNameAndEmail() {
             alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
         });
 }
-        
-// 서버에서 이름과 이메일로 아이디 조회 (시뮬레이션)
+
 function fetchUserIdByNameAndEmail(name, email) {
-    // 실제로는 서버에 API 요청을 보냅니다.
-    // 여기서는 간단한 시뮬레이션으로 로컬 스토리지 사용
     return new Promise((resolve, reject) => {
         try {
-            // 모든 로컬 스토리지 항목을 검색하여 이메일이 일치하는 사용자 찾기
             let foundUserId = null;
-                    
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key && key.includes('_email')) {
                     const storedEmail = localStorage.getItem(key);
-                    const studentId = key.split('_')[1]; // 학번 추출
-                            
-                    // 이메일이 일치하는지 확인
+                    const studentId   = key.split('_')[1];
                     if (storedEmail && storedEmail.toLowerCase() === email.toLowerCase()) {
-                        // 이름도 일치하는지 확인
                         const storedName = localStorage.getItem(`user_${studentId}_name`);
-                                
-                        if (storedName && storedName === name) {
-                            // 아이디 가져오기 (학번을 아이디로 사용)
+                        if (storedName === name) {
                             foundUserId = studentId;
                             break;
                         }
                     }
                 }
             }
-                    
             resolve(foundUserId);
         } catch (error) {
-                    reject(error);
+            reject(error);
         }
     });
 }
-        
-// 휴대폰으로 아이디 찾기
+
+// ──────────────── 휴대폰으로 아이디 찾기 ────────────────
 function findIdByPhone() {
-    const name = document.getElementById('name-phone-input').value.trim();
-    const phoneWithHyphens = document.getElementById('phone-input').value.trim();
-    const verificationCode = document.getElementById('verification-input').value.trim();
-            
-    // 하이픈 제거
-    const phone = phoneWithHyphens.replace(/-/g, '');
-            
-    // 입력 필드 확인
+    const name              = document.getElementById('name-phone-input').value.trim();
+    const phoneWithHyphens  = document.getElementById('phone-input').value.trim();
+    const verificationCode  = document.getElementById('verification-input').value.trim();
+    const phone             = phoneWithHyphens.replace(/-/g, '');
+
     if (!name) {
         alert('이름을 입력해주세요.');
         document.getElementById('name-phone-input').focus();
@@ -338,24 +335,19 @@ function findIdByPhone() {
         document.getElementById('verification-input').focus();
         return;
     }
-            
-    // 인증번호 확인
+
     const storedCode = sessionStorage.getItem('verificationCode');
     if (verificationCode !== storedCode) {
         alert('인증번호가 일치하지 않습니다.');
         document.getElementById('verification-input').focus();
         return;
     }
-            
-    // 휴대폰 번호로 아이디 조회
+
     fetchUserIdByPhoneAndName(phone, name)
         .then(userId => {
             if (userId) {
-                // 아이디 찾기 성공
-                document.getElementById('found-id').textContent = userId;
+                document.getElementById('found-id').textContent    = userId;
                 document.getElementById('id-result').style.display = 'block';
-                        
-                // 인증번호 세션 초기화
                 sessionStorage.removeItem('verificationCode');
             } else {
                 alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
@@ -366,34 +358,26 @@ function findIdByPhone() {
             alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
         });
 }
-        
-// 서버에서 휴대폰과 이름으로 아이디 조회 (시뮬레이션)
+
 function fetchUserIdByPhoneAndName(phone, name) {
-    // 실제로는 서버에 API 요청을 보냅니다.
     return new Promise((resolve, reject) => {
         try {
-            // 모든 사용자 중에서 휴대폰 번호와 이름이 일치하는 사용자 찾기
             let foundUserId = null;
-                    
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key && key.includes('_phone')) {
                     const storedPhone = localStorage.getItem(key);
-                    const storedPhoneNoHyphen = storedPhone.replace(/-/g, '');
-                    const studentId = key.split('_')[1]; // 학번 추출
-                            
-                    if (storedPhoneNoHyphen === phone) {
-                        // 이름 확인
+                    const storedNoHyphen = storedPhone.replace(/-/g, '');
+                    const studentId = key.split('_')[1];
+                    if (storedNoHyphen === phone) {
                         const storedName = localStorage.getItem(`user_${studentId}_name`);
                         if (storedName === name) {
-                            // 아이디 가져오기 (학번을 아이디로 사용)
                             foundUserId = studentId;
                             break;
                         }
                     }
                 }
             }
-                    
             resolve(foundUserId);
         } catch (error) {
             reject(error);
@@ -401,123 +385,23 @@ function fetchUserIdByPhoneAndName(phone, name) {
     });
 }
 
-// 인증번호 전송 (아이디 찾기)
-function sendVerificationCode() {
-    const name = document.getElementById('name-phone-input').value.trim();
-    const phoneWithHyphens = document.getElementById('phone-input').value.trim();
-            
-    // 하이픈 제거
-    const phone = phoneWithHyphens.replace(/-/g, '');
-            
-    // 입력 필드 확인은 버튼 활성화 조건에서 이미 처리됨
-            
-    // 인증번호 생성 (6자리 난수)
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-            
-    // 개발 테스트용 알림
-    console.log('테스트 모드 - 인증번호:', code);
-    alert(`개발 테스트 모드: 인증번호는 [${code}] 입니다.`);
-            
-    // 인증번호 저장
-    sessionStorage.setItem('verificationCode', code);
-            
-    // 인증번호 타이머 시작 (3분)
-    startTimer('id-timer', 180);
-}
-
-// 비밀번호 찾기 인증번호 전송
-function sendPwVerificationCode() {
-    const userId = document.getElementById('id-input').value.trim();
-    const name = document.getElementById('pw-name-input').value.trim();
-    const phoneWithHyphens = document.getElementById('pw-phone-input').value.trim();
-            
-    // 하이픈 제거
-    const phone = phoneWithHyphens.replace(/-/g, '');
-            
-    // 입력 필드 확인은 버튼 활성화 조건에서 이미 처리됨
-            
-    // 사용자 정보 확인
-    verifyUserInfoForPwReset(userId, name, phone)
-        .then(isVerified => {
-            if (!isVerified) {
-                alert('입력하신 정보와 일치하는 사용자가 없습니다.');
-                return null;
-            }
-                    
-            // 인증번호 생성 (6자리 난수)
-            const code = Math.floor(100000 + Math.random() * 900000).toString();
-                    
-            // 개발 테스트용 알림
-            console.log('테스트 모드 - 비밀번호 재설정 인증번호:', code);
-            alert(`개발 테스트 모드: 인증번호는 [${code}] 입니다.`);
-                    
-            // 인증번호 저장
-            sessionStorage.setItem('pwVerificationCode', code);
-                    
-            // 인증번호 타이머 시작 (3분)
-            startTimer('pw-timer', 180);
-                    
-            return { success: true };
-        })
-        .catch(error => {
-            console.error('인증번호 전송 오류:', error);
-            alert('인증번호 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
-        });
-}
-
-// 비밀번호 재설정을 위한 사용자 정보 확인
+// ──────────────── 비밀번호 재설정 전 본인 확인 ────────────────
 function verifyUserInfoForPwReset(userId, name, phone) {
     return new Promise((resolve) => {
-        // 로컬 스토리지에서 사용자 정보 확인
-        const storedName = localStorage.getItem(`user_${userId}_name`);
+        const storedName  = localStorage.getItem(`user_${userId}_name`);
         const storedPhone = localStorage.getItem(`user_${userId}_phone`);
-        const storedPhoneNoHyphen = storedPhone ? storedPhone.replace(/-/g, '') : '';
-                
-        const isVerified = storedName === name && storedPhoneNoHyphen === phone;
-        resolve(isVerified);
+        const noHyphen    = storedPhone ? storedPhone.replace(/-/g, '') : '';
+        resolve(storedName === name && noHyphen === phone);
     });
 }
 
-// 타이머 함수
-function startTimer(elementId, seconds) {
-    const timerElement = document.getElementById(elementId);
-    let remainingTime = seconds;
-            
-    // 이전 타이머가 있으면 중지
-    if (window[`${elementId}Interval`]) {
-        clearInterval(window[`${elementId}Interval`]);
-    }
-            
-    window[`${elementId}Interval`] = setInterval(function() {
-        const minutes = Math.floor(remainingTime / 60);
-        const seconds = remainingTime % 60;
-                
-        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-        if (--remainingTime < 0) {
-            clearInterval(window[`${elementId}Interval`]);
-            timerElement.textContent = "인증시간 만료";
-                    
-            if (elementId === 'id-timer') {
-                sessionStorage.removeItem('verificationCode');
-            } else {
-                sessionStorage.removeItem('pwVerificationCode');
-            }
-        }
-    }, 1000);
-}
-
-// 비밀번호 재설정을 위한 사용자 본인 인증
 function verifyUserForPasswordReset() {
-    const userId = document.getElementById('id-input').value.trim();
-    const name = document.getElementById('pw-name-input').value.trim();
+    const userId           = document.getElementById('id-input').value.trim();
+    const name             = document.getElementById('pw-name-input').value.trim();
     const phoneWithHyphens = document.getElementById('pw-phone-input').value.trim();
     const verificationCode = document.getElementById('pw-verification-input').value.trim();
-            
-    // 하이픈 제거
-    const phone = phoneWithHyphens.replace(/-/g, '');
-            
-    // 입력 필드 확인
+    const phone            = phoneWithHyphens.replace(/-/g, '');
+
     if (!userId) {
         alert('아이디를 입력해주세요.');
         document.getElementById('id-input').focus();
@@ -535,35 +419,25 @@ function verifyUserForPasswordReset() {
         document.getElementById('pw-verification-input').focus();
         return;
     }
-            
-    // 인증번호 확인
+
     const storedCode = sessionStorage.getItem('pwVerificationCode');
     if (verificationCode !== storedCode) {
         alert('인증번호가 일치하지 않습니다.');
         document.getElementById('pw-verification-input').focus();
         return;
     }
-            
-    // 사용자 정보 확인
+
     verifyUserInfoForPwReset(userId, name, phone)
         .then(isVerified => {
             if (!isVerified) {
                 alert('입력하신 정보와 일치하는 사용자가 없습니다.');
                 return;
             }
-                    
-            // 본인 인증 성공, 비밀번호 재설정 폼 표시
             document.getElementById('verify-first-container').style.display = 'none';
-            document.getElementById('new-pw-container').style.display = 'block';
-                    
-            // 새 비밀번호 입력 필드 초기화 (추가된 부분)
-            document.getElementById('new-pw-input').value = '';
-            document.getElementById('new-pw-confirm-input').value = '';
-                    
-            // 유효성 검사 표시 초기화
+            document.getElementById('new-pw-container').style.display      = 'block';
+            document.getElementById('new-pw-input').value                  = '';
+            document.getElementById('new-pw-confirm-input').value          = '';
             resetValidationStatus();
-                    
-            // 인증된 사용자 ID 세션에 저장
             sessionStorage.setItem('verifiedUserId', userId);
         })
         .catch(error => {
@@ -572,83 +446,56 @@ function verifyUserForPasswordReset() {
         });
 }
 
-// 유효성 검사 표시 초기화
+// ──────────────── 유효성 상태 초기화 ────────────────
 function resetValidationStatus() {
-    const validationItems = document.querySelectorAll('.validation-item');
-    validationItems.forEach(item => {
-        item.classList.remove('valid');
-        item.classList.remove('invalid');
+    document.querySelectorAll('.validation-item').forEach(item => {
+        item.classList.remove('valid', 'invalid');
         const icon = item.querySelector('.validation-icon');
-        if (icon) {
-            icon.classList.remove('valid');
-            icon.classList.remove('invalid');
-        }
+        if (icon) icon.classList.remove('valid', 'invalid');
     });
 }
 
-// 새 비밀번호 설정
+// ──────────────── 새 비밀번호 설정 ────────────────
 function resetPassword() {
-    const newPw = document.getElementById('new-pw-input').value.trim();
-    const confirmNewPw = document.getElementById('new-pw-confirm-input').value.trim();
-            
-    // 입력 필드 확인
+    const newPw        = document.getElementById('new-pw-input').value.trim();
+    const confirmPw    = document.getElementById('new-pw-confirm-input').value.trim();
+    const verifiedId   = sessionStorage.getItem('verifiedUserId');
+
     if (!newPw) {
         alert('새 비밀번호를 입력해주세요.');
         document.getElementById('new-pw-input').focus();
         return;
-    } else if (!confirmNewPw) {
+    }
+    if (!confirmPw) {
         alert('비밀번호 확인을 입력해주세요.');
         document.getElementById('new-pw-confirm-input').focus();
         return;
     }
-            
-    // 새 비밀번호 확인
-    if (newPw !== confirmNewPw) {
+    if (newPw !== confirmPw) {
         alert('새 비밀번호와 확인이 일치하지 않습니다.');
         document.getElementById('new-pw-confirm-input').focus();
         return;
     }
-            
-    // 비밀번호 패턴 확인 (영문, 숫자, 특수문자 포함 8-20자)
+
     const pwPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
     if (!pwPattern.test(newPw)) {
         alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8-20자로 입력해주세요.');
         document.getElementById('new-pw-input').focus();
         return;
     }
-            
-    // 인증된 사용자 ID 가져오기
-    const verifiedUserId = sessionStorage.getItem('verifiedUserId');
-    if (!verifiedUserId) {
+    if (!verifiedId) {
         alert('사용자 인증 정보가 유효하지 않습니다. 다시 시도해주세요.');
         return;
     }
-            
-    // 비밀번호 변경 (시뮬레이션)
+
     try {
-        // 로컬 스토리지에서 비밀번호 업데이트
-        localStorage.setItem(`user_${verifiedUserId}_password`, newPw);
-                
-        // 인증 정보 및 코드 세션에서 삭제
+        localStorage.setItem(`user_${verifiedId}_password`, newPw);
         sessionStorage.removeItem('verifiedUserId');
         sessionStorage.removeItem('pwVerificationCode');
-                
         alert('비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인해주세요.');
-                
-        // 로그인 페이지로 이동
         window.location.href = 'login.html';
     } catch (error) {
         console.error('비밀번호 변경 오류:', error);
         alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-}
-
-// 테스트용 SMS 전송 함수 (실제 구현 시 수정 필요)
-function sendSMS(phoneNumber, message) {
-    return new Promise((resolve) => {
-        // 테스트 환경에서는 실제 API 호출 대신 시뮬레이션
-        console.log('테스트 모드 - 인증번호:', message);
-        alert(`개발 테스트 모드: 인증번호는 [${message}] 입니다.`);
-        resolve({ success: true, message: '테스트 모드 SMS 발송' });
-    });
 }
