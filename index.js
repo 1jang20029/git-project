@@ -2472,89 +2472,88 @@ function getTodaysClasses() {
 
 // 네이버 지도 초기화 함수 - 수정된 버전
 function initNaverMap() {
-console.log('네이버 지도 초기화 시작...');
+    console.log('네이버 지도 초기화 시작...');
 
-// 네이버 지도 라이브러리가 로드되었는지 확인
-if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
-console.error('네이버 지도 API가 로드되지 않았습니다. API 키를 확인해주세요.');
-// 사용자에게 오류 메시지 표시
-alert('지도를 불러오는 데 문제가 발생했습니다. 인터넷 연결을 확인해주세요.');
-
-// 지도 영역에 오류 메시지 표시
-const mapContainer = document.getElementById('naverMap');
-if (mapContainer) {
-    mapContainer.innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; flex-direction:column; background-color:#f8f9fa; border-radius:8px;"><div style="font-size:24px; margin-bottom:10px;">🗺️</div><div style="font-weight:bold; margin-bottom:5px;">지도를 불러올 수 없습니다</div><div style="font-size:14px; color:#666;">네트워크 연결을 확인해주세요</div></div>';
-}
-return;
-}
-
-try {
-// 지도 컨테이너 요소 가져오기
-const mapContainer = document.getElementById('naverMap');
-if (!mapContainer) {
-    console.error('지도 컨테이너가 존재하지 않습니다.');
-    return;
-}
-
-// 컨테이너 스타일 직접 설정 - 명시적 너비와 높이 설정
-mapContainer.style.width = '100%';
-mapContainer.style.height = '350px';
-
-// 기존 내용 비우기 (이미지나 다른 요소 제거)
-mapContainer.innerHTML = '';
-
-console.log('네이버 지도 컨테이너 확인됨');
-
-// 연성대학교 위치 (실제 좌표로 설정)
-const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-
-// 지도 옵션
-const mapOptions = {
-    center: yeonsung,
-    zoom: 16,
-    minZoom: 14,
-    maxZoom: 19,
-    zoomControl: true,
-    zoomControlOptions: {
-        position: naver.maps.Position.TOP_RIGHT
-    },
-    scaleControl: true,
-    logoControl: true,
-    mapDataControl: true
-};
-
-console.log('지도 옵션 설정 완료');
-
-// 지도 생성
-naverMap = new naver.maps.Map(mapContainer, mapOptions);
-
-// 지도 생성 확인
-console.log('네이버 지도 객체 생성 완료');
-
-// 윈도우 리사이즈 이벤트 발생시키기 (지도 크기 강제 업데이트)
-window.dispatchEvent(new Event('resize'));
-
-// 지도 완전히 로드된 후 추가 갱신
-setTimeout(() => {
-    if (naverMap) {
-        naverMap.refresh();
-        console.log('지도 리프레시 완료');
-    }
-}, 500);
-
-// Direction 서비스 사용을 위한 스크립트 동적 로드
-loadDirectionAPI();
-
-// 마커와 정보창 생성
-buildingData.forEach(building => {
-    // 좌표 유효성 확인
-    if (!building.position || !building.position.lat || !building.position.lng) {
-        console.error('건물 데이터에 유효한 좌표가 없습니다:', building.name);
+    // 1) 네이버 지도 API 로드 여부 확인
+    if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+        console.error('네이버 지도 API가 로드되지 않았습니다. API 키를 확인해주세요.');
+        alert('지도를 불러오는 데 문제가 발생했습니다. 인터넷 연결을 확인해주세요.');
+        const mapContainer = document.getElementById('naverMap');
+        if (mapContainer) {
+            mapContainer.innerHTML = ''
+                + '<div style="display:flex; height:100%; align-items:center; '
+                + 'justify-content:center; flex-direction:column; background-color:#f8f9fa; '
+                + 'border-radius:8px;">'
+                + '<div style="font-size:24px; margin-bottom:10px;">🗺️</div>'
+                + '<div style="font-weight:bold; margin-bottom:5px;">지도를 불러올 수 없습니다</div>'
+                + '<div style="font-size:14px; color:#666;">네트워크 연결을 확인해주세요</div>'
+                + '</div>';
+        }
         return;
     }
-    
-    try {
-        // 마커 생성
+
+    // 2) 컨테이너 초기화
+    const mapContainer = document.getElementById('naverMap');
+    mapContainer.style.width = '100%';
+    mapContainer.style.height = '350px';
+    mapContainer.innerHTML = '';
+    console.log('네이버 지도 컨테이너 확인됨');
+
+    // 3) 지도 옵션 설정
+    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+    const mapOptions = {
+        center: yeonsung,
+        zoom: 16,
+        minZoom: 14,
+        maxZoom: 19,
+        zoomControl: true,
+        zoomControlOptions: { position: naver.maps.Position.TOP_RIGHT },
+        scaleControl: true,
+        logoControl: true,
+        mapDataControl: true
+    };
+    console.log('지도 옵션 설정 완료');
+
+    // 4) 지도 생성
+    naverMap = new naver.maps.Map(mapContainer, mapOptions);
+    console.log('네이버 지도 객체 생성 완료');
+
+    // 5) 강제 resize 이벤트 발생
+    window.dispatchEvent(new Event('resize'));
+
+    // 6) 로드 완료 후 안전하게 refresh
+    setTimeout(() => {
+        if (naverMap && typeof naverMap.refresh === 'function') {
+            try {
+                naverMap.refresh();
+                console.log('지도 리프레시 완료');
+            } catch (e) {
+                console.warn('Map refresh skipped due to error:', e);
+            }
+        }
+    }, 500);
+
+    // 7) 스타일맵 초기화 후에도 한 번 더 안전하게 refresh
+    naver.maps.Event.once(naverMap, 'init_stylemap', () => {
+        console.log('지도 스타일맵 초기화 완료');
+        window.dispatchEvent(new Event('resize'));
+        if (typeof naverMap.refresh === 'function') {
+            try {
+                naverMap.refresh();
+            } catch (e) {
+                console.warn('Map refresh skipped after stylemap init:', e);
+            }
+        }
+    });
+
+    // 8) 마커 & 정보창 생성
+    mapMarkers = [];
+    infoWindows = [];
+    buildingData.forEach(building => {
+        if (!building.position || !building.position.lat || !building.position.lng) {
+            console.error('건물 데이터에 유효한 좌표가 없습니다:', building.name);
+            return;
+        }
         const marker = new naver.maps.Marker({
             position: new naver.maps.LatLng(building.position.lat, building.position.lng),
             map: naverMap,
@@ -2562,15 +2561,11 @@ buildingData.forEach(building => {
         });
         mapMarkers.push(marker);
 
-        // 정보창 내용 생성
-        const contentString = `
-            <div class="map-info-window">
-                <div class="map-info-title">${building.name}</div>
-                <div class="map-info-desc">${building.description}</div>
-            </div>
-        `;
-
-        // 정보창 생성
+        const contentString = ''
+            + '<div class="map-info-window">'
+            +   `<div class="map-info-title">${building.name}</div>`
+            +   `<div class="map-info-desc">${building.description}</div>`
+            + '</div>';
         const infoWindow = new naver.maps.InfoWindow({
             content: contentString,
             maxWidth: 250,
@@ -2580,59 +2575,41 @@ buildingData.forEach(building => {
             anchorSize: { width: 12, height: 12 },
             pixelOffset: new naver.maps.Point(10, -10)
         });
+        infoWindows.push(infoWindow);
 
-        // 마커 클릭 이벤트
-        naver.maps.Event.addListener(marker, "click", function() {
-            // 이미 열려있는 모든 정보창 닫기
-            infoWindows.forEach(window => window.close());
-            
-            // 현재 마커의 정보창 열기
+        naver.maps.Event.addListener(marker, "click", () => {
+            infoWindows.forEach(w => w.close());
             infoWindow.open(naverMap, marker);
         });
+    });
 
-        infoWindows.push(infoWindow);
-    } catch (error) {
-        console.error('마커 생성 중 오류 발생:', error, building);
-    }
-});
+    // 9) GPS 버튼 추가
+    const gpsButton = document.createElement('div');
+    gpsButton.className = 'gps-button';
+    gpsButton.innerHTML = '📍';
+    gpsButton.onclick = trackUserLocation;
+    mapContainer.appendChild(gpsButton);
 
-// GPS 버튼 추가
-const gpsButton = document.createElement('div');
-gpsButton.className = 'gps-button';
-gpsButton.innerHTML = '📍';
-gpsButton.onclick = trackUserLocation;
-mapContainer.appendChild(gpsButton);
-        
-// 지도가 완전히 로드된 후 리사이즈 트리거
-naver.maps.Event.once(naverMap, 'init_stylemap', function() {
-    console.log('지도 스타일맵 초기화 완료');
-    window.dispatchEvent(new Event('resize'));
-    naverMap.refresh();
-});
+    // 10) 리사이즈 디바운스 처리
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (naverMap && typeof naverMap.refresh === 'function') {
+                try {
+                    naverMap.refresh();
+                } catch (e) {
+                    console.warn('Map refresh skipped on resize:', e);
+                }
+            }
+        }, 200);
+    });
 
-// 지도 리사이즈 이벤트 - 디바운스 적용
-let resizeTimer;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        if (naverMap) {
-            naverMap.refresh();
-        }
-    }, 200);
-});
-
-console.log('네이버 지도가 성공적으로 초기화되었습니다.');
-} catch (error) {
-console.error('네이버 지도 초기화 중 오류가 발생했습니다:', error);
-alert('지도를 불러오는 중 오류가 발생했습니다.');
-
-// 지도 영역에 오류 메시지 표시
-const mapContainer = document.getElementById('naverMap');
-if (mapContainer) {
-    mapContainer.innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; flex-direction:column; background-color:#f8f9fa; border-radius:8px;"><div style="font-size:24px; margin-bottom:10px;">❌</div><div style="font-weight:bold; margin-bottom:5px;">지도 초기화 오류</div><div style="font-size:14px; color:#666;">개발자 콘솔을 확인해주세요</div></div>';
+    console.log('네이버 지도가 성공적으로 초기화되었습니다.');
 }
-}
-}
+
+
+
 
 // 회색 영역 문제 해결을 위한 스타일 동적 적용 함수
 function fixMapGrayArea() {
@@ -2679,22 +2656,30 @@ fixMapGrayArea();
 
 // 탭 전환 시 지도 크기 조정 및 새로고침을 처리하는 함수
 function handleMapResize() {
-// 지도 컨테이너 너비 업데이트
-const mapContainer = document.getElementById('naverMap');
-if (mapContainer) {
-// 컨테이너가 보이는 상태인지 확인
-const isVisible = getComputedStyle(mapContainer).display !== 'none';
+    // 1) 컨테이너와 맵 인스턴스 준비 여부 확인
+    const mapContainer = document.getElementById('naverMap');
+    if (!mapContainer || !naverMap || typeof naverMap.refresh !== 'function') {
+        return;
+    }
 
-if (isVisible && naverMap) {
-    // 지도 갱신 및 크기 조정
+    // 2) 실제 보이는 상태 확인
+    const isVisible = getComputedStyle(mapContainer).display !== 'none';
+    if (!isVisible) {
+        return;
+    }
+
+    // 3) 약간의 딜레이 후 resize + refresh
     setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
-        naverMap.refresh();
-        console.log('지도 크기 조정 및 갱신 완료');
+        try {
+            naverMap.refresh();
+            console.log('지도 크기 조정 및 갱신 완료');
+        } catch (e) {
+            console.warn('Map refresh skipped due to error:', e);
+        }
     }, 100);
 }
-}
-}
+
 
 // Direction API 스크립트 동적 로드 함수
 function loadDirectionAPI() {
