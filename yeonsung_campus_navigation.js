@@ -9,7 +9,7 @@ const buildings = [
     { 
         name: '자연과학관', 
         coords: { lat: 37.39669466288283, lng: 126.90676716508685 },
-        image: 'images/NaturalScienceBuilding.png',
+        image: 'images/NaturalScienceMuseum.png',
         description: '자연과학 관련 학과 및 연구실'
     },
     { 
