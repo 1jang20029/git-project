@@ -1380,57 +1380,64 @@ function addSwipeFeature(container) {
     let isDragging = false;
     let startScrollLeft = 0;
 
-    // (기존) 마우스 드래그로 스와이프
-    container.addEventListener('mousedown', e => {
+    // 마우스 드래그로 스와이프
+    container.addEventListener('mousedown', (e) => {
         isDragging = true;
         startX = e.clientX;
         startScrollLeft = container.scrollLeft;
         container.style.cursor = 'grabbing';
         e.preventDefault();
     });
-    container.addEventListener('mousemove', e => {
+
+    container.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         e.preventDefault();
         currentX = e.clientX;
         const diffX = startX - currentX;
         container.scrollLeft = startScrollLeft + diffX;
     });
+
     container.addEventListener('mouseup', () => {
         isDragging = false;
         container.style.cursor = 'grab';
     });
+
     container.addEventListener('mouseleave', () => {
         isDragging = false;
         container.style.cursor = 'grab';
     });
 
-    // (기존) 터치로 스와이프
-    container.addEventListener('touchstart', e => {
+    // 터치 스와이프 (모바일)
+    container.addEventListener('touchstart', (e) => {
         startX = e.touches[0].clientX;
         startScrollLeft = container.scrollLeft;
     });
-    container.addEventListener('touchmove', e => {
+
+    container.addEventListener('touchmove', (e) => {
         if (!startX) return;
         currentX = e.touches[0].clientX;
         const diffX = startX - currentX;
         container.scrollLeft = startScrollLeft + diffX;
         e.preventDefault();
     });
+
     container.addEventListener('touchend', () => {
         startX = 0;
         currentX = 0;
     });
 
-    // **추가**: 마우스 휠로 가로 스크롤, 끝에는 세로 스크롤로 넘기기
+    // 휠 스크롤 가속
     container.addEventListener('wheel', e => {
         const maxScrollLeft = container.scrollWidth - container.clientWidth;
-        // deltaY 방향으로 가로 스크롤 할 수 있으면 가로 스크롤
-        if ((e.deltaY > 0 && container.scrollLeft < maxScrollLeft) ||
-            (e.deltaY < 0 && container.scrollLeft > 0)) {
-            container.scrollLeft += e.deltaY;
-            e.preventDefault();  // 페이지 세로 스크롤 차단
+        const SPEED = 3;  // ← 이 값을 조절해서 스크롤 속도를 빠르게/느리게 설정하세요.
+
+        const canScrollRight = e.deltaY > 0 && container.scrollLeft < maxScrollLeft;
+        const canScrollLeft  = e.deltaY < 0 && container.scrollLeft > 0;
+
+        if (canScrollRight || canScrollLeft) {
+            container.scrollLeft += e.deltaY * SPEED;
+            e.preventDefault();  // 세로 스크롤 막기
         }
-        // 그렇지 않으면 e.preventDefault() 하지 않으므로, 페이지가 세로로 스크롤 됩니다.
     });
 }
 
