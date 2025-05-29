@@ -4,23 +4,6 @@ let currentSemester = '1';
 let currentFilter = 'all';
 
 
-(function initCurrentDateFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const y = params.get('year');
-  const m = params.get('month');
-  if (y !== null && m !== null) {
-    // month는 1~12 => Date에는 0~11
-    const yearNum  = parseInt(y, 10);
-    const monthNum = parseInt(m, 10) - 1;
-    if (!isNaN(yearNum) && !isNaN(monthNum) && monthNum >= 0 && monthNum <= 11) {
-      currentDate = new Date(yearNum, monthNum, 1);
-      return;
-    }
-  }
-  // 파라미터가 없거나 잘못됐으면 오늘로
-  currentDate = new Date();
-})();
-
 // 뒤로 가기 함수
 function goBackToMain() {
     // 브라우저 히스토리에서 이전 페이지로 이동
@@ -1622,21 +1605,18 @@ function getEventsForDate(dateString) {
 // 월 네비게이션 함수들
 function prevMonth() {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    updateURLParams();      // ← URL 반영
     renderCalendar();
     renderEventsList();
 }
 
 function nextMonth() {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    updateURLParams();      // ← URL 반영
     renderCalendar();
     renderEventsList();
 }
 
 function goToToday() {
     currentDate = new Date();
-    updateURLParams();      // ← URL 반영
     renderCalendar();
     renderEventsList();
 }
@@ -2134,20 +2114,5 @@ function checkImportantEvents() {
 
 // 페이지 로드 시 알림 권한 요청
 document.addEventListener('DOMContentLoaded', function() {
-    // 1) URL 파라미터(year, month)에 따라 currentDate를 세팅한 뒤,
-    // 2) 현재 URL에도 그 파라미터가 반영되어 있지 않다면 반영해 줍니다.
-    updateURLParams();
-
-    // 페이지 로드시 가장 먼저 달력을 그리고
-    renderCalendar();
-    // 이어서 리스트와 요약 카드도 렌더링
-    renderEventsList();
-    renderSummaryCards();
-    
-    // 모달 외부 클릭 시 모달 닫기
-    document.getElementById('eventDetailModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeDetailModal();
-        }
-    });
+    setTimeout(requestNotificationPermission, 2000);
 });
