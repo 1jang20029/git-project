@@ -3633,24 +3633,50 @@ function initCategoryFilter() {
 
 // 탭 전환 함수 - 시설 탭으로 전환 시 페이지네이션 초기화 추가 (수정된 버전)
 function switchTab(tabName) {
-  // 1) 탭 콘텐츠 & 버튼 활성화 토글
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
-  const content = document.getElementById(`${tabName}-tab`);
-  if (content) content.classList.add('active');
+    // 모든 탭 콘텐츠 숨기기
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    // 선택한 탭 콘텐츠 표시
+    document.getElementById(`${tabName}-tab`).classList.add('active');
 
-  // 탭 버튼 텍스트와 매칭
-  document.querySelectorAll('.tab-item').forEach(btn => {
-    if (btn.textContent.trim() === tabNameToLabel(tabName)) {
-      btn.classList.add('active');
+    // 탭 메뉴 활성화 상태 변경
+    document.querySelectorAll('.tab-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    const tabItems = document.querySelectorAll('.tab-item');
+    for (let i = 0; i < tabItems.length; i++) {
+        if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+            tabItems[i].classList.add('active');
+            break;
+        }
     }
-  });
 
-  // 2) 시설 탭 전환 시
-  if (tabName === 'facility') {
-    initNaverMap();
-    setTimeout(handleMapResize, 100);
-  }
+    // **시설 탭**으로 전환 시에만 맵 초기화
+    if (tabName === 'facility') {
+        // 페이지네이션 초기화
+        currentPage = 1;
+        loadBuildingsByPage(currentPage);
+        updatePaginationControls();
+
+        // 맵을 보이게 한 다음에 초기화 (스크립트 onload로 최초 1회만 불립니다)
+        initNaverMapWithFix();
+    }
+
+    // 프로필 탭 전환 시
+    if (tabName === 'profile') {
+        setTimeout(() => {
+            checkLoginStatus();
+            updateAllProfileImages();
+        }, 100);
+    }
+
+    // 홈 탭으로 전환 시 시간표 미리보기 업데이트
+    if (tabName === 'home') {
+        setTimeout(() => {
+            updateTimetablePreview();
+        }, 200);
+    }
 }
 
 // 탭 이름 ↔ 라벨 매핑 헬퍼
