@@ -413,147 +413,61 @@ function changeWeekendDisplay() {
 }
 
 // 이미지로 내보내기 (실제 시간표를 이미지로 변환)
-function exportToImage() {
-    const timetable = document.querySelector('.timetable');
-    const scale = 2;
-    const rect = timetable.getBoundingClientRect();
-    const margin = 40;
+// 1) 화면 렌더링용 함수
+function renderCoursesOnTimetable() {
+    const container = document.querySelector('.timetable-container');
+    const table     = container.querySelector('.timetable');
+    const tbody     = table.querySelector('tbody');
 
-    // 캔버스 세팅
-    const canvas = document.createElement('canvas');
-    canvas.width  = (rect.width  + margin * 2) * scale;
-    canvas.height = (rect.height + margin * 2) * scale;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(scale, scale);
+    // container 절대 위치 기준 잡기
+    const baseRect = container.getBoundingClientRect();
 
-    // 배경
-    ctx.fillStyle = '#1e1e1e';
-    ctx.fillRect(0, 0, rect.width + margin * 2, rect.height + margin * 2);
+    // 기존 블록 제거
+    tbody.querySelectorAll('.class-item').forEach(el => el.remove());
 
-    // 셀 크기 계산
-    const showWeekend = settings.showWeekend;
-    const dayCount    = showWeekend ? 6 : 5;
-    const totalCols   = dayCount + 1;       // 시간열 + 요일열
-    const totalRows   = timeData.length + 1; // 헤더행 + 교시행
-    const cellWidth   = rect.width  / totalCols;
-    const cellHeight  = rect.height / totalRows;
-
-    // 헤더 그리기
-    ctx.fillStyle = '#222';
-    ctx.fillRect(margin, margin, rect.width, cellHeight);
-
-    ctx.fillStyle    = '#f0f0f0';
-    ctx.font         = 'bold 14px Arial';
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'middle';
-    const headers = ['시간','월','화','수','목','금'];
-    if (showWeekend) headers.push('토');
-    headers.forEach((h,i) => {
-        ctx.fillText(h,
-            margin + (i + 0.5) * cellWidth,
-            margin + cellHeight / 2
-        );
-    });
-
-    // 시간 레이블 그리기 (첫 열)
-    ctx.fillStyle = '#f0f0f0';
-    timeData.forEach((td,i) => {
-        const y = margin + (i + 1) * cellHeight;
-        ctx.font      = 'bold 10px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${td.period}교시`,
-            margin + cellWidth / 2,
-            y + cellHeight * 0.3
-        );
-        ctx.font = '9px Arial';
-        ctx.fillText(td.startTime,
-            margin + cellWidth / 2,
-            y + cellHeight * 0.7
-        );
-    });
-
-    // 그리드 선
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth   = 1;
-    // 가로선
-    for (let r = 0; r <= totalRows; r++) {
-        const y = margin + r * cellHeight;
-        ctx.beginPath();
-        ctx.moveTo(margin, y);
-        ctx.lineTo(margin + rect.width, y);
-        ctx.stroke();
-    }
-    // 세로선
-    for (let c = 0; c <= totalCols; c++) {
-        const x = margin + c * cellWidth;
-        ctx.beginPath();
-        ctx.moveTo(x, margin);
-        ctx.lineTo(x, margin + rect.height);
-        ctx.stroke();
-    }
-
-    // 과목 블록 그리기
-    const colorMap = {
-        'color-1': '#e57373','color-2': '#81c784','color-3': '#64b5f6',
-        'color-4': '#ba68c8','color-5': '#ffb74d','color-6': '#4db6ac',
-        'color-7': '#7986cb','color-8': '#a1887f'
-    };
+    // 한 교시 셀 높이 (px)
+    const sampleCell = tbody.querySelector('.class-cell[data-day="1"][data-period="1"]');
+    const cellH      = sampleCell.getBoundingClientRect().height;
 
     courses.forEach(course => {
         course.times.forEach(t => {
-            // 주말 숨김 설정
-            if (t.day > dayCount) return;
+            // 시작 셀 위치
+            const startCell = tbody.querySelector(
+                `.class-cell[data-day="${t.day}"][data-period="${t.start}"]`
+            );
+            const rect = startCell.getBoundingClientRect();
 
-            const x     = margin + t.day * cellWidth;
-            const y     = margin + t.start * cellHeight;
-            const span  = t.end - t.start + 1;
-            const w     = cellWidth;
-            const h     = cellHeight * span;
+            // 오프셋 y = 셀 상단 + 0.5*cellH  (30분)
+            const offsetY = rect.top - baseRect.top + cellH * 0.5;
+            // 높이 = (end-start)*cellH + (50/60)*cellH
+            const height = (t.end - t.start) * cellH + (50/60) * cellH;
 
-            // 배경
-            ctx.fillStyle = colorMap[course.color] || '#666';
-            ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
+            // 블록 생성
+            const block = document.createElement('div');
+            block.className = `class-item ${course.color}`;
+            block.style.position       = 'absolute';
+            block.style.top            = `${offsetY}px`;
+            block.style.left           = `${rect.left - baseRect.left}px`;
+            block.style.width          = `${rect.width}px`;
+            block.style.height         = `${height}px`;
+            block.style.display        = 'flex';
+            block.style.flexDirection  = 'column';
+            block.style.alignItems     = 'center';
+            block.style.justifyContent = 'center';
+            block.style.textAlign      = 'center';
+            block.style.overflow       = 'hidden';
 
-            // 텍스트
-            const textX = x + w / 2;
-            ctx.textAlign    = 'center';
-            ctx.textBaseline = 'middle';
+            // 내용
+            const parts = [ course.name ];
+            if (settings.showProfessor && course.professor) parts.push(course.professor);
+            if (settings.showRoom      && course.room)      parts.push(course.room);
+            block.innerHTML = parts
+                .map((t,i) => `<div class="${i===0?'class-name':'class-info'}">${t}</div>`)
+                .join('');
 
-            // 과목명
-            ctx.fillStyle = '#ffffff';
-            ctx.font      = 'bold 11px Arial';
-            ctx.fillText(course.name, textX, y + h * 0.35);
-
-            // 교수/강의실
-            const infoParts = [];
-            if (settings.showProfessor && course.professor) infoParts.push(course.professor);
-            if (settings.showRoom      && course.room)      infoParts.push(course.room);
-            if (infoParts.length) {
-                ctx.font      = '8px Arial';
-                ctx.fillText(infoParts.join(' | '), textX, y + h * 0.65);
-            }
+            container.appendChild(block);
         });
     });
-
-    // 제목
-    ctx.fillStyle = '#ffffff';
-    ctx.font      = 'bold 18px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(
-        `${currentTimetable.name} - ${currentSemester.year}년 ${currentSemester.term}학기`,
-        margin + rect.width / 2,
-        margin - 10
-    );
-
-    // 다운로드
-    canvas.toBlob(blob => {
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href     = url;
-        a.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }, 'image/png', 1.0);
 }
 
 
