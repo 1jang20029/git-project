@@ -471,6 +471,7 @@ function renderCoursesOnTimetable() {
 }
 
 
+
 // 현재 시간표 초기화 (기본값으로 복원)
 function deleteTimetable() {
     if (confirm('현재 시간표의 모든 데이터가 삭제되고 기본 설정으로 초기화됩니다. 계속하시겠습니까?')) {
