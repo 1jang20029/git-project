@@ -414,159 +414,148 @@ function changeWeekendDisplay() {
 
 // 이미지로 내보내기 (실제 시간표를 이미지로 변환)
 function exportToImage() {
-    // 시간표 요소 가져오기
-    const timetableContainer = document.querySelector('.timetable-container');
     const timetable = document.querySelector('.timetable');
-    
-    // 캔버스 생성
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // 고해상도 설정
     const scale = 2;
     const rect = timetable.getBoundingClientRect();
-    
-    // 여백 추가로 크기 조정
     const margin = 40;
-    canvas.width = (rect.width + margin * 2) * scale;
+
+    // 캔버스 세팅
+    const canvas = document.createElement('canvas');
+    canvas.width  = (rect.width  + margin * 2) * scale;
     canvas.height = (rect.height + margin * 2) * scale;
+    const ctx = canvas.getContext('2d');
     ctx.scale(scale, scale);
-    
-    // 배경 설정
+
+    // 배경
     ctx.fillStyle = '#1e1e1e';
     ctx.fillRect(0, 0, rect.width + margin * 2, rect.height + margin * 2);
-    
-    // 폰트 설정
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    
-    // 시간표 데이터 렌더링
-    const cellWidth = rect.width / 7; // 시간+요일 6개
-    const cellHeight = rect.height / 10; // 헤더+교시 9개
-    
+
+    // 셀 크기 계산
+    const showWeekend = settings.showWeekend;
+    const dayCount    = showWeekend ? 6 : 5;
+    const totalCols   = dayCount + 1;       // 시간열 + 요일열
+    const totalRows   = timeData.length + 1; // 헤더행 + 교시행
+    const cellWidth   = rect.width  / totalCols;
+    const cellHeight  = rect.height / totalRows;
+
     // 헤더 그리기
     ctx.fillStyle = '#222';
     ctx.fillRect(margin, margin, rect.width, cellHeight);
-    
-    // 헤더 텍스트
-    ctx.fillStyle = '#f0f0f0';
-    ctx.font = 'bold 14px Arial';
-    const headers = ['시간', '월', '화', '수', '목', '금'];
-    if (settings.showWeekend) headers.push('토');
-    
-    headers.forEach((header, i) => {
-        ctx.fillText(header, margin + (i + 0.5) * cellWidth, margin + cellHeight / 2);
+
+    ctx.fillStyle    = '#f0f0f0';
+    ctx.font         = 'bold 14px Arial';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    const headers = ['시간','월','화','수','목','금'];
+    if (showWeekend) headers.push('토');
+    headers.forEach((h,i) => {
+        ctx.fillText(h,
+            margin + (i + 0.5) * cellWidth,
+            margin + cellHeight / 2
+        );
     });
-    
-    // 시간표 셀 그리기
-    for (let row = 0; row < 9; row++) {
-        const period = row + 1;
-        const y = margin + (row + 1) * cellHeight;
-        
-        // 시간 셀 (첫 번째 열)
-        ctx.fillStyle = '#222';
-        ctx.fillRect(margin, y, cellWidth, cellHeight);
-        
-        // 시간 텍스트
-        ctx.fillStyle = '#f0f0f0';
-        ctx.font = 'bold 10px Arial';
-        const timeText = `${period}교시`;
-        ctx.fillText(timeText, margin + cellWidth / 2, y + cellHeight / 3);
-        
+
+    // 시간 레이블 그리기 (첫 열)
+    ctx.fillStyle = '#f0f0f0';
+    timeData.forEach((td,i) => {
+        const y = margin + (i + 1) * cellHeight;
+        ctx.font      = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${td.period}교시`,
+            margin + cellWidth / 2,
+            y + cellHeight * 0.3
+        );
         ctx.font = '9px Arial';
-        const startTime = timeData[row].startTime;
-        ctx.fillText(startTime, margin + cellWidth / 2, y + cellHeight * 2 / 3);
-        
-        // 요일별 셀 그리기
-        const maxDays = settings.showWeekend ? 6 : 5;
-        for (let day = 1; day <= maxDays; day++) {
-            const x = margin + day * cellWidth;
-            
-            // 셀 배경
-            ctx.fillStyle = '#1e1e1e';
-            ctx.fillRect(x, y, cellWidth, cellHeight);
-            
-            // 셀 테두리
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(x, y, cellWidth, cellHeight);
-            
-            // 해당 시간에 과목이 있는지 확인
-            const courseWithTime = courses.find(c => 
-                c.times.some(t => t.day === day && period >= t.start && period <= t.end)
-            );
-            
-            if (courseWithTime) {
-                const time = courseWithTime.times.find(t => t.day === day && period >= t.start && period <= t.end);
-                
-                // 과목 색상 적용
-                const colorMap = {
-                    'color-1': '#e57373',
-                    'color-2': '#81c784',
-                    'color-3': '#64b5f6',
-                    'color-4': '#ba68c8',
-                    'color-5': '#ffb74d',
-                    'color-6': '#4db6ac',
-                    'color-7': '#7986cb',
-                    'color-8': '#a1887f'
-                };
-                
-                ctx.fillStyle = colorMap[courseWithTime.color] || '#666';
-                
-                // 첫 번째 교시인 경우
-                if (period === time.start) {
-                    // 30분부터 시작하는 블록
-                    ctx.fillRect(x + 2, y + cellHeight * 0.5, cellWidth - 4, cellHeight * 0.5 - 2);
-                    
-                    // 과목명 텍스트
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 11px Arial';
-                    ctx.fillText(courseWithTime.name, x + cellWidth / 2, y + cellHeight * 0.65);
-                    
-                    // 교수/강의실 정보
-                    let infoText = '';
-                    if (settings.showProfessor && courseWithTime.professor) {
-                        infoText += courseWithTime.professor;
-                    }
-                    if (settings.showRoom && courseWithTime.room) {
-                        infoText += (infoText ? ' ' : '') + courseWithTime.room;
-                    }
-                    
-                    if (infoText) {
-                        ctx.font = '8px Arial';
-                        ctx.fillText(infoText, x + cellWidth / 2, y + cellHeight * 0.85);
-                    }
-                } else if (period === time.end) {
-                    // 마지막 교시는 20분까지
-                    ctx.fillRect(x + 2, y + 2, cellWidth - 4, cellHeight * 0.35 - 2);
-                } else {
-                    // 중간 교시는 전체
-                    ctx.fillRect(x + 2, y + 2, cellWidth - 4, cellHeight - 4);
-                }
-            }
-        }
+        ctx.fillText(td.startTime,
+            margin + cellWidth / 2,
+            y + cellHeight * 0.7
+        );
+    });
+
+    // 그리드 선
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth   = 1;
+    // 가로선
+    for (let r = 0; r <= totalRows; r++) {
+        const y = margin + r * cellHeight;
+        ctx.beginPath();
+        ctx.moveTo(margin, y);
+        ctx.lineTo(margin + rect.width, y);
+        ctx.stroke();
     }
-    
-    // 시간표 제목 추가
+    // 세로선
+    for (let c = 0; c <= totalCols; c++) {
+        const x = margin + c * cellWidth;
+        ctx.beginPath();
+        ctx.moveTo(x, margin);
+        ctx.lineTo(x, margin + rect.height);
+        ctx.stroke();
+    }
+
+    // 과목 블록 그리기
+    const colorMap = {
+        'color-1': '#e57373','color-2': '#81c784','color-3': '#64b5f6',
+        'color-4': '#ba68c8','color-5': '#ffb74d','color-6': '#4db6ac',
+        'color-7': '#7986cb','color-8': '#a1887f'
+    };
+
+    courses.forEach(course => {
+        course.times.forEach(t => {
+            // 주말 숨김 설정
+            if (t.day > dayCount) return;
+
+            const x     = margin + t.day * cellWidth;
+            const y     = margin + t.start * cellHeight;
+            const span  = t.end - t.start + 1;
+            const w     = cellWidth;
+            const h     = cellHeight * span;
+
+            // 배경
+            ctx.fillStyle = colorMap[course.color] || '#666';
+            ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
+
+            // 텍스트
+            const textX = x + w / 2;
+            ctx.textAlign    = 'center';
+            ctx.textBaseline = 'middle';
+
+            // 과목명
+            ctx.fillStyle = '#ffffff';
+            ctx.font      = 'bold 11px Arial';
+            ctx.fillText(course.name, textX, y + h * 0.35);
+
+            // 교수/강의실
+            const infoParts = [];
+            if (settings.showProfessor && course.professor) infoParts.push(course.professor);
+            if (settings.showRoom      && course.room)      infoParts.push(course.room);
+            if (infoParts.length) {
+                ctx.font      = '8px Arial';
+                ctx.fillText(infoParts.join(' | '), textX, y + h * 0.65);
+            }
+        });
+    });
+
+    // 제목
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px Arial';
+    ctx.font      = 'bold 18px Arial';
     ctx.textAlign = 'center';
     ctx.fillText(
         `${currentTimetable.name} - ${currentSemester.year}년 ${currentSemester.term}학기`,
         margin + rect.width / 2,
         margin - 10
     );
-    
+
     // 다운로드
-    canvas.toBlob(function(blob) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
-        link.click();
+    canvas.toBlob(blob => {
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
+        a.click();
         URL.revokeObjectURL(url);
     }, 'image/png', 1.0);
 }
+
 
 // 현재 시간표 초기화 (기본값으로 복원)
 function deleteTimetable() {
