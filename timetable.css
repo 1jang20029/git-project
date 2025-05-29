@@ -1,3 +1,4 @@
+
 * {
     margin: 0;
     padding: 0;
@@ -898,38 +899,14 @@ header {
 }
 
 /* 테마별 과목 색상 스타일 */
-.theme-light .color-1 {
-     background-color: #ff6b6b; background-image: linear-gradient(45deg, #ff6b6b, #ff5252); 
-}
-
-.theme-light .color-2 {
-     background-color: #4caf50; background-image: linear-gradient(45deg, #4caf50, #43a047); 
-}
-
-.theme-light .color-3 {
-     background-color: #2196f3; background-image: linear-gradient(45deg, #2196f3, #1976d2); 
-}
-
-.theme-light .color-4 {
-     background-color: #9c27b0; background-image: linear-gradient(45deg, #9c27b0, #8e24aa); 
-}
-
-.theme-light .color-5 {
-     background-color: #ff9800; background-image: linear-gradient(45deg, #ff9800, #f57c00); 
-}
-
-.theme-light .color-6 {
-     background-color: #009688; background-image: linear-gradient(45deg, #009688, #00897b); 
-}
-
-.theme-light .color-7 {
-     background-color: #3f51b5; background-image: linear-gradient(45deg, #3f51b5, #303f9f); 
-}
-
-.theme-light .color-8 {
-     background-color: #795548; background-image: linear-gradient(45deg, #795548, #6d4c41); 
-}
-
+.theme-light .color-1 { background-color: #ff6b6b; background-image: linear-gradient(45deg, #ff6b6b, #ff5252); }
+.theme-light .color-2 { background-color: #4caf50; background-image: linear-gradient(45deg, #4caf50, #43a047); }
+.theme-light .color-3 { background-color: #2196f3; background-image: linear-gradient(45deg, #2196f3, #1976d2); }
+.theme-light .color-4 { background-color: #9c27b0; background-image: linear-gradient(45deg, #9c27b0, #8e24aa); }
+.theme-light .color-5 { background-color: #ff9800; background-image: linear-gradient(45deg, #ff9800, #f57c00); }
+.theme-light .color-6 { background-color: #009688; background-image: linear-gradient(45deg, #009688, #00897b); }
+.theme-light .color-7 { background-color: #3f51b5; background-image: linear-gradient(45deg, #3f51b5, #303f9f); }
+.theme-light .color-8 { background-color: #795548; background-image: linear-gradient(45deg, #795548, #6d4c41); }
 
 .theme-blue .color-1 { background-color: #1976d2; background-image: linear-gradient(45deg, #1976d2, #0d47a1); }
 .theme-blue .color-2 { background-color: #42a5f5; background-image: linear-gradient(45deg, #42a5f5, #1976d2); }
