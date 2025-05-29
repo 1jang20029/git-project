@@ -1232,58 +1232,77 @@ function removeTimeSlot(button) {
 // 과목 저장
 function saveCourse(event) {
     event.preventDefault();
-    
+
+    // --- 중복 시간 슬롯 검사 (추가된 부분) ---
+    // 모든 슬롯에서 day-start-end 문자열을 만들어 중복 여부를 체크
+    const slotEls = document.querySelectorAll('.time-slot');
+    const keys = [], dupes = [];
+    slotEls.forEach(slot => {
+        const d = slot.querySelector('.day-select').value;
+        const s = slot.querySelector('.start-select').value;
+        const e = slot.querySelector('.end-select').value;
+        const key = `${d}-${s}-${e}`;
+        if (keys.includes(key)) dupes.push(key);
+        keys.push(key);
+    });
+    // 만약 dupes 배열에 하나라도 들어있다면
+    if (dupes.length > 0) {
+        // 기존 경고 메시지 제거
+        let err = document.getElementById('time-error');
+        if (err) err.remove();
+        // 모달 폼 상단에 오류 메시지를 삽입
+        const form = document.getElementById('course-form');
+        err = document.createElement('div');
+        err.id = 'time-error';
+        err.style.color = '#ff6b6b';
+        err.style.marginBottom = '12px';
+        err.textContent = '⚠️ 동일한 요일·교시가 중복 입력되었습니다.';
+        form.prepend(err);
+        return;  // 저장 중단
+    }
+    // --- 중복 검사 끝 ---
+
     // 과목 정보 수집
-    const courseId = document.getElementById('course-id').value;
-    const name = document.getElementById('course-name').value.trim();
-    const professor = document.getElementById('course-professor').value.trim();
-    const credits = parseInt(document.getElementById('course-credits').value);
-    const type = document.getElementById('course-type').value;
-    const room = document.getElementById('course-room').value.trim();
-    const color = document.getElementById('course-color').value;
-    const grade = document.getElementById('course-grade').value;
-    
+    const courseId   = document.getElementById('course-id').value;
+    const name       = document.getElementById('course-name').value.trim();
+    const professor  = document.getElementById('course-professor').value.trim();
+    const credits    = parseInt(document.getElementById('course-credits').value);
+    const type       = document.getElementById('course-type').value;
+    const room       = document.getElementById('course-room').value.trim();
+    const color      = document.getElementById('course-color').value;
+    const grade      = document.getElementById('course-grade').value;
+
     // 시간 정보 수집
     const times = [];
-    const timeSlots = document.querySelectorAll('.time-slot');
-    
-    timeSlots.forEach(slot => {
-        const day = parseInt(slot.querySelector('.day-select').value);
+    slotEls.forEach(slot => {
+        const day   = parseInt(slot.querySelector('.day-select').value);
         const start = parseInt(slot.querySelector('.start-select').value);
-        const end = parseInt(slot.querySelector('.end-select').value);
-        
+        const end   = parseInt(slot.querySelector('.end-select').value);
         times.push({ day, start, end });
     });
-    
+
     // 과목 객체 생성
     const course = {
-        id: courseId ? parseInt(courseId) : Date.now(),
-        name,
-        professor,
-        credits,
-        type,
-        color,
-        room,
+        id:     courseId ? parseInt(courseId) : Date.now(),
+        name, professor, credits, type, color, room,
         times,
         grade: grade || null
     };
-    
+
     // 기존 과목 수정 또는 새 과목 추가
     if (courseId) {
-        const index = courses.findIndex(c => c.id === parseInt(courseId));
-        if (index !== -1) {
-            courses[index] = course;
-        }
+        const idx = courses.findIndex(c => c.id === course.id);
+        if (idx !== -1) courses[idx] = course;
     } else {
         courses.push(course);
     }
-    
-    // 데이터 저장 및 화면 갱신
+
+    // 저장 및 화면 갱신
     saveCoursesToStorage();
     renderCourseList();
     renderCoursesOnTimetable();
     calculateGrades();
-    
+
     // 모달 닫기
     closeModal();
 }
