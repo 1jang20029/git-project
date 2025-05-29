@@ -2120,3 +2120,661 @@ function loadBuildingsByPage(page) {
     // 현재 페이지 저장
     currentPage = page;
 }
+
+// 모든 이미지 URL을 확인하고 수정하는 함수
+function fixAllImageUrls() {
+    console.log('모든 이미지 URL 확인 및 수정 중...');
+
+    // 문서 내 모든 이미지 태그 선택
+    document.querySelectorAll('img').forEach(img => {
+        const src = img.getAttribute('src');
+
+        // placeholder URL 확인
+        if (src && src.includes('/api/placeholder/')) {
+            const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+            if (dimensions && dimensions.length === 3) {
+                const width = dimensions[1];
+                const height = dimensions[2];
+                const altText = img.getAttribute('alt') || 'Image';
+                
+                // placehold.co 서비스로 대체
+                const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
+                console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
+                img.src = newSrc;
+            }
+        }
+    });
+
+    console.log('모든 이미지 URL 수정 완료');
+}
+
+// 페이지네이션 컨트롤 업데이트
+function updatePaginationControls() {
+    // 총 페이지 수 계산
+    const totalPages = Math.ceil(buildingData.length / buildingsPerPage);
+
+    // 페이지네이션 컨트롤 컨테이너
+    const paginationContainer = document.querySelector('#pagination-controls');
+    if (!paginationContainer) return;
+
+    // 컨트롤 초기화
+    paginationContainer.innerHTML = '';
+
+    // 이전 페이지 버튼
+    const prevButton = document.createElement('button');
+    prevButton.className = 'pagination-button';
+    prevButton.textContent = '이전';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = function() {
+        if (currentPage > 1) {
+            loadBuildingsByPage(currentPage - 1);
+            updatePaginationControls();
+        }
+    };
+    paginationContainer.appendChild(prevButton);
+
+    // 페이지 번호 버튼
+    // 총 페이지 수가 5개 이하면 모든 페이지 표시
+    if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = 'pagination-button';
+            pageButton.textContent = i;
+            
+            if (i === currentPage) {
+                pageButton.classList.add('active');
+            }
+            
+            pageButton.onclick = function() {
+                loadBuildingsByPage(i);
+                updatePaginationControls();
+            };
+            
+            paginationContainer.appendChild(pageButton);
+        }
+    } else {
+        // 페이지가 많은 경우, 현재 페이지 주변 페이지만 표시
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+
+        // 시작 페이지가 1보다 크면 첫 페이지와 ellipsis 표시
+        if (startPage > 1) {
+            const firstButton = document.createElement('button');
+            firstButton.className = 'pagination-button';
+            firstButton.textContent = '1';
+            firstButton.onclick = function() {
+                loadBuildingsByPage(1);
+                updatePaginationControls();
+            };
+            paginationContainer.appendChild(firstButton);
+            
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '0 5px';
+                paginationContainer.appendChild(ellipsis);
+            }
+        }
+
+        // 페이지 번호 표시
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = 'pagination-button';
+            pageButton.textContent = i;
+            
+            if (i === currentPage) {
+                pageButton.classList.add('active');
+            }
+            
+            pageButton.onclick = function() {
+                loadBuildingsByPage(i);
+                updatePaginationControls();
+            };
+            
+            paginationContainer.appendChild(pageButton);
+        }
+
+        // 마지막 페이지가 totalPages보다 작으면 ellipsis와 마지막 페이지 표시
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '0 5px';
+                paginationContainer.appendChild(ellipsis);
+            }
+            
+            const lastButton = document.createElement('button');
+            lastButton.className = 'pagination-button';
+            lastButton.textContent = totalPages;
+            lastButton.onclick = function() {
+                loadBuildingsByPage(totalPages);
+                updatePaginationControls();
+            };
+            paginationContainer.appendChild(lastButton);
+        }
+    }
+
+    // 다음 페이지 버튼
+    const nextButton = document.createElement('button');
+    nextButton.className = 'pagination-button';
+    nextButton.textContent = '다음';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = function() {
+        if (currentPage < totalPages) {
+            loadBuildingsByPage(currentPage + 1);
+            updatePaginationControls();
+        }
+    };
+    paginationContainer.appendChild(nextButton);
+}
+
+// 오늘의 모든 수업 가져오기
+function getTodaysClasses() {
+    const courses = loadTimetableData();
+    const currentTime = getCurrentTimeInfo();
+    const todaysClasses = [];
+    
+    // 일요일이면 빈 배열 반환
+    if (currentTime.day === 0) {
+        return todaysClasses;
+    }
+    
+    // 오늘의 모든 수업 찾기
+    courses.forEach(course => {
+        course.times.forEach(time => {
+            if (time.day === currentTime.day) {
+                // 첫 번째 교시만 표시 (미리보기용)
+                const startTime = periodTimes[time.start].start;
+                const endTime = periodTimes[time.end].end;
+                
+                todaysClasses.push({
+                    course: course,
+                    startTime: startTime,
+                    endTime: endTime,
+                    startMinutes: timeToMinutes(startTime),
+                    period: time.start
+                });
+            }
+        });
+    });
+    
+    // 시간 순으로 정렬
+    todaysClasses.sort((a, b) => a.startMinutes - b.startMinutes);
+    
+    console.log('오늘의 수업 목록:', todaysClasses);
+    return todaysClasses;
+}
+
+// 네이버 지도 초기화 함수 - 수정된 버전
+function initNaverMap() {
+    console.log('네이버 지도 초기화 시작…');
+
+    // 1) naver 객체 또는 maps 모듈, LatLng 생성자가 준비되지 않았으면 바로 중단
+    if (
+        typeof naver === 'undefined' ||
+        !naver.maps ||
+        typeof naver.maps.LatLng !== 'function'
+    ) {
+        console.error('네이버 지도 API가 로드되지 않았습니다. Client ID 또는 Allowed Origin을 확인하세요.');
+        return;
+    }
+
+    try {
+        // 2) 지도를 그릴 컨테이너가 문서에 없으면 중단
+        const mapContainer = document.getElementById('naverMap');
+        if (!mapContainer) {
+            console.error('지도 컨테이너 엘리먼트(#naverMap)를 찾을 수 없습니다.');
+            return;
+        }
+
+        // 3) 컨테이너 초기화
+        mapContainer.style.width = '100%';
+        mapContainer.style.height = '350px';
+        mapContainer.innerHTML = '';
+
+        // 4) 지도 생성
+        const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+        const mapOptions = {
+            center: yeonsung,
+            zoom: 16,
+            minZoom: 14,
+            maxZoom: 19,
+            zoomControl: true,
+            zoomControlOptions: { position: naver.maps.Position.TOP_RIGHT },
+            scaleControl: true,
+            logoControl: true,
+            mapDataControl: true
+        };
+        naverMap = new naver.maps.Map(mapContainer, mapOptions);
+
+        // 5) 지도 리사이즈 강제
+        window.dispatchEvent(new Event('resize'));
+        setTimeout(() => {
+            if (naverMap) naverMap.refresh();
+        }, 500);
+
+        // 6) Direction API 로드 및 회색 영역 보정
+        loadDirectionAPI();
+        setTimeout(fixMapGrayArea, 1000);
+
+        // 7) 마커, 정보창, GPS 버튼 등 나머지 초기화
+        mapMarkers = [];
+        infoWindows = [];
+        buildingData.forEach(building => {
+            if (!building.position) return;
+            const marker = new naver.maps.Marker({
+                position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                map: naverMap,
+                title: building.name
+            });
+            mapMarkers.push(marker);
+
+            const infoWindow = new naver.maps.InfoWindow({
+                content: `
+                    <div class="map-info-window">
+                        <div class="map-info-title">${building.name}</div>
+                        <div class="map-info-desc">${building.description}</div>
+                    </div>
+                `,
+                maxWidth: 250,
+                backgroundColor: "#fff",
+                borderColor: "#ddd",
+                borderWidth: 1,
+                anchorSize: { width: 12, height: 12 },
+                pixelOffset: new naver.maps.Point(10, -10)
+            });
+            naver.maps.Event.addListener(marker, "click", () => {
+                infoWindows.forEach(iw => iw.close());
+                infoWindow.open(naverMap, marker);
+            });
+            infoWindows.push(infoWindow);
+        });
+
+        // GPS 버튼
+        const gpsButton = document.createElement('div');
+        gpsButton.className = 'gps-button';
+        gpsButton.innerHTML = '📍';
+        gpsButton.onclick = trackUserLocation;
+        mapContainer.appendChild(gpsButton);
+
+        console.log('네이버 지도가 성공적으로 초기화되었습니다.');
+    }
+    catch (error) {
+        console.error('네이버 지도 초기화 중 오류:', error);
+        const mapContainer = document.getElementById('naverMap');
+        if (mapContainer) {
+            mapContainer.innerHTML = `
+                <div style="
+                    display:flex; height:100%; 
+                    align-items:center; justify-content:center; 
+                    flex-direction:column; background-color:#f8f9fa;
+                    border-radius:8px;
+                ">
+                    <div style="font-size:24px; margin-bottom:10px;">❌</div>
+                    <div style="font-weight:bold; margin-bottom:5px;">
+                        지도 초기화 오류
+                    </div>
+                    <div style="font-size:14px; color:#666;">
+                        개발자 콘솔을 확인해주세요
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
+
+// 회색 영역 문제 해결을 위한 스타일 동적 적용 함수
+function fixMapGrayArea() {
+    // 회색 영역을 가리는 요소가 있는지 확인
+    const mapContainer = document.getElementById('naverMap');
+    if (mapContainer) {
+        // 회색 오버레이 요소가 있는지 확인하고 제거
+        const grayOverlays = mapContainer.querySelectorAll('div[style*="background-color: rgb(128, 128, 128)"]');
+        grayOverlays.forEach(overlay => {
+            overlay.style.display = 'none';
+        });
+
+        // 지도 컨테이너 내부의 모든 div 요소 확인
+        const mapDivs = mapContainer.querySelectorAll('div');
+        mapDivs.forEach(div => {
+            // width가 50%로 설정된 요소 찾기
+            const style = getComputedStyle(div);
+            if (style.width === '50%' || style.width.endsWith('50%')) {
+                div.style.width = '100%';
+                console.log('지도 요소 너비 수정: 50% → 100%');
+            }
+
+            // 회색 배경색을 가진 요소 찾기
+            if (
+                style.backgroundColor.includes('128') ||
+                style.backgroundColor.toLowerCase().includes('gray') ||
+                style.backgroundColor.toLowerCase().includes('grey')
+            ) {
+                div.style.backgroundColor = 'transparent';
+                console.log('회색 배경 요소 발견 및 수정');
+            }
+        });
+    }
+}
+
+// 지도 초기화 완료 후 회색 영역 수정 함수 호출하는 함수
+function initNaverMapWithFix() {
+    // 기본 초기화 함수 호출
+    initNaverMap();
+
+    // 지도가 로드된 후 회색 영역 수정
+    setTimeout(() => {
+        fixMapGrayArea();
+    }, 1000);
+}
+
+// 탭 전환 시 지도 크기 조정 및 새로고침을 처리하는 함수
+function handleMapResize() {
+    const mapContainer = document.getElementById('naverMap');
+    if (!mapContainer || !window.naverMap) return;
+    if (getComputedStyle(mapContainer).display === 'none') return;
+
+    setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        try { naverMap.refresh(); console.log('지도 크기 조정 및 갱신 완료'); }
+        catch (e) { /* 무시 */ }
+    }, 100);
+}
+
+// Direction API 스크립트 동적 로드 함수
+function loadDirectionAPI() {
+    if (window.naver && window.naver.maps && window.naver.maps.Direction) {
+        console.log('Direction API가 이미 로드되어 있습니다.');
+        return; // 이미 로드되어 있으면 중복 로드 방지
+    }
+
+    // Direction API 스크립트 엘리먼트 생성
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x&submodules=direction';
+    script.async = true;
+    script.defer = true;
+
+    script.onload = function() {
+        console.log('Direction API 로드 완료');
+    };
+
+    script.onerror = function() {
+        console.error('Direction API 로드 실패');
+        alert('길 안내 기능을 로드하는 데 문제가 발생했습니다. 직선 경로로 안내합니다.');
+    };
+
+    // 헤드에 스크립트 추가
+    document.head.appendChild(script);
+}
+
+// Direction API 로드 여부를 확인하는 함수
+function isDirectionAPILoaded() {
+    return window.naver && window.naver.maps && window.naver.maps.Direction;
+}
+
+// 브라우저 버전과 모바일 버전 전환 기능
+function switchToBrowserView() {
+    currentViewMode = 'browser';
+    localStorage.setItem('viewMode', 'browser');
+    applyViewMode();
+}
+
+function switchToMobileView() {
+    currentViewMode = 'mobile';
+    localStorage.setItem('viewMode', 'mobile');
+    applyViewMode();
+}
+
+// 네비게이션 함수들
+function goToHome() {
+    if (currentViewMode === 'browser') {
+        // 브라우저 모드에서는 섹션으로 스크롤
+        const homeSection = document.querySelector('.browser-main-content');
+        if (homeSection) {
+            homeSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    } else {
+        // 모바일 모드에서는 기존 방식
+        switchTab('home');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function switchTab(tabName) {
+    if (currentViewMode === 'browser') {
+        // 브라우저 모드에서는 네비게이션 클릭 시 해당 섹션으로 스크롤
+        const targetSection = document.querySelector(`#browser-${tabName}-section`);
+        if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    } else {
+        // 모바일 모드에서는 기존 탭 전환 방식
+        // 모든 탭 콘텐츠 숨기기
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        // 선택한 탭 콘텐츠 표시
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+
+        // 탭 메뉴 활성화 상태 변경
+        document.querySelectorAll('.tab-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        const tabItems = document.querySelectorAll('.tab-item');
+        for (let i = 0; i < tabItems.length; i++) {
+            if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
+                tabItems[i].classList.add('active');
+                break;
+            }
+        }
+
+        // **시설 탭**으로 전환 시에만 맵 초기화
+        if (tabName === 'facility') {
+            // 페이지네이션 초기화
+            currentPage = 1;
+            loadBuildingsByPage(currentPage);
+            updatePaginationControls();
+
+            // 맵을 보이게 한 다음에 초기화
+            initNaverMapWithFix();
+        }
+
+        // 프로필 탭 전환 시
+        if (tabName === 'profile') {
+            setTimeout(() => {
+                checkLoginStatus();
+                updateAllProfileImages();
+            }, 100);
+        }
+
+        // 홈 탭으로 전환 시 시간표 미리보기 업데이트
+        if (tabName === 'home') {
+            setTimeout(() => {
+                updateTimetablePreview();
+            }, 200);
+        }
+    }
+}
+
+// 페이지 초기화 함수
+function initializePage() {
+    console.log('=== 페이지 초기화 시작 ===');
+    
+    // 뷰 모드 감지 및 적용
+    detectViewMode();
+    
+    // 기본으로 노선 1 선택
+    selectedShuttleRoute = 1;
+    
+    // 초기 셔틀버스 정보 업데이트
+    updateShuttleBusInfo();
+    
+    // 주기적 업데이트 (30초마다)
+    shuttleBusInterval = setInterval(updateShuttleBusInfo, 30000);
+    
+    // 프로필 이미지 업데이트
+    setTimeout(updateAllProfileImages, 100);
+    
+    // 로그인 상태 체크 및 UI 업데이트
+    checkLoginStatus();
+    
+    // 저장된 위젯 설정 불러오기
+    loadWidgetSettings();
+    
+    // 시설 탭 초기화 (페이지네이션 포함)
+    initFacilityTab();
+    
+    // 네이버 지도 초기화
+    initNaverMapWithFix();
+    
+    // 검색 기능 초기화
+    initSearchFunctionality();
+    
+    // Placeholder 이미지 URL 문제 해결
+    fixAllImageUrls();
+    
+    // 시간표 미리보기 초기화
+    setTimeout(() => {
+        console.log('시간표 미리보기 초기화');
+        updateTimetablePreview();
+        
+        // 1분마다 시간표 미리보기 업데이트
+        timetableInterval = setInterval(updateTimetablePreview, 60000);
+    }, 1000);
+    
+    // 활동 통계 표시
+    displayActivityStats();
+    updateActivityNotices();
+    
+    // 다가오는 학사일정 표시
+    displayUpcomingAcademicSchedule();
+    
+    // 5분마다 자동 갱신
+    activityStatsInterval = setInterval(displayActivityStats, 300000);
+    
+    // 맛집 스타일 추가
+    addRestaurantStyles();
+    
+    // 인기 맛집 정보 표시
+    displayPopularRestaurantsOnMainPage();
+    
+    // 5분마다 새로고침
+    restaurantInterval = setInterval(displayPopularRestaurantsOnMainPage, 300000);
+    
+    console.log('=== 페이지 초기화 완료 ===');
+}
+
+// 이벤트 리스너 등록
+document.addEventListener('DOMContentLoaded', function() {
+    initializePage();
+    
+    // 화면 크기 변경 시 뷰 모드 자동 조정 (선택사항)
+    window.addEventListener('resize', function() {
+        if (currentViewMode === 'auto') {
+            detectViewMode();
+        }
+    });
+    
+    // localStorage 변경 감지를 위한 이벤트 리스너
+    window.addEventListener('storage', function(event) {
+        console.log('Storage 변경 감지:', event.key);
+        
+        // 프로필 관련 변경사항 감지
+        if (event.key === 'profileUpdated' || 
+            event.key === 'profileImageUpdated' || 
+            event.key.includes('_profileImage') || 
+            event.key.includes('_customProfileImage')) {
+            console.log('프로필 정보 업데이트');
+            updateAllProfileImages();
+        }
+        
+        // 활동 데이터 변경 감지
+        if (event.key === 'activityStats' || event.key === 'urgentActivities') {
+            console.log('활동 데이터가 다른 탭에서 변경됨:', event.key);
+            displayActivityStats();
+            updateActivityNotices();
+        }
+        
+        // 맛집 데이터 변경 감지
+        if (event.key === 'restaurants') {
+            console.log('맛집 데이터 변경 감지');
+            displayPopularRestaurantsOnMainPage();
+        }
+        
+        // 학사일정 데이터 변경 감지
+        if (event.key === 'academicScheduleUpdated') {
+            console.log('학사일정 데이터 변경 감지');
+            displayUpcomingAcademicSchedule();
+        }
+    });
+
+    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+    window.addEventListener('pageshow', function(event) {
+        console.log('페이지 복원 감지:', event.persisted);
+        
+        // bfcache에서 페이지가 복원된 경우에도 실행
+        if (event.persisted) {
+            checkLoginStatus();
+            updateAllProfileImages();
+            updateShuttleBusInfo();
+            displayActivityStats();
+            displayUpcomingAcademicSchedule();
+            displayPopularRestaurantsOnMainPage();
+        }
+    });
+});
+
+// 수정된 페이지 언로드 시 정리 작업
+window.addEventListener('beforeunload', function(event) {
+    console.log('페이지 언로드 시작: 정리 작업 수행 중...');
+    
+    // 위치 추적 중지
+    if (typeof isTrackingUser !== 'undefined' && isTrackingUser) {
+        stopUserTracking();
+        console.log('위치 추적 중지 완료');
+    }
+    
+    // 모든 인터벌 정리
+    const intervals = [
+        { name: 'timeInterval', ref: timeInterval },
+        { name: 'shuttleBusInterval', ref: shuttleBusInterval },
+        { name: 'timetableInterval', ref: timetableInterval },
+        { name: 'activityStatsInterval', ref: activityStatsInterval },
+        { name: 'restaurantInterval', ref: restaurantInterval }
+    ];
+    
+    intervals.forEach(interval => {
+        if (interval.ref) {
+            clearInterval(interval.ref);
+            console.log(`${interval.name} 정리 완료`);
+        }
+    });
+    
+    console.log('페이지 언로드: 모든 정리 작업 완료');
+});
+
+// 전역 함수: 모든 타이머 정리 (디버깅용)
+function clearAllIntervals() {
+    const intervals = [timeInterval, shuttleBusInterval, timetableInterval, activityStatsInterval, restaurantInterval];
+    intervals.forEach((interval, index) => {
+        if (interval) {
+            clearInterval(interval);
+            console.log(`인터벌 ${index + 1} 정리 완료`);
+        }
+    });
+    
+    // 변수 초기화
+    timeInterval = null;
+    shuttleBusInterval = null;
+    timetableInterval = null;
+    activityStatsInterval = null;
+    restaurantInterval = null;
+    
+    console.log('모든 타이머 정리 완료');
+}
+
+// 기타 모든 기존 함수들도 동일하게 유지
+// (여기서는 생략하고 실제로는 기존 코드의 모든 함수들이 포함되어야 함)
+
+console.log('연성대학교 캠퍼스 가이드 JavaScript 로드 완료');
