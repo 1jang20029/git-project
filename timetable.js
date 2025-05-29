@@ -824,78 +824,79 @@ function createTimetable() {
     renderCoursesOnTimetable();
 }
 
+
 // 시간표에 과목 데이터 표시
 function renderCoursesOnTimetable() {
-    // 기존 과목 셀 초기화
+    // 1) 기존 과목 셀 초기화
     const classCells = document.querySelectorAll('.class-cell');
     classCells.forEach(cell => {
         cell.innerHTML = '';
         cell.style.position = 'relative';
     });
-    
-    // 과목별로 시간표에 표시
+
+    // 2) 과목별로 시간표에 표시
     courses.forEach(course => {
         course.times.forEach(time => {
-            // 요일 열 찾기
-            const day = time.day;
+            const day         = time.day;
             const startPeriod = time.start;
-            const endPeriod = time.end;
-            
-            // 30분부터 시작하는 수업 (반만 채우기)
+            const endPeriod   = time.end;
+
+            // 해당 과목이 걸치는 모든 교시에 대해
             for (let period = startPeriod; period <= endPeriod; period++) {
-                const cell = document.querySelector(`.class-cell[data-day="${day}"][data-period="${period}"]`);
+                const cell = document.querySelector(
+                    `.class-cell[data-day="${day}"][data-period="${period}"]`
+                );
                 if (!cell) continue;
-                
+
                 // 수업 블록 생성
                 const courseBlock = document.createElement('div');
                 cell.appendChild(courseBlock);
-                
-                // 블록 포지셔닝 및 스타일링
+
+                // 스타일링
                 courseBlock.style.position = 'absolute';
-                courseBlock.style.zIndex = '5';
-                courseBlock.className = `class-item ${course.color}`;
-                
+                courseBlock.style.zIndex    = '5';
+                courseBlock.className       = `class-item ${course.color}`;
+
                 if (period === startPeriod) {
-                    // 첫 번째 교시 (30분부터 시작)
-                    courseBlock.style.top = '30px';  // 50% 대신 고정값 사용
+                    // 첫 교시 블록 (30분부터 시작)
+                    courseBlock.style.top    = '30px';
                     courseBlock.style.height = 'calc(100% - 30px)';
-                    courseBlock.style.left = '-1px';
-                    courseBlock.style.right = '-1px';
+                    courseBlock.style.left   = '-1px';
+                    courseBlock.style.right  = '-1px';
                     courseBlock.style.bottom = '-1px';
-                    
-                    // 첫 교시에는 과목명과 정보 표시
-                    let classInfo = '';
-                    if (settings.showProfessor && course.professor) {
-                        classInfo += course.professor;
-                    }
-                    if (settings.showRoom && course.room) {
-                        classInfo += (classInfo ? ' ' : '') + course.room;
-                    }
-                    
+
+                    // 과목명 + 교수명 + 강의실 출력
+                    const prof = course.professor || '';
+                    const room = course.room      || '';
+                    const info = prof + (prof && room ? ' | ' : '') + room;
+
                     courseBlock.innerHTML = `
                         <div class="class-name">${course.name}</div>
-                        ${classInfo ? `<div class="class-info">${classInfo}</div>` : ''}
+                        <div class="class-info">${info}</div>
                     `;
-                } else if (period === endPeriod) {
-                    // 마지막 교시 (20분에 종료)
-                    courseBlock.style.top = '-1px';
-                    courseBlock.style.height = '35%';
-                    courseBlock.style.left = '-1px';
-                    courseBlock.style.right = '-1px';
-                    courseBlock.style.borderTop = 'none';
-                    courseBlock.style.borderRadius = '0';
-                } else {
-                    // 중간 교시 (전체 채우기)
-                    courseBlock.style.top = '-1px';
-                    courseBlock.style.height = 'calc(100% + 2px)';
-                    courseBlock.style.left = '-1px';
-                    courseBlock.style.right = '-1px';
-                    courseBlock.style.borderRadius = '0';
+                }
+                else if (period === endPeriod) {
+                    // 마지막 교시 블록 (20분까지)
+                    courseBlock.style.top         = '-1px';
+                    courseBlock.style.height      = '35%';
+                    courseBlock.style.left        = '-1px';
+                    courseBlock.style.right       = '-1px';
+                    courseBlock.style.borderTop   = 'none';
+                    courseBlock.style.borderRadius= '0';
+                }
+                else {
+                    // 중간 교시 블록 (전체 높이)
+                    courseBlock.style.top         = '-1px';
+                    courseBlock.style.height      = 'calc(100% + 2px)';
+                    courseBlock.style.left        = '-1px';
+                    courseBlock.style.right       = '-1px';
+                    courseBlock.style.borderRadius= '0';
                 }
             }
         });
     });
 }
+
 
 // 과목 목록 표시
 function renderCourseList() {
