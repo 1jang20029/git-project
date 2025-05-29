@@ -16,37 +16,18 @@ function normalizePhone(number) {
 
 // 알리고 SMS API 실제 호출 함수
 async function sendSMS(phoneNumbers, message) {
-    const receiver = Array.isArray(phoneNumbers)
-        ? phoneNumbers.map(normalizePhone).join(',')
-        : normalizePhone(phoneNumbers);
+  const res = await fetch('/.netlify/functions/send-sms', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumbers, message })
+  });
 
-    const params = new URLSearchParams({
-        user_id:     ALIGO_USER_ID,
-        key:         ALIGO_API_KEY,
-        sender:      ALIGO_SENDER,
-        receiver:    receiver,
-        msg:         message,
-        testmode_yn: 'N'   // 개발 중 'Y', 운영 'N'
-    });
-
-    try {
-        const res  = await fetch(ALIGO_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params
-        });
-        const data = await res.json();
-        if (data.result_code === '1') {
-            console.log('🎉 SMS 발송 성공:', data);
-            return { success: true };
-        } else {
-            console.error('❌ SMS 발송 실패:', data);
-            return { success: false, error: data.message };
-        }
-    } catch (err) {
-        console.error('🚨 SMS API 호출 에러:', err);
-        return { success: false, error: err.message };
-    }
+  const data = await res.json();
+  if (!data.success) {
+    console.error('SMS 전송 오류:', data.error);
+    return { success: false, error: data.error };
+  }
+  return { success: true };
 }
 
 // 타이머 함수 (초를 받아 MM:SS 표시)
