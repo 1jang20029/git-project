@@ -16,10 +16,16 @@ function normalizePhone(number) {
 
 // 알리고 SMS API 실제 호출 함수
 async function sendSMS(phoneNumbers, message) {
+  // 단일 번호든 복수 번호(배열)든 ,로 묶어 한 번에 보내줄 수 있게 처리
+  const receiver = Array.isArray(phoneNumbers)
+    ? phoneNumbers.map(normalizePhone).join(',')
+    : normalizePhone(phoneNumbers);
+
+  // 서버리스 함수로 페이로드 전달
   const res = await fetch('/.netlify/functions/send-sms', {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phoneNumbers, message })
+    body:    JSON.stringify({ phoneNumbers: receiver, message })
   });
 
   const data = await res.json();
