@@ -826,6 +826,7 @@ function createTimetable() {
 
 
 
+
 // 시간표에 과목 데이터 표시
 function renderCoursesOnTimetable() {
     // 1) 기존 셀 초기화
@@ -843,7 +844,7 @@ function renderCoursesOnTimetable() {
             const endPeriod   = time.end;
             const spanCount   = endPeriod - startPeriod + 1;
 
-            // 셀 높이와 경계 보정
+            // 블록 높이 계산 (셀 높이 100% 기준, 셀 간 경계 1px 보정)
             const heightPercent = spanCount * 100 + (spanCount - 1) * 2; 
 
             // 첫 교시 셀에만 블록 생성
@@ -855,36 +856,40 @@ function renderCoursesOnTimetable() {
             const block = document.createElement('div');
             firstCell.appendChild(block);
 
-            // 위치 및 크기 설정
-            block.style.position        = 'absolute';
-            block.style.top             = '0';
-            block.style.left            = '-1px';
-            block.style.right           = '-1px';
-            block.style.height          = `calc(${heightPercent}% + ${spanCount - 1}px)`;
-            block.style.zIndex          = '5';
-            block.className             = `class-item ${course.color}`;
+            // 위치 및 크기
+            block.style.position       = 'absolute';
+            block.style.top            = '0';
+            block.style.left           = '-1px';
+            block.style.right          = '-1px';
+            block.style.height         = `calc(${heightPercent}% + ${spanCount - 1}px)`;
+            block.style.zIndex         = '5';
+            block.className            = `class-item ${course.color}`;
+            block.style.display        = 'flex';
+            block.style.flexDirection  = 'column';
+            block.style.alignItems     = 'center';
+            block.style.justifyContent = 'center';
+            block.style.textAlign      = 'center';
 
-            // **가운데 정렬을 위한 flex 설정**
-            block.style.display         = 'flex';
-            block.style.flexDirection   = 'column';
-            block.style.alignItems      = 'center';
-            block.style.justifyContent  = 'center';
-            block.style.textAlign       = 'center';
+            // 과목명
+            const titleHTML = `<div class="class-name">${course.name}</div>`;
 
-            // 과목명, 교수명, 강의실 내용
-            const prof = course.professor || '';
-            const room = course.room      || '';
-            const info = prof && room
-                ? `${prof} | ${room}`
-                : prof || room;
+            // 교수/강의실 정보 조합 (설정에 따라 표시 여부 결정)
+            const infoParts = [];
+            if (settings.showProfessor && course.professor) {
+                infoParts.push(course.professor);
+            }
+            if (settings.showRoom && course.room) {
+                infoParts.push(course.room);
+            }
+            const infoHTML = infoParts.length
+                ? `<div class="class-info">${infoParts.join(' | ')}</div>`
+                : '';
 
-            block.innerHTML = `
-                <div class="class-name">${course.name}</div>
-                <div class="class-info">${info}</div>
-            `;
+            block.innerHTML = titleHTML + infoHTML;
         });
     });
 }
+
 
 
 
