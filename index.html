@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연성대학교 캠퍼스 가이드</title>
-    <!-- 네이버 지도 API 스크립트 추가 - Direction 서브모듈 포함 -->
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ikduyzmop9&submodules=direction"></script>
-    <!-- CSS 파일 연결 -->
+    <!-- Vworld API 스크립트 -->
+    <script type="text/javascript" src="https://map.vworld.kr/js/vworldMapInit.js.do?version=2.0&apiKey=YsGRmESVu1SHAvrBkGIq6GlsYhWuH61eeyesFkst"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -14,11 +13,9 @@
        <header>
            <div class="logo" onclick="goToHome()">연성대학교</div>
            <div class="header-icons">
-               <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
                <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
                <div class="profile-dropdown-container" style="display: none;">
                    <div class="header-profile-image" onclick="toggleProfileDropdown()">
-                       <!-- 여기에 프로필 이미지가 들어갑니다 -->
                        <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
                    </div>
                    <div class="profile-dropdown">
@@ -43,24 +40,21 @@
                
        <!-- 홈 탭 -->
        <div id="home-tab" class="tab-content active">
-           <!-- 긴급 알림 배너 -->
+           <!-- 기존 홈 탭 내용 유지 -->
            <div class="notification-banner" onclick="viewNotification('emergency')">
                <span class="urgent-icon">📢</span>
                <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
            </div>
            
-           <!-- 환영 카드 -->
            <div class="welcome-card">
                <div class="welcome-title">안녕하세요, 학우님!</div>
                <div class="welcome-subtitle">오늘도 연성대학교와 함께 멋진 하루 되세요.</div>
            </div>
            
-           <!-- 검색 바 -->
            <div class="search-bar">
                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
            </div>
            
-           <!-- 오늘의 날씨 -->
            <div class="weather-widget">
                <div class="weather-info">
                    <div class="weather-temp">로딩 중...</div>
@@ -69,7 +63,6 @@
                <div class="weather-icon">☀️</div>
            </div>
            
-           <!-- 바로가기 메뉴 -->
            <div class="shortcut-menu">
                <div class="shortcut-item" onclick="goToPage('activities')">
                    <div class="shortcut-icon">🌟</div>
@@ -93,7 +86,6 @@
                </div>
             </div>
            
-            <!-- 오늘의 시간표 -->
             <div class="timetable-preview">
                 <div class="timetable-header">
                     <div class="timetable-date">2025년 4월 8일 (월) 시간표</div>
@@ -104,14 +96,12 @@
                 </div>
             </div>
            
-            <!-- 다음 셔틀버스 -->
             <div class="shuttle-card">
                 <div class="shuttle-header">
                     <div class="shuttle-title">다음 셔틀버스</div>
                     <div class="shuttle-icon">🚌</div>
                 </div>
                 
-                <!-- 노선 선택 탭 -->
                 <div class="shuttle-route-tabs">
                     <button class="route-tab active" onclick="selectShuttleRoute(1)" data-route="1">
                         <span class="route-name">노선 1</span>
@@ -127,7 +117,6 @@
                     </button>
                 </div>
                 
-                <!-- 다음 버스 정보 -->
                 <div class="shuttle-next-info">
                     <div class="next-bus-main">
                         <div class="shuttle-time">15분 후 출발</div>
@@ -138,7 +127,6 @@
                     </div>
                 </div>
                 
-                <!-- 운행 시간표 -->
                 <div class="shuttle-schedule">
                     <div class="schedule-header">오늘의 운행 시간</div>
                     <div class="shuttle-time-slots">
@@ -160,7 +148,6 @@
                     </div>
                 </div>
                 
-                <!-- 다음 운행 시간들 -->
                 <div class="shuttle-upcoming">
                     <div class="upcoming-header">다음 운행 시간</div>
                     <div class="shuttle-time-list">
@@ -180,7 +167,6 @@
                 </div>
             </div>
            
-           <!-- 교내/대외활동 현황 -->
            <div class="activity-summary-card">
                <div class="activity-summary-header">
                    <div class="activity-summary-title">🌟 교내/대외활동 현황</div>
@@ -221,7 +207,6 @@
                </div>
             </div>
 
-           <!-- 학사 일정 -->
            <div class="calendar-card">
                 <div class="section-title">
                     <span>다가오는 학사일정</span>
@@ -232,15 +217,12 @@
                 </ul>
             </div>
 
-            <!-- 인기 맛집 할인 정보 -->
             <div class="student-deals-card">
             <div class="everytime-header">
                 <div class="everytime-title">🍽️ 인기 맛집 할인 정보</div>
                 <a href="student-deals.html" class="everytime-view-all">전체보기</a>
             </div>
             <div id="popular-restaurants-list">
-                <!-- 여기에 동적으로 맛집 목록이 추가됩니다 -->
-                <!-- 로딩 표시 -->
                 <div class="popular-restaurant-item loading">
                     <div class="restaurant-image skeleton"></div>
                     <div class="restaurant-content">
@@ -253,7 +235,6 @@
             </div>
         </div>
            
-           <!-- 공지사항 섹션 -->
            <div class="content-section">
                <div class="section-title">
                    <span>주요 공지사항</span>
@@ -270,7 +251,6 @@
                </div>
                
                <ul class="notice-list">
-                   <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
                    <li class="notice-item" onclick="goToNoticeDetail('notice1')">
                        <div class="notice-header">
                            <span class="notice-category">학사</span>
@@ -307,9 +287,9 @@
            <div class="content-pad"></div>
        </div>
 
-        <!-- 시설 탭 -->
+        <!-- 시설 탭 - 완전히 새로운 구조 -->
         <div id="facility-tab" class="tab-content">
-            <!-- 검색 바 - 새로운 구조로 변경 -->
+            <!-- 검색 바 -->
             <div class="search-bar">
                 <div class="search-container">
                     <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
@@ -317,120 +297,77 @@
                 </div>
             </div>
             
-            <!-- 빠른 검색 버튼 영역 -->
-            <div class="quick-search-buttons">
-                <div class="section-title" style="margin-top: 12px; margin-left: 16px; margin-right: 16px;">
-                    <span>빠른 검색</span>
-                </div>
-                <div style="display: flex; overflow-x: auto; padding: 0 16px 12px 16px; gap: 8px;">
-                    <button class="category-tag" onclick="quickSearch('강의실')">강의실</button>
-                    <button class="category-tag" onclick="quickSearch('학생')">학생시설</button>
-                    <button class="category-tag" onclick="quickSearch('식당')">식당/카페</button>
-                    <button class="category-tag" onclick="quickSearch('도서관')">도서관</button>
-                    <button class="category-tag" onclick="quickSearch('공학')">공학계열</button>
-                </div>
-            </div>
-            
-            <!-- 검색 결과를 표시할 컨테이너 추가 -->
-            <div id="search-results" class="search-results" style="display: none;">
-                <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
-            </div>
-            
-            <!-- 검색 결과가 없을 때 표시될 내용 -->
-            <div id="no-results" class="no-results" style="display: none;">
-                검색 결과가 없습니다.
-            </div>
-            
-            <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
-            <div id="original-content">
-                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
-                <div class="campus-map" id="naverMap">
-                    <!-- 지도가 로드되기 전에 표시할 이미지 삭제 -->
-                    <!-- <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도"> -->
-                    <div class="map-control-buttons">
-                        <div class="map-button" onclick="zoomIn()">🔍+</div>
-                        <div class="map-button" onclick="zoomOut()">🔍-</div>
-                        <div class="map-button" onclick="resetMapView()">🏠</div>
-                    </div>
-
-                    <!-- 여기에 GPS 버튼 추가 -->
-                    <div class="gps-button" onclick="trackUserLocation()">📍</div>
-                    
-                    <!-- 경로 정보 로딩 인디케이터 -->
-                    <div class="route-loading" id="routeLoading">
-                        <span>🔄</span>
-                        <span class="route-loading-text">경로를 계산하는 중...</span>
-                    </div>
-                    
-                    <!-- 경로 정보 박스 -->
-                    <div class="route-info-box" id="routeInfoBox">
-                        <span class="route-info-close" onclick="closeRouteInfo()">✕</span>
-                        <div class="route-info-title">목적지: <span id="routeDestination"></span></div>
-                        <div class="route-info-detail">
-                            <div>거리: <span id="routeDistance"></span></div>
-                            <div>예상 소요시간: <span id="routeDuration"></span></div>
-                        </div>
-                    </div>
+            <!-- 지도 컨테이너 -->
+            <div class="campus-map-container">
+                <div id="vworldMap" class="vworld-map">
+                    <!-- 지도가 여기에 로드됩니다 -->
                 </div>
                 
-                <div class="content-section">
-                    <div class="section-title">
-                        <span>주요 건물</span>
-                    </div>
-                    
-                    <ul class="building-list">
-                        <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
-                    </ul>
-                    
-                    <!-- 페이지네이션 컨트롤 추가 -->
-                    <div id="pagination-controls" class="pagination-controls">
-                        <!-- 페이지 버튼들이 JavaScript로 동적 생성됩니다 -->
-                    </div>
+                <!-- 지도 컨트롤 버튼들 -->
+                <div class="map-controls">
+                    <button class="map-control-btn" onclick="zoomIn()" title="확대">
+                        <span>🔍+</span>
+                    </button>
+                    <button class="map-control-btn" onclick="zoomOut()" title="축소">
+                        <span>🔍-</span>
+                    </button>
+                    <button class="map-control-btn" onclick="resetMapView()" title="초기화">
+                        <span>🏠</span>
+                    </button>
+                    <button class="map-control-btn" onclick="getCurrentLocation()" title="내 위치">
+                        <span>📍</span>
+                    </button>
                 </div>
                 
-                <div class="content-section">
-                    <div class="section-title">
-                        <span>편의시설</span>
+                <!-- 경로 안내 정보 -->
+                <div id="route-info" class="route-info" style="display: none;">
+                    <div class="route-info-header">
+                        <span class="route-info-title">경로 안내</span>
+                        <button class="route-info-close" onclick="closeRouteInfo()">✕</button>
                     </div>
-                    
-                    <div class="facility-list">
-                        <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=학생식당" alt="학생식당">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">학생식당</div>
-                                <div class="facility-location">학생복지센터 2층</div>
-                            </div>
+                    <div class="route-info-content">
+                        <div class="route-detail">
+                            <span>목적지: </span>
+                            <span id="route-destination">-</span>
                         </div>
-                        <div class="facility-item" onclick="showFacilityDetail('cafe')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=카페" alt="카페">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">카페 연성</div>
-                                <div class="facility-location">문화1관 1층</div>
-                            </div>
+                        <div class="route-detail">
+                            <span>거리: </span>
+                            <span id="route-distance">-</span>
                         </div>
-                        <div class="facility-item" onclick="showFacilityDetail('convenience')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=편의점" alt="편의점">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">CU 편의점</div>
-                                <div class="facility-location">학생복지센터 1층</div>
-                            </div>
-                        </div>
-                        <div class="facility-item" onclick="showFacilityDetail('atm')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=ATM" alt="ATM">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">ATM</div>
-                                <div class="facility-location">학생복지센터 1층</div>
-                            </div>
+                        <div class="route-detail">
+                            <span>예상 시간: </span>
+                            <span id="route-duration">-</span>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- 건물 목록 -->
+            <div class="facility-content">
+                <div class="section-title">
+                    <span>🏫 캠퍼스 건물</span>
+                    <span class="building-count" id="building-count">0개</span>
+                </div>
+                
+                <!-- 카테고리 필터 -->
+                <div class="category-filter">
+                    <div class="category-tag active" onclick="filterBuildings('all')">전체</div>
+                    <div class="category-tag" onclick="filterBuildings('academic')">강의동</div>
+                    <div class="category-tag" onclick="filterBuildings('facility')">편의시설</div>
+                    <div class="category-tag" onclick="filterBuildings('dormitory')">기숙시설</div>
+                    <div class="category-tag" onclick="filterBuildings('sports')">체육시설</div>
+                </div>
+                
+                <!-- 건물 리스트 -->
+                <div id="building-list" class="building-list">
+                    <!-- 건물 항목들이 동적으로 생성됩니다 -->
+                </div>
+                
+                <!-- 검색 결과가 없을 때 -->
+                <div id="no-buildings" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🏢</div>
+                    <div class="no-results-text">검색 결과가 없습니다</div>
+                    <div class="no-results-desc">다른 검색어를 입력해보세요</div>
                 </div>
             </div>
             
@@ -443,7 +380,6 @@
                 <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
             </div>
             
-            <!-- 실시간 커뮤니티 (에브리타임 스타일) -->
             <div class="everytime-community-card">
                 <div class="everytime-header">
                     <div class="everytime-title">💬 실시간 커뮤니티</div>
@@ -497,7 +433,6 @@
                 </div>
             </div>
             
-            <!-- 인기 강의평가 섹션 (메인 페이지에서 이동됨) -->
             <div class="content-section">
                 <div class="section-title">
                     <span>인기 강의평가</span>
@@ -573,9 +508,8 @@
             <div class="content-pad"></div>
         </div>
         
-        <!-- 내 정보 탭 - 로그인 상태에 따라 동적으로 변경 -->
+        <!-- 내 정보 탭 -->
         <div id="profile-tab" class="tab-content">
-            <!-- 로그인이 필요한 상태 (기본값) -->
             <div id="profile-login-required" class="profile-section">
                 <div class="profile-image">👤</div>
                 <div class="profile-info">
@@ -584,7 +518,6 @@
                 </div>
             </div>
             
-            <!-- 로그인된 상태 (로그인 후 표시) -->
             <div id="profile-logged-in" class="profile-section" style="display: none;">
                 <div class="profile-image">👨‍🎓</div>
                 <div class="profile-info">
@@ -594,7 +527,6 @@
                 </div>
             </div>
             
-            <!-- 메뉴들은 항상 표시 -->
             <div class="content-section">
                 <div class="section-title">
                     <span>내 정보 관리</span>
