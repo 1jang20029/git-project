@@ -2242,12 +2242,161 @@ function retryMapLoad() {
 
 // 전역 콜백 함수 (HTML의 callback 파라미터용)
 window.onNaverMapAPILoaded = function() {
-    console.log('네이버 지도 API 콜백 실행');
-    setTimeout(checkAndInitializeMap, 300);
+    console.log('네이버 지도 API 콜백 실행됨');
+    setTimeout(() => {
+        if (typeof checkAndInitializeMap === 'function') {
+            checkAndInitializeMap();
+        } else {
+            console.error('checkAndInitializeMap 함수가 정의되지 않았습니다');
+        }
+    }, 300);
 };
 
 
+function loadNaverMapsAPI() {
+    // 기존 스크립트 제거
+    const existingScript = document.querySelector('script[src*="openapi.naver.com"]');
+    if (existingScript) {
+        existingScript.remove();
+    }
+    
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://openapi.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x&submodules=direction&callback=onNaverMapAPILoaded';
+    script.async = true;
+    script.defer = true;
+    
+    script.onload = function() {
+        console.log('네이버 지도 스크립트 로드 성공');
+    };
+    
+    script.onerror = function() {
+        console.error('네이버 지도 스크립트 로드 실패');
+        // 대체 방법으로 callback 없이 시도
+        setTimeout(() => {
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://openapi.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x';
+            fallbackScript.onload = function() {
+                console.log('대체 스크립트 로드 성공');
+                setTimeout(() => {
+                    if (window.onNaverMapAPILoaded) {
+                        window.onNaverMapAPILoaded();
+                    }
+                }, 500);
+            };
+            document.head.appendChild(fallbackScript);
+        }, 1000);
+    };
+    
+    document.head.appendChild(script);
+}
 
+
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadNaverMapsAPI);
+} else {
+    loadNaverMapsAPI();
+}
+
+
+
+function forceLoadNaverMaps() {
+    console.log('네이버 지도 API 강제 로드 시작...');
+    
+    // 기존 스크립트들 모두 제거
+    document.querySelectorAll('script[src*="openapi.naver.com"]').forEach(script => {
+        script.remove();
+    });
+    
+    // 전역 콜백 함수 정의
+    window.onNaverMapAPILoaded = function() {
+        console.log('✅ 네이버 지도 API 콜백 성공!');
+        setTimeout(() => {
+            if (typeof checkAndInitializeMap === 'function') {
+                checkAndInitializeMap();
+            } else {
+                console.log('checkAndInitializeMap 함수를 직접 실행합니다');
+                // 직접 지도 생성
+                const mapContainer = document.getElementById('naverMap');
+                if (mapContainer && window.naver && window.naver.maps) {
+                    try {
+                        window.naverMap = new naver.maps.Map(mapContainer, {
+                            center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
+                            zoom: 16,
+                            mapTypeControl: true,
+                            zoomControl: true
+                        });
+                        console.log('✅ 지도 직접 생성 성공!');
+                        
+                        // 마커 추가
+                        if (typeof buildingData !== 'undefined') {
+                            buildingData.forEach(building => {
+                                new naver.maps.Marker({
+                                    position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                                    map: window.naverMap,
+                                    title: building.name,
+                                    icon: {
+                                        content: `<div style="background-color: #c62917; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">${building.name}</div>`,
+                                        anchor: new naver.maps.Point(0, 0)
+                                    }
+                                });
+                            });
+                            console.log('✅ 마커 추가 완료!');
+                        }
+                    } catch (error) {
+                        console.error('지도 생성 오류:', error);
+                    }
+                }
+            }
+        }, 500);
+    };
+    
+    // 새 스크립트 로드
+    const script = document.createElement('script');
+    script.src = 'https://openapi.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x&callback=onNaverMapAPILoaded';
+    script.async = true;
+    
+    script.onload = function() {
+        console.log('📦 스크립트 로드 완료');
+    };
+    
+    script.onerror = function() {
+        console.error('❌ 스크립트 로드 실패');
+        // 콜백 없이 재시도
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = 'https://openapi.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x';
+        fallbackScript.onload = function() {
+            console.log('📦 대체 스크립트 로드 완료');
+            setTimeout(() => {
+                if (window.onNaverMapAPILoaded) {
+                    window.onNaverMapAPILoaded();
+                }
+            }, 1000);
+        };
+        document.head.appendChild(fallbackScript);
+    };
+    
+    document.head.appendChild(script);
+}
+
+
+forceLoadNaverMaps();
+
+
+setTimeout(() => {
+    if (window.naver && window.naver.maps) {
+        console.log('✅ 네이버 지도 API 로드 성공!');
+        if (window.naverMap) {
+            console.log('✅ 지도 인스턴스 존재함');
+        } else {
+            console.log('⚠️ 지도 인스턴스가 없습니다. 직접 생성을 시도합니다.');
+            window.onNaverMapAPILoaded();
+        }
+    } else {
+        console.log('❌ 네이버 지도 API 로드 실패');
+    }
+}, 10000);
 
 // 시설 탭 초기화 함수 (페이지네이션 포함)
 function initFacilityTab() {
@@ -5961,14 +6110,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 윈도우 리사이즈 시 지도 크기 조정
-window.addEventListener('resize', function() {
-    if (naverMap) {
-        setTimeout(() => {
-            naverMap.autoResize();
-        }, 100);
-    }
-});
+
 
 
 // 수정된 페이지 언로드 시 정리 작업
@@ -6854,3 +6996,11 @@ window.addEventListener('restaurantUpdated', function() {
 window.onNaverMapAPILoaded = onNaverMapAPILoaded;
 window.switchTab = switchTab;
 
+// 윈도우 리사이즈 시 지도 크기 조정
+window.addEventListener('resize', function() {
+    if (naverMap) {
+        setTimeout(() => {
+            naverMap.autoResize();
+        }, 100);
+    }
+});
