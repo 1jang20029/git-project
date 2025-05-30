@@ -300,67 +300,103 @@ function setupGradeDropdown() {
     });
 }
 
-// 파일 검증 관련 함수들
+// 개선된 파일 검증 관련 함수들
 
-// 파일명에서 문서 유형 추론
+// 파일명에서 문서 유형 추론 - 더 엄격한 검증
 function detectDocumentType(fileName) {
     const name = fileName.toLowerCase();
     
-    // 교직원증 관련 키워드
-    const employeeCardKeywords = ['교직원증', '신분증', '사원증', 'id카드', 'id_card', 'employee_card', '직원증'];
+    // 제외할 키워드들 (이런 키워드가 있으면 해당 문서가 아님)
+    const excludeKeywords = ['시간표', '수업', '강의', '과제', '리포트', '보고서', '발표', 'ppt', 'presentation', 
+                           '자료', '교안', '시험', '문제', '답안', '성적', '출석', '계획', '일정', 'schedule',
+                           '과목', '커리큘럼', '교육과정', 'curriculum', '학습', '연구', '논문', 'paper'];
     
-    // 임용서류 관련 키워드
-    const appointmentKeywords = ['임용', '발령', '임용장', '발령장', '임명', '임명장', 'appointment', '계약서', '고용'];
+    // 제외 키워드 체크
+    for (let keyword of excludeKeywords) {
+        if (name.includes(keyword)) {
+            return null; // 확실히 해당 문서가 아님
+        }
+    }
     
-    // 급여명세서 관련 키워드
-    const payslipKeywords = ['급여', '월급', '봉급', '임금', '급여명세', '급여명세서', 'payslip', 'salary', '페이', '소득'];
+    // 교직원증 관련 키워드 (더 엄격하게)
+    const employeeCardKeywords = ['교직원증', '신분증', '사원증', '직원증', 'id카드', 'id_card', 'employee_card', 
+                                '사번카드', '교번카드', '직번카드', '신분카드', 'identity_card', 'staff_id'];
     
-    // 키워드 매칭 검사
+    // 임용서류 관련 키워드 (더 엄격하게)
+    const appointmentKeywords = ['임용', '발령', '임용장', '발령장', '임명', '임명장', 'appointment', 
+                               '계약서', '고용계약', '근로계약', '채용', '인사발령', '발령통지', '임용통지',
+                               '채용통지서', '임용서', '발령서'];
+    
+    // 급여명세서 관련 키워드 (더 엄격하게)
+    const payslipKeywords = ['급여명세', '급여명세서', '월급명세', '봉급명세', 'payslip', 'salary_slip', 
+                           '급여통지', '소득명세', '임금명세', '급여지급명세', '월급통지서', '봉급통지서',
+                           '급여내역', '임금내역'];
+    
+    // 교직원증 키워드 매칭 (정확한 매칭)
     for (let keyword of employeeCardKeywords) {
         if (name.includes(keyword)) {
-            return 'employeeCard';
+            // 추가 검증: 다른 문서 키워드가 함께 있으면 제외
+            let hasOtherDocKeywords = false;
+            for (let otherKeyword of [...appointmentKeywords, ...payslipKeywords]) {
+                if (name.includes(otherKeyword)) {
+                    hasOtherDocKeywords = true;
+                    break;
+                }
+            }
+            if (!hasOtherDocKeywords) {
+                return 'employeeCard';
+            }
         }
     }
     
+    // 임용서류 키워드 매칭
     for (let keyword of appointmentKeywords) {
         if (name.includes(keyword)) {
-            return 'appointmentDoc';
+            let hasOtherDocKeywords = false;
+            for (let otherKeyword of [...employeeCardKeywords, ...payslipKeywords]) {
+                if (name.includes(otherKeyword)) {
+                    hasOtherDocKeywords = true;
+                    break;
+                }
+            }
+            if (!hasOtherDocKeywords) {
+                return 'appointmentDoc';
+            }
         }
     }
     
+    // 급여명세서 키워드 매칭
     for (let keyword of payslipKeywords) {
         if (name.includes(keyword)) {
-            return 'payslip';
+            let hasOtherDocKeywords = false;
+            for (let otherKeyword of [...employeeCardKeywords, ...appointmentKeywords]) {
+                if (name.includes(otherKeyword)) {
+                    hasOtherDocKeywords = true;
+                    break;
+                }
+            }
+            if (!hasOtherDocKeywords) {
+                return 'payslip';
+            }
         }
     }
     
     return null; // 유형을 특정할 수 없음
 }
 
-// 이미지에서 텍스트 유형 분석 (단순 키워드 기반)
+// 이미지에서 텍스트 유형 분석 (더 엄격한 검증)
 function analyzeImageContent(file, callback) {
-    // 실제 환경에서는 OCR API를 사용할 수 있지만, 
-    // 여기서는 파일명과 파일 크기를 기반으로 간단한 검증을 수행
-    
     const fileName = file.name.toLowerCase();
     const fileSize = file.size;
     
-    // 파일 크기 기반 추론 (대략적인 기준)
-    // 교직원증: 보통 작은 사이즈 (100KB - 2MB)
-    // 임용서류: 중간 사이즈 (200KB - 5MB) 
-    // 급여명세서: 다양한 사이즈 (100KB - 3MB)
-    
+    // 파일명 기반 문서 유형 감지
     let contentType = detectDocumentType(fileName);
     
-    // 파일명으로 유형을 특정할 수 없는 경우, 크기로 추가 추론
+    // 파일명으로 유형이 감지되지 않으면 null 반환 (크기 기반 추론 제거)
+    // 더 엄격한 검증을 위해 파일명에 명확한 키워드가 있어야만 통과
     if (!contentType) {
-        if (fileSize < 500 * 1024) { // 500KB 미만
-            // 작은 파일은 교직원증일 가능성이 높음
-            contentType = 'employeeCard';
-        } else if (fileSize > 2 * 1024 * 1024) { // 2MB 초과
-            // 큰 파일은 임용서류일 가능성이 높음
-            contentType = 'appointmentDoc';
-        }
+        // 파일명에 명확한 키워드가 없으면 인식 불가로 처리
+        contentType = null;
     }
     
     setTimeout(() => {
@@ -381,25 +417,40 @@ function validateFileMatch(file, selectedMethod, callback) {
         if (detectedType === selectedMethod) {
             isValid = true;
             message = '올바른 서류가 업로드되었습니다.';
-        } else {
-            // 선택된 방법에 따른 오류 메시지
+        } else if (detectedType === null) {
+            // 파일 유형을 인식할 수 없는 경우
             switch (selectedMethod) {
                 case 'employeeCard':
-                    message = '교직원증 또는 신분증 사진을 업로드해주세요. 현재 업로드된 파일은 교직원증으로 인식되지 않습니다.';
+                    message = '교직원증 또는 신분증으로 인식되지 않습니다. 파일명에 "교직원증", "신분증", "직원증" 등의 키워드를 포함하여 다시 업로드해주세요.';
                     break;
                 case 'appointmentDoc':
-                    message = '임용장, 발령장 등 임용 관련 서류를 업로드해주세요. 현재 업로드된 파일은 임용서류로 인식되지 않습니다.';
+                    message = '임용서류로 인식되지 않습니다. 파일명에 "임용", "발령", "임용장", "계약서" 등의 키워드를 포함하여 다시 업로드해주세요.';
                     break;
                 case 'payslip':
-                    message = '급여명세서를 업로드해주세요. 현재 업로드된 파일은 급여명세서로 인식되지 않습니다.';
+                    message = '급여명세서로 인식되지 않습니다. 파일명에 "급여명세", "급여명세서", "월급명세" 등의 키워드를 포함하여 다시 업로드해주세요.';
                     break;
                 default:
                     message = '선택하신 인증 방법과 일치하는 서류를 업로드해주세요.';
             }
+        } else {
+            // 다른 유형의 문서가 감지된 경우
+            const detectedName = getDocumentTypeName(detectedType);
+            const expectedName = getDocumentTypeName(selectedMethod);
+            message = `${detectedName}이(가) 감지되었습니다. ${expectedName}을(를) 업로드해주세요.`;
         }
         
         callback(isValid, message);
     });
+}
+
+// 문서 유형명 반환
+function getDocumentTypeName(type) {
+    switch(type) {
+        case 'employeeCard': return '교직원증';
+        case 'appointmentDoc': return '임용서류';
+        case 'payslip': return '급여명세서';
+        default: return '알 수 없는 문서';
+    }
 }
 
 // 파일 분석 로딩 표시
