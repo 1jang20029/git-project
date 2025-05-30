@@ -2006,7 +2006,6 @@ function getNextBusForRoute(routeId) {
 }
 
 // 네이버 지도 관련 변수
-let naverMap = false;
 let mapMarkers = [];
 let infoWindows = [];
 let userMarker = null;
@@ -3338,7 +3337,7 @@ function initCategoryFilter() {
     });
 }
 
-
+let naverMap = null;
 let isMapInitialized = false;
 
 // 하단 탭 클릭 시 호출되는 함수 (active toggle + 시설 탭 resize)
