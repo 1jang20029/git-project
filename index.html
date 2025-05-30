@@ -2,222 +2,105 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <!-- 반응형 뷰포트 설정 -->
+  <title>연성대학교 캠퍼스 가이드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>연성대학교 캠퍼스 웹사이트</title>
-  <!-- 외부 CSS -->
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
-  <div class="container">
-    <!-- 헤더 -->
-    <header>
-      <div class="logo">연성대학교 캠퍼스 웹</div>
-      <div class="header-icons">
-        <button class="login-button" onclick="goToPage('login')">로그인</button>
-        <div class="profile-dropdown-container">
-          <div class="header-profile-image" id="headerProfileImg" onclick="toggleProfileDropdown()">👤</div>
-          <div class="profile-dropdown">
-            <div class="dropdown-profile-info">
-              <div class="dropdown-profile-name">사용자</div>
-              <div class="dropdown-profile-detail">학과 | 학년</div>
-              <div class="dropdown-profile-detail">학번: 00000000</div>
-            </div>
-            <div class="dropdown-divider"></div>
-            <div class="dropdown-item" onclick="navigateToProfilePage('profile-edit')">
-              <span class="dropdown-icon">✏️</span> 프로필 수정
-            </div>
-            <div class="dropdown-item" onclick="logout()">
-              <span class="dropdown-icon">🚪</span> 로그아웃
-            </div>
-            <div class="dropdown-item delete-account" onclick="deleteAccount()">
-              <span class="dropdown-icon">❌</span> 회원 탈퇴
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- 검색 -->
-    <div class="search-bar">
-      <div class="search-container">
-        <input
-          type="text"
-          id="facility-search-input"
-          class="search-input"
-          placeholder="건물 또는 편의시설 검색"
-          oninput="searchFacilities(this.value)"
-          onkeypress="if(event.key==='Enter')searchFacilities(this.value)"
-        >
-        <button class="search-clear" onclick="clearSearch()">×</button>
-      </div>
+  <!-- 상단 내비게이션 바 -->
+  <nav class="navbar">
+    <div class="navbar__logo" onclick="goToHome()">Yeonsung Campus</div>
+    <ul class="navbar__menu">
+      <li><a href="#dashboard">대시보드</a></li>
+      <li><a href="#timetable">시간표</a></li>
+      <li><a href="#shuttle">셔틀버스</a></li>
+      <li><a href="#map">캠퍼스 지도</a></li>
+      <li><a href="#notices">공지사항</a></li>
+    </ul>
+    <div class="navbar__actions">
+      <input type="text" class="navbar__search" placeholder="검색…">
+      <button class="btn btn--login" onclick="goToPage('login')">로그인</button>
     </div>
+  </nav>
 
-    <!-- 검색 결과 -->
-    <div id="search-results" class="search-results"></div>
-    <div id="no-results" class="no-results">검색 결과가 없습니다.</div>
+  <!-- 좌측 사이드바 (데스크탑) / 오프캔버스 (모바일 햄버거) -->
+  <aside class="sidebar">
+    <ul class="sidebar__list">
+      <li><a href="#dashboard">🏠 대시보드</a></li>
+      <li><a href="#timetable">📅 시간표</a></li>
+      <li><a href="#shuttle">🚌 셔틀버스</a></li>
+      <li><a href="#map">🗺️ 캠퍼스 지도</a></li>
+      <li><a href="#notices">📢 공지사항</a></li>
+      <li><a href="#profile">👤 내 정보</a></li>
+    </ul>
+  </aside>
 
-    <!-- 원래 콘텐츠 -->
-    <div id="original-content">
-      <!-- 알림 배너 -->
-      <div class="notification-banner">
-        <div class="urgent-icon">⚠️</div>
-        <div class="notification-text">오늘부터 동계 계절학기 신청이 시작되었습니다!</div>
+  <!-- 메인 콘텐츠 영역 -->
+  <main class="content">
+    <!-- 드래그 가능 위젯을 포함한 그리드 레이아웃 -->
+    <section id="dashboard" class="grid">
+      <div class="widget" draggable="true" data-widget="notice">
+        <h2>긴급 알림</h2>
+        <p>내일(4/9) 전체 휴강 안내</p>
       </div>
-
-      <!-- 빠른 바로가기 -->
-      <div class="quick-search-buttons">
-        <span class="category-tag" onclick="quickSearch('학생식당')">학생식당</span>
-        <span class="category-tag" onclick="quickSearch('도서관')">도서관</span>
-        <span class="category-tag" onclick="quickSearch('텀블러')">텀블러 대여소</span>
+      <div class="widget" draggable="true" data-widget="quick-links">
+        <h2>바로가기</h2>
+        <ul>
+          <li><a href="#timetable">🕑 오늘 시간표</a></li>
+          <li><a href="#shuttle">🚌 다음 셔틀</a></li>
+          <li><a href="#map">🗺️ 캠퍼스 지도</a></li>
+        </ul>
       </div>
-
-      <!-- 탭 콘텐츠: 홈 -->
-      <div id="home-tab" class="tab-content active content-pad">
-        <div class="welcome-card">
-          <div class="welcome-title">환영합니다, 학생님!</div>
-          <div class="welcome-subtitle">오늘의 캠퍼스 정보를 확인하세요.</div>
-        </div>
-        <div class="timetable-preview">
-          <div class="timetable-header">
-            <div class="timetable-date">2025년 5월 1일 (목) 시간표</div>
-            <div class="timetable-now">수강 예정</div>
-          </div>
-          <div id="timetable-preview-content"></div>
-        </div>
-        <div class="shuttle-card">
-          <div class="shuttle-header">
-            <div class="shuttle-title">셔틀버스 정보</div>
-            <div class="shuttle-icon">🚌</div>
-          </div>
-          <div class="shuttle-route-tabs">
-            <div class="route-tab active" data-route="1" onclick="selectShuttleRoute(1)">
-              <span class="route-name">노선 1</span>
-              <span class="route-desc">인천→캠퍼스</span>
-            </div>
-            <div class="route-tab" data-route="2" onclick="selectShuttleRoute(2)">
-              <span class="route-name">노선 2</span>
-              <span class="route-desc">시흥→캠퍼스</span>
-            </div>
-            <div class="route-tab" data-route="3" onclick="selectShuttleRoute(3)">
-              <span class="route-name">노선 3</span>
-              <span class="route-desc">목동→캠퍼스</span>
-            </div>
-          </div>
-          <div class="shuttle-next-info">
-            <div class="next-bus-main">
-              <div class="shuttle-time">--:--</div>
-              <div class="shuttle-desc">운행 정보를 불러오는 중...</div>
-            </div>
-            <div class="shuttle-status"><span class="status-badge stopped">운행 종료</span></div>
-          </div>
-          <div class="shuttle-schedule shuttle-time-slots"></div>
-          <div class="shuttle-upcoming">
-            <div class="upcoming-header">곧 도착할 정류장</div>
-            <div class="shuttle-time-list">
-              <div class="shuttle-time-item"><div class="time-value">--:--</div><div class="time-label">운행 종료</div></div>
-              <div class="shuttle-time-item"><div class="time-value">--:--</div><div class="time-label">운행 종료</div></div>
-              <div class="shuttle-time-item"><div class="time-value">--:--</div><div class="time-label">운행 종료</div></div>
-            </div>
-          </div>
-        </div>
+      <div class="widget" draggable="true" data-widget="activities">
+        <h2>교내/대외활동 현황</h2>
+        <ul>
+          <li>🏆 12건 공모전</li>
+          <li>👥 8건 동아리 모집</li>
+          <li>🌟 15건 대외활동</li>
+        </ul>
       </div>
-
-      <!-- 탭 콘텐츠: 시설 -->
-      <div id="facility-tab" class="tab-content content-pad">
-        <div class="category-filter"></div>
-        <div id="pagination-controls" class="pagination-controls"></div>
-        <ul class="building-list"></ul>
+      <div class="widget" draggable="true" data-widget="deals">
+        <h2>맛집 할인 정보</h2>
+        <p>인기 맛집 최대 30% 할인</p>
       </div>
+    </section>
 
-      <!-- 탭 콘텐츠: 커뮤니티 -->
-      <div id="community-tab" class="tab-content content-pad">
-        <div class="everytime-community-card">
-          <div class="everytime-header">
-            <div class="everytime-title">커뮤니티</div>
-            <a class="everytime-view-all" href="#" onclick="goToPage('community')">전체 보기</a>
-          </div>
-          <div class="community-posts"></div>
-        </div>
+    <section id="timetable" class="section">
+      <h2>오늘의 시간표</h2>
+      <div id="timetable-preview-content">
+        <!-- JS로 채워질 시간표 프리뷰 -->
       </div>
+    </section>
 
-      <!-- 탭 콘텐츠: 알림 -->
-      <div id="alert-tab" class="tab-content content-pad">
-        <ul class="alert-list"></ul>
+    <section id="shuttle" class="section">
+      <h2>다음 셔틀버스</h2>
+      <div class="tabs">
+        <button class="tab active" data-route="1">노선 1</button>
+        <button class="tab" data-route="2">노선 2</button>
+        <button class="tab" data-route="3">노선 3</button>
       </div>
+      <div id="shuttle-next-info"><!-- JS로 채움 --></div>
+      <div id="shuttle-schedule"><!-- JS로 채움 --></div>
+    </section>
 
-      <!-- 탭 콘텐츠: 내 정보 -->
-      <div id="profile-tab" class="tab-content content-pad">
-        <div id="profile-login-required">
-          <div class="profile-image">👤</div>
-          <div>
-            <div class="profile-name">로그인이 필요합니다</div>
-            <div class="profile-detail">내 정보를 확인하려면 로그인하세요</div>
-          </div>
-          <div id="profile-login-button">
-            <div class="menu-item" onclick="goToPage('login')">
-              <div class="menu-title">로그인</div>
-            </div>
-          </div>
-        </div>
-        <div id="profile-logged-in" style="display:none;">
-          <div class="profile-section">
-            <div class="profile-image"></div>
-            <div class="profile-info">
-              <div class="profile-name">사용자</div>
-              <div class="profile-detail">학과 | 학년</div>
-            </div>
-          </div>
-          <ul class="menu-list">
-            <li class="menu-item" onclick="navigateToProfilePage('timetable')">
-              <span class="menu-title">내 시간표</span><span class="menu-arrow">›</span>
-            </li>
-            <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
-              <span class="menu-title">개인정보 수정</span><span class="menu-arrow">›</span>
-            </li>
-            <li class="menu-item delete-account" onclick="deleteAccount()">
-              <span class="menu-title">회원 탈퇴</span><span class="menu-arrow">›</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+    <section id="map" class="section">
+      <h2>캠퍼스 지도</h2>
+      <div id="naverMap" class="map"></div>
+    </section>
 
-  <!-- 하단 탭 메뉴 -->
-  <div class="tab-menu">
-    <div class="tab-item active" onclick="switchTab('home')">
-      <span class="tab-icon">🏠</span><span>홈</span>
-    </div>
-    <div class="tab-item" onclick="switchTab('facility')">
-      <span class="tab-icon">🏫</span><span>시설</span>
-    </div>
-    <div class="tab-item" onclick="switchTab('community')">
-      <span class="tab-icon">💬</span><span>커뮤니티</span>
-    </div>
-    <div class="tab-item" onclick="switchTab('alert')">
-      <span class="tab-icon">🔔</span><span>알림</span>
-    </div>
-    <div class="tab-item" onclick="switchTab('profile')">
-      <span class="tab-icon">👤</span><span>내 정보</span>
-    </div>
-  </div>
+    <section id="notices" class="section">
+      <h2>주요 공지사항</h2>
+      <ul id="notice-list">
+        <!-- JS로 공지목록 생성 -->
+      </ul>
+    </section>
+  </main>
 
-  <!-- 네이버 지도 -->
-  <div class="campus-map" id="naverMap"></div>
-  <div class="route-loading" id="routeLoading"><span class="route-loading-text">경로를 불러오는 중...</span></div>
-  <div class="route-info-box" id="routeInfoBox" style="display:none;">
-    <div class="route-info-title">경로 안내</div>
-    <div class="route-info-detail">
-      <span id="routeDestination">목적지</span>
-      <span id="routeDistance">--</span>
-      <span id="routeDuration">--</span>
-    </div>
-    <div class="route-info-close" onclick="closeRouteInfo()">×</div>
-  </div>
+  <!-- 하단 푸터 -->
+  <footer class="footer">
+    <small>&copy; 2025 연성대학교 캠퍼스 가이드</small>
+  </footer>
 
-  <!-- 외부 JS -->
-  <script src="index.js"></script>
+  <script src="index.js" defer></script>
 </body>
 </html>
