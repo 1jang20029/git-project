@@ -33,7 +33,7 @@ const timeData = [
     { period: 7, startTime: "15:00" },
     { period: 8, startTime: "16:00" },
     { period: 9, startTime: "17:00" },
-    { period: 9, startTime: "18:00" }
+    { period: 10, startTime: "18:00" }
 ];
 
 // 요일 데이터
