@@ -58,25 +58,25 @@
                <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
            </div>
            
-           <!-- 바로가기 메뉴 -->
-           <div class="shortcut-menu">
-               <div class="shortcut-item" onclick="goToPage('activities')">
+           <!-- 드래그 가능한 바로가기 메뉴 -->
+           <div class="shortcut-menu" id="draggable-shortcuts">
+               <div class="shortcut-item" draggable="true" data-widget="activities" onclick="goToPage('activities')">
                    <div class="shortcut-icon">🌟</div>
                    <div class="shortcut-text">교내/대외활동</div>
                </div>
-               <div class="shortcut-item" onclick="switchTab('community')">
+               <div class="shortcut-item" draggable="true" data-widget="community" onclick="switchTab('community')">
                    <div class="shortcut-icon">📝</div>
                    <div class="shortcut-text">강의평가</div>
                </div>
-                <div class="shortcut-item" onclick="window.location.href='shuttle_bus_tracker.html'">
+                <div class="shortcut-item" draggable="true" data-widget="shuttle" onclick="window.location.href='shuttle_bus_tracker.html'">
                     <div class="shortcut-icon">🚌</div>
                     <div class="shortcut-text">셔틀버스</div>
                 </div>
-               <div class="shortcut-item" onclick="goToPage('everytime-board')">
+               <div class="shortcut-item" draggable="true" data-widget="everytime" onclick="goToPage('everytime-board')">
                    <div class="shortcut-icon">💬</div>
                    <div class="shortcut-text">커뮤니티</div>
                </div>
-               <div class="shortcut-item" onclick="goToPage('academic-calendar')">
+               <div class="shortcut-item" draggable="true" data-widget="calendar" onclick="goToPage('academic-calendar')">
                    <div class="shortcut-icon">📅</div>
                    <div class="shortcut-text">학사일정</div>
                </div>
@@ -708,25 +708,25 @@
             <div class="content-pad"></div>
         </div>
         
-        <!-- 하단 탭 메뉴 -->
-        <div class="tab-menu">
-            <div class="tab-item active" onclick="switchTab('home')">
+        <!-- 드래그 가능한 하단 탭 메뉴 -->
+        <div class="tab-menu" id="draggable-tabs">
+            <div class="tab-item active" draggable="true" data-tab="home" onclick="switchTab('home')">
                 <span class="tab-icon">🏠</span>
                 <span>홈</span>
             </div>
-            <div class="tab-item" onclick="switchTab('facility')">
+            <div class="tab-item" draggable="true" data-tab="facility" onclick="switchTab('facility')">
                 <span class="tab-icon">🏫</span>
                 <span>시설</span>
             </div>
-            <div class="tab-item" onclick="switchTab('community')">
+            <div class="tab-item" draggable="true" data-tab="community" onclick="switchTab('community')">
                 <span class="tab-icon">💬</span>
                 <span>커뮤니티</span>
             </div>
-            <div class="tab-item" onclick="switchTab('profile')">
+            <div class="tab-item" draggable="true" data-tab="profile" onclick="switchTab('profile')">
                 <span class="tab-icon">👤</span>
                 <span>내 정보</span>
             </div>
-            <div class="tab-item" onclick="switchTab('alert')">
+            <div class="tab-item" draggable="true" data-tab="alert" onclick="switchTab('alert')">
                 <span class="tab-icon">🔔</span>
                 <span>알림</span>
             </div>
