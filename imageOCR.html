@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR 테스트 이미지 생성기</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Malgun Gothic', Arial, sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button.danger {
+            background-color: #dc3545;
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+        button.success {
+            background-color: #28a745;
+        }
+        button.success:hover {
+            background-color: #218838;
+        }
+        canvas {
+            border: 2px solid #ccc;
+            margin: 20px 0;
+            background-color: white;
+        }
+        .preset-buttons {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        .test-result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success-result {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error-result {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .control-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .image-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .instruction {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .instruction h4 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 OCR 검증 시스템 테스트 도구</h1>
+    
+    <div class="instruction">
+        <h4>📝 사용 방법</h4>
+        <ol>
+            <li><strong>테스트 케이스 선택</strong>: 아래 버튼으로 미리 설정된 텍스트 선택</li>
+            <li><strong>이미지 생성</strong>: "이미지 생성" 버튼 클릭</li>
+            <li><strong>다운로드</strong>: 생성된 이미지를 다운로드</li>
+            <li><strong>실제 테스트</strong>: 다운로드한 이미지를 회원가입 페이지에서 업로드</li>
+        </ol>
+    </div>
+    
+    <div class="container">
+        <h3>🧪 테스트 케이스 선택</h3>
+        <div class="preset-buttons">
+            <button class="danger" onclick="setPresetText('schedule1')">❌ 시간표 #1 (기본)</button>
+            <button class="danger" onclick="setPresetText('schedule2')">❌ 시간표 #2 (상세)</button>
+            <button class="danger" onclick="setPresetText('schedule3')">❌ 시간표 #3 (교직원증 혼합)</button>
+            <button class="danger" onclick="setPresetText('homework')">❌ 과제 관련</button>
+            <button class="success" onclick="setPresetText('employee1')">✅ 교직원증 #1 (완전)</button>
+            <button class="success" onclick="setPresetText('employee2')">✅ 교직원증 #2 (최소)</button>
+            <button class="success" onclick="setPresetText('appointment1')">✅ 임용서류 #1 (발령장)</button>
+            <button class="success" onclick="setPresetText('appointment2')">✅ 임용서류 #2 (임용장)</button>
+            <button class="success" onclick="setPresetText('payslip1')">✅ 급여명세서 #1 (완전)</button>
+            <button class="success" onclick="setPresetText('payslip2')">✅ 급여명세서 #2 (최소)</button>
+        </div>
+        
+        <h4>📝 텍스트 편집</h4>
+        <textarea id="textInput" placeholder="테스트할 텍스트를 입력하거나 위의 버튼으로 미리 설정된 텍스트를 선택하세요..."></textarea>
+        
+        <h4>🎨 이미지 설정</h4>
+        <div class="controls">
+            <div class="control-group">
+                <label>폰트 크기</label>
+                <select id="fontSize">
+                    <option value="14">14px (작게)</option>
+                    <option value="16">16px (보통)</option>
+                    <option value="20" selected>20px (큼)</option>
+                    <option value="24">24px (매우 큼)</option>
+                    <option value="32">32px (거대)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>배경색</label>
+                <select id="bgColor">
+                    <option value="white" selected>흰색</option>
+                    <option value="#f8f9fa">연한 회색</option>
+                    <option value="#fffacd">연한 노란색</option>
+                    <option value="#f0f8ff">연한 파란색</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>텍스트 색상</label>
+                <select id="textColor">
+                    <option value="black" selected>검은색</option>
+                    <option value="#333">진한 회색</option>
+                    <option value="#666">회색</option>
+                    <option value="blue">파란색</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>이미지 너비</label>
+                <input type="number" id="imageWidth" value="600" min="300" max="1200">
+            </div>
+        </div>
+        
+        <div>
+            <button onclick="generateImage()">🖼️ 이미지 생성</button>
+            <button onclick="downloadImage()">⬇️ 이미지 다운로드</button>
+            <button onclick="clearCanvas()">🗑️ 초기화</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h3>🖼️ 생성된 테스트 이미지</h3>
+        <div class="image-preview">
+            <canvas id="canvas" width="600" height="400"></canvas>
+        </div>
+        <p><em>💡 팁: 이미지를 우클릭해서 "다른 이름으로 저장"할 수도 있습니다.</em></p>
+    </div>
+    
+    <div class="container">
+        <h3>📊 예상 테스트 결과</h3>
+        <div id="testResult" class="test-result" style="display: none;"></div>
+        <button onclick="predictResult()">🔮 결과 예측</button>
+    </div>
+
+    <script>
+        // 미리 설정된 테스트 텍스트들
+        const presetTexts = {
+            schedule1: `시간표 1 - 2025년 1학기
+월    화    수    목    금
+1교시 수학  영어  과학  역사  체육
+2교시 국어  수학  영어  과학  음악
+3교시 체육  국어  수학  영어  미술`,
+
+            schedule2: `연성대학교 2025학년도 1학기 시간표
+학과: 컴퓨터소프트웨어과
+학년: 2학년
+
+시간    월     화     수     목     금
+09:00  프로그래밍  수학   영어   과학   체육
+10:00  데이터베이스 알고리즘 웹개발 네트워크 실습
+11:00  강의실 A동 203호`,
+
+            schedule3: `연성대학교 교직원 시간표
+교수: 김철수 (교번: 2024001)
+강의시간표
+월 1교시: 프로그래밍 기초 (A동 301)
+화 2교시: 데이터베이스 (B동 205)`,
+
+            homework: `과제 제출 안내
+과목: 웹프로그래밍
+교수: 김영희
+제출일: 2025년 6월 15일
+과제 내용: 웹사이트 제작`,
+
+            employee1: `연성대학교 교직원증
+
+성명: 김철수
+교번: 2024001
+소속: 전산실
+부서: 정보시스템팀
+직급: 대리
+발급일: 2024.03.01
+
+YEONSUNG UNIVERSITY
+EMPLOYEE ID CARD`,
+
+            employee2: `연성대학교
+교직원증
+김영희
+직번: 2024002
+전산실`,
+
+            appointment1: `연성대학교 인사발령장
+
+발령사항
+성명: 박민수
+교번: 2024003
+임용: 전임강사
+소속: 컴퓨터소프트웨어과
+발령일: 2024년 3월 1일
+근무기간: 2024.03.01 ~ 2026.02.28
+
+연성대학교 총장`,
+
+            appointment2: `임용장
+연성대학교
+
+성명: 이수진
+임용직급: 조교수
+임용일: 2024년 9월 1일
+소속: 전자공학과`,
+
+            payslip1: `연성대학교 급여명세서
+2024년 5월분
+
+성명: 최기술
+교번: 2024004
+소속: 정보통신과
+
+급여내역
+기본급: 3,500,000원
+수당: 500,000원
+지급총액: 4,000,000원
+
+공제내역
+소득세: 200,000원
+국민연금: 180,000원
+건강보험: 140,000원
+공제총액: 520,000원
+
+실지급액: 3,480,000원`,
+
+            payslip2: `연성대학교
+급여명세
+홍길동
+기본급: 2,800,000
+실지급액: 2,500,000`
+        };
+
+        function setPresetText(type) {
+            document.getElementById('textInput').value = presetTexts[type] || '';
+            
+            // 테스트 결과 미리보기 업데이트
+            predictResult();
+        }
+
+        function generateImage() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const text = document.getElementById('textInput').value;
+            const fontSize = document.getElementById('fontSize').value;
+            const bgColor = document.getElementById('bgColor').value;
+            const textColor = document.getElementById('textColor').value;
+            const imageWidth = parseInt(document.getElementById('imageWidth').value);
+            
+            if (!text.trim()) {
+                alert('텍스트를 입력해주세요!');
+                return;
+            }
+            
+            // 캔버스 크기 설정
+            canvas.width = imageWidth;
+            
+            // 배경 그리기
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 텍스트 설정
+            ctx.fillStyle = textColor;
+            ctx.font = `${fontSize}px 'Malgun Gothic', Arial, sans-serif`;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            
+            // 텍스트를 줄별로 나누기
+            const lines = text.split('\n');
+            const lineHeight = parseInt(fontSize) * 1.4;
+            const padding = 20;
+            
+            // 필요한 높이 계산
+            const requiredHeight = Math.max(400, lines.length * lineHeight + padding * 2);
+            canvas.height = requiredHeight;
+            
+            // 배경 다시 그리기 (높이가 변경되었으므로)
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 텍스트 그리기
+            ctx.fillStyle = textColor;
+            ctx.font = `${fontSize}px 'Malgun Gothic', Arial, sans-serif`;
+            
+            lines.forEach((line, index) => {
+                const y = padding + (index * lineHeight);
+                ctx.fillText(line, padding, y);
+            });
+        }
+
+        function downloadImage() {
+            const canvas = document.getElementById('canvas');
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            
+            link.download = `ocr-test-${timestamp}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function predictResult() {
+            const text = document.getElementById('textInput').value.toLowerCase();
+            const resultDiv = document.getElementById('testResult');
+            
+            if (!text.trim()) {
+                resultDiv.style.display = 'none';
+                return;
+            }
+            
+            // 제외 키워드 체크
+            const excludeKeywords = [
+                '시간표', '수업', '강의', '과제', '과목', '성적', '학습', '교육과정',
+                '출석', '학점', '평가', '과제물', '리포트', '수강', '강의실', '교실',
+                '시험', '중간고사', '기말고사', '1교시', '2교시', '3교시', '월', '화', '수', '목', '금'
+            ];
+            
+            let hasExcludeKeyword = false;
+            let foundExcludeKeyword = '';
+            
+            for (let keyword of excludeKeywords) {
+                if (text.includes(keyword)) {
+                    hasExcludeKeyword = true;
+                    foundExcludeKeyword = keyword;
+                    break;
+                }
+            }
+            
+            if (hasExcludeKeyword) {
+                resultDiv.className = 'test-result error-result';
+                resultDiv.innerHTML = `❌ 예상 결과: 거부됨
+
+🚫 감지된 제외 키워드: "${foundExcludeKeyword}"
+📝 이유: 교육/수업 관련 키워드가 포함되어 있습니다.
+🎯 예상 정확도: 100% (올바른 거부)`;
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // 각 문서 유형별 키워드 체크
+            const docTypes = {
+                employeeCard: {
+                    mandatory: ['교직원증', '연성대학교'],
+                    supporting: ['교번', '직번', '사번', '소속', '부서', '직급', '성명', '발급일']
+                },
+                appointmentDoc: {
+                    mandatory: ['임용', '연성대학교'],
+                    supporting: ['발령', '임용장', '발령장', '계약서', '임용일', '발령일', '계약기간', '근무기간']
+                },
+                payslip: {
+                    mandatory: ['급여명세', '연성대학교'],
+                    supporting: ['기본급', '수당', '공제', '실지급액', '소득세', '국민연금', '건강보험', '지급총액']
+                }
+            };
+            
+            let detectedType = null;
+            let detectionDetails = '';
+            
+            for (let [docType, keywords] of Object.entries(docTypes)) {
+                let mandatoryCount = 0;
+                let supportingCount = 0;
+                let foundMandatory = [];
+                let foundSupporting = [];
+                
+                // 필수 키워드 체크
+                for (let keyword of keywords.mandatory) {
+                    if (text.includes(keyword)) {
+                        mandatoryCount++;
+                        foundMandatory.push(keyword);
+                    }
+                }
+                
+                // 지원 키워드 체크
+                for (let keyword of keywords.supporting) {
+                    if (text.includes(keyword)) {
+                        supportingCount++;
+                        foundSupporting.push(keyword);
+                    }
+                }
+                
+                detectionDetails += `\n📋 ${getDocTypeName(docType)} 검증:
+   필수 키워드 (${mandatoryCount}/${keywords.mandatory.length}): ${foundMandatory.join(', ') || '없음'}
+   지원 키워드 (${supportingCount}개): ${foundSupporting.join(', ') || '없음'}`;
+                
+                if (mandatoryCount === keywords.mandatory.length && supportingCount >= 1) {
+                    detectedType = docType;
+                    break;
+                }
+            }
+            
+            if (detectedType) {
+                resultDiv.className = 'test-result success-result';
+                resultDiv.innerHTML = `✅ 예상 결과: ${getDocTypeName(detectedType)}으로 인식됨
+
+🎯 예상 정확도: 100% (올바른 승인)
+${detectionDetails}
+
+💡 이 이미지는 해당 서류 선택 시 승인될 것입니다.`;
+            } else {
+                resultDiv.className = 'test-result error-result';
+                resultDiv.innerHTML = `❌ 예상 결과: 인식 실패
+
+📝 이유: 필수 키워드가 부족합니다.
+${detectionDetails}
+
+💡 각 서류별로 필수 키워드가 모두 포함되어야 승인됩니다.`;
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+        
+        function getDocTypeName(type) {
+            const names = {
+                employeeCard: '교직원증',
+                appointmentDoc: '임용서류',
+                payslip: '급여명세서'
+            };
+            return names[type] || type;
+        }
+
+        // 페이지 로드 시 기본 이미지 생성
+        window.addEventListener('load', function() {
+            // 기본 텍스트 설정
+            document.getElementById('textInput').value = '여기에 테스트할 텍스트를 입력하거나\n위의 버튼으로 미리 설정된 텍스트를 선택하세요.';
+            generateImage();
+        });
+    </script>
+</body>
+</html>
