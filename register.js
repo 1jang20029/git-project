@@ -300,108 +300,204 @@ function setupGradeDropdown() {
     });
 }
 
-// 개선된 파일 검증 관련 함수들
+// OCR 라이브러리 로드 상태 확인
+let ocrLibraryLoaded = false;
 
-// 파일명에서 문서 유형 추론 - 더 엄격한 검증
-function detectDocumentType(fileName) {
-    const name = fileName.toLowerCase();
+// Tesseract.js 동적 로드
+function loadOCRLibrary() {
+    return new Promise((resolve, reject) => {
+        if (ocrLibraryLoaded) {
+            resolve();
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js';
+        script.onload = () => {
+            ocrLibraryLoaded = true;
+            resolve();
+        };
+        script.onerror = () => {
+            reject(new Error('OCR 라이브러리 로드 실패'));
+        };
+        document.head.appendChild(script);
+    });
+}
+
+// 이미지에서 텍스트 추출
+async function extractTextFromImage(file) {
+    try {
+        await loadOCRLibrary();
+        
+        const { data: { text } } = await Tesseract.recognize(
+            file,
+            'kor+eng', // 한국어 + 영어 인식
+            {
+                logger: m => {
+                    // OCR 진행 상황 표시
+                    if (m.status === 'recognizing text') {
+                        updateOCRProgress(Math.round(m.progress * 100));
+                    }
+                }
+            }
+        );
+        
+        return text;
+    } catch (error) {
+        console.error('OCR 처리 중 오류:', error);
+        throw error;
+    }
+}
+
+// OCR 진행 상황 업데이트
+function updateOCRProgress(progress) {
+    const loadingText = document.querySelector('.loading-text');
+    if (loadingText) {
+        loadingText.textContent = `이미지 내용을 분석하고 있습니다... ${progress}%`;
+    }
+}
+
+// 추출된 텍스트에서 문서 유형 분석 (순수 이미지 인식 기반)
+function analyzeExtractedText(text) {
+    const normalizedText = text.toLowerCase().replace(/\s+/g, ' ').trim();
     
-    // 제외할 키워드들 (이런 키워드가 있으면 해당 문서가 아님)
-    const excludeKeywords = ['시간표', '수업', '강의', '과제', '리포트', '보고서', '발표', 'ppt', 'presentation', 
-                           '자료', '교안', '시험', '문제', '답안', '성적', '출석', '계획', '일정', 'schedule',
-                           '과목', '커리큘럼', '교육과정', 'curriculum', '학습', '연구', '논문', 'paper'];
+    console.log('OCR 추출 텍스트:', normalizedText); // 디버깅용
+    
+    // 교직원증 관련 키워드 (이미지에서 나타날 수 있는 텍스트)
+    const employeeCardKeywords = [
+        '교직원증', '신분증', '사원증', '직원증', '교번', '직번', '사번',
+        'employee', 'staff', 'id', 'card', '연성대학교', '대학교',
+        '소속', '부서', '직급', '성명', '생년월일', '발급일',
+        'yeonsung', 'university', 'college'
+    ];
+    
+    // 임용서류 관련 키워드
+    const appointmentKeywords = [
+        '임용', '발령', '임명', '채용', '계약', '고용',
+        'appointment', '임용장', '발령장', '계약서',
+        '인사발령', '임용통지', '채용통지', '임용기간',
+        '발령일', '임용일', '채용일', '계약기간', '근무기간',
+        '인사명령', '발령사항', '임용사항'
+    ];
+    
+    // 급여명세서 관련 키워드
+    const payslipKeywords = [
+        '급여', '월급', '봉급', '임금', '소득', '급여명세',
+        'salary', 'pay', '급여지급', '월급명세', '임금명세',
+        '기본급', '수당', '공제', '실지급액', '급여계산서',
+        '소득세', '국민연금', '건강보험', '고용보험',
+        '지급총액', '공제총액', '차인지급액', '급여내역'
+    ];
+    
+    // 제외할 키워드 (이런 키워드가 있으면 해당 문서가 아님)
+    const excludeKeywords = [
+        '시간표', '수업', '강의', '과제', '과목', '성적',
+        'schedule', 'class', 'course', '학습', '교육과정',
+        '출석', '학점', '평가', '과제물', '리포트'
+    ];
     
     // 제외 키워드 체크
     for (let keyword of excludeKeywords) {
-        if (name.includes(keyword)) {
-            return null; // 확실히 해당 문서가 아님
+        if (normalizedText.includes(keyword.toLowerCase())) {
+            return null;
         }
     }
     
-    // 교직원증 관련 키워드 (더 엄격하게)
-    const employeeCardKeywords = ['교직원증', '신분증', '사원증', '직원증', 'id카드', 'id_card', 'employee_card', 
-                                '사번카드', '교번카드', '직번카드', '신분카드', 'identity_card', 'staff_id'];
+    // 각 문서 유형별 점수 계산
+    let employeeScore = 0;
+    let appointmentScore = 0;
+    let payslipScore = 0;
     
-    // 임용서류 관련 키워드 (더 엄격하게)
-    const appointmentKeywords = ['임용', '발령', '임용장', '발령장', '임명', '임명장', 'appointment', 
-                               '계약서', '고용계약', '근로계약', '채용', '인사발령', '발령통지', '임용통지',
-                               '채용통지서', '임용서', '발령서'];
-    
-    // 급여명세서 관련 키워드 (더 엄격하게)
-    const payslipKeywords = ['급여명세', '급여명세서', '월급명세', '봉급명세', 'payslip', 'salary_slip', 
-                           '급여통지', '소득명세', '임금명세', '급여지급명세', '월급통지서', '봉급통지서',
-                           '급여내역', '임금내역'];
-    
-    // 교직원증 키워드 매칭 (정확한 매칭)
+    // 교직원증 키워드 점수 계산
     for (let keyword of employeeCardKeywords) {
-        if (name.includes(keyword)) {
-            // 추가 검증: 다른 문서 키워드가 함께 있으면 제외
-            let hasOtherDocKeywords = false;
-            for (let otherKeyword of [...appointmentKeywords, ...payslipKeywords]) {
-                if (name.includes(otherKeyword)) {
-                    hasOtherDocKeywords = true;
-                    break;
-                }
-            }
-            if (!hasOtherDocKeywords) {
-                return 'employeeCard';
+        if (normalizedText.includes(keyword.toLowerCase())) {
+            if (keyword === '교직원증' || keyword === '신분증') {
+                employeeScore += 5; // 핵심 키워드
+            } else if (keyword === '연성대학교' || keyword === '대학교') {
+                employeeScore += 3; // 기관명
+            } else if (keyword === '교번' || keyword === '직번' || keyword === '사번') {
+                employeeScore += 3; // 번호 관련
+            } else {
+                employeeScore += 1; // 일반 키워드
             }
         }
     }
     
-    // 임용서류 키워드 매칭
+    // 임용서류 키워드 점수 계산
     for (let keyword of appointmentKeywords) {
-        if (name.includes(keyword)) {
-            let hasOtherDocKeywords = false;
-            for (let otherKeyword of [...employeeCardKeywords, ...payslipKeywords]) {
-                if (name.includes(otherKeyword)) {
-                    hasOtherDocKeywords = true;
-                    break;
-                }
-            }
-            if (!hasOtherDocKeywords) {
-                return 'appointmentDoc';
+        if (normalizedText.includes(keyword.toLowerCase())) {
+            if (keyword === '임용' || keyword === '발령' || keyword === '임용장' || keyword === '발령장') {
+                appointmentScore += 5; // 핵심 키워드
+            } else if (keyword === '임용일' || keyword === '발령일' || keyword === '계약기간') {
+                appointmentScore += 3; // 날짜/기간 관련
+            } else {
+                appointmentScore += 1; // 일반 키워드
             }
         }
     }
     
-    // 급여명세서 키워드 매칭
+    // 급여명세서 키워드 점수 계산
     for (let keyword of payslipKeywords) {
-        if (name.includes(keyword)) {
-            let hasOtherDocKeywords = false;
-            for (let otherKeyword of [...employeeCardKeywords, ...appointmentKeywords]) {
-                if (name.includes(otherKeyword)) {
-                    hasOtherDocKeywords = true;
-                    break;
-                }
-            }
-            if (!hasOtherDocKeywords) {
-                return 'payslip';
+        if (normalizedText.includes(keyword.toLowerCase())) {
+            if (keyword === '급여명세' || keyword === '급여' || keyword === '급여명세서') {
+                payslipScore += 5; // 핵심 키워드
+            } else if (keyword === '기본급' || keyword === '실지급액' || keyword === '지급총액') {
+                payslipScore += 4; // 금액 관련
+            } else if (keyword === '소득세' || keyword === '국민연금' || keyword === '건강보험') {
+                payslipScore += 3; // 공제 항목
+            } else {
+                payslipScore += 1; // 일반 키워드
             }
         }
     }
     
-    return null; // 유형을 특정할 수 없음
+    console.log('점수:', { employeeScore, appointmentScore, payslipScore }); // 디버깅용
+    
+    // 최고 점수 유형 반환 (최소 3점 이상이어야 함)
+    const maxScore = Math.max(employeeScore, appointmentScore, payslipScore);
+    
+    if (maxScore < 3) {
+        return null; // 확신도가 낮음
+    }
+    
+    if (employeeScore === maxScore && employeeScore >= 3) {
+        return 'employeeCard';
+    } else if (appointmentScore === maxScore && appointmentScore >= 3) {
+        return 'appointmentDoc';
+    } else if (payslipScore === maxScore && payslipScore >= 3) {
+        return 'payslip';
+    }
+    
+    return null;
 }
 
-// 이미지에서 텍스트 유형 분석 (더 엄격한 검증)
-function analyzeImageContent(file, callback) {
-    const fileName = file.name.toLowerCase();
-    const fileSize = file.size;
-    
-    // 파일명 기반 문서 유형 감지
-    let contentType = detectDocumentType(fileName);
-    
-    // 파일명으로 유형이 감지되지 않으면 null 반환 (크기 기반 추론 제거)
-    // 더 엄격한 검증을 위해 파일명에 명확한 키워드가 있어야만 통과
-    if (!contentType) {
-        // 파일명에 명확한 키워드가 없으면 인식 불가로 처리
-        contentType = null;
+// 이미지 내용 분석 (순수 OCR 기반)
+async function analyzeImageContent(file, callback) {
+    try {
+        // PDF 파일은 OCR 처리하지 않음
+        if (file.type === 'application/pdf') {
+            callback(null); // PDF는 텍스트 추출이 어려우므로 인식 불가로 처리
+            return;
+        }
+        
+        // 이미지 파일만 OCR 처리
+        if (file.type.startsWith('image/')) {
+            try {
+                const extractedText = await extractTextFromImage(file);
+                const detectedType = analyzeExtractedText(extractedText);
+                callback(detectedType);
+            } catch (error) {
+                console.error('OCR 처리 실패:', error);
+                callback(null);
+            }
+        } else {
+            callback(null); // 지원하지 않는 파일 형식
+        }
+        
+    } catch (error) {
+        console.error('이미지 분석 중 오류:', error);
+        callback(null);
     }
-    
-    setTimeout(() => {
-        callback(contentType);
-    }, 1000); // 분석 시뮬레이션을 위한 지연
 }
 
 // 파일과 선택된 인증 방법의 일치성 검증
@@ -416,18 +512,30 @@ function validateFileMatch(file, selectedMethod, callback) {
         
         if (detectedType === selectedMethod) {
             isValid = true;
-            message = '올바른 서류가 업로드되었습니다.';
+            message = '올바른 서류가 인식되었습니다.';
         } else if (detectedType === null) {
             // 파일 유형을 인식할 수 없는 경우
             switch (selectedMethod) {
                 case 'employeeCard':
-                    message = '교직원증 또는 신분증으로 인식되지 않습니다. 파일명에 "교직원증", "신분증", "직원증" 등의 키워드를 포함하여 다시 업로드해주세요.';
+                    if (file.type === 'application/pdf') {
+                        message = 'PDF 파일은 내용 분석이 어렵습니다. 교직원증의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
+                    } else {
+                        message = '교직원증으로 인식되지 않습니다. 교직원증이 선명하게 보이는 사진을 업로드해주세요.';
+                    }
                     break;
                 case 'appointmentDoc':
-                    message = '임용서류로 인식되지 않습니다. 파일명에 "임용", "발령", "임용장", "계약서" 등의 키워드를 포함하여 다시 업로드해주세요.';
+                    if (file.type === 'application/pdf') {
+                        message = 'PDF 파일은 내용 분석이 어렵습니다. 임용서류의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
+                    } else {
+                        message = '임용서류로 인식되지 않습니다. 임용장, 발령장 등이 선명하게 보이는 사진을 업로드해주세요.';
+                    }
                     break;
                 case 'payslip':
-                    message = '급여명세서로 인식되지 않습니다. 파일명에 "급여명세", "급여명세서", "월급명세" 등의 키워드를 포함하여 다시 업로드해주세요.';
+                    if (file.type === 'application/pdf') {
+                        message = 'PDF 파일은 내용 분석이 어렵습니다. 급여명세서의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
+                    } else {
+                        message = '급여명세서로 인식되지 않습니다. 급여명세서가 선명하게 보이는 사진을 업로드해주세요.';
+                    }
                     break;
                 default:
                     message = '선택하신 인증 방법과 일치하는 서류를 업로드해주세요.';
@@ -436,7 +544,7 @@ function validateFileMatch(file, selectedMethod, callback) {
             // 다른 유형의 문서가 감지된 경우
             const detectedName = getDocumentTypeName(detectedType);
             const expectedName = getDocumentTypeName(selectedMethod);
-            message = `${detectedName}이(가) 감지되었습니다. ${expectedName}을(를) 업로드해주세요.`;
+            message = `${detectedName}이(가) 인식되었습니다. ${expectedName}을(를) 업로드해주세요.`;
         }
         
         callback(isValid, message);
@@ -461,7 +569,7 @@ function showFileAnalysisLoading() {
     loadingDiv.innerHTML = `
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <div class="loading-text">파일을 분석하고 있습니다...</div>
+            <div class="loading-text">이미지 내용을 분석하고 있습니다...</div>
         </div>
     `;
     
@@ -567,7 +675,7 @@ function handleFileUpload(file) {
     // 선택된 인증 방법 확인
     const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
     if (selectedMethod) {
-        // 파일과 인증 방법 일치성 검증
+        // 파일과 인증 방법 일치성 검증 (순수 이미지 인식)
         validateFileMatch(file, selectedMethod.value, (isValid, message) => {
             showFileValidationResult(isValid, message);
         });
@@ -651,7 +759,7 @@ function validateVerification(selectedRole) {
     // 파일 검증 결과 확인
     const validationResult = document.querySelector('.file-validation-result');
     if (!validationResult || validationResult.classList.contains('invalid')) {
-        alert('올바른 인증 서류를 업로드해주세요.');
+        alert('올바른 인증 서류를 업로드해주세요. 이미지가 선명하고 해당 서류의 내용이 잘 보이는지 확인해주세요.');
         return false;
     }
     
@@ -844,6 +952,7 @@ function register() {
         if (fileInput.files && fileInput.files.length > 0) {
             localStorage.setItem(`user_${userId}_verification_file`, fileInput.files[0].name);
             localStorage.setItem(`user_${userId}_verification_file_size`, fileInput.files[0].size);
+            localStorage.setItem(`user_${userId}_verification_file_type`, fileInput.files[0].type);
         }
     }
     
@@ -862,11 +971,12 @@ function register() {
             requestDate: new Date().toISOString(),
             status: 'pending',
             verificationMethod: selectedMethod ? selectedMethod.value : null,
-            verificationFileName: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : null
+            verificationFileName: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : null,
+            verificationFileType: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].type : null
         });
         localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
         
-        alert('회원가입이 완료되었습니다!\n교수/교직원 권한은 관리자 승인 후 활성화됩니다.\n승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
+        alert('회원가입이 완료되었습니다!\n\n업로드하신 서류는 이미지 인식 기술로 검증되었습니다.\n교수/교직원 권한은 관리자 최종 승인 후 활성화됩니다.\n승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
     } else {
         alert('회원가입이 완료되었습니다!');
     }
