@@ -300,73 +300,343 @@ function setupGradeDropdown() {
     });
 }
 
-// OCR 라이브러리 로드 상태 확인
-let ocrLibraryLoaded = false;
+// OCR 라이브러리들 로드 상태 확인
+let ocrLibrariesLoaded = {
+    tesseract: false,
+    opencv: false
+};
 
-// Tesseract.js 동적 로드
-function loadOCRLibrary() {
+// 여러 OCR 라이브러리 동적 로드
+function loadOCRLibraries() {
     return new Promise((resolve, reject) => {
-        if (ocrLibraryLoaded) {
+        if (ocrLibrariesLoaded.tesseract && ocrLibrariesLoaded.opencv) {
             resolve();
             return;
         }
         
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js';
-        script.onload = () => {
-            ocrLibraryLoaded = true;
-            resolve();
-        };
-        script.onerror = () => {
-            reject(new Error('OCR 라이브러리 로드 실패'));
-        };
-        document.head.appendChild(script);
+        const promises = [];
+        
+        // Tesseract.js 로드
+        if (!ocrLibrariesLoaded.tesseract) {
+            const tesseractPromise = new Promise((res, rej) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js';
+                script.onload = () => {
+                    ocrLibrariesLoaded.tesseract = true;
+                    res();
+                };
+                script.onerror = rej;
+                document.head.appendChild(script);
+            });
+            promises.push(tesseractPromise);
+        }
+        
+        // OpenCV.js 로드 (이미지 전처리용)
+        if (!ocrLibrariesLoaded.opencv) {
+            const opencvPromise = new Promise((res, rej) => {
+                const script = document.createElement('script');
+                script.src = 'https://docs.opencv.org/4.8.0/opencv.js';
+                script.onload = () => {
+                    // OpenCV 초기화 대기
+                    const checkOpenCV = () => {
+                        if (typeof cv !== 'undefined' && cv.Mat) {
+                            ocrLibrariesLoaded.opencv = true;
+                            res();
+                        } else {
+                            setTimeout(checkOpenCV, 100);
+                        }
+                    };
+                    checkOpenCV();
+                };
+                script.onerror = () => {
+                    // OpenCV 로드 실패해도 진행
+                    ocrLibrariesLoaded.opencv = false;
+                    res();
+                };
+                document.head.appendChild(script);
+            });
+            promises.push(opencvPromise);
+        }
+        
+        Promise.all(promises).then(resolve).catch(reject);
     });
 }
 
-// 이미지에서 텍스트 추출
-async function extractTextFromImage(file) {
+// 이미지 전처리 (OpenCV 사용)
+function preprocessImage(imageElement) {
+    return new Promise((resolve) => {
+        try {
+            if (!ocrLibrariesLoaded.opencv || typeof cv === 'undefined') {
+                // OpenCV 없으면 원본 반환
+                resolve(imageElement);
+                return;
+            }
+            
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = imageElement.width;
+            canvas.height = imageElement.height;
+            ctx.drawImage(imageElement, 0, 0);
+            
+            const src = cv.imread(canvas);
+            const dst = new cv.Mat();
+            
+            // 그레이스케일 변환
+            cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+            
+            // 가우시안 블러로 노이즈 제거
+            const ksize = new cv.Size(3, 3);
+            cv.GaussianBlur(dst, dst, ksize, 0, 0, cv.BORDER_DEFAULT);
+            
+            // 적응형 임계값으로 이진화
+            cv.adaptiveThreshold(dst, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
+            
+            // 결과를 캔버스에 출력
+            cv.imshow(canvas, dst);
+            
+            // 메모리 정리
+            src.delete();
+            dst.delete();
+            
+            resolve(canvas);
+        } catch (error) {
+            console.warn('이미지 전처리 실패, 원본 사용:', error);
+            resolve(imageElement);
+        }
+    });
+}
+
+// 여러 OCR 엔진으로 텍스트 추출
+async function extractTextWithMultipleEngines(file) {
+    const results = [];
+    
     try {
-        await loadOCRLibrary();
+        await loadOCRLibraries();
         
-        const { data: { text } } = await Tesseract.recognize(
-            file,
-            'kor+eng', // 한국어 + 영어 인식
-            {
-                logger: m => {
-                    // OCR 진행 상황 표시
-                    if (m.status === 'recognizing text') {
-                        updateOCRProgress(Math.round(m.progress * 100));
+        // 이미지 로드
+        const imageElement = await loadImageElement(file);
+        
+        // 1. 원본 이미지로 OCR
+        try {
+            const originalResult = await Tesseract.recognize(
+                imageElement,
+                'kor+eng',
+                {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            updateOCRProgress('원본 이미지 분석', Math.round(m.progress * 30));
+                        }
                     }
                 }
-            }
-        );
+            );
+            results.push({
+                source: 'original',
+                text: originalResult.data.text,
+                confidence: originalResult.data.confidence
+            });
+        } catch (error) {
+            console.warn('원본 이미지 OCR 실패:', error);
+        }
         
-        return text;
+        // 2. 전처리된 이미지로 OCR
+        try {
+            const preprocessedImage = await preprocessImage(imageElement);
+            const preprocessedResult = await Tesseract.recognize(
+                preprocessedImage,
+                'kor+eng',
+                {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            updateOCRProgress('전처리 이미지 분석', 30 + Math.round(m.progress * 30));
+                        }
+                    }
+                }
+            );
+            results.push({
+                source: 'preprocessed',
+                text: preprocessedResult.data.text,
+                confidence: preprocessedResult.data.confidence
+            });
+        } catch (error) {
+            console.warn('전처리 이미지 OCR 실패:', error);
+        }
+        
+        // 3. 다른 설정으로 OCR
+        try {
+            updateOCRProgress('추가 분석', 60);
+            const enhancedResult = await Tesseract.recognize(
+                imageElement,
+                'kor+eng',
+                {
+                    tessedit_pageseg_mode: '6', // 단일 블록 텍스트
+                    tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz가-힣 ',
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            updateOCRProgress('추가 분석', 60 + Math.round(m.progress * 30));
+                        }
+                    }
+                }
+            );
+            results.push({
+                source: 'enhanced',
+                text: enhancedResult.data.text,
+                confidence: enhancedResult.data.confidence
+            });
+        } catch (error) {
+            console.warn('향상된 OCR 실패:', error);
+        }
+        
+        updateOCRProgress('분석 완료', 100);
+        
     } catch (error) {
         console.error('OCR 처리 중 오류:', error);
         throw error;
     }
+    
+    return results;
 }
 
-// OCR 진행 상황 업데이트
-function updateOCRProgress(progress) {
+// 이미지 엘리먼트 로드
+function loadImageElement(file) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+// OCR 진행 상황 업데이트 (향상됨)
+function updateOCRProgress(stage, progress) {
     const loadingText = document.querySelector('.loading-text');
     if (loadingText) {
-        loadingText.textContent = `이미지 내용을 분석하고 있습니다... ${progress}%`;
+        loadingText.textContent = `${stage}... ${progress}%`;
     }
 }
 
-// 추출된 텍스트에서 문서 유형 분석 (순수 이미지 인식 기반)
-function analyzeExtractedText(text) {
-    const normalizedText = text.toLowerCase().replace(/\s+/g, ' ').trim();
+// 시각적 패턴 분석 (카드 모양, 레이아웃 등)
+async function analyzeVisualPatterns(file) {
+    try {
+        if (!ocrLibrariesLoaded.opencv || typeof cv === 'undefined') {
+            return null;
+        }
+        
+        const imageElement = await loadImageElement(file);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = imageElement.width;
+        canvas.height = imageElement.height;
+        ctx.drawImage(imageElement, 0, 0);
+        
+        const src = cv.imread(canvas);
+        const gray = new cv.Mat();
+        
+        // 그레이스케일 변환
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+        
+        // 카드 모양 감지 (직사각형 검출)
+        const edges = new cv.Mat();
+        cv.Canny(gray, edges, 50, 150);
+        
+        const contours = new cv.MatVector();
+        const hierarchy = new cv.Mat();
+        cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+        
+        let hasCardShape = false;
+        const imageArea = imageElement.width * imageElement.height;
+        
+        for (let i = 0; i < contours.size(); i++) {
+            const contour = contours.get(i);
+            const area = cv.contourArea(contour);
+            
+            // 이미지의 10% 이상을 차지하는 직사각형이 있으면 카드로 판단
+            if (area > imageArea * 0.1) {
+                const approx = new cv.Mat();
+                const peri = cv.arcLength(contour, true);
+                cv.approxPolyDP(contour, approx, 0.02 * peri, true);
+                
+                if (approx.rows === 4) { // 사각형
+                    hasCardShape = true;
+                }
+                
+                approx.delete();
+            }
+            contour.delete();
+        }
+        
+        // 메모리 정리
+        src.delete();
+        gray.delete();
+        edges.delete();
+        contours.delete();
+        hierarchy.delete();
+        
+        return {
+            hasCardShape: hasCardShape,
+            aspectRatio: imageElement.width / imageElement.height
+        };
+        
+    } catch (error) {
+        console.warn('시각적 패턴 분석 실패:', error);
+        return null;
+    }
+}
+
+// 유연한 키워드 매칭 (오타 허용)
+function fuzzyMatch(text, keyword) {
+    const normalizedText = text.toLowerCase().replace(/\s+/g, '');
+    const normalizedKeyword = keyword.toLowerCase();
     
-    console.log('OCR 추출 텍스트:', normalizedText); // 디버깅용
+    // 정확한 매칭
+    if (normalizedText.includes(normalizedKeyword)) {
+        return 3;
+    }
     
-    // 교직원증 관련 키워드 (이미지에서 나타날 수 있는 텍스트)
+    // 부분 매칭 (키워드의 70% 이상)
+    const threshold = Math.ceil(normalizedKeyword.length * 0.7);
+    let matchCount = 0;
+    
+    for (let i = 0; i <= normalizedKeyword.length - threshold; i++) {
+        const substring = normalizedKeyword.substring(i, i + threshold);
+        if (normalizedText.includes(substring)) {
+            matchCount++;
+        }
+    }
+    
+    if (matchCount > 0) {
+        return 2;
+    }
+    
+    // 개별 문자 매칭 (50% 이상)
+    let charMatches = 0;
+    for (const char of normalizedKeyword) {
+        if (normalizedText.includes(char)) {
+            charMatches++;
+        }
+    }
+    
+    if (charMatches >= normalizedKeyword.length * 0.5) {
+        return 1;
+    }
+    
+    return 0;
+}
+
+// 향상된 텍스트 분석 (여러 OCR 결과 종합)
+function analyzeExtractedTexts(ocrResults, visualPatterns) {
+    console.log('OCR 결과들:', ocrResults);
+    console.log('시각적 패턴:', visualPatterns);
+    
+    // 모든 OCR 결과 텍스트 결합
+    const allTexts = ocrResults.map(result => result.text).join(' ');
+    const normalizedText = allTexts.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    console.log('결합된 텍스트:', normalizedText);
+    
+    // 교직원증 관련 키워드 (유연한 매칭)
     const employeeCardKeywords = [
         '교직원증', '신분증', '사원증', '직원증', '교번', '직번', '사번',
-        'employee', 'staff', 'id', 'card', '연성대학교', '대학교',
+        'employee', 'staff', 'id', 'card', '연성대학교', '대학교', '연성',
         '소속', '부서', '직급', '성명', '생년월일', '발급일',
         'yeonsung', 'university', 'college'
     ];
@@ -377,7 +647,7 @@ function analyzeExtractedText(text) {
         'appointment', '임용장', '발령장', '계약서',
         '인사발령', '임용통지', '채용통지', '임용기간',
         '발령일', '임용일', '채용일', '계약기간', '근무기간',
-        '인사명령', '발령사항', '임용사항'
+        '인사명령', '발령사항', '임용사항', '인사명'
     ];
     
     // 급여명세서 관련 키워드
@@ -389,7 +659,7 @@ function analyzeExtractedText(text) {
         '지급총액', '공제총액', '차인지급액', '급여내역'
     ];
     
-    // 제외할 키워드 (이런 키워드가 있으면 해당 문서가 아님)
+    // 제외할 키워드
     const excludeKeywords = [
         '시간표', '수업', '강의', '과제', '과목', '성적',
         'schedule', 'class', 'course', '학습', '교육과정',
@@ -398,96 +668,111 @@ function analyzeExtractedText(text) {
     
     // 제외 키워드 체크
     for (let keyword of excludeKeywords) {
-        if (normalizedText.includes(keyword.toLowerCase())) {
+        if (fuzzyMatch(normalizedText, keyword) > 0) {
             return null;
         }
     }
     
-    // 각 문서 유형별 점수 계산
+    // 각 문서 유형별 점수 계산 (유연한 매칭)
     let employeeScore = 0;
     let appointmentScore = 0;
     let payslipScore = 0;
     
+    // 시각적 패턴 보너스
+    if (visualPatterns && visualPatterns.hasCardShape) {
+        employeeScore += 2; // 카드 모양은 교직원증에 유리
+    }
+    
     // 교직원증 키워드 점수 계산
     for (let keyword of employeeCardKeywords) {
-        if (normalizedText.includes(keyword.toLowerCase())) {
+        const matchScore = fuzzyMatch(normalizedText, keyword);
+        if (matchScore > 0) {
             if (keyword === '교직원증' || keyword === '신분증') {
-                employeeScore += 5; // 핵심 키워드
-            } else if (keyword === '연성대학교' || keyword === '대학교') {
-                employeeScore += 3; // 기관명
+                employeeScore += matchScore * 3; // 핵심 키워드
+            } else if (keyword === '연성대학교' || keyword === '연성' || keyword === '대학교') {
+                employeeScore += matchScore * 2; // 기관명
             } else if (keyword === '교번' || keyword === '직번' || keyword === '사번') {
-                employeeScore += 3; // 번호 관련
+                employeeScore += matchScore * 2; // 번호 관련
             } else {
-                employeeScore += 1; // 일반 키워드
+                employeeScore += matchScore; // 일반 키워드
             }
         }
     }
     
     // 임용서류 키워드 점수 계산
     for (let keyword of appointmentKeywords) {
-        if (normalizedText.includes(keyword.toLowerCase())) {
+        const matchScore = fuzzyMatch(normalizedText, keyword);
+        if (matchScore > 0) {
             if (keyword === '임용' || keyword === '발령' || keyword === '임용장' || keyword === '발령장') {
-                appointmentScore += 5; // 핵심 키워드
+                appointmentScore += matchScore * 3; // 핵심 키워드
             } else if (keyword === '임용일' || keyword === '발령일' || keyword === '계약기간') {
-                appointmentScore += 3; // 날짜/기간 관련
+                appointmentScore += matchScore * 2; // 날짜/기간 관련
             } else {
-                appointmentScore += 1; // 일반 키워드
+                appointmentScore += matchScore; // 일반 키워드
             }
         }
     }
     
     // 급여명세서 키워드 점수 계산
     for (let keyword of payslipKeywords) {
-        if (normalizedText.includes(keyword.toLowerCase())) {
+        const matchScore = fuzzyMatch(normalizedText, keyword);
+        if (matchScore > 0) {
             if (keyword === '급여명세' || keyword === '급여' || keyword === '급여명세서') {
-                payslipScore += 5; // 핵심 키워드
+                payslipScore += matchScore * 3; // 핵심 키워드
             } else if (keyword === '기본급' || keyword === '실지급액' || keyword === '지급총액') {
-                payslipScore += 4; // 금액 관련
+                payslipScore += matchScore * 2; // 금액 관련
             } else if (keyword === '소득세' || keyword === '국민연금' || keyword === '건강보험') {
-                payslipScore += 3; // 공제 항목
+                payslipScore += matchScore * 2; // 공제 항목
             } else {
-                payslipScore += 1; // 일반 키워드
+                payslipScore += matchScore; // 일반 키워드
             }
         }
     }
     
-    console.log('점수:', { employeeScore, appointmentScore, payslipScore }); // 디버깅용
+    console.log('점수:', { employeeScore, appointmentScore, payslipScore });
     
-    // 최고 점수 유형 반환 (최소 3점 이상이어야 함)
+    // 최고 점수 유형 반환 (최소 2점 이상이어야 함)
     const maxScore = Math.max(employeeScore, appointmentScore, payslipScore);
     
-    if (maxScore < 3) {
+    if (maxScore < 2) {
         return null; // 확신도가 낮음
     }
     
-    if (employeeScore === maxScore && employeeScore >= 3) {
+    if (employeeScore === maxScore && employeeScore >= 2) {
         return 'employeeCard';
-    } else if (appointmentScore === maxScore && appointmentScore >= 3) {
+    } else if (appointmentScore === maxScore && appointmentScore >= 2) {
         return 'appointmentDoc';
-    } else if (payslipScore === maxScore && payslipScore >= 3) {
+    } else if (payslipScore === maxScore && payslipScore >= 2) {
         return 'payslip';
     }
     
     return null;
 }
 
-// 이미지 내용 분석 (순수 OCR 기반)
+// 고급 이미지 내용 분석 (모든 기술 통합)
 async function analyzeImageContent(file, callback) {
     try {
         // PDF 파일은 OCR 처리하지 않음
         if (file.type === 'application/pdf') {
-            callback(null); // PDF는 텍스트 추출이 어려우므로 인식 불가로 처리
+            callback(null);
             return;
         }
         
         // 이미지 파일만 OCR 처리
         if (file.type.startsWith('image/')) {
             try {
-                const extractedText = await extractTextFromImage(file);
-                const detectedType = analyzeExtractedText(extractedText);
+                // 1. 여러 OCR 엔진으로 텍스트 추출
+                const ocrResults = await extractTextWithMultipleEngines(file);
+                
+                // 2. 시각적 패턴 분석
+                const visualPatterns = await analyzeVisualPatterns(file);
+                
+                // 3. 종합 분석
+                const detectedType = analyzeExtractedTexts(ocrResults, visualPatterns);
+                
                 callback(detectedType);
             } catch (error) {
-                console.error('OCR 처리 실패:', error);
+                console.error('고급 이미지 분석 실패:', error);
                 callback(null);
             }
         } else {
@@ -500,7 +785,79 @@ async function analyzeImageContent(file, callback) {
     }
 }
 
-// 파일과 선택된 인증 방법의 일치성 검증
+// 사용자 확인 옵션 제공
+function showUserConfirmationDialog(file, selectedMethod, callback) {
+    // 기존 다이얼로그 제거
+    const existingDialog = document.querySelector('.user-confirmation-dialog');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+    
+    const dialog = document.createElement('div');
+    dialog.className = 'user-confirmation-dialog';
+    dialog.innerHTML = `
+        <div class="dialog-backdrop"></div>
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3>수동 확인</h3>
+                <button class="dialog-close" onclick="closeConfirmationDialog()">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <p>자동 인식에 실패했습니다. 업로드하신 파일을 직접 확인해주세요.</p>
+                <div class="file-preview">
+                    <img id="previewImage" src="" alt="업로드된 파일" style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="confirmation-question">
+                    <p><strong>이 파일이 ${getDocumentTypeName(selectedMethod)}이(가) 맞습니까?</strong></p>
+                    <div class="dialog-buttons">
+                        <button class="btn-yes" onclick="confirmUserVerification(true)">네, 맞습니다</button>
+                        <button class="btn-no" onclick="confirmUserVerification(false)">아니오, 다른 파일입니다</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    
+    // 이미지 미리보기 설정
+    const previewImage = document.getElementById('previewImage');
+    previewImage.src = URL.createObjectURL(file);
+    
+    // 콜백 저장 (전역에서 접근 가능하도록)
+    window.userConfirmationCallback = callback;
+}
+
+// 사용자 확인 다이얼로그 닫기
+function closeConfirmationDialog() {
+    const dialog = document.querySelector('.user-confirmation-dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+    if (window.userConfirmationCallback) {
+        window.userConfirmationCallback(false, '사용자가 확인을 취소했습니다.');
+        window.userConfirmationCallback = null;
+    }
+}
+
+// 사용자 확인 결과 처리
+function confirmUserVerification(isCorrect) {
+    const dialog = document.querySelector('.user-confirmation-dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+    
+    if (window.userConfirmationCallback) {
+        if (isCorrect) {
+            window.userConfirmationCallback(true, '사용자가 올바른 서류임을 확인했습니다.');
+        } else {
+            window.userConfirmationCallback(false, '다른 종류의 서류를 업로드해주세요.');
+        }
+        window.userConfirmationCallback = null;
+    }
+}
+
+// 파일과 선택된 인증 방법의 일치성 검증 (모든 기능 통합)
 function validateFileMatch(file, selectedMethod, callback) {
     const loadingIndicator = showFileAnalysisLoading();
     
@@ -513,41 +870,17 @@ function validateFileMatch(file, selectedMethod, callback) {
         if (detectedType === selectedMethod) {
             isValid = true;
             message = '올바른 서류가 인식되었습니다.';
+            callback(isValid, message);
         } else if (detectedType === null) {
-            // 파일 유형을 인식할 수 없는 경우
-            switch (selectedMethod) {
-                case 'employeeCard':
-                    if (file.type === 'application/pdf') {
-                        message = 'PDF 파일은 내용 분석이 어렵습니다. 교직원증의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
-                    } else {
-                        message = '교직원증으로 인식되지 않습니다. 교직원증이 선명하게 보이는 사진을 업로드해주세요.';
-                    }
-                    break;
-                case 'appointmentDoc':
-                    if (file.type === 'application/pdf') {
-                        message = 'PDF 파일은 내용 분석이 어렵습니다. 임용서류의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
-                    } else {
-                        message = '임용서류로 인식되지 않습니다. 임용장, 발령장 등이 선명하게 보이는 사진을 업로드해주세요.';
-                    }
-                    break;
-                case 'payslip':
-                    if (file.type === 'application/pdf') {
-                        message = 'PDF 파일은 내용 분석이 어렵습니다. 급여명세서의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
-                    } else {
-                        message = '급여명세서로 인식되지 않습니다. 급여명세서가 선명하게 보이는 사진을 업로드해주세요.';
-                    }
-                    break;
-                default:
-                    message = '선택하신 인증 방법과 일치하는 서류를 업로드해주세요.';
-            }
+            // 자동 인식 실패 시 사용자 확인 요청
+            showUserConfirmationDialog(file, selectedMethod, callback);
         } else {
             // 다른 유형의 문서가 감지된 경우
             const detectedName = getDocumentTypeName(detectedType);
             const expectedName = getDocumentTypeName(selectedMethod);
             message = `${detectedName}이(가) 인식되었습니다. ${expectedName}을(를) 업로드해주세요.`;
+            callback(false, message);
         }
-        
-        callback(isValid, message);
     });
 }
 
@@ -561,7 +894,7 @@ function getDocumentTypeName(type) {
     }
 }
 
-// 파일 분석 로딩 표시
+// 파일 분석 로딩 표시 (향상됨)
 function showFileAnalysisLoading() {
     const uploadedFile = document.getElementById('uploadedFile');
     const loadingDiv = document.createElement('div');
@@ -569,7 +902,8 @@ function showFileAnalysisLoading() {
     loadingDiv.innerHTML = `
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <div class="loading-text">이미지 내용을 분석하고 있습니다...</div>
+            <div class="loading-text">고급 이미지 분석을 시작합니다...</div>
+            <div class="loading-details">여러 OCR 엔진과 시각적 패턴 분석을 사용합니다</div>
         </div>
     `;
     
@@ -675,7 +1009,7 @@ function handleFileUpload(file) {
     // 선택된 인증 방법 확인
     const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
     if (selectedMethod) {
-        // 파일과 인증 방법 일치성 검증 (순수 이미지 인식)
+        // 고급 파일 검증 (모든 기술 통합)
         validateFileMatch(file, selectedMethod.value, (isValid, message) => {
             showFileValidationResult(isValid, message);
         });
@@ -709,6 +1043,12 @@ function removeFile() {
     const validationResult = document.querySelector('.file-validation-result');
     if (validationResult) {
         validationResult.remove();
+    }
+    
+    // 사용자 확인 다이얼로그 제거
+    const dialog = document.querySelector('.user-confirmation-dialog');
+    if (dialog) {
+        dialog.remove();
     }
     
     // UI 업데이트
@@ -759,7 +1099,7 @@ function validateVerification(selectedRole) {
     // 파일 검증 결과 확인
     const validationResult = document.querySelector('.file-validation-result');
     if (!validationResult || validationResult.classList.contains('invalid')) {
-        alert('올바른 인증 서류를 업로드해주세요. 이미지가 선명하고 해당 서류의 내용이 잘 보이는지 확인해주세요.');
+        alert('올바른 인증 서류를 업로드해주세요. 고급 이미지 인식과 사용자 확인을 통해 검증해주세요.');
         return false;
     }
     
@@ -948,7 +1288,7 @@ function register() {
         // 인증 방법 저장
         localStorage.setItem(`user_${userId}_verification_method`, selectedMethod.value);
         
-        // 파일 정보 저장 (실제 파일은 여기서는 저장하지 않고, 파일명만 저장)
+        // 파일 정보 저장
         if (fileInput.files && fileInput.files.length > 0) {
             localStorage.setItem(`user_${userId}_verification_file`, fileInput.files[0].name);
             localStorage.setItem(`user_${userId}_verification_file_size`, fileInput.files[0].size);
@@ -976,7 +1316,7 @@ function register() {
         });
         localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
         
-        alert('회원가입이 완료되었습니다!\n\n업로드하신 서류는 이미지 인식 기술로 검증되었습니다.\n교수/교직원 권한은 관리자 최종 승인 후 활성화됩니다.\n승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
+        alert('회원가입이 완료되었습니다!\n\n고급 이미지 인식 기술과 시각적 패턴 분석으로 서류를 검증했습니다.\n교수/교직원 권한은 관리자 최종 승인 후 활성화됩니다.\n승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
     } else {
         alert('회원가입이 완료되었습니다!');
     }

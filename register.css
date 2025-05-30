@@ -1,3 +1,16 @@
+/* 사용자 확인 다이얼로그 스타일 */
+.user-confirmation-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 * {
     margin: 0;
     padding: 0;
