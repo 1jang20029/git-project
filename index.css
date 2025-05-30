@@ -1,105 +1,2124 @@
-/*-------------------------------------------------------
-  완전 새 디자인: 데스크톱 웹 가이드
---------------------------------------------------------*/
-/* 1. 리셋 */
-*,
-*::before,
-*::after {
-  margin: 0; padding: 0; box-sizing: border-box;
-}
-html, body {
-  width: 100%; height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333; background: #f5f7fa;
-}
-a { text-decoration: none; color: inherit; }
-ul { list-style: none; }
-button { background: none; border: none; cursor: pointer; }
-
-/* 2. 컬러 변수 */
-:root {
-  --primary: #c62917;
-  --secondary: #4caf50;
-  --bg: #f5f7fa;
-  --bg-card: #fff;
-  --text-light: #666;
-  --radius: 8px;
-  --gap: 16px;
-  --header-h: 60px;
-  --sidebar-w: 260px;
+/* 기본 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
-/* 3. 레이아웃 */
-.container {
-  display: grid;
-  grid-template-areas:
-    "header header"
-    "sidebar main";
-  grid-template-columns: var(--sidebar-w) 1fr;
-  grid-template-rows: var(--header-h) 1fr;
-  height: 100vh;
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    min-height: 100vh;
 }
-header { grid-area: header; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--gap); background: var(--bg-card); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-.sidebar { grid-area: sidebar; background: var(--bg-card); border-right: 1px solid #e0e0e0; padding: var(--gap); overflow-y: auto; }
-.main-content { grid-area: main; padding: var(--gap); overflow-y: auto; }
 
-/* 4. 헤더 */
-.logo { font-size: 1.4rem; font-weight: bold; color: var(--primary); cursor: pointer; }
-.main-nav { display: flex; gap: var(--gap); }
-.nav-item { padding: 0 8px; line-height: var(--header-h); font-size: 1rem; transition: color 0.2s; }
-.nav-item.active, .nav-item:hover { color: var(--primary); }
-.header-actions .login-button { padding: 6px 12px; background: var(--primary); color: #fff; border-radius: var(--radius); }
+/* 버전 전환 버튼 */
+.version-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
 
-/* 5. 사이드바 */
-.search-bar { margin-bottom: var(--gap); }
-.search-input { width: 100%; padding: 8px var(--gap); border: 1px solid #ccc; border-radius: var(--radius); }
-.shortcut-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); gap: var(--gap); }
-.shortcut-item { background: var(--bg-card); border-radius: var(--radius); text-align: center; padding: var(--gap); transition: transform 0.1s, box-shadow 0.1s; }
-.shortcut-item:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.shortcut-icon { font-size: 1.6rem; margin-bottom: 8px; }
-.shortcut-text { font-size: 0.95rem; }
+.version-toggle:hover {
+    background-color: #a52312;
+    transform: translateY(-2px);
+}
 
-/* 6. 공통 카드 */
-.card { background: var(--bg-card); border-radius: var(--radius); box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: var(--gap); margin-bottom: var(--gap*1.5); }
+/* 웹 브라우저 스타일 */
+.browser-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    display: block;
+}
 
-/* 7. 시간표 미리보기 */
-.timetable-header { display: flex; justify-content: space-between; margin-bottom: var(--gap); }
-.timetable-date { font-weight: bold; }
-.timetable-now { background: var(--secondary); color: #fff; padding: 4px 8px; border-radius: var(--radius); font-size: 0.9rem; }
-#timetable-preview-content .class-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
-.class-time { width: 70px; font-weight: bold; }
-.class-info .class-name { margin-bottom: 4px; }
-.class-info .class-location { color: var(--text-light); font-size: 0.9rem; }
+/* 모바일 컨테이너 기본 숨김 */
+.mobile-container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+    padding-bottom: 60px;
+    position: relative;
+    display: none;
+}
 
-/* 8. 셔틀버스 */
-.shuttle-route-tabs { display: flex; gap: 8px; margin-bottom: var(--gap); }
-.route-tab { flex: 1; padding: 6px; text-align: center; background: #f0f0f0; border-radius: var(--radius); font-size: 0.9rem; transition: background 0.2s; }
-.route-tab.active, .route-tab:hover { background: var(--primary); color: #fff; }
-.shuttle-next-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gap); }
-.shuttle-time { font-size: 1.2rem; font-weight: bold; }
-.shuttle-desc { color: var(--text-light); }
-.status-badge { padding: 4px 8px; border-radius: var(--radius); font-size: 0.85rem; }
-.running { background: var(--secondary); color: #fff; }
-.stopped { background: #ccc; color: #fff; }
-.shuttle-schedule .time-slot { padding: 6px 0; border-bottom: 1px solid #eee; }
-.shuttle-upcoming { display: flex; gap: var(--gap); margin-top: var(--gap); }
-.shuttle-time-item { flex: 1; text-align: center; background: #fafafa; border-radius: var(--radius); padding: var(--gap); }
+/* 브라우저 헤더 */
+.browser-header {
+    background-color: #c62917;
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
 
-/* 9. 기타 카드 스타일 (활동, 학사일정, 맛집, 공지) */
-/* … 위 예시 CSS와 동일하게 card 클래스 활용 … */
+.browser-logo {
+    font-size: 28px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
 
-/* 10. 반응형 */
-@media (max-width: 768px) {
-  .container {
-    grid-template-areas:
-      "header"
-      "main";
-    grid-template-columns: 1fr;
-    grid-template-rows: var(--header-h) 1fr;
-  }
-  .sidebar { display: none; }
-  header { justify-content: space-between; }
-  .main-nav { display: none; }
-  .header-actions .login-button { font-size: 0.9rem; }
-  .shortcut-menu { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); }
+.browser-nav {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-item {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-item:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.nav-item.active {
+    background-color: rgba(255,255,255,0.2);
+}
+
+.browser-auth {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* 브라우저 메인 콘텐츠 */
+.browser-main {
+    padding: 40px;
+    min-height: calc(100vh - 80px);
+}
+
+.browser-tab-content {
+    display: none;
+}
+
+.browser-tab-content.active {
+    display: block;
+}
+
+/* 브라우저 콘텐츠 그리드 레이아웃 */
+.browser-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 웹 버전 카드 스타일 */
+.browser-container .notification-banner,
+.browser-container .search-bar,
+.browser-container .shortcut-menu,
+.browser-container .timetable-preview,
+.browser-container .activity-summary-card,
+.browser-container .shuttle-card,
+.browser-container .calendar-card,
+.browser-container .student-deals-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+}
+
+/* 모바일 앱 컨테이너 헤더 */
+.mobile-container header {
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mobile-container .logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.mobile-container .header-icons {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.login-button {
+    padding: 6px 12px;
+    background-color: white;
+    color: #c62917;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.profile-dropdown-container {
+    position: relative;
+}
+
+.header-profile-image {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 220px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    overflow: hidden;
+    display: none;
+}
+
+.profile-dropdown.active {
+    display: block;
+}
+
+.dropdown-profile-info {
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-profile-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.dropdown-profile-detail {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: #eee;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    color: #666;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.search-bar {
+    padding: 12px 16px;
+    background-color: #f9f9f9;
+    display: flex;
+    border-bottom: 1px solid #eee;
+}
+
+.search-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* 검색 결과 스타일 */
+.search-results {
+    background-color: white;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 0 16px;
+    overflow: hidden;
+    position: relative;
+    z-index: 100;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.no-results {
+    padding: 16px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+.notification-banner {
+    background-color: #ffebee;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ffcdd2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.urgent-icon {
+    color: #c62917;
+    font-weight: bold;
+}
+
+.notification-text {
+    font-size: 14px;
+    flex: 1;
+}
+
+.shortcut-menu {
+    display: flex;
+    padding: 16px;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+}
+
+.shortcut-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60px;
+    cursor: pointer;
+}
+
+.shortcut-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+.shortcut-text {
+    font-size: 12px;
+    text-align: center;
+    color: #555;
+}
+
+.content-section {
+    padding: 16px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.see-all {
+    font-size: 13px;
+    color: #888;
+    text-decoration: none;
+}
+
+.notice-list {
+    list-style: none;
+}
+
+.notice-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.notice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.notice-category {
+    background-color: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #555;
+}
+
+.notice-date {
+    font-size: 12px;
+    color: #888;
+}
+
+.notice-title {
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+.notice-summary {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.facility-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.facility-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.facility-image {
+    height: 100px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.facility-info {
+    padding: 10px;
+}
+
+.facility-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.facility-location {
+    font-size: 12px;
+    color: #666;
+}
+
+.lecture-list {
+    list-style: none;
+}
+
+.lecture-item {
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.lecture-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.lecture-title {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.lecture-rating {
+    color: #ff9800;
+    font-weight: bold;
+}
+
+.lecture-info {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.lecture-professor {
+    color: #333;
+}
+
+.lecture-reviews {
+    font-size: 12px;
+    color: #666;
+}
+
+/* 하단 탭 메뉴 수정 - 항상 표시되도록 */
+.tab-menu {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    border-top: 1px solid #ddd;
+    z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 추가 */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* 약간의 그림자 추가 */
+}
+
+.tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 12px;
+    color: #888;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.tab-item.active {
+    color: #c62917;
+}
+
+.tab-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+/* 지도 컨테이너 스타일 수정 */
+.campus-map {
+    height: 350px; /* 높이 고정 */
+    width: 100%;   /* 너비 100% */
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    /* 추가: 컨테이너가 축소되지 않도록 패딩 및 마진 제거 */
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 추가: 지도를 가리는 요소들 제거 */
+.campus-map > div:not(#naverMap):not(.map-control-buttons):not(.gps-button):not(.route-loading):not(.route-info-box) {
+    display: none;
+}
+
+.campus-map img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* 지도 마커 정보창 스타일 */
+.map-info-window {
+    padding: 8px 12px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    font-size: 13px;
+    max-width: 200px;
+}
+
+.map-info-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.map-info-desc {
+    color: #666;
+    font-size: 12px;
+}
+
+/* 지도 버튼 스타일 */
+.map-control-buttons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.map-button {
+    padding: 8px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.content-pad {
+    padding-bottom: 60px; /* 하단 탭 메뉴 높이만큼 여백 */
+}
+
+/* 탭 콘텐츠 */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 건물 및 교실 목록 */
+.building-list {
+    list-style: none;
+}
+
+/* 건물 목록 항목 재디자인 */
+.building-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.building-image {
+    width: 80px;
+    height: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-right: 12px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.building-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.building-info-container {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.building-info {
+    flex: 1;
+}
+
+.building-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.building-description {
+    font-size: 13px;
+    color: #666;
+}
+
+.building-nav-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.building-nav-button:hover {
+    background-color: #e0e0e0;
+}
+
+.building-nav-button span:first-child {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.building-nav-button span:last-child {
+    font-size: 18px;
+}
+
+/* 강의 평가 스타일 */
+.rating-stars {
+    color: #ffb400;
+    letter-spacing: 2px;
+}
+
+/* 카테고리 필터 */
+.category-filter {
+    display: flex;
+    overflow-x: auto;
+    padding: 8px 0;
+    margin-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.category-tag {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    margin-right: 8px;
+    font-size: 13px;
+    color: #555;
+    background-color: white;
+    cursor: pointer;
+}
+
+.category-tag.active {
+    background-color: #c62917;
+    color: white;
+    border-color: #c62917;
+}
+
+/* 알림 리스트 */
+.alert-list {
+    list-style: none;
+}
+
+.alert-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    cursor: pointer;
+}
+
+.alert-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 12px;
+    font-size: 20px;
+}
+
+.alert-info {
+    flex: 1;
+}
+
+.alert-title {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.alert-message {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.alert-time {
+    font-size: 12px;
+    color: #888;
+}
+
+.alert-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background-color: #c62917;
+    color: white;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+/* 내 정보 탭 */
+.profile-section {
+    padding: 24px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #f0f0f0;
+    margin-right: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    overflow: hidden;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.profile-detail {
+    font-size: 14px;
+    color: #666;
+}
+
+.menu-list {
+    list-style: none;
+}
+
+.menu-item {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.menu-title {
+    font-size: 15px;
+}
+
+.menu-arrow {
+    color: #ccc;
+}
+
+/* 공지사항 상세 */
+.notice-detail {
+    padding: 20px 16px;
+}
+
+.notice-detail-header {
+    margin-bottom: 16px;
+}
+
+.notice-detail-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.notice-detail-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #888;
+}
+
+.notice-detail-content {
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* 로딩 인디케이터 */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+
+/* 헤더 프로필 이미지 스타일 */
+.header-profile-image {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-left: 8px;
+}
+
+/* 프로필 이미지 스타일 */
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 회원 탈퇴 버튼 스타일 */
+.delete-account {
+    color: #e53935;
+}
+
+/* 페이지네이션 스타일 */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    padding: 16px 0;
+    gap: 10px;
+}
+
+.pagination-button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.pagination-button:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination-button.active {
+    background-color: #c62917;
+    border-color: #c62917;
+    color: white;
+}
+
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 검색 결과 스타일 개선 */
+.search-results {
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 0 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+    position: absolute;
+    width: calc(100% - 32px);
+    z-index: 200;
+}
+
+.search-results .building-item {
+    border-bottom: 1px solid #eee;
+}
+
+.search-results .building-item:last-child {
+    border-bottom: none;
+}
+
+.no-results {
+    padding: 16px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid #eee;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 0 16px;
+    position: absolute;
+    z-index: 100;
+    width: calc(100% - 32px);
+}
+
+.search-highlight {
+    background-color: rgba(198, 41, 23, 0.1);
+    font-weight: bold;
+    color: #c62917;
+}
+
+/* 검색바 컨테이너 스타일 */
+.search-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+}
+
+.search-input {
+    flex: 1;
+    padding: 8px 30px 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #c62917;
+    box-shadow: 0 0 0 2px rgba(198, 41, 23, 0.2);
+}
+
+.search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    display: none;
+    transition: color 0.2s ease;
+}
+
+.search-clear:hover {
+    color: #c62917;
+}
+
+/* 검색 결과 항목 호버 효과 */
+.search-results .building-item:hover {
+    background-color: #f9f9f9;
+}
+
+/* 빠른 검색 버튼 스타일 */
+.quick-search-buttons {
+    background-color: white;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 12px;
+}
+
+.quick-search-buttons .category-tag {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    color: #555;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+}
+
+.quick-search-buttons .category-tag:hover {
+    background-color: #e5e5e5;
+}
+
+.quick-search-buttons .category-tag.active {
+    background-color: #c62917;
+    border-color: #c62917;
+    color: white;
+}
+
+/* GPS 버튼 스타일 */
+.gps-button {
+    position: absolute;
+    bottom: 80px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    z-index: 100;
+    cursor: pointer;
+}
+
+/* 사용자 위치 마커 스타일 */
+.user-location-marker {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #4285F4;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* 경로 안내 로딩 인디케이터 */
+.route-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: none;
+}
+
+.route-loading-text {
+    font-size: 14px;
+    color: #333;
+    margin-left: 8px;
+}
+
+/* 경로 정보 박스 */
+.route-info-box {
+    position: absolute;
+    bottom: 120px;
+    left: 10px;
+    right: 10px;
+    background-color: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 90;
+    display: none;
+}
+
+.route-info-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.route-info-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #555;
+}
+
+.route-info-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
+    color: #888;
+    cursor: pointer;
+}
+
+/* 홈 화면을 위한 새로운 스타일 추가 */
+/* 사용자 환영 카드 */
+.welcome-card {
+    background: linear-gradient(135deg, #c62917, #e64a19);
+    color: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.welcome-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.welcome-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* 시간표 미리보기 */
+.timetable-preview {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 16px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.timetable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.timetable-date {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.timetable-now {
+    font-size: 12px;
+    padding: 4px 8px;
+    background-color: #c62917;
+    color: white;
+    border-radius: 12px;
+}
+
+.class-item {
+    display: flex;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.class-item:last-child {
+    border-bottom: none;
+}
+
+.class-time {
+    width: 60px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    padding-right: 10px;
+}
+
+.class-info {
+    flex: 1;
+}
+
+.class-name {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.class-location {
+    font-size: 13px;
+    color: #666;
+}
+
+/* 수정된 셔틀버스 카드 스타일 */
+.shuttle-card {
+    background-color: white;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    padding: 20px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.shuttle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.shuttle-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.shuttle-icon {
+    font-size: 24px;
+}
+
+/* 노선 선택 탭 */
+.shuttle-route-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 5px;
+}
+
+.route-tab {
+    flex: 1;
+    min-width: 110px;
+    padding: 12px 8px;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.route-tab.active {
+    background-color: #c62917;
+    border-color: #c62917;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(198, 41, 23, 0.2);
+}
+
+.route-tab:hover:not(.active) {
+    background-color: #f0f0f0;
+    border-color: #ddd;
+    transform: translateY(-1px);
+}
+
+.route-name {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.route-tab.active .route-name {
+    color: white;
+}
+
+.route-desc {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.route-tab.active .route-desc {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 다음 버스 정보 */
+.shuttle-next-info {
+    background: linear-gradient(135deg, #f8f9ff, #e8f2ff);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.next-bus-main {
+    flex: 1;
+}
+
+.shuttle-time {
+    font-size: 20px;
+    font-weight: bold;
+    color: #c62917;
+    margin-bottom: 6px;
+}
+
+.shuttle-desc {
+    font-size: 14px;
+    color: #666;
+}
+
+.shuttle-status {
+    margin-left: 12px;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.status-badge.running {
+    background-color: #4caf50;
+    color: white;
+}
+
+.status-badge.waiting {
+    background-color: #ff9800;
+    color: white;
+}
+
+.status-badge.stopped {
+    background-color: #9e9e9e;
+    color: white;
+}
+
+/* 운행 시간표 */
+.shuttle-schedule {
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.schedule-header {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.shuttle-time-slots {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.time-slot {
+    flex: 1;
+    text-align: center;
+    padding: 10px 8px;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.time-period {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.time-range {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.time-interval {
+    font-size: 11px;
+    color: #999;
+}
+
+/* 다음 운행 시간들 */
+.shuttle-upcoming {
+    background-color: white;
+}
+
+.upcoming-header {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.shuttle-time-list {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.shuttle-time-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    transition: all 0.2s ease;
+}
+
+.shuttle-time-item:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+.time-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.time-label {
+    font-size: 11px;
+    color: #666;
+}
+
+/* 기존 셔틀버스 노선 선택 스타일 제거 */
+.shuttle-route-selector {
+    display: none;
+}
+
+.route-select-btn {
+    display: none;
+}
+
+/* 구 시간더타임즈 스타일 숨기기 */
+.shuttle-next,
+.shuttle-more-times {
+    display: none;
+}
+
+/* 캘린더 이벤트 카드 */
+.calendar-card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 16px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.calendar-list {
+    list-style: none;
+}
+
+/* 학사일정 항목 개선된 스타일 */
+.calendar-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.calendar-item:hover {
+    background-color: #f9f9f9;
+    transform: translateX(5px);
+}
+
+.calendar-item:last-child {
+    border-bottom: none;
+}
+
+.calendar-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+    margin-right: 16px;
+}
+
+.calendar-day {
+    font-size: 24px;
+    font-weight: bold;
+    color: #c62917;
+    line-height: 1;
+}
+
+.calendar-month {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.d-day {
+    font-size: 10px;
+    background-color: #c62917;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-top: 4px;
+    font-weight: bold;
+}
+
+.calendar-info {
+    flex: 1;
+}
+
+.calendar-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.calendar-desc {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.calendar-full-date {
+    font-size: 12px;
+    color: #888;
+}
+
+/* 이벤트 타입별 색상 */
+.type-academic .calendar-day {
+    color: #3498db;
+}
+
+.type-exam .calendar-day {
+    color: #e74c3c;
+}
+
+.type-holiday .calendar-day {
+    color: #27ae60;
+}
+
+.type-event .calendar-day {
+    color: #9b59b6;
+}
+
+.type-registration .calendar-day {
+    color: #f39c12;
+}
+
+/* 동아리 활동 카드 */
+.club-activity-card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 16px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.club-activities {
+    margin-top: 12px;
+    display: grid;
+    gap: 12px;
+}
+
+.status-item {
+    flex: 1;
+    text-align: center;
+}
+
+.club-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.club-item.recruiting {
+    border-left-color: #4caf50;
+    background-color: #f8fff8;
+}
+
+.club-item.event {
+    border-left-color: #ff9800;
+    background-color: #fff8f0;
+}
+
+.club-item.activity {
+    border-left-color: #2196f3;
+    background-color: #f0f8ff;
+}
+
+.club-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    width: 40px;
+    text-align: center;
+}
+
+.club-info {
+    flex: 1;
+}
+
+.club-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.club-description {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.club-status {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.club-item.recruiting .club-status {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.club-item.event .club-status {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.club-item.activity .club-status {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+/* 로그인 필요 상태 스타일 */
+#profile-login-required {
+    padding: 24px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+}
+
+#profile-login-required .profile-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #e0e0e0;
+    margin-right: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #888;
+}
+
+#profile-login-required .profile-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #666;
+}
+
+#profile-login-required .profile-detail {
+    font-size: 14px;
+    color: #888;
+}
+
+/* 로그인 버튼 스타일 개선 */
+#profile-login-button .menu-item {
+    background-color: #f9f9f9;
+    border: 1px solid #c62917;
+    border-radius: 8px;
+    margin: 16px;
+    transition: all 0.2s ease;
+}
+
+#profile-login-button .menu-item:hover {
+    background-color: #c62917;
+    color: white;
+}
+
+#profile-login-button .menu-item:hover .menu-title {
+    color: white;
+}
+
+/* 로그인된 상태 프로필 이미지 스타일 보완 */
+#profile-logged-in .profile-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #f0f0f0;
+    margin-right: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    overflow: hidden;
+}
+
+#profile-logged-in .profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 애니메이션 효과 추가 */
+#profile-login-required,
+#profile-logged-in,
+#profile-menus,
+#profile-login-button {
+    transition: all 0.3s ease;
+}
+
+/* 교내/대외활동 요약 카드 */
+.activity-summary-card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 16px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.activity-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.activity-summary-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.activity-summary-time {
+    font-size: 12px;
+    color: #888;
+    padding: 4px 8px;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+}
+
+.activity-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.activity-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.activity-stat-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.activity-stat-info {
+    text-align: center;
+}
+
+.activity-stat-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #c62917;
+    margin-bottom: 4px;
+}
+
+.activity-stat-label {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.3;
+}
+
+.activity-summary-notices {
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.activity-notice-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.activity-notice-item:last-child {
+    margin-bottom: 0;
+}
+
+.activity-notice-icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.activity-notice-text {
+    font-size: 13px;
+    color: #666;
+}
+
+/* 에브리타임 커뮤니티 카드 */
+.everytime-community-card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 16px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.everytime-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.everytime-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.everytime-view-all {
+    font-size: 13px;
+    color: #c62917;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.community-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.post-item {
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.post-item:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+.post-board {
+    font-size: 12px;
+    color: #c62917;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.post-content {
+    flex: 1;
+}
+
+.post-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.post-preview {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-time {
+    font-size: 12px;
+    color: #888;
+}
+
+.post-stats {
+    font-size: 12px;
+    color: #888;
+}
+
+/* 학생 할인 맛집 카드 스타일 */
+.student-deals-card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 16px;
+    margin: 0 16px 16px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+#popular-restaurants-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.popular-restaurant-item {
+    display: flex;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.popular-restaurant-item:last-child {
+    border-bottom: none;
+}
+
+.restaurant-image {
+    width: 92px;
+    height: 92px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 16px;
+    flex-shrink: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+}
+
+.restaurant-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.restaurant-category {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.restaurant-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.restaurant-discount {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.restaurant-discount .discount-icon {
+    margin-right: 4px;
+    color: #c62917;
+}
+
+.restaurant-location {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.restaurant-likes {
+    margin-left: auto;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    color: #c62917;
+    font-weight: bold;
+}
+
+.detail-button {
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    width: fit-content;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+.restaurant-image.skeleton {
+    width: 92px;
+    height: 92px;
+    border-radius: 8px;
+}
+
+.restaurant-category.skeleton {
+    width: 60px;
+    height: 14px;
+    margin-bottom: 8px;
+}
+
+.restaurant-name.skeleton {
+    width: 100%;
+    height: 18px;
+    margin-bottom: 10px;
+}
+
+.restaurant-location.skeleton, .restaurant-discount.skeleton {
+    width: 80%;
+    height: 14px;
+    margin-bottom: 8px;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 768px) {
+    .browser-content-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .browser-main {
+        padding: 20px;
+    }
+    
+    .browser-header {
+        padding: 16px 20px;
+    }
+    
+    .browser-logo {
+        font-size: 20px;
+    }
+    
+    .browser-nav {
+        gap: 15px;
+    }
+    
+    .nav-item {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+    
+    .route-tab {
+        min-width: 90px;
+        padding: 10px 6px;
+    }
+    
+    .route-name {
+        font-size: 13px;
+    }
+    
+    .route-desc {
+        font-size: 10px;
+    }
+    
+    .shuttle-time-slots {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .time-slot {
+        padding: 8px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .browser-nav {
+        display: none;
+    }
 }
