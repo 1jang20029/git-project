@@ -45,99 +45,13 @@ const safeStorage = {
     }
 };
 
-// 사용자 권한 확인 함수
-function getUserRole(userId) {
-    return safeStorage.getItem(`user_${userId}_role`) || 'student';
-}
-
-// 권한 상태 확인 함수
-function getRoleStatus(userId) {
-    return safeStorage.getItem(`user_${userId}_role_status`) || 'approved';
-}
-
-// 요청된 권한 확인 함수
-function getRequestedRole(userId) {
-    return safeStorage.getItem(`user_${userId}_requested_role`) || 'student';
-}
-
-// 권한 승인 알림 표시 함수
-function checkRoleApproval(userId) {
-    const roleStatus = getRoleStatus(userId);
-    const requestedRole = getRequestedRole(userId);
-    const currentRole = getUserRole(userId);
-    
-    // 권한이 승인되었고, 요청한 권한과 현재 권한이 다른 경우 (새로 승인된 경우)
-    if (roleStatus === 'approved' && requestedRole !== 'student' && currentRole === 'student') {
-        // 권한 업데이트
-        safeStorage.setItem(`user_${userId}_role`, requestedRole);
-        
-        // 승인 알림 표시
-        showApprovalNotification(requestedRole);
-    }
-}
-
-// 권한 승인 알림 표시
-function showApprovalNotification(role) {
-    const notification = document.getElementById('approvalNotification');
-    const titleElement = notification.querySelector('.notification-title');
-    const textElement = notification.querySelector('.notification-text');
-    
-    const roleNames = {
-        'professor': '교수',
-        'staff': '교직원'
-    };
-    
-    titleElement.textContent = '권한 승인 완료';
-    textElement.textContent = `${roleNames[role]} 권한이 승인되었습니다!`;
-    
-    notification.style.display = 'flex';
-}
-
-// 알림 닫기
-function closeNotification() {
-    document.getElementById('approvalNotification').style.display = 'none';
-}
-
-// 관리자 로그인 모달 표시
-function showAdminLogin() {
-    document.getElementById('adminLoginModal').style.display = 'block';
-}
-
-// 관리자 로그인 처리
-function processAdminLogin() {
-    const adminId = document.getElementById('adminId').value;
-    const adminPassword = document.getElementById('adminPassword').value;
-    
-    // 간단한 유효성 검사
-    if (!adminId || !adminPassword) {
-        alert('관리자 ID와 비밀번호를 모두 입력해주세요.');
-        return;
-    }
-    
-    // 관리자 계정 확인 (실제로는 서버에서 검증)
-    if (adminId === 'admin' && adminPassword === 'admin123') {
-        // 관리자 로그인 성공
-        safeStorage.setItem('currentLoggedInUser', 'admin');
-        safeStorage.setItem('user_admin_role', 'admin');
-        safeStorage.setItem('user_admin_name', '시스템 관리자');
-        
-        closeModal('adminLoginModal');
-        alert('관리자로 로그인되었습니다.');
-        
-        // 관리자 대시보드로 이동
-        window.location.href = "admin-dashboard.html";
-    } else {
-        alert('관리자 ID 또는 비밀번호가 일치하지 않습니다.');
-    }
-}
-
 // 로그아웃 함수 - 로그아웃 버튼에 연결하세요
 function logout() {
     // 현재 로그인된 사용자 아이디 가져오기
     const currentUser = safeStorage.getItem('currentLoggedInUser');
     
     // 아이디 저장 옵션 확인
-    const isSaveIdEnabled = document.getElementById('saveId') ? document.getElementById('saveId').checked : false;
+    const isSaveIdEnabled = document.getElementById('saveId').checked;
     
     // 아이디 저장이 활성화되어 있으면 현재 사용자 아이디 저장
     if (isSaveIdEnabled && currentUser) {
@@ -189,14 +103,14 @@ function goBack() {
     window.location.href = "index.html";
 }
 
-// 일반 로그인 처리 함수 (권한 시스템 추가)
+// 일반 로그인 처리 함수
 function login() {
     const studentId = document.getElementById('studentId').value;
     const password = document.getElementById('password').value;
     
     // 간단한 유효성 검사
     if (!studentId || !password) {
-        alert('아이디와 비밀번호를 모두 입력해주세요.');
+        alert('학번과 비밀번호를 모두 입력해주세요.');
         return;
     }
     
@@ -204,15 +118,14 @@ function login() {
     const isRegistered = safeStorage.getItem(`user_${studentId}_registered`) === 'true';
     
     if (!isRegistered) {
-        alert('등록되지 않은 아이디입니다. 회원가입을 먼저 진행해주세요.');
+        alert('등록되지 않은 학번입니다. 회원가입을 먼저 진행해주세요.');
         return;
     }
     
-    // 비밀번호 검증 (소셜 로그인 사용자는 비밀번호가 없을 수 있음)
+    // 비밀번호 검증
     const storedPassword = safeStorage.getItem(`user_${studentId}_password`);
-    const socialType = safeStorage.getItem(`user_${studentId}_socialType`);
     
-    if (!socialType && password !== storedPassword) {
+    if (password !== storedPassword) {
         alert('아이디 또는 비밀번호가 일치하지 않습니다.');
         return;
     }
@@ -231,16 +144,8 @@ function login() {
         safeStorage.removeItem('savedStudentId');
     }
     
-    // 권한 승인 상태 확인
-    checkRoleApproval(studentId);
-    
     // 현재 로그인된 사용자 저장
     safeStorage.setItem('currentLoggedInUser', studentId);
-    
-    // 사용자 권한 정보 가져오기
-    const userRole = getUserRole(studentId);
-    const roleStatus = getRoleStatus(studentId);
-    const requestedRole = getRequestedRole(studentId);
     
     // 최초 로그인 여부 확인
     const isFirstLogin = safeStorage.getItem(`user_${studentId}_first_login`) === 'true';
@@ -250,35 +155,11 @@ function login() {
         // 다음 로그인 때는 위젯 페이지로 이동하지 않도록 설정
         safeStorage.setItem(`user_${studentId}_first_login`, 'false');
         
-        let message = '로그인이 완료되었습니다.';
-        
-        // 권한 상태에 따른 메시지 추가
-        if (requestedRole !== 'student' && roleStatus === 'pending') {
-            const roleNames = {
-                'professor': '교수',
-                'staff': '교직원'
-            };
-            message += `\n${roleNames[requestedRole]} 권한 승인이 대기 중입니다.`;
-        }
-        
-        message += ' 위젯 및 메뉴 설정 페이지로 이동합니다.';
-        
-        alert(message);
+        alert('로그인이 완료되었습니다. 위젯 및 메뉴 설정 페이지로 이동합니다.');
         window.location.href = "widget-settings.html";
     } else {
         // 이미 로그인한 적이 있는 경우 메인 페이지로 이동
-        let message = '로그인이 완료되었습니다.';
-        
-        // 권한 상태에 따른 메시지 추가
-        if (requestedRole !== 'student' && roleStatus === 'pending') {
-            const roleNames = {
-                'professor': '교수',
-                'staff': '교직원'
-            };
-            message += `\n${roleNames[requestedRole]} 권한 승인이 대기 중입니다.`;
-        }
-        
-        alert(message);
+        alert('로그인이 완료되었습니다.');
         window.location.href = "index.html";
     }
 }
@@ -407,9 +288,6 @@ function processNaverLogin() {
             safeStorage.setItem(`user_${tempStudentId}_email`, `${naverId}@naver.com`);
             safeStorage.setItem(`user_${tempStudentId}_phone`, '010-0000-0000');
             safeStorage.setItem(`user_${tempStudentId}_first_login`, 'true');
-            safeStorage.setItem(`user_${tempStudentId}_role`, 'student');
-            safeStorage.setItem(`user_${tempStudentId}_requested_role`, 'student');
-            safeStorage.setItem(`user_${tempStudentId}_role_status`, 'approved');
             
             // 소셜 로그인 사용자 표시
             safeStorage.setItem(`user_${tempStudentId}_socialType`, 'naver');
@@ -485,25 +363,15 @@ function googleLogin() {
 // 엔터 키로 로그인 처리
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
-        const naverModal = document.getElementById('naverLoginModal');
-        const adminModal = document.getElementById('adminLoginModal');
+        const modal = document.getElementById('naverLoginModal');
         
         // 네이버 로그인 모달이 열려있고 입력 필드에 포커스가 있을 때
-        if (naverModal.style.display === 'block') {
+        if (modal.style.display === 'block') {
             const naverId = document.getElementById('naverId');
             const naverPw = document.getElementById('naverPw');
             
             if (document.activeElement === naverId || document.activeElement === naverPw) {
                 processNaverLogin();
-            }
-        }
-        // 관리자 로그인 모달이 열려있고 입력 필드에 포커스가 있을 때
-        else if (adminModal.style.display === 'block') {
-            const adminId = document.getElementById('adminId');
-            const adminPassword = document.getElementById('adminPassword');
-            
-            if (document.activeElement === adminId || document.activeElement === adminPassword) {
-                processAdminLogin();
             }
         }
         // 일반 로그인 폼에서 엔터키를 눌렀을 때
