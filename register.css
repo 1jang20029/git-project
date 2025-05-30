@@ -614,6 +614,72 @@ header {
     margin-bottom: 0;
 }
 
+/* 파일 검증 관련 스타일 */
+.file-analysis-loading {
+    padding: 12px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+.loading-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e9ecef;
+    border-top: 2px solid #c62917;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 13px;
+    color: #666;
+}
+
+.file-validation-result {
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.file-validation-result.valid {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.file-validation-result.invalid {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.validation-icon {
+    font-size: 16px;
+}
+
+.validation-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 480px) {
     .role-selection {
@@ -647,5 +713,10 @@ header {
     
     .upload-icon {
         font-size: 28px;
+    }
+    
+    .loading-content {
+        flex-direction: column;
+        gap: 8px;
     }
 }
