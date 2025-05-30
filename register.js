@@ -79,7 +79,7 @@ function validatePasswordConfirm(password, confirmPassword) {
 function validateIdPattern(role, id) {
     switch(role) {
         case 'student':
-            // 학생: 8자리 숫자만 (예: 20241234)
+            // 학생: 10자리 숫자만 (예: 2024123456)
             return /^\d{10}$/.test(id);
         case 'professor':
             // 교수: 7자리 숫자만 (예: 2024001)
@@ -109,7 +109,7 @@ function updateUIByRole(role) {
         case 'student':
             idLabel.textContent = '학번';
             idInput.placeholder = '학번을 입력하세요';
-            idHint.textContent = '예: 20241234 (8자리)';
+            idHint.textContent = '예: 2024123456 (10자리)';
             gradeGroup.style.display = 'block';
             approvalNotice.style.display = 'none';
             
@@ -302,7 +302,7 @@ function getSocialTypeName(type) {
 function getIdErrorMessage(role) {
     switch(role) {
         case 'student':
-            return '8자리 숫자로 입력해주세요 (예: 20241234)';
+            return '10자리 숫자로 입력해주세요 (예: 2024123456)';
         case 'professor':
             return '7자리 숫자로 입력해주세요 (예: 2024001)';
         case 'staff':
