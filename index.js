@@ -2285,17 +2285,12 @@ function onNaverMapAPILoaded() {
 
 // 실제 지도 생성 함수
 function initNaverMap() {
-  // guard: 이미 한 번 초기화했으면 리턴
-  if (isMapInitialized) return;
-  isMapInitialized = true;
-
-  const mapContainer = document.getElementById('naverMap');
-  const mapOptions = {
-    center: new naver.maps.LatLng(37.553517, 126.937452),
-    zoom: 16,
-    mapTypeControl: true,
-    zoomControl: true,
-  };
+  naverMap = new naver.maps.Map('naverMap', {
+    center: new naver.maps.LatLng(37.3963, 126.9070), // 예시: 연성대학교
+    zoom: 17,
+    mapTypeControl: true
+  });
+}
 
   naverMap = new naver.maps.Map(mapContainer, mapOptions);
 
@@ -3337,7 +3332,7 @@ function initCategoryFilter() {
     });
 }
 
-let naverMap = null;
+let naverMap;
 let isMapInitialized = false;
 
 // 하단 탭 클릭 시 호출되는 함수 (active toggle + 시설 탭 resize)
