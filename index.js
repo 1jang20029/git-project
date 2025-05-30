@@ -3473,26 +3473,34 @@ let isMapInitialized = false;
 
 // 탭 전환 함수 - 시설 탭으로 전환 시 페이지네이션 초기화 추가 (수정된 버전)
 function switchTab(tabName) {
-  // 1) 기존 탭 토글
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.getElementById(`${tabName}-tab`).classList.add('active');
+  // --- 1) 모든 탭 콘텐츠 숨기기 ---
+  document.querySelectorAll('.tab-content').forEach(tabEl => {
+    tabEl.classList.remove('active');
+  });
 
-  // 2) 하단 탭 메뉴 active 토글 (생략)
+  // --- 2) 선택된 탭만 보이기 ---
+  const targetTab = document.getElementById(`${tabName}-tab`);
+  if (targetTab) {
+    targetTab.classList.add('active');
+  }
 
-  // 3) facility 탭으로 전환되었을 때만
+  // --- 3) 하단 탭 메뉴 활성화 토글 ---
+  document.querySelectorAll('.tab-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  const menuItem = document.querySelector(`.tab-item[data-tab="${tabName}"]`);
+  if (menuItem) {
+    menuItem.classList.add('active');
+  }
+
+  // --- 4) ‘시설’ 탭일 경우: 지도 초기화 & 리사이즈 ---
   if (tabName === 'facility') {
-    // 한 번만 수행하도록 guard
-    if (!isMapInitialized) {
-      // 탭 전환 후 300ms 뒤에 초기화 (탭 컨텐츠가 완전히 보인 뒤)
-      setTimeout(() => {
-        initNaverMapWithFix();
-        handleMapResize();
-        isMapInitialized = true;
-      }, 300);
-    } else {
-      // 이미 초기화된 이후에는 리사이즈만
-      setTimeout(handleMapResize, 300);
-    }
+    // (1) 처음 한 번만 실행되도록 init 함수
+    initNaverMapWithFix();
+
+    // (2) 탭 전환 애니메이션(또는 CSS 전환)이 끝난 뒤
+    //     300ms 정도 뒤에 리사이즈/리레이아웃 호출
+    setTimeout(handleMapResize, 300);
   }
 }
 
