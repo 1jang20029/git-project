@@ -6,7 +6,10 @@
     <title>연성대학교 캠퍼스 가이드</title>
     <!-- 네이버 지도 API 스크립트 추가 - Direction 서브모듈 포함 -->
     <script
-  src="https://openapi.naver.com/maps/v3?clientId=ud4n9otj1x&submodules=direction&callback=onNaverMapAPILoaded"defer></script>
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
+    defer>
+    </script>
+    </script>
     <!-- CSS 파일 연결 -->
     <link rel="stylesheet" href="index.css">
 </head>
@@ -363,8 +366,6 @@
                     <div class="section-title">
                         <span>주요 건물</span>
                     </div>
-
-                      <div id="naverMap"></div>
                     
                     <ul class="building-list">
                         <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
