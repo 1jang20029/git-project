@@ -80,7 +80,7 @@ function validateIdPattern(role, id) {
     switch(role) {
         case 'student':
             // 학생: 8자리 숫자만 (예: 20241234)
-            return /^\d{8}$/.test(id);
+            return /^\d{10}$/.test(id);
         case 'professor':
             // 교수: 7자리 숫자만 (예: 2024001)
             return /^\d{7}$/.test(id);
