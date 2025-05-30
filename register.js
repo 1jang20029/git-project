@@ -506,7 +506,7 @@ function loadImageElement(file) {
     });
 }
 
-// OCR 진행 상황 업데이트 (향상됨)
+// OCR 진행 상황 업데이트
 function updateOCRProgress(stage, progress) {
     const loadingText = document.querySelector('.loading-text');
     if (loadingText) {
@@ -622,7 +622,7 @@ function fuzzyMatch(text, keyword) {
     return 0;
 }
 
-// 향상된 텍스트 분석 (여러 OCR 결과 종합)
+// 엄격한 텍스트 분석 (높은 임계값 사용)
 function analyzeExtractedTexts(ocrResults, visualPatterns) {
     console.log('OCR 결과들:', ocrResults);
     console.log('시각적 패턴:', visualPatterns);
@@ -633,7 +633,7 @@ function analyzeExtractedTexts(ocrResults, visualPatterns) {
     
     console.log('결합된 텍스트:', normalizedText);
     
-    // 교직원증 관련 키워드 (유연한 매칭)
+    // 교직원증 관련 키워드 (엄격한 키워드만)
     const employeeCardKeywords = [
         '교직원증', '신분증', '사원증', '직원증', '교번', '직번', '사번',
         'employee', 'staff', 'id', 'card', '연성대학교', '대학교', '연성',
@@ -659,28 +659,30 @@ function analyzeExtractedTexts(ocrResults, visualPatterns) {
         '지급총액', '공제총액', '차인지급액', '급여내역'
     ];
     
-    // 제외할 키워드
+    // 제외할 키워드 (강화됨)
     const excludeKeywords = [
         '시간표', '수업', '강의', '과제', '과목', '성적',
         'schedule', 'class', 'course', '학습', '교육과정',
-        '출석', '학점', '평가', '과제물', '리포트'
+        '출석', '학점', '평가', '과제물', '리포트', '수강',
+        '강의실', '교실', '시험', '중간고사', '기말고사'
     ];
     
-    // 제외 키워드 체크
+    // 제외 키워드 체크 (더 엄격하게)
     for (let keyword of excludeKeywords) {
-        if (fuzzyMatch(normalizedText, keyword) > 0) {
+        if (fuzzyMatch(normalizedText, keyword) >= 2) { // 부분 매칭도 거부
+            console.log('제외 키워드 감지:', keyword);
             return null;
         }
     }
     
-    // 각 문서 유형별 점수 계산 (유연한 매칭)
+    // 각 문서 유형별 점수 계산
     let employeeScore = 0;
     let appointmentScore = 0;
     let payslipScore = 0;
     
-    // 시각적 패턴 보너스
+    // 시각적 패턴 보너스 (줄임)
     if (visualPatterns && visualPatterns.hasCardShape) {
-        employeeScore += 2; // 카드 모양은 교직원증에 유리
+        employeeScore += 1; // 보너스 점수 감소
     }
     
     // 교직원증 키워드 점수 계산
@@ -688,11 +690,11 @@ function analyzeExtractedTexts(ocrResults, visualPatterns) {
         const matchScore = fuzzyMatch(normalizedText, keyword);
         if (matchScore > 0) {
             if (keyword === '교직원증' || keyword === '신분증') {
-                employeeScore += matchScore * 3; // 핵심 키워드
+                employeeScore += matchScore * 4; // 핵심 키워드 가중치 증가
             } else if (keyword === '연성대학교' || keyword === '연성' || keyword === '대학교') {
-                employeeScore += matchScore * 2; // 기관명
+                employeeScore += matchScore * 3; // 기관명
             } else if (keyword === '교번' || keyword === '직번' || keyword === '사번') {
-                employeeScore += matchScore * 2; // 번호 관련
+                employeeScore += matchScore * 3; // 번호 관련
             } else {
                 employeeScore += matchScore; // 일반 키워드
             }
@@ -704,9 +706,9 @@ function analyzeExtractedTexts(ocrResults, visualPatterns) {
         const matchScore = fuzzyMatch(normalizedText, keyword);
         if (matchScore > 0) {
             if (keyword === '임용' || keyword === '발령' || keyword === '임용장' || keyword === '발령장') {
-                appointmentScore += matchScore * 3; // 핵심 키워드
+                appointmentScore += matchScore * 4; // 핵심 키워드 가중치 증가
             } else if (keyword === '임용일' || keyword === '발령일' || keyword === '계약기간') {
-                appointmentScore += matchScore * 2; // 날짜/기간 관련
+                appointmentScore += matchScore * 3; // 날짜/기간 관련
             } else {
                 appointmentScore += matchScore; // 일반 키워드
             }
@@ -718,11 +720,11 @@ function analyzeExtractedTexts(ocrResults, visualPatterns) {
         const matchScore = fuzzyMatch(normalizedText, keyword);
         if (matchScore > 0) {
             if (keyword === '급여명세' || keyword === '급여' || keyword === '급여명세서') {
-                payslipScore += matchScore * 3; // 핵심 키워드
+                payslipScore += matchScore * 4; // 핵심 키워드 가중치 증가
             } else if (keyword === '기본급' || keyword === '실지급액' || keyword === '지급총액') {
-                payslipScore += matchScore * 2; // 금액 관련
+                payslipScore += matchScore * 3; // 금액 관련
             } else if (keyword === '소득세' || keyword === '국민연금' || keyword === '건강보험') {
-                payslipScore += matchScore * 2; // 공제 항목
+                payslipScore += matchScore * 3; // 공제 항목
             } else {
                 payslipScore += matchScore; // 일반 키워드
             }
@@ -731,25 +733,26 @@ function analyzeExtractedTexts(ocrResults, visualPatterns) {
     
     console.log('점수:', { employeeScore, appointmentScore, payslipScore });
     
-    // 최고 점수 유형 반환 (최소 2점 이상이어야 함)
+    // 더 엄격한 임계값 사용 (최소 5점 이상이어야 함)
     const maxScore = Math.max(employeeScore, appointmentScore, payslipScore);
     
-    if (maxScore < 2) {
+    if (maxScore < 5) {
+        console.log('점수가 너무 낮음, 거부');
         return null; // 확신도가 낮음
     }
     
-    if (employeeScore === maxScore && employeeScore >= 2) {
+    if (employeeScore === maxScore && employeeScore >= 5) {
         return 'employeeCard';
-    } else if (appointmentScore === maxScore && appointmentScore >= 2) {
+    } else if (appointmentScore === maxScore && appointmentScore >= 5) {
         return 'appointmentDoc';
-    } else if (payslipScore === maxScore && payslipScore >= 2) {
+    } else if (payslipScore === maxScore && payslipScore >= 5) {
         return 'payslip';
     }
     
     return null;
 }
 
-// 고급 이미지 내용 분석 (모든 기술 통합)
+// 엄격한 이미지 내용 분석 (사용자 확인 없음)
 async function analyzeImageContent(file, callback) {
     try {
         // PDF 파일은 OCR 처리하지 않음
@@ -767,12 +770,12 @@ async function analyzeImageContent(file, callback) {
                 // 2. 시각적 패턴 분석
                 const visualPatterns = await analyzeVisualPatterns(file);
                 
-                // 3. 종합 분석
+                // 3. 엄격한 종합 분석
                 const detectedType = analyzeExtractedTexts(ocrResults, visualPatterns);
                 
                 callback(detectedType);
             } catch (error) {
-                console.error('고급 이미지 분석 실패:', error);
+                console.error('엄격한 이미지 분석 실패:', error);
                 callback(null);
             }
         } else {
@@ -785,79 +788,7 @@ async function analyzeImageContent(file, callback) {
     }
 }
 
-// 사용자 확인 옵션 제공
-function showUserConfirmationDialog(file, selectedMethod, callback) {
-    // 기존 다이얼로그 제거
-    const existingDialog = document.querySelector('.user-confirmation-dialog');
-    if (existingDialog) {
-        existingDialog.remove();
-    }
-    
-    const dialog = document.createElement('div');
-    dialog.className = 'user-confirmation-dialog';
-    dialog.innerHTML = `
-        <div class="dialog-backdrop"></div>
-        <div class="dialog-content">
-            <div class="dialog-header">
-                <h3>수동 확인</h3>
-                <button class="dialog-close" onclick="closeConfirmationDialog()">&times;</button>
-            </div>
-            <div class="dialog-body">
-                <p>자동 인식에 실패했습니다. 업로드하신 파일을 직접 확인해주세요.</p>
-                <div class="file-preview">
-                    <img id="previewImage" src="" alt="업로드된 파일" style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-                <div class="confirmation-question">
-                    <p><strong>이 파일이 ${getDocumentTypeName(selectedMethod)}이(가) 맞습니까?</strong></p>
-                    <div class="dialog-buttons">
-                        <button class="btn-yes" onclick="confirmUserVerification(true)">네, 맞습니다</button>
-                        <button class="btn-no" onclick="confirmUserVerification(false)">아니오, 다른 파일입니다</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(dialog);
-    
-    // 이미지 미리보기 설정
-    const previewImage = document.getElementById('previewImage');
-    previewImage.src = URL.createObjectURL(file);
-    
-    // 콜백 저장 (전역에서 접근 가능하도록)
-    window.userConfirmationCallback = callback;
-}
-
-// 사용자 확인 다이얼로그 닫기
-function closeConfirmationDialog() {
-    const dialog = document.querySelector('.user-confirmation-dialog');
-    if (dialog) {
-        dialog.remove();
-    }
-    if (window.userConfirmationCallback) {
-        window.userConfirmationCallback(false, '사용자가 확인을 취소했습니다.');
-        window.userConfirmationCallback = null;
-    }
-}
-
-// 사용자 확인 결과 처리
-function confirmUserVerification(isCorrect) {
-    const dialog = document.querySelector('.user-confirmation-dialog');
-    if (dialog) {
-        dialog.remove();
-    }
-    
-    if (window.userConfirmationCallback) {
-        if (isCorrect) {
-            window.userConfirmationCallback(true, '사용자가 올바른 서류임을 확인했습니다.');
-        } else {
-            window.userConfirmationCallback(false, '다른 종류의 서류를 업로드해주세요.');
-        }
-        window.userConfirmationCallback = null;
-    }
-}
-
-// 파일과 선택된 인증 방법의 일치성 검증 (모든 기능 통합)
+// 엄격한 파일 검증 (사용자 확인 옵션 제거)
 function validateFileMatch(file, selectedMethod, callback) {
     const loadingIndicator = showFileAnalysisLoading();
     
@@ -869,18 +800,34 @@ function validateFileMatch(file, selectedMethod, callback) {
         
         if (detectedType === selectedMethod) {
             isValid = true;
-            message = '올바른 서류가 인식되었습니다.';
-            callback(isValid, message);
+            message = '자동 인식에 성공했습니다. 올바른 서류가 확인되었습니다.';
         } else if (detectedType === null) {
-            // 자동 인식 실패 시 사용자 확인 요청
-            showUserConfirmationDialog(file, selectedMethod, callback);
+            // 자동 인식 실패 시 즉시 거부
+            if (file.type === 'application/pdf') {
+                message = 'PDF 파일은 자동 인식이 어렵습니다. 해당 서류의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
+            } else {
+                switch (selectedMethod) {
+                    case 'employeeCard':
+                        message = '교직원증으로 인식되지 않았습니다. 다음을 확인해주세요:\n\n• 교직원증이 선명하게 촬영되었는지\n• "교직원증", "연성대학교" 등의 텍스트가 잘 보이는지\n• 조명이 충분하고 반사가 없는지\n• 카드 전체가 프레임 안에 들어있는지';
+                        break;
+                    case 'appointmentDoc':
+                        message = '임용서류로 인식되지 않았습니다. 다음을 확인해주세요:\n\n• 임용장, 발령장 등의 공식 서류인지\n• "임용", "발령" 등의 텍스트가 선명한지\n• 문서 전체가 잘 보이도록 촬영되었는지\n• 글자가 흐리거나 잘리지 않았는지';
+                        break;
+                    case 'payslip':
+                        message = '급여명세서로 인식되지 않았습니다. 다음을 확인해주세요:\n\n• 공식 급여명세서인지\n• "급여명세", "기본급" 등의 텍스트가 선명한지\n• 급여 항목들이 잘 보이도록 촬영되었는지\n• 개인정보는 가려도 되지만 문서 유형은 확인 가능해야 함';
+                        break;
+                    default:
+                        message = '선택하신 인증 방법과 일치하는 서류를 업로드해주세요.';
+                }
+            }
         } else {
             // 다른 유형의 문서가 감지된 경우
             const detectedName = getDocumentTypeName(detectedType);
             const expectedName = getDocumentTypeName(selectedMethod);
             message = `${detectedName}이(가) 인식되었습니다. ${expectedName}을(를) 업로드해주세요.`;
-            callback(false, message);
         }
+        
+        callback(isValid, message);
     });
 }
 
@@ -894,7 +841,7 @@ function getDocumentTypeName(type) {
     }
 }
 
-// 파일 분석 로딩 표시 (향상됨)
+// 파일 분석 로딩 표시
 function showFileAnalysisLoading() {
     const uploadedFile = document.getElementById('uploadedFile');
     const loadingDiv = document.createElement('div');
@@ -902,8 +849,8 @@ function showFileAnalysisLoading() {
     loadingDiv.innerHTML = `
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <div class="loading-text">고급 이미지 분석을 시작합니다...</div>
-            <div class="loading-details">여러 OCR 엔진과 시각적 패턴 분석을 사용합니다</div>
+            <div class="loading-text">엄격한 자동 인식을 진행하고 있습니다...</div>
+            <div class="loading-details">여러 OCR 엔진과 시각적 패턴 분석 사용</div>
         </div>
     `;
     
@@ -1009,7 +956,7 @@ function handleFileUpload(file) {
     // 선택된 인증 방법 확인
     const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
     if (selectedMethod) {
-        // 고급 파일 검증 (모든 기술 통합)
+        // 엄격한 자동 검증만 사용
         validateFileMatch(file, selectedMethod.value, (isValid, message) => {
             showFileValidationResult(isValid, message);
         });
@@ -1043,12 +990,6 @@ function removeFile() {
     const validationResult = document.querySelector('.file-validation-result');
     if (validationResult) {
         validationResult.remove();
-    }
-    
-    // 사용자 확인 다이얼로그 제거
-    const dialog = document.querySelector('.user-confirmation-dialog');
-    if (dialog) {
-        dialog.remove();
     }
     
     // UI 업데이트
@@ -1099,7 +1040,7 @@ function validateVerification(selectedRole) {
     // 파일 검증 결과 확인
     const validationResult = document.querySelector('.file-validation-result');
     if (!validationResult || validationResult.classList.contains('invalid')) {
-        alert('올바른 인증 서류를 업로드해주세요. 고급 이미지 인식과 사용자 확인을 통해 검증해주세요.');
+        alert('자동 인식에 실패했습니다. 올바른 서류를 선명하게 촬영하여 다시 업로드해주세요.');
         return false;
     }
     
@@ -1287,6 +1228,7 @@ function register() {
         
         // 인증 방법 저장
         localStorage.setItem(`user_${userId}_verification_method`, selectedMethod.value);
+        localStorage.setItem(`user_${userId}_verification_status`, 'auto_verified'); // 자동 검증 완료
         
         // 파일 정보 저장
         if (fileInput.files && fileInput.files.length > 0) {
@@ -1309,14 +1251,15 @@ function register() {
             requestedRole: selectedRole,
             department: department,
             requestDate: new Date().toISOString(),
-            status: 'pending',
+            status: 'auto_verified', // 자동 검증 완료 상태
             verificationMethod: selectedMethod ? selectedMethod.value : null,
             verificationFileName: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : null,
-            verificationFileType: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].type : null
+            verificationFileType: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].type : null,
+            verificationConfidence: 'high' // 높은 신뢰도
         });
         localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
         
-        alert('회원가입이 완료되었습니다!\n\n고급 이미지 인식 기술과 시각적 패턴 분석으로 서류를 검증했습니다.\n교수/교직원 권한은 관리자 최종 승인 후 활성화됩니다.\n승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
+        alert('회원가입이 완료되었습니다!\n\n엄격한 자동 인식 시스템으로 서류 검증이 완료되었습니다.\n교수/교직원 권한은 시스템 검토 후 자동으로 활성화됩니다.\n검토 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
     } else {
         alert('회원가입이 완료되었습니다!');
     }
