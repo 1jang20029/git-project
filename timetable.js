@@ -765,19 +765,22 @@ function createTimetable() {
     tbody.innerHTML = '';
     
     // 교시별 행 생성
-    for (let period = 1; period <= timeData.length; period++) {
-        const timeInfo = timeData[period - 1];
+    for (let i = 0; i < timeData.length; i++) {
+        const period = timeData[i].period;
+        const startTime = timeData[i].startTime;
+        
         const row = document.createElement('tr');
         
         // 시간 열
         const timeCell = document.createElement('td');
         timeCell.className = 'time-col';
         
+        // 24시간 형식 처리
         if (settings.timeFormat24) {
-            timeCell.innerHTML = `${period}교시<br>${timeInfo.startTime}`;
+            timeCell.innerHTML = `${period}교시<br>${startTime}`;
         } else {
-            const hour = parseInt(timeInfo.startTime.split(':')[0]);
-            const minute = timeInfo.startTime.split(':')[1];
+            const hour = parseInt(startTime.split(':')[0]);
+            const minute = startTime.split(':')[1];
             const ampm = hour >= 12 ? '오후' : '오전';
             const displayHour = hour > 12 ? hour - 12 : hour;
             timeCell.innerHTML = `${period}교시<br>${ampm} ${displayHour}:${minute}`;
@@ -817,87 +820,66 @@ function createTimetable() {
 // UI에 과목을 정확히 30분→20분 구간으로 렌더링하는 함수
 function renderCoursesOnTimetable() {
     const container = document.querySelector('.timetable-container');
-    const baseRect = container.getBoundingClientRect();
+    const baseRect  = container.getBoundingClientRect();
 
     // 1) 기존 블록 제거
     container.querySelectorAll('.class-item').forEach(el => el.remove());
 
-    // 2) 헤더 행을 제외한 첫 번째 데이터 행 찾기
-    const tbody = document.getElementById('timetable-body');
-    if (!tbody) return;
+    // 2) 셀 하나 크기(px) 구하기
+    const sampleCell = container.querySelector('.class-cell[data-day="1"][data-period="1"]');
+    const cellRect   = sampleCell.getBoundingClientRect();
+    const cellH      = cellRect.height;
+    const cellW      = cellRect.width;
 
-    const firstRow = tbody.querySelector('tr');
-    if (!firstRow) return;
-
-    // 3) 시간 열을 제외한 첫 번째 셀(월요일) 찾기
-    const timeCells = firstRow.querySelectorAll('td');
-    if (timeCells.length < 2) return;
-
-    const firstDayCell = timeCells[1]; // 시간 열(인덱스 0) 다음이 월요일(인덱스 1)
-    const firstDayCellRect = firstDayCell.getBoundingClientRect();
-    const cellW = firstDayCellRect.width;
-    const cellH = firstDayCellRect.height;
-
-    // 4) 과목별 블록 렌더링
+    // 3) 과목별 블록 렌더링
     courses.forEach(course => {
-        course.times.forEach(time => {
-            // 주말 숨김 설정 확인
-            const maxDays = settings.showWeekend ? 6 : 5;
-            if (time.day > maxDays) return;
-
-            // 요일과 교시에 해당하는 셀 찾기
-            const periodRow = tbody.children[time.start - 1]; // 교시는 1부터 시작
-            if (!periodRow) return;
-
-            const dayCells = periodRow.querySelectorAll('td');
-            const dayCell = dayCells[time.day]; // time.day: 1=월요일, 2=화요일, ...
-            if (!dayCell) return;
-
-            const dayCellRect = dayCell.getBoundingClientRect();
-            
-            // 위치 계산
-            const x = dayCellRect.left - baseRect.left;
-            const y = dayCellRect.top - baseRect.top;
-            
-            // 높이 계산 (시작 교시부터 종료 교시까지)
-            const spanPeriods = time.end - time.start + 1;
-            const h = cellH * spanPeriods;
+        course.times.forEach(t => {
+            // 위치 계산 (9:30 시작, 50분 길이)
+            const x = cellRect.left - baseRect.left + t.day * cellW;
+            const y = cellRect.top  - baseRect.top  + (t.start - 1) * cellH + cellH * 0.5;
+            const h = (t.end - t.start) * cellH + (50/60) * cellH;
 
             // 블록 생성
             const block = document.createElement('div');
             block.className = `class-item ${course.color}`;
             Object.assign(block.style, {
-                position: 'absolute',
-                left: `${x}px`,
-                top: `${y}px`,
-                width: `${cellW}px`,
-                height: `${h}px`,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
+                position:       'absolute',
+                left:           `${x}px`,
+                top:            `${y}px`,
+                width:          `${cellW}px`,
+                height:         `${h}px`,
+                display:        'flex',
+                flexDirection:  'column',
+                alignItems:     'center',
                 justifyContent: 'center',
-                textAlign: 'center',
-                overflow: 'hidden',
-                zIndex: 5,
-                borderRadius: '4px'
+                textAlign:      'center',
+                overflow:       'hidden',
+                zIndex:         5
             });
+
+            // — 여기부터 infoParts 로 변경 —
 
             // 과목명
             const nameHTML = `<div class="class-name">${course.name}</div>`;
 
-            // 교수명/강의실 표시
+            // 교수명/강의실 표시 (미정일 때 기본 문구)
             const infoParts = [];
             if (settings.showProfessor) {
-                infoParts.push(course.professor || '교수명 미정');
+                infoParts.push(course.professor
+                    ? course.professor
+                    : '교수명 미정');
             }
             if (settings.showRoom) {
-                infoParts.push(course.room || '강의실 미정');
+                infoParts.push(course.room
+                    ? course.room
+                    : '강의실 미정');
             }
             const infoHTML = infoParts.length
                 ? `<div class="class-info">${infoParts.join(' | ')}</div>`
                 : '';
 
             block.innerHTML = nameHTML + infoHTML;
+
             container.appendChild(block);
         });
     });
