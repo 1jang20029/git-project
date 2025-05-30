@@ -785,13 +785,13 @@ function createTimetable() {
         
         row.appendChild(timeCell);
         
-        // 요일별 열 (월~토) - 정확한 data-day 값 설정
+        // 요일별 열 (월~토)
         const maxDays = settings.showWeekend ? 6 : 5;
         for (let day = 1; day <= maxDays; day++) {
             const cell = document.createElement('td');
             cell.className = 'class-cell';
-            cell.dataset.day = day;      // 1=월, 2=화, 3=수, 4=목, 5=금, 6=토
-            cell.dataset.period = period; // 1~9교시
+            cell.dataset.day = day;
+            cell.dataset.period = period;
             row.appendChild(cell);
         }
         
