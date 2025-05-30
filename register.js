@@ -99,6 +99,8 @@ function updateUIByRole(role) {
     const idHint = document.getElementById('idHint');
     const gradeGroup = document.getElementById('gradeGroup');
     const approvalNotice = document.getElementById('approvalNotice');
+    const verificationSection = document.getElementById('verificationSection');
+    const verificationTitle = document.getElementById('verificationTitle');
     const staffOptions = document.querySelectorAll('.staff-option');
     const staffCategory = document.getElementById('staffCategory');
     
@@ -112,6 +114,7 @@ function updateUIByRole(role) {
             idHint.textContent = '예: 2024123456 (10자리)';
             gradeGroup.style.display = 'block';
             approvalNotice.style.display = 'none';
+            verificationSection.style.display = 'none';
             
             // 교직원 부서 옵션 숨기기
             staffOptions.forEach(option => option.style.display = 'none');
@@ -124,6 +127,8 @@ function updateUIByRole(role) {
             idHint.textContent = '예: 2024001 (7자리)';
             gradeGroup.style.display = 'none';
             approvalNotice.style.display = 'block';
+            verificationSection.style.display = 'block';
+            verificationTitle.textContent = '교수 신원 인증';
             
             // 교직원 부서 옵션 숨기기
             staffOptions.forEach(option => option.style.display = 'none');
@@ -136,6 +141,8 @@ function updateUIByRole(role) {
             idHint.textContent = '예: 2024001 (7자리)';
             gradeGroup.style.display = 'none';
             approvalNotice.style.display = 'block';
+            verificationSection.style.display = 'block';
+            verificationTitle.textContent = '교직원 신원 인증';
             
             // 교직원 부서 옵션 표시
             staffOptions.forEach(option => option.style.display = 'block');
@@ -147,6 +154,11 @@ function updateUIByRole(role) {
     idInput.value = '';
     document.getElementById('departmentInput').value = '';
     document.getElementById('selectedDepartment').value = '';
+    
+    // 인증 관련 입력값 초기화
+    if (verificationSection.style.display === 'block') {
+        resetVerificationForm();
+    }
 }
 
 // 학과 검색 기능
@@ -288,6 +300,137 @@ function setupGradeDropdown() {
     });
 }
 
+// 파일 업로드 관련 함수들
+function setupFileUpload() {
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileInput = document.getElementById('verificationFile');
+    const uploadedFile = document.getElementById('uploadedFile');
+    const uploadPlaceholder = fileUploadArea.querySelector('.upload-placeholder');
+    
+    // 클릭으로 파일 선택
+    fileUploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    // 파일 선택 시
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileUpload(file);
+        }
+    });
+    
+    // 드래그 앤 드롭
+    fileUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.add('dragover');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', () => {
+        fileUploadArea.classList.remove('dragover');
+    });
+    
+    fileUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileUpload(files[0]);
+        }
+    });
+}
+
+function handleFileUpload(file) {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    
+    // 파일 크기 검사
+    if (file.size > maxSize) {
+        alert('파일 크기가 10MB를 초과합니다.');
+        return;
+    }
+    
+    // 파일 형식 검사
+    if (!allowedTypes.includes(file.type)) {
+        alert('JPG, PNG, PDF 파일만 업로드 가능합니다.');
+        return;
+    }
+    
+    // 파일 정보 표시
+    displayUploadedFile(file);
+    
+    // 에러 메시지 숨기기
+    document.getElementById('file-error').style.display = 'none';
+}
+
+function displayUploadedFile(file) {
+    const uploadPlaceholder = document.querySelector('.upload-placeholder');
+    const uploadedFile = document.getElementById('uploadedFile');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    
+    // 파일 정보 설정
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    
+    // UI 업데이트
+    uploadPlaceholder.style.display = 'none';
+    uploadedFile.style.display = 'flex';
+}
+
+function removeFile() {
+    const fileInput = document.getElementById('verificationFile');
+    const uploadPlaceholder = document.querySelector('.upload-placeholder');
+    const uploadedFile = document.getElementById('uploadedFile');
+    
+    // 파일 입력 초기화
+    fileInput.value = '';
+    
+    // UI 업데이트
+    uploadedFile.style.display = 'none';
+    uploadPlaceholder.style.display = 'flex';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function resetVerificationForm() {
+    // 인증 방법 선택 초기화
+    const verificationMethods = document.querySelectorAll('input[name="verificationType"]');
+    verificationMethods.forEach(method => method.checked = false);
+    
+    // 파일 업로드 초기화
+    removeFile();
+}
+
+function validateVerification(selectedRole) {
+    if (selectedRole !== 'professor' && selectedRole !== 'staff') {
+        return true; // 학생은 인증 불필요
+    }
+    
+    // 인증 방법 선택 확인
+    const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
+    if (!selectedMethod) {
+        alert('인증 방법을 선택해주세요.');
+        return false;
+    }
+    
+    // 파일 업로드 확인
+    const fileInput = document.getElementById('verificationFile');
+    if (!fileInput.files || fileInput.files.length === 0) {
+        document.getElementById('file-error').style.display = 'block';
+        return false;
+    }
+    
+    return true;
+}
+
 // 소셜 타입명 변환 함수
 function getSocialTypeName(type) {
     switch(type) {
@@ -383,6 +526,11 @@ function register() {
         return;
     }
     
+    // 교수/교직원 인증 검사
+    if (!validateVerification(selectedRole)) {
+        return;
+    }
+    
     // 약관 동의 검사
     if (!agreeTerms || !agreePrivacy) {
         alert('필수 약관에 동의해주세요.');
@@ -433,9 +581,27 @@ function register() {
         localStorage.setItem(`user_${userId}_socialType`, socialType);
     }
     
+    // 교수/교직원 인증 정보 저장
+    if (selectedRole === 'professor' || selectedRole === 'staff') {
+        const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
+        const fileInput = document.getElementById('verificationFile');
+        
+        // 인증 방법 저장
+        localStorage.setItem(`user_${userId}_verification_method`, selectedMethod.value);
+        
+        // 파일 정보 저장 (실제 파일은 여기서는 저장하지 않고, 파일명만 저장)
+        if (fileInput.files && fileInput.files.length > 0) {
+            localStorage.setItem(`user_${userId}_verification_file`, fileInput.files[0].name);
+            localStorage.setItem(`user_${userId}_verification_file_size`, fileInput.files[0].size);
+        }
+    }
+    
     // 권한 승인 요청이 있는 경우 관리자 승인 목록에 추가
     if (selectedRole === 'professor' || selectedRole === 'staff') {
         let pendingApprovals = JSON.parse(localStorage.getItem('pending_role_approvals') || '[]');
+        const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
+        const fileInput = document.getElementById('verificationFile');
+        
         pendingApprovals.push({
             userId: userId,
             studentId: studentId,
@@ -443,7 +609,9 @@ function register() {
             requestedRole: selectedRole,
             department: department,
             requestDate: new Date().toISOString(),
-            status: 'pending'
+            status: 'pending',
+            verificationMethod: selectedMethod ? selectedMethod.value : null,
+            verificationFileName: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : null
         });
         localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
         
@@ -478,6 +646,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 학과 검색 기능 설정
     setupDepartmentSearch();
+    
+    // 파일 업로드 기능 설정
+    setupFileUpload();
     
     // 역할 선택 라디오 버튼 이벤트
     const roleRadios = document.querySelectorAll('input[name="userRole"]');

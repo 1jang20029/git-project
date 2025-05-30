@@ -67,6 +67,91 @@
                         가입 후 관리자 승인을 받기 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.
                     </div>
                 </div>
+
+                <!-- 교수/교직원 인증 섹션 -->
+                <div id="verificationSection" class="verification-section" style="display: none;">
+                    <div class="verification-header">
+                        <div class="verification-icon">🔐</div>
+                        <div class="verification-title" id="verificationTitle">교수 신원 인증</div>
+                    </div>
+                    
+                    <div class="verification-description">
+                        <p>교수/교직원 권한 승인을 위해 신원 확인 서류를 제출해주세요.</p>
+                    </div>
+                    
+                    <div class="verification-methods">
+                        <div class="method-option">
+                            <input type="radio" id="employeeCard" name="verificationType" value="employeeCard">
+                            <label for="employeeCard" class="method-label">
+                                <div class="method-icon">📇</div>
+                                <div class="method-info">
+                                    <div class="method-title">교직원증</div>
+                                    <div class="method-desc">현재 유효한 교직원증 또는 신분증</div>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="method-option">
+                            <input type="radio" id="appointmentDoc" name="verificationType" value="appointmentDoc">
+                            <label for="appointmentDoc" class="method-label">
+                                <div class="method-icon">📄</div>
+                                <div class="method-info">
+                                    <div class="method-title">임용서류</div>
+                                    <div class="method-desc">임용장, 발령장 등 공식 서류</div>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="method-option">
+                            <input type="radio" id="payslip" name="verificationType" value="payslip">
+                            <label for="payslip" class="method-label">
+                                <div class="method-icon">💰</div>
+                                <div class="method-info">
+                                    <div class="method-title">급여명세서</div>
+                                    <div class="method-desc">최근 3개월 이내 급여명세서</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="file-upload-section">
+                        <label class="form-label">인증 서류 업로드 <span class="required">*</span></label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <input type="file" id="verificationFile" accept="image/*,.pdf" style="display: none;">
+                            <div class="upload-placeholder">
+                                <div class="upload-icon">📎</div>
+                                <div class="upload-text">
+                                    <p>파일을 선택하거나 여기에 드래그하세요</p>
+                                    <span class="upload-hint">JPG, PNG, PDF 파일만 업로드 가능 (최대 10MB)</span>
+                                </div>
+                            </div>
+                            <div class="uploaded-file" id="uploadedFile" style="display: none;">
+                                <div class="file-info">
+                                    <div class="file-icon">📄</div>
+                                    <div class="file-details">
+                                        <div class="file-name" id="fileName"></div>
+                                        <div class="file-size" id="fileSize"></div>
+                                    </div>
+                                    <div class="file-remove" onclick="removeFile()">✕</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="error-message" id="file-error">인증 서류를 업로드해주세요</div>
+                    </div>
+                    
+                    <div class="verification-notice">
+                        <div class="notice-header">
+                            <span class="notice-icon">ℹ️</span>
+                            <span class="notice-title">인증 안내사항</span>
+                        </div>
+                        <ul class="notice-list">
+                            <li>제출하신 서류는 신원 확인 목적으로만 사용됩니다</li>
+                            <li>승인까지 1-2일 정도 소요될 수 있습니다</li>
+                            <li>승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다</li>
+                            <li>개인정보가 포함된 부분은 가려서 업로드해도 됩니다</li>
+                        </ul>
+                    </div>
+                </div>
                 
                 <div class="form-group">
                     <label class="form-label" id="idLabel">학번</label>

@@ -375,6 +375,245 @@ header {
     line-height: 1.4;
 }
 
+/* 인증 섹션 스타일 */
+.verification-section {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.verification-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.verification-icon {
+    font-size: 24px;
+    margin-right: 12px;
+}
+
+.verification-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.verification-description {
+    margin-bottom: 20px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.verification-methods {
+    margin-bottom: 24px;
+}
+
+.method-option {
+    margin-bottom: 12px;
+}
+
+.method-option input[type="radio"] {
+    display: none;
+}
+
+.method-label {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.method-label:hover {
+    border-color: #c62917;
+    box-shadow: 0 2px 8px rgba(198, 41, 23, 0.1);
+}
+
+.method-option input[type="radio"]:checked + .method-label {
+    border-color: #c62917;
+    background-color: #fff5f5;
+}
+
+.method-icon {
+    font-size: 24px;
+    margin-right: 16px;
+    width: 40px;
+    text-align: center;
+}
+
+.method-info {
+    flex: 1;
+}
+
+.method-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.method-desc {
+    font-size: 14px;
+    color: #666;
+}
+
+.file-upload-section {
+    margin-bottom: 20px;
+}
+
+.required {
+    color: #c62917;
+    margin-left: 4px;
+}
+
+.file-upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.file-upload-area:hover {
+    border-color: #c62917;
+    background-color: #fafafa;
+}
+
+.file-upload-area.dragover {
+    border-color: #c62917;
+    background-color: #fff5f5;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upload-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    color: #999;
+}
+
+.upload-text p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.upload-hint {
+    font-size: 12px;
+    color: #888;
+}
+
+.uploaded-file {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.file-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    color: #666;
+}
+
+.file-details {
+    flex: 1;
+}
+
+.file-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.file-size {
+    font-size: 12px;
+    color: #666;
+}
+
+.file-remove {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #dc3545;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.file-remove:hover {
+    background-color: #c82333;
+}
+
+.verification-notice {
+    background-color: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.notice-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.notice-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #0066cc;
+}
+
+.notice-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.notice-list li {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    padding-left: 16px;
+    position: relative;
+}
+
+.notice-list li:before {
+    content: "•";
+    color: #0066cc;
+    position: absolute;
+    left: 0;
+}
+
+.notice-list li:last-child {
+    margin-bottom: 0;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 480px) {
     .role-selection {
@@ -387,5 +626,26 @@ header {
     
     .department-dropdown {
         max-height: 250px;
+    }
+    
+    .verification-section {
+        padding: 16px;
+    }
+    
+    .method-label {
+        padding: 12px;
+    }
+    
+    .method-icon {
+        margin-right: 12px;
+        width: 32px;
+    }
+    
+    .file-upload-area {
+        padding: 20px 16px;
+    }
+    
+    .upload-icon {
+        font-size: 28px;
     }
 }
