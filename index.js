@@ -5440,6 +5440,12 @@ function updateActivityNotices() {
 }
 
 
+function onNaverMapAPILoaded() {
+    console.log('✅ 네이버 지도 API 로드 완료, 지도 초기화 시작');
+    initNaverMapWithFix();  // 실제 지도 초기화 함수 호출
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== 메인 페이지 초기화 시작 ===');
     
