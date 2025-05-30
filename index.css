@@ -387,18 +387,15 @@ header {
     margin-bottom: 4px;
 }
 
-/* 지도 컨테이너 스타일 수정 */
+/* 지도 컨테이너 스타일 수정*/
 .campus-map {
-    height: 350px; /* 높이 고정 */
-    width: 100%;   /* 너비 100% */
+    height: 350px !important;
+    width: 100% !important;
     position: relative;
     border-radius: 8px;
     overflow: hidden;
     margin: 16px 0;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    /* 추가: 컨테이너가 축소되지 않도록 패딩 및 마진 제거 */
-    padding: 0;
-    box-sizing: border-box;
 }
 
 /* 추가: 지도를 가리는 요소들 제거 */
@@ -2050,8 +2047,15 @@ header {
     100% { background-position: -200% 0; }
 }
 
+#naverMap {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 /* facility-tab 안에 있는 naverMap 컨테이너 */
 #facility-tab #naverMap {
-  width: 100%;
-  height: 350px;    /* 원하는 높이로 조정 */
+    width: 100% !important;
+    height: 350px !important;
 }
+
+

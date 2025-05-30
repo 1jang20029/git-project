@@ -2006,6 +2006,8 @@ function getNextBusForRoute(routeId) {
 }
 
 // 네이버 지도 관련 변수
+let naverMap = null;
+let isMapInitialized = false;
 let mapMarkers = [];
 let infoWindows = [];
 let userMarker = null;
@@ -2285,25 +2287,67 @@ function onNaverMapAPILoaded() {
 
 // 실제 지도 생성 함수
 function initNaverMap() {
-  // guard: 이미 한 번 초기화했으면 리턴
-  if (isMapInitialized) return;
-  isMapInitialized = true;
+    if (isMapInitialized || !window.naver || !naver.maps) {
+        console.log('지도 API 준비되지 않음 또는 이미 초기화됨');
+        return;
+    }
 
-  const mapContainer = document.getElementById('naverMap');
-  const mapOptions = {
-    center: new naver.maps.LatLng(37.553517, 126.937452),
-    zoom: 16,
-    mapTypeControl: true,
-    zoomControl: true,
-  };
+    const mapContainer = document.getElementById('naverMap');
+    if (!mapContainer) {
+        console.error('지도 컨테이너를 찾을 수 없습니다.');
+        return;
+    }
 
-  naverMap = new naver.maps.Map(mapContainer, mapOptions);
+    try {
+        // 연성대학교 좌표 (정확한 좌표)
+        const mapOptions = {
+            center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
+            zoom: 16,
+            mapTypeControl: true,
+            zoomControl: true,
+        };
 
-  // 예: 마커 하나 띄우기
-  new naver.maps.Marker({
-    position: mapOptions.center,
-    map: naverMap
-  });
+        naverMap = new naver.maps.Map(mapContainer, mapOptions);
+        isMapInitialized = true;
+        
+        // 건물 마커 추가
+        addBuildingMarkers();
+        
+        console.log('네이버 지도 초기화 완료');
+    } catch (error) {
+        console.error('지도 초기화 중 오류:', error);
+    }
+}
+
+
+// 건물 마커 추가 함수
+function addBuildingMarkers() {
+    if (!naverMap || !buildingData) return;
+
+    buildingData.forEach(building => {
+        const marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+            map: naverMap,
+            title: building.name
+        });
+
+        const infoWindow = new naver.maps.InfoWindow({
+            content: `
+                <div class="map-info-window">
+                    <div class="map-info-title">${building.name}</div>
+                    <div class="map-info-desc">${building.description}</div>
+                </div>
+            `
+        });
+
+        naver.maps.Event.addListener(marker, 'click', function() {
+            infoWindows.forEach(window => window.close());
+            infoWindow.open(naverMap, marker);
+        });
+
+        mapMarkers.push(marker);
+        infoWindows.push(infoWindow);
+    });
 }
 
 
@@ -3337,23 +3381,50 @@ function initCategoryFilter() {
     });
 }
 
-let naverMap = null;
-let isMapInitialized = false;
+
 
 // 하단 탭 클릭 시 호출되는 함수 (active toggle + 시설 탭 resize)
 function switchTab(tabName) {
-  // 1) 모든 탭 콘텐츠 hide
-  document.querySelectorAll('.tab-content').forEach(el => {
-    el.classList.remove('active');
-  });
-  // 2) 클릭된 탭만 show
-  document.getElementById(`${tabName}-tab`).classList.add('active');
+    // 모든 탭 콘텐츠 hide
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // 모든 탭 메뉴 비활성화
+    document.querySelectorAll('.tab-item').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // 클릭된 탭만 show
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+    
+    // 해당 탭 메뉴 활성화
+    const tabItems = document.querySelectorAll('.tab-item');
+    const tabIndex = ['home', 'facility', 'community', 'profile', 'alert'].indexOf(tabName);
+    if (tabIndex !== -1 && tabItems[tabIndex]) {
+        tabItems[tabIndex].classList.add('active');
+    }
 
-  // 3) facility 탭일 때만 지도 리사이즈 강제
-  if (tabName === 'facility') {
-    // 탭 콘텐츠가 완전히 렌더링된 뒤에 호출
-    setTimeout(handleMapResize, 300);
-  }
+    // facility 탭일 때만 지도 리사이즈
+    if (tabName === 'facility') {
+        setTimeout(() => {
+            if (naverMap) {
+                // 지도가 초기화되지 않은 경우 초기화
+                if (!isMapInitialized) {
+                    initNaverMap();
+                } else {
+                    // 지도 리사이즈 및 갱신
+                    window.dispatchEvent(new Event('resize'));
+                    if (typeof naverMap.refresh === 'function') {
+                        naverMap.refresh();
+                    }
+                }
+            } else {
+                // 지도가 없으면 초기화
+                initNaverMap();
+            }
+        }, 300);
+    }
 }
 
 // 탭 이름 ↔ 라벨 매핑 헬퍼
@@ -5486,8 +5557,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // 시설 탭 초기화 (페이지네이션 포함)
     initFacilityTab();
     
-    // 네이버 지도 초기화
-    initNaverMapWithFix();
+    // 네이버 지도 초기화 - 수정된 부분
+    setTimeout(() => {
+        if (window.naver && naver.maps) {
+            console.log('네이버 지도 API 로드 완료, 지도 초기화 시작');
+            initNaverMap();
+        } else {
+            console.log('네이버 지도 API가 아직 로드되지 않음, 재시도 중...');
+            // API가 로드될 때까지 재시도
+            let retryCount = 0;
+            const retryInterval = setInterval(() => {
+                retryCount++;
+                if (window.naver && naver.maps) {
+                    console.log(`네이버 지도 API 로드 완료 (${retryCount}번째 시도), 지도 초기화 시작`);
+                    initNaverMap();
+                    clearInterval(retryInterval);
+                } else if (retryCount > 10) {
+                    console.error('네이버 지도 API 로드 실패 - 최대 재시도 횟수 초과');
+                    clearInterval(retryInterval);
+                }
+            }, 500);
+        }
+    }, 1000);
     
     // 검색 기능 초기화
     initSearchFunctionality();
@@ -5563,7 +5654,6 @@ document.addEventListener('DOMContentLoaded', function() {
     displayActivityStats();
     updateActivityNotices();
     
-    // ===== 정확히 이 위치에 학사일정 코드를 추가하세요 =====
     // 다가오는 학사일정 표시
     displayUpcomingAcademicSchedule();
     
@@ -5574,7 +5664,6 @@ document.addEventListener('DOMContentLoaded', function() {
             displayUpcomingAcademicSchedule();
         }
     }, 60000); // 1분마다 체크
-    // ===== 학사일정 코드 추가 끝 =====
     
     // 5분마다 자동 갱신 (선택적) - 인터벌 변수에 저장
     activityStatsInterval = setInterval(displayActivityStats, 300000);
@@ -5628,13 +5717,11 @@ document.addEventListener('DOMContentLoaded', function() {
             displayPopularRestaurantsOnMainPage();
         }
         
-        // ===== 정확히 이 위치에 학사일정 변경 감지 코드를 추가하세요 =====
         // 학사일정 데이터 변경 감지 (필요시)
         if (event.key === 'academicScheduleUpdated') {
             console.log('학사일정 데이터 변경 감지');
             displayUpcomingAcademicSchedule();
         }
-        // ===== 학사일정 변경 감지 코드 추가 끝 =====
     });
 
      // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
@@ -5647,9 +5734,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateAllProfileImages(); // 프로필 이미지도 다시 확인
             updateShuttleBusInfo(); // 뒤로가기 시에도 셔틀버스 정보 갱신
             displayActivityStats(); // 활동 통계 갱신
-            // ===== 정확히 이 위치에 학사일정 갱신 코드를 추가하세요 =====
             displayUpcomingAcademicSchedule(); // 학사일정 갱신
-            // ===== 학사일정 갱신 코드 추가 끝 =====
             displayPopularRestaurantsOnMainPage(); // 맛집 정보 갱신
         }
     });
