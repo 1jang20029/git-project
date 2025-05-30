@@ -396,6 +396,7 @@ header {
     overflow: hidden;
     margin: 16px 0;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    background-color: #f0f0f0; /* 로딩 중 배경색 */
 }
 
 /* 추가: 지도를 가리는 요소들 제거 */
@@ -2050,6 +2051,23 @@ header {
 #naverMap {
     width: 100% !important;
     height: 100% !important;
+    border-radius: 8px;
+}
+
+/* 지도 로딩 중 표시할 스타일 */
+.campus-map::before {
+    content: "지도 로딩 중...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #666;
+    font-size: 14px;
+    z-index: 1;
+}
+
+.campus-map.loaded::before {
+    display: none;
 }
 
 /* facility-tab 안에 있는 naverMap 컨테이너 */
