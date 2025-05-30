@@ -1,616 +1,409 @@
-/* ─────────────────────────────────────────────────────────
-   1. 리셋 & 기본 스타일
-───────────────────────────────────────────────────────── */
-* {
+/* ==================================================
+   index.css — 완전 새 데스크톱 웹 레이아웃 & 디자인
+   ================================================== */
+
+/* 1. 리셋 & 기본 설정 */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-html {
-  font-size: 16px;
-}
-@media (max-width: 768px) {
-  html { font-size: 14px; }
-}
-@media (max-width: 480px) {
-  html { font-size: 12px; }
-}
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  line-height: 1.6;
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
-  background-color: #f9f9f9;
+  background: #f5f7fa;
+}
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+button { cursor: pointer; border: none; background: none; }
+
+/* 2. 레이아웃 그리드 */
+:root {
+  --header-height: 60px;
+  --sidebar-width: 220px;
+  --gap: 16px;
+  --radius: 8px;
+  --primary: #c62917;
+  --secondary: #4caf50;
+  --bg-card: #fff;
+  --text-light: #666;
 }
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-.content-pad {
-  height: 32px;
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: var(--header-height) 1fr;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* ─────────────────────────────────────────────────────────
-   2. 헤더 & 네비게이션
-───────────────────────────────────────────────────────── */
+/* 3. 헤더 */
 header {
+  grid-area: header;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
-  background-color: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 0 var(--gap);
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
-.logo {
-  font-size: 1.5rem;
+header .logo {
+  font-size: 1.25rem;
   font-weight: bold;
-  color: #D23F31;
+  color: var(--primary);
   cursor: pointer;
 }
-.top-nav ul {
-  display: flex;
-  list-style: none;
-}
-.top-nav .nav-item {
-  margin-right: 24px;
-  font-size: 1rem;
-  padding-bottom: 4px;
-  cursor: pointer;
-  color: #555;
-  transition: color 0.2s;
-}
-.top-nav .nav-item:hover {
-  color: #D23F31;
-}
-.top-nav .nav-item.active {
-  border-bottom: 2px solid #D23F31;
-  color: #D23F31;
-  font-weight: bold;
-}
-
-/* ─────────────────────────────────────────────────────────
-   3. 헤더 우측 아이콘
-───────────────────────────────────────────────────────── */
-.header-icons {
+header .header-icons {
   display: flex;
   align-items: center;
+  gap: var(--gap);
 }
 .login-button {
   padding: 8px 12px;
-  background-color: #D23F31;
+  background: var(--primary);
   color: #fff;
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 0.9rem;
+  border-radius: var(--radius);
   transition: background 0.2s;
 }
 .login-button:hover {
-  background-color: #b02e29;
+  background: darken(var(--primary), 10%);
 }
-.profile-dropdown-container {
-  position: relative;
+
+/* 4. 사이드바 (탭 메뉴) */
+.tab-menu {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding-top: var(--gap);
 }
-.header-profile-image {
-  width: 32px;
-  height: 32px;
-  margin-left: 16px;
-  cursor: pointer;
-}
-.profile-dropdown {
-  position: absolute;
-  top: 44px;
-  right: 0;
-  width: 200px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: none;
-  z-index: 200;
-}
-.profile-dropdown-container .profile-dropdown.active {
-  display: block;
-}
-.dropdown-profile-info {
-  padding: 12px;
-}
-.dropdown-profile-name {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-.dropdown-profile-detail {
-  font-size: 0.85rem;
-  color: #666;
-}
-.dropdown-divider {
-  height: 1px;
-  background: #eee;
-}
-.dropdown-item {
+.tab-menu .tab-item {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  cursor: pointer;
+  padding: 12px var(--gap);
+  font-size: 1rem;
   transition: background 0.2s;
 }
-.dropdown-item:hover {
-  background: #f5f5f5;
-}
-.dropdown-icon {
+.tab-menu .tab-item .tab-icon {
   margin-right: 8px;
+  font-size: 1.2rem;
+}
+.tab-menu .tab-item.active,
+.tab-menu .tab-item:hover {
+  background: rgba(198,41,23,0.1);
+}
+.tab-menu .tab-item.active .tab-icon,
+.tab-menu .tab-item:hover .tab-icon {
+  color: var(--primary);
 }
 
-/* ─────────────────────────────────────────────────────────
-   4. 탭 콘텐츠 기본
-───────────────────────────────────────────────────────── */
-main {
-  background-color: #fff;
-}
+/* 5. 메인 콘텐츠 */
 .tab-content {
-  display: none;
-  padding: 16px 0;
+  grid-area: main;
+  overflow-y: auto;
+  padding: calc(var(--gap)*2);
 }
-.tab-content.active {
-  display: block;
-}
-
-/* ─────────────────────────────────────────────────────────
-   5. notification-banner
-───────────────────────────────────────────────────────── */
-.notification-banner {
-  background-color: #fdecea;
-  color: #611a15;
-  padding: 12px 16px;
-  border-radius: 4px;
+.section-title {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  margin-bottom: 16px;
-  border: 1px solid #f5c6cb;
+  justify-content: space-between;
+  margin-bottom: var(--gap);
+  font-size: 1.1rem;
+  font-weight: bold;
 }
-.notification-banner .urgent-icon {
-  margin-right: 8px;
-  font-size: 1.2rem;
-}
-
-/* ─────────────────────────────────────────────────────────
-   6. 검색 바
-───────────────────────────────────────────────────────── */
-.search-bar {
-  margin-bottom: 16px;
-}
-.search-input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-.search-container {
-  position: relative;
-}
-.search-clear {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: none;
-}
-.search-container input:not(:placeholder-shown) + .search-clear {
-  display: block;
+.section-title .see-all {
+  font-size: 0.9rem;
+  color: var(--primary);
 }
 
-/* ─────────────────────────────────────────────────────────
-   7. 바로가기 메뉴 (shortcut-menu)
-───────────────────────────────────────────────────────── */
+/* 6. 공통 카드 스타일 */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  padding: var(--gap);
+  margin-bottom: var(--gap * 1.5);
+}
+
+/* 7. 홈 탭: 빠른 메뉴 */
 .shortcut-menu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--gap);
+  margin-bottom: var(--gap * 1.5);
 }
 .shortcut-item {
-  flex: 1 1 calc(20% - 16px);
-  min-width: 80px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
   text-align: center;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  padding: var(--gap);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 .shortcut-item:hover {
-  background: #f0f0f0;
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .shortcut-icon {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   margin-bottom: 8px;
 }
 .shortcut-text {
   font-size: 0.95rem;
-  color: #333;
 }
 
-/* ─────────────────────────────────────────────────────────
-   8. 시간표 미리보기 (timetable-preview)
-───────────────────────────────────────────────────────── */
+/* 8. 검색 바 */
+.search-bar {
+  margin-bottom: var(--gap * 1.5);
+}
+.search-input {
+  width: 100%;
+  padding: 10px var(--gap);
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+
+/* 9. 시간표 미리보기 */
 .timetable-preview {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
+  margin-bottom: var(--gap * 1.5);
 }
 .timetable-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  margin-bottom: var(--gap);
 }
 .timetable-date {
   font-weight: bold;
 }
 .timetable-now {
-  background: #4caf50;
+  background: var(--secondary);
   color: #fff;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius);
   font-size: 0.9rem;
 }
 #timetable-preview-content .class-item {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
 }
-#timetable-preview-content .class-time {
-  width: 60px;
+.class-time {
+  width: 70px;
   font-weight: bold;
 }
-#timetable-preview-content .class-info {
+.class-info {
   flex: 1;
 }
-#timetable-preview-content .class-name {
-  font-size: 1rem;
+.class-name {
+  margin-bottom: 4px;
 }
-#timetable-preview-content .class-location {
-  font-size: 0.85rem;
-  color: #666;
+.class-location {
+  font-size: 0.9rem;
+  color: var(--text-light);
 }
 
-/* ─────────────────────────────────────────────────────────
-   9. 셔틀버스 카드 (shuttle-card)
-───────────────────────────────────────────────────────── */
-.shuttle-card {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-.shuttle-header {
+/* 10. 셔틀버스 */
+.shuttle-card { /* reuse .card */ }
+.shuttle-card .shuttle-header {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--gap);
 }
 .shuttle-title {
-  flex: 1;
   font-weight: bold;
+  flex: 1;
 }
-.shuttle-icon {
-  font-size: 1.5rem;
-}
+.shuttle-icon { font-size: 1.4rem; }
 .shuttle-route-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
+  margin-bottom: var(--gap);
 }
 .route-tab {
   flex: 1;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 8px;
-  cursor: pointer;
+  padding: 6px 0;
   text-align: center;
+  border-radius: var(--radius);
+  background: #f0f0f0;
   transition: background 0.2s;
+  font-size: 0.9rem;
 }
-.route-tab.active {
-  background: #D23F31;
+.route-tab.active,
+.route-tab:hover {
+  background: var(--primary);
   color: #fff;
-  border-color: #D23F31;
 }
-.route-name {
-  font-weight: bold;
-}
-.next-bus-main {
+.shuttle-next-info {
   display: flex;
   align-items: center;
-  gap: 16px;
+  margin-bottom: var(--gap);
+}
+.next-bus-main {
+  flex: 1;
 }
 .shuttle-time {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 .shuttle-desc {
-  color: #555;
+  font-size: 0.9rem;
+  color: var(--text-light);
 }
 .status-badge {
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius);
   font-size: 0.85rem;
 }
-.status-badge.running {
-  background: #4caf50;
-  color: #fff;
-}
-.status-badge.stopped {
-  background: #ccc;
-  color: #666;
-}
-.shuttle-schedule {
-  margin: 16px 0;
-}
-.schedule-header {
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-.shuttle-time-slots {
+.running { background: var(--secondary); color: #fff; }
+.stopped { background: #ccc; color: #fff; }
+.shuttle-schedule .time-slot {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.time-slot {
-  flex: 1;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 8px;
-  text-align: center;
-}
-.time-period {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-.time-range,
-.time-interval {
-  font-size: 0.85rem;
-  color: #555;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
 }
 .shuttle-upcoming {
-  margin-top: 12px;
-}
-.upcoming-header {
-  font-weight: bold;
-  margin-bottom: 8px;
+  margin-top: var(--gap);
 }
 .shuttle-time-list {
   display: flex;
-  gap: 8px;
+  gap: var(--gap);
 }
 .shuttle-time-item {
   flex: 1;
+  background: #fafafa;
+  border-radius: var(--radius);
   text-align: center;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 8px;
+  padding: var(--gap);
 }
 .time-value {
   font-weight: bold;
 }
 .time-label {
   font-size: 0.85rem;
-  color: #555;
+  color: var(--text-light);
 }
 
-/* ─────────────────────────────────────────────────────────
-   10. 교내/대외활동 현황 (activity-summary-card)
-───────────────────────────────────────────────────────── */
-.activity-summary-card {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
+/* 11. 교내/대외활동 현황 */
+.activity-summary-card {}
 .activity-summary-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-}
-.activity-summary-title {
-  font-weight: bold;
-}
-.activity-summary-time {
-  font-size: 0.85rem;
-  color: #666;
+  justify-content: space-between;
+  margin-bottom: var(--gap);
 }
 .activity-summary-grid {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--gap);
+  margin-bottom: var(--gap);
 }
 .activity-stat-item {
-  flex: 1 1 calc(33.333% - 16px);
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
   display: flex;
   align-items: center;
-  padding: 12px;
+  background: #fafafa;
+  padding: var(--gap);
+  border-radius: var(--radius);
 }
 .activity-stat-icon {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   margin-right: 12px;
 }
-.activity-stat-info {
-  flex: 1;
-}
 .activity-stat-number {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: bold;
 }
 .activity-stat-label {
   font-size: 0.85rem;
-  color: #555;
+  color: var(--text-light);
 }
 .activity-summary-notices .activity-notice-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  margin-bottom: 6px;
 }
 .activity-notice-icon {
-  font-size: 1.2rem;
-}
-.activity-notice-text {
-  font-size: 0.9rem;
+  margin-right: 6px;
 }
 
-/* ─────────────────────────────────────────────────────────
-   11. 학사 일정 (calendar-card)
-───────────────────────────────────────────────────────── */
-.calendar-card {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-.section-title {
+/* 12. 학사 일정 */
+.calendar-list .calendar-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-}
-.section-title span {
-  font-weight: bold;
-}
-.see-all {
-  font-size: 0.9rem;
-  color: #D23F31;
-  text-decoration: none;
-}
-.calendar-list {
-  list-style: none;
-}
-.calendar-list li {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
-.calendar-list li:last-child {
-  border-bottom: none;
+.calendar-item .date {
+  width: 90px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+.calendar-item .title {
+  flex: 1;
 }
 
-/* ─────────────────────────────────────────────────────────
-   12. 인기 맛집 할인 정보 (student-deals-card)
-───────────────────────────────────────────────────────── */
-.student-deals-card {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-.everytime-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.everytime-title {
-  font-weight: bold;
-}
-.everytime-view-all {
-  font-size: 0.9rem;
-  color: #D23F31;
-  text-decoration: none;
-}
-#popular-restaurants-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+/* 13. 인기 맛집 */
+.student-deals-card {}
 .popular-restaurant-item {
   display: flex;
-  gap: 12px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.popular-restaurant-item.loading {
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-  0% { background-color: #f5f5f5; }
-  50% { background-color: #eaeaea; }
-  100% { background-color: #f5f5f5; }
+  align-items: center;
+  padding: var(--gap) 0;
+  border-bottom: 1px solid #eee;
 }
 .restaurant-image {
-  width: 100px;
-  height: 80px;
-  background: #ddd;
+  width: 80px;
+  height: 60px;
+  margin-right: var(--gap);
 }
-.skeleton {
-  background: #ddd !important;
+.restaurant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
 }
-.restaurant-content {
-  flex: 1;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.restaurant-content .restaurant-name {
+  font-weight: bold;
 }
-.restaurant-category,
-.restaurant-name,
-.restaurant-location,
-.restaurant-discount {
-  height: 12px;
-  background: #ddd;
-  margin-bottom: 6px;
-  border-radius: 2px;
+.restaurant-content .restaurant-location,
+.restaurant-content .restaurant-discount {
+  font-size: 0.85rem;
+  color: var(--text-light);
 }
 
-/* ─────────────────────────────────────────────────────────
-   13. 주요 공지사항 (notice-list)
-───────────────────────────────────────────────────────── */
-.notice-list {
-  list-style: none;
-}
-.notice-item {
-  padding: 12px 0;
+/* 14. 공지사항 */
+.notice-list .notice-item {
+  padding: var(--gap) 0;
   border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.1s;
 }
 .notice-item:hover {
   background: #fafafa;
 }
 .notice-header {
   display: flex;
-  gap: 8px;
+  align-items: center;
   margin-bottom: 4px;
 }
 .notice-category {
-  font-size: 0.85rem;
-  color: #D23F31;
+  background: var(--primary);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  margin-right: 8px;
 }
 .notice-date {
-  font-size: 0.85rem;
-  color: #999;
+  font-size: 0.8rem;
+  color: var(--text-light);
 }
 .notice-title {
   font-weight: bold;
@@ -618,395 +411,69 @@ main {
 }
 .notice-summary {
   font-size: 0.9rem;
-  color: #555;
+  color: var(--text-light);
 }
 
-/* ─────────────────────────────────────────────────────────
-   14. 시설 탭: 지도 & 검색 결과
-───────────────────────────────────────────────────────── */
-#facility-tab .search-bar {
-  margin-bottom: 16px;
-}
-#facility-tab .search-input {
-  width: calc(100% - 32px);
-}
-#facility-tab .search-clear {
-  right: 8px;
-}
-.quick-search-buttons {
-  margin-bottom: 16px;
-}
-.category-tag {
-  background: #f0f0f0;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-.category-tag.active,
-.category-tag:hover {
-  background: #D23F31;
-  color: #fff;
-}
-#search-results {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-#search-results .building-item {
-  flex: 1 1 calc(50% - 16px);
-}
-.no-results {
-  text-align: center;
-  color: #666;
-  padding: 24px 0;
-}
-.original-content {
-  /* nothing special */
-}
-.campus-map {
-  position: relative;
-  width: 100%;
-  height: 300px;
-  margin-bottom: 16px;
-  border-radius: 6px;
-  overflow: hidden;
-}
-.map-control-buttons {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.map-button {
-  background: rgba(255,255,255,0.9);
-  padding: 6px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-.gps-button {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(255,255,255,0.9);
-  padding: 6px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-.route-loading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255,255,255,0.9);
-  padding: 12px;
-  border-radius: 6px;
-  display: none;
-}
-.route-info-box {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  background: rgba(0,0,0,0.75);
-  color: #fff;
-  padding: 12px;
-  border-radius: 6px;
-  display: none;
-}
-.route-info-close {
-  position: absolute;
-  top: 4px;
-  right: 6px;
-  cursor: pointer;
-}
-.route-info-title {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-.route-info-detail div {
-  font-size: 0.9rem;
-}
-
-/* ─────────────────────────────────────────────────────────
-   15. 건물 & 시설 리스트
-───────────────────────────────────────────────────────── */
-.building-list,
-.facility-list {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.building-item,
-.facility-item {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.building-item:hover,
-.facility-item:hover {
-  transform: translateY(-2px);
-}
-.building-image img,
-.facility-image img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-.building-info-container,
-.facility-info {
-  padding: 8px;
-}
-.building-name,
-.facility-name {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-.building-description,
-.facility-location {
-  font-size: 0.9rem;
-  color: #555;
-}
-.building-nav-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  background: #f5f5f5;
-  border-top: 1px solid #ddd;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.building-nav-button:hover {
-  background: #ececec;
-}
-
-/* 페이지네이션 컨트롤 */
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin: 16px 0;
-}
-.pagination-button {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  background: #fff;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-.pagination-button.active {
-  background: #D23F31;
-  color: #fff;
-  border-color: #D23F31;
-}
-.pagination-button:disabled {
-  background: #eee;
-  cursor: default;
-}
-
-/* ─────────────────────────────────────────────────────────
-   16. 커뮤니티 & 강의평가
-───────────────────────────────────────────────────────── */
-.everytime-community-card {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-.community-posts {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.post-item {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  display: flex;
-  padding: 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.post-item:hover {
-  background: #f5f5f5;
-}
-.post-board {
-  font-weight: bold;
-  margin-right: 12px;
-}
-.post-content {
-  flex: 1;
-}
-.post-title {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-.post-preview {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 6px;
-}
-.post-meta {
-  font-size: 0.85rem;
-  color: #999;
-  display: flex;
-  gap: 8px;
-}
-
-/* 인기 강의평가 */
-.lecture-list {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.lecture-item {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 12px;
-  width: calc(50% - 16px);
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.lecture-item:hover {
-  transform: translateY(-2px);
-}
-.lecture-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.lecture-title {
-  font-weight: bold;
-}
-.lecture-rating {
-  background: #ffd54f;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-.lecture-info {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 8px;
-  display: flex;
-  gap: 8px;
-}
-.rating-stars {
-  color: #ffd700;
-  margin-bottom: 8px;
-}
-.lecture-reviews {
-  font-size: 0.9rem;
-  color: #555;
-}
-
-/* ─────────────────────────────────────────────────────────
-   17. 내 정보 & 메뉴 리스트
-───────────────────────────────────────────────────────── */
+/* 15. 프로필 & 메뉴 */
 .profile-section {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
+  padding: var(--gap) 0;
+  text-align: center;
+}
+.profile-section .profile-image {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+.profile-detail {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+.menu-list .menu-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  padding: var(--gap) 0;
+  border-bottom: 1px solid #eee;
 }
-.profile-image {
-  font-size: 2rem;
+.menu-title { font-size: 1rem; }
+.menu-arrow { font-size: 1.2rem; }
+
+/* 16. 알림 */
+.alert-list .alert-item {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--gap) 0;
+  border-bottom: 1px solid #eee;
+  transition: background 0.1s;
 }
-.profile-info .profile-name {
+.alert-item:hover { background: #fafafa; }
+.alert-icon { font-size: 1.4rem; margin-right: 12px; }
+.alert-info .alert-title {
   font-weight: bold;
   margin-bottom: 4px;
-}
-.profile-info .profile-detail {
-  font-size: 0.9rem;
-  color: #666;
-}
-.menu-list {
-  list-style: none;
-}
-.menu-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.menu-item:hover {
-  background: #fafafa;
-}
-.menu-title {
-  font-size: 1rem;
-}
-.menu-arrow {
-  font-size: 1.2rem;
-  color: #ccc;
-}
-.delete-account {
-  color: #D23F31;
-}
-
-/* ─────────────────────────────────────────────────────────
-   18. 알림 리스트 (alert-list)
-───────────────────────────────────────────────────────── */
-.alert-list {
-  list-style: none;
-}
-.alert-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.alert-item:hover {
-  background: #fafafa;
-}
-.alert-icon {
-  font-size: 1.5rem;
-}
-.alert-info {
-  flex: 1;
-}
-.alert-title {
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 .alert-badge {
-  background: #D23F31;
+  background: var(--primary);
   color: #fff;
   padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  margin-left: 6px;
 }
 .alert-message {
-  font-size: 0.9rem;
-  color: #555;
-  margin: 4px 0;
+  color: var(--text-light);
+  margin-bottom: 4px;
 }
 .alert-time {
   font-size: 0.85rem;
-  color: #999;
+  color: var(--text-light);
+}
+
+/* 17. 스크롤바 (WebKit) */
+.tab-content::-webkit-scrollbar {
+  width: 8px;
+}
+.tab-content::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
 }
