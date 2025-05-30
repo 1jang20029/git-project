@@ -2287,67 +2287,128 @@ function onNaverMapAPILoaded() {
 
 // 실제 지도 생성 함수
 function initNaverMap() {
-    if (isMapInitialized || !window.naver || !naver.maps) {
-        console.log('지도 API 준비되지 않음 또는 이미 초기화됨');
+    console.log('initNaverMap 함수 호출됨');
+    
+    // 이미 초기화되었거나 API가 준비되지 않은 경우
+    if (isMapInitialized) {
+        console.log('지도가 이미 초기화되었습니다.');
+        return;
+    }
+    
+    if (!window.naver || !window.naver.maps) {
+        console.error('네이버 지도 API가 로드되지 않았습니다.');
         return;
     }
 
     const mapContainer = document.getElementById('naverMap');
     if (!mapContainer) {
-        console.error('지도 컨테이너를 찾을 수 없습니다.');
+        console.error('지도 컨테이너(#naverMap)를 찾을 수 없습니다.');
         return;
     }
 
     try {
-        // 연성대학교 좌표 (정확한 좌표)
+        console.log('지도 초기화 시작...');
+        
+        // 연성대학교 정확한 좌표
+        const centerPosition = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+        
         const mapOptions = {
-            center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
+            center: centerPosition,
             zoom: 16,
             mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: naver.maps.MapTypeControlStyle.BUTTON,
+                position: naver.maps.Position.TOP_RIGHT
+            },
             zoomControl: true,
+            zoomControlOptions: {
+                style: naver.maps.ZoomControlStyle.SMALL,
+                position: naver.maps.Position.TOP_LEFT
+            }
         };
 
+        // 지도 생성
         naverMap = new naver.maps.Map(mapContainer, mapOptions);
         isMapInitialized = true;
         
-        // 건물 마커 추가
-        addBuildingMarkers();
+        console.log('네이버 지도 생성 완료');
         
-        console.log('네이버 지도 초기화 완료');
+        // 잠시 후 건물 마커 추가
+        setTimeout(() => {
+            addBuildingMarkers();
+        }, 500);
+        
     } catch (error) {
-        console.error('지도 초기화 중 오류:', error);
+        console.error('지도 초기화 중 오류 발생:', error);
+        isMapInitialized = false;
     }
 }
 
 
 // 건물 마커 추가 함수
 function addBuildingMarkers() {
-    if (!naverMap || !buildingData) return;
+    if (!naverMap) {
+        console.error('지도가 초기화되지 않았습니다.');
+        return;
+    }
+    
+    if (typeof buildingData === 'undefined') {
+        console.error('buildingData가 정의되지 않았습니다.');
+        return;
+    }
 
-    buildingData.forEach(building => {
-        const marker = new naver.maps.Marker({
-            position: new naver.maps.LatLng(building.position.lat, building.position.lng),
-            map: naverMap,
-            title: building.name
-        });
+    console.log('건물 마커 추가 시작...');
+    
+    buildingData.forEach((building, index) => {
+        try {
+            const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+            
+            const marker = new naver.maps.Marker({
+                position: position,
+                map: naverMap,
+                title: building.name,
+                icon: {
+                    content: '<div style="background: #c62917; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + building.name + '</div>',
+                    anchor: new naver.maps.Point(0, 0)
+                }
+            });
 
-        const infoWindow = new naver.maps.InfoWindow({
-            content: `
-                <div class="map-info-window">
-                    <div class="map-info-title">${building.name}</div>
-                    <div class="map-info-desc">${building.description}</div>
-                </div>
-            `
-        });
+            const infoWindow = new naver.maps.InfoWindow({
+                content: `
+                    <div style="padding: 10px; min-width: 150px;">
+                        <h4 style="margin: 0 0 5px 0; color: #c62917;">${building.name}</h4>
+                        <p style="margin: 0; font-size: 13px; color: #666;">${building.description}</p>
+                    </div>
+                `,
+                maxWidth: 200,
+                backgroundColor: "#fff",
+                borderColor: "#c62917",
+                borderWidth: 2,
+                anchorSize: new naver.maps.Size(10, 10),
+                anchorSkew: true,
+                anchorColor: "#c62917",
+                pixelOffset: new naver.maps.Point(0, -10)
+            });
 
-        naver.maps.Event.addListener(marker, 'click', function() {
-            infoWindows.forEach(window => window.close());
-            infoWindow.open(naverMap, marker);
-        });
+            // 마커 클릭 이벤트
+            naver.maps.Event.addListener(marker, 'click', function() {
+                // 다른 모든 정보창 닫기
+                infoWindows.forEach(window => window.close());
+                // 클릭한 마커의 정보창 열기
+                infoWindow.open(naverMap, marker);
+            });
 
-        mapMarkers.push(marker);
-        infoWindows.push(infoWindow);
+            mapMarkers.push(marker);
+            infoWindows.push(infoWindow);
+            
+            console.log(`마커 추가 완료: ${building.name}`);
+            
+        } catch (error) {
+            console.error(`마커 추가 실패 - ${building.name}:`, error);
+        }
     });
+    
+    console.log(`총 ${mapMarkers.length}개의 마커가 추가되었습니다.`);
 }
 
 
@@ -3385,6 +3446,8 @@ function initCategoryFilter() {
 
 // 하단 탭 클릭 시 호출되는 함수 (active toggle + 시설 탭 resize)
 function switchTab(tabName) {
+    console.log('탭 전환:', tabName);
+    
     // 모든 탭 콘텐츠 hide
     document.querySelectorAll('.tab-content').forEach(el => {
         el.classList.remove('active');
@@ -3396,7 +3459,10 @@ function switchTab(tabName) {
     });
     
     // 클릭된 탭만 show
-    document.getElementById(`${tabName}-tab`).classList.add('active');
+    const targetTab = document.getElementById(`${tabName}-tab`);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
     
     // 해당 탭 메뉴 활성화
     const tabItems = document.querySelectorAll('.tab-item');
@@ -3405,23 +3471,29 @@ function switchTab(tabName) {
         tabItems[tabIndex].classList.add('active');
     }
 
-    // facility 탭일 때만 지도 리사이즈
+    // facility 탭일 때 지도 처리
     if (tabName === 'facility') {
+        console.log('시설 탭 활성화 - 지도 초기화 확인');
+        
         setTimeout(() => {
-            if (naverMap) {
-                // 지도가 초기화되지 않은 경우 초기화
-                if (!isMapInitialized) {
-                    initNaverMap();
-                } else {
-                    // 지도 리사이즈 및 갱신
-                    window.dispatchEvent(new Event('resize'));
+            if (!isMapInitialized) {
+                console.log('지도가 초기화되지 않음. 초기화 시도...');
+                initNaverMap();
+            } else if (naverMap) {
+                console.log('지도 리사이즈 및 갱신');
+                // 지도 컨테이너 크기 재조정
+                window.dispatchEvent(new Event('resize'));
+                
+                // 지도 리프레시 (naver maps v3에서는 refresh 메서드가 없을 수 있음)
+                try {
                     if (typeof naverMap.refresh === 'function') {
                         naverMap.refresh();
                     }
+                    // 지도 크기 재계산
+                    naverMap.updateBy(naverMap.getCenter(), naverMap.getZoom());
+                } catch (e) {
+                    console.log('지도 리프레시 중 오류 (무시 가능):', e);
                 }
-            } else {
-                // 지도가 없으면 초기화
-                initNaverMap();
             }
         }, 300);
     }
@@ -5512,283 +5584,285 @@ function updateActivityNotices() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== 메인 페이지 초기화 시작 ===');
-    
-    // ========================================
-    // 1. 셔틀버스 시스템 초기화
-    // ========================================
-    console.log('셔틀버스 시스템 초기화 중...');
-    
-    // 기본으로 노선 1 선택
-    selectedShuttleRoute = 1;
-    
-    // 초기 셔틀버스 정보 업데이트
-    updateShuttleBusInfo();
-    
-    // 주기적 업데이트 (30초마다) - 인터벌 변수에 저장
-    shuttleBusInterval = setInterval(updateShuttleBusInfo, 30000);
-    
-    console.log('셔틀버스 시스템 초기화 완료');
-    
-    // ========================================
-    // 2. 프로필 및 사용자 인터페이스 초기화
-    // ========================================
-    console.log('프로필 및 UI 초기화 중...');
-    
-    // 프로필 이미지 업데이트
-    setTimeout(updateAllProfileImages, 100);
-    
-    // 카테고리 필터 기능 초기화
-    initCategoryFilter();
-    
-    // 로그인 상태 체크 및 UI 업데이트
-    checkLoginStatus();
-    
-    // 저장된 위젯 설정 불러오기
-    loadWidgetSettings();
-    
-    console.log('프로필 및 UI 초기화 완료');
-    
-    // ========================================
-    // 3. 지도 및 시설 관련 초기화
-    // ========================================
-    console.log('지도 및 시설 초기화 중...');
-    
-    // 시설 탭 초기화 (페이지네이션 포함)
-    initFacilityTab();
-    
-    // 네이버 지도 초기화 - 수정된 부분
-    setTimeout(() => {
-        if (window.naver && naver.maps) {
-            console.log('네이버 지도 API 로드 완료, 지도 초기화 시작');
-            initNaverMap();
-        } else {
-            console.log('네이버 지도 API가 아직 로드되지 않음, 재시도 중...');
-            // API가 로드될 때까지 재시도
-            let retryCount = 0;
-            const retryInterval = setInterval(() => {
-                retryCount++;
-                if (window.naver && naver.maps) {
-                    console.log(`네이버 지도 API 로드 완료 (${retryCount}번째 시도), 지도 초기화 시작`);
-                    initNaverMap();
-                    clearInterval(retryInterval);
-                } else if (retryCount > 10) {
-                    console.error('네이버 지도 API 로드 실패 - 최대 재시도 횟수 초과');
-                    clearInterval(retryInterval);
-                }
-            }, 500);
-        }
-    }, 1000);
-    
-    // 검색 기능 초기화
-    initSearchFunctionality();
-    
-    console.log('지도 및 시설 초기화 완료');
-    
-    // ========================================
-    // 4. 이미지 URL 수정 및 시간표 초기화
-    // ========================================
-    console.log('이미지 및 시간표 초기화 중...');
-    
-    // Placeholder 이미지 URL 문제 해결
-    function fixPlaceholderImages() {
-        console.log('Placeholder 이미지 URL 수정 중...');
+   console.log('=== 메인 페이지 초기화 시작 ===');
+   
+   // ========================================
+   // 1. 셔틀버스 시스템 초기화
+   // ========================================
+   console.log('셔틀버스 시스템 초기화 중...');
+   
+   // 기본으로 노선 1 선택
+   selectedShuttleRoute = 1;
+   
+   // 초기 셔틀버스 정보 업데이트
+   updateShuttleBusInfo();
+   
+   // 주기적 업데이트 (30초마다) - 인터벌 변수에 저장
+   shuttleBusInterval = setInterval(updateShuttleBusInfo, 30000);
+   
+   console.log('셔틀버스 시스템 초기화 완료');
+   
+   // ========================================
+   // 2. 프로필 및 사용자 인터페이스 초기화
+   // ========================================
+   console.log('프로필 및 UI 초기화 중...');
+   
+   // 프로필 이미지 업데이트
+   setTimeout(updateAllProfileImages, 100);
+   
+   // 카테고리 필터 기능 초기화
+   initCategoryFilter();
+   
+   // 로그인 상태 체크 및 UI 업데이트
+   checkLoginStatus();
+   
+   // 저장된 위젯 설정 불러오기
+   loadWidgetSettings();
+   
+   console.log('프로필 및 UI 초기화 완료');
+   
+   // ========================================
+   // 3. 지도 및 시설 관련 초기화
+   // ========================================
+   console.log('지도 및 시설 초기화 중...');
+   
+   // 시설 탭 초기화 (페이지네이션 포함)
+   initFacilityTab();
+   
+   // 네이버 지도 초기화 - 수정된 부분
+   console.log('네이버 지도 API 상태 확인...');
+   if (window.naver && window.naver.maps) {
+       console.log('네이버 지도 API 즉시 사용 가능');
+       setTimeout(initNaverMap, 500);
+   } else {
+       console.log('네이버 지도 API 로딩 대기 중...');
+       
+       // API 로드 대기
+       let checkCount = 0;
+       const checkInterval = setInterval(() => {
+           checkCount++;
+           console.log(`API 로드 체크 ${checkCount}회...`);
+           
+           if (window.naver && window.naver.maps) {
+               console.log('네이버 지도 API 로드 완료!');
+               clearInterval(checkInterval);
+               initNaverMap();
+           } else if (checkCount > 20) { // 10초 후 포기
+               console.error('네이버 지도 API 로드 타임아웃');
+               clearInterval(checkInterval);
+           }
+       }, 500);
+   }
+   
+   // 검색 기능 초기화
+   initSearchFunctionality();
+   
+   console.log('지도 및 시설 초기화 완료');
+   
+   // ========================================
+   // 4. 이미지 URL 수정 및 시간표 초기화
+   // ========================================
+   console.log('이미지 및 시간표 초기화 중...');
+   
+   // Placeholder 이미지 URL 문제 해결
+   function fixPlaceholderImages() {
+       console.log('Placeholder 이미지 URL 수정 중...');
 
-        // 모든 img 태그 중 placeholder를 사용하는 것 찾기
-        document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
-            const src = img.getAttribute('src');
-            const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
-            
-            if (dimensions && dimensions.length === 3) {
-                const width = dimensions[1];
-                const height = dimensions[2];
-                const altText = img.getAttribute('alt') || 'Image';
-                
-                // placehold.co 서비스로 대체
-                const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
-                console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
-                img.src = newSrc;
-            }
-        });
+       // 모든 img 태그 중 placeholder를 사용하는 것 찾기
+       document.querySelectorAll('img[src*="/api/placeholder/"]').forEach(img => {
+           const src = img.getAttribute('src');
+           const dimensions = src.match(/\/api\/placeholder\/(\d+)\/(\d+)/);
+           
+           if (dimensions && dimensions.length === 3) {
+               const width = dimensions[1];
+               const height = dimensions[2];
+               const altText = img.getAttribute('alt') || 'Image';
+               
+               // placehold.co 서비스로 대체
+               const newSrc = `https://placehold.co/${width}x${height}/gray/white?text=${encodeURIComponent(altText)}`;
+               console.log(`이미지 URL 수정: ${src} → ${newSrc}`);
+               img.src = newSrc;
+           }
+       });
 
-        console.log('Placeholder 이미지 URL 수정 완료');
+       console.log('Placeholder 이미지 URL 수정 완료');
 
-        // 시간표 미리보기 초기화 (다른 초기화 완료 후)
-        setTimeout(() => {
-            console.log('시간표 미리보기 초기화');
-            updateTimetablePreview();
-            
-            // 1분마다 시간표 미리보기 업데이트 - 인터벌 변수에 저장
-            timetableInterval = setInterval(updateTimetablePreview, 60000);
-        }, 1000);
-    }
+       // 시간표 미리보기 초기화 (다른 초기화 완료 후)
+       setTimeout(() => {
+           console.log('시간표 미리보기 초기화');
+           updateTimetablePreview();
+           
+           // 1분마다 시간표 미리보기 업데이트 - 인터벌 변수에 저장
+           timetableInterval = setInterval(updateTimetablePreview, 60000);
+       }, 1000);
+   }
 
-    // 즉시 실행하여 모든 이미지 URL 수정
-    fixPlaceholderImages();
-    
-    console.log('이미지 및 시간표 초기화 완료');
-    
-    // ========================================
-    // 5. 과제 링크 수정
-    // ========================================
-    console.log('과제 링크 수정 중...');
-    
-    // 과제 링크 href 속성 수정
-    const assignmentLinks = document.querySelectorAll('a[onclick*="goToPage(\'assignments\')"]');
-    assignmentLinks.forEach(link => {
-        link.href = 'assignments.html';
-        link.onclick = function(e) {
-            e.preventDefault();
-            window.location.href = 'assignments.html';
-        };
-    });
-    
-    console.log('과제 링크 수정 완료');
-    
-    // ========================================
-    // 6. 활동 통계 및 공지사항 초기화
-    // ========================================
-    console.log('활동 통계 초기화 중...');
-    
-    // 활동 통계 표시
-    displayActivityStats();
-    updateActivityNotices();
-    
-    // 다가오는 학사일정 표시
-    displayUpcomingAcademicSchedule();
-    
-    // 학사일정을 주기적으로 업데이트 (하루에 한 번, 자정 이후)
-    const scheduleUpdateInterval = setInterval(() => {
-        const now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0) {
-            displayUpcomingAcademicSchedule();
-        }
-    }, 60000); // 1분마다 체크
-    
-    // 5분마다 자동 갱신 (선택적) - 인터벌 변수에 저장
-    activityStatsInterval = setInterval(displayActivityStats, 300000);
-    
-    console.log('활동 통계 초기화 완료');
-    
-    // ========================================
-    // 7. 맛집 정보 초기화
-    // ========================================
-    console.log('맛집 정보 초기화 중...');
-    
-    // 맛집 스타일 추가
-    addRestaurantStyles();
-    
-    // 인기 맛집 정보 표시
-    displayPopularRestaurantsOnMainPage();
-    
-    // 5분마다 새로고침 (선택사항) - 인터벌 변수에 저장
-    restaurantInterval = setInterval(displayPopularRestaurantsOnMainPage, 300000);
-    
-    console.log('맛집 정보 초기화 완료');
-    
-    // ========================================
-    // 8. 이벤트 리스너 등록
-    // ========================================
-    console.log('이벤트 리스너 등록 중...');
-    
-    // localStorage 변경 감지를 위한 이벤트 리스너
-    window.addEventListener('storage', function(event) {
-        console.log('Storage 변경 감지:', event.key);
-        
-        // 프로필 관련 변경사항 감지
-        if (event.key === 'profileUpdated' || 
-            event.key === 'profileImageUpdated' || 
-            event.key.includes('_profileImage') || 
-            event.key.includes('_customProfileImage')) {
-            console.log('프로필 정보 업데이트');
-            updateAllProfileImages();
-        }
-        
-        // 활동 데이터 변경 감지
-        if (event.key === 'activityStats' || event.key === 'urgentActivities') {
-            console.log('활동 데이터가 다른 탭에서 변경됨:', event.key);
-            displayActivityStats();
-            updateActivityNotices();
-        }
-        
-        // 맛집 데이터 변경 감지
-        if (event.key === 'restaurants') {
-            console.log('맛집 데이터 변경 감지');
-            displayPopularRestaurantsOnMainPage();
-        }
-        
-        // 학사일정 데이터 변경 감지 (필요시)
-        if (event.key === 'academicScheduleUpdated') {
-            console.log('학사일정 데이터 변경 감지');
-            displayUpcomingAcademicSchedule();
-        }
-    });
+   // 즉시 실행하여 모든 이미지 URL 수정
+   fixPlaceholderImages();
+   
+   console.log('이미지 및 시간표 초기화 완료');
+   
+   // ========================================
+   // 5. 과제 링크 수정
+   // ========================================
+   console.log('과제 링크 수정 중...');
+   
+   // 과제 링크 href 속성 수정
+   const assignmentLinks = document.querySelectorAll('a[onclick*="goToPage(\'assignments\')"]');
+   assignmentLinks.forEach(link => {
+       link.href = 'assignments.html';
+       link.onclick = function(e) {
+           e.preventDefault();
+           window.location.href = 'assignments.html';
+       };
+   });
+   
+   console.log('과제 링크 수정 완료');
+   
+   // ========================================
+   // 6. 활동 통계 및 공지사항 초기화
+   // ========================================
+   console.log('활동 통계 초기화 중...');
+   
+   // 활동 통계 표시
+   displayActivityStats();
+   updateActivityNotices();
+   
+   // 다가오는 학사일정 표시
+   displayUpcomingAcademicSchedule();
+   
+   // 학사일정을 주기적으로 업데이트 (하루에 한 번, 자정 이후)
+   const scheduleUpdateInterval = setInterval(() => {
+       const now = new Date();
+       if (now.getHours() === 0 && now.getMinutes() === 0) {
+           displayUpcomingAcademicSchedule();
+       }
+   }, 60000); // 1분마다 체크
+   
+   // 5분마다 자동 갱신 (선택적) - 인터벌 변수에 저장
+   activityStatsInterval = setInterval(displayActivityStats, 300000);
+   
+   console.log('활동 통계 초기화 완료');
+   
+   // ========================================
+   // 7. 맛집 정보 초기화
+   // ========================================
+   console.log('맛집 정보 초기화 중...');
+   
+   // 맛집 스타일 추가
+   addRestaurantStyles();
+   
+   // 인기 맛집 정보 표시
+   displayPopularRestaurantsOnMainPage();
+   
+   // 5분마다 새로고침 (선택사항) - 인터벌 변수에 저장
+   restaurantInterval = setInterval(displayPopularRestaurantsOnMainPage, 300000);
+   
+   console.log('맛집 정보 초기화 완료');
+   
+   // ========================================
+   // 8. 이벤트 리스너 등록
+   // ========================================
+   console.log('이벤트 리스너 등록 중...');
+   
+   // localStorage 변경 감지를 위한 이벤트 리스너
+   window.addEventListener('storage', function(event) {
+       console.log('Storage 변경 감지:', event.key);
+       
+       // 프로필 관련 변경사항 감지
+       if (event.key === 'profileUpdated' || 
+           event.key === 'profileImageUpdated' || 
+           event.key.includes('_profileImage') || 
+           event.key.includes('_customProfileImage')) {
+           console.log('프로필 정보 업데이트');
+           updateAllProfileImages();
+       }
+       
+       // 활동 데이터 변경 감지
+       if (event.key === 'activityStats' || event.key === 'urgentActivities') {
+           console.log('활동 데이터가 다른 탭에서 변경됨:', event.key);
+           displayActivityStats();
+           updateActivityNotices();
+       }
+       
+       // 맛집 데이터 변경 감지
+       if (event.key === 'restaurants') {
+           console.log('맛집 데이터 변경 감지');
+           displayPopularRestaurantsOnMainPage();
+       }
+       
+       // 학사일정 데이터 변경 감지 (필요시)
+       if (event.key === 'academicScheduleUpdated') {
+           console.log('학사일정 데이터 변경 감지');
+           displayUpcomingAcademicSchedule();
+       }
+   });
 
-     // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
-    window.addEventListener('pageshow', function(event) {
-        console.log('페이지 복원 감지:', event.persisted);
-        
-        // bfcache에서 페이지가 복원된 경우에도 실행
-        if (event.persisted) {
-            checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
-            updateAllProfileImages(); // 프로필 이미지도 다시 확인
-            updateShuttleBusInfo(); // 뒤로가기 시에도 셔틀버스 정보 갱신
-            displayActivityStats(); // 활동 통계 갱신
-            displayUpcomingAcademicSchedule(); // 학사일정 갱신
-            displayPopularRestaurantsOnMainPage(); // 맛집 정보 갱신
-        }
-    });
-    
-    // 활동 통계 업데이트 이벤트 리스너 추가
-    window.addEventListener('activityStatsUpdated', function() {
-        console.log('활동 통계 업데이트 이벤트 수신');
-        displayActivityStats();
-        updateActivityNotices();
-    });
-    
-    // 맛집 업데이트 이벤트 리스너 등록
-    window.addEventListener('restaurantUpdated', function() {
-        console.log('맛집 업데이트 이벤트 수신');
-        displayPopularRestaurantsOnMainPage();
-    });
-    
-    // 맛집 반응 업데이트 이벤트 리스너
-    window.addEventListener('restaurantsUpdated', function(event) {
-        console.log('맛집 반응 업데이트 이벤트 수신:', event.detail);
-        displayPopularRestaurantsOnMainPage();
-    });
-    
-    console.log('이벤트 리스너 등록 완료');
-    
-    // ========================================
-    // 9. 초기화 상태 업데이트 및 완료 처리
-    // ========================================
-    console.log('초기화 상태 업데이트 중...');
-    
-    // 컴포넌트별 초기화 상태 업데이트
-    initializationStatus.map = true;
-    initializationStatus.busSystem = true;
-    initializationStatus.timetable = true;
-    initializationStatus.profile = true;
-    initializationStatus.search = true;
-    
-    // 초기화 완료 체크
-    checkInitializationComplete();
-    
-    console.log('=== 메인 페이지 초기화 완료 ===');
-    console.log('초기화된 컴포넌트:', {
-        셔틀버스: initializationStatus.busSystem,
-        지도: initializationStatus.map,
-        시간표: initializationStatus.timetable,
-        프로필: initializationStatus.profile,
-        검색: initializationStatus.search
-    });
-    
-    // 디버그 모드에서 추가 정보 출력
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log('🔧 개발 모드: 디버그 유틸리티 사용 가능');
-        console.log('window.debugUtils 객체를 통해 디버깅 함수들을 사용할 수 있습니다.');
-    }
+    // pageshow 이벤트 리스너 추가 - 뒤로가기로 돌아왔을 때 정보 갱신
+   window.addEventListener('pageshow', function(event) {
+       console.log('페이지 복원 감지:', event.persisted);
+       
+       // bfcache에서 페이지가 복원된 경우에도 실행
+       if (event.persisted) {
+           checkLoginStatus(); // 로그인 상태와 프로필 정보 다시 확인
+           updateAllProfileImages(); // 프로필 이미지도 다시 확인
+           updateShuttleBusInfo(); // 뒤로가기 시에도 셔틀버스 정보 갱신
+           displayActivityStats(); // 활동 통계 갱신
+           displayUpcomingAcademicSchedule(); // 학사일정 갱신
+           displayPopularRestaurantsOnMainPage(); // 맛집 정보 갱신
+       }
+   });
+   
+   // 활동 통계 업데이트 이벤트 리스너 추가
+   window.addEventListener('activityStatsUpdated', function() {
+       console.log('활동 통계 업데이트 이벤트 수신');
+       displayActivityStats();
+       updateActivityNotices();
+   });
+   
+   // 맛집 업데이트 이벤트 리스너 등록
+   window.addEventListener('restaurantUpdated', function() {
+       console.log('맛집 업데이트 이벤트 수신');
+       displayPopularRestaurantsOnMainPage();
+   });
+   
+   // 맛집 반응 업데이트 이벤트 리스너
+   window.addEventListener('restaurantsUpdated', function(event) {
+       console.log('맛집 반응 업데이트 이벤트 수신:', event.detail);
+       displayPopularRestaurantsOnMainPage();
+   });
+   
+   console.log('이벤트 리스너 등록 완료');
+   
+   // ========================================
+   // 9. 초기화 상태 업데이트 및 완료 처리
+   // ========================================
+   console.log('초기화 상태 업데이트 중...');
+   
+   // 컴포넌트별 초기화 상태 업데이트
+   initializationStatus.map = true;
+   initializationStatus.busSystem = true;
+   initializationStatus.timetable = true;
+   initializationStatus.profile = true;
+   initializationStatus.search = true;
+   
+   // 초기화 완료 체크
+   checkInitializationComplete();
+   
+   console.log('=== 메인 페이지 초기화 완료 ===');
+   console.log('초기화된 컴포넌트:', {
+       셔틀버스: initializationStatus.busSystem,
+       지도: initializationStatus.map,
+       시간표: initializationStatus.timetable,
+       프로필: initializationStatus.profile,
+       검색: initializationStatus.search
+   });
+   
+   // 디버그 모드에서 추가 정보 출력
+   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+       console.log('🔧 개발 모드: 디버그 유틸리티 사용 가능');
+       console.log('window.debugUtils 객체를 통해 디버깅 함수들을 사용할 수 있습니다.');
+   }
 });
 
 
