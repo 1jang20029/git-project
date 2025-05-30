@@ -2278,423 +2278,34 @@ function getTodaysClasses() {
 
 // API 로드 완료 콜백으로만 호출
 function onNaverMapAPILoaded() {
-    console.log('네이버 지도 API 로드 완료');
-    
-    // DOM이 준비될 때까지 대기
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initNaverMap, 500); // 조금 더 대기
-        });
-    } else {
-        setTimeout(initNaverMap, 500); // 조금 더 대기
-    }
+  // 이 시점에는 window.naver.maps가 보장된다
+  initNaverMap();                  // 최초 한 번만 지도 생성
+  setTimeout(fixMapGrayArea, 500); // 회색 오버레이 제거
 }
-
-
-
-// 안전한 지도 초기화 함수
-function initNaverMapSafe() {
-    console.log('안전한 지도 초기화 시작');
-    
-    const mapContainer = document.getElementById('naverMap');
-    if (!mapContainer) {
-        console.error('지도 컨테이너를 찾을 수 없습니다.');
-        return;
-    }
-
-    // 이미 초기화되었다면 중복 실행 방지
-    if (isMapInitialized && naverMap) {
-        console.log('지도가 이미 초기화되었습니다.');
-        return;
-    }
-
-    try {
-        // 지도 생성 시도
-        const mapOptions = {
-            center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
-            zoom: 16,
-            mapTypeControl: true,
-            mapTypeControlOptions: {
-                style: naver.maps.MapTypeControlStyle.BUTTON,
-                position: naver.maps.Position.TOP_RIGHT
-            },
-            zoomControl: false, // 커스텀 줌 컨트롤 사용
-            scaleControl: false,
-            logoControl: false,
-            mapDataControl: false
-        };
-
-        naverMap = new naver.maps.Map(mapContainer, mapOptions);
-        isMapInitialized = true;
-        
-        console.log('네이버 지도 생성 성공');
-
-        // 지도 이벤트 리스너 등록
-        naver.maps.Event.addListener(naverMap, 'tilesloaded', function() {
-            console.log('지도 타일 로드 완료');
-            setTimeout(addBuildingMarkersSafe, 500);
-        });
-
-        // 지도 클릭 시 정보창 닫기
-        naver.maps.Event.addListener(naverMap, 'click', function() {
-            if (infoWindows && infoWindows.length > 0) {
-                infoWindows.forEach(window => {
-                    try {
-                        window.close();
-                    } catch (e) {
-                        console.warn('정보창 닫기 오류:', e);
-                    }
-                });
-            }
-        });
-
-    } catch (error) {
-        console.error('지도 생성 오류:', error);
-        showMapFallback();
-    }
-}
-
-
-function addBuildingMarkersSafe() {
-    if (!naverMap || !buildingData) {
-        console.warn('지도 또는 건물 데이터가 없습니다.');
-        return;
-    }
-
-    console.log('건물 마커 추가 시작');
-
-    try {
-        // 기존 마커 안전하게 제거
-        if (mapMarkers && mapMarkers.length > 0) {
-            mapMarkers.forEach(marker => {
-                try {
-                    marker.setMap(null);
-                } catch (e) {
-                    console.warn('마커 제거 오류:', e);
-                }
-            });
-        }
-
-        if (infoWindows && infoWindows.length > 0) {
-            infoWindows.forEach(window => {
-                try {
-                    window.close();
-                } catch (e) {
-                    console.warn('정보창 제거 오류:', e);
-                }
-            });
-        }
-
-        // 배열 초기화
-        mapMarkers = [];
-        infoWindows = [];
-
-        // 새 마커 추가
-        buildingData.forEach((building, index) => {
-            try {
-                const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-                
-                const marker = new naver.maps.Marker({
-                    position: position,
-                    map: naverMap,
-                    title: building.name,
-                    icon: {
-                        content: `<div style="
-                            background-color: #c62917;
-                            color: white;
-                            padding: 4px 8px;
-                            border-radius: 12px;
-                            font-size: 12px;
-                            font-weight: bold;
-                            white-space: nowrap;
-                            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                        ">${building.name}</div>`,
-                        size: new naver.maps.Size(100, 24),
-                        anchor: new naver.maps.Point(50, 24)
-                    }
-                });
-
-                const infoWindow = new naver.maps.InfoWindow({
-                    content: `
-                        <div style="padding: 12px; max-width: 200px;">
-                            <h4 style="margin: 0 0 8px 0; color: #c62917;">${building.name}</h4>
-                            <p style="margin: 0 0 8px 0; font-size: 13px; color: #666;">${building.description}</p>
-                            <button onclick="navigateToBuilding('${building.id}', event)" style="
-                                background-color: #c62917;
-                                color: white;
-                                border: none;
-                                padding: 6px 12px;
-                                border-radius: 4px;
-                                font-size: 12px;
-                                cursor: pointer;
-                            ">길찾기</button>
-                        </div>
-                    `,
-                    maxWidth: 240,
-                    backgroundColor: "white",
-                    borderColor: "#c62917",
-                    borderWidth: 2,
-                    anchorSize: new naver.maps.Size(10, 10)
-                });
-
-                naver.maps.Event.addListener(marker, 'click', function() {
-                    infoWindows.forEach(window => {
-                        try {
-                            window.close();
-                        } catch (e) {
-                            console.warn('정보창 닫기 오류:', e);
-                        }
-                    });
-                    infoWindow.open(naverMap, marker);
-                });
-
-                mapMarkers.push(marker);
-                infoWindows.push(infoWindow);
-
-            } catch (error) {
-                console.error(`건물 ${building.name} 마커 생성 오류:`, error);
-            }
-        });
-
-        console.log(`총 ${mapMarkers.length}개의 마커가 추가되었습니다.`);
-
-    } catch (error) {
-        console.error('마커 추가 중 전체 오류:', error);
-    }
-}
-
-
-// 지도 대체 표시 함수 (API 로드 실패 시)
-function showMapFallback() {
-    const mapContainer = document.getElementById('naverMap');
-    if (!mapContainer) return;
-
-    mapContainer.innerHTML = `
-        <div style="
-            width: 100%; 
-            height: 350px; 
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center;
-            border: 2px dashed #dee2e6;
-            border-radius: 12px;
-            color: #495057;
-            text-align: center;
-            padding: 20px;
-        ">
-            <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.7;">🗺️</div>
-            <div style="font-size: 18px; font-weight: bold; margin-bottom: 12px;">지도 서비스 일시 중단</div>
-            <div style="font-size: 14px; line-height: 1.6; margin-bottom: 20px; max-width: 300px;">
-                현재 지도 서비스에 일시적인 문제가 발생했습니다.<br>
-                아래 건물 목록에서 원하는 시설을 찾아보세요.
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="retryMapLoad()" style="
-                    padding: 10px 20px;
-                    background-color: #c62917;
-                    color: white;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    font-weight: 500;
-                ">다시 시도</button>
-                <button onclick="scrollToBuildingList()" style="
-                    padding: 10px 20px;
-                    background-color: #6c757d;
-                    color: white;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    font-weight: 500;
-                ">건물 목록 보기</button>
-            </div>
-        </div>
-    `;
-}
-
-
-function createMap() {
-    if (isMapInitialized) {
-        console.log('지도가 이미 초기화되었습니다.');
-        return;
-    }
-
-    const mapContainer = document.getElementById('naverMap');
-    if (!mapContainer) {
-        console.error('지도 컨테이너를 찾을 수 없습니다.');
-        return;
-    }
-
-    try {
-        const mapOptions = {
-            center: new naver.maps.LatLng(37.39661657434427, 126.90772437800818),
-            zoom: 16,
-            mapTypeControl: true,
-            zoomControl: true
-        };
-
-        naverMap = new naver.maps.Map(mapContainer, mapOptions);
-        isMapInitialized = true;
-        
-        console.log('네이버 지도 생성 성공!');
-        
-        // 마커 추가
-        setTimeout(addBuildingMarkers, 1000);
-        
-    } catch (error) {
-        console.error('지도 생성 오류:', error);
-        showMapError(mapContainer);
-    }
-}
-
 
 // 실제 지도 생성 함수
 function initNaverMap() {
-    console.log('네이버 지도 초기화 시작');
-    
-    // API 로드 체크
-    function checkNaverAPI() {
-        if (window.naver && window.naver.maps) {
-            console.log('네이버 지도 API 사용 가능');
-            createMap();
-        } else {
-            console.log('네이버 지도 API 대기 중...');
-            setTimeout(checkNaverAPI, 200);
-        }
-    }
-    
-    checkNaverAPI();
+  // guard: 이미 한 번 초기화했으면 리턴
+  if (isMapInitialized) return;
+  isMapInitialized = true;
+
+  const mapContainer = document.getElementById('naverMap');
+  const mapOptions = {
+    center: new naver.maps.LatLng(37.553517, 126.937452),
+    zoom: 16,
+    mapTypeControl: true,
+    zoomControl: true,
+  };
+
+  naverMap = new naver.maps.Map(mapContainer, mapOptions);
+
+  // 예: 마커 하나 띄우기
+  new naver.maps.Marker({
+    position: mapOptions.center,
+    map: naverMap
+  });
 }
 
-
-
-// 지도 오류 표시 함수
-function showMapError(container) {
-    container.innerHTML = `
-        <div style="width:100%;height:350px;display:flex;justify-content:center;align-items:center;background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;">
-            <div style="text-align:center;">
-                <div style="font-size:48px;margin-bottom:16px;">🗺️</div>
-                <div style="font-size:16px;margin-bottom:8px;">지도 로딩 실패</div>
-                <button onclick="retryNaverMap()" style="padding:8px 16px;background:#c62917;color:white;border:none;border-radius:4px;cursor:pointer;">다시 시도</button>
-            </div>
-        </div>
-    `;
-}
-
-
-function retryNaverMap() {
-    console.log('지도 재시도');
-    isMapInitialized = false;
-    naverMap = null;
-    mapMarkers = [];
-    infoWindows = [];
-    
-    const mapContainer = document.getElementById('naverMap');
-    if (mapContainer) {
-        mapContainer.innerHTML = '<div style="width:100%;height:350px;display:flex;justify-content:center;align-items:center;">지도 로딩 중...</div>';
-    }
-    
-    setTimeout(initNaverMap, 500);
-}
-
-
-// 지도 재로드 함수
-function retryMapLoad() {
-    console.log('지도 재로드 시도');
-    
-    isMapInitialized = false;
-    naverMap = null;
-    mapMarkers = [];
-    infoWindows = [];
-    
-    const mapContainer = document.getElementById('naverMap');
-    if (mapContainer) {
-        mapContainer.innerHTML = '<div style="width: 100%; height: 350px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa; border-radius: 8px; color: #6c757d;"><div style="text-align: center;"><div style="font-size: 32px; margin-bottom: 10px;">⏳</div><div>지도 로딩 중...</div></div></div>';
-    }
-    
-    setTimeout(function() {
-        if (window.naver && window.naver.maps) {
-            initNaverMap();
-        } else {
-            console.error('네이버 지도 API가 여전히 로드되지 않았습니다.');
-            showMapError(mapContainer);
-        }
-    }, 1000);
-}
-
-
-// 건물 목록으로 스크롤
-function scrollToBuildingList() {
-    const buildingList = document.querySelector('.building-list');
-    if (buildingList) {
-        buildingList.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
-}
-
-
-// 전역 함수 노출
-window.onNaverMapAPILoaded = onNaverMapAPILoaded;
-window.retryMapLoad = retryMapLoad;
-window.scrollToBuildingList = scrollToBuildingList;
-
-
-
-// 건물 마커 추가 함수 수정
-function addBuildingMarkers() {
-    if (!naverMap || !buildingData) {
-        console.log('지도 또는 데이터 준비 안됨');
-        return;
-    }
-
-    console.log('마커 추가 시작');
-    
-    // 기존 마커 제거
-    if (mapMarkers) {
-        mapMarkers.forEach(marker => marker.setMap(null));
-    }
-    if (infoWindows) {
-        infoWindows.forEach(window => window.close());
-    }
-    
-    mapMarkers = [];
-    infoWindows = [];
-
-    buildingData.forEach(building => {
-        try {
-            const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-            
-            const marker = new naver.maps.Marker({
-                position: position,
-                map: naverMap,
-                title: building.name
-            });
-
-            const infoWindow = new naver.maps.InfoWindow({
-                content: `<div style="padding:10px"><b>${building.name}</b><br>${building.description}</div>`
-            });
-
-            naver.maps.Event.addListener(marker, 'click', () => {
-                infoWindows.forEach(w => w.close());
-                infoWindow.open(naverMap, marker);
-            });
-
-            mapMarkers.push(marker);
-            infoWindows.push(infoWindow);
-
-        } catch (error) {
-            console.error('마커 생성 오류:', error);
-        }
-    });
-
-    console.log(`마커 ${mapMarkers.length}개 추가 완료`);
-}
 
 
 
@@ -2726,27 +2337,17 @@ function initNaverMapWithFix() {
 
 // 탭이 보이는 상태에서만 resize/refresh를 강제 발생
 function handleMapResize() {
-    if (!naverMap) {
-        console.log('지도가 초기화되지 않았습니다.');
-        return;
-    }
-    
-    const mapContainer = document.getElementById('naverMap');
-    if (!mapContainer || getComputedStyle(mapContainer).display === 'none') {
-        return;
-    }
-    
-    setTimeout(function() {
-        try {
-            window.dispatchEvent(new Event('resize'));
-            if (naverMap && typeof naverMap.refresh === 'function') {
-                naverMap.refresh();
-            }
-            console.log('지도 리사이즈 완료');
-        } catch (error) {
-            console.warn('지도 리사이즈 중 오류:', error);
-        }
-    }, 300);
+  if (!naverMap) return;
+  const mapContainer = document.getElementById('naverMap');
+  if (!mapContainer || getComputedStyle(mapContainer).display === 'none') {
+    return;
+  }
+  // 브라우저 resize 이벤트 트리거
+  window.dispatchEvent(new Event('resize'));
+  // v3 refresh
+  if (typeof naverMap.refresh === 'function') {
+    naverMap.refresh();
+  }
 }
 
 
@@ -3741,176 +3342,32 @@ let isMapInitialized = false;
 
 // 하단 탭 클릭 시 호출되는 함수 (active toggle + 시설 탭 resize)
 function switchTab(tabName) {
-    console.log('탭 전환:', tabName);
-    
-    // 1. 모든 탭 콘텐츠 숨기기
-    document.querySelectorAll('.tab-content').forEach(function(el) {
-        el.classList.remove('active');
-    });
-    
-    // 2. 모든 탭 메뉴 비활성화
-    document.querySelectorAll('.tab-item').forEach(function(el) {
-        el.classList.remove('active');
-    });
-    
-    // 3. 선택된 탭 콘텐츠 활성화
-    const selectedTabContent = document.getElementById(tabName + '-tab');
-    if (selectedTabContent) {
-        selectedTabContent.classList.add('active');
-    }
-    
-    // 4. 해당 탭 메뉴 아이템 활성화
-    const tabMenus = ['home', 'facility', 'community', 'profile', 'alert'];
-    const tabIndex = tabMenus.indexOf(tabName);
-    const tabItems = document.querySelectorAll('.tab-item');
-    
-    if (tabIndex !== -1 && tabItems[tabIndex]) {
-        tabItems[tabIndex].classList.add('active');
-    }
-    
-    // 5. 탭별 특별 처리
-    if (tabName === 'home') {
-        console.log('홈 탭 활성화');
-        setTimeout(function() {
-            if (typeof updateTimetablePreview === 'function') {
-                updateTimetablePreview();
-            }
-            if (typeof updateShuttleBusInfo === 'function') {
-                updateShuttleBusInfo();
-            }
-            if (typeof displayActivityStats === 'function') {
-                displayActivityStats();
-            }
-            if (typeof displayUpcomingAcademicSchedule === 'function') {
-                displayUpcomingAcademicSchedule();
-            }
-            if (typeof displayPopularRestaurantsOnMainPage === 'function') {
-                displayPopularRestaurantsOnMainPage();
-            }
-        }, 100);
-    }
-    
-    if (tabName === 'facility') {
-        console.log('시설 탭 활성화');
-        setTimeout(function() {
-            if (!isMapInitialized) {
-                console.log('지도 초기화 시작');
-                initNaverMap();
-            } else if (naverMap && typeof naverMap.refresh === 'function') {
-                console.log('지도 리프레시');
-                try {
-                    naverMap.refresh();
-                } catch (error) {
-                    console.warn('지도 리프레시 오류:', error);
-                    retryNaverMap();
-                }
-            }
-        }, 300);
-    }
-    
-    if (tabName === 'community') {
-        console.log('커뮤니티 탭 활성화');
-        setTimeout(function() {
-            const categoryTags = document.querySelectorAll('#community-tab .category-tag');
-            if (categoryTags.length > 0) {
-                categoryTags.forEach(function(tag) {
-                    tag.classList.remove('active');
-                });
-                if (categoryTags[0]) {
-                    categoryTags[0].classList.add('active');
-                }
-            }
-        }, 100);
-    }
-    
-    if (tabName === 'profile') {
-        console.log('프로필 탭 활성화');
-        setTimeout(function() {
-            if (typeof checkLoginStatus === 'function') {
-                checkLoginStatus();
-            }
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            if (currentUser && typeof updateProfileInfo === 'function') {
-                updateProfileInfo(currentUser);
-            }
-        }, 100);
-    }
-    
-    if (tabName === 'alert') {
-        console.log('알림 탭 활성화');
-    }
-    
-    // 6. 페이지 스크롤을 맨 위로
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-    
-    console.log('탭 전환 완료:', tabName);
+  // 1) 모든 탭 콘텐츠 hide
+  document.querySelectorAll('.tab-content').forEach(el => {
+    el.classList.remove('active');
+  });
+  // 2) 클릭된 탭만 show
+  document.getElementById(`${tabName}-tab`).classList.add('active');
+
+  // 3) facility 탭일 때만 지도 리사이즈 강제
+  if (tabName === 'facility') {
+    // 탭 콘텐츠가 완전히 렌더링된 뒤에 호출
+    setTimeout(handleMapResize, 300);
+  }
 }
-
-window.switchTab = switchTab;
-
 
 // 탭 이름 ↔ 라벨 매핑 헬퍼
 function tabNameToLabel(name) {
-    const tabLabels = {
-        'home': '홈',
-        'facility': '시설',
-        'community': '커뮤니티',
-        'profile': '내 정보',
-        'alert': '알림'
-    };
-    
-    return tabLabels[name] || name;
-}
-function getCurrentActiveTab() {
-    const activeTabContent = document.querySelector('.tab-content.active');
-    if (activeTabContent) {
-        const tabId = activeTabContent.id;
-        return tabId.replace('-tab', '');
-    }
-    return 'home'; // 기본값
+  switch (name) {
+    case 'home':     return '홈';
+    case 'facility': return '시설';
+    case 'community':return '커뮤니티';
+    case 'profile':  return '내 정보';
+    case 'alert':    return '알림';
+    default:         return name;
+  }
 }
 
-
-// 탭 전환 히스토리 관리
-let tabHistory = ['home'];
-
-
-function switchTabWithHistory(tabName) {
-    // 현재 탭이 히스토리 마지막과 다르면 추가
-    if (tabHistory[tabHistory.length - 1] !== tabName) {
-        tabHistory.push(tabName);
-        
-        // 히스토리 크기 제한 (최대 10개)
-        if (tabHistory.length > 10) {
-            tabHistory.shift();
-        }
-    }
-    
-    // 일반 탭 전환 실행
-    switchTab(tabName);
-}
-
-function goToPreviousTab() {
-    if (tabHistory.length > 1) {
-        // 현재 탭 제거
-        tabHistory.pop();
-        
-        // 이전 탭으로 전환
-        const previousTab = tabHistory[tabHistory.length - 1];
-        switchTab(previousTab);
-    }
-}
-
-
-// 전역 함수로 노출
-window.switchTab = switchTab;
-window.switchTabWithHistory = switchTabWithHistory;
-window.goToPreviousTab = goToPreviousTab;
-window.getCurrentActiveTab = getCurrentActiveTab;
-window.tabNameToLabel = tabNameToLabel;
 
 // 메인 홈으로 이동
 function goToHome() {
@@ -7131,7 +6588,7 @@ window.addEventListener('restaurantUpdated', function() {
 
 
 
-// window 객체에 함수 노출
+// window 객체에 노출
 window.onNaverMapAPILoaded = onNaverMapAPILoaded;
-window.retryMapLoad = retryMapLoad;
+window.switchTab = switchTab;
 
