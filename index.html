@@ -6,9 +6,8 @@
     <title>연성대학교 캠퍼스 가이드</title>
     <!-- 네이버 지도 API 스크립트 추가 - Direction 서브모듈 포함 -->
     <script
-    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
-    defer>
-    </script>
+      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
+      defer>
     </script>
     <!-- CSS 파일 연결 -->
     <link rel="stylesheet" href="index.css">
@@ -68,10 +67,10 @@
                    <div class="shortcut-icon">📝</div>
                    <div class="shortcut-text">강의평가</div>
                </div>
-                <div class="shortcut-item" onclick="window.location.href='shuttle_bus_tracker.html'">
-                    <div class="shortcut-icon">🚌</div>
-                    <div class="shortcut-text">셔틀버스</div>
-                </div>
+               <div class="shortcut-item" onclick="window.location.href='shuttle_bus_tracker.html'">
+                   <div class="shortcut-icon">🚌</div>
+                   <div class="shortcut-text">셔틀버스</div>
+               </div>
                <div class="shortcut-item" onclick="goToPage('everytime-board')">
                    <div class="shortcut-icon">💬</div>
                    <div class="shortcut-text">커뮤니티</div>
@@ -259,7 +258,6 @@
                </div>
                
                <ul class="notice-list">
-                   <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
                    <li class="notice-item" onclick="goToNoticeDetail('notice1')">
                        <div class="notice-header">
                            <span class="notice-category">학사</span>
@@ -298,7 +296,7 @@
 
         <!-- 시설 탭 -->
         <div id="facility-tab" class="tab-content">
-            <!-- 검색 바 - 새로운 구조로 변경 -->
+            <!-- 검색 바 -->
             <div class="search-bar">
                 <div class="search-container">
                     <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
@@ -320,38 +318,23 @@
                 </div>
             </div>
             
-            <!-- 검색 결과를 표시할 컨테이너 추가 -->
-            <div id="search-results" class="search-results" style="display: none;">
-                <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
-            </div>
+            <!-- 검색 결과 -->
+            <div id="search-results" class="search-results" style="display: none;"></div>
+            <div id="no-results" class="no-results" style="display: none;">검색 결과가 없습니다.</div>
             
-            <!-- 검색 결과가 없을 때 표시될 내용 -->
-            <div id="no-results" class="no-results" style="display: none;">
-                검색 결과가 없습니다.
-            </div>
-            
-            <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
+            <!-- 원본 콘텐츠 -->
             <div id="original-content">
-                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
                 <div class="campus-map" id="naverMap">
-                    <!-- 지도가 로드되기 전에 표시할 이미지 삭제 -->
-                    <!-- <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도"> -->
                     <div class="map-control-buttons">
                         <div class="map-button" onclick="zoomIn()">🔍+</div>
                         <div class="map-button" onclick="zoomOut()">🔍-</div>
                         <div class="map-button" onclick="resetMapView()">🏠</div>
                     </div>
-
-                    <!-- 여기에 GPS 버튼 추가 -->
                     <div class="gps-button" onclick="trackUserLocation()">📍</div>
-                    
-                    <!-- 경로 정보 로딩 인디케이터 -->
                     <div class="route-loading" id="routeLoading">
                         <span>🔄</span>
                         <span class="route-loading-text">경로를 계산하는 중...</span>
                     </div>
-                    
-                    <!-- 경로 정보 박스 -->
                     <div class="route-info-box" id="routeInfoBox">
                         <span class="route-info-close" onclick="closeRouteInfo()">✕</span>
                         <div class="route-info-title">목적지: <span id="routeDestination"></span></div>
@@ -363,25 +346,13 @@
                 </div>
                 
                 <div class="content-section">
-                    <div class="section-title">
-                        <span>주요 건물</span>
-                    </div>
-                    
-                    <ul class="building-list">
-                        <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
-                    </ul>
-                    
-                    <!-- 페이지네이션 컨트롤 추가 -->
-                    <div id="pagination-controls" class="pagination-controls">
-                        <!-- 페이지 버튼들이 JavaScript로 동적 생성됩니다 -->
-                    </div>
+                    <div class="section-title"><span>주요 건물</span></div>
+                    <ul class="building-list"></ul>
+                    <div id="pagination-controls" class="pagination-controls"></div>
                 </div>
                 
                 <div class="content-section">
-                    <div class="section-title">
-                        <span>편의시설</span>
-                    </div>
-                    
+                    <div class="section-title"><span>편의시설</span></div>
                     <div class="facility-list">
                         <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
                             <div class="facility-image">
@@ -431,8 +402,6 @@
             <div class="search-bar">
                 <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
             </div>
-            
-            <!-- 실시간 커뮤니티 (에브리타임 스타일) -->
             <div class="everytime-community-card">
                 <div class="everytime-header">
                     <div class="everytime-title">💬 실시간 커뮤니티</div>
@@ -486,19 +455,14 @@
                 </div>
             </div>
             
-            <!-- 인기 강의평가 섹션 (메인 페이지에서 이동됨) -->
             <div class="content-section">
-                <div class="section-title">
-                    <span>인기 강의평가</span>
-                </div>
-                
+                <div class="section-title"><span>인기 강의평가</span></div>
                 <div class="category-filter">
                     <div class="category-tag active" onclick="filterLectures('all')">전체</div>
                     <div class="category-tag" onclick="filterLectures('general')">교양</div>
                     <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
                     <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
                 </div>
-                
                 <ul class="lecture-list">
                     <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
                         <div class="lecture-header">
@@ -562,9 +526,8 @@
             <div class="content-pad"></div>
         </div>
         
-        <!-- 내 정보 탭 - 로그인 상태에 따라 동적으로 변경 -->
+        <!-- 내 정보 탭 -->
         <div id="profile-tab" class="tab-content">
-            <!-- 로그인이 필요한 상태 (기본값) -->
             <div id="profile-login-required" class="profile-section">
                 <div class="profile-image">👤</div>
                 <div class="profile-info">
@@ -573,7 +536,6 @@
                 </div>
             </div>
             
-            <!-- 로그인된 상태 (로그인 후 표시) -->
             <div id="profile-logged-in" class="profile-section" style="display: none;">
                 <div class="profile-image">👨‍🎓</div>
                 <div class="profile-info">
@@ -583,12 +545,8 @@
                 </div>
             </div>
             
-            <!-- 메뉴들은 항상 표시 -->
             <div class="content-section">
-                <div class="section-title">
-                    <span>내 정보 관리</span>
-                </div>
-                
+                <div class="section-title"><span>내 정보 관리</span></div>
                 <ul class="menu-list">
                     <li class="menu-item" onclick="navigateToProfilePage('timetable')">
                         <div class="menu-title">내 시간표</div>
@@ -614,10 +572,7 @@
             </div>
             
             <div class="content-section">
-                <div class="section-title">
-                    <span>학적 정보</span>
-                </div>
-                
+                <div class="section-title"><span>학적 정보</span></div>
                 <ul class="menu-list">
                     <li class="menu-item" onclick="navigateToProfilePage('grades')">
                         <div class="menu-title">성적 조회</div>
@@ -639,10 +594,7 @@
             </div>
             
             <div class="content-section">
-                <div class="section-title">
-                    <span>앱 설정</span>
-                </div>
-                
+                <div class="section-title"><span>앱 설정</span></div>
                 <ul class="menu-list">
                     <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
                         <div class="menu-title">알림 설정</div>
@@ -673,10 +625,7 @@
         <!-- 알림 탭 -->
         <div id="alert-tab" class="tab-content">
             <div class="content-section">
-                <div class="section-title">
-                    <span>알림</span>
-                </div>
-                
+                <div class="section-title"><span>알림</span></div>
                 <ul class="alert-list">
                     <li class="alert-item" onclick="viewNotification('emergency')">
                         <div class="alert-icon">📢</div>
@@ -704,31 +653,25 @@
                     </li>
                 </ul>
             </div>
-            
             <div class="content-pad"></div>
         </div>
         
         <!-- 하단 탭 메뉴 -->
         <div class="tab-menu">
             <div class="tab-item active" onclick="switchTab('home')">
-                <span class="tab-icon">🏠</span>
-                <span>홈</span>
+                <span class="tab-icon">🏠</span><span>홈</span>
             </div>
             <div class="tab-item" onclick="switchTab('facility')">
-                <span class="tab-icon">🏫</span>
-                <span>시설</span>
+                <span class="tab-icon">🏫</span><span>시설</span>
             </div>
             <div class="tab-item" onclick="switchTab('community')">
-                <span class="tab-icon">💬</span>
-                <span>커뮤니티</span>
+                <span class="tab-icon">💬</span><span>커뮤니티</span>
             </div>
             <div class="tab-item" onclick="switchTab('profile')">
-                <span class="tab-icon">👤</span>
-                <span>내 정보</span>
+                <span class="tab-icon">👤</span><span>내 정보</span>
             </div>
             <div class="tab-item" onclick="switchTab('alert')">
-                <span class="tab-icon">🔔</span>
-                <span>알림</span>
+                <span class="tab-icon">🔔</span><span>알림</span>
             </div>
         </div>
     </div>
