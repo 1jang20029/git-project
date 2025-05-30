@@ -2435,26 +2435,50 @@ function fixMapGrayArea() {
 
 // 지도 초기화 완료 후 회색 영역 수정 함수 호출하는 함수
 function initNaverMapWithFix() {
-// 기본 초기화 함수 호출
-initNaverMap();
+  // 1) naver.maps API가 준비되지 않았다면 잠시 후 재시도하거나 에러 로그만 남기고 종료
+  if (!window.naver || !naver.maps) {
+    console.error('네이버 지도 API 로드 전 init 호출됨');
+    return;
+  }
 
-// 지도가 로드된 후 회색 영역 수정
-setTimeout(() => {
-fixMapGrayArea();
-}, 1000);
+  // 2) 실제 지도 생성 및 마커/정보창 세팅
+  initNaverMap();           // (initNaverMap 안에서 한 번만 지도 컨테이너에 naverMap = new naver.maps.Map(...) 수행)
+
+  // 3) 지도 주변에 남아있는 회색 오버레이나 잘못된 CSS 스타일들 제거
+  //    (지도가 로드된 직후엔 일부 div가 50% 너비나 gray 배경으로 남아 있을 수 있어서 딜레이를 둡니다)
+  setTimeout(fixMapGrayArea, 1000);
 }
 
 // 탭 전환 시 지도 크기 조정 및 새로고침을 처리하는 함수
 function handleMapResize() {
-  const mapContainer = document.getElementById('naverMap');
-  if (!mapContainer || !window.naverMap) return;
-  if (getComputedStyle(mapContainer).display === 'none') return;
+  // 1) 지도 인스턴스가 없으면 중단
+  if (typeof naverMap === 'undefined' || !naverMap) return;
 
-  setTimeout(() => {
-    window.dispatchEvent(new Event('resize'));
-    try { naverMap.refresh(); console.log('지도 크기 조정 및 갱신 완료'); }
-    catch (e) { /* 무시 */ }
-  }, 100);
+  // 2) 컨테이너 엘리먼트를 얻고, display 상태 확인
+  const mapContainer = document.getElementById('naverMap');
+  if (!mapContainer) return;
+  const style = getComputedStyle(mapContainer);
+  if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+    // 완전히 숨겨져 있으면 리사이즈할 필요 없음
+    return;
+  }
+
+  // 3) 브라우저 리사이즈 이벤트 강제 발생 (내부 리스너가 있을 경우)
+  window.dispatchEvent(new Event('resize'));
+
+  // 4) naverMap 객체에 맞는 메서드 호출
+  try {
+    // v4+ 에서는 refresh()
+    naverMap.refresh();
+  } catch (e1) {
+    try {
+      // v3 에서는 relayout()
+      naverMap.relayout();
+    } catch (e2) {
+      // 이외엔 무시
+      console.warn('지도 리사이즈 실패', e1, e2);
+    }
+  }
 }
 
 
@@ -3446,50 +3470,35 @@ function initCategoryFilter() {
 
 // 탭 전환 함수 - 시설 탭으로 전환 시 페이지네이션 초기화 추가 (수정된 버전)
 function switchTab(tabName) {
-    // 모든 탭 콘텐츠 숨기기
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    // 선택한 탭 콘텐츠 표시
-    document.getElementById(`${tabName}-tab`).classList.add('active');
+  // --- 1) 모든 탭 콘텐츠 숨기기 ---
+  document.querySelectorAll('.tab-content').forEach(tabEl => {
+    tabEl.classList.remove('active');
+  });
 
-    // 탭 메뉴 활성화 상태 변경
-    document.querySelectorAll('.tab-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    const tabItems = document.querySelectorAll('.tab-item');
-    for (let i = 0; i < tabItems.length; i++) {
-        if (tabItems[i].onclick.toString().includes(`'${tabName}'`)) {
-            tabItems[i].classList.add('active');
-            break;
-        }
-    }
+  // --- 2) 선택된 탭만 보이기 ---
+  const targetTab = document.getElementById(`${tabName}-tab`);
+  if (targetTab) {
+    targetTab.classList.add('active');
+  }
 
-    // **시설 탭**으로 전환 시에만 맵 초기화
-    if (tabName === 'facility') {
-        // 페이지네이션 초기화
-        currentPage = 1;
-        loadBuildingsByPage(currentPage);
-        updatePaginationControls();
+  // --- 3) 하단 탭 메뉴 활성화 토글 ---
+  document.querySelectorAll('.tab-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  const menuItem = document.querySelector(`.tab-item[data-tab="${tabName}"]`);
+  if (menuItem) {
+    menuItem.classList.add('active');
+  }
 
-        // 맵을 보이게 한 다음에 초기화 (스크립트 onload로 최초 1회만 불립니다)
-        initNaverMapWithFix();
-    }
+  // --- 4) ‘시설’ 탭일 경우: 지도 초기화 & 리사이즈 ---
+  if (tabName === 'facility') {
+    // (1) 처음 한 번만 실행되도록 init 함수
+    initNaverMapWithFix();
 
-    // 프로필 탭 전환 시
-    if (tabName === 'profile') {
-        setTimeout(() => {
-            checkLoginStatus();
-            updateAllProfileImages();
-        }, 100);
-    }
-
-    // 홈 탭으로 전환 시 시간표 미리보기 업데이트
-    if (tabName === 'home') {
-        setTimeout(() => {
-            updateTimetablePreview();
-        }, 200);
-    }
+    // (2) 탭 전환 애니메이션(또는 CSS 전환)이 끝난 뒤
+    //     300ms 정도 뒤에 리사이즈/리레이아웃 호출
+    setTimeout(handleMapResize, 300);
+  }
 }
 
 // 탭 이름 ↔ 라벨 매핑 헬퍼
