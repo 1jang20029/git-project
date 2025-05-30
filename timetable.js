@@ -834,8 +834,8 @@ function renderCoursesOnTimetable() {
     // 3) 과목별 블록 렌더링
     courses.forEach(course => {
         course.times.forEach(t => {
-            // 위치 계산 (9:30 시작, 50분 길이)
-            const x = cellRect.left - baseRect.left + t.day * cellW;
+            // 위치 계산 (요일 인덱스 수정: t.day - 1)
+            const x = cellRect.left - baseRect.left + (t.day - 1) * cellW;
             const y = cellRect.top  - baseRect.top  + (t.start - 1) * cellH + cellH * 0.5;
             const h = (t.end - t.start) * cellH + (50/60) * cellH;
 
@@ -856,8 +856,6 @@ function renderCoursesOnTimetable() {
                 overflow:       'hidden',
                 zIndex:         5
             });
-
-            // — 여기부터 infoParts 로 변경 —
 
             // 과목명
             const nameHTML = `<div class="class-name">${course.name}</div>`;
@@ -883,7 +881,7 @@ function renderCoursesOnTimetable() {
             container.appendChild(block);
         });
     });
-}
+}ㅌ
 
 
 
