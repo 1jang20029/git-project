@@ -94,7 +94,7 @@ function validateIdPattern(role, id) {
 
 // EmailJS 설정 (보안 강화)
 const EMAILJS_CONFIG = {
-    publicKey: "wSUCVBd2HeWkMgWc",           // ✅ 확인된 Public Key
+    publicKey: "SsbBsstNmRubY3laH",           // ✅ 새로 발급받은 Public Key
     serviceId: "service_tjelgug",            // ✅ 확인된 Service ID
     templateId: "template_ejprum5",          // ✅ 확인된 Template ID
     isProduction: false                      // 배포시 true로 변경
@@ -732,31 +732,37 @@ function logEmailAttempt(email, type, details = '') {
 // EmailJS를 통한 실제 이메일 발송 (보안 강화)
 async function sendEmailViaEmailJS(to, subject, verificationCode) {
     try {
-        console.log('📧 EmailJS 이메일 발송 시도:', { to, subject, sessionId: emailVerificationData.sessionId });
+        console.log('📧 EmailJS 이메일 발송 시도:', { 
+            to, 
+            subject, 
+            sessionId: emailVerificationData.sessionId,
+            publicKey: EMAILJS_CONFIG.publicKey 
+        });
         
         // EmailJS가 로드되었는지 확인
         if (typeof emailjs === 'undefined') {
             throw new Error('EmailJS 라이브러리가 로드되지 않았습니다.');
         }
         
-        // EmailJS 초기화 (이미 HTML에서 초기화되었지만 다시 확인)
+        // EmailJS 재초기화 (새로운 Public Key로)
         emailjs.init(EMAILJS_CONFIG.publicKey);
+        console.log('🔑 새로운 Public Key로 초기화:', EMAILJS_CONFIG.publicKey);
         
-        // 보안 강화된 템플릿 파라미터 (EmailJS 템플릿 변수와 일치)
+        // 보안 강화된 템플릿 파라미터
         const templateParams = {
-            to_email: to,                               // {{to_email}}
-            to_name: to.split('@')[0],                  // {{to_name}}
-            subject: subject,                           // {{subject}}
-            verification_code: verificationCode,        // {{verification_code}}
-            university_name: '연성대학교',               // {{university_name}}
-            app_name: '캠퍼스 가이드',                   // {{app_name}}
-            from_name: '연성대학교 캠퍼스 가이드',        // {{from_name}}
-            expiry_time: '5분',                        // {{expiry_time}}
-            current_year: new Date().getFullYear(),     // {{current_year}}
-            session_id: emailVerificationData.sessionId, // {{session_id}}
-            security_notice: '⚠️ 이 인증 코드는 일회용이며 5분 후 만료됩니다. 타인과 공유하지 마세요.', // {{security_notice}}
-            support_info: '문제가 있으시면 관리자에게 문의하세요.', // {{support_info}}
-            timestamp: new Date().toLocaleString('ko-KR') // {{timestamp}}
+            to_email: to,
+            to_name: to.split('@')[0],
+            subject: subject,
+            verification_code: verificationCode,
+            university_name: '연성대학교',
+            app_name: '캠퍼스 가이드',
+            from_name: '연성대학교 캠퍼스 가이드',
+            expiry_time: '5분',
+            current_year: new Date().getFullYear(),
+            session_id: emailVerificationData.sessionId,
+            security_notice: '⚠️ 이 인증 코드는 일회용이며 5분 후 만료됩니다. 타인과 공유하지 마세요.',
+            support_info: '문제가 있으시면 관리자에게 문의하세요.',
+            timestamp: new Date().toLocaleString('ko-KR')
         };
         
         console.log('📨 EmailJS 템플릿 파라미터:', templateParams);
@@ -794,6 +800,7 @@ async function sendEmailViaEmailJS(to, subject, verificationCode) {
         };
     }
 }
+
 
 // 실제 인증 이메일 발송 (보안 강화)
 async function sendVerificationEmail() {
@@ -1578,7 +1585,7 @@ function quickVerify() {
 
 // 설정 확인 및 테스트 함수들 (보안 강화)
 function checkEmailJSConfig() {
-    console.log('📧 EmailJS 설정 확인 (보안 강화):');
+    console.log('📧 EmailJS 설정 확인 (새로운 Public Key):');
     console.log('Public Key:', EMAILJS_CONFIG.publicKey);
     console.log('Service ID:', EMAILJS_CONFIG.serviceId);
     console.log('Template ID:', EMAILJS_CONFIG.templateId);
@@ -1589,9 +1596,18 @@ function checkEmailJSConfig() {
         return false;
     }
     
-    console.log('✅ EmailJS 설정이 완료되었습니다.');
-    return true;
+    // 새로운 Public Key로 재초기화
+    try {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+        console.log('✅ EmailJS 설정이 완료되었습니다.');
+        console.log('🔑 새로운 Public Key 적용 완료');
+        return true;
+    } catch (error) {
+        console.error('❌ EmailJS 초기화 실패:', error);
+        return false;
+    }
 }
+
 
 // 테스트 이메일 발송 함수 (보안 강화)
 async function testEmailJS() {
@@ -1616,17 +1632,20 @@ async function testEmailJS() {
         // 테스트용 임시 세션 생성
         const tempSessionId = generateSessionId();
         const tempCode = '123456';
-        const tempSalt = 'test_salt';
+        
+        // 임시 세션 데이터 설정
+        emailVerificationData.sessionId = tempSessionId;
         
         console.log('🧪 테스트 세션 생성:', {
             sessionId: tempSessionId,
             code: tempCode,
-            email: testEmail
+            email: testEmail,
+            publicKey: EMAILJS_CONFIG.publicKey
         });
         
         const result = await sendEmailViaEmailJS(
             testEmail, 
-            '연성대학교 캠퍼스 가이드 테스트', 
+            '연성대학교 캠퍼스 가이드 테스트 (새로운 키)', 
             tempCode
         );
         
@@ -1636,7 +1655,8 @@ async function testEmailJS() {
 📧 이메일: ${testEmail}
 📮 이메일함을 확인해보세요.
 🔐 테스트 세션 ID: ${tempSessionId}
-🔑 테스트 코드: ${tempCode}`);
+🔑 테스트 코드: ${tempCode}
+🆔 Public Key: ${EMAILJS_CONFIG.publicKey}`);
         } else {
             alert(`❌ 테스트 실패: ${result.message}`);
         }
@@ -1646,6 +1666,7 @@ async function testEmailJS() {
         alert(`❌ 테스트 실패: ${error.message}`);
     }
 }
+
 
 // 로그 조회 함수 (보안 강화)
 function showVerificationLogs() {
