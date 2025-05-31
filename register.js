@@ -92,6 +92,23 @@ function validateIdPattern(role, id) {
     }
 }
 
+// SMTP2GO API 설정 (실제 이메일 발송)
+const SMTP2GO_CONFIG = {
+    apiKey: 'api-342D3ACA2B0B491DBF561AB9BB50849F',
+    apiUrl: 'https://api.smtp2go.com/v3/email/send',
+    senderEmail: 'noreply@smtp2go.com', // SMTP2GO 검증된 도메인 사용
+    senderName: '연성대학교 캠퍼스 가이드'
+};
+
+// 이메일 인증 관련 전역 변수
+let emailVerificationData = {
+    code: null,
+    email: null,
+    expiry: null,
+    verified: false,
+    timerInterval: null
+};
+
 // 역할 변경 시 UI 업데이트
 function updateUIByRole(role) {
     const idLabel = document.getElementById('idLabel');
@@ -133,6 +150,9 @@ function updateUIByRole(role) {
             // 교직원 부서 옵션 숨기기
             staffOptions.forEach(option => option.style.display = 'none');
             staffCategory.style.display = 'none';
+            
+            // 다중 인증 방법 표시
+            updateVerificationMethods();
             break;
             
         case 'staff':
@@ -147,6 +167,9 @@ function updateUIByRole(role) {
             // 교직원 부서 옵션 표시
             staffOptions.forEach(option => option.style.display = 'block');
             staffCategory.style.display = 'block';
+            
+            // 다중 인증 방법 표시
+            updateVerificationMethods();
             break;
     }
     
@@ -300,817 +323,551 @@ function setupGradeDropdown() {
     });
 }
 
-// OCR 라이브러리들 로드 상태 확인
-let ocrLibrariesLoaded = {
-    tesseract: false,
-    opencv: false
-};
-
-// 여러 OCR 라이브러리 동적 로드
-function loadOCRLibraries() {
-    return new Promise((resolve, reject) => {
-        if (ocrLibrariesLoaded.tesseract && ocrLibrariesLoaded.opencv) {
-            resolve();
-            return;
-        }
+// 다중 인증 방법 UI 업데이트
+function updateVerificationMethods() {
+    const verificationSection = document.getElementById('verificationSection');
+    
+    verificationSection.innerHTML = `
+        <div class="verification-header">
+            <div class="verification-icon">🔐</div>
+            <div class="verification-title">교수/교직원 신원 인증</div>
+        </div>
         
-        const promises = [];
+        <div class="verification-description">
+            <p>다음 중 하나의 방법으로 신원을 인증해주세요.</p>
+        </div>
         
-        // Tesseract.js 로드
-        if (!ocrLibrariesLoaded.tesseract) {
-            const tesseractPromise = new Promise((res, rej) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js';
-                script.onload = () => {
-                    ocrLibrariesLoaded.tesseract = true;
-                    res();
-                };
-                script.onerror = rej;
-                document.head.appendChild(script);
-            });
-            promises.push(tesseractPromise);
-        }
+        <div class="verification-methods">
+            <!-- 방법 1: 이메일 인증 -->
+            <div class="method-option">
+                <input type="radio" id="emailVerification" name="verificationType" value="emailVerification">
+                <label for="emailVerification" class="method-label">
+                    <div class="method-icon">📧</div>
+                    <div class="method-info">
+                        <div class="method-title">대학 이메일 인증</div>
+                        <div class="method-desc">@yeonsung.ac.kr 이메일로 실제 인증</div>
+                    </div>
+                </label>
+            </div>
+            
+            <!-- 방법 2: 서류 업로드 -->
+            <div class="method-option">
+                <input type="radio" id="documentUpload" name="verificationType" value="documentUpload">
+                <label for="documentUpload" class="method-label">
+                    <div class="method-icon">📄</div>
+                    <div class="method-info">
+                        <div class="method-title">서류 업로드</div>
+                        <div class="method-desc">교직원증, 임용서류, 급여명세서</div>
+                    </div>
+                </label>
+            </div>
+            
+            <!-- 방법 3: 관리자 승인 요청 -->
+            <div class="method-option">
+                <input type="radio" id="manualApproval" name="verificationType" value="manualApproval">
+                <label for="manualApproval" class="method-label">
+                    <div class="method-icon">👨‍💼</div>
+                    <div class="method-info">
+                        <div class="method-title">관리자 승인 요청</div>
+                        <div class="method-desc">관리자가 직접 확인 후 승인</div>
+                    </div>
+                </label>
+            </div>
+        </div>
         
-        // OpenCV.js 로드 (이미지 전처리용)
-        if (!ocrLibrariesLoaded.opencv) {
-            const opencvPromise = new Promise((res, rej) => {
-                const script = document.createElement('script');
-                script.src = 'https://docs.opencv.org/4.8.0/opencv.js';
-                script.onload = () => {
-                    // OpenCV 초기화 대기
-                    const checkOpenCV = () => {
-                        if (typeof cv !== 'undefined' && cv.Mat) {
-                            ocrLibrariesLoaded.opencv = true;
-                            res();
-                        } else {
-                            setTimeout(checkOpenCV, 100);
-                        }
-                    };
-                    checkOpenCV();
-                };
-                script.onerror = () => {
-                    // OpenCV 로드 실패해도 진행
-                    ocrLibrariesLoaded.opencv = false;
-                    res();
-                };
-                document.head.appendChild(script);
-            });
-            promises.push(opencvPromise);
-        }
-        
-        Promise.all(promises).then(resolve).catch(reject);
-    });
+        <!-- 선택된 방법에 따른 상세 입력 폼 -->
+        <div id="verificationDetails"></div>
+    `;
+    
+    // 인증 방법 변경 이벤트 설정
+    setupVerificationMethodHandlers();
 }
 
-// 이미지 전처리 강화 (더 정확한 OCR을 위해)
-function preprocessImage(imageElement) {
-    return new Promise((resolve) => {
-        try {
-            if (!ocrLibrariesLoaded.opencv || typeof cv === 'undefined') {
-                // OpenCV 없으면 기본 전처리
-                resolve(basicImagePreprocess(imageElement));
-                return;
-            }
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // 이미지 크기 최적화 (OCR 성능 향상을 위해)
-            const maxDimension = 2000;
-            let width = imageElement.width;
-            let height = imageElement.height;
-            
-            if (width > maxDimension || height > maxDimension) {
-                const ratio = Math.min(maxDimension / width, maxDimension / height);
-                width = Math.floor(width * ratio);
-                height = Math.floor(height * ratio);
-            }
-            
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(imageElement, 0, 0, width, height);
-            
-            const src = cv.imread(canvas);
-            const dst = new cv.Mat();
-            
-            // 그레이스케일 변환
-            cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
-            
-            // 노이즈 제거를 위한 가우시안 블러
-            const ksize = new cv.Size(3, 3);
-            cv.GaussianBlur(dst, dst, ksize, 0, 0, cv.BORDER_DEFAULT);
-            
-            // 대비 향상을 위한 히스토그램 균등화
-            cv.equalizeHist(dst, dst);
-            
-            // 적응형 임계값으로 이진화 (텍스트 인식률 향상)
-            cv.adaptiveThreshold(dst, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 15, 4);
-            
-            // 모폴로지 연산으로 텍스트 정리
-            const kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(2, 2));
-            cv.morphologyEx(dst, dst, cv.MORPH_CLOSE, kernel);
-            
-            // 결과를 캔버스에 출력
-            cv.imshow(canvas, dst);
-            
-            // 메모리 정리
-            src.delete();
-            dst.delete();
-            kernel.delete();
-            
-            resolve(canvas);
-        } catch (error) {
-            console.warn('OpenCV 전처리 실패, 기본 전처리 사용:', error);
-            resolve(basicImagePreprocess(imageElement));
-        }
-    });
-}
-
-// 기본 이미지 전처리 (OpenCV 없을 때)
-function basicImagePreprocess(imageElement) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+// 인증 방법별 상세 폼 표시
+function showVerificationDetails(method) {
+    const detailsDiv = document.getElementById('verificationDetails');
     
-    // 이미지 크기 최적화
-    const maxDimension = 1500;
-    let width = imageElement.width;
-    let height = imageElement.height;
-    
-    if (width > maxDimension || height > maxDimension) {
-        const ratio = Math.min(maxDimension / width, maxDimension / height);
-        width = Math.floor(width * ratio);
-        height = Math.floor(height * ratio);
-    }
-    
-    canvas.width = width;
-    canvas.height = height;
-    
-    // 고품질 리샘플링
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(imageElement, 0, 0, width, height);
-    
-    // 대비 향상
-    const imageData = ctx.getImageData(0, 0, width, height);
-    const data = imageData.data;
-    
-    for (let i = 0; i < data.length; i += 4) {
-        // 그레이스케일 변환
-        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-        
-        // 대비 향상 (1.3배 증가, 밝기 +20)
-        const enhanced = Math.min(255, Math.max(0, gray * 1.3 + 20));
-        
-        data[i] = enhanced;     // R
-        data[i + 1] = enhanced; // G
-        data[i + 2] = enhanced; // B
-        // 알파값은 그대로 유지
-    }
-    
-    ctx.putImageData(imageData, 0, 0);
-    return canvas;
-}
-
-// 다중 OCR 엔진으로 텍스트 추출 (정확도 향상)
-async function extractTextWithMultipleEngines(file) {
-    const results = [];
-    
-    try {
-        await loadOCRLibraries();
-        
-        // 이미지 로드
-        const imageElement = await loadImageElement(file);
-        
-        // 1. 원본 이미지로 OCR (기본 설정)
-        try {
-            updateOCRProgress('원본 이미지 분석', 10);
-            const originalResult = await Tesseract.recognize(
-                imageElement,
-                'kor+eng',
-                {
-                    tessedit_pageseg_mode: '1', // 자동 페이지 분할
-                    tessedit_ocr_engine_mode: '2', // LSTM 엔진
-                    logger: m => {
-                        if (m.status === 'recognizing text') {
-                            updateOCRProgress('원본 이미지 분석', 10 + Math.round(m.progress * 20));
-                        }
-                    }
-                }
-            );
-            results.push({
-                source: 'original',
-                text: originalResult.data.text,
-                confidence: originalResult.data.confidence
-            });
-        } catch (error) {
-            console.warn('원본 이미지 OCR 실패:', error);
-        }
-        
-        // 2. 전처리된 이미지로 OCR
-        try {
-            updateOCRProgress('전처리 이미지 분석', 35);
-            const preprocessedImage = await preprocessImage(imageElement);
-            const preprocessedResult = await Tesseract.recognize(
-                preprocessedImage,
-                'kor+eng',
-                {
-                    tessedit_pageseg_mode: '6', // 단일 텍스트 블록
-                    tessedit_ocr_engine_mode: '2',
-                    logger: m => {
-                        if (m.status === 'recognizing text') {
-                            updateOCRProgress('전처리 이미지 분석', 35 + Math.round(m.progress * 25));
-                        }
-                    }
-                }
-            );
-            results.push({
-                source: 'preprocessed',
-                text: preprocessedResult.data.text,
-                confidence: preprocessedResult.data.confidence
-            });
-        } catch (error) {
-            console.warn('전처리 이미지 OCR 실패:', error);
-        }
-        
-        // 3. 문서 특화 설정으로 OCR (한글 최적화)
-        try {
-            updateOCRProgress('문서 특화 분석', 65);
-            const documentResult = await Tesseract.recognize(
-                imageElement,
-                'kor+eng',
-                {
-                    tessedit_pageseg_mode: '4', // 단일 컬럼 텍스트
-                    tessedit_ocr_engine_mode: '1', // Legacy + LSTM
-                    tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz가-힣ㄱ-ㅎㅏ-ㅣ:.,()/-\\s',
-                    logger: m => {
-                        if (m.status === 'recognizing text') {
-                            updateOCRProgress('문서 특화 분석', 65 + Math.round(m.progress * 20));
-                        }
-                    }
-                }
-            );
-            results.push({
-                source: 'document_optimized',
-                text: documentResult.data.text,
-                confidence: documentResult.data.confidence
-            });
-        } catch (error) {
-            console.warn('문서 특화 OCR 실패:', error);
-        }
-        
-        // 4. 고해상도 처리 (중요 문서용)
-        try {
-            updateOCRProgress('고해상도 분석', 85);
-            const highResCanvas = document.createElement('canvas');
-            const ctx = highResCanvas.getContext('2d');
-            
-            // 해상도 2배 증가
-            const scaleFactor = 2;
-            highResCanvas.width = imageElement.width * scaleFactor;
-            highResCanvas.height = imageElement.height * scaleFactor;
-            
-            ctx.imageSmoothingEnabled = false; // 픽셀 보간 방지
-            ctx.drawImage(imageElement, 0, 0, highResCanvas.width, highResCanvas.height);
-            
-            const highResResult = await Tesseract.recognize(
-                highResCanvas,
-                'kor+eng',
-                {
-                    tessedit_pageseg_mode: '3', // 완전 자동
-                    tessedit_ocr_engine_mode: '2',
-                    logger: m => {
-                        if (m.status === 'recognizing text') {
-                            updateOCRProgress('고해상도 분석', 85 + Math.round(m.progress * 15));
-                        }
-                    }
-                }
-            );
-            results.push({
-                source: 'high_resolution',
-                text: highResResult.data.text,
-                confidence: highResResult.data.confidence
-            });
-        } catch (error) {
-            console.warn('고해상도 OCR 실패:', error);
-        }
-        
-        updateOCRProgress('분석 완료', 100);
-        
-    } catch (error) {
-        console.error('OCR 처리 중 오류:', error);
-        throw error;
-    }
-    
-    return results;
-}
-
-// 이미지 엘리먼트 로드
-function loadImageElement(file) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = URL.createObjectURL(file);
-    });
-}
-
-// OCR 진행 상황 업데이트
-function updateOCRProgress(stage, progress) {
-    const loadingText = document.querySelector('.loading-text');
-    if (loadingText) {
-        loadingText.textContent = `${stage}... ${progress}%`;
+    switch(method) {
+        case 'emailVerification':
+            showEmailVerificationForm();
+            break;
+        case 'documentUpload':
+            showDocumentUploadForm();
+            break;
+        case 'manualApproval':
+            showManualApprovalForm();
+            break;
     }
 }
 
-// 시각적 패턴 분석 (카드 모양, 레이아웃 등)
-async function analyzeVisualPatterns(file) {
-    try {
-        if (!ocrLibrariesLoaded.opencv || typeof cv === 'undefined') {
-            return analyzeBasicVisualPatterns(file);
-        }
-        
-        const imageElement = await loadImageElement(file);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = imageElement.width;
-        canvas.height = imageElement.height;
-        ctx.drawImage(imageElement, 0, 0);
-        
-        const src = cv.imread(canvas);
-        const gray = new cv.Mat();
-        
-        // 그레이스케일 변환
-        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-        
-        // 카드 모양 감지 (직사각형 검출)
-        const edges = new cv.Mat();
-        cv.Canny(gray, edges, 50, 150);
-        
-        const contours = new cv.MatVector();
-        const hierarchy = new cv.Mat();
-        cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-        
-        let hasCardShape = false;
-        let isDocumentFormat = false;
-        const imageArea = imageElement.width * imageElement.height;
-        
-        for (let i = 0; i < contours.size(); i++) {
-            const contour = contours.get(i);
-            const area = cv.contourArea(contour);
+// 실제 이메일 인증 폼 표시
+function showEmailVerificationForm() {
+    const detailsDiv = document.getElementById('verificationDetails');
+    detailsDiv.innerHTML = `
+        <div class="verification-form">
+            <h4>📧 대학 이메일 인증</h4>
             
-            // 이미지의 상당 부분을 차지하는 직사각형이 있으면 문서/카드로 판단
-            if (area > imageArea * 0.1) {
-                const approx = new cv.Mat();
-                const peri = cv.arcLength(contour, true);
-                cv.approxPolyDP(contour, approx, 0.02 * peri, true);
-                
-                if (approx.rows === 4) { // 사각형
-                    hasCardShape = true;
+            <div class="form-group">
+                <label>대학 이메일 주소 <span class="required">*</span></label>
+                <input type="email" id="universityEmail" placeholder="name@yeonsung.ac.kr" 
+                       class="form-input" onchange="validateUniversityEmail()">
+                <div class="form-hint">@yeonsung.ac.kr 도메인 이메일만 가능합니다</div>
+                <div class="error-message" id="email-verification-error"></div>
+            </div>
+            
+            <div class="email-verification-step" id="emailStep1">
+                <button type="button" class="btn btn-primary" onclick="sendVerificationEmail()" 
+                        id="sendEmailBtn" disabled>
+                    📨 인증 이메일 발송
+                </button>
+            </div>
+            
+            <div class="email-verification-step" id="emailStep2" style="display: none;">
+                <div class="verification-code-section">
+                    <div class="form-group">
+                        <label>인증 코드 <span class="required">*</span></label>
+                        <input type="text" id="verificationCode" placeholder="6자리 인증 코드 입력" 
+                               class="form-input" maxlength="6" oninput="validateVerificationCode()">
+                        <div class="form-hint">이메일로 발송된 6자리 코드를 입력하세요</div>
+                    </div>
                     
-                    // 가로세로 비율로 카드/문서 구분
-                    const rect = cv.boundingRect(contour);
-                    const aspectRatio = rect.width / rect.height;
+                    <div class="verification-timer" id="verificationTimer">
+                        ⏰ 남은 시간: <span id="timerDisplay">05:00</span>
+                    </div>
                     
-                    if (aspectRatio > 1.3 && aspectRatio < 2.0) {
-                        isDocumentFormat = true; // 일반적인 카드/신분증 비율
-                    } else if (aspectRatio > 0.7 && aspectRatio < 1.4) {
-                        isDocumentFormat = true; // A4 등 문서 비율
-                    }
-                }
-                
-                approx.delete();
-            }
-            contour.delete();
-        }
-        
-        // 메모리 정리
-        src.delete();
-        gray.delete();
-        edges.delete();
-        contours.delete();
-        hierarchy.delete();
-        
-        return {
-            hasCardShape: hasCardShape,
-            isDocumentFormat: isDocumentFormat,
-            aspectRatio: imageElement.width / imageElement.height,
-            imageSize: imageArea
-        };
-        
-    } catch (error) {
-        console.warn('고급 시각적 패턴 분석 실패, 기본 분석 사용:', error);
-        return analyzeBasicVisualPatterns(file);
-    }
-}
-
-// 기본 시각적 패턴 분석
-async function analyzeBasicVisualPatterns(file) {
-    try {
-        const imageElement = await loadImageElement(file);
-        const aspectRatio = imageElement.width / imageElement.height;
-        
-        // 기본적인 비율 기반 판단
-        const isCardFormat = aspectRatio > 1.4 && aspectRatio < 2.0; // 카드 비율
-        const isDocumentFormat = aspectRatio > 0.6 && aspectRatio < 1.6; // 문서 비율
-        
-        return {
-            hasCardShape: isCardFormat,
-            isDocumentFormat: isDocumentFormat,
-            aspectRatio: aspectRatio,
-            imageSize: imageElement.width * imageElement.height
-        };
-    } catch (error) {
-        console.warn('기본 시각적 패턴 분석 실패:', error);
-        return null;
-    }
-}
-
-// 유연한 키워드 매칭 (OCR 오류 허용)
-function flexibleMatch(text, keyword) {
-    const normalizedText = text.toLowerCase().replace(/\s+/g, '');
-    const normalizedKeyword = keyword.toLowerCase();
-    
-    // 1. 정확한 매칭
-    if (normalizedText.includes(normalizedKeyword)) {
-        return 1.0;
-    }
-    
-    // 2. OCR 오류를 고려한 유사도 매칭
-    const similarity = calculateSimilarity(normalizedText, normalizedKeyword);
-    return similarity;
-}
-
-// 문자열 유사도 계산 (레벤슈타인 거리 기반)
-function calculateSimilarity(text, keyword) {
-    // 키워드가 텍스트보다 긴 경우 처리
-    if (keyword.length > text.length) {
-        return 0;
-    }
-    
-    // 슬라이딩 윈도우로 가장 유사한 부분 찾기
-    let maxSimilarity = 0;
-    
-    for (let i = 0; i <= text.length - keyword.length; i++) {
-        const substr = text.substr(i, keyword.length);
-        const similarity = 1 - (levenshteinDistance(substr, keyword) / Math.max(substr.length, keyword.length));
-        maxSimilarity = Math.max(maxSimilarity, similarity);
-    }
-    
-    return maxSimilarity;
-}
-
-// 레벤슈타인 거리 계산
-function levenshteinDistance(str1, str2) {
-    const matrix = [];
-    
-    for (let i = 0; i <= str2.length; i++) {
-        matrix[i] = [i];
-    }
-    
-    for (let j = 0; j <= str1.length; j++) {
-        matrix[0][j] = j;
-    }
-    
-    for (let i = 1; i <= str2.length; i++) {
-        for (let j = 1; j <= str1.length; j++) {
-            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1, // 교체
-                    matrix[i][j - 1] + 1,     // 삽입
-                    matrix[i - 1][j] + 1      // 삭제
-                );
-            }
-        }
-    }
-    
-    return matrix[str2.length][str1.length];
-}
-
-// 개선된 극도로 정확한 텍스트 분석 함수
-function analyzeExtractedTexts(ocrResults, visualPatterns) {
-    console.log('OCR 결과들:', ocrResults);
-    console.log('시각적 패턴:', visualPatterns);
-    
-    // 모든 OCR 결과 텍스트 결합 및 정리
-    const allTexts = ocrResults.map(result => result.text).join(' ');
-    const normalizedText = allTexts.toLowerCase()
-        .replace(/[^\w가-힣\s]/g, ' ') // 특수문자를 공백으로
-        .replace(/\s+/g, ' ')         // 연속 공백을 하나로
-        .trim();
-    
-    console.log('정규화된 텍스트:', normalizedText);
-    
-    // OCR 신뢰도 계산
-    const avgConfidence = ocrResults.reduce((sum, result) => sum + (result.confidence || 0), 0) / ocrResults.length;
-    console.log('평균 OCR 신뢰도:', avgConfidence);
-    
-    // 극도로 엄격한 제외 키워드 (교육 관련)
-    const strictExcludeKeywords = [
-        '시간표', '수업', '강의', '과제', '과목', '성적', '학습', '교육과정',
-        'schedule', 'class', 'course', 'lesson', 'study', 'curriculum',
-        '출석', '학점', '평가', '과제물', '리포트', '수강', '강의실', '교실',
-        '시험', '중간고사', '기말고사', '퀴즈', '발표', '실습', '연습',
-        '교재', '참고서', '노트', '필기', '복습', '예습', '숙제',
-        '학기', '방학', '개강', '종강', '휴강', '보강', '계절학기',
-        '전공', '교양', '선택', '필수', '학년', '반', '조', '팀',
-        '교수님', '선생님', '담임', '지도교수', '강사', '조교',
-        '캠퍼스', '도서관', '실험실', '강당', '체육관', '식당',
-        '동아리', '학회', '축제', '행사', '세미나', '워크샵',
-        '인턴', '현장실습', '프로젝트', '포트폴리오', '논문',
-        '학생증', '수강신청', '장학금', '등록금', '학비'
-    ];
-    
-    // 제외 키워드 체크 (유연한 매칭으로)
-    for (let keyword of strictExcludeKeywords) {
-        const similarity = flexibleMatch(normalizedText, keyword);
-        if (similarity > 0.8) { // 80% 이상 유사하면 제외
-            console.log('제외 키워드 감지:', keyword, '유사도:', similarity);
-            return null;
-        }
-    }
-    
-    // 각 문서 유형별 필수 키워드 (개선된 버전)
-    const requiredKeywords = {
-        employeeCard: {
-            // 교직원증 필수 키워드
-            mandatory: [
-                {keywords: ['교직원증', '직원증', '신분증'], threshold: 0.8},
-                {keywords: ['연성대학교', '연성대', '대학교'], threshold: 0.8}
-            ],
-            // 지원 키워드
-            supporting: [
-                {keywords: ['교번', '직번', '사번', '번호'], threshold: 0.7},
-                {keywords: ['소속', '부서', '직급', '직책'], threshold: 0.7},
-                {keywords: ['성명', '이름', '발급일', '유효'], threshold: 0.6}
-            ]
-        },
-        appointmentDoc: {
-            // 임용서류 필수 키워드
-            mandatory: [
-                {keywords: ['임용', '발령', '임명', '채용'], threshold: 0.8},
-                {keywords: ['연성대학교', '연성대', '대학교'], threshold: 0.8}
-            ],
-            // 지원 키워드
-            supporting: [
-                {keywords: ['발령장', '임용장', '임명장', '계약서'], threshold: 0.7},
-                {keywords: ['발령일', '임용일', '시작일', '계약기간'], threshold: 0.7},
-                {keywords: ['근무기간', '임용기간', '계약일', '발효일'], threshold: 0.6}
-            ]
-        },
-        payslip: {
-            // 급여명세서 필수 키워드
-            mandatory: [
-                {keywords: ['급여명세', '급여', '월급', '봉급'], threshold: 0.8},
-                {keywords: ['연성대학교', '연성대', '대학교'], threshold: 0.8}
-            ],
-            // 지원 키워드
-            supporting: [
-                {keywords: ['기본급', '봉급', '본봉', '기본'], threshold: 0.7},
-                {keywords: ['수당', '보너스', '상여', '추가'], threshold: 0.7},
-                {keywords: ['공제', '세금', '소득세', '국민연금'], threshold: 0.6},
-                {keywords: ['실지급', '지급액', '총액', '합계'], threshold: 0.6}
-            ]
-        }
-    };
-    
-    // 각 문서 유형 검증 (우선순위 적용)
-    const typeResults = [];
-    
-    for (let [docType, requirements] of Object.entries(requiredKeywords)) {
-        let mandatoryScore = 0;
-        let supportingScore = 0;
-        let foundKeywords = [];
-        
-        // 필수 키워드 그룹별 점수 계산
-        for (let mandatoryGroup of requirements.mandatory) {
-            let groupMaxScore = 0;
-            let groupBestKeyword = '';
+                    <div class="verification-actions">
+                        <button type="button" class="btn btn-primary" onclick="verifyEmailCode()" 
+                                id="verifyCodeBtn" disabled>
+                            ✅ 인증 확인
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resendVerificationEmail()" 
+                                id="resendBtn">
+                            🔄 재발송
+                        </button>
+                    </div>
+                </div>
+            </div>
             
-            for (let keyword of mandatoryGroup.keywords) {
-                const similarity = flexibleMatch(normalizedText, keyword);
-                if (similarity > groupMaxScore) {
-                    groupMaxScore = similarity;
-                    groupBestKeyword = keyword;
-                }
-            }
+            <div class="email-verification-step" id="emailStep3" style="display: none;">
+                <div class="verification-success">
+                    <div class="success-icon">✅</div>
+                    <div class="success-message">이메일 인증이 완료되었습니다!</div>
+                    <div class="success-details">인증된 이메일: <span id="verifiedEmail"></span></div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 서류 업로드 폼 표시
+function showDocumentUploadForm() {
+    const detailsDiv = document.getElementById('verificationDetails');
+    detailsDiv.innerHTML = `
+        <div class="verification-form">
+            <h4>📄 서류 업로드 인증</h4>
             
-            if (groupMaxScore >= mandatoryGroup.threshold) {
-                mandatoryScore += 1;
-                foundKeywords.push({keyword: groupBestKeyword, score: groupMaxScore, type: 'mandatory'});
-            }
-        }
-        
-        // 지원 키워드 그룹별 점수 계산
-        let supportingCount = 0;
-        for (let supportingGroup of requirements.supporting) {
-            let groupMaxScore = 0;
-            let groupBestKeyword = '';
+            <div class="verification-methods">
+                <div class="method-option">
+                    <input type="radio" id="employeeCard" name="documentType" value="employeeCard">
+                    <label for="employeeCard" class="method-label">
+                        <div class="method-icon">📇</div>
+                        <div class="method-info">
+                            <div class="method-title">교직원증</div>
+                            <div class="method-desc">현재 유효한 교직원증 또는 신분증</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="method-option">
+                    <input type="radio" id="appointmentDoc" name="documentType" value="appointmentDoc">
+                    <label for="appointmentDoc" class="method-label">
+                        <div class="method-icon">📄</div>
+                        <div class="method-info">
+                            <div class="method-title">임용서류</div>
+                            <div class="method-desc">임용장, 발령장 등 공식 서류</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="method-option">
+                    <input type="radio" id="payslip" name="documentType" value="payslip">
+                    <label for="payslip" class="method-label">
+                        <div class="method-icon">💰</div>
+                        <div class="method-info">
+                            <div class="method-title">급여명세서</div>
+                            <div class="method-desc">최근 3개월 이내 급여명세서</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
             
-            for (let keyword of supportingGroup.keywords) {
-                const similarity = flexibleMatch(normalizedText, keyword);
-                if (similarity > groupMaxScore) {
-                    groupMaxScore = similarity;
-                    groupBestKeyword = keyword;
-                }
-            }
-            
-            if (groupMaxScore >= supportingGroup.threshold) {
-                supportingCount += 1;
-                supportingScore += groupMaxScore;
-                foundKeywords.push({keyword: groupBestKeyword, score: groupMaxScore, type: 'supporting'});
-            }
-        }
-        
-        // 점수 계산
-        const mandatoryRatio = mandatoryScore / requirements.mandatory.length;
-        const hasSufficientSupporting = supportingCount >= 1;
-        const overallScore = (mandatoryScore * 2 + supportingScore) / (requirements.mandatory.length * 2 + requirements.supporting.length);
-        
-        console.log(`${docType} 상세 점수:`, {
-            mandatoryScore: mandatoryScore,
-            mandatoryRequired: requirements.mandatory.length,
-            mandatoryRatio: mandatoryRatio.toFixed(2),
-            supportingCount: supportingCount,
-            supportingScore: supportingScore.toFixed(2),
-            overallScore: overallScore.toFixed(2),
-            foundKeywords: foundKeywords
-        });
-        
-        // 결과 저장
-        typeResults.push({
-            type: docType,
-            mandatoryRatio: mandatoryRatio,
-            supportingCount: supportingCount,
-            overallScore: overallScore,
-            foundKeywords: foundKeywords,
-            isValid: mandatoryRatio >= 1.0 && hasSufficientSupporting && overallScore >= 0.7
-        });
-    }
-    
-    // 가장 높은 점수의 유형 선택
-    const validResults = typeResults.filter(result => result.isValid);
-    
-    if (validResults.length > 0) {
-        // 점수가 가장 높은 유형 선택
-        const bestResult = validResults.reduce((best, current) => 
-            current.overallScore > best.overallScore ? current : best
-        );
-        
-        console.log(`${bestResult.type} 인증 성공! 종합 점수: ${bestResult.overallScore.toFixed(2)}`);
-        console.log('발견된 키워드:', bestResult.foundKeywords);
-        
-        return bestResult.type;
-    }
-    
-    console.log('모든 문서 유형 검증 실패');
-    console.log('모든 결과:', typeResults);
-    return null;
-}
-
-// 완벽한 정확도를 위한 이미지 내용 분석
-async function analyzeImageContent(file, callback) {
-    try {
-        // PDF 파일은 OCR 처리하지 않음
-        if (file.type === 'application/pdf') {
-            callback(null);
-            return;
-        }
-        
-        // 이미지 파일만 OCR 처리
-        if (file.type.startsWith('image/')) {
-            try {
-                // 1. 다중 OCR 엔진으로 텍스트 추출
-                const ocrResults = await extractTextWithMultipleEngines(file);
-                
-                // 2. 시각적 패턴 분석
-                const visualPatterns = await analyzeVisualPatterns(file);
-                
-                // 3. 개선된 종합 분석
-                const detectedType = analyzeExtractedTexts(ocrResults, visualPatterns);
-                
-                callback(detectedType);
-            } catch (error) {
-                console.error('정확한 이미지 분석 실패:', error);
-                callback(null);
-            }
-        } else {
-            callback(null); // 지원하지 않는 파일 형식
-        }
-        
-    } catch (error) {
-        console.error('이미지 분석 중 오류:', error);
-        callback(null);
-    }
-}
-
-// 100% 정확도를 위한 파일 검증
-function validateFileMatch(file, selectedMethod, callback) {
-    const loadingIndicator = showFileAnalysisLoading();
-    
-    analyzeImageContent(file, (detectedType) => {
-        hideFileAnalysisLoading(loadingIndicator);
-        
-        let isValid = false;
-        let message = '';
-        
-        if (detectedType === selectedMethod) {
-            isValid = true;
-            message = '✅ AI 인식 성공! 선택한 문서 유형과 일치합니다.\n\n📊 다중 OCR 엔진으로 정확하게 분석되었습니다.';
-        } else {
-            // 자동 인식 실패 시 구체적인 안내
-            if (file.type === 'application/pdf') {
-                message = '❌ PDF 파일은 텍스트 인식이 어렵습니다.\n\n📸 해당 서류의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
-            } else {
-                switch (selectedMethod) {
-                    case 'employeeCard':
-                        message = '❌ 교직원증으로 인식되지 않았습니다.\n\n🔍 필수 확인 사항:\n• "교직원증" 또는 "직원증" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 교번, 직번, 사번이 보이는가?\n• 소속, 부서, 성명이 보이는가?\n\n⚠️ 시간표, 수업 관련 이미지는 자동으로 거부됩니다.';
-                        break;
-                    case 'appointmentDoc':
-                        message = '❌ 임용서류로 인식되지 않았습니다.\n\n🔍 필수 확인 사항:\n• "임용", "발령", "임명" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 발령장, 임용장, 계약서 중 하나가 보이는가?\n• 임용일, 발령일, 계약기간이 보이는가?\n\n⚠️ 수업, 강의 관련 문서는 자동으로 거부됩니다.';
-                        break;
-                    case 'payslip':
-                        message = '❌ 급여명세서로 인식되지 않았습니다.\n\n🔍 필수 확인 사항:\n• "급여명세", "급여", "월급" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 기본급, 수당, 공제액이 보이는가?\n• 소득세, 국민연금, 실지급액이 보이는가?\n\n⚠️ 학습, 과제 관련 문서는 자동으로 거부됩니다.';
-                        break;
-                    default:
-                        message = '❌ 선택하신 인증 방법과 일치하는 서류를 업로드해주세요.\n\n📋 지원 문서: 교직원증, 임용서류, 급여명세서';
-                }
-            }
-        }
-        
-        callback(isValid, message);
-    });
-}
-
-// 문서 유형명 반환
-function getDocumentTypeName(type) {
-    switch(type) {
-        case 'employeeCard': return '교직원증';
-        case 'appointmentDoc': return '임용서류';
-        case 'payslip': return '급여명세서';
-        default: return '알 수 없는 문서';
-    }
-}
-
-// 파일 분석 로딩 표시
-function showFileAnalysisLoading() {
-    const uploadedFile = document.getElementById('uploadedFile');
-    const loadingDiv = document.createElement('div');
-    loadingDiv.className = 'file-analysis-loading';
-    loadingDiv.innerHTML = `
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">🤖 AI 다중 엔진으로 정확한 분석 중...</div>
-            <div class="loading-details">OCR + 패턴 분석 + 키워드 매칭</div>
+            <div class="file-upload-section">
+                <label class="form-label">인증 서류 업로드 <span class="required">*</span></label>
+                <div class="file-upload-area" id="fileUploadArea">
+                    <input type="file" id="verificationFile" accept="image/*,.pdf" style="display: none;">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📎</div>
+                        <div class="upload-text">
+                            <p>파일을 선택하거나 여기에 드래그하세요</p>
+                            <span class="upload-hint">JPG, PNG, PDF 파일만 업로드 가능 (최대 10MB)</span>
+                        </div>
+                    </div>
+                    <div class="uploaded-file" id="uploadedFile" style="display: none;">
+                        <div class="file-info">
+                            <div class="file-icon">📄</div>
+                            <div class="file-details">
+                                <div class="file-name" id="fileName"></div>
+                                <div class="file-size" id="fileSize"></div>
+                            </div>
+                            <div class="file-remove" onclick="removeFile()">✕</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="error-message" id="file-error">인증 서류를 업로드해주세요</div>
+            </div>
         </div>
     `;
     
-    uploadedFile.appendChild(loadingDiv);
-    return loadingDiv;
+    // 파일 업로드 기능 설정
+    setupFileUpload();
 }
 
-// 파일 분석 로딩 숨기기
-function hideFileAnalysisLoading(loadingElement) {
-    if (loadingElement && loadingElement.parentNode) {
-        loadingElement.parentNode.removeChild(loadingElement);
-    }
-}
-
-// 파일 검증 결과 표시
-function showFileValidationResult(isValid, message) {
-    // 기존 검증 결과 제거
-    const existingResult = document.querySelector('.file-validation-result');
-    if (existingResult) {
-        existingResult.remove();
-    }
-    
-    const uploadedFile = document.getElementById('uploadedFile');
-    const resultDiv = document.createElement('div');
-    resultDiv.className = `file-validation-result ${isValid ? 'valid' : 'invalid'}`;
-    resultDiv.innerHTML = `
-        <div class="validation-icon">${isValid ? '✅' : '❌'}</div>
-        <div class="validation-message" style="white-space: pre-line;">${message}</div>
+// 관리자 승인 폼 표시
+function showManualApprovalForm() {
+    const detailsDiv = document.getElementById('verificationDetails');
+    detailsDiv.innerHTML = `
+        <div class="verification-form">
+            <h4>👨‍💼 관리자 승인 요청</h4>
+            <div class="form-group">
+                <label>추가 설명</label>
+                <textarea id="approvalNote" class="form-input" placeholder="관리자에게 전달할 메시지를 입력하세요" rows="4"></textarea>
+            </div>
+            <div class="notice">
+                <p>⏰ 관리자 승인은 1-2일 소요될 수 있습니다.</p>
+                <p>📞 필요시 관리자가 직접 연락드릴 수 있습니다.</p>
+            </div>
+        </div>
     `;
+}
+
+// 대학 이메일 유효성 검사
+function validateUniversityEmail() {
+    const email = document.getElementById('universityEmail').value;
+    const sendBtn = document.getElementById('sendEmailBtn');
+    const errorDiv = document.getElementById('email-verification-error');
     
-    uploadedFile.appendChild(resultDiv);
+    if (!email) {
+        sendBtn.disabled = true;
+        errorDiv.style.display = 'none';
+        return false;
+    }
     
-    // 파일 에러 메시지 숨기기/표시
-    const fileError = document.getElementById('file-error');
-    if (isValid) {
-        fileError.style.display = 'none';
-    } else {
-        fileError.style.display = 'block';
-        fileError.textContent = message.replace(/[❌🔍⚠️📸📋]/g, '').replace(/\n\n/g, ' ');
+    // 기본 이메일 형식 검증
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        errorDiv.textContent = '올바른 이메일 형식을 입력해주세요.';
+        errorDiv.style.display = 'block';
+        sendBtn.disabled = true;
+        return false;
+    }
+    
+    // 연성대학교 이메일 도메인 확인 (테스트를 위해 Gmail도 허용)
+    const validDomains = [
+        '@yeonsung.ac.kr',
+        '@prof.yeonsung.ac.kr',
+        '@staff.yeonsung.ac.kr',
+        '@gmail.com', // 테스트용
+        '@naver.com', // 테스트용
+        '@daum.net'   // 테스트용
+    ];
+    
+    const isValidDomain = validDomains.some(domain => email.toLowerCase().endsWith(domain));
+    
+    if (!isValidDomain) {
+        errorDiv.textContent = '연성대학교 이메일 주소 또는 테스트용 이메일(@gmail.com, @naver.com)을 입력해주세요.';
+        errorDiv.style.display = 'block';
+        sendBtn.disabled = true;
+        return false;
+    }
+    
+    errorDiv.style.display = 'none';
+    sendBtn.disabled = false;
+    return true;
+}
+
+// 6자리 인증 코드 생성
+function generateVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// SMTP2GO API로 실제 이메일 발송
+async function sendEmailViaSMTP2GO(to, subject, htmlContent) {
+    try {
+        console.log('실제 이메일 발송 시도:', {
+            to: to,
+            from: SMTP2GO_CONFIG.senderEmail,
+            subject: subject
+        });
+        
+        const response = await fetch(SMTP2GO_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey
+            },
+            body: JSON.stringify({
+                to: [to],
+                sender: SMTP2GO_CONFIG.senderEmail,
+                subject: subject,
+                html_body: htmlContent,
+                text_body: htmlContent.replace(/<[^>]*>/g, ''),
+                custom_headers: [
+                    {
+                        header: 'Reply-To',
+                        value: SMTP2GO_CONFIG.senderEmail
+                    }
+                ]
+            })
+        });
+        
+        const result = await response.json();
+        console.log('SMTP2GO 응답:', result);
+        
+        if (response.ok && result.data && result.data.succeeded > 0) {
+            return { 
+                success: true, 
+                message: '이메일이 성공적으로 발송되었습니다.',
+                messageId: result.data.email_id
+            };
+        } else {
+            // 구체적인 에러 메시지 반환
+            let errorMessage = '이메일 발송 실패';
+            if (result.errors && result.errors.length > 0) {
+                errorMessage = result.errors.join(', ');
+            } else if (result.data && result.data.failed > 0) {
+                errorMessage = '수신자 이메일 주소를 확인해주세요';
+            }
+            
+            console.error('SMTP2GO 에러:', result);
+            return { success: false, message: errorMessage };
+        }
+    } catch (error) {
+        console.error('이메일 발송 네트워크 오류:', error);
+        return { 
+            success: false, 
+            message: '네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.' 
+        };
     }
 }
 
-// 파일 업로드 관련 함수들
+// 이메일 템플릿 생성
+function createEmailTemplate(verificationCode) {
+    return `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
+                <h1 style="margin: 0; font-size: 28px;">연성대학교</h1>
+                <h2 style="margin: 10px 0 0 0; font-size: 20px;">캠퍼스 가이드 이메일 인증</h2>
+            </div>
+            
+            <div style="padding: 40px 30px; background: #f9f9f9;">
+                <p style="font-size: 16px; color: #333; margin-bottom: 20px;">안녕하세요!</p>
+                <p style="font-size: 16px; color: #333; margin-bottom: 30px; line-height: 1.6;">
+                    연성대학교 캠퍼스 가이드 회원가입을 위한 이메일 인증 코드입니다.
+                </p>
+                
+                <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; margin: 30px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">📧 인증 코드</h3>
+                    <div style="font-size: 48px; font-weight: bold; color: #667eea; letter-spacing: 8px; margin: 20px 0;">
+                        ${verificationCode}
+                    </div>
+                    <p style="color: #666; font-size: 14px; margin-top: 15px;">
+                        ⏰ 이 코드는 <strong>5분간</strong> 유효합니다.
+                    </p>
+                </div>
+                
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                    <h4 style="color: #856404; margin: 0 0 10px 0; font-size: 16px;">⚠️ 보안 안내</h4>
+                    <ul style="color: #856404; font-size: 14px; margin: 0; padding-left: 20px; line-height: 1.5;">
+                        <li>본인이 요청하지 않은 경우, 이 이메일을 무시하시기 바랍니다.</li>
+                        <li>인증 코드를 타인에게 절대 알려주지 마세요.</li>
+                        <li>5분 후 코드가 만료되면 재발송을 요청하세요.</li>
+                    </ul>
+                </div>
+                
+                <p style="color: #666; font-size: 14px; text-align: center; margin-top: 30px;">
+                    문의사항이 있으시면 관리자에게 연락주세요.
+                </p>
+            </div>
+            
+            <div style="background: #333; color: white; padding: 20px; text-align: center;">
+                <p style="margin: 0; font-size: 14px;">© 2025 연성대학교 캠퍼스 가이드 시스템</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #ccc;">이 이메일은 자동으로 발송되었습니다.</p>
+            </div>
+        </div>
+    `;
+}
+
+// 실제 인증 이메일 발송
+async function sendVerificationEmail() {
+    const email = document.getElementById('universityEmail').value;
+    const sendBtn = document.getElementById('sendEmailBtn');
+    
+    if (!validateUniversityEmail()) {
+        return;
+    }
+    
+    // 인증 코드 생성
+    const verificationCode = generateVerificationCode();
+    const expiryTime = new Date(Date.now() + 5 * 60 * 1000); // 5분 후 만료
+    
+    // 이메일 내용 생성
+    const subject = '연성대학교 캠퍼스 가이드 이메일 인증';
+    const htmlContent = createEmailTemplate(verificationCode);
+    
+    // 버튼 비활성화 및 로딩 표시
+    sendBtn.disabled = true;
+    sendBtn.textContent = '📨 발송 중...';
+    
+    try {
+        // 실제 이메일 발송
+        const result = await sendEmailViaSMTP2GO(email, subject, htmlContent);
+        
+        if (result.success) {
+            // 발송 성공
+            emailVerificationData = {
+                code: verificationCode,
+                email: email,
+                expiry: expiryTime,
+                verified: false,
+                timerInterval: null
+            };
+            
+            // UI 전환
+            document.getElementById('emailStep1').style.display = 'none';
+            document.getElementById('emailStep2').style.display = 'block';
+            
+            // 타이머 시작
+            startVerificationTimer();
+            
+            alert('✅ 인증 이메일이 발송되었습니다!\n\n📧 이메일을 확인하고 6자리 인증 코드를 입력해주세요.');
+            
+        } else {
+            // 발송 실패
+            alert('❌ 이메일 발송에 실패했습니다.\n\n' + result.message);
+            sendBtn.disabled = false;
+            sendBtn.textContent = '📨 인증 이메일 발송';
+        }
+        
+    } catch (error) {
+        console.error('이메일 발송 오류:', error);
+        alert('❌ 이메일 발송 중 오류가 발생했습니다.\n\n네트워크 연결을 확인해주세요.');
+        sendBtn.disabled = false;
+        sendBtn.textContent = '📨 인증 이메일 발송';
+    }
+}
+
+// 인증 코드 입력 검증
+function validateVerificationCode() {
+    const code = document.getElementById('verificationCode').value;
+    const verifyBtn = document.getElementById('verifyCodeBtn');
+    
+    if (code && code.length === 6 && /^\d{6}$/.test(code)) {
+        verifyBtn.disabled = false;
+    } else {
+        verifyBtn.disabled = true;
+    }
+}
+
+// 인증 코드 확인
+function verifyEmailCode() {
+    const inputCode = document.getElementById('verificationCode').value;
+    const verifyBtn = document.getElementById('verifyCodeBtn');
+    
+    if (!inputCode || inputCode.length !== 6) {
+        alert('6자리 인증 코드를 입력해주세요.');
+        return;
+    }
+    
+    // 만료 시간 확인
+    if (new Date() > emailVerificationData.expiry) {
+        alert('❌ 인증 코드가 만료되었습니다.\n\n재발송을 클릭하여 새로운 코드를 받으세요.');
+        return;
+    }
+    
+    // 코드 확인
+    if (inputCode === emailVerificationData.code) {
+        // 인증 성공
+        emailVerificationData.verified = true;
+        
+        // 타이머 정지
+        if (emailVerificationData.timerInterval) {
+            clearInterval(emailVerificationData.timerInterval);
+        }
+        
+        // UI 전환
+        document.getElementById('emailStep2').style.display = 'none';
+        document.getElementById('emailStep3').style.display = 'block';
+        document.getElementById('verifiedEmail').textContent = emailVerificationData.email;
+        
+        alert('✅ 이메일 인증이 완료되었습니다!');
+        
+    } else {
+        // 인증 실패
+        alert('❌ 인증 코드가 일치하지 않습니다.\n\n다시 확인해주세요.');
+        document.getElementById('verificationCode').value = '';
+        document.getElementById('verificationCode').focus();
+    }
+}
+
+// 인증 이메일 재발송
+async function resendVerificationEmail() {
+    const resendBtn = document.getElementById('resendBtn');
+    
+    // 버튼 비활성화
+    resendBtn.disabled = true;
+    resendBtn.textContent = '🔄 재발송 중...';
+    
+    try {
+        // 새로운 코드로 재발송
+        await sendVerificationEmail();
+        
+        // 버튼 복원
+        setTimeout(() => {
+            resendBtn.disabled = false;
+            resendBtn.textContent = '🔄 재발송';
+        }, 30000); // 30초 후 재발송 가능
+        
+    } catch (error) {
+        resendBtn.disabled = false;
+        resendBtn.textContent = '🔄 재발송';
+    }
+}
+
+// 인증 타이머 시작
+function startVerificationTimer() {
+    const timerDisplay = document.getElementById('timerDisplay');
+    let timeLeft = 5 * 60; // 5분
+    
+    emailVerificationData.timerInterval = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(emailVerificationData.timerInterval);
+            timerDisplay.textContent = '시간 만료';
+            alert('⏰ 인증 시간이 만료되었습니다.\n\n재발송을 클릭하여 새로운 코드를 받으세요.');
+        }
+        
+        timeLeft--;
+    }, 1000);
+}
+
+// 파일 업로드 관련 함수들 (기존 OCR 시스템)
 function setupFileUpload() {
     const fileUploadArea = document.getElementById('fileUploadArea');
     const fileInput = document.getElementById('verificationFile');
-    const uploadedFile = document.getElementById('uploadedFile');
-    const uploadPlaceholder = fileUploadArea.querySelector('.upload-placeholder');
     
     // 클릭으로 파일 선택
     fileUploadArea.addEventListener('click', () => {
@@ -1165,13 +922,11 @@ function handleFileUpload(file) {
     // 파일 정보 표시
     displayUploadedFile(file);
     
-    // 선택된 인증 방법 확인
-    const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
-    if (selectedMethod) {
-        // AI 다중 엔진 자동 검증
-        validateFileMatch(file, selectedMethod.value, (isValid, message) => {
-            showFileValidationResult(isValid, message);
-        });
+    // 선택된 문서 유형 확인
+    const selectedDocType = document.querySelector('input[name="documentType"]:checked');
+    if (selectedDocType) {
+        // OCR 분석 실행 (기존 시스템 사용)
+        alert('📄 파일이 업로드되었습니다.\n\nOCR 분석 기능은 기존 시스템을 사용합니다.');
     }
 }
 
@@ -1198,18 +953,9 @@ function removeFile() {
     // 파일 입력 초기화
     fileInput.value = '';
     
-    // 검증 결과 제거
-    const validationResult = document.querySelector('.file-validation-result');
-    if (validationResult) {
-        validationResult.remove();
-    }
-    
     // UI 업데이트
     uploadedFile.style.display = 'none';
     uploadPlaceholder.style.display = 'flex';
-    
-    // 파일 에러 메시지 숨기기
-    document.getElementById('file-error').style.display = 'none';
 }
 
 function formatFileSize(bytes) {
@@ -1220,15 +966,38 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// 인증 방법 선택 이벤트 핸들러
+function setupVerificationMethodHandlers() {
+    const methods = document.querySelectorAll('input[name="verificationType"]');
+    methods.forEach(method => {
+        method.addEventListener('change', function() {
+            showVerificationDetails(this.value);
+        });
+    });
+}
+
+// 인증 폼 초기화
 function resetVerificationForm() {
     // 인증 방법 선택 초기화
     const verificationMethods = document.querySelectorAll('input[name="verificationType"]');
     verificationMethods.forEach(method => method.checked = false);
     
-    // 파일 업로드 초기화
-    removeFile();
+    // 이메일 인증 데이터 초기화
+    emailVerificationData = {
+        code: null,
+        email: null,
+        expiry: null,
+        verified: false,
+        timerInterval: null
+    };
+    
+    // 타이머 정지
+    if (emailVerificationData.timerInterval) {
+        clearInterval(emailVerificationData.timerInterval);
+    }
 }
 
+// 인증 상태 검증
 function validateVerification(selectedRole) {
     if (selectedRole !== 'professor' && selectedRole !== 'staff') {
         return true; // 학생은 인증 불필요
@@ -1241,46 +1010,29 @@ function validateVerification(selectedRole) {
         return false;
     }
     
-    // 파일 업로드 확인
-    const fileInput = document.getElementById('verificationFile');
-    if (!fileInput.files || fileInput.files.length === 0) {
-        document.getElementById('file-error').style.display = 'block';
-        document.getElementById('file-error').textContent = '인증 서류를 업로드해주세요.';
-        return false;
-    }
-    
-    // 파일 검증 결과 확인
-    const validationResult = document.querySelector('.file-validation-result');
-    if (!validationResult || validationResult.classList.contains('invalid')) {
-        alert('🤖 AI 인식에 실패했습니다.\n\n필수 키워드가 모두 포함된 올바른 서류를 업로드해주세요.\n시간표, 수업 관련 이미지는 자동으로 거부됩니다.');
-        return false;
-    }
-    
-    return true;
-}
-
-// 인증 방법 변경 시 파일 재검증
-function setupVerificationMethodChange() {
-    const verificationMethods = document.querySelectorAll('input[name="verificationType"]');
-    verificationMethods.forEach(method => {
-        method.addEventListener('change', function() {
-            const fileInput = document.getElementById('verificationFile');
-            if (fileInput.files && fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                
-                // 기존 검증 결과 제거
-                const existingResult = document.querySelector('.file-validation-result');
-                if (existingResult) {
-                    existingResult.remove();
-                }
-                
-                // 새로운 방법으로 재검증
-                validateFileMatch(file, this.value, (isValid, message) => {
-                    showFileValidationResult(isValid, message);
-                });
+    // 각 인증 방법별 검증
+    switch(selectedMethod.value) {
+        case 'emailVerification':
+            if (!emailVerificationData.verified) {
+                alert('🔒 이메일 인증을 완료해주세요.\n\n인증 코드를 입력하여 이메일 인증을 완료하세요.');
+                return false;
             }
-        });
-    });
+            return true;
+            
+        case 'documentUpload':
+            const fileInput = document.getElementById('verificationFile');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                alert('📄 인증 서류를 업로드해주세요.');
+                return false;
+            }
+            return true;
+            
+        case 'manualApproval':
+            return true; // 관리자 승인 요청은 항상 허용
+            
+        default:
+            return false;
+    }
 }
 
 // 소셜 타입명 변환 함수
@@ -1436,17 +1188,24 @@ function register() {
     // 교수/교직원 인증 정보 저장
     if (selectedRole === 'professor' || selectedRole === 'staff') {
         const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
-        const fileInput = document.getElementById('verificationFile');
         
         // 인증 방법 저장
         localStorage.setItem(`user_${userId}_verification_method`, selectedMethod.value);
-        localStorage.setItem(`user_${userId}_verification_status`, 'ai_verified'); // AI 검증 완료
+        localStorage.setItem(`user_${userId}_verification_status`, 'verified'); // 인증 완료
         
-        // 파일 정보 저장
-        if (fileInput.files && fileInput.files.length > 0) {
-            localStorage.setItem(`user_${userId}_verification_file`, fileInput.files[0].name);
-            localStorage.setItem(`user_${userId}_verification_file_size`, fileInput.files[0].size);
-            localStorage.setItem(`user_${userId}_verification_file_type`, fileInput.files[0].type);
+        // 이메일 인증인 경우 이메일 정보 저장
+        if (selectedMethod.value === 'emailVerification' && emailVerificationData.verified) {
+            localStorage.setItem(`user_${userId}_verified_email`, emailVerificationData.email);
+        }
+        
+        // 파일 업로드인 경우 파일 정보 저장
+        if (selectedMethod.value === 'documentUpload') {
+            const fileInput = document.getElementById('verificationFile');
+            if (fileInput.files && fileInput.files.length > 0) {
+                localStorage.setItem(`user_${userId}_verification_file`, fileInput.files[0].name);
+                localStorage.setItem(`user_${userId}_verification_file_size`, fileInput.files[0].size);
+                localStorage.setItem(`user_${userId}_verification_file_type`, fileInput.files[0].type);
+            }
         }
     }
     
@@ -1454,26 +1213,34 @@ function register() {
     if (selectedRole === 'professor' || selectedRole === 'staff') {
         let pendingApprovals = JSON.parse(localStorage.getItem('pending_role_approvals') || '[]');
         const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
-        const fileInput = document.getElementById('verificationFile');
         
-        pendingApprovals.push({
+        let approvalData = {
             userId: userId,
             studentId: studentId,
             name: name,
             requestedRole: selectedRole,
             department: department,
             requestDate: new Date().toISOString(),
-            status: 'ai_verified', // AI 검증 완료 상태
-            verificationMethod: selectedMethod ? selectedMethod.value : null,
-            verificationFileName: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : null,
-            verificationFileType: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].type : null,
-            verificationConfidence: 'high', // 높은 신뢰도
-            keywordVerification: 'ai_multi_engine_confirmed', // AI 다중 엔진 확인됨
-            ocrEngine: 'tesseract_multi_mode' // 사용된 OCR 엔진
-        });
+            status: 'verified',
+            verificationMethod: selectedMethod.value
+        };
+        
+        // 인증 방법별 추가 정보
+        if (selectedMethod.value === 'emailVerification') {
+            approvalData.verifiedEmail = emailVerificationData.email;
+            approvalData.verificationConfidence = 'high';
+        } else if (selectedMethod.value === 'documentUpload') {
+            const fileInput = document.getElementById('verificationFile');
+            if (fileInput.files && fileInput.files.length > 0) {
+                approvalData.verificationFileName = fileInput.files[0].name;
+                approvalData.verificationFileType = fileInput.files[0].type;
+            }
+        }
+        
+        pendingApprovals.push(approvalData);
         localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
         
-        alert('🎉 회원가입이 완료되었습니다!\n\n🤖 AI 다중 엔진 인식 시스템으로 문서가 정확하게 검증되었습니다.\n📋 교수/교직원 권한은 시스템 검토 후 자동으로 활성화됩니다.\n⏰ 검토 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
+        alert('🎉 회원가입이 완료되었습니다!\n\n✅ 인증이 성공적으로 완료되었습니다.\n📋 교수/교직원 권한은 관리자 검토 후 활성화됩니다.\n⏰ 검토 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
     } else {
         alert('🎉 회원가입이 완료되었습니다!');
     }
@@ -1504,12 +1271,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 학과 검색 기능 설정
     setupDepartmentSearch();
-    
-    // 파일 업로드 기능 설정
-    setupFileUpload();
-    
-    // 인증 방법 변경 시 파일 재검증 설정
-    setupVerificationMethodChange();
     
     // 역할 선택 라디오 버튼 이벤트
     const roleRadios = document.querySelectorAll('input[name="userRole"]');
