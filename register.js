@@ -756,26 +756,22 @@ async function sendVerificationEmail() {
     const verificationCode = generateVerificationCode();
     const expiryTime = new Date(Date.now() + 5 * 60 * 1000); // 5분 후 만료
     
-    // 이메일 내용 생성
-    const subject = '연성대학교 캠퍼스 가이드 이메일 인증';
-    const htmlContent = createEmailTemplate(verificationCode);
-    
     // 버튼 비활성화 및 로딩 표시
     sendBtn.disabled = true;
     sendBtn.textContent = '📨 발송 중...';
     
     try {
-        // 항상 시뮬레이션 모드 사용 (개발용)
-        console.log('=== 이메일 인증 코드 발송 ===');
-        console.log('받는 사람:', email);
-        console.log('제목:', subject);
-        console.log('🔑 인증 코드:', verificationCode);
-        console.log('===========================');
-        
-        // 1.5초 지연으로 실제 발송처럼 보이게
+        // 시뮬레이션 지연
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // 발송 성공으로 처리
+        // 콘솔에 인증 정보 출력
+        console.log('=== 📧 이메일 인증 코드 발송 ===');
+        console.log('받는 사람:', email);
+        console.log('🔑 인증 코드:', verificationCode);
+        console.log('⏰ 만료 시간:', expiryTime.toLocaleString());
+        console.log('==============================');
+        
+        // 이메일 인증 데이터 저장
         emailVerificationData = {
             code: verificationCode,
             email: email,
@@ -791,21 +787,20 @@ async function sendVerificationEmail() {
         // 타이머 시작
         startVerificationTimer();
         
-        // 성공 알림
+        // 성공 알림 (인증 코드 포함)
         alert(`✅ 인증 이메일이 발송되었습니다!
 
 📧 이메일: ${email}
 🔑 인증 코드: ${verificationCode}
 
-💡 개발 모드에서는 콘솔(F12)에서도 인증 코드를 확인할 수 있습니다.`);
-        
-        // 버튼 복원
-        sendBtn.disabled = false;
-        sendBtn.textContent = '📨 인증 이메일 발송';
+💡 위의 6자리 코드를 입력하여 인증을 완료하세요.
+💻 개발자 도구 콘솔에서도 확인 가능합니다.`);
         
     } catch (error) {
-        console.error('이메일 발송 오류:', error);
-        alert('❌ 이메일 발송 중 오류가 발생했습니다.\n\n네트워크 연결을 확인해주세요.');
+        console.error('이메일 발송 시뮬레이션 오류:', error);
+        alert('❌ 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+        // 버튼 복원
         sendBtn.disabled = false;
         sendBtn.textContent = '📨 인증 이메일 발송';
     }
@@ -831,16 +826,34 @@ function quickVerify() {
         if (codeInput) {
             codeInput.value = emailVerificationData.code;
             validateVerificationCode();
-            verifyEmailCode();
+            setTimeout(() => {
+                verifyEmailCode();
+            }, 100);
+            return true;
         }
+    }
+    console.log('❌ 발송된 인증 코드가 없습니다. 먼저 인증 이메일을 발송해주세요.');
+    return false;
+}
+
+
+function showVerificationCode() {
+    if (emailVerificationData && emailVerificationData.code) {
+        console.log('🔑 현재 인증 코드:', emailVerificationData.code);
+        console.log('📧 인증 이메일:', emailVerificationData.email);
+        console.log('⏰ 만료 시간:', emailVerificationData.expiry.toLocaleString());
+        return emailVerificationData.code;
     } else {
-        console.log('발송된 인증 코드가 없습니다. 먼저 인증 이메일을 발송해주세요.');
+        console.log('❌ 생성된 인증 코드가 없습니다.');
+        return null;
     }
 }
 
 
-// 전역으로 노출
+// 전역 함수로 노출
 window.quickVerify = quickVerify;
+window.showVerificationCode = showVerificationCode;
+window.getVerificationCode = showVerificationCode; // 기존 함수명 호환성
 
 
 // 인증 코드 확인
@@ -893,14 +906,19 @@ async function resendVerificationEmail() {
     resendBtn.textContent = '🔄 재발송 중...';
     
     try {
+        // 기존 타이머 정지
+        if (emailVerificationData.timerInterval) {
+            clearInterval(emailVerificationData.timerInterval);
+        }
+        
         // 새로운 코드로 재발송
         await sendVerificationEmail();
         
-        // 버튼 복원
+        // 버튼 복원 (30초 후)
         setTimeout(() => {
             resendBtn.disabled = false;
             resendBtn.textContent = '🔄 재발송';
-        }, 30000); // 30초 후 재발송 가능
+        }, 30000);
         
     } catch (error) {
         resendBtn.disabled = false;
