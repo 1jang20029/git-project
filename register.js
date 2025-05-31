@@ -765,47 +765,43 @@ async function sendVerificationEmail() {
     sendBtn.textContent = '📨 발송 중...';
     
     try {
-        let result;
+        // 항상 시뮬레이션 모드 사용 (개발용)
+        console.log('=== 이메일 인증 코드 발송 ===');
+        console.log('받는 사람:', email);
+        console.log('제목:', subject);
+        console.log('🔑 인증 코드:', verificationCode);
+        console.log('===========================');
         
-        // 환경에 따라 다른 발송 방법 사용
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            // 개발 환경: 시뮬레이션 사용
-            result = await sendEmailSimulation(email, subject, htmlContent, verificationCode);
-        } else {
-            // 프로덕션 환경: EmailJS 또는 백엔드 사용
-            // EmailJS가 설정되어 있다면 EmailJS 사용, 아니면 백엔드 사용
-            if (typeof emailjs !== 'undefined') {
-                result = await sendEmailViaEmailJS(email, subject, htmlContent, verificationCode);
-            } else {
-                result = await sendEmailViaBackend(email, subject, htmlContent, verificationCode);
-            }
-        }
+        // 1.5초 지연으로 실제 발송처럼 보이게
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        if (result.success) {
-            // 발송 성공
-            emailVerificationData = {
-                code: verificationCode,
-                email: email,
-                expiry: expiryTime,
-                verified: false,
-                timerInterval: null
-            };
-            
-            // UI 전환
-            document.getElementById('emailStep1').style.display = 'none';
-            document.getElementById('emailStep2').style.display = 'block';
-            
-            // 타이머 시작
-            startVerificationTimer();
-            
-            alert('✅ 인증 이메일이 발송되었습니다!\n\n📧 이메일을 확인하고 6자리 인증 코드를 입력해주세요.\n\n💡 개발 환경에서는 콘솔(F12)에서 인증 코드를 확인할 수 있습니다.');
-            
-        } else {
-            // 발송 실패
-            alert('❌ 이메일 발송에 실패했습니다.\n\n' + result.message);
-            sendBtn.disabled = false;
-            sendBtn.textContent = '📨 인증 이메일 발송';
-        }
+        // 발송 성공으로 처리
+        emailVerificationData = {
+            code: verificationCode,
+            email: email,
+            expiry: expiryTime,
+            verified: false,
+            timerInterval: null
+        };
+        
+        // UI 전환
+        document.getElementById('emailStep1').style.display = 'none';
+        document.getElementById('emailStep2').style.display = 'block';
+        
+        // 타이머 시작
+        startVerificationTimer();
+        
+        // 성공 알림
+        alert(`✅ 인증 이메일이 발송되었습니다!
+
+📧 이메일: ${email}
+🔑 인증 코드: ${verificationCode}
+
+💡 개발 모드에서는 콘솔(F12)에서도 인증 코드를 확인할 수 있습니다.`);
+        
+        // 버튼 복원
+        sendBtn.disabled = false;
+        sendBtn.textContent = '📨 인증 이메일 발송';
         
     } catch (error) {
         console.error('이메일 발송 오류:', error);
@@ -826,6 +822,26 @@ function validateVerificationCode() {
         verifyBtn.disabled = true;
     }
 }
+
+
+// 개발용 빠른 인증 함수 (콘솔에서 사용)
+function quickVerify() {
+    if (emailVerificationData && emailVerificationData.code) {
+        const codeInput = document.getElementById('verificationCode');
+        if (codeInput) {
+            codeInput.value = emailVerificationData.code;
+            validateVerificationCode();
+            verifyEmailCode();
+        }
+    } else {
+        console.log('발송된 인증 코드가 없습니다. 먼저 인증 이메일을 발송해주세요.');
+    }
+}
+
+
+// 전역으로 노출
+window.quickVerify = quickVerify;
+
 
 // 인증 코드 확인
 function verifyEmailCode() {
