@@ -603,7 +603,7 @@ function generateVerificationCode() {
 // SMTP2GO API를 통한 실제 이메일 발송
 async function sendEmailViaSMTP2GO(to, subject, verificationCode) {
     try {
-        console.log('📧 SMTP2GO 이메일 발송 시도:', { to, subject, verificationCode });
+        console.log('📧 SMTP2GO 직접 이메일 발송 시도:', { to, subject, verificationCode });
         
         // 이메일 HTML 템플릿
         const htmlContent = `
@@ -636,7 +636,17 @@ async function sendEmailViaSMTP2GO(to, subject, verificationCode) {
                         </p>
                     </div>
                     
-                    <div style="background: #333; color: white; padding: 20px; text-align: center;">
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                        <h4 style="color: #856404; margin: 0 0 10px 0; font-size: 16px;">⚠️ 보안 안내</h4>
+                        <ul style="color: #856404; font-size: 14px; margin: 0; padding-left: 20px; line-height: 1.5;">
+                            <li>본인이 요청하지 않은 경우, 이 이메일을 무시하시기 바랍니다.</li>
+                            <li>인증 코드를 타인에게 절대 알려주지 마세요.</li>
+                            <li>5분 후 코드가 만료되면 재발송을 요청하세요.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="background: #333; color: white; padding: 20px; text-align: center;">
                     <p style="margin: 0; font-size: 14px;">© 2025 연성대학교 캠퍼스 가이드 시스템</p>
                     <p style="margin: 5px 0 0 0; font-size: 12px; color: #ccc;">이 이메일은 자동으로 발송되었습니다.</p>
                 </div>
@@ -648,7 +658,7 @@ async function sendEmailViaSMTP2GO(to, subject, verificationCode) {
         // 텍스트 버전
         const textContent = `연성대학교 캠퍼스 가이드 이메일 인증\n\n인증 코드: ${verificationCode}\n\n이 코드는 5분간 유효합니다.\n\n보안을 위해 인증 코드를 타인에게 알려주지 마세요.`;
 
-        // SMTP2GO API 요청 데이터
+        // SMTP2GO API 직접 호출 (CORS 제한으로 인해 브라우저에서는 제한됨)
         const emailData = {
             to: [to],
             sender: SMTP2GO_CONFIG.senderEmail,
@@ -657,69 +667,63 @@ async function sendEmailViaSMTP2GO(to, subject, verificationCode) {
             text_body: textContent
         };
 
-        // 다양한 방법으로 CORS 우회 시도
-        const corsProxies = [
-            'https://api.allorigins.win/raw?url=',
-            'https://corsproxy.io/?',
-            'https://cors-anywhere.herokuapp.com/',
-            'https://thingproxy.freeboard.io/fetch/'
-        ];
+        console.log('📨 SMTP2GO API 직접 요청 시작...');
 
-        let lastError = null;
-        let proxySuccess = false;
+        // 직접 API 호출 시도
+        const response = await fetch(SMTP2GO_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(emailData)
+        });
 
-        // 각 프록시를 순차적으로 시도
-        for (const proxy of corsProxies) {
-            try {
-                console.log(`🔄 ${proxy} 프록시로 SMTP2GO API 요청 중...`);
-                
-                const targetUrl = SMTP2GO_CONFIG.apiUrl;
-                const proxyUrl = proxy + encodeURIComponent(targetUrl);
-                
-                const response = await fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify(emailData)
-                });
+        console.log('📨 SMTP2GO 응답 상태:', response.status, response.statusText);
 
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('✅ SMTP2GO API 성공 응답:', result);
-                    
-                    if (result.data && result.data.succeeded > 0) {
-                        proxySuccess = true;
-                        return { 
-                            success: true, 
-                            message: '실제 이메일이 성공적으로 발송되었습니다.',
-                            messageId: result.data.message_id || 'smtp2go_success'
-                        };
-                    } else {
-                        lastError = result.errors ? result.errors.join(', ') : '이메일 발송 실패';
-                    }
-                } else {
-                    lastError = `HTTP ${response.status}: ${response.statusText}`;
-                }
-            } catch (error) {
-                console.log(`❌ ${proxy} 프록시 실패:`, error.message);
-                lastError = error.message;
-                continue; // 다음 프록시 시도
+        if (response.ok) {
+            const result = await response.json();
+            console.log('✅ SMTP2GO 성공 응답:', result);
+            
+            if (result.data && result.data.succeeded > 0) {
+                return { 
+                    success: true, 
+                    message: '이메일이 성공적으로 발송되었습니다.',
+                    messageId: result.data.message_id || 'smtp2go_success'
+                };
+            } else {
+                const errorMsg = result.errors ? result.errors.join(', ') : '이메일 발송 실패';
+                console.error('SMTP2GO API 오류:', result);
+                return { 
+                    success: false, 
+                    message: `SMTP2GO 오류: ${errorMsg}` 
+                };
             }
-        }
-
-        // 모든 프록시 실패 시 폴백
-        if (!proxySuccess) {
-            console.log('⚠️ 모든 CORS 프록시 실패, 시뮬레이션 모드로 전환');
-            return await sendEmailSimulation(to, subject, verificationCode);
+        } else {
+            const errorText = await response.text();
+            console.error('SMTP2GO HTTP 오류:', response.status, errorText);
+            return { 
+                success: false, 
+                message: `HTTP ${response.status}: SMTP2GO API 요청 실패` 
+            };
         }
 
     } catch (error) {
         console.error('SMTP2GO 이메일 발송 오류:', error);
-        // 오류 발생 시 시뮬레이션으로 폴백
-        return await sendEmailSimulation(to, subject, verificationCode);
+        
+        // CORS 오류인지 확인
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            return { 
+                success: false, 
+                message: 'CORS 정책으로 인해 브라우저에서 직접 SMTP2GO API를 호출할 수 없습니다. 서버 사이드 구현이 필요합니다.' 
+            };
+        }
+        
+        return { 
+            success: false, 
+            message: `이메일 발송 오류: ${error.message}` 
+        };
     }
 }
 
@@ -783,38 +787,38 @@ async function sendVerificationEmail() {
             // 타이머 시작
             startVerificationTimer();
             
-            // 성공 메시지 - 실제 발송인지 시뮬레이션인지 구분
-            if (result.messageId === 'simulation_fallback') {
-                alert(`📧 이메일 발송을 시도했습니다!
-
-🔑 인증 코드: ${verificationCode}
-
-⚠️ 실제 이메일 발송에 실패하여 시뮬레이션 모드로 전환되었습니다.
-위의 인증 코드를 직접 입력하여 인증을 완료하세요.
-
-💡 개발자 도구 콘솔에서도 확인 가능합니다.`);
-            } else {
-                alert(`✅ 인증 이메일이 발송되었습니다!
+            alert(`✅ 인증 이메일이 발송되었습니다!
 
 📧 이메일: ${email}
 📮 이메일함을 확인하여 6자리 인증 코드를 입력해주세요.
 
 ⚠️ 스팸함도 확인해보세요.
 💡 이메일이 도착하지 않으면 재발송을 클릭하세요.`);
-            }
             
         } else {
             // 발송 실패
+            console.error('이메일 발송 실패:', result.message);
+            
             alert(`❌ 이메일 발송에 실패했습니다.
 
-${result.message}
+오류: ${result.message}
 
-다시 시도하거나 관리자에게 문의하세요.`);
+해결 방법:
+1. 네트워크 연결 확인
+2. 이메일 주소 확인
+3. 관리자에게 문의
+
+SMTP2GO API는 브라우저의 CORS 정책으로 인해 직접 호출이 제한될 수 있습니다.
+실제 운영 환경에서는 서버 사이드 구현이 필요합니다.`);
         }
         
     } catch (error) {
         console.error('이메일 발송 오류:', error);
-        alert('❌ 이메일 발송 중 오류가 발생했습니다.\n\n네트워크 연결을 확인해주세요.');
+        alert(`❌ 이메일 발송 중 오류가 발생했습니다.
+
+오류: ${error.message}
+
+네트워크 연결을 확인하거나 관리자에게 문의하세요.`);
     } finally {
         // 버튼 복원
         sendBtn.disabled = false;
