@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입 - 연성대학교</title>
     <link rel="stylesheet" href="register.css">
+    
+    <!-- EmailJS 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // EmailJS 초기화 (페이지 로드 시)
+        (function(){
+            emailjs.init("wSUCVBd2HeWkMgWc");
+        })();
+    </script>
 </head>
 <body>
     <div class="container">
@@ -333,6 +342,7 @@
         </div>
     </div>
     
+    <!-- 보안 강화된 JavaScript 파일 로드 -->
     <script src="register.js"></script>
 </body>
 </html>

@@ -686,7 +686,6 @@ function checkEmailRateLimit(email) {
     // 5분 이내의 시도만 유지
     const recentAttempts = attempts.filter(time => now - time < 5 * 60 * 1000);
     
-    // 발송 시도 제한 검사 (보안 강화) - 이어서
     if (recentAttempts.length >= 3) {
         return { 
             limited: true, 
@@ -740,7 +739,7 @@ async function sendEmailViaEmailJS(to, subject, verificationCode) {
             throw new Error('EmailJS 라이브러리가 로드되지 않았습니다.');
         }
         
-        // EmailJS 초기화
+        // EmailJS 초기화 (이미 HTML에서 초기화되었지만 다시 확인)
         emailjs.init(EMAILJS_CONFIG.publicKey);
         
         // 보안 강화된 템플릿 파라미터 (EmailJS 템플릿 변수와 일치)
@@ -1425,7 +1424,7 @@ function register() {
             localStorage.setItem(`user_${userId}_verification_hash`, emailVerificationData.hashedCode);
         }
         
-        // 파일 업로드인 경우 파일 정보 저장 - 이어서
+        // 파일 업로드인 경우 파일 정보 저장
         if (selectedMethod.value === 'documentUpload') {
             const fileInput = document.getElementById('verificationFile');
             const selectedDocType = document.querySelector('input[name="documentType"]:checked');
@@ -1527,6 +1526,56 @@ function register() {
     }
 }
 
+// 개발자 도구용 헬퍼 함수들 (보안 강화)
+function showVerificationCode() {
+    if (emailVerificationData && emailVerificationData.code) {
+        console.log('🔑 현재 인증 정보 (보안 강화):');
+        console.log('- 인증 코드:', emailVerificationData.code);
+        console.log('- 인증 이메일:', emailVerificationData.email);
+        console.log('- 세션 ID:', emailVerificationData.sessionId);
+        console.log('- 해시 코드:', emailVerificationData.hashedCode);
+        console.log('- 솔트:', emailVerificationData.salt);
+        console.log('- 시도 횟수:', emailVerificationData.attempts);
+        console.log('- 최대 시도:', emailVerificationData.maxAttempts);
+        
+        if (emailVerificationData.expiry) {
+            console.log('- 만료 시간:', emailVerificationData.expiry.toLocaleString());
+            console.log('- 남은 시간:', Math.max(0, Math.floor((emailVerificationData.expiry - new Date()) / 1000)), '초');
+        }
+        
+        return {
+            code: emailVerificationData.code,
+            sessionId: emailVerificationData.sessionId,
+            email: emailVerificationData.email
+        };
+    } else {
+        console.log('❌ 생성된 인증 코드가 없습니다.');
+        return null;
+    }
+}
+
+function quickVerify() {
+    if (emailVerificationData && emailVerificationData.code) {
+        const codeInput = document.getElementById('verificationCode');
+        if (codeInput) {
+            codeInput.value = emailVerificationData.code;
+            validateVerificationCode();
+            setTimeout(() => {
+                verifyEmailCode();
+            }, 100);
+            
+            console.log('🚀 자동 인증 완료:', {
+                code: emailVerificationData.code,
+                sessionId: emailVerificationData.sessionId
+            });
+            
+            return true;
+        }
+    }
+    console.log('❌ 발송된 인증 코드가 없습니다. 먼저 인증 이메일을 발송해주세요.');
+    return false;
+}
+
 // 설정 확인 및 테스트 함수들 (보안 강화)
 function checkEmailJSConfig() {
     console.log('📧 EmailJS 설정 확인 (보안 강화):');
@@ -1596,56 +1645,6 @@ async function testEmailJS() {
         console.error('❌ 테스트 이메일 발송 실패:', error);
         alert(`❌ 테스트 실패: ${error.message}`);
     }
-}
-
-// 개발용 헬퍼 함수들 (보안 강화)
-function showVerificationCode() {
-    if (emailVerificationData && emailVerificationData.code) {
-        console.log('🔑 현재 인증 정보 (보안 강화):');
-        console.log('- 인증 코드:', emailVerificationData.code);
-        console.log('- 인증 이메일:', emailVerificationData.email);
-        console.log('- 세션 ID:', emailVerificationData.sessionId);
-        console.log('- 해시 코드:', emailVerificationData.hashedCode);
-        console.log('- 솔트:', emailVerificationData.salt);
-        console.log('- 시도 횟수:', emailVerificationData.attempts);
-        console.log('- 최대 시도:', emailVerificationData.maxAttempts);
-        
-        if (emailVerificationData.expiry) {
-            console.log('- 만료 시간:', emailVerificationData.expiry.toLocaleString());
-            console.log('- 남은 시간:', Math.max(0, Math.floor((emailVerificationData.expiry - new Date()) / 1000)), '초');
-        }
-        
-        return {
-            code: emailVerificationData.code,
-            sessionId: emailVerificationData.sessionId,
-            email: emailVerificationData.email
-        };
-    } else {
-        console.log('❌ 생성된 인증 코드가 없습니다.');
-        return null;
-    }
-}
-
-function quickVerify() {
-    if (emailVerificationData && emailVerificationData.code) {
-        const codeInput = document.getElementById('verificationCode');
-        if (codeInput) {
-            codeInput.value = emailVerificationData.code;
-            validateVerificationCode();
-            setTimeout(() => {
-                verifyEmailCode();
-            }, 100);
-            
-            console.log('🚀 자동 인증 완료:', {
-                code: emailVerificationData.code,
-                sessionId: emailVerificationData.sessionId
-            });
-            
-            return true;
-        }
-    }
-    console.log('❌ 발송된 인증 코드가 없습니다. 먼저 인증 이메일을 발송해주세요.');
-    return false;
 }
 
 // 로그 조회 함수 (보안 강화)
@@ -1877,4 +1876,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('  - 발송 시도 제한');
     console.log('  - 상세 로깅');
     console.log('  - 도메인 검증 강화');
+    
+    // 환경 정보 표시
+    console.log('🌍 현재 환경:', EMAILJS_CONFIG.isProduction ? '배포 환경' : '개발 환경');
+    if (!EMAILJS_CONFIG.isProduction) {
+        console.log('🧪 개발 모드: 테스트용 이메일 도메인 허용됨');
+    }
 });

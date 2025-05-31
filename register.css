@@ -476,6 +476,106 @@ header {
     color: #666;
 }
 
+/* 인증 폼 스타일 */
+.verification-form {
+    background-color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.verification-form h4 {
+    color: #333;
+    margin-bottom: 16px;
+    font-size: 16px;
+}
+
+/* 이메일 인증 단계별 스타일 */
+.email-verification-step {
+    margin-bottom: 16px;
+}
+
+.verification-code-section {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.verification-timer {
+    background-color: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #1976d2;
+}
+
+.verification-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #c62917;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #a22015;
+}
+
+.btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.verification-success {
+    text-align: center;
+    padding: 20px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+}
+
+.success-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.success-message {
+    font-size: 16px;
+    font-weight: bold;
+    color: #155724;
+    margin-bottom: 8px;
+}
+
+.success-details {
+    font-size: 14px;
+    color: #155724;
+}
+
 .file-upload-section {
     margin-bottom: 20px;
 }
@@ -627,6 +727,25 @@ header {
     margin-bottom: 0;
 }
 
+/* 관리자 승인 폼 스타일 */
+.notice {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.notice p {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #666;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
 /* 파일 검증 관련 스타일 */
 .file-analysis-loading {
     padding: 12px;
@@ -731,5 +850,13 @@ header {
     .loading-content {
         flex-direction: column;
         gap: 8px;
+    }
+    
+    .verification-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
     }
 }
