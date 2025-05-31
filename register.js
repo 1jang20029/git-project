@@ -92,12 +92,11 @@ function validateIdPattern(role, id) {
     }
 }
 
-// SMTP2GO API 설정
-const SMTP2GO_CONFIG = {
-    apiKey: 'api-342D3ACA2B0B491DBF561AB9BB50849F',
-    apiUrl: 'https://api.smtp2go.com/v3/email/send',
-    senderEmail: 'noreply@smtp2go.com',
-    senderName: '연성대학교 캠퍼스 가이드'
+// EmailJS 설정 (실제 값으로 설정됨)
+const EMAILJS_CONFIG = {
+    publicKey: "wSUCVBd2HeWkMgWc",           // ✅ 확인된 Public Key
+    serviceId: "service_tjelgug",            // ✅ 확인된 Service ID
+    templateId: "template_ejprum5"           // ✅ 확인된 Template ID
 };
 
 // 이메일 인증 관련 전역 변수
@@ -600,150 +599,66 @@ function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// SMTP2GO API를 통한 실제 이메일 발송
-async function sendEmailViaSMTP2GO(to, subject, verificationCode) {
+// EmailJS를 통한 실제 이메일 발송
+async function sendEmailViaEmailJS(to, subject, verificationCode) {
     try {
-        console.log('📧 SMTP2GO 직접 이메일 발송 시도:', { to, subject, verificationCode });
+        console.log('📧 EmailJS 이메일 발송 시도:', { to, subject, verificationCode });
         
-        // 이메일 HTML 템플릿
-        const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: white; border: 1px solid #ddd;">
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
-                    <h1 style="margin: 0; font-size: 28px;">연성대학교</h1>
-                    <h2 style="margin: 10px 0 0 0; font-size: 20px;">캠퍼스 가이드 이메일 인증</h2>
-                </div>
-                
-                <div style="padding: 40px 30px; background: #f9f9f9;">
-                    <p style="font-size: 16px; color: #333; margin-bottom: 20px;">안녕하세요!</p>
-                    <p style="font-size: 16px; color: #333; margin-bottom: 30px; line-height: 1.6;">
-                        연성대학교 캠퍼스 가이드 회원가입을 위한 이메일 인증 코드입니다.
-                    </p>
-                    
-                    <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; margin: 30px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                        <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">📧 인증 코드</h3>
-                        <div style="font-size: 48px; font-weight: bold; color: #667eea; letter-spacing: 8px; margin: 20px 0;">
-                            ${verificationCode}
-                        </div>
-                        <p style="color: #666; font-size: 14px; margin-top: 15px;">
-                            ⏰ 이 코드는 <strong>5분간</strong> 유효합니다.
-                        </p>
-                    </div>
-                    
-                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                        <h4 style="color: #856404; margin: 0 0 10px 0; font-size: 16px;">⚠️ 보안 안내</h4>
-                        <ul style="color: #856404; font-size: 14px; margin: 0; padding-left: 20px; line-height: 1.5;">
-                            <li>본인이 요청하지 않은 경우, 이 이메일을 무시하시기 바랍니다.</li>
-                            <li>인증 코드를 타인에게 절대 알려주지 마세요.</li>
-                            <li>5분 후 코드가 만료되면 재발송을 요청하세요.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div style="background: #333; color: white; padding: 20px; text-align: center;">
-                    <p style="margin: 0; font-size: 14px;">© 2025 연성대학교 캠퍼스 가이드 시스템</p>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #ccc;">이 이메일은 자동으로 발송되었습니다.</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        `;
-
-        // 텍스트 버전
-        const textContent = `연성대학교 캠퍼스 가이드 이메일 인증\n\n인증 코드: ${verificationCode}\n\n이 코드는 5분간 유효합니다.\n\n보안을 위해 인증 코드를 타인에게 알려주지 마세요.`;
-
-        // SMTP2GO API 직접 호출 (CORS 제한으로 인해 브라우저에서는 제한됨)
-        const emailData = {
-            to: [to],
-            sender: SMTP2GO_CONFIG.senderEmail,
-            subject: subject,
-            html_body: htmlContent,
-            text_body: textContent
-        };
-
-        console.log('📨 SMTP2GO API 직접 요청 시작...');
-
-        // 직접 API 호출 시도
-        const response = await fetch(SMTP2GO_CONFIG.apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(emailData)
-        });
-
-        console.log('📨 SMTP2GO 응답 상태:', response.status, response.statusText);
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log('✅ SMTP2GO 성공 응답:', result);
-            
-            if (result.data && result.data.succeeded > 0) {
-                return { 
-                    success: true, 
-                    message: '이메일이 성공적으로 발송되었습니다.',
-                    messageId: result.data.message_id || 'smtp2go_success'
-                };
-            } else {
-                const errorMsg = result.errors ? result.errors.join(', ') : '이메일 발송 실패';
-                console.error('SMTP2GO API 오류:', result);
-                return { 
-                    success: false, 
-                    message: `SMTP2GO 오류: ${errorMsg}` 
-                };
-            }
-        } else {
-            const errorText = await response.text();
-            console.error('SMTP2GO HTTP 오류:', response.status, errorText);
-            return { 
-                success: false, 
-                message: `HTTP ${response.status}: SMTP2GO API 요청 실패` 
-            };
+        // EmailJS가 로드되었는지 확인
+        if (typeof emailjs === 'undefined') {
+            throw new Error('EmailJS 라이브러리가 로드되지 않았습니다.');
         }
-
-    } catch (error) {
-        console.error('SMTP2GO 이메일 발송 오류:', error);
         
-        // CORS 오류인지 확인
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            return { 
-                success: false, 
-                message: 'CORS 정책으로 인해 브라우저에서 직접 SMTP2GO API를 호출할 수 없습니다. 서버 사이드 구현이 필요합니다.' 
-            };
+        // EmailJS 초기화
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+        
+        // 템플릿 파라미터 (EmailJS 템플릿 변수와 일치)
+        const templateParams = {
+            to_email: to,                               // {{to_email}}
+            to_name: to.split('@')[0],                  // {{to_name}}
+            subject: subject,                           // {{subject}}
+            verification_code: verificationCode,        // {{verification_code}}
+            university_name: '연성대학교',               // {{university_name}}
+            app_name: '캠퍼스 가이드',                   // {{app_name}}
+            from_name: '연성대학교 캠퍼스 가이드',        // {{from_name}}
+            expiry_time: '5분',                        // {{expiry_time}}
+            current_year: new Date().getFullYear()     // {{current_year}}
+        };
+        
+        console.log('📨 EmailJS 템플릿 파라미터:', templateParams);
+        
+        // 이메일 발송
+        const response = await emailjs.send(
+            EMAILJS_CONFIG.serviceId,
+            EMAILJS_CONFIG.templateId,
+            templateParams
+        );
+        
+        console.log('✅ EmailJS 발송 성공:', response);
+        
+        return { 
+            success: true, 
+            message: '이메일이 성공적으로 발송되었습니다.',
+            messageId: response.text
+        };
+        
+    } catch (error) {
+        console.error('❌ EmailJS 발송 오류:', error);
+        
+        // 구체적인 오류 메시지
+        let errorMessage = '이메일 발송에 실패했습니다.';
+        
+        if (error.text) {
+            errorMessage += `\n오류: ${error.text}`;
+        } else if (error.message) {
+            errorMessage += `\n오류: ${error.message}`;
         }
         
         return { 
             success: false, 
-            message: `이메일 발송 오류: ${error.message}` 
+            message: errorMessage 
         };
     }
-}
-
-// 시뮬레이션 이메일 발송 (폴백용)
-async function sendEmailSimulation(to, subject, verificationCode) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log('=== 📧 시뮬레이션 이메일 발송 ===');
-            console.log('받는 사람:', to);
-            console.log('제목:', subject);
-            console.log('🔑 인증 코드:', verificationCode);
-            console.log('==============================');
-            
-            resolve({ 
-                success: true, 
-                message: '시뮬레이션 이메일이 발송되었습니다. (실제 발송 실패로 인한 폴백)',
-                messageId: 'simulation_fallback'
-            });
-        }, 1500);
-    });
 }
 
 // 실제 인증 이메일 발송
@@ -764,11 +679,10 @@ async function sendVerificationEmail() {
     sendBtn.textContent = '📨 발송 중...';
     
     try {
-        // 이메일 내용 생성
         const subject = '연성대학교 캠퍼스 가이드 이메일 인증';
         
-        // SMTP2GO를 통한 실제 이메일 발송 시도
-        const result = await sendEmailViaSMTP2GO(email, subject, verificationCode);
+        // EmailJS로 실제 이메일 발송
+        const result = await sendEmailViaEmailJS(email, subject, verificationCode);
         
         if (result.success) {
             // 발송 성공
@@ -797,19 +711,15 @@ async function sendVerificationEmail() {
             
         } else {
             // 발송 실패
-            console.error('이메일 발송 실패:', result.message);
-            
             alert(`❌ 이메일 발송에 실패했습니다.
 
-오류: ${result.message}
+${result.message}
 
 해결 방법:
 1. 네트워크 연결 확인
-2. 이메일 주소 확인
-3. 관리자에게 문의
-
-SMTP2GO API는 브라우저의 CORS 정책으로 인해 직접 호출이 제한될 수 있습니다.
-실제 운영 환경에서는 서버 사이드 구현이 필요합니다.`);
+2. 이메일 주소 확인  
+3. 스팸 설정 확인
+4. 관리자에게 문의`);
         }
         
     } catch (error) {
@@ -1328,6 +1238,51 @@ function register() {
     }
 }
 
+// 설정 확인 및 테스트 함수들
+function checkEmailJSConfig() {
+    console.log('📧 EmailJS 설정 확인:');
+    console.log('Public Key:', EMAILJS_CONFIG.publicKey);
+    console.log('Service ID:', EMAILJS_CONFIG.serviceId);
+    console.log('Template ID:', EMAILJS_CONFIG.templateId);
+    
+    if (typeof emailjs === 'undefined') {
+        console.log('❌ EmailJS 라이브러리가 로드되지 않았습니다.');
+        return false;
+    }
+    
+    console.log('✅ EmailJS 설정이 완료되었습니다.');
+    return true;
+}
+
+// 테스트 이메일 발송 함수
+async function testEmailJS() {
+    if (!checkEmailJSConfig()) {
+        alert('EmailJS 설정을 확인해주세요.');
+        return;
+    }
+    
+    const testEmail = prompt('테스트 이메일 주소를 입력하세요:', 'groria123@yeonsung.ac.kr');
+    if (!testEmail) return;
+    
+    try {
+        const result = await sendEmailViaEmailJS(
+            testEmail, 
+            '연성대학교 캠퍼스 가이드 테스트', 
+            '123456'
+        );
+        
+        if (result.success) {
+            alert('✅ 테스트 이메일이 발송되었습니다! 이메일함을 확인해보세요.');
+        } else {
+            alert(`❌ 테스트 실패: ${result.message}`);
+        }
+        
+    } catch (error) {
+        console.error('❌ 테스트 이메일 발송 실패:', error);
+        alert(`❌ 테스트 실패: ${error.message}`);
+    }
+}
+
 // 개발용 헬퍼 함수들
 function showVerificationCode() {
     if (emailVerificationData && emailVerificationData.code) {
@@ -1360,6 +1315,8 @@ function quickVerify() {
 }
 
 // 전역 함수로 노출 (개발자 도구에서 사용 가능)
+window.checkEmailJSConfig = checkEmailJSConfig;
+window.testEmailJS = testEmailJS;
 window.showVerificationCode = showVerificationCode;
 window.quickVerify = quickVerify;
 window.getVerificationCode = showVerificationCode; // 기존 함수명 호환성
@@ -1368,6 +1325,8 @@ window.getVerificationCode = showVerificationCode; // 기존 함수명 호환성
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📱 연성대학교 캠퍼스 가이드 회원가입 페이지 로드됨');
     console.log('🔧 개발자 도구 명령어:');
+    console.log('  - checkEmailJSConfig() : EmailJS 설정 확인');
+    console.log('  - testEmailJS() : 테스트 이메일 발송');
     console.log('  - showVerificationCode() : 현재 인증 코드 확인');
     console.log('  - quickVerify() : 자동 인증 완료');
     
@@ -1445,12 +1404,13 @@ document.addEventListener('DOMContentLoaded', function() {
         validateEmail(this.value);
     });
     
-    // 개발 환경 알림
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log('🚀 개발 환경에서 실행 중입니다.');
-        console.log('📧 이메일 발송은 SMTP2GO API를 시도하고, 실패 시 시뮬레이션으로 폴백됩니다.');
+    // EmailJS 설정 확인
+    if (typeof emailjs !== 'undefined') {
+        console.log('✅ EmailJS 라이브러리가 로드되었습니다.');
+        console.log('📧 실제 이메일 발송이 가능합니다.');
     } else {
-        console.log('🌐 프로덕션 환경에서 실행 중입니다.');
-        console.log('📧 실제 SMTP2GO API를 통해 이메일을 발송합니다.');
+        console.log('⚠️ EmailJS 라이브러리가 로드되지 않았습니다.');
+        console.log('💡 HTML에 EmailJS 스크립트를 추가해주세요:');
+        console.log('<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>');
     }
 });
