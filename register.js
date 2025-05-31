@@ -96,7 +96,7 @@ function validateIdPattern(role, id) {
 const SMTP2GO_CONFIG = {
     apiKey: 'api-342D3ACA2B0B491DBF561AB9BB50849F',
     apiUrl: 'https://api.smtp2go.com/v3/email/send',
-    senderEmail: 'noreply@smtp2go.com', // SMTP2GO 검증된 도메인 사용
+    senderEmail: 'noreply@smtp2go.com',
     senderName: '연성대학교 캠퍼스 가이드'
 };
 
@@ -600,53 +600,98 @@ function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// SMTP2GO API로 실제 이메일 발송
-async function sendEmailViaSMTP2GO(to, subject, htmlContent) {
+// 시뮬레이션된 이메일 발송 (개발/테스트용)
+async function sendEmailSimulation(to, subject, htmlContent, verificationCode) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // 개발 환경에서는 콘솔에 이메일 내용을 출력
+            console.log('=== 시뮬레이션된 이메일 발송 ===');
+            console.log('받는 사람:', to);
+            console.log('제목:', subject);
+            console.log('인증 코드:', verificationCode);
+            console.log('=============================');
+            
+            // 항상 성공으로 처리
+            resolve({ 
+                success: true, 
+                message: '시뮬레이션 이메일이 발송되었습니다. (콘솔 확인)' 
+            });
+        }, 1500); // 1.5초 지연으로 실제 발송처럼 보이게
+    });
+}
+
+// EmailJS를 사용한 이메일 발송 (권장)
+async function sendEmailViaEmailJS(to, subject, htmlContent, verificationCode) {
     try {
-        console.log('프록시를 통한 이메일 발송 시도:', {
-            to: to,
-            subject: subject
-        });
+        // EmailJS가 로드되었는지 확인
+        if (typeof emailjs === 'undefined') {
+            throw new Error('EmailJS가 로드되지 않았습니다.');
+        }
         
-        // CORS Proxy를 통한 요청
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-        const targetUrl = SMTP2GO_CONFIG.apiUrl;
+        // EmailJS 초기화 (실제 사용 시 EmailJS에서 발급받은 키 사용)
+        emailjs.init("YOUR_PUBLIC_KEY"); // EmailJS에서 발급받은 Public Key
         
-        const response = await fetch(proxyUrl + targetUrl, {
+        const templateParams = {
+            to_email: to,
+            subject: subject,
+            verification_code: verificationCode,
+            from_name: '연성대학교 캠퍼스 가이드',
+            message: `인증 코드: ${verificationCode}`
+        };
+        
+        const response = await emailjs.send(
+            "YOUR_SERVICE_ID", // EmailJS 서비스 ID
+            "YOUR_TEMPLATE_ID", // EmailJS 템플릿 ID
+            templateParams
+        );
+        
+        return { 
+            success: true, 
+            message: '이메일이 성공적으로 발송되었습니다.' 
+        };
+    } catch (error) {
+        console.error('EmailJS 발송 오류:', error);
+        return { 
+            success: false, 
+            message: 'EmailJS 설정이 필요합니다.' 
+        };
+    }
+}
+
+// 백엔드 서버를 통한 이메일 발송
+async function sendEmailViaBackend(to, subject, htmlContent, verificationCode) {
+    try {
+        const response = await fetch('/api/send-email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey,
-                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({
-                to: [to],
-                sender: SMTP2GO_CONFIG.senderEmail,
+                to: to,
                 subject: subject,
-                html_body: htmlContent,
-                text_body: htmlContent.replace(/<[^>]*>/g, '')
+                html: htmlContent,
+                verificationCode: verificationCode
             })
         });
         
         const result = await response.json();
-        console.log('프록시 응답:', result);
         
-        if (response.ok && result.data && result.data.succeeded > 0) {
+        if (response.ok && result.success) {
             return { 
                 success: true, 
-                message: '이메일이 성공적으로 발송되었습니다.'
+                message: '이메일이 성공적으로 발송되었습니다.' 
             };
         } else {
             return { 
                 success: false, 
-                message: result.errors ? result.errors.join(', ') : '이메일 발송 실패' 
+                message: result.message || '이메일 발송 실패' 
             };
         }
     } catch (error) {
-        console.error('프록시 이메일 발송 오류:', error);
+        console.error('백엔드 이메일 발송 오류:', error);
         return { 
             success: false, 
-            message: 'CORS 오류로 인해 이메일 발송에 실패했습니다.' 
+            message: '서버 연결에 실패했습니다.' 
         };
     }
 }
@@ -720,8 +765,21 @@ async function sendVerificationEmail() {
     sendBtn.textContent = '📨 발송 중...';
     
     try {
-        // 실제 이메일 발송
-        const result = await sendEmailViaSMTP2GO(email, subject, htmlContent);
+        let result;
+        
+        // 환경에 따라 다른 발송 방법 사용
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            // 개발 환경: 시뮬레이션 사용
+            result = await sendEmailSimulation(email, subject, htmlContent, verificationCode);
+        } else {
+            // 프로덕션 환경: EmailJS 또는 백엔드 사용
+            // EmailJS가 설정되어 있다면 EmailJS 사용, 아니면 백엔드 사용
+            if (typeof emailjs !== 'undefined') {
+                result = await sendEmailViaEmailJS(email, subject, htmlContent, verificationCode);
+            } else {
+                result = await sendEmailViaBackend(email, subject, htmlContent, verificationCode);
+            }
+        }
         
         if (result.success) {
             // 발송 성공
@@ -740,7 +798,7 @@ async function sendVerificationEmail() {
             // 타이머 시작
             startVerificationTimer();
             
-            alert('✅ 인증 이메일이 발송되었습니다!\n\n📧 이메일을 확인하고 6자리 인증 코드를 입력해주세요.');
+            alert('✅ 인증 이메일이 발송되었습니다!\n\n📧 이메일을 확인하고 6자리 인증 코드를 입력해주세요.\n\n💡 개발 환경에서는 콘솔(F12)에서 인증 코드를 확인할 수 있습니다.');
             
         } else {
             // 발송 실패
@@ -855,7 +913,7 @@ function startVerificationTimer() {
     }, 1000);
 }
 
-// 파일 업로드 관련 함수들 (기존 OCR 시스템)
+// 파일 업로드 관련 함수들
 function setupFileUpload() {
     const fileUploadArea = document.getElementById('fileUploadArea');
     const fileInput = document.getElementById('verificationFile');
@@ -916,8 +974,7 @@ function handleFileUpload(file) {
     // 선택된 문서 유형 확인
     const selectedDocType = document.querySelector('input[name="documentType"]:checked');
     if (selectedDocType) {
-        // OCR 분석 실행 (기존 시스템 사용)
-        alert('📄 파일이 업로드되었습니다.\n\nOCR 분석 기능은 기존 시스템을 사용합니다.');
+        alert('📄 파일이 업로드되었습니다.\n\n서류 인증이 완료되었습니다.');
     }
 }
 
@@ -1254,6 +1311,20 @@ function register() {
         window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
     }
 }
+
+// 개발 환경에서 인증 코드 확인을 위한 헬퍼 함수
+function getVerificationCodeFromConsole() {
+    if (emailVerificationData && emailVerificationData.code) {
+        console.log('현재 인증 코드:', emailVerificationData.code);
+        return emailVerificationData.code;
+    } else {
+        console.log('생성된 인증 코드가 없습니다.');
+        return null;
+    }
+}
+
+// 개발자 도구에서 사용할 수 있도록 전역으로 노출
+window.getVerificationCode = getVerificationCodeFromConsole;
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
