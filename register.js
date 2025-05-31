@@ -603,59 +603,50 @@ function generateVerificationCode() {
 // SMTP2GO API로 실제 이메일 발송
 async function sendEmailViaSMTP2GO(to, subject, htmlContent) {
     try {
-        console.log('실제 이메일 발송 시도:', {
+        console.log('프록시를 통한 이메일 발송 시도:', {
             to: to,
-            from: SMTP2GO_CONFIG.senderEmail,
             subject: subject
         });
         
-        const response = await fetch(SMTP2GO_CONFIG.apiUrl, {
+        // CORS Proxy를 통한 요청
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const targetUrl = SMTP2GO_CONFIG.apiUrl;
+        
+        const response = await fetch(proxyUrl + targetUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey
+                'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey,
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({
                 to: [to],
                 sender: SMTP2GO_CONFIG.senderEmail,
                 subject: subject,
                 html_body: htmlContent,
-                text_body: htmlContent.replace(/<[^>]*>/g, ''),
-                custom_headers: [
-                    {
-                        header: 'Reply-To',
-                        value: SMTP2GO_CONFIG.senderEmail
-                    }
-                ]
+                text_body: htmlContent.replace(/<[^>]*>/g, '')
             })
         });
         
         const result = await response.json();
-        console.log('SMTP2GO 응답:', result);
+        console.log('프록시 응답:', result);
         
         if (response.ok && result.data && result.data.succeeded > 0) {
             return { 
                 success: true, 
-                message: '이메일이 성공적으로 발송되었습니다.',
-                messageId: result.data.email_id
+                message: '이메일이 성공적으로 발송되었습니다.'
             };
         } else {
-            // 구체적인 에러 메시지 반환
-            let errorMessage = '이메일 발송 실패';
-            if (result.errors && result.errors.length > 0) {
-                errorMessage = result.errors.join(', ');
-            } else if (result.data && result.data.failed > 0) {
-                errorMessage = '수신자 이메일 주소를 확인해주세요';
-            }
-            
-            console.error('SMTP2GO 에러:', result);
-            return { success: false, message: errorMessage };
+            return { 
+                success: false, 
+                message: result.errors ? result.errors.join(', ') : '이메일 발송 실패' 
+            };
         }
     } catch (error) {
-        console.error('이메일 발송 네트워크 오류:', error);
+        console.error('프록시 이메일 발송 오류:', error);
         return { 
             success: false, 
-            message: '네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.' 
+            message: 'CORS 오류로 인해 이메일 발송에 실패했습니다.' 
         };
     }
 }
