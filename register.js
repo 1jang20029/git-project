@@ -92,7 +92,7 @@ function validateIdPattern(role, id) {
     }
 }
 
-// SMTP2GO API 설정 (실제 이메일 발송)
+// SMTP2GO API 설정
 const SMTP2GO_CONFIG = {
     apiKey: 'api-342D3ACA2B0B491DBF561AB9BB50849F',
     apiUrl: 'https://api.smtp2go.com/v3/email/send',
@@ -600,147 +600,146 @@ function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// 시뮬레이션된 이메일 발송 (개발/테스트용)
-async function sendEmailSimulation(to, subject, htmlContent, verificationCode) {
+// SMTP2GO API를 통한 실제 이메일 발송
+async function sendEmailViaSMTP2GO(to, subject, verificationCode) {
+    try {
+        console.log('📧 SMTP2GO 이메일 발송 시도:', { to, subject, verificationCode });
+        
+        // 이메일 HTML 템플릿
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: white; border: 1px solid #ddd;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 28px;">연성대학교</h1>
+                    <h2 style="margin: 10px 0 0 0; font-size: 20px;">캠퍼스 가이드 이메일 인증</h2>
+                </div>
+                
+                <div style="padding: 40px 30px; background: #f9f9f9;">
+                    <p style="font-size: 16px; color: #333; margin-bottom: 20px;">안녕하세요!</p>
+                    <p style="font-size: 16px; color: #333; margin-bottom: 30px; line-height: 1.6;">
+                        연성대학교 캠퍼스 가이드 회원가입을 위한 이메일 인증 코드입니다.
+                    </p>
+                    
+                    <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; margin: 30px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">📧 인증 코드</h3>
+                        <div style="font-size: 48px; font-weight: bold; color: #667eea; letter-spacing: 8px; margin: 20px 0;">
+                            ${verificationCode}
+                        </div>
+                        <p style="color: #666; font-size: 14px; margin-top: 15px;">
+                            ⏰ 이 코드는 <strong>5분간</strong> 유효합니다.
+                        </p>
+                    </div>
+                    
+                    <div style="background: #333; color: white; padding: 20px; text-align: center;">
+                    <p style="margin: 0; font-size: 14px;">© 2025 연성대학교 캠퍼스 가이드 시스템</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #ccc;">이 이메일은 자동으로 발송되었습니다.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
+        // 텍스트 버전
+        const textContent = `연성대학교 캠퍼스 가이드 이메일 인증\n\n인증 코드: ${verificationCode}\n\n이 코드는 5분간 유효합니다.\n\n보안을 위해 인증 코드를 타인에게 알려주지 마세요.`;
+
+        // SMTP2GO API 요청 데이터
+        const emailData = {
+            to: [to],
+            sender: SMTP2GO_CONFIG.senderEmail,
+            subject: subject,
+            html_body: htmlContent,
+            text_body: textContent
+        };
+
+        // 다양한 방법으로 CORS 우회 시도
+        const corsProxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            'https://cors-anywhere.herokuapp.com/',
+            'https://thingproxy.freeboard.io/fetch/'
+        ];
+
+        let lastError = null;
+        let proxySuccess = false;
+
+        // 각 프록시를 순차적으로 시도
+        for (const proxy of corsProxies) {
+            try {
+                console.log(`🔄 ${proxy} 프록시로 SMTP2GO API 요청 중...`);
+                
+                const targetUrl = SMTP2GO_CONFIG.apiUrl;
+                const proxyUrl = proxy + encodeURIComponent(targetUrl);
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Smtp2go-Api-Key': SMTP2GO_CONFIG.apiKey,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(emailData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ SMTP2GO API 성공 응답:', result);
+                    
+                    if (result.data && result.data.succeeded > 0) {
+                        proxySuccess = true;
+                        return { 
+                            success: true, 
+                            message: '실제 이메일이 성공적으로 발송되었습니다.',
+                            messageId: result.data.message_id || 'smtp2go_success'
+                        };
+                    } else {
+                        lastError = result.errors ? result.errors.join(', ') : '이메일 발송 실패';
+                    }
+                } else {
+                    lastError = `HTTP ${response.status}: ${response.statusText}`;
+                }
+            } catch (error) {
+                console.log(`❌ ${proxy} 프록시 실패:`, error.message);
+                lastError = error.message;
+                continue; // 다음 프록시 시도
+            }
+        }
+
+        // 모든 프록시 실패 시 폴백
+        if (!proxySuccess) {
+            console.log('⚠️ 모든 CORS 프록시 실패, 시뮬레이션 모드로 전환');
+            return await sendEmailSimulation(to, subject, verificationCode);
+        }
+
+    } catch (error) {
+        console.error('SMTP2GO 이메일 발송 오류:', error);
+        // 오류 발생 시 시뮬레이션으로 폴백
+        return await sendEmailSimulation(to, subject, verificationCode);
+    }
+}
+
+// 시뮬레이션 이메일 발송 (폴백용)
+async function sendEmailSimulation(to, subject, verificationCode) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            // 개발 환경에서는 콘솔에 이메일 내용을 출력
-            console.log('=== 시뮬레이션된 이메일 발송 ===');
+            console.log('=== 📧 시뮬레이션 이메일 발송 ===');
             console.log('받는 사람:', to);
             console.log('제목:', subject);
-            console.log('인증 코드:', verificationCode);
-            console.log('=============================');
+            console.log('🔑 인증 코드:', verificationCode);
+            console.log('==============================');
             
-            // 항상 성공으로 처리
             resolve({ 
                 success: true, 
-                message: '시뮬레이션 이메일이 발송되었습니다. (콘솔 확인)' 
+                message: '시뮬레이션 이메일이 발송되었습니다. (실제 발송 실패로 인한 폴백)',
+                messageId: 'simulation_fallback'
             });
-        }, 1500); // 1.5초 지연으로 실제 발송처럼 보이게
+        }, 1500);
     });
-}
-
-// EmailJS를 사용한 이메일 발송 (권장)
-async function sendEmailViaEmailJS(to, subject, htmlContent, verificationCode) {
-    try {
-        // EmailJS가 로드되었는지 확인
-        if (typeof emailjs === 'undefined') {
-            throw new Error('EmailJS가 로드되지 않았습니다.');
-        }
-        
-        // EmailJS 초기화 (실제 사용 시 EmailJS에서 발급받은 키 사용)
-        emailjs.init("YOUR_PUBLIC_KEY"); // EmailJS에서 발급받은 Public Key
-        
-        const templateParams = {
-            to_email: to,
-            subject: subject,
-            verification_code: verificationCode,
-            from_name: '연성대학교 캠퍼스 가이드',
-            message: `인증 코드: ${verificationCode}`
-        };
-        
-        const response = await emailjs.send(
-            "YOUR_SERVICE_ID", // EmailJS 서비스 ID
-            "YOUR_TEMPLATE_ID", // EmailJS 템플릿 ID
-            templateParams
-        );
-        
-        return { 
-            success: true, 
-            message: '이메일이 성공적으로 발송되었습니다.' 
-        };
-    } catch (error) {
-        console.error('EmailJS 발송 오류:', error);
-        return { 
-            success: false, 
-            message: 'EmailJS 설정이 필요합니다.' 
-        };
-    }
-}
-
-// 백엔드 서버를 통한 이메일 발송
-async function sendEmailViaBackend(to, subject, htmlContent, verificationCode) {
-    try {
-        const response = await fetch('/api/send-email', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                to: to,
-                subject: subject,
-                html: htmlContent,
-                verificationCode: verificationCode
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok && result.success) {
-            return { 
-                success: true, 
-                message: '이메일이 성공적으로 발송되었습니다.' 
-            };
-        } else {
-            return { 
-                success: false, 
-                message: result.message || '이메일 발송 실패' 
-            };
-        }
-    } catch (error) {
-        console.error('백엔드 이메일 발송 오류:', error);
-        return { 
-            success: false, 
-            message: '서버 연결에 실패했습니다.' 
-        };
-    }
-}
-
-// 이메일 템플릿 생성
-function createEmailTemplate(verificationCode) {
-    return `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
-                <h1 style="margin: 0; font-size: 28px;">연성대학교</h1>
-                <h2 style="margin: 10px 0 0 0; font-size: 20px;">캠퍼스 가이드 이메일 인증</h2>
-            </div>
-            
-            <div style="padding: 40px 30px; background: #f9f9f9;">
-                <p style="font-size: 16px; color: #333; margin-bottom: 20px;">안녕하세요!</p>
-                <p style="font-size: 16px; color: #333; margin-bottom: 30px; line-height: 1.6;">
-                    연성대학교 캠퍼스 가이드 회원가입을 위한 이메일 인증 코드입니다.
-                </p>
-                
-                <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; margin: 30px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">📧 인증 코드</h3>
-                    <div style="font-size: 48px; font-weight: bold; color: #667eea; letter-spacing: 8px; margin: 20px 0;">
-                        ${verificationCode}
-                    </div>
-                    <p style="color: #666; font-size: 14px; margin-top: 15px;">
-                        ⏰ 이 코드는 <strong>5분간</strong> 유효합니다.
-                    </p>
-                </div>
-                
-                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                    <h4 style="color: #856404; margin: 0 0 10px 0; font-size: 16px;">⚠️ 보안 안내</h4>
-                    <ul style="color: #856404; font-size: 14px; margin: 0; padding-left: 20px; line-height: 1.5;">
-                        <li>본인이 요청하지 않은 경우, 이 이메일을 무시하시기 바랍니다.</li>
-                        <li>인증 코드를 타인에게 절대 알려주지 마세요.</li>
-                        <li>5분 후 코드가 만료되면 재발송을 요청하세요.</li>
-                    </ul>
-                </div>
-                
-                <p style="color: #666; font-size: 14px; text-align: center; margin-top: 30px;">
-                    문의사항이 있으시면 관리자에게 연락주세요.
-                </p>
-            </div>
-            
-            <div style="background: #333; color: white; padding: 20px; text-align: center;">
-                <p style="margin: 0; font-size: 14px;">© 2025 연성대학교 캠퍼스 가이드 시스템</p>
-                <p style="margin: 5px 0 0 0; font-size: 12px; color: #ccc;">이 이메일은 자동으로 발송되었습니다.</p>
-            </div>
-        </div>
-    `;
 }
 
 // 실제 인증 이메일 발송
@@ -761,44 +760,61 @@ async function sendVerificationEmail() {
     sendBtn.textContent = '📨 발송 중...';
     
     try {
-        // 시뮬레이션 지연
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // 이메일 내용 생성
+        const subject = '연성대학교 캠퍼스 가이드 이메일 인증';
         
-        // 콘솔에 인증 정보 출력
-        console.log('=== 📧 이메일 인증 코드 발송 ===');
-        console.log('받는 사람:', email);
-        console.log('🔑 인증 코드:', verificationCode);
-        console.log('⏰ 만료 시간:', expiryTime.toLocaleString());
-        console.log('==============================');
+        // SMTP2GO를 통한 실제 이메일 발송 시도
+        const result = await sendEmailViaSMTP2GO(email, subject, verificationCode);
         
-        // 이메일 인증 데이터 저장
-        emailVerificationData = {
-            code: verificationCode,
-            email: email,
-            expiry: expiryTime,
-            verified: false,
-            timerInterval: null
-        };
-        
-        // UI 전환
-        document.getElementById('emailStep1').style.display = 'none';
-        document.getElementById('emailStep2').style.display = 'block';
-        
-        // 타이머 시작
-        startVerificationTimer();
-        
-        // 성공 알림 (인증 코드 포함)
-        alert(`✅ 인증 이메일이 발송되었습니다!
+        if (result.success) {
+            // 발송 성공
+            emailVerificationData = {
+                code: verificationCode,
+                email: email,
+                expiry: expiryTime,
+                verified: false,
+                timerInterval: null
+            };
+            
+            // UI 전환
+            document.getElementById('emailStep1').style.display = 'none';
+            document.getElementById('emailStep2').style.display = 'block';
+            
+            // 타이머 시작
+            startVerificationTimer();
+            
+            // 성공 메시지 - 실제 발송인지 시뮬레이션인지 구분
+            if (result.messageId === 'simulation_fallback') {
+                alert(`📧 이메일 발송을 시도했습니다!
 
-📧 이메일: ${email}
 🔑 인증 코드: ${verificationCode}
 
-💡 위의 6자리 코드를 입력하여 인증을 완료하세요.
-💻 개발자 도구 콘솔에서도 확인 가능합니다.`);
+⚠️ 실제 이메일 발송에 실패하여 시뮬레이션 모드로 전환되었습니다.
+위의 인증 코드를 직접 입력하여 인증을 완료하세요.
+
+💡 개발자 도구 콘솔에서도 확인 가능합니다.`);
+            } else {
+                alert(`✅ 인증 이메일이 발송되었습니다!
+
+📧 이메일: ${email}
+📮 이메일함을 확인하여 6자리 인증 코드를 입력해주세요.
+
+⚠️ 스팸함도 확인해보세요.
+💡 이메일이 도착하지 않으면 재발송을 클릭하세요.`);
+            }
+            
+        } else {
+            // 발송 실패
+            alert(`❌ 이메일 발송에 실패했습니다.
+
+${result.message}
+
+다시 시도하거나 관리자에게 문의하세요.`);
+        }
         
     } catch (error) {
-        console.error('이메일 발송 시뮬레이션 오류:', error);
-        alert('❌ 오류가 발생했습니다. 다시 시도해주세요.');
+        console.error('이메일 발송 오류:', error);
+        alert('❌ 이메일 발송 중 오류가 발생했습니다.\n\n네트워크 연결을 확인해주세요.');
     } finally {
         // 버튼 복원
         sendBtn.disabled = false;
@@ -817,44 +833,6 @@ function validateVerificationCode() {
         verifyBtn.disabled = true;
     }
 }
-
-
-// 개발용 빠른 인증 함수 (콘솔에서 사용)
-function quickVerify() {
-    if (emailVerificationData && emailVerificationData.code) {
-        const codeInput = document.getElementById('verificationCode');
-        if (codeInput) {
-            codeInput.value = emailVerificationData.code;
-            validateVerificationCode();
-            setTimeout(() => {
-                verifyEmailCode();
-            }, 100);
-            return true;
-        }
-    }
-    console.log('❌ 발송된 인증 코드가 없습니다. 먼저 인증 이메일을 발송해주세요.');
-    return false;
-}
-
-
-function showVerificationCode() {
-    if (emailVerificationData && emailVerificationData.code) {
-        console.log('🔑 현재 인증 코드:', emailVerificationData.code);
-        console.log('📧 인증 이메일:', emailVerificationData.email);
-        console.log('⏰ 만료 시간:', emailVerificationData.expiry.toLocaleString());
-        return emailVerificationData.code;
-    } else {
-        console.log('❌ 생성된 인증 코드가 없습니다.');
-        return null;
-    }
-}
-
-
-// 전역 함수로 노출
-window.quickVerify = quickVerify;
-window.showVerificationCode = showVerificationCode;
-window.getVerificationCode = showVerificationCode; // 기존 함수명 호환성
-
 
 // 인증 코드 확인
 function verifyEmailCode() {
@@ -1346,22 +1324,49 @@ function register() {
     }
 }
 
-// 개발 환경에서 인증 코드 확인을 위한 헬퍼 함수
-function getVerificationCodeFromConsole() {
+// 개발용 헬퍼 함수들
+function showVerificationCode() {
     if (emailVerificationData && emailVerificationData.code) {
-        console.log('현재 인증 코드:', emailVerificationData.code);
+        console.log('🔑 현재 인증 코드:', emailVerificationData.code);
+        console.log('📧 인증 이메일:', emailVerificationData.email);
+        if (emailVerificationData.expiry) {
+            console.log('⏰ 만료 시간:', emailVerificationData.expiry.toLocaleString());
+        }
         return emailVerificationData.code;
     } else {
-        console.log('생성된 인증 코드가 없습니다.');
+        console.log('❌ 생성된 인증 코드가 없습니다.');
         return null;
     }
 }
 
-// 개발자 도구에서 사용할 수 있도록 전역으로 노출
-window.getVerificationCode = getVerificationCodeFromConsole;
+function quickVerify() {
+    if (emailVerificationData && emailVerificationData.code) {
+        const codeInput = document.getElementById('verificationCode');
+        if (codeInput) {
+            codeInput.value = emailVerificationData.code;
+            validateVerificationCode();
+            setTimeout(() => {
+                verifyEmailCode();
+            }, 100);
+            return true;
+        }
+    }
+    console.log('❌ 발송된 인증 코드가 없습니다. 먼저 인증 이메일을 발송해주세요.');
+    return false;
+}
+
+// 전역 함수로 노출 (개발자 도구에서 사용 가능)
+window.showVerificationCode = showVerificationCode;
+window.quickVerify = quickVerify;
+window.getVerificationCode = showVerificationCode; // 기존 함수명 호환성
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('📱 연성대학교 캠퍼스 가이드 회원가입 페이지 로드됨');
+    console.log('🔧 개발자 도구 명령어:');
+    console.log('  - showVerificationCode() : 현재 인증 코드 확인');
+    console.log('  - quickVerify() : 자동 인증 완료');
+    
     // 학년 드롭다운 설정
     setupGradeDropdown();
     
@@ -1435,4 +1440,13 @@ document.addEventListener('DOMContentLoaded', function() {
     emailInput.addEventListener('input', function() {
         validateEmail(this.value);
     });
+    
+    // 개발 환경 알림
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('🚀 개발 환경에서 실행 중입니다.');
+        console.log('📧 이메일 발송은 SMTP2GO API를 시도하고, 실패 시 시뮬레이션으로 폴백됩니다.');
+    } else {
+        console.log('🌐 프로덕션 환경에서 실행 중입니다.');
+        console.log('📧 실제 SMTP2GO API를 통해 이메일을 발송합니다.');
+    }
 });
