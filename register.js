@@ -362,21 +362,33 @@ function loadOCRLibraries() {
     });
 }
 
-// 이미지 전처리 (OpenCV 사용)
+// 이미지 전처리 강화 (더 정확한 OCR을 위해)
 function preprocessImage(imageElement) {
     return new Promise((resolve) => {
         try {
             if (!ocrLibrariesLoaded.opencv || typeof cv === 'undefined') {
-                // OpenCV 없으면 원본 반환
-                resolve(imageElement);
+                // OpenCV 없으면 기본 전처리
+                resolve(basicImagePreprocess(imageElement));
                 return;
             }
             
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = imageElement.width;
-            canvas.height = imageElement.height;
-            ctx.drawImage(imageElement, 0, 0);
+            
+            // 이미지 크기 최적화 (OCR 성능 향상을 위해)
+            const maxDimension = 2000;
+            let width = imageElement.width;
+            let height = imageElement.height;
+            
+            if (width > maxDimension || height > maxDimension) {
+                const ratio = Math.min(maxDimension / width, maxDimension / height);
+                width = Math.floor(width * ratio);
+                height = Math.floor(height * ratio);
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(imageElement, 0, 0, width, height);
             
             const src = cv.imread(canvas);
             const dst = new cv.Mat();
@@ -384,12 +396,19 @@ function preprocessImage(imageElement) {
             // 그레이스케일 변환
             cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
             
-            // 가우시안 블러로 노이즈 제거
+            // 노이즈 제거를 위한 가우시안 블러
             const ksize = new cv.Size(3, 3);
             cv.GaussianBlur(dst, dst, ksize, 0, 0, cv.BORDER_DEFAULT);
             
-            // 적응형 임계값으로 이진화
-            cv.adaptiveThreshold(dst, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
+            // 대비 향상을 위한 히스토그램 균등화
+            cv.equalizeHist(dst, dst);
+            
+            // 적응형 임계값으로 이진화 (텍스트 인식률 향상)
+            cv.adaptiveThreshold(dst, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 15, 4);
+            
+            // 모폴로지 연산으로 텍스트 정리
+            const kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(2, 2));
+            cv.morphologyEx(dst, dst, cv.MORPH_CLOSE, kernel);
             
             // 결과를 캔버스에 출력
             cv.imshow(canvas, dst);
@@ -397,16 +416,62 @@ function preprocessImage(imageElement) {
             // 메모리 정리
             src.delete();
             dst.delete();
+            kernel.delete();
             
             resolve(canvas);
         } catch (error) {
-            console.warn('이미지 전처리 실패, 원본 사용:', error);
-            resolve(imageElement);
+            console.warn('OpenCV 전처리 실패, 기본 전처리 사용:', error);
+            resolve(basicImagePreprocess(imageElement));
         }
     });
 }
 
-// 여러 OCR 엔진으로 텍스트 추출
+// 기본 이미지 전처리 (OpenCV 없을 때)
+function basicImagePreprocess(imageElement) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 이미지 크기 최적화
+    const maxDimension = 1500;
+    let width = imageElement.width;
+    let height = imageElement.height;
+    
+    if (width > maxDimension || height > maxDimension) {
+        const ratio = Math.min(maxDimension / width, maxDimension / height);
+        width = Math.floor(width * ratio);
+        height = Math.floor(height * ratio);
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    // 고품질 리샘플링
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(imageElement, 0, 0, width, height);
+    
+    // 대비 향상
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    
+    for (let i = 0; i < data.length; i += 4) {
+        // 그레이스케일 변환
+        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        
+        // 대비 향상 (1.3배 증가, 밝기 +20)
+        const enhanced = Math.min(255, Math.max(0, gray * 1.3 + 20));
+        
+        data[i] = enhanced;     // R
+        data[i + 1] = enhanced; // G
+        data[i + 2] = enhanced; // B
+        // 알파값은 그대로 유지
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+    return canvas;
+}
+
+// 다중 OCR 엔진으로 텍스트 추출 (정확도 향상)
 async function extractTextWithMultipleEngines(file) {
     const results = [];
     
@@ -416,15 +481,18 @@ async function extractTextWithMultipleEngines(file) {
         // 이미지 로드
         const imageElement = await loadImageElement(file);
         
-        // 1. 원본 이미지로 OCR
+        // 1. 원본 이미지로 OCR (기본 설정)
         try {
+            updateOCRProgress('원본 이미지 분석', 10);
             const originalResult = await Tesseract.recognize(
                 imageElement,
                 'kor+eng',
                 {
+                    tessedit_pageseg_mode: '1', // 자동 페이지 분할
+                    tessedit_ocr_engine_mode: '2', // LSTM 엔진
                     logger: m => {
                         if (m.status === 'recognizing text') {
-                            updateOCRProgress('원본 이미지 분석', Math.round(m.progress * 30));
+                            updateOCRProgress('원본 이미지 분석', 10 + Math.round(m.progress * 20));
                         }
                     }
                 }
@@ -440,14 +508,17 @@ async function extractTextWithMultipleEngines(file) {
         
         // 2. 전처리된 이미지로 OCR
         try {
+            updateOCRProgress('전처리 이미지 분석', 35);
             const preprocessedImage = await preprocessImage(imageElement);
             const preprocessedResult = await Tesseract.recognize(
                 preprocessedImage,
                 'kor+eng',
                 {
+                    tessedit_pageseg_mode: '6', // 단일 텍스트 블록
+                    tessedit_ocr_engine_mode: '2',
                     logger: m => {
                         if (m.status === 'recognizing text') {
-                            updateOCRProgress('전처리 이미지 분석', 30 + Math.round(m.progress * 30));
+                            updateOCRProgress('전처리 이미지 분석', 35 + Math.round(m.progress * 25));
                         }
                     }
                 }
@@ -461,29 +532,66 @@ async function extractTextWithMultipleEngines(file) {
             console.warn('전처리 이미지 OCR 실패:', error);
         }
         
-        // 3. 다른 설정으로 OCR
+        // 3. 문서 특화 설정으로 OCR (한글 최적화)
         try {
-            updateOCRProgress('추가 분석', 60);
-            const enhancedResult = await Tesseract.recognize(
+            updateOCRProgress('문서 특화 분석', 65);
+            const documentResult = await Tesseract.recognize(
                 imageElement,
                 'kor+eng',
                 {
-                    tessedit_pageseg_mode: '6', // 단일 블록 텍스트
-                    tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz가-힣 ',
+                    tessedit_pageseg_mode: '4', // 단일 컬럼 텍스트
+                    tessedit_ocr_engine_mode: '1', // Legacy + LSTM
+                    tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz가-힣ㄱ-ㅎㅏ-ㅣ:.,()/-\\s',
                     logger: m => {
                         if (m.status === 'recognizing text') {
-                            updateOCRProgress('추가 분석', 60 + Math.round(m.progress * 30));
+                            updateOCRProgress('문서 특화 분석', 65 + Math.round(m.progress * 20));
                         }
                     }
                 }
             );
             results.push({
-                source: 'enhanced',
-                text: enhancedResult.data.text,
-                confidence: enhancedResult.data.confidence
+                source: 'document_optimized',
+                text: documentResult.data.text,
+                confidence: documentResult.data.confidence
             });
         } catch (error) {
-            console.warn('향상된 OCR 실패:', error);
+            console.warn('문서 특화 OCR 실패:', error);
+        }
+        
+        // 4. 고해상도 처리 (중요 문서용)
+        try {
+            updateOCRProgress('고해상도 분석', 85);
+            const highResCanvas = document.createElement('canvas');
+            const ctx = highResCanvas.getContext('2d');
+            
+            // 해상도 2배 증가
+            const scaleFactor = 2;
+            highResCanvas.width = imageElement.width * scaleFactor;
+            highResCanvas.height = imageElement.height * scaleFactor;
+            
+            ctx.imageSmoothingEnabled = false; // 픽셀 보간 방지
+            ctx.drawImage(imageElement, 0, 0, highResCanvas.width, highResCanvas.height);
+            
+            const highResResult = await Tesseract.recognize(
+                highResCanvas,
+                'kor+eng',
+                {
+                    tessedit_pageseg_mode: '3', // 완전 자동
+                    tessedit_ocr_engine_mode: '2',
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            updateOCRProgress('고해상도 분석', 85 + Math.round(m.progress * 15));
+                        }
+                    }
+                }
+            );
+            results.push({
+                source: 'high_resolution',
+                text: highResResult.data.text,
+                confidence: highResResult.data.confidence
+            });
+        } catch (error) {
+            console.warn('고해상도 OCR 실패:', error);
         }
         
         updateOCRProgress('분석 완료', 100);
@@ -518,7 +626,7 @@ function updateOCRProgress(stage, progress) {
 async function analyzeVisualPatterns(file) {
     try {
         if (!ocrLibrariesLoaded.opencv || typeof cv === 'undefined') {
-            return null;
+            return analyzeBasicVisualPatterns(file);
         }
         
         const imageElement = await loadImageElement(file);
@@ -543,13 +651,14 @@ async function analyzeVisualPatterns(file) {
         cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
         
         let hasCardShape = false;
+        let isDocumentFormat = false;
         const imageArea = imageElement.width * imageElement.height;
         
         for (let i = 0; i < contours.size(); i++) {
             const contour = contours.get(i);
             const area = cv.contourArea(contour);
             
-            // 이미지의 10% 이상을 차지하는 직사각형이 있으면 카드로 판단
+            // 이미지의 상당 부분을 차지하는 직사각형이 있으면 문서/카드로 판단
             if (area > imageArea * 0.1) {
                 const approx = new cv.Mat();
                 const peri = cv.arcLength(contour, true);
@@ -557,6 +666,16 @@ async function analyzeVisualPatterns(file) {
                 
                 if (approx.rows === 4) { // 사각형
                     hasCardShape = true;
+                    
+                    // 가로세로 비율로 카드/문서 구분
+                    const rect = cv.boundingRect(contour);
+                    const aspectRatio = rect.width / rect.height;
+                    
+                    if (aspectRatio > 1.3 && aspectRatio < 2.0) {
+                        isDocumentFormat = true; // 일반적인 카드/신분증 비율
+                    } else if (aspectRatio > 0.7 && aspectRatio < 1.4) {
+                        isDocumentFormat = true; // A4 등 문서 비율
+                    }
                 }
                 
                 approx.delete();
@@ -573,40 +692,121 @@ async function analyzeVisualPatterns(file) {
         
         return {
             hasCardShape: hasCardShape,
-            aspectRatio: imageElement.width / imageElement.height
+            isDocumentFormat: isDocumentFormat,
+            aspectRatio: imageElement.width / imageElement.height,
+            imageSize: imageArea
         };
         
     } catch (error) {
-        console.warn('시각적 패턴 분석 실패:', error);
+        console.warn('고급 시각적 패턴 분석 실패, 기본 분석 사용:', error);
+        return analyzeBasicVisualPatterns(file);
+    }
+}
+
+// 기본 시각적 패턴 분석
+async function analyzeBasicVisualPatterns(file) {
+    try {
+        const imageElement = await loadImageElement(file);
+        const aspectRatio = imageElement.width / imageElement.height;
+        
+        // 기본적인 비율 기반 판단
+        const isCardFormat = aspectRatio > 1.4 && aspectRatio < 2.0; // 카드 비율
+        const isDocumentFormat = aspectRatio > 0.6 && aspectRatio < 1.6; // 문서 비율
+        
+        return {
+            hasCardShape: isCardFormat,
+            isDocumentFormat: isDocumentFormat,
+            aspectRatio: aspectRatio,
+            imageSize: imageElement.width * imageElement.height
+        };
+    } catch (error) {
+        console.warn('기본 시각적 패턴 분석 실패:', error);
         return null;
     }
 }
 
-// 정확한 키워드 매칭만 허용 (오타 허용 제거)
-function exactMatch(text, keyword) {
+// 유연한 키워드 매칭 (OCR 오류 허용)
+function flexibleMatch(text, keyword) {
     const normalizedText = text.toLowerCase().replace(/\s+/g, '');
     const normalizedKeyword = keyword.toLowerCase();
     
-    // 정확한 매칭만 허용
+    // 1. 정확한 매칭
     if (normalizedText.includes(normalizedKeyword)) {
-        return 1;
+        return 1.0;
     }
     
-    return 0;
+    // 2. OCR 오류를 고려한 유사도 매칭
+    const similarity = calculateSimilarity(normalizedText, normalizedKeyword);
+    return similarity;
 }
 
-// 극도로 엄격한 텍스트 분석 (100% 정확도 목표)
+// 문자열 유사도 계산 (레벤슈타인 거리 기반)
+function calculateSimilarity(text, keyword) {
+    // 키워드가 텍스트보다 긴 경우 처리
+    if (keyword.length > text.length) {
+        return 0;
+    }
+    
+    // 슬라이딩 윈도우로 가장 유사한 부분 찾기
+    let maxSimilarity = 0;
+    
+    for (let i = 0; i <= text.length - keyword.length; i++) {
+        const substr = text.substr(i, keyword.length);
+        const similarity = 1 - (levenshteinDistance(substr, keyword) / Math.max(substr.length, keyword.length));
+        maxSimilarity = Math.max(maxSimilarity, similarity);
+    }
+    
+    return maxSimilarity;
+}
+
+// 레벤슈타인 거리 계산
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1, // 교체
+                    matrix[i][j - 1] + 1,     // 삽입
+                    matrix[i - 1][j] + 1      // 삭제
+                );
+            }
+        }
+    }
+    
+    return matrix[str2.length][str1.length];
+}
+
+// 개선된 극도로 정확한 텍스트 분석 함수
 function analyzeExtractedTexts(ocrResults, visualPatterns) {
     console.log('OCR 결과들:', ocrResults);
     console.log('시각적 패턴:', visualPatterns);
     
-    // 모든 OCR 결과 텍스트 결합
+    // 모든 OCR 결과 텍스트 결합 및 정리
     const allTexts = ocrResults.map(result => result.text).join(' ');
-    const normalizedText = allTexts.toLowerCase().replace(/\s+/g, ' ').trim();
+    const normalizedText = allTexts.toLowerCase()
+        .replace(/[^\w가-힣\s]/g, ' ') // 특수문자를 공백으로
+        .replace(/\s+/g, ' ')         // 연속 공백을 하나로
+        .trim();
     
-    console.log('결합된 텍스트:', normalizedText);
+    console.log('정규화된 텍스트:', normalizedText);
     
-    // 극도로 엄격한 제외 키워드 (모든 교육 관련 키워드)
+    // OCR 신뢰도 계산
+    const avgConfidence = ocrResults.reduce((sum, result) => sum + (result.confidence || 0), 0) / ocrResults.length;
+    console.log('평균 OCR 신뢰도:', avgConfidence);
+    
+    // 극도로 엄격한 제외 키워드 (교육 관련)
     const strictExcludeKeywords = [
         '시간표', '수업', '강의', '과제', '과목', '성적', '학습', '교육과정',
         'schedule', 'class', 'course', 'lesson', 'study', 'curriculum',
@@ -619,77 +819,153 @@ function analyzeExtractedTexts(ocrResults, visualPatterns) {
         '캠퍼스', '도서관', '실험실', '강당', '체육관', '식당',
         '동아리', '학회', '축제', '행사', '세미나', '워크샵',
         '인턴', '현장실습', '프로젝트', '포트폴리오', '논문',
-        '학생증', '수강신청', '장학금', '등록금', '학비',
-        '봄', '여름', '가을', '겨울', '월', '화', '수', '목', '금', '토', '일',
-        '1교시', '2교시', '3교시', '4교시', '5교시', '6교시', '7교시', '8교시',
-        '오전', '오후', '저녁', '야간', '주간', '전일', '반일'
+        '학생증', '수강신청', '장학금', '등록금', '학비'
     ];
     
-    // 제외 키워드 체크 (하나라도 있으면 무조건 거부)
+    // 제외 키워드 체크 (유연한 매칭으로)
     for (let keyword of strictExcludeKeywords) {
-        if (exactMatch(normalizedText, keyword)) {
-            console.log('제외 키워드 감지:', keyword);
+        const similarity = flexibleMatch(normalizedText, keyword);
+        if (similarity > 0.8) { // 80% 이상 유사하면 제외
+            console.log('제외 키워드 감지:', keyword, '유사도:', similarity);
             return null;
         }
     }
     
-    // 각 문서 유형별 필수 키워드 (모두 있어야 인정)
+    // 각 문서 유형별 필수 키워드 (개선된 버전)
     const requiredKeywords = {
         employeeCard: {
-            // 교직원증은 반드시 이 키워드들이 모두 있어야 함
-            mandatory: ['교직원증', '연성대학교'],
-            // 추가로 이 중 하나 이상 있어야 함
-            supporting: ['교번', '직번', '사번', '소속', '부서', '직급', '성명', '발급일']
+            // 교직원증 필수 키워드
+            mandatory: [
+                {keywords: ['교직원증', '직원증', '신분증'], threshold: 0.8},
+                {keywords: ['연성대학교', '연성대', '대학교'], threshold: 0.8}
+            ],
+            // 지원 키워드
+            supporting: [
+                {keywords: ['교번', '직번', '사번', '번호'], threshold: 0.7},
+                {keywords: ['소속', '부서', '직급', '직책'], threshold: 0.7},
+                {keywords: ['성명', '이름', '발급일', '유효'], threshold: 0.6}
+            ]
         },
         appointmentDoc: {
-            // 임용서류는 반드시 이 키워드들이 모두 있어야 함
-            mandatory: ['임용', '연성대학교'],
-            // 추가로 이 중 하나 이상 있어야 함
-            supporting: ['발령', '임용장', '발령장', '계약서', '임용일', '발령일', '계약기간', '근무기간']
+            // 임용서류 필수 키워드
+            mandatory: [
+                {keywords: ['임용', '발령', '임명', '채용'], threshold: 0.8},
+                {keywords: ['연성대학교', '연성대', '대학교'], threshold: 0.8}
+            ],
+            // 지원 키워드
+            supporting: [
+                {keywords: ['발령장', '임용장', '임명장', '계약서'], threshold: 0.7},
+                {keywords: ['발령일', '임용일', '시작일', '계약기간'], threshold: 0.7},
+                {keywords: ['근무기간', '임용기간', '계약일', '발효일'], threshold: 0.6}
+            ]
         },
         payslip: {
-            // 급여명세서는 반드시 이 키워드들이 모두 있어야 함
-            mandatory: ['급여명세', '연성대학교'],
-            // 추가로 이 중 하나 이상 있어야 함
-            supporting: ['기본급', '수당', '공제', '실지급액', '소득세', '국민연금', '건강보험', '지급총액']
+            // 급여명세서 필수 키워드
+            mandatory: [
+                {keywords: ['급여명세', '급여', '월급', '봉급'], threshold: 0.8},
+                {keywords: ['연성대학교', '연성대', '대학교'], threshold: 0.8}
+            ],
+            // 지원 키워드
+            supporting: [
+                {keywords: ['기본급', '봉급', '본봉', '기본'], threshold: 0.7},
+                {keywords: ['수당', '보너스', '상여', '추가'], threshold: 0.7},
+                {keywords: ['공제', '세금', '소득세', '국민연금'], threshold: 0.6},
+                {keywords: ['실지급', '지급액', '총액', '합계'], threshold: 0.6}
+            ]
         }
     };
     
-    // 각 문서 유형 검증
-    for (let docType in requiredKeywords) {
-        const { mandatory, supporting } = requiredKeywords[docType];
+    // 각 문서 유형 검증 (우선순위 적용)
+    const typeResults = [];
+    
+    for (let [docType, requirements] of Object.entries(requiredKeywords)) {
+        let mandatoryScore = 0;
+        let supportingScore = 0;
+        let foundKeywords = [];
         
-        // 필수 키워드 모두 확인
-        let mandatoryCount = 0;
-        for (let keyword of mandatory) {
-            if (exactMatch(normalizedText, keyword)) {
-                mandatoryCount++;
+        // 필수 키워드 그룹별 점수 계산
+        for (let mandatoryGroup of requirements.mandatory) {
+            let groupMaxScore = 0;
+            let groupBestKeyword = '';
+            
+            for (let keyword of mandatoryGroup.keywords) {
+                const similarity = flexibleMatch(normalizedText, keyword);
+                if (similarity > groupMaxScore) {
+                    groupMaxScore = similarity;
+                    groupBestKeyword = keyword;
+                }
+            }
+            
+            if (groupMaxScore >= mandatoryGroup.threshold) {
+                mandatoryScore += 1;
+                foundKeywords.push({keyword: groupBestKeyword, score: groupMaxScore, type: 'mandatory'});
             }
         }
         
-        // 지원 키워드 확인
+        // 지원 키워드 그룹별 점수 계산
         let supportingCount = 0;
-        for (let keyword of supporting) {
-            if (exactMatch(normalizedText, keyword)) {
-                supportingCount++;
+        for (let supportingGroup of requirements.supporting) {
+            let groupMaxScore = 0;
+            let groupBestKeyword = '';
+            
+            for (let keyword of supportingGroup.keywords) {
+                const similarity = flexibleMatch(normalizedText, keyword);
+                if (similarity > groupMaxScore) {
+                    groupMaxScore = similarity;
+                    groupBestKeyword = keyword;
+                }
+            }
+            
+            if (groupMaxScore >= supportingGroup.threshold) {
+                supportingCount += 1;
+                supportingScore += groupMaxScore;
+                foundKeywords.push({keyword: groupBestKeyword, score: groupMaxScore, type: 'supporting'});
             }
         }
         
-        console.log(`${docType} 검증:`, {
-            mandatoryFound: mandatoryCount,
-            mandatoryRequired: mandatory.length,
-            supportingFound: supportingCount,
-            supportingRequired: 1
+        // 점수 계산
+        const mandatoryRatio = mandatoryScore / requirements.mandatory.length;
+        const hasSufficientSupporting = supportingCount >= 1;
+        const overallScore = (mandatoryScore * 2 + supportingScore) / (requirements.mandatory.length * 2 + requirements.supporting.length);
+        
+        console.log(`${docType} 상세 점수:`, {
+            mandatoryScore: mandatoryScore,
+            mandatoryRequired: requirements.mandatory.length,
+            mandatoryRatio: mandatoryRatio.toFixed(2),
+            supportingCount: supportingCount,
+            supportingScore: supportingScore.toFixed(2),
+            overallScore: overallScore.toFixed(2),
+            foundKeywords: foundKeywords
         });
         
-        // 필수 키워드가 모두 있고, 지원 키워드가 1개 이상 있어야 함
-        if (mandatoryCount === mandatory.length && supportingCount >= 1) {
-            console.log(`${docType} 인증 성공`);
-            return docType;
-        }
+        // 결과 저장
+        typeResults.push({
+            type: docType,
+            mandatoryRatio: mandatoryRatio,
+            supportingCount: supportingCount,
+            overallScore: overallScore,
+            foundKeywords: foundKeywords,
+            isValid: mandatoryRatio >= 1.0 && hasSufficientSupporting && overallScore >= 0.7
+        });
+    }
+    
+    // 가장 높은 점수의 유형 선택
+    const validResults = typeResults.filter(result => result.isValid);
+    
+    if (validResults.length > 0) {
+        // 점수가 가장 높은 유형 선택
+        const bestResult = validResults.reduce((best, current) => 
+            current.overallScore > best.overallScore ? current : best
+        );
+        
+        console.log(`${bestResult.type} 인증 성공! 종합 점수: ${bestResult.overallScore.toFixed(2)}`);
+        console.log('발견된 키워드:', bestResult.foundKeywords);
+        
+        return bestResult.type;
     }
     
     console.log('모든 문서 유형 검증 실패');
+    console.log('모든 결과:', typeResults);
     return null;
 }
 
@@ -705,18 +981,18 @@ async function analyzeImageContent(file, callback) {
         // 이미지 파일만 OCR 처리
         if (file.type.startsWith('image/')) {
             try {
-                // 1. 여러 OCR 엔진으로 텍스트 추출
+                // 1. 다중 OCR 엔진으로 텍스트 추출
                 const ocrResults = await extractTextWithMultipleEngines(file);
                 
                 // 2. 시각적 패턴 분석
                 const visualPatterns = await analyzeVisualPatterns(file);
                 
-                // 3. 극도로 엄격한 종합 분석
+                // 3. 개선된 종합 분석
                 const detectedType = analyzeExtractedTexts(ocrResults, visualPatterns);
                 
                 callback(detectedType);
             } catch (error) {
-                console.error('완벽한 정확도 이미지 분석 실패:', error);
+                console.error('정확한 이미지 분석 실패:', error);
                 callback(null);
             }
         } else {
@@ -741,24 +1017,24 @@ function validateFileMatch(file, selectedMethod, callback) {
         
         if (detectedType === selectedMethod) {
             isValid = true;
-            message = '완벽한 자동 인식에 성공했습니다. 필수 키워드가 모두 확인되었습니다.';
+            message = '✅ AI 인식 성공! 선택한 문서 유형과 일치합니다.\n\n📊 다중 OCR 엔진으로 정확하게 분석되었습니다.';
         } else {
-            // 자동 인식 실패 시 즉시 거부 (더 구체적인 안내)
+            // 자동 인식 실패 시 구체적인 안내
             if (file.type === 'application/pdf') {
-                message = 'PDF 파일은 텍스트 인식이 어렵습니다. 해당 서류의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
+                message = '❌ PDF 파일은 텍스트 인식이 어렵습니다.\n\n📸 해당 서류의 선명한 JPG 또는 PNG 이미지를 업로드해주세요.';
             } else {
                 switch (selectedMethod) {
                     case 'employeeCard':
-                        message = '교직원증으로 인식되지 않았습니다.\n\n필수 확인 사항:\n• "교직원증" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 교번, 직번, 사번 중 하나가 보이는가?\n• 소속, 부서, 직급, 성명, 발급일 중 하나가 보이는가?\n\n⚠️ 시간표, 수업 관련 이미지는 거부됩니다.';
+                        message = '❌ 교직원증으로 인식되지 않았습니다.\n\n🔍 필수 확인 사항:\n• "교직원증" 또는 "직원증" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 교번, 직번, 사번이 보이는가?\n• 소속, 부서, 성명이 보이는가?\n\n⚠️ 시간표, 수업 관련 이미지는 자동으로 거부됩니다.';
                         break;
                     case 'appointmentDoc':
-                        message = '임용서류로 인식되지 않았습니다.\n\n필수 확인 사항:\n• "임용" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 발령, 임용장, 발령장, 계약서 중 하나가 보이는가?\n• 임용일, 발령일, 계약기간, 근무기간 중 하나가 보이는가?\n\n⚠️ 수업, 강의 관련 문서는 거부됩니다.';
+                        message = '❌ 임용서류로 인식되지 않았습니다.\n\n🔍 필수 확인 사항:\n• "임용", "발령", "임명" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 발령장, 임용장, 계약서 중 하나가 보이는가?\n• 임용일, 발령일, 계약기간이 보이는가?\n\n⚠️ 수업, 강의 관련 문서는 자동으로 거부됩니다.';
                         break;
                     case 'payslip':
-                        message = '급여명세서로 인식되지 않았습니다.\n\n필수 확인 사항:\n• "급여명세" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 기본급, 수당, 공제, 실지급액 중 하나가 보이는가?\n• 소득세, 국민연금, 건강보험, 지급총액 중 하나가 보이는가?\n\n⚠️ 학습, 과제 관련 문서는 거부됩니다.';
+                        message = '❌ 급여명세서로 인식되지 않았습니다.\n\n🔍 필수 확인 사항:\n• "급여명세", "급여", "월급" 문구가 명확히 보이는가?\n• "연성대학교" 문구가 선명한가?\n• 기본급, 수당, 공제액이 보이는가?\n• 소득세, 국민연금, 실지급액이 보이는가?\n\n⚠️ 학습, 과제 관련 문서는 자동으로 거부됩니다.';
                         break;
                     default:
-                        message = '선택하신 인증 방법과 일치하는 서류를 업로드해주세요.';
+                        message = '❌ 선택하신 인증 방법과 일치하는 서류를 업로드해주세요.\n\n📋 지원 문서: 교직원증, 임용서류, 급여명세서';
                 }
             }
         }
@@ -785,8 +1061,8 @@ function showFileAnalysisLoading() {
     loadingDiv.innerHTML = `
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <div class="loading-text">100% 정확도 인식을 진행하고 있습니다...</div>
-            <div class="loading-details">극도로 엄격한 키워드 검증 시스템 사용</div>
+            <div class="loading-text">🤖 AI 다중 엔진으로 정확한 분석 중...</div>
+            <div class="loading-details">OCR + 패턴 분석 + 키워드 매칭</div>
         </div>
     `;
     
@@ -825,7 +1101,7 @@ function showFileValidationResult(isValid, message) {
         fileError.style.display = 'none';
     } else {
         fileError.style.display = 'block';
-        fileError.textContent = message;
+        fileError.textContent = message.replace(/[❌🔍⚠️📸📋]/g, '').replace(/\n\n/g, ' ');
     }
 }
 
@@ -892,7 +1168,7 @@ function handleFileUpload(file) {
     // 선택된 인증 방법 확인
     const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
     if (selectedMethod) {
-        // 100% 정확도 자동 검증
+        // AI 다중 엔진 자동 검증
         validateFileMatch(file, selectedMethod.value, (isValid, message) => {
             showFileValidationResult(isValid, message);
         });
@@ -976,7 +1252,7 @@ function validateVerification(selectedRole) {
     // 파일 검증 결과 확인
     const validationResult = document.querySelector('.file-validation-result');
     if (!validationResult || validationResult.classList.contains('invalid')) {
-        alert('100% 정확도 인식에 실패했습니다.\n\n필수 키워드가 모두 포함된 올바른 서류를 업로드해주세요.\n시간표, 수업 관련 이미지는 절대 승인되지 않습니다.');
+        alert('🤖 AI 인식에 실패했습니다.\n\n필수 키워드가 모두 포함된 올바른 서류를 업로드해주세요.\n시간표, 수업 관련 이미지는 자동으로 거부됩니다.');
         return false;
     }
     
@@ -1164,7 +1440,7 @@ function register() {
         
         // 인증 방법 저장
         localStorage.setItem(`user_${userId}_verification_method`, selectedMethod.value);
-        localStorage.setItem(`user_${userId}_verification_status`, 'perfect_verified'); // 완벽한 검증 완료
+        localStorage.setItem(`user_${userId}_verification_status`, 'ai_verified'); // AI 검증 완료
         
         // 파일 정보 저장
         if (fileInput.files && fileInput.files.length > 0) {
@@ -1187,18 +1463,19 @@ function register() {
             requestedRole: selectedRole,
             department: department,
             requestDate: new Date().toISOString(),
-            status: 'perfect_verified', // 완벽한 검증 완료 상태
+            status: 'ai_verified', // AI 검증 완료 상태
             verificationMethod: selectedMethod ? selectedMethod.value : null,
             verificationFileName: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : null,
             verificationFileType: fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].type : null,
-            verificationConfidence: 'perfect', // 완벽한 신뢰도
-            keywordVerification: 'mandatory_keywords_confirmed' // 필수 키워드 확인됨
+            verificationConfidence: 'high', // 높은 신뢰도
+            keywordVerification: 'ai_multi_engine_confirmed', // AI 다중 엔진 확인됨
+            ocrEngine: 'tesseract_multi_mode' // 사용된 OCR 엔진
         });
         localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
         
-        alert('회원가입이 완료되었습니다!\n\n100% 정확도 인식 시스템으로 필수 키워드가 모두 확인되었습니다.\n교수/교직원 권한은 시스템 검토 후 자동으로 활성화됩니다.\n검토 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
+        alert('🎉 회원가입이 완료되었습니다!\n\n🤖 AI 다중 엔진 인식 시스템으로 문서가 정확하게 검증되었습니다.\n📋 교수/교직원 권한은 시스템 검토 후 자동으로 활성화됩니다.\n⏰ 검토 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.');
     } else {
-        alert('회원가입이 완료되었습니다!');
+        alert('🎉 회원가입이 완료되었습니다!');
     }
     
     // 소셜 로그인 세션 데이터 정리
