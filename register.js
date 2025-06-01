@@ -92,11 +92,11 @@ function validateIdPattern(role, id) {
     }
 }
 
-// EmailJS 설정 (보안 강화)
+// EmailJS 설정 (수정된 올바른 값들)
 const EMAILJS_CONFIG = {
-    publicKey: "SsbBsstNmRubY3laH",           // ✅ 새로 발급받은 Public Key
-    serviceId: "service_tjelgug",            // ✅ 확인된 Service ID
-    templateId: "template_ejprum5",          // ✅ 확인된 Template ID
+    publicKey: "SsbBsstNmRubY3laH",           // ✅ 스크린샷의 Public Key
+    serviceId: "service_j0pcond",            // ✅ 수정: 스크린샷의 Service ID
+    templateId: "template_ejprum5",          // ✅ 스크린샷의 Template ID
     isProduction: false                      // 배포시 true로 변경
 };
 
@@ -736,7 +736,9 @@ async function sendEmailViaEmailJS(to, subject, verificationCode) {
             to, 
             subject, 
             sessionId: emailVerificationData.sessionId,
-            publicKey: EMAILJS_CONFIG.publicKey 
+            publicKey: EMAILJS_CONFIG.publicKey,
+            serviceId: EMAILJS_CONFIG.serviceId,
+            templateId: EMAILJS_CONFIG.templateId
         });
         
         // EmailJS가 로드되었는지 확인
@@ -744,9 +746,9 @@ async function sendEmailViaEmailJS(to, subject, verificationCode) {
             throw new Error('EmailJS 라이브러리가 로드되지 않았습니다.');
         }
         
-        // EmailJS 재초기화 (새로운 Public Key로)
+        // EmailJS 재초기화 (올바른 Public Key로)
         emailjs.init(EMAILJS_CONFIG.publicKey);
-        console.log('🔑 새로운 Public Key로 초기화:', EMAILJS_CONFIG.publicKey);
+        console.log('🔑 올바른 Public Key로 초기화:', EMAILJS_CONFIG.publicKey);
         
         // 보안 강화된 템플릿 파라미터
         const templateParams = {
@@ -767,10 +769,10 @@ async function sendEmailViaEmailJS(to, subject, verificationCode) {
         
         console.log('📨 EmailJS 템플릿 파라미터:', templateParams);
         
-        // 이메일 발송
+        // 이메일 발송 (수정된 올바른 ID들 사용)
         const response = await emailjs.send(
-            EMAILJS_CONFIG.serviceId,
-            EMAILJS_CONFIG.templateId,
+            EMAILJS_CONFIG.serviceId,    // service_j0pcond
+            EMAILJS_CONFIG.templateId,   // template_ejprum5
             templateParams
         );
         
@@ -1585,7 +1587,7 @@ function quickVerify() {
 
 // 설정 확인 및 테스트 함수들 (보안 강화)
 function checkEmailJSConfig() {
-    console.log('📧 EmailJS 설정 확인 (새로운 Public Key):');
+    console.log('📧 EmailJS 설정 확인 (올바른 값들):');
     console.log('Public Key:', EMAILJS_CONFIG.publicKey);
     console.log('Service ID:', EMAILJS_CONFIG.serviceId);
     console.log('Template ID:', EMAILJS_CONFIG.templateId);
@@ -1596,11 +1598,11 @@ function checkEmailJSConfig() {
         return false;
     }
     
-    // 새로운 Public Key로 재초기화
+    // 올바른 Public Key로 재초기화
     try {
         emailjs.init(EMAILJS_CONFIG.publicKey);
         console.log('✅ EmailJS 설정이 완료되었습니다.');
-        console.log('🔑 새로운 Public Key 적용 완료');
+        console.log('🔑 올바른 Public Key 적용 완료');
         return true;
     } catch (error) {
         console.error('❌ EmailJS 초기화 실패:', error);
@@ -1640,12 +1642,14 @@ async function testEmailJS() {
             sessionId: tempSessionId,
             code: tempCode,
             email: testEmail,
-            publicKey: EMAILJS_CONFIG.publicKey
+            publicKey: EMAILJS_CONFIG.publicKey,
+            serviceId: EMAILJS_CONFIG.serviceId,
+            templateId: EMAILJS_CONFIG.templateId
         });
         
         const result = await sendEmailViaEmailJS(
             testEmail, 
-            '연성대학교 캠퍼스 가이드 테스트 (새로운 키)', 
+            '연성대학교 캠퍼스 가이드 테스트 (수정된 설정)', 
             tempCode
         );
         
@@ -1656,7 +1660,9 @@ async function testEmailJS() {
 📮 이메일함을 확인해보세요.
 🔐 테스트 세션 ID: ${tempSessionId}
 🔑 테스트 코드: ${tempCode}
-🆔 Public Key: ${EMAILJS_CONFIG.publicKey}`);
+🆔 Public Key: ${EMAILJS_CONFIG.publicKey}
+🏷️ Service ID: ${EMAILJS_CONFIG.serviceId}
+📄 Template ID: ${EMAILJS_CONFIG.templateId}`);
         } else {
             alert(`❌ 테스트 실패: ${result.message}`);
         }
@@ -1883,6 +1889,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const configValid = checkEmailJSConfig();
         if (configValid) {
             console.log('🎯 EmailJS 설정이 유효합니다.');
+            console.log('📊 현재 설정:');
+            console.log(`  - Public Key: ${EMAILJS_CONFIG.publicKey}`);
+            console.log(`  - Service ID: ${EMAILJS_CONFIG.serviceId}`);
+            console.log(`  - Template ID: ${EMAILJS_CONFIG.templateId}`);
         }
     } else {
         console.log('⚠️ EmailJS 라이브러리가 로드되지 않았습니다.');
