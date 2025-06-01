@@ -4,736 +4,852 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연성대학교 캠퍼스 가이드</title>
-    <!-- 네이버 지도 API 스크립트 추가 - Direction 서브모듈 포함 -->
-    <script
-    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
-    defer>
-    </script>
-    </script>
-    <!-- CSS 파일 연결 -->
-    <link rel="stylesheet" href="index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1e3c72;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover {
+            color: #1e3c72;
+            background: rgba(30, 60, 114, 0.1);
+        }
+
+        .hero-section {
+            margin-top: 80px;
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            position: relative;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 20px 60px 20px 25px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            transform: scale(1.02);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: #666;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px 80px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .category-card:hover::before {
+            left: 100%;
+        }
+
+        .category-card:nth-child(1) { animation-delay: 0.1s; }
+        .category-card:nth-child(2) { animation-delay: 0.2s; }
+        .category-card:nth-child(3) { animation-delay: 0.3s; }
+        .category-card:nth-child(4) { animation-delay: 0.4s; }
+        .category-card:nth-child(5) { animation-delay: 0.5s; }
+        .category-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .category-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+
+        .category-icon {
+            font-size: 4rem;
+            margin-bottom: 25px;
+            display: block;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #1e3c72;
+        }
+
+        .category-description {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .quick-access {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            animation: fadeInUp 1s ease-out 0.8s both;
+        }
+
+        .quick-access h3 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #1e3c72;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .quick-link {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .quick-link:hover::before {
+            left: 100%;
+        }
+
+        .quick-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(30, 60, 114, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 3% auto;
+            padding: 50px;
+            border-radius: 25px;
+            width: 80%;
+            max-width: 900px;
+            position: relative;
+            animation: modalSlideIn 0.4s ease-out;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            color: #1e3c72;
+            margin-left: 15px;
+        }
+
+        .modal-body {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .modal-body h4 {
+            color: #1e3c72;
+            margin: 25px 0 15px;
+            font-size: 1.4rem;
+        }
+
+        .modal-body p {
+            margin-bottom: 20px;
+        }
+
+        .close {
+            position: absolute;
+            right: 30px;
+            top: 25px;
+            color: #aaa;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #1e3c72;
+        }
+
+        .floating-help {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(30, 60, 114, 0.4);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .floating-help:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(30, 60, 114, 0.6);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 10px 30px rgba(30, 60, 114, 0.4);
+            }
+            50% {
+                box-shadow: 0 10px 30px rgba(30, 60, 114, 0.6), 0 0 0 10px rgba(30, 60, 114, 0.1);
+            }
+            100% {
+                box-shadow: 0 10px 30px rgba(30, 60, 114, 0.4);
+            }
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1200px) {
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-links-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-links-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-   <div class="container">
-       <header>
-           <div class="logo" onclick="goToHome()">연성대학교</div>
-           <div class="header-icons">
-               <!-- 로그인 버튼만 남기고 검색 및 알림 아이콘 제거 -->
-               <a href="#" class="login-button" onclick="goToPage('login')">로그인</a>
-               <div class="profile-dropdown-container" style="display: none;">
-                   <div class="header-profile-image" onclick="toggleProfileDropdown()">
-                       <!-- 여기에 프로필 이미지가 들어갑니다 -->
-                       <img id="headerProfileImg" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">
-                   </div>
-                   <div class="profile-dropdown">
-                       <div class="dropdown-profile-info">
-                           <div class="dropdown-profile-name">사용자</div>
-                           <div class="dropdown-profile-detail">학과 | 학년</div>
-                           <div class="dropdown-profile-detail">학번: 0000000000</div>
-                       </div>
-                       <div class="dropdown-divider"></div>
-                       <div class="dropdown-item" onclick="goToPage('profile-edit')">
-                           <span class="dropdown-icon">✏️</span>
-                           <span>프로필 수정</span>
-                        </div>
-                        <div class="dropdown-item" onclick="logout()">
-                            <span class="dropdown-icon">🚪</span>
-                            <span>로그아웃</span>
-                        </div>
-                   </div>
-               </div>
-           </div>
-       </header>
-               
-       <!-- 홈 탭 -->
-       <div id="home-tab" class="tab-content active">
-           <!-- 긴급 알림 배너 -->
-           <div class="notification-banner" onclick="viewNotification('emergency')">
-               <span class="urgent-icon">📢</span>
-               <span class="notification-text">긴급 공지: 내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</span>
-           </div>
-           
-           <!-- 검색 바 -->
-           <div class="search-bar">
-               <input type="text" class="search-input" placeholder="강의실, 공지사항, 교수님 검색" onkeypress="handleSearchKeyPress(event)">
-           </div>
-           
-           <!-- 바로가기 메뉴 -->
-           <div class="shortcut-menu">
-               <div class="shortcut-item" onclick="goToPage('activities')">
-                   <div class="shortcut-icon">🌟</div>
-                   <div class="shortcut-text">교내/대외활동</div>
-               </div>
-               <div class="shortcut-item" onclick="switchTab('community')">
-                   <div class="shortcut-icon">📝</div>
-                   <div class="shortcut-text">강의평가</div>
-               </div>
-                <div class="shortcut-item" onclick="window.location.href='shuttle_bus_tracker.html'">
-                    <div class="shortcut-icon">🚌</div>
-                    <div class="shortcut-text">셔틀버스</div>
-                </div>
-               <div class="shortcut-item" onclick="goToPage('everytime-board')">
-                   <div class="shortcut-icon">💬</div>
-                   <div class="shortcut-text">커뮤니티</div>
-               </div>
-               <div class="shortcut-item" onclick="goToPage('academic-calendar')">
-                   <div class="shortcut-icon">📅</div>
-                   <div class="shortcut-text">학사일정</div>
-               </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                🎓 연성대학교
             </div>
-           
-            <!-- 오늘의 시간표 -->
-            <div class="timetable-preview">
-                <div class="timetable-header">
-                    <div class="timetable-date">2025년 4월 8일 (월) 시간표</div>
-                    <div class="timetable-now">현재 강의</div>
-                </div>
-                <div id="timetable-preview-content">
-                    <!-- 동적으로 생성될 수업 내용 -->
-                </div>
+            <ul class="nav-links">
+                <li><a href="#home">홈</a></li>
+                <li><a href="#buildings">건물안내</a></li>
+                <li><a href="#facilities">시설안내</a></li>
+                <li><a href="#contact">연락처</a></li>
+                <li><a href="#help">도움말</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="hero-container">
+            <h1 class="hero-title">연성대학교 캠퍼스 가이드</h1>
+            <p class="hero-subtitle">캠퍼스의 모든 정보를 한눈에 확인하세요</p>
+            
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="건물명, 학과, 시설 등을 검색해보세요..." id="mainSearch">
+                <span class="search-icon">🔍</span>
             </div>
-           
-            <!-- 다음 셔틀버스 -->
-            <div class="shuttle-card">
-                <div class="shuttle-header">
-                    <div class="shuttle-title">다음 셔틀버스</div>
-                    <div class="shuttle-icon">🚌</div>
-                </div>
-                
-                <!-- 노선 선택 탭 -->
-                <div class="shuttle-route-tabs">
-                    <button class="route-tab active" onclick="selectShuttleRoute(1)" data-route="1">
-                        <span class="route-name">노선 1</span>
-                        <span class="route-desc">인천 남동구, 시흥시</span>
-                    </button>
-                    <button class="route-tab" onclick="selectShuttleRoute(2)" data-route="2">
-                        <span class="route-name">노선 2</span>
-                        <span class="route-desc">시화지역, 장현지구</span>
-                    </button>
-                    <button class="route-tab" onclick="selectShuttleRoute(3)" data-route="3">
-                        <span class="route-name">노선 3</span>
-                        <span class="route-desc">서울 목동</span>
-                    </button>
-                </div>
-                
-                <!-- 다음 버스 정보 -->
-                <div class="shuttle-next-info">
-                    <div class="next-bus-main">
-                        <div class="shuttle-time">15분 후 출발</div>
-                        <div class="shuttle-desc">학교 → 안양역 경유 (14:30)</div>
-                    </div>
-                    <div class="shuttle-status">
-                        <span class="status-badge running">운행 중</span>
-                    </div>
-                </div>
-                
-                <!-- 운행 시간표 -->
-                <div class="shuttle-schedule">
-                    <div class="schedule-header">오늘의 운행 시간</div>
-                    <div class="shuttle-time-slots">
-                        <div class="time-slot">
-                            <div class="time-period">오전</div>
-                            <div class="time-range">08:30~10:50</div>
-                            <div class="time-interval">6분 간격</div>
-                        </div>
-                        <div class="time-slot">
-                            <div class="time-period">점심</div>
-                            <div class="time-range">12:00~13:20</div>
-                            <div class="time-interval">10분 간격</div>
-                        </div>
-                        <div class="time-slot">
-                            <div class="time-period">오후</div>
-                            <div class="time-range">16:55~17:45</div>
-                            <div class="time-interval">5분 간격</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 다음 운행 시간들 -->
-                <div class="shuttle-upcoming">
-                    <div class="upcoming-header">다음 운행 시간</div>
-                    <div class="shuttle-time-list">
-                        <div class="shuttle-time-item">
-                            <div class="time-value">15:00</div>
-                            <div class="time-label">5분 후</div>
-                        </div>
-                        <div class="shuttle-time-item">
-                            <div class="time-value">15:05</div>
-                            <div class="time-label">10분 후</div>
-                        </div>
-                        <div class="shuttle-time-item">
-                            <div class="time-value">15:10</div>
-                            <div class="time-label">15분 후</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-           
-           <!-- 교내/대외활동 현황 -->
-           <div class="activity-summary-card">
-               <div class="activity-summary-header">
-                   <div class="activity-summary-title">🌟 교내/대외활동 현황</div>
-                   <div class="activity-summary-time">실시간 업데이트</div>
-               </div>
-               <div class="activity-summary-grid">
-                   <div class="activity-stat-item">
-                       <div class="activity-stat-icon">🏆</div>
-                       <div class="activity-stat-info">
-                           <div class="activity-stat-number">12</div>
-                           <div class="activity-stat-label">진행 중인 공모전</div>
-                       </div>
-                   </div>
-                   <div class="activity-stat-item">
-                       <div class="activity-stat-icon">👥</div>
-                       <div class="activity-stat-info">
-                           <div class="activity-stat-number">8</div>
-                           <div class="activity-stat-label">신입 모집 동아리</div>
-                       </div>
-                   </div>
-                   <div class="activity-stat-item">
-                       <div class="activity-stat-icon">🌟</div>
-                       <div class="activity-stat-info">
-                           <div class="activity-stat-number">15</div>
-                           <div class="activity-stat-label">대외활동 기회</div>
-                       </div>
-                   </div>
-               </div>
-               <div class="activity-summary-notices">
-                   <div class="activity-notice-item">
-                       <span class="activity-notice-icon">⏰</span>
-                       <span class="activity-notice-text">창업 아이디어 경진대회 마감 22일 남음</span>
-                   </div>
-                   <div class="activity-notice-item">
-                       <span class="activity-notice-icon">🎵</span>
-                       <span class="activity-notice-text">밴드 동아리 ECHO 오디션 이번 주</span>
-                   </div>
-               </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2 class="section-title">캠퍼스 정보</h2>
+        
+        <div class="categories-grid">
+            <div class="category-card" onclick="openModal('buildings')">
+                <span class="category-icon">🏢</span>
+                <h3 class="category-title">건물 및 시설 안내</h3>
+                <p class="category-description">각 건물의 위치, 층별 구성, 주요 시설 정보를 상세히 확인할 수 있습니다</p>
             </div>
 
-           <!-- 학사 일정 -->
-           <div class="calendar-card">
-                <div class="section-title">
-                    <span>다가오는 학사일정</span>
-                    <a href="academic-calendar.html" class="see-all" onclick="goToPage('academic-calendar')">전체보기</a>
-                </div>
-                <ul class="calendar-list">
-                    <!-- 동적으로 생성될 학사일정 목록 -->
-                </ul>
+            <div class="category-card" onclick="openModal('departments')">
+                <span class="category-icon">📚</span>
+                <h3 class="category-title">학과 및 행정부서</h3>
+                <p class="category-description">각 학과의 위치, 연락처, 주요 프로그램 정보와 행정부서 안내</p>
             </div>
 
-            <!-- 인기 맛집 할인 정보 -->
-            <div class="student-deals-card">
-            <div class="everytime-header">
-                <div class="everytime-title">🍽️ 인기 맛집 할인 정보</div>
-                <a href="student-deals.html" class="everytime-view-all">전체보기</a>
+            <div class="category-card" onclick="openModal('services')">
+                <span class="category-icon">🎯</span>
+                <h3 class="category-title">학생 서비스</h3>
+                <p class="category-description">도서관, 식당, 헬스장 등 학생들을 위한 다양한 서비스 시설</p>
             </div>
-            <div id="popular-restaurants-list">
-                <!-- 여기에 동적으로 맛집 목록이 추가됩니다 -->
-                <!-- 로딩 표시 -->
-                <div class="popular-restaurant-item loading">
-                    <div class="restaurant-image skeleton"></div>
-                    <div class="restaurant-content">
-                        <div class="restaurant-category skeleton"></div>
-                        <div class="restaurant-name skeleton"></div>
-                        <div class="restaurant-location skeleton"></div>
-                        <div class="restaurant-discount skeleton"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-           
-           <!-- 공지사항 섹션 -->
-           <div class="content-section">
-               <div class="section-title">
-                   <span>주요 공지사항</span>
-                   <a href="#" class="see-all" onclick="goToPage('notices')">전체보기</a>
-               </div>
-               
-               <div class="category-filter">
-                   <div class="category-tag active" onclick="filterNotices('all')">전체</div>
-                   <div class="category-tag" onclick="filterNotices('academic')">학사</div>
-                   <div class="category-tag" onclick="filterNotices('scholarship')">장학</div>
-                   <div class="category-tag" onclick="filterNotices('job')">취업</div>
-                   <div class="category-tag" onclick="filterNotices('event')">행사</div>
-                   <div class="category-tag" onclick="filterNotices('department')">학과</div>
-               </div>
-               
-               <ul class="notice-list">
-                   <!-- 알림창 없이 공지사항 상세 페이지로 바로 이동하도록 수정 -->
-                   <li class="notice-item" onclick="goToNoticeDetail('notice1')">
-                       <div class="notice-header">
-                           <span class="notice-category">학사</span>
-                           <span class="notice-date">2025.04.08</span>
-                       </div>
-                       <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
-                       <div class="notice-summary">
-                           4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.
-                       </div>
-                   </li>
-                   <li class="notice-item" onclick="goToNoticeDetail('notice2')">
-                       <div class="notice-header">
-                           <span class="notice-category">장학</span>
-                           <span class="notice-date">2025.04.07</span>
-                       </div>
-                       <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
-                       <div class="notice-summary">
-                           국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.
-                       </div>
-                   </li>
-                   <li class="notice-item" onclick="goToNoticeDetail('notice3')">
-                       <div class="notice-header">
-                           <span class="notice-category">취업</span>
-                           <span class="notice-date">2025.04.06</span>
-                       </div>
-                       <div class="notice-title">삼성전자 대규모 채용설명회 개최 안내</div>
-                       <div class="notice-summary">
-                           4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.
-                       </div>
-                   </li>
-               </ul>
-           </div>
-           
-           <div class="content-pad"></div>
-       </div>
 
-        <!-- 시설 탭 -->
-        <div id="facility-tab" class="tab-content">
-            <!-- 검색 바 - 새로운 구조로 변경 -->
-            <div class="search-bar">
-                <div class="search-container">
-                    <input type="text" id="facility-search-input" class="search-input" placeholder="건물, 강의실, 편의시설 검색" oninput="searchFacilities(this.value)">
-                    <button class="search-clear" onclick="clearSearch()">✕</button>
-                </div>
+            <div class="category-card" onclick="openModal('transport')">
+                <span class="category-icon">🚌</span>
+                <h3 class="category-title">교통 및 주차</h3>
+                <p class="category-description">대중교통 이용법, 셔틀버스 시간표, 주차장 정보</p>
             </div>
-            
-            <!-- 빠른 검색 버튼 영역 -->
-            <div class="quick-search-buttons">
-                <div class="section-title" style="margin-top: 12px; margin-left: 16px; margin-right: 16px;">
-                    <span>빠른 검색</span>
-                </div>
-                <div style="display: flex; overflow-x: auto; padding: 0 16px 12px 16px; gap: 8px;">
-                    <button class="category-tag" onclick="quickSearch('강의실')">강의실</button>
-                    <button class="category-tag" onclick="quickSearch('학생')">학생시설</button>
-                    <button class="category-tag" onclick="quickSearch('식당')">식당/카페</button>
-                    <button class="category-tag" onclick="quickSearch('도서관')">도서관</button>
-                    <button class="category-tag" onclick="quickSearch('공학')">공학계열</button>
-                </div>
-            </div>
-            
-            <!-- 검색 결과를 표시할 컨테이너 추가 -->
-            <div id="search-results" class="search-results" style="display: none;">
-                <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
-            </div>
-            
-            <!-- 검색 결과가 없을 때 표시될 내용 -->
-            <div id="no-results" class="no-results" style="display: none;">
-                검색 결과가 없습니다.
-            </div>
-            
-            <!-- 원래 내용은 검색 결과가 없을 때만 표시 -->
-            <div id="original-content">
-                <!-- 네이버 지도로 대체된 캠퍼스 맵 -->
-                <div class="campus-map" id="naverMap">
-                    <!-- 지도가 로드되기 전에 표시할 이미지 삭제 -->
-                    <!-- <img src="/api/placeholder/400/250" alt="연성대학교 캠퍼스 지도"> -->
-                    <div class="map-control-buttons">
-                        <div class="map-button" onclick="zoomIn()">🔍+</div>
-                        <div class="map-button" onclick="zoomOut()">🔍-</div>
-                        <div class="map-button" onclick="resetMapView()">🏠</div>
-                    </div>
 
-                    <!-- 여기에 GPS 버튼 추가 -->
-                    <div class="gps-button" onclick="trackUserLocation()">📍</div>
-                    
-                    <!-- 경로 정보 로딩 인디케이터 -->
-                    <div class="route-loading" id="routeLoading">
-                        <span>🔄</span>
-                        <span class="route-loading-text">경로를 계산하는 중...</span>
-                    </div>
-                    
-                    <!-- 경로 정보 박스 -->
-                    <div class="route-info-box" id="routeInfoBox">
-                        <span class="route-info-close" onclick="closeRouteInfo()">✕</span>
-                        <div class="route-info-title">목적지: <span id="routeDestination"></span></div>
-                        <div class="route-info-detail">
-                            <div>거리: <span id="routeDistance"></span></div>
-                            <div>예상 소요시간: <span id="routeDuration"></span></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="content-section">
-                    <div class="section-title">
-                        <span>주요 건물</span>
-                    </div>
-                    
-                    <ul class="building-list">
-                        <!-- 건물 항목들이 JavaScript로 동적 생성됩니다 -->
-                    </ul>
-                    
-                    <!-- 페이지네이션 컨트롤 추가 -->
-                    <div id="pagination-controls" class="pagination-controls">
-                        <!-- 페이지 버튼들이 JavaScript로 동적 생성됩니다 -->
-                    </div>
-                </div>
-                
-                <div class="content-section">
-                    <div class="section-title">
-                        <span>편의시설</span>
-                    </div>
-                    
-                    <div class="facility-list">
-                        <div class="facility-item" onclick="showFacilityDetail('cafeteria')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=학생식당" alt="학생식당">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">학생식당</div>
-                                <div class="facility-location">학생복지센터 2층</div>
-                            </div>
-                        </div>
-                        <div class="facility-item" onclick="showFacilityDetail('cafe')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=카페" alt="카페">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">카페 연성</div>
-                                <div class="facility-location">문화1관 1층</div>
-                            </div>
-                        </div>
-                        <div class="facility-item" onclick="showFacilityDetail('convenience')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=편의점" alt="편의점">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">CU 편의점</div>
-                                <div class="facility-location">학생복지센터 1층</div>
-                            </div>
-                        </div>
-                        <div class="facility-item" onclick="showFacilityDetail('atm')">
-                            <div class="facility-image">
-                                <img src="https://placehold.co/150x100/gray/white?text=ATM" alt="ATM">
-                            </div>
-                            <div class="facility-info">
-                                <div class="facility-name">ATM</div>
-                                <div class="facility-location">학생복지센터 1층</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="category-card" onclick="openModal('events')">
+                <span class="category-icon">🎉</span>
+                <h3 class="category-title">행사 및 공지사항</h3>
+                <p class="category-description">캠퍼스 내 진행되는 각종 행사와 중요한 공지사항</p>
             </div>
-            
-            <div class="content-pad"></div>
+
+            <div class="category-card" onclick="openModal('emergency')">
+                <span class="category-icon">🚨</span>
+                <h3 class="category-title">응급상황 대응</h3>
+                <p class="category-description">응급상황 시 연락처, 안전 수칙, 대피 경로 안내</p>
+            </div>
         </div>
-        
-        <!-- 커뮤니티 탭 -->
-        <div id="community-tab" class="tab-content">
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="강의평가 검색" onkeypress="handleSearchKeyPress(event)">
+
+        <div class="quick-access">
+            <h3>빠른 접근 링크</h3>
+            <div class="quick-links-grid">
+                <a href="#" class="quick-link">학사일정</a>
+                <a href="#" class="quick-link">도서관 좌석예약</a>
+                <a href="#" class="quick-link">셔틀버스 실시간</a>
+                <a href="#" class="quick-link">학생식당 메뉴</a>
+                <a href="#" class="quick-link">온라인 강의실</a>
+                <a href="#" class="quick-link">학생상담센터</a>
+                <a href="#" class="quick-link">취업지원센터</a>
+                <a href="#" class="quick-link">기숙사 신청</a>
             </div>
-            
-            <!-- 실시간 커뮤니티 (에브리타임 스타일) -->
-            <div class="everytime-community-card">
-                <div class="everytime-header">
-                    <div class="everytime-title">💬 실시간 커뮤니티</div>
-                    <div class="everytime-view-all" onclick="goToPage('everytime-board')">게시판</div>
-                </div>
-                <div class="community-posts">
-                    <div class="post-item">
-                        <div class="post-board">[자유게시판]</div>
-                        <div class="post-content">
-                            <div class="post-title">중간고사 스터디 그룹 모집해요!</div>
-                            <div class="post-preview">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
-                            <div class="post-meta">
-                                <span class="post-time">3분 전</span>
-                                <span class="post-stats">👍 12 💬 8</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-item">
-                        <div class="post-board">[정보게시판]</div>
-                        <div class="post-content">
-                            <div class="post-title">김민수 교수님 수업 꿀팁 공유</div>
-                            <div class="post-preview">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
-                            <div class="post-meta">
-                                <span class="post-time">12분 전</span>
-                                <span class="post-stats">👍 24 💬 15</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-item">
-                        <div class="post-board">[취업게시판]</div>
-                        <div class="post-content">
-                            <div class="post-title">삼성전자 채용설명회 후기</div>
-                            <div class="post-preview">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
-                            <div class="post-meta">
-                                <span class="post-time">32분 전</span>
-                                <span class="post-stats">👍 45 💬 23</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-item">
-                        <div class="post-board">[강의평가]</div>
-                        <div class="post-content">
-                            <div class="post-title">이지영 교수님 마케팅 원론 후기</div>
-                            <div class="post-preview">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
-                            <div class="post-meta">
-                                <span class="post-time">1시간 전</span>
-                                <span class="post-stats">👍 18 💬 6</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 인기 강의평가 섹션 (메인 페이지에서 이동됨) -->
-            <div class="content-section">
-                <div class="section-title">
-                    <span>인기 강의평가</span>
-                </div>
-                
-                <div class="category-filter">
-                    <div class="category-tag active" onclick="filterLectures('all')">전체</div>
-                    <div class="category-tag" onclick="filterLectures('general')">교양</div>
-                    <div class="category-tag" onclick="filterLectures('required')">전공필수</div>
-                    <div class="category-tag" onclick="filterLectures('optional')">전공선택</div>
-                </div>
-                
-                <ul class="lecture-list">
-                    <li class="lecture-item" onclick="viewLectureDetail('web-programming')">
-                        <div class="lecture-header">
-                            <div class="lecture-title">웹 프로그래밍 실습</div>
-                            <div class="lecture-rating">4.8</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">김민수 교수님</span>
-                            <span>컴퓨터정보학과</span>
-                        </div>
-                        <div class="rating-stars">★★★★★</div>
-                        <div class="lecture-reviews">
-                            "과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."
-                        </div>
-                    </li>
-                    <li class="lecture-item" onclick="viewLectureDetail('marketing')">
-                        <div class="lecture-header">
-                            <div class="lecture-title">마케팅 원론</div>
-                            <div class="lecture-rating">4.5</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">이지영 교수님</span>
-                            <span>경영학과</span>
-                        </div>
-                        <div class="rating-stars">★★★★☆</div>
-                        <div class="lecture-reviews">
-                            "실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."
-                        </div>
-                    </li>
-                    <li class="lecture-item" onclick="viewLectureDetail('english')">
-                        <div class="lecture-header">
-                            <div class="lecture-title">영어회화</div>
-                            <div class="lecture-rating">4.3</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">John Smith 교수님</span>
-                            <span>교양과정</span>
-                        </div>
-                        <div class="rating-stars">★★★★☆</div>
-                        <div class="lecture-reviews">
-                            "원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."
-                        </div>
-                    </li>
-                    <li class="lecture-item" onclick="viewLectureDetail('statistics')">
-                        <div class="lecture-header">
-                            <div class="lecture-title">경영통계학</div>
-                            <div class="lecture-rating">3.7</div>
-                        </div>
-                        <div class="lecture-info">
-                            <span class="lecture-professor">박성호 교수님</span>
-                            <span>경영학과</span>
-                        </div>
-                        <div class="rating-stars">★★★☆☆</div>
-                        <div class="lecture-reviews">
-                            "내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
         </div>
-        
-        <!-- 내 정보 탭 - 로그인 상태에 따라 동적으로 변경 -->
-        <div id="profile-tab" class="tab-content">
-            <!-- 로그인이 필요한 상태 (기본값) -->
-            <div id="profile-login-required" class="profile-section">
-                <div class="profile-image">👤</div>
-                <div class="profile-info">
-                    <div class="profile-name">로그인이 필요합니다</div>
-                    <div class="profile-detail">내 정보를 확인하려면 로그인해주세요</div>
-                </div>
+    </main>
+
+    <!-- Floating Help Button -->
+    <div class="floating-help" onclick="openModal('help')">
+        💬
+    </div>
+
+    <!-- Modals -->
+    <div id="buildingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('buildings')">&times;</span>
+            <div class="modal-header">
+                <span style="font-size: 3rem;">🏢</span>
+                <h2 class="modal-title">건물 및 시설 안내</h2>
             </div>
-            
-            <!-- 로그인된 상태 (로그인 후 표시) -->
-            <div id="profile-logged-in" class="profile-section" style="display: none;">
-                <div class="profile-image">👨‍🎓</div>
-                <div class="profile-info">
-                    <div class="profile-name">사용자</div>
-                    <div class="profile-detail">학과 | 학년</div>
-                    <div class="profile-detail">학번: 0000000000</div>
-                </div>
-            </div>
-            
-            <!-- 메뉴들은 항상 표시 -->
-            <div class="content-section">
-                <div class="section-title">
-                    <span>내 정보 관리</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item" onclick="navigateToProfilePage('timetable')">
-                        <div class="menu-title">내 시간표</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('my-courses')">
-                        <div class="menu-title">내 수강 강의</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('favorite-classrooms')">
-                        <div class="menu-title">즐겨찾는 강의실</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('profile-edit')">
-                        <div class="menu-title">개인정보 수정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="deleteAccount()">
-                        <div class="menu-title delete-account">회원 탈퇴</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>학적 정보</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item" onclick="navigateToProfilePage('grades')">
-                        <div class="menu-title">성적 조회</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('course-registration')">
-                        <div class="menu-title">수강 신청 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('scholarships')">
-                        <div class="menu-title">장학금 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('tuition')">
-                        <div class="menu-title">등록금 납부 내역</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-section">
-                <div class="section-title">
-                    <span>앱 설정</span>
-                </div>
-                
-                <ul class="menu-list">
-                    <li class="menu-item" onclick="navigateToProfilePage('notification-settings')">
-                        <div class="menu-title">알림 설정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('widget-settings')">
-                        <div class="menu-title">위젯 및 메뉴 설정</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="resetAllSettings()">
-                        <div class="menu-title">모든 설정 초기화</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="navigateToProfilePage('app-info')">
-                        <div class="menu-title">앱 정보</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                    <li class="menu-item" onclick="logout()">
-                        <div class="menu-title">로그아웃</div>
-                        <div class="menu-arrow">›</div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 알림 탭 -->
-        <div id="alert-tab" class="tab-content">
-            <div class="content-section">
-                <div class="section-title">
-                    <span>알림</span>
-                </div>
-                
-                <ul class="alert-list">
-                    <li class="alert-item" onclick="viewNotification('emergency')">
-                        <div class="alert-icon">📢</div>
-                        <div class="alert-info">
-                            <div class="alert-title">긴급 공지 <span class="alert-badge">중요</span></div>
-                            <div class="alert-message">내일(4/9) 대학 전체 휴강 안내 - 시설 점검으로 인한 단수</div>
-                            <div class="alert-time">10분 전</div>
-                        </div>
-                    </li>
-                    <li class="alert-item" onclick="viewNotification('classroom')">
-                        <div class="alert-icon">🏫</div>
-                        <div class="alert-info">
-                            <div class="alert-title">강의실 알림</div>
-                            <div class="alert-message">웹 프로그래밍 실습 강의실이 3-101호에서 3-201호로 변경되었습니다.</div>
-                            <div class="alert-time">30분 전</div>
-                        </div>
-                    </li>
-                    <li class="alert-item" onclick="viewNotification('assignment')">
-                        <div class="alert-icon">📝</div>
-                        <div class="alert-info">
-                            <div class="alert-title">과제 알림</div>
-                            <div class="alert-message">마케팅 원론 과제 제출 기한이 내일 오후 6시까지입니다.</div>
-                            <div class="alert-time">1시간 전</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="content-pad"></div>
-        </div>
-        
-        <!-- 하단 탭 메뉴 -->
-        <div class="tab-menu">
-            <div class="tab-item active" onclick="switchTab('home')">
-                <span class="tab-icon">🏠</span>
-                <span>홈</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('facility')">
-                <span class="tab-icon">🏫</span>
-                <span>시설</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('community')">
-                <span class="tab-icon">💬</span>
-                <span>커뮤니티</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('profile')">
-                <span class="tab-icon">👤</span>
-                <span>내 정보</span>
-            </div>
-            <div class="tab-item" onclick="switchTab('alert')">
-                <span class="tab-icon">🔔</span>
-                <span>알림</span>
+            <div class="modal-body">
+                <h4>본관 (A동)</h4>
+                <p><strong>위치:</strong> 캠퍼스 정문 정면<br>
+                <strong>1층:</strong> 입학처, 총무처, 학생지원팀<br>
+                <strong>2층:</strong> 교무처, 학사관리팀<br>
+                <strong>3층:</strong> 총장실, 부총장실, 대회의실<br>
+                <strong>4층:</strong> 교수회의실, 연구실</p>
+
+                <h4>공학관 (B동)</h4>
+                <p><strong>위치:</strong> 본관 좌측<br>
+                <strong>1층:</strong> 컴퓨터실습실, 멀티미디어실<br>
+                <strong>2층:</strong> 전자공학과 실험실<br>
+                <strong>3층:</strong> 컴퓨터공학과 연구실<br>
+                <strong>4층:</strong> 기계공학과 설계실</p>
+
+                <h4>인문사회관 (C동)</h4>
+                <p><strong>위치:</strong> 본관 우측<br>
+                <strong>1층:</strong> 대강의실 (200석)<br>
+                <strong>2층:</strong> 경영학과, 회계학과<br>
+                <strong>3층:</strong> 사회복지학과, 상담실<br>
+                <strong>4층:</strong> 어학실, 세미나실</p>
             </div>
         </div>
     </div>
-    
-    <!-- JavaScript 파일 연결 -->
-    <script src="index.js"></script>
+
+    <div id="departmentsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('departments')">&times;</span>
+            <div class="modal-header">
+                <span style="font-size: 3rem;">📚</span>
+                <h2 class="modal-title">학과 및 행정부서</h2>
+            </div>
+            <div class="modal-body">
+                <h4>공학계열</h4>
+                <p><strong>컴퓨터공학과:</strong> B동 3층 (031-299-3000)<br>
+                <strong>전자공학과:</strong> B동 2층 (031-299-3100)<br>
+                <strong>기계공학과:</strong> B동 4층 (031-299-3200)</p>
+
+                <h4>인문사회계열</h4>
+                <p><strong>경영학과:</strong> C동 2층 (031-299-4000)<br>
+                <strong>사회복지학과:</strong> C동 3층 (031-299-4100)<br>
+                <strong>영어영문학과:</strong> C동 4층 (031-299-4200)</p>
+
+                <h4>주요 행정부서</h4>
+                <p><strong>교무처:</strong> A동 2층 (031-299-0200)<br>
+                <strong>학생처:</strong> A동 1층 (031-299-0300)<br>
+                <strong>입학처:</strong> A동 1층 (031-299-0100)<br>
+                <strong>총무처:</strong> A동 1층 (031-299-0400)</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="servicesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('services')">&times;</span>
+            <div class="modal-header">
+                <span style="font-size: 3rem;">🎯</span>
+                <h2 class="modal-title">학생 서비스</h2>
+            </div>
+            <div class="modal-body">
+                <h4>중앙도서관</h4>
+                <p><strong>위치:</strong> D동<br>
+                <strong>운영시간:</strong> 평일 09:00-22:00, 주말 10:00-18:00<br>
+                <strong>시설:</strong> 열람실 (300석), 스터디룸 (10실), 멀티미디어실, 북카페</p>
+
+                <h4>학생식당</h4>
+                <p><strong>위치:</strong> E동 1-2층<br>
+                <strong>운영시간:</strong> 조식 08:00-09:30, 중식 11:30-14:00, 석식 17:30-19:30<br>
+                <strong>1층:</strong> 한식 코너, 분식 코너<br>
+                <strong>2층:</strong> 양식 코너, 일식 코너, 카페</p>
+
+                <h4>체육시설</h4>
+                <p><strong>체육관:</strong> F동 - 농구장, 배구장, 배드민턴장<br>
+                <strong>헬스장:</strong> F동 지하 - 웨이트 트레이닝, 유산소 운동기구<br>
+                <strong>운동장:</strong> 축구장, 농구장, 테니스장</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="transportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('transport')">&times;</span>
+            <div class="modal-header">
+                <span style="font-size: 3rem;">🚌</span>
+                <h2 class="modal-title">교통 및 주차</h2>
+            </div>
+            <div class="modal-body">
+                <h4>지하철</h4>
+                <p><strong>수인분당선:</strong> 연성대역 하차 → 도보 5분<br>
+                <strong>1호선:</strong> 안양역 하차 → 버스 10분</p>
+
+                <h4>시내버스</h4>
+                <p><strong>간선버스:</strong> 110번, 330번, 777번<br>
+                <strong>지선버스:</strong> 3001번, 3002번, 3005번<br>
+                <strong>정류장:</strong> 연성대학교 정문</p>
+
+                <h4>셔틀버스</h4>
+                <p><strong>안양역 ↔ 연성대:</strong> 15분 간격 운행<br>
+                <strong>첫차:</strong> 07:30 (안양역 출발)<br>
+                <strong>막차:</strong> 21:30 (연성대 출발)</p>
+
+                <h4>주차시설</h4>
+                <p><strong>교직원 주차장:</strong> 100대 (본관 뒤편)<br>
+                <strong>학생 주차장:</strong> 200대 (체육관 옆)<br>
+                <strong>방문자 주차장:</strong> 50대 (정문 우측)</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="eventsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('events')">&times;</span>
+            <div class="modal-header">
+                <span style="font-size: 3rem;">🎉</span>
+                <h2 class="modal-title">행사 및 공지사항</h2>
+            </div>
+            <div class="modal-body">
+                <h4>이번 주 주요 행사</h4>
+                <p><strong>6월 3일 (화):</strong> 2025 취업박람회 (체육관, 10:00-17:00)<br>
+                <strong>6월 5일 (목):</strong> 학과별 진로설명회<br>
+                <strong>6월 7일 (토):</strong> 연성대 축제 '별빛제'</p>
+
+                <h4>중요 공지사항</h4>
+                <p><strong>수강신청:</strong> 2학기 수강신청 6월 10일-14일<br>
+                <strong>장학금:</strong> 2학기 장학금 신청 마감 6월 15일<br>
+                <strong>계절학기:</strong> 하계 계절학기 수강신청 6월 20일 시작</p>
+
+                <h4>학사일정</h4>
+                <p><strong>기말고사:</strong> 6월 17일-21일<br>
+                <strong>방학:</strong> 6월 24일-8월 31일<br>
+                <strong>2학기 개강:</strong> 9월 1일</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="emergencyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('emergency')">&times;</span>
+            <div class="modal-header">
+                <span style="font-size: 3rem;">🚨</span>
+                <h2 class="modal-title">응급상황 대응</h2>
+            </div>
+            <div class="modal-body">
+                <h4>응급 연락처</h4>
+                <p><strong>종합상황실:</strong> 031-299-0119 (24시간)<br>
+                <strong>보건실:</strong> 031-299-0777<br>
+                <strong>경비실:</strong> 031-299-0911</p>
+
+                <h4>의료 지원</h4>
+                <p><strong>보건실:</strong> A동 1층 (간호사 상주, 평일 09:00-18:00)<br>
+                <strong>가까운 병원:</strong> 한림대안양성심병원 (도보 10분)<br>
+                <strong>약국:</strong> 정문 앞 온누리약국</p>
+
+                <h4>안전 수칙</h4>
+                <p><strong>화재 발생시:</strong> 119 신고 → 대피 → 종합상황실 연락<br>
+                <strong>응급환자 발생시:</strong> 119 신고 → 보건실 연락 → 응급처치<br>
+                <strong>범죄 신고:</strong> 112 신고 → 경비실 연락</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('help')">&times;</span>
+        <div class="modal-header">
+            <span style="font-size: 3rem;">💬</span>
+            <h2 class="modal-title">도움말</h2>
+        </div>
+        <div class="modal-body">
+            <h4>이 캠퍼스 가이드 사용법</h4>
+            <p><strong>검색 기능:</strong> 상단 검색창에서 건물명, 학과명, 시설명을 입력하여 빠르게 찾을 수 있습니다.<br>
+            <strong>카테고리 탐색:</strong> 메인 화면의 6개 카테고리 카드를 클릭하여 상세 정보를 확인하세요.<br>
+            <strong>빠른 링크:</strong> 자주 사용하는 서비스는 하단의 빠른 접근 링크를 이용하세요.</p>
+
+            <h4>키보드 단축키</h4>
+            <p><strong>Ctrl + K:</strong> 검색창 포커스<br>
+            <strong>ESC:</strong> 모달 창 닫기</p>
+
+            <h4>문의사항</h4>
+            <p><strong>기술 지원:</strong> 전산팀 031-299-0500<br>
+            <strong>일반 문의:</strong> 학생처 031-299-0300<br>
+            <strong>시설 문의:</strong> 시설관리팀 031-299-0600</p>
+
+            <h4>업데이트 정보</h4>
+            <p>이 가이드는 정기적으로 업데이트됩니다. 최신 정보는 학교 홈페이지를 확인해주세요.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal functionality
+    function openModal(type) {
+        document.getElementById(type + 'Modal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(type) {
+        document.getElementById(type + 'Modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Search functionality
+    document.getElementById('mainSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.category-card');
+        
+        cards.forEach(card => {
+            const title = card.querySelector('.category-title').textContent.toLowerCase();
+            const description = card.querySelector('.category-description').textContent.toLowerCase();
+            
+            if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            } else {
+                card.style.opacity = '0.3';
+                card.style.transform = 'scale(0.95)';
+            }
+        });
+    });
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Enhanced hover effects
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(255,255,255,1)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.background = 'rgba(255,255,255,0.95)';
+        });
+    });
+
+    // Parallax effect for hero section
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const heroSection = document.querySelector('.hero-section');
+        const rate = scrolled * -0.5;
+        
+        if (heroSection) {
+            heroSection.style.transform = `translateY(${rate}px)`;
+        }
+    });
+
+    // Dynamic greeting based on time
+    function updateGreeting() {
+        const now = new Date();
+        const hour = now.getHours();
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        
+        let greeting = '';
+        if (hour < 12) {
+            greeting = '좋은 아침입니다! ';
+        } else if (hour < 18) {
+            greeting = '좋은 오후입니다! ';
+        } else {
+            greeting = '좋은 저녁입니다! ';
+        }
+        
+        heroSubtitle.textContent = greeting + '캠퍼스의 모든 정보를 한눈에 확인하세요';
+    }
+
+    // Initialize greeting on page load
+    updateGreeting();
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // ESC key to close modals
+        if (e.key === 'Escape') {
+            const openModal = document.querySelector('.modal[style*="block"]');
+            if (openModal) {
+                openModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Ctrl + K to focus search
+        if (e.ctrlKey && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('mainSearch').focus();
+        }
+    });
+
+    // Loading animation
+    window.addEventListener('load', function() {
+        document.body.style.opacity = '0';
+        document.body.style.transition = 'opacity 0.5s ease-in-out';
+        
+        setTimeout(() => {
+            document.body.style.opacity = '1';
+        }, 100);
+    });
+</script>
 </body>
 </html>
