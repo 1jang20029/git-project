@@ -1921,3 +1921,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('🧪 개발 모드: 테스트용 이메일 도메인 허용됨');
     }
 });
+
+
+if (window.disableSimulationMode) {
+    window.disableSimulationMode();
+}
