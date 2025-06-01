@@ -34,18 +34,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 80px;
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            white-space: nowrap;
         }
 
         .nav-controls {
@@ -181,6 +183,7 @@
             left: 0;
             bottom: 0;
             overflow-y: auto;
+            z-index: 900;
         }
 
         .sidebar-section {
@@ -280,7 +283,7 @@
         /* 대시보드 그리드 */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -382,7 +385,7 @@
         /* 지도 컨테이너 */
         .map-card {
             grid-column: span 2;
-            height: 500px;
+            height: 400px;
             position: relative;
             overflow: hidden;
         }
@@ -960,6 +963,10 @@
                         <span class="nav-icon">💬</span>
                         <span>커뮤니티</span>
                     </li>
+                    <li class="nav-item" onclick="showContent('lecture-review')">
+                        <span class="nav-icon">⭐</span>
+                        <span>강의평가</span>
+                    </li>
                     <li class="nav-item" onclick="showContent('notices')">
                         <span class="nav-icon">📢</span>
                         <span>공지사항</span>
@@ -1263,6 +1270,203 @@
                 </div>
             </div>
 
+            <!-- 커뮤니티 콘텐츠 -->
+            <div id="communityContent" style="display: none;">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">실시간 커뮤니티</h1>
+                        <div class="breadcrumb">
+                            <span>홈</span>
+                            <span>›</span>
+                            <span>커뮤니티</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- 실시간 게시글 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">실시간 게시글</h3>
+                            <span class="card-icon">💬</span>
+                        </div>
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">자유게시판</span>
+                                    <span class="notice-date">3분 전</span>
+                                </div>
+                                <div class="notice-title">중간고사 스터디 그룹 모집해요!</div>
+                                <div class="notice-summary">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 12 💬 8
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">정보게시판</span>
+                                    <span class="notice-date">12분 전</span>
+                                </div>
+                                <div class="notice-title">김민수 교수님 수업 꿀팁 공유</div>
+                                <div class="notice-summary">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 24 💬 15
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">취업게시판</span>
+                                    <span class="notice-date">32분 전</span>
+                                </div>
+                                <div class="notice-title">삼성전자 채용설명회 후기</div>
+                                <div class="notice-summary">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 45 💬 23
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 인기 게시글 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">인기 게시글</h3>
+                            <span class="card-icon">🔥</span>
+                        </div>
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">강의평가</span>
+                                    <span class="notice-date">HOT</span>
+                                </div>
+                                <div class="notice-title">이지영 교수님 마케팅 원론 후기</div>
+                                <div class="notice-summary">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 118 💬 56
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">생활정보</span>
+                                    <span class="notice-date">HOT</span>
+                                </div>
+                                <div class="notice-title">연성대 근처 맛집 총정리</div>
+                                <div class="notice-summary">4년 다니면서 발견한 진짜 맛집들만 모았습니다</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 89 💬 34
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 강의평가 콘텐츠 -->
+            <div id="lecture-reviewContent" style="display: none;">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">강의평가</h1>
+                        <div class="breadcrumb">
+                            <span>홈</span>
+                            <span>›</span>
+                            <span>강의평가</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- 인기 강의평가 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">인기 강의평가</h3>
+                            <span class="card-icon">⭐</span>
+                        </div>
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">전공필수</span>
+                                    <span class="notice-date" style="color: #f59e0b;">★★★★★</span>
+                                </div>
+                                <div class="notice-title">웹 프로그래밍 실습 - 김민수 교수님</div>
+                                <div class="notice-summary">"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.8/5.0 | 컴퓨터정보학과
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">전공선택</span>
+                                    <span class="notice-date" style="color: #f59e0b;">★★★★☆</span>
+                                </div>
+                                <div class="notice-title">마케팅 원론 - 이지영 교수님</div>
+                                <div class="notice-summary">"실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.5/5.0 | 경영학과
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">교양</span>
+                                    <span class="notice-date" style="color: #f59e0b;">★★★★☆</span>
+                                </div>
+                                <div class="notice-title">영어회화 - John Smith 교수님</div>
+                                <div class="notice-summary">"원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.3/5.0 | 교양과정
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 최근 강의평가 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">최근 강의평가</h3>
+                            <span class="card-icon">🕒</span>
+                        </div>
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">전공필수</span>
+                                    <span class="notice-date">1시간 전</span>
+                                </div>
+                                <div class="notice-title">경영통계학 - 박성호 교수님</div>
+                                <div class="notice-summary">"내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 3.7/5.0 | 경영학과
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">교양</span>
+                                    <span class="notice-date">3시간 전</span>
+                                </div>
+                                <div class="notice-title">컴퓨터활용 - 정민지 교수님</div>
+                                <div class="notice-summary">"기초부터 차근차근 가르쳐주셔서 초보자도 따라하기 쉬워요."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.2/5.0 | 교양과정
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 강의평가 작성 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">강의평가 작성</h3>
+                            <span class="card-icon">✍️</span>
+                        </div>
+                        <div style="padding: 1rem; text-align: center;">
+                            <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+                                수강 중인 강의에 대한 솔직한 평가를 남겨주세요
+                            </p>
+                            <button class="btn btn-primary" onclick="alert('강의평가 작성 페이지로 이동합니다.')">
+                                강의평가 작성하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- 공지사항 콘텐츠 -->
             <div id="noticesContent" style="display: none;">
                 <div class="content-header">
@@ -1280,8 +1484,6 @@
                     <!-- 공지사항이 동적으로 생성됩니다 -->
                 </div>
             </div>
-        </main>
-    </div>
 
     <script>
         // 전역 변수들
@@ -1591,7 +1793,7 @@
         // 콘텐츠 전환
         function showContent(contentType) {
             // 모든 콘텐츠 숨기기
-            const contents = ['homeContent', 'buildingsContent', 'noticesContent', 'servicesContent', 'communityContent'];
+            const contents = ['homeContent', 'buildingsContent', 'noticesContent', 'servicesContent', 'communityContent', 'lecture-reviewContent'];
             contents.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.style.display = 'none';
