@@ -986,9 +986,9 @@
                         <span class="nav-icon">🍽️</span>
                         <span>맛집정보</span>
                     </li>
-                    <li class="nav-item" onclick="openQuickLink('library')">
-                        <span class="nav-icon">📚</span>
-                        <span>도서관</span>
+                    <li class="nav-item" onclick="openQuickLink('academic-calendar')">
+                        <span class="nav-icon">📅</span>
+                        <span>학사일정</span>
                     </li>
                 </ul>
             </div>
@@ -1661,10 +1661,10 @@
                 'shuttle': 'shuttle_bus_tracker.html',
                 'activities': 'activities.html',
                 'deals': 'student-deals.html',
-                'library': '#'
+                'academic-calendar': 'academic-calendar.html'
             };
             
-            if (links[type] && links[type] !== '#') {
+            if (links[type]) {
                 window.open(links[type], '_blank');
             } else {
                 alert(`${type} 서비스는 준비 중입니다.`);
