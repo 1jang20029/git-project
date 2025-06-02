@@ -2366,135 +2366,264 @@
             }
         }
 
-        // 검색 기능
+        // 검색 기능 - 전체 페이지에서 검색어 포함 요소만 표시
         function handleGlobalSearch() {
             const searchInput = document.getElementById('globalSearch');
-            const query = searchInput.value.trim().toLowerCase();
+            const query = searchInput.value.trim();
             
-            if (!query) return;
-
-            console.log('검색어:', query); // 디버깅용
-
-            // 1. 건물 검색
-            const foundBuilding = buildingData.find(building => 
-                building.name.toLowerCase().includes(query) || 
-                building.description.toLowerCase().includes(query)
-            );
-
-            if (foundBuilding) {
-                console.log('건물 발견:', foundBuilding.name);
-                showBuildingOnMap(foundBuilding.id);
-                searchInput.value = '';
-                showMessage(`"${foundBuilding.name}" 건물을 지도에서 찾았습니다.`, 'success');
+            if (!query) {
+                // 검색어가 없으면 모든 콘텐츠 복원
+                clearGlobalSearch();
                 return;
             }
 
-            // 2. 공지사항 검색
-            const foundNotice = noticesData.find(notice => 
-                notice.title.toLowerCase().includes(query) || 
-                notice.summary.toLowerCase().includes(query) ||
-                notice.category.toLowerCase().includes(query)
-            );
+            console.log('전역 검색어:', query);
 
-            if (foundNotice) {
-                console.log('공지사항 발견:', foundNotice.title);
-                showContent('notices');
-                searchInput.value = '';
-                showMessage(`"${foundNotice.title}" 공지사항을 찾았습니다.`, 'success');
-                return;
-            }
+            // 검색 상태 저장
+            window.currentSearchQuery = query.toLowerCase();
+            window.isSearchActive = true;
+            
+            // 모든 콘텐츠에서 검색
+            searchInAllContent(query);
+            
+            searchInput.value = '';
+            showMessage(`"${query}" 검색 결과를 표시합니다.`, 'success');
+        }
 
-            // 3. 교수님 이름 검색
-            const professorKeywords = ['김민수', '이지영', 'john smith', '박성호', '정민지'];
-            const foundProfessor = professorKeywords.find(prof => 
-                prof.toLowerCase().includes(query) || query.includes(prof.toLowerCase())
-            );
+        // 전체 콘텐츠에서 검색
+        function searchInAllContent(query) {
+            const searchTerm = query.toLowerCase();
+            let hasResults = false;
 
-            if (foundProfessor) {
-                console.log('교수님 발견:', foundProfessor);
-                showContent('lecture-review');
-                searchInput.value = '';
-                showMessage(`"${foundProfessor}" 교수님 관련 강의평가를 찾았습니다.`, 'success');
-                return;
-            }
+            // 현재 표시중인 콘텐츠 확인
+            const allContentDivs = ['homeContent', 'buildingsContent', 'noticesContent', 'communityContent', 'lecture-reviewContent'];
+            
+            allContentDivs.forEach(contentId => {
+                const contentDiv = document.getElementById(contentId);
+                if (!contentDiv) return;
 
-            // 4. 강의실 검색
-            const classroomKeywords = ['301호', '201호', '101호', '공학1관', '문화1관', '문화2관'];
-            const foundClassroom = classroomKeywords.find(room => 
-                room.toLowerCase().includes(query) || query.includes(room.toLowerCase())
-            );
-
-            if (foundClassroom) {
-                console.log('강의실 발견:', foundClassroom);
-                // 건물명이 포함된 경우 해당 건물로 이동
-                if (foundClassroom.includes('공학1관')) {
-                    showBuildingOnMap('공학1관');
-                } else if (foundClassroom.includes('문화1관')) {
-                    showBuildingOnMap('문화1관');
-                } else if (foundClassroom.includes('문화2관')) {
-                    // 문화2관이 buildingData에 없으므로 문화1관으로 대체
-                    showBuildingOnMap('문화1관');
-                } else {
-                    showContent('buildings');
-                }
-                searchInput.value = '';
-                showMessage(`"${foundClassroom}" 강의실 정보를 찾았습니다.`, 'success');
-                return;
-            }
-
-            // 5. 강의명 검색
-            const courseKeywords = ['웹프로그래밍', '웹 프로그래밍', '마케팅', '영어회화', '영어', '경영통계학', '컴퓨터활용'];
-            const foundCourse = courseKeywords.find(course => 
-                course.toLowerCase().includes(query) || query.includes(course.toLowerCase())
-            );
-
-            if (foundCourse) {
-                console.log('강의 발견:', foundCourse);
-                showContent('lecture-review');
-                searchInput.value = '';
-                showMessage(`"${foundCourse}" 강의 관련 정보를 찾았습니다.`, 'success');
-                return;
-            }
-
-            // 6. 서비스 관련 검색
-            const serviceKeywords = {
-                '셔틀': 'shuttle',
-                '셔틀버스': 'shuttle', 
-                '버스': 'shuttle',
-                '시간표': 'timetable',
-                '수업': 'timetable',
-                '강의': 'lecture-review',
-                '평가': 'lecture-review',
-                '강의평가': 'lecture-review',
-                '활동': 'activities',
-                '교내활동': 'activities',
-                '공모전': 'activities',
-                '동아리': 'activities',
-                '맛집': 'deals',
-                '음식': 'deals',
-                '할인': 'deals',
-                '커뮤니티': 'community',
-                '게시판': 'community'
-            };
-
-            for (let keyword in serviceKeywords) {
-                if (keyword.toLowerCase().includes(query) || query.includes(keyword.toLowerCase())) {
-                    console.log('서비스 발견:', keyword);
-                    const contentType = serviceKeywords[keyword];
-                    if (contentType === 'shuttle' || contentType === 'timetable' || contentType === 'activities' || contentType === 'deals') {
-                        openQuickLink(contentType);
-                    } else {
-                        showContent(contentType);
+                const isCurrentContent = contentDiv.style.display !== 'none';
+                
+                if (isCurrentContent) {
+                    // 현재 표시중인 콘텐츠에서 검색
+                    const searchResults = searchInContent(contentDiv, searchTerm);
+                    if (searchResults > 0) {
+                        hasResults = true;
                     }
-                    searchInput.value = '';
-                    showMessage(`"${keyword}" 관련 서비스를 찾았습니다.`, 'success');
-                    return;
                 }
+            });
+
+            // 다른 콘텐츠들도 검색해서 결과가 있으면 해당 페이지로 이동
+            if (!hasResults) {
+                searchInOtherContents(searchTerm);
             }
 
-            // 검색 결과가 없는 경우
-            console.log('검색 결과 없음');
-            showMessage(`"${query}"에 대한 검색 결과를 찾을 수 없습니다.`, 'error');
+            // 검색 결과가 없으면 메시지 표시
+            if (!hasResults && !window.foundInOtherContent) {
+                showGlobalNoResults(query);
+            }
+        }
+
+        // 특정 콘텐츠 내에서 검색
+        function searchInContent(container, searchTerm) {
+            let matchCount = 0;
+
+            // 모든 카드/아이템 초기화
+            const allCards = container.querySelectorAll('.card, .notice-item, .class-item, .restaurant-card, .building-card, .stat-card');
+            allCards.forEach(card => {
+                card.classList.remove('search-result');
+                card.style.display = 'none'; // 일단 모두 숨김
+            });
+
+            // 모든 텍스트 요소 검색
+            const allElements = container.querySelectorAll('*');
+            
+            allElements.forEach(element => {
+                // 텍스트가 있는 요소만 확인 (자식 요소가 없는 leaf 노드)
+                if (element.children.length === 0 && element.textContent.trim()) {
+                    const text = element.textContent.toLowerCase();
+                    
+                    if (text.includes(searchTerm)) {
+                        // 일치하는 요소의 부모 카드/아이템 찾기
+                        const parentCard = element.closest('.card, .notice-item, .class-item, .restaurant-card, .building-card, .stat-card');
+                        if (parentCard && !parentCard.classList.contains('search-result')) {
+                            parentCard.style.display = 'block';
+                            parentCard.classList.add('search-result');
+                            matchCount++;
+                            
+                            // 검색어 하이라이트
+                            highlightSearchTerm(element, searchTerm);
+                        }
+                    }
+                }
+            });
+
+            return matchCount;
+        }
+
+        // 다른 콘텐츠에서 검색
+        function searchInOtherContents(searchTerm) {
+            window.foundInOtherContent = false;
+
+            // 모든 콘텐츠에서 검색
+            const contentMappings = [
+                { id: 'homeContent', name: '대시보드', type: 'home' },
+                { id: 'buildingsContent', name: '건물 안내', type: 'buildings' },
+                { id: 'noticesContent', name: '공지사항', type: 'notices' },
+                { id: 'communityContent', name: '커뮤니티', type: 'community' },
+                { id: 'lecture-reviewContent', name: '강의평가', type: 'lecture-review' }
+            ];
+
+            for (let mapping of contentMappings) {
+                const content = document.getElementById(mapping.id);
+                if (!content) continue;
+
+                // 현재 표시중인 콘텐츠는 스킵
+                if (content.style.display !== 'none') continue;
+
+                const hasMatch = checkContentForMatch(content, searchTerm);
+
+                if (hasMatch) {
+                    // 해당 콘텐츠로 이동
+                    showContent(mapping.type);
+                    
+                    // 검색 실행
+                    setTimeout(() => {
+                        searchInContent(content, searchTerm);
+                    }, 100);
+                    
+                    window.foundInOtherContent = true;
+                    showMessage(`"${searchTerm}" 검색 결과를 ${mapping.name}에서 찾았습니다.`, 'success');
+                    break;
+                }
+            }
+        }
+
+        // 콘텐츠에 검색어가 있는지 확인
+        function checkContentForMatch(container, searchTerm) {
+            const allText = container.textContent.toLowerCase();
+            return allText.includes(searchTerm);
+        }
+
+        // 검색어 하이라이트 함수
+        function highlightSearchTerm(element, searchTerm) {
+            if (!element || !searchTerm) return;
+            
+            const text = element.textContent;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            const highlightedText = text.replace(regex, '<mark style="background: #3b82f6; color: white; padding: 0.1rem 0.2rem; border-radius: 3px; font-weight: bold;">$1</mark>');
+            element.innerHTML = highlightedText;
+        }
+
+        // 전역 검색 결과 없음 메시지
+        function showGlobalNoResults(query) {
+            const currentContent = getCurrentVisibleContent();
+            if (!currentContent) return;
+
+            // 기존 메시지 제거
+            const existingMessage = currentContent.querySelector('.global-no-results');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // 새 메시지 생성
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'global-no-results';
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(15, 23, 42, 0.95);
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                border-radius: 16px;
+                padding: 3rem;
+                text-align: center;
+                z-index: 2000;
+                backdrop-filter: blur(20px);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            `;
+            messageDiv.innerHTML = `
+                <div style="font-size: 4rem; margin-bottom: 1.5rem;">🔍</div>
+                <h2 style="color: #f1f5f9; margin-bottom: 1rem; font-size: 1.5rem;">"${query}"에 대한 검색 결과가 없습니다</h2>
+                <p style="color: #94a3b8; margin-bottom: 2rem;">전체 웹사이트에서 해당 내용을 찾을 수 없습니다.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button onclick="clearGlobalSearch()" style="
+                        background: #3b82f6;
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">전체 보기</button>
+                    <button onclick="closeNoResultsModal()" style="
+                        background: rgba(148, 163, 184, 0.2);
+                        color: #94a3b8;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 8px;
+                        cursor: pointer;
+                    ">닫기</button>
+                </div>
+            `;
+            
+            document.body.appendChild(messageDiv);
+        }
+
+        // 현재 표시중인 콘텐츠 가져오기
+        function getCurrentVisibleContent() {
+            const contentIds = ['homeContent', 'buildingsContent', 'noticesContent', 'communityContent', 'lecture-reviewContent'];
+            return contentIds.map(id => document.getElementById(id)).find(el => el && el.style.display !== 'none');
+        }
+
+        // 전역 검색 초기화
+        function clearGlobalSearch() {
+            console.log('전역 검색 초기화');
+            
+            // 검색 상태 초기화
+            window.currentSearchQuery = null;
+            window.foundInOtherContent = false;
+            window.isSearchActive = false;
+
+            // 모든 콘텐츠 복원
+            const allContentDivs = ['homeContent', 'buildingsContent', 'noticesContent', 'communityContent', 'lecture-reviewContent'];
+            
+            allContentDivs.forEach(contentId => {
+                const contentDiv = document.getElementById(contentId);
+                if (!contentDiv) return;
+
+                // 모든 카드/아이템 다시 표시
+                const allCards = contentDiv.querySelectorAll('.card, .notice-item, .class-item, .restaurant-card, .building-card, .stat-card');
+                allCards.forEach(card => {
+                    card.style.display = 'block';
+                    card.classList.remove('search-result');
+                });
+
+                // 하이라이트 제거
+                const highlightedElements = contentDiv.querySelectorAll('mark');
+                highlightedElements.forEach(mark => {
+                    mark.outerHTML = mark.textContent;
+                });
+
+                // 검색 관련 메시지 제거
+                const messages = contentDiv.querySelectorAll('.global-no-results, .no-results-message');
+                messages.forEach(msg => msg.remove());
+            });
+
+            // 전역 메시지 제거
+            const globalMessages = document.querySelectorAll('.global-no-results');
+            globalMessages.forEach(msg => msg.remove());
+
+            showMessage('전체 콘텐츠를 표시합니다.', 'success');
+        }
+
+        // 결과 없음 모달 닫기
+        function closeNoResultsModal() {
+            const modal = document.querySelector('.global-no-results');
+            if (modal) {
+                modal.remove();
+            }
         }
 
         // 공지사항 상세 보기
