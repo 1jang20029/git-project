@@ -121,146 +121,6 @@
             border-radius: 50%;
         }
 
-        /* 알림 드롭다운 */
-        .notification-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0;
-            min-width: 350px;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            z-index: 1100;
-            display: none;
-            margin-top: 0.5rem;
-            max-height: 500px;
-            overflow: hidden;
-        }
-
-        .notification-dropdown.show {
-            display: block;
-            animation: fadeInDown 0.3s ease-out;
-        }
-
-        .notification-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            color: #f1f5f9;
-            font-size: 1rem;
-        }
-
-        .notification-count {
-            background: #ef4444;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .notification-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .notification-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .notification-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .notification-icon.academic {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-        }
-
-        .notification-icon.scholarship {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-
-        .notification-icon.shuttle {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-message {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
-        }
-
-        .notification-detail {
-            color: #94a3b8;
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
-
-        .notification-time {
-            color: #64748b;
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
-        }
-
-        .notification-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
-            text-align: center;
-        }
-
-        .notification-footer button {
-            background: none;
-            border: none;
-            color: #3b82f6;
-            font-size: 0.9rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .notification-footer button:hover {
-            background: rgba(59, 130, 246, 0.1);
-        }
-
         .user-profile {
             display: flex;
             align-items: center;
@@ -1080,11 +940,6 @@
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
-
-            .notification-dropdown {
-                min-width: 300px;
-                right: -50px;
-            }
         }
 
         /* 애니메이션 */
@@ -1169,22 +1024,9 @@
             </div>
             
             <div class="user-menu">
-                <button class="notification-btn" onclick="toggleNotifications()">
+                <button class="notification-btn" onclick="showNotifications()">
                     🔔
-                    <div class="notification-dot" id="notificationDot"></div>
-                    <!-- 알림 드롭다운 -->
-                    <div class="notification-dropdown" id="notificationDropdown">
-                        <div class="notification-header">
-                            <h3 class="notification-title">알림</h3>
-                            <span class="notification-count" id="notificationCount">3</span>
-                        </div>
-                        <div class="notification-list" id="notificationList">
-                            <!-- 알림 항목들이 동적으로 생성됩니다 -->
-                        </div>
-                        <div class="notification-footer">
-                            <button onclick="markAllAsRead()">모든 알림 읽음 처리</button>
-                        </div>
-                    </div>
+                    <div class="notification-dot"></div>
                 </button>
                 
                 <div class="user-profile" onclick="toggleUserMenu()">
@@ -1727,7 +1569,7 @@
                         </div>
                     </div>
 
-                    <!-- 강의평가 작성 -->
+                        <!-- 강의평가 작성 -->
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">강의평가 작성</h3>
@@ -1744,7 +1586,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- 공지사항 콘텐츠 -->
             <div id="noticesContent" style="display: none;">
                 <div class="content-header">
@@ -1878,37 +1719,6 @@
             }
         ];
 
-        // 알림 시스템
-        const notificationsData = [
-            {
-                id: 'notif1',
-                type: 'academic',
-                icon: '📚',
-                title: '중간고사 일정 안내',
-                message: '2025학년도 1학기 중간고사 일정이 공지되었습니다.',
-                time: '5분 전',
-                read: false
-            },
-            {
-                id: 'notif2',
-                type: 'scholarship',
-                icon: '💰',
-                title: '장학금 신청 마감',
-                message: '국가장학금 2차 신청이 이번 주 금요일에 마감됩니다.',
-                time: '1시간 전',
-                read: false
-            },
-            {
-                id: 'notif3',
-                type: 'shuttle',
-                icon: '🚌',
-                title: '셔틀버스 운행 변경',
-                message: '노선 3번의 운행 시간이 변경되었습니다.',
-                time: '2시간 전',
-                read: false
-            }
-        ];
-
         // 페이지 로드 시 이벤트 리스너 추가
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
@@ -1929,9 +1739,6 @@
                     }
                 });
             }
-            
-            // 알림 데이터 초기화
-            initializeNotifications();
         });
 
         // 앱 초기화
@@ -1954,178 +1761,6 @@
             checkUserStatus();
             
             console.log('앱 초기화 완료');
-        }
-
-        // 알림 초기화
-        function initializeNotifications() {
-            updateNotificationList();
-            updateNotificationCount();
-        }
-
-        // 알림 토글
-        function toggleNotifications() {
-            const dropdown = document.getElementById('notificationDropdown');
-            
-            if (dropdown) {
-                const isVisible = dropdown.classList.contains('show');
-                if (isVisible) {
-                    closeNotificationDropdown();
-                } else {
-                    showNotificationDropdown();
-                }
-            }
-        }
-
-        // 알림 드롭다운 표시
-        function showNotificationDropdown() {
-            const dropdown = document.getElementById('notificationDropdown');
-            if (dropdown) {
-                // 다른 드롭다운이 열려있다면 닫기
-                closeAllDropdowns();
-                
-                dropdown.classList.add('show');
-                
-                // 외부 클릭 시 닫기
-                setTimeout(() => {
-                    document.addEventListener('click', handleNotificationOutsideClick);
-                }, 100);
-            }
-        }
-
-        // 알림 드롭다운 닫기
-        function closeNotificationDropdown() {
-            const dropdown = document.getElementById('notificationDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('show');
-                document.removeEventListener('click', handleNotificationOutsideClick);
-            }
-        }
-
-        // 알림 외부 클릭 처리
-        function handleNotificationOutsideClick(event) {
-            const notificationBtn = event.target.closest('.notification-btn');
-            if (!notificationBtn) {
-                closeNotificationDropdown();
-            }
-        }
-
-        // 알림 목록 업데이트
-        function updateNotificationList() {
-            const notificationList = document.getElementById('notificationList');
-            if (!notificationList) return;
-
-            notificationList.innerHTML = '';
-
-            notificationsData.forEach(notification => {
-                const notificationItem = document.createElement('div');
-                notificationItem.className = 'notification-item';
-                notificationItem.onclick = () => handleNotificationClick(notification.id);
-                
-                notificationItem.innerHTML = `
-                    <div class="notification-icon ${notification.type}">
-                        ${notification.icon}
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-message">${notification.title}</div>
-                        <div class="notification-detail">${notification.message}</div>
-                        <div class="notification-time">${notification.time}</div>
-                    </div>
-                `;
-                
-                notificationList.appendChild(notificationItem);
-            });
-        }
-
-        // 알림 개수 업데이트
-        function updateNotificationCount() {
-            const unreadCount = notificationsData.filter(n => !n.read).length;
-            const countElement = document.getElementById('notificationCount');
-            const dotElement = document.getElementById('notificationDot');
-            
-            if (countElement) {
-                countElement.textContent = unreadCount;
-            }
-            
-            // 읽지 않은 알림이 없으면 점 숨기기
-            if (dotElement) {
-                dotElement.style.display = unreadCount > 0 ? 'block' : 'none';
-            }
-        }
-
-        // 알림 클릭 처리
-        function handleNotificationClick(notificationId) {
-            const notification = notificationsData.find(n => n.id === notificationId);
-            if (notification) {
-                // 읽음 처리
-                notification.read = true;
-                updateNotificationCount();
-                
-                // 알림에 따른 액션
-                switch (notification.type) {
-                    case 'academic':
-                        showContent('notices');
-                        break;
-                    case 'scholarship':
-                        alert('장학금 신청 페이지로 이동합니다.');
-                        break;
-                    case 'shuttle':
-                        openQuickLink('shuttle');
-                        break;
-                }
-                
-                closeNotificationDropdown();
-            }
-        }
-
-        // 모든 알림 읽음 처리
-        function markAllAsRead() {
-            notificationsData.forEach(notification => {
-                notification.read = true;
-            });
-            updateNotificationCount();
-            closeNotificationDropdown();
-            
-            // 성공 메시지
-            showNotificationSuccess('모든 알림을 읽음 처리했습니다.');
-        }
-
-        // 알림 성공 메시지
-        function showNotificationSuccess(message) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: rgba(16, 185, 129, 0.9);
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-                z-index: 10000;
-                font-weight: 600;
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(16, 185, 129, 0.3);
-                animation: slideInRight 0.3s ease-out;
-            `;
-            
-            notification.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>✅</span>
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // 3초 후 자동 제거
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease-in';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
         }
 
         // 네이버 지도 초기화
@@ -2528,6 +2163,11 @@
             }
         }
 
+        // 알림 표시
+        function showNotifications() {
+            alert('새로운 알림이 3개 있습니다:\n\n1. 중간고사 일정 안내\n2. 장학금 신청 마감\n3. 셔틀버스 운행 변경');
+        }
+
         // 사용자 메뉴 토글
         function toggleUserMenu() {
             const dropdown = document.getElementById('userDropdown');
@@ -2583,11 +2223,7 @@
             document.querySelectorAll('.user-dropdown').forEach(dropdown => {
                 dropdown.classList.remove('show');
             });
-            document.querySelectorAll('.notification-dropdown').forEach(dropdown => {
-                dropdown.classList.remove('show');
-            });
             document.removeEventListener('click', handleOutsideClick);
-            document.removeEventListener('click', handleNotificationOutsideClick);
         }
 
         // 외부 클릭 처리
