@@ -91,7 +91,6 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            position: relative;
         }
 
         .notification-btn {
@@ -131,109 +130,11 @@
             padding: 0.5rem 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
         }
 
         .user-profile:hover {
             background: rgba(59, 130, 246, 0.1);
             border-color: #3b82f6;
-        }
-
-        /* 사용자 드롭다운 메뉴 */
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0.5rem 0;
-            min-width: 200px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            z-index: 1100;
-            display: none;
-            margin-top: 0.5rem;
-        }
-
-        .user-dropdown.show {
-            display: block;
-            animation: fadeInDown 0.3s ease-out;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            color: #f1f5f9;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: rgba(148, 163, 184, 0.1);
-            margin: 0.5rem 0;
-        }
-
-        .dropdown-user-info {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            margin-bottom: 0.5rem;
-        }
-
-        .dropdown-user-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-        }
-
-        .dropdown-user-role {
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideOutRight {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(100px);
-            }
         }
 
         .avatar {
@@ -1035,26 +936,6 @@
                         <div class="user-name" id="userName">게스트</div>
                         <div class="user-role" id="userRole">방문자</div>
                     </div>
-                    <!-- 사용자 드롭다운 메뉴 -->
-                    <div class="user-dropdown" id="userDropdown">
-                        <div class="dropdown-user-info">
-                            <div class="dropdown-user-name" id="dropdownUserName">게스트</div>
-                            <div class="dropdown-user-role" id="dropdownUserRole">방문자</div>
-                        </div>
-                        <button class="dropdown-item" onclick="showProfile()">
-                            <span>👤</span>
-                            <span>프로필</span>
-                        </button>
-                        <button class="dropdown-item" onclick="showSettings()">
-                            <span>⚙️</span>
-                            <span>설정</span>
-                        </button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
-                            <span>🚪</span>
-                            <span>로그아웃</span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1569,7 +1450,7 @@
                         </div>
                     </div>
 
-                        <!-- 강의평가 작성 -->
+                    <!-- 강의평가 작성 -->
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">강의평가 작성</h3>
@@ -1603,8 +1484,6 @@
                     <!-- 공지사항이 동적으로 생성됩니다 -->
                 </div>
             </div>
-        </main>
-    </div>
 
     <script>
         // 전역 변수들
@@ -1719,26 +1598,9 @@
             }
         ];
 
-        // 페이지 로드 시 이벤트 리스너 추가
+        // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
-            
-            // Escape 키로 드롭다운 닫기
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeAllDropdowns();
-                }
-            });
-            
-            // 검색 입력 이벤트
-            const searchInput = document.getElementById('globalSearch');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        handleGlobalSearch();
-                    }
-                });
-            }
         });
 
         // 앱 초기화
@@ -2069,30 +1931,19 @@
             const currentUser = localStorage.getItem('currentLoggedInUser');
             const userNameElement = document.getElementById('userName');
             const userRoleElement = document.getElementById('userRole');
-            const dropdownUserNameElement = document.getElementById('dropdownUserName');
-            const dropdownUserRoleElement = document.getElementById('dropdownUserRole');
             
             if (currentUser) {
                 const userName = localStorage.getItem(`user_${currentUser}_name`) || '사용자';
                 const department = localStorage.getItem(`user_${currentUser}_department`) || '';
-                const departmentName = department ? getDepartmentName(department) : '학생';
                 
-                // 상단 프로필 업데이트
                 userNameElement.textContent = userName;
-                userRoleElement.textContent = departmentName;
-                
-                // 드롭다운 프로필 업데이트
-                if (dropdownUserNameElement) dropdownUserNameElement.textContent = userName;
-                if (dropdownUserRoleElement) dropdownUserRoleElement.textContent = departmentName;
+                userRoleElement.textContent = department ? getDepartmentName(department) : '학생';
                 
                 // 프로필 이미지 업데이트
                 updateProfileImage(currentUser);
             } else {
                 userNameElement.textContent = '게스트';
                 userRoleElement.textContent = '방문자';
-                
-                if (dropdownUserNameElement) dropdownUserNameElement.textContent = '게스트';
-                if (dropdownUserRoleElement) dropdownUserRoleElement.textContent = '방문자';
             }
         }
 
@@ -2155,6 +2006,18 @@
             alert('검색 결과를 찾을 수 없습니다.');
         }
 
+        // 엔터 키 검색
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('globalSearch');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleGlobalSearch();
+                    }
+                });
+            }
+        });
+
         // 공지사항 상세 보기
         function viewNoticeDetail(noticeId) {
             const notice = noticesData.find(n => n.id === noticeId);
@@ -2170,67 +2033,18 @@
 
         // 사용자 메뉴 토글
         function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
+            // 사용자 메뉴 드롭다운 구현 (간단 버전)
             const currentUser = localStorage.getItem('currentLoggedInUser');
-            
-            // 로그인하지 않은 경우 로그인 페이지로 이동
-            if (!currentUser) {
+            if (currentUser) {
+                const action = confirm('프로필을 확인하시겠습니까?');
+                if (action) {
+                    showProfile();
+                }
+            } else {
                 const action = confirm('로그인하시겠습니까?');
                 if (action) {
                     window.open('login.html', '_blank');
                 }
-                return;
-            }
-            
-            // 드롭다운 토글
-            if (dropdown) {
-                const isVisible = dropdown.classList.contains('show');
-                if (isVisible) {
-                    closeUserDropdown();
-                } else {
-                    showUserDropdown();
-                }
-            }
-        }
-
-        // 사용자 드롭다운 표시
-        function showUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) {
-                // 다른 드롭다운이 열려있다면 닫기
-                closeAllDropdowns();
-                
-                dropdown.classList.add('show');
-                
-                // 외부 클릭 시 닫기
-                setTimeout(() => {
-                    document.addEventListener('click', handleOutsideClick);
-                }, 100);
-            }
-        }
-
-        // 사용자 드롭다운 닫기
-        function closeUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('show');
-                document.removeEventListener('click', handleOutsideClick);
-            }
-        }
-
-        // 모든 드롭다운 닫기
-        function closeAllDropdowns() {
-            document.querySelectorAll('.user-dropdown').forEach(dropdown => {
-                dropdown.classList.remove('show');
-            });
-            document.removeEventListener('click', handleOutsideClick);
-        }
-
-        // 외부 클릭 처리
-        function handleOutsideClick(event) {
-            const userProfile = event.target.closest('.user-profile');
-            if (!userProfile) {
-                closeUserDropdown();
             }
         }
 
@@ -2242,80 +2056,26 @@
             } else {
                 alert('로그인이 필요한 서비스입니다.');
             }
-            closeUserDropdown();
         }
 
         // 설정 표시
         function showSettings() {
             alert('설정 페이지는 준비 중입니다.');
-            closeUserDropdown();
         }
 
         // 로그아웃
         function handleLogout() {
             const currentUser = localStorage.getItem('currentLoggedInUser');
             if (currentUser) {
-                // 로그아웃 확인 다이얼로그
-                const confirmLogout = confirm('로그아웃 하시겠습니까?');
-                if (confirmLogout) {
-                    // 로그아웃 처리
+                const confirm_logout = confirm('로그아웃 하시겠습니까?');
+                if (confirm_logout) {
                     localStorage.removeItem('currentLoggedInUser');
-                    
-                    // 드롭다운 닫기
-                    closeUserDropdown();
-                    
-                    // 사용자 상태 업데이트
                     checkUserStatus();
-                    
-                    // 성공 메시지
-                    showLogoutSuccess();
+                    alert('로그아웃 되었습니다.');
                 }
             } else {
                 alert('로그인 상태가 아닙니다.');
             }
-            
-            // 드롭다운 닫기 (에러 상황에서도)
-            closeUserDropdown();
-        }
-
-        // 로그아웃 성공 메시지
-        function showLogoutSuccess() {
-            // 커스텀 알림 생성
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: rgba(16, 185, 129, 0.9);
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-                z-index: 10000;
-                font-weight: 600;
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(16, 185, 129, 0.3);
-                animation: slideInRight 0.3s ease-out;
-            `;
-            
-            notification.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>✅</span>
-                    <span>로그아웃 되었습니다</span>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // 3초 후 자동 제거
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease-in';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
         }
 
         // 사이드바 토글 (모바일)
