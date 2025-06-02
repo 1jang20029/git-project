@@ -2373,31 +2373,128 @@
             
             if (!query) return;
 
-            // 건물 검색
+            console.log('검색어:', query); // 디버깅용
+
+            // 1. 건물 검색
             const foundBuilding = buildingData.find(building => 
                 building.name.toLowerCase().includes(query) || 
                 building.description.toLowerCase().includes(query)
             );
 
             if (foundBuilding) {
+                console.log('건물 발견:', foundBuilding.name);
                 showBuildingOnMap(foundBuilding.id);
                 searchInput.value = '';
+                showMessage(`"${foundBuilding.name}" 건물을 지도에서 찾았습니다.`, 'success');
                 return;
             }
 
-            // 공지사항 검색
+            // 2. 공지사항 검색
             const foundNotice = noticesData.find(notice => 
                 notice.title.toLowerCase().includes(query) || 
-                notice.summary.toLowerCase().includes(query)
+                notice.summary.toLowerCase().includes(query) ||
+                notice.category.toLowerCase().includes(query)
             );
 
             if (foundNotice) {
+                console.log('공지사항 발견:', foundNotice.title);
                 showContent('notices');
                 searchInput.value = '';
+                showMessage(`"${foundNotice.title}" 공지사항을 찾았습니다.`, 'success');
                 return;
             }
 
-            alert('검색 결과를 찾을 수 없습니다.');
+            // 3. 교수님 이름 검색
+            const professorKeywords = ['김민수', '이지영', 'john smith', '박성호', '정민지'];
+            const foundProfessor = professorKeywords.find(prof => 
+                prof.toLowerCase().includes(query) || query.includes(prof.toLowerCase())
+            );
+
+            if (foundProfessor) {
+                console.log('교수님 발견:', foundProfessor);
+                showContent('lecture-review');
+                searchInput.value = '';
+                showMessage(`"${foundProfessor}" 교수님 관련 강의평가를 찾았습니다.`, 'success');
+                return;
+            }
+
+            // 4. 강의실 검색
+            const classroomKeywords = ['301호', '201호', '101호', '공학1관', '문화1관', '문화2관'];
+            const foundClassroom = classroomKeywords.find(room => 
+                room.toLowerCase().includes(query) || query.includes(room.toLowerCase())
+            );
+
+            if (foundClassroom) {
+                console.log('강의실 발견:', foundClassroom);
+                // 건물명이 포함된 경우 해당 건물로 이동
+                if (foundClassroom.includes('공학1관')) {
+                    showBuildingOnMap('공학1관');
+                } else if (foundClassroom.includes('문화1관')) {
+                    showBuildingOnMap('문화1관');
+                } else if (foundClassroom.includes('문화2관')) {
+                    // 문화2관이 buildingData에 없으므로 문화1관으로 대체
+                    showBuildingOnMap('문화1관');
+                } else {
+                    showContent('buildings');
+                }
+                searchInput.value = '';
+                showMessage(`"${foundClassroom}" 강의실 정보를 찾았습니다.`, 'success');
+                return;
+            }
+
+            // 5. 강의명 검색
+            const courseKeywords = ['웹프로그래밍', '웹 프로그래밍', '마케팅', '영어회화', '영어', '경영통계학', '컴퓨터활용'];
+            const foundCourse = courseKeywords.find(course => 
+                course.toLowerCase().includes(query) || query.includes(course.toLowerCase())
+            );
+
+            if (foundCourse) {
+                console.log('강의 발견:', foundCourse);
+                showContent('lecture-review');
+                searchInput.value = '';
+                showMessage(`"${foundCourse}" 강의 관련 정보를 찾았습니다.`, 'success');
+                return;
+            }
+
+            // 6. 서비스 관련 검색
+            const serviceKeywords = {
+                '셔틀': 'shuttle',
+                '셔틀버스': 'shuttle', 
+                '버스': 'shuttle',
+                '시간표': 'timetable',
+                '수업': 'timetable',
+                '강의': 'lecture-review',
+                '평가': 'lecture-review',
+                '강의평가': 'lecture-review',
+                '활동': 'activities',
+                '교내활동': 'activities',
+                '공모전': 'activities',
+                '동아리': 'activities',
+                '맛집': 'deals',
+                '음식': 'deals',
+                '할인': 'deals',
+                '커뮤니티': 'community',
+                '게시판': 'community'
+            };
+
+            for (let keyword in serviceKeywords) {
+                if (keyword.toLowerCase().includes(query) || query.includes(keyword.toLowerCase())) {
+                    console.log('서비스 발견:', keyword);
+                    const contentType = serviceKeywords[keyword];
+                    if (contentType === 'shuttle' || contentType === 'timetable' || contentType === 'activities' || contentType === 'deals') {
+                        openQuickLink(contentType);
+                    } else {
+                        showContent(contentType);
+                    }
+                    searchInput.value = '';
+                    showMessage(`"${keyword}" 관련 서비스를 찾았습니다.`, 'success');
+                    return;
+                }
+            }
+
+            // 검색 결과가 없는 경우
+            console.log('검색 결과 없음');
+            showMessage(`"${query}"에 대한 검색 결과를 찾을 수 없습니다.`, 'error');
         }
 
         // 공지사항 상세 보기
