@@ -121,136 +121,6 @@
             border-radius: 50%;
         }
 
-        /* 알림 드롭다운 */
-        .notification-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0;
-            min-width: 350px;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            z-index: 1100;
-            display: none;
-            margin-top: 0.5rem;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .notification-dropdown.show {
-            display: block;
-            animation: fadeInDown 0.3s ease-out;
-        }
-
-        .notification-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notification-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .notification-badge {
-            background: #ef4444;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .notification-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .notification-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .notification-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-
-        .notification-item.unread {
-            background: rgba(59, 130, 246, 0.05);
-            border-left: 3px solid #3b82f6;
-        }
-
-        .notification-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .notification-category {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .notification-time {
-            color: #94a3b8;
-            font-size: 0.75rem;
-        }
-
-        .notification-content {
-            color: #f1f5f9;
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-            line-height: 1.4;
-        }
-
-        .notification-summary {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            line-height: 1.3;
-        }
-
-        .notification-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
-            text-align: center;
-        }
-
-        .mark-all-read {
-            background: none;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            color: #94a3b8;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-        }
-
-        .mark-all-read:hover {
-            border-color: #3b82f6;
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-        }
-
         .user-profile {
             display: flex;
             align-items: center;
@@ -267,103 +137,6 @@
         .user-profile:hover {
             background: rgba(59, 130, 246, 0.1);
             border-color: #3b82f6;
-        }
-
-        /* 사용자 드롭다운 메뉴 */
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0.5rem 0;
-            min-width: 200px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            z-index: 1100;
-            display: none;
-            margin-top: 0.5rem;
-        }
-
-        .user-dropdown.show {
-            display: block;
-            animation: fadeInDown 0.3s ease-out;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            color: #f1f5f9;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: rgba(148, 163, 184, 0.1);
-            margin: 0.5rem 0;
-        }
-
-        .dropdown-user-info {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            margin-bottom: 0.5rem;
-        }
-
-        .dropdown-user-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-        }
-
-        .dropdown-user-role {
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideOutRight {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(100px);
-            }
         }
 
         .avatar {
@@ -653,10 +426,33 @@
             border-color: #3b82f6;
         }
 
-        /* 시간표 위젯 */
+        /* 시간표 위젯 개선 */
         .timetable-card {
             max-height: 500px;
             overflow-y: auto;
+        }
+
+        .timetable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .timetable-date {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .timetable-count {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
         .class-item {
@@ -668,11 +464,27 @@
             border: 1px solid rgba(148, 163, 184, 0.1);
             border-radius: 12px;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .class-item:hover {
             background: rgba(59, 130, 246, 0.1);
             border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .class-item.current {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .class-item.upcoming {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .class-item.finished {
+            opacity: 0.6;
+            border-color: #6b7280;
         }
 
         .class-time {
@@ -710,6 +522,15 @@
         .class-location {
             font-size: 0.85rem;
             color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .class-professor {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
         }
 
         .class-status {
@@ -735,181 +556,21 @@
             color: #6b7280;
         }
 
-        /* 셔틀버스 위젯 */
-        .shuttle-routes {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .route-tab {
-            flex: 1;
-            padding: 0.75rem;
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 8px;
+        .no-classes {
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .route-tab.active {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: #3b82f6;
-        }
-
-        .route-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .route-desc {
-            font-size: 0.75rem;
+            padding: 2rem;
             color: #94a3b8;
         }
 
-        .shuttle-status {
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
+        .no-classes-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .timetable-actions {
+            margin-top: 1rem;
             text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .shuttle-time {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .shuttle-desc {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .status-running {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .status-stopped {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        /* 공지사항 */
-        .notice-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .notice-item {
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .notice-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.3);
-            transform: translateX(4px);
-        }
-
-        .notice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .notice-category {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .notice-date {
-            color: #94a3b8;
-            font-size: 0.85rem;
-        }
-
-        .notice-title {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .notice-summary {
-            color: #94a3b8;
-            line-height: 1.6;
-            font-size: 0.9rem;
-        }
-
-        /* 건물 그리드 */
-        .building-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .building-card {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .building-card:hover {
-            background: rgba(30, 41, 59, 0.7);
-            border-color: rgba(59, 130, 246, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .building-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.5rem;
-        }
-
-        .building-desc {
-            color: #94a3b8;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
-        }
-
-        .building-actions {
-            display: flex;
-            gap: 0.75rem;
         }
 
         .btn {
@@ -947,98 +608,6 @@
             border-color: #3b82f6;
             color: #3b82f6;
             background: rgba(59, 130, 246, 0.1);
-        }
-
-        /* 활동 통계 */
-        .activity-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .activity-stat {
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .activity-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.25rem;
-        }
-
-        .activity-label {
-            color: #94a3b8;
-            font-size: 0.8rem;
-        }
-
-        /* 맛집 카드 */
-        .restaurant-grid {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .restaurant-card {
-            display: flex;
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .restaurant-card:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-
-        .restaurant-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            background: rgba(59, 130, 246, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin-right: 1rem;
-        }
-
-        .restaurant-info {
-            flex: 1;
-        }
-
-        .restaurant-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-        }
-
-        .restaurant-category {
-            color: #3b82f6;
-            font-size: 0.85rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .restaurant-discount {
-            color: #ef4444;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .restaurant-likes {
-            color: #94a3b8;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
         }
 
         /* 반응형 디자인 */
@@ -1084,6 +653,21 @@
 
             .dashboard-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .class-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .class-time {
+                min-width: auto;
+                align-items: flex-start;
+            }
+
+            .class-info {
+                margin-left: 0;
             }
         }
 
@@ -1172,42 +756,6 @@
                 <div class="notification-btn" onclick="toggleNotifications()">
                     🔔
                     <div class="notification-dot" id="notificationDot"></div>
-                    <!-- 알림 드롭다운 -->
-                    <div class="notification-dropdown" id="notificationDropdown">
-                        <div class="notification-header">
-                            <div class="notification-title">알림</div>
-                            <div class="notification-badge" id="notificationCount">3</div>
-                        </div>
-                        <div class="notification-list" id="notificationList">
-                            <div class="notification-item unread" onclick="markAsRead(this)">
-                                <div class="notification-meta">
-                                    <span class="notification-category">학사</span>
-                                    <span class="notification-time">5분 전</span>
-                                </div>
-                                <div class="notification-content">중간고사 일정 안내</div>
-                                <div class="notification-summary">4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다.</div>
-                            </div>
-                            <div class="notification-item unread" onclick="markAsRead(this)">
-                                <div class="notification-meta">
-                                    <span class="notification-category">장학</span>
-                                    <span class="notification-time">1시간 전</span>
-                                </div>
-                                <div class="notification-content">장학금 신청 마감</div>
-                                <div class="notification-summary">국가장학금 2차 신청이 이번 주 금요일에 마감됩니다.</div>
-                            </div>
-                            <div class="notification-item unread" onclick="markAsRead(this)">
-                                <div class="notification-meta">
-                                    <span class="notification-category">교통</span>
-                                    <span class="notification-time">2시간 전</span>
-                                </div>
-                                <div class="notification-content">셔틀버스 운행 변경</div>
-                                <div class="notification-summary">노선 3번이 일시적으로 운행을 중단합니다.</div>
-                            </div>
-                        </div>
-                        <div class="notification-footer">
-                            <button class="mark-all-read" onclick="markAllAsRead()">모두 읽음 처리</button>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="user-profile" onclick="toggleUserMenu()">
@@ -1215,26 +763,6 @@
                     <div class="user-info">
                         <div class="user-name" id="userName">게스트</div>
                         <div class="user-role" id="userRole">방문자</div>
-                    </div>
-                    <!-- 사용자 드롭다운 메뉴 -->
-                    <div class="user-dropdown" id="userDropdown">
-                        <div class="dropdown-user-info">
-                            <div class="dropdown-user-name" id="dropdownUserName">게스트</div>
-                            <div class="dropdown-user-role" id="dropdownUserRole">방문자</div>
-                        </div>
-                        <button class="dropdown-item" onclick="showProfile()">
-                            <span>👤</span>
-                            <span>프로필</span>
-                        </button>
-                        <button class="dropdown-item" onclick="showSettings()">
-                            <span>⚙️</span>
-                            <span>설정</span>
-                        </button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
-                            <span>🚪</span>
-                            <span>로그아웃</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1247,27 +775,27 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">메인 메뉴</div>
                 <ul class="nav-list">
-                    <li class="nav-item active" onclick="showContent('home')">
+                    <li class="nav-item active">
                         <span class="nav-icon">🏠</span>
                         <span>대시보드</span>
                     </li>
-                    <li class="nav-item" onclick="showContent('buildings')">
+                    <li class="nav-item">
                         <span class="nav-icon">🏢</span>
                         <span>건물 & 시설</span>
                     </li>
-                    <li class="nav-item" onclick="showContent('services')">
+                    <li class="nav-item">
                         <span class="nav-icon">🎯</span>
                         <span>학생 서비스</span>
                     </li>
-                    <li class="nav-item" onclick="showContent('community')">
+                    <li class="nav-item">
                         <span class="nav-icon">💬</span>
                         <span>커뮤니티</span>
                     </li>
-                    <li class="nav-item" onclick="showContent('lecture-review')">
+                    <li class="nav-item">
                         <span class="nav-icon">⭐</span>
                         <span>강의평가</span>
                     </li>
-                    <li class="nav-item" onclick="showContent('notices')">
+                    <li class="nav-item">
                         <span class="nav-icon">📢</span>
                         <span>공지사항</span>
                     </li>
@@ -1299,240 +827,67 @@
                     </li>
                 </ul>
             </div>
-            
-            <div class="sidebar-section">
-                <div class="sidebar-title">계정</div>
-                <ul class="nav-list">
-                    <li class="nav-item" onclick="showProfile()">
-                        <span class="nav-icon">👤</span>
-                        <span>프로필</span>
-                    </li>
-                    <li class="nav-item" onclick="showSettings()">
-                        <span class="nav-icon">⚙️</span>
-                        <span>설정</span>
-                    </li>
-                    <li class="nav-item" onclick="handleLogout()">
-                        <span class="nav-icon">🚪</span>
-                        <span>로그아웃</span>
-                    </li>
-                </ul>
-            </div>
         </aside>
 
         <!-- 메인 콘텐츠 -->
         <main class="content-area">
-            <!-- 홈 대시보드 -->
-            <div id="homeContent" class="fade-in">
-                <div class="content-header">
-                    <div>
-                        <h1 class="page-title">대시보드</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>대시보드</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 통계 카드 -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalBuildings">15</div>
-                        <div class="stat-label">캠퍼스 건물</div>
-                        <div class="stat-change positive">
-                            <span>↗</span>
-                            <span>+2 신규</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalStudents">8,500</div>
-                        <div class="stat-label">재학생 수</div>
-                        <div class="stat-change positive">
-                            <span>↗</span>
-                            <span>+3.2%</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="activeServices">25</div>
-                        <div class="stat-label">운영 서비스</div>
-                        <div class="stat-change positive">
-                            <span>↗</span>
-                            <span>+1 추가</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="todayEvents">12</div>
-                        <div class="stat-label">오늘 일정</div>
-                        <div class="stat-change">
-                            <span>📅</span>
-                            <span>진행중</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 메인 위젯 그리드 -->
-                <div class="dashboard-grid">
-                    <!-- 지도 카드 -->
-                    <div class="card map-card">
-                        <div class="card-header">
-                            <h3 class="card-title">캠퍼스 지도</h3>
-                            <span class="card-icon">🗺️</span>
-                        </div>
-                        <div class="map-container">
-                            <div id="naverMap" style="width: 100%; height: 100%;"></div>
-                            <div class="map-overlay">
-                                <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
-                                <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
-                                <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
-                                <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 시간표 위젯 -->
-                    <div class="card timetable-card">
-                        <div class="card-header">
-                            <h3 class="card-title">오늘의 시간표</h3>
-                            <span class="card-icon">📅</span>
-                        </div>
-                        <div id="timetableContent">
-                            <!-- 시간표 데이터가 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-
-                    <!-- 셔틀버스 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">셔틀버스 현황</h3>
-                            <span class="card-icon">🚌</span>
-                        </div>
-                        <div class="shuttle-routes">
-                            <div class="route-tab active" onclick="selectShuttleRoute(1)">
-                                <div class="route-name">노선 1</div>
-                                <div class="route-desc">인천 남동구</div>
-                            </div>
-                            <div class="route-tab" onclick="selectShuttleRoute(2)">
-                                <div class="route-name">노선 2</div>
-                                <div class="route-desc">시화지역</div>
-                            </div>
-                            <div class="route-tab" onclick="selectShuttleRoute(3)">
-                                <div class="route-name">노선 3</div>
-                                <div class="route-desc">서울 목동</div>
-                            </div>
-                        </div>
-                        <div class="shuttle-status">
-                            <div class="shuttle-time" id="shuttleTime">15분 후</div>
-                            <div class="shuttle-desc" id="shuttleDesc">학교 → 안양역 경유 (14:30)</div>
-                            <div class="status-badge status-running" id="shuttleStatus">
-                                <span>🟢</span>
-                                <span>운행중</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 교내 활동 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">교내 활동 현황</h3>
-                            <span class="card-icon">🌟</span>
-                        </div>
-                        <div class="activity-stats">
-                            <div class="activity-stat">
-                                <div class="activity-number" id="contestCount">12</div>
-                                <div class="activity-label">진행중 공모전</div>
-                            </div>
-                            <div class="activity-stat">
-                                <div class="activity-number" id="clubCount">8</div>
-                                <div class="activity-label">신입 모집 동아리</div>
-                            </div>
-                            <div class="activity-stat">
-                                <div class="activity-number" id="externalCount">15</div>
-                                <div class="activity-label">대외활동 기회</div>
-                            </div>
-                        </div>
-                        <div class="notice-item">
-                            <div class="notice-header">
-                                <span class="notice-category">마감임박</span>
-                                <span class="notice-date">22일 남음</span>
-                            </div>
-                            <div class="notice-title">창업 아이디어 경진대회</div>
-                        </div>
-                    </div>
-
-                    <!-- 인기 맛집 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">인기 맛집</h3>
-                            <span class="card-icon">🍽️</span>
-                        </div>
-                        <div class="restaurant-grid" id="restaurantGrid">
-                            <div class="restaurant-card">
-                                <div class="restaurant-image">🍲</div>
-                                <div class="restaurant-info">
-                                    <div class="restaurant-name">지지고 안양 연성대점</div>
-                                    <div class="restaurant-category">한식</div>
-                                    <div class="restaurant-discount">학생증 제시 시 15% 할인</div>
-                                    <div class="restaurant-likes">👍 3</div>
-                                </div>
-                            </div>
-                            <div class="restaurant-card">
-                                <div class="restaurant-image">🍜</div>
-                                <div class="restaurant-info">
-                                    <div class="restaurant-name">갯마을 칼국수</div>
-                                    <div class="restaurant-category">한식</div>
-                                    <div class="restaurant-discount">할인 없음</div>
-                                    <div class="restaurant-likes">👍 5</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 최근 공지사항 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">최근 공지사항</h3>
-                            <span class="card-icon">📢</span>
-                        </div>
-                        <div class="notice-list">
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">학사</span>
-                                    <span class="notice-date">2025.04.08</span>
-                                </div>
-                                <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
-                            </div>
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">장학</span>
-                                    <span class="notice-date">2025.04.07</span>
-                                </div>
-                                <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
-                            </div>
-                        </div>
+            <div class="content-header">
+                <div>
+                    <h1 class="page-title">대시보드</h1>
+                    <div class="breadcrumb">
+                        <span>홈</span>
+                        <span>›</span>
+                        <span>대시보드</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 건물 안내 콘텐츠 -->
-            <div id="buildingsContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1 class="page-title">건물 & 시설 안내</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>건물 안내</span>
-                        </div>
+            <!-- 통계 카드 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBuildings">15</div>
+                    <div class="stat-label">캠퍼스 건물</div>
+                    <div class="stat-change positive">
+                        <span>↗</span>
+                        <span>+2 신규</span>
                     </div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalStudents">8,500</div>
+                    <div class="stat-label">재학생 수</div>
+                    <div class="stat-change positive">
+                        <span>↗</span>
+                        <span>+3.2%</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeServices">25</div>
+                    <div class="stat-label">운영 서비스</div>
+                    <div class="stat-change positive">
+                        <span>↗</span>
+                        <span>+1 추가</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayEvents">0</div>
+                    <div class="stat-label">오늘 수업</div>
+                    <div class="stat-change">
+                        <span>📅</span>
+                        <span id="todayEventsStatus">로딩중...</span>
+                    </div>
+                </div>
+            </div>
 
-                <div class="card map-card" style="margin-bottom: 2rem;">
+            <!-- 메인 위젯 그리드 -->
+            <div class="dashboard-grid">
+                <!-- 지도 카드 -->
+                <div class="card map-card">
                     <div class="card-header">
                         <h3 class="card-title">캠퍼스 지도</h3>
                         <span class="card-icon">🗺️</span>
                     </div>
                     <div class="map-container">
-                        <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
+                        <div id="naverMap" style="width: 100%; height: 100%;"></div>
                         <div class="map-overlay">
                             <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
                             <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
@@ -1542,223 +897,130 @@
                     </div>
                 </div>
 
-                <div class="building-grid" id="buildingGrid">
-                    <!-- 건물 카드들이 동적으로 생성됩니다 -->
-                </div>
-            </div>
-
-            <!-- 커뮤니티 콘텐츠 -->
-            <div id="communityContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1 class="page-title">실시간 커뮤니티</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>커뮤니티</span>
-                        </div>
+                <!-- 시간표 위젯 개선 -->
+                <div class="card timetable-card">
+                    <div class="card-header">
+                        <h3 class="card-title">오늘의 시간표</h3>
+                        <span class="card-icon">📅</span>
+                    </div>
+                    <div class="timetable-header">
+                        <div class="timetable-date" id="currentDate">오늘 날짜</div>
+                        <div class="timetable-count" id="classCount">0개 수업</div>
+                    </div>
+                    <div id="timetableContent">
+                        <!-- 시간표 데이터가 동적으로 생성됩니다 -->
                     </div>
                 </div>
 
-                <div class="dashboard-grid">
-                    <!-- 실시간 게시글 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">실시간 게시글</h3>
-                            <span class="card-icon">💬</span>
+                <!-- 셔틀버스 위젯 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">셔틀버스 현황</h3>
+                        <span class="card-icon">🚌</span>
+                    </div>
+                    <div class="shuttle-routes">
+                        <div class="route-tab active" onclick="selectShuttleRoute(1)">
+                            <div class="route-name">노선 1</div>
+                            <div class="route-desc">인천 남동구</div>
                         </div>
-                        <div class="notice-list">
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">자유게시판</span>
-                                    <span class="notice-date">3분 전</span>
-                                </div>
-                                <div class="notice-title">중간고사 스터디 그룹 모집해요!</div>
-                                <div class="notice-summary">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
-                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
-                                    👍 12 💬 8
-                                </div>
-                            </div>
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">정보게시판</span>
-                                    <span class="notice-date">12분 전</span>
-                                </div>
-                                <div class="notice-title">김민수 교수님 수업 꿀팁 공유</div>
-                                <div class="notice-summary">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
-                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
-                                    👍 24 💬 15
-                                </div>
-                            </div>
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">취업게시판</span>
-                                    <span class="notice-date">32분 전</span>
-                                </div>
-                                <div class="notice-title">삼성전자 채용설명회 후기</div>
-                                <div class="notice-summary">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
-                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
-                                    👍 45 💬 23
-                                </div>
-                            </div>
+                        <div class="route-tab" onclick="selectShuttleRoute(2)">
+                            <div class="route-name">노선 2</div>
+                            <div class="route-desc">시화지역</div>
+                        </div>
+                        <div class="route-tab" onclick="selectShuttleRoute(3)">
+                            <div class="route-name">노선 3</div>
+                            <div class="route-desc">서울 목동</div>
                         </div>
                     </div>
-
-                    <!-- 인기 게시글 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">인기 게시글</h3>
-                            <span class="card-icon">🔥</span>
-                        </div>
-                        <div class="notice-list">
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">강의평가</span>
-                                    <span class="notice-date">HOT</span>
-                                </div>
-                                <div class="notice-title">이지영 교수님 마케팅 원론 후기</div>
-                                <div class="notice-summary">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
-                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
-                                    👍 118 💬 56
-                                </div>
-                            </div>
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">생활정보</span>
-                                    <span class="notice-date">HOT</span>
-                                </div>
-                                <div class="notice-title">연성대 근처 맛집 총정리</div>
-                                <div class="notice-summary">4년 다니면서 발견한 진짜 맛집들만 모았습니다</div>
-                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
-                                    👍 89 💬 34
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 강의평가 콘텐츠 -->
-            <div id="lecture-reviewContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1 class="page-title">강의평가</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>강의평가</span>
+                    <div class="shuttle-status">
+                        <div class="shuttle-time" id="shuttleTime">15분 후</div>
+                        <div class="shuttle-desc" id="shuttleDesc">학교 → 안양역 경유 (14:30)</div>
+                        <div class="status-badge status-running" id="shuttleStatus">
+                            <span>🟢</span>
+                            <span>운행중</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="dashboard-grid">
-                    <!-- 인기 강의평가 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">인기 강의평가</h3>
-                            <span class="card-icon">⭐</span>
+                <!-- 교내 활동 위젯 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">교내 활동 현황</h3>
+                        <span class="card-icon">🌟</span>
+                    </div>
+                    <div class="activity-stats">
+                        <div class="activity-stat">
+                            <div class="activity-number" id="contestCount">12</div>
+                            <div class="activity-label">진행중 공모전</div>
                         </div>
-                        <div class="notice-list">
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">전공필수</span>
-                                    <span class="notice-date" style="color: #f59e0b;">★★★★★</span>
-                                </div>
-                                <div class="notice-title">웹 프로그래밍 실습 - 김민수 교수님</div>
-                                <div class="notice-summary">"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</div>
-                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
-                                    평점: 4.8/5.0 | 컴퓨터정보학과
-                                </div>
-                            </div>
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">전공선택</span>
-                                    <span class="notice-date" style="color: #f59e0b;">★★★★☆</span>
-                                </div>
-                                <div class="notice-title">마케팅 원론 - 이지영 교수님</div>
-                                <div class="notice-summary">"실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."</div>
-                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
-                                    평점: 4.5/5.0 | 경영학과
-                                </div>
-                            </div>
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">교양</span>
-                                    <span class="notice-date" style="color: #f59e0b;">★★★★☆</span>
-                                </div>
-                                <div class="notice-title">영어회화 - John Smith 교수님</div>
-                                <div class="notice-summary">"원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."</div>
-                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
-                                    평점: 4.3/5.0 | 교양과정
-                                </div>
-                            </div>
+                        <div class="activity-stat">
+                            <div class="activity-number" id="clubCount">8</div>
+                            <div class="activity-label">신입 모집 동아리</div>
+                        </div>
+                        <div class="activity-stat">
+                            <div class="activity-number" id="externalCount">15</div>
+                            <div class="activity-label">대외활동 기회</div>
                         </div>
                     </div>
-
-                    <!-- 최근 강의평가 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">최근 강의평가</h3>
-                            <span class="card-icon">🕒</span>
+                    <div class="notice-item">
+                        <div class="notice-header">
+                            <span class="notice-category">마감임박</span>
+                            <span class="notice-date">22일 남음</span>
                         </div>
-                        <div class="notice-list">
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">전공필수</span>
-                                    <span class="notice-date">1시간 전</span>
-                                </div>
-                                <div class="notice-title">경영통계학 - 박성호 교수님</div>
-                                <div class="notice-summary">"내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."</div>
-                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
-                                    평점: 3.7/5.0 | 경영학과
-                                </div>
-                            </div>
-                            <div class="notice-item">
-                                <div class="notice-header">
-                                    <span class="notice-category">교양</span>
-                                    <span class="notice-date">3시간 전</span>
-                                </div>
-                                <div class="notice-title">컴퓨터활용 - 정민지 교수님</div>
-                                <div class="notice-summary">"기초부터 차근차근 가르쳐주셔서 초보자도 따라하기 쉬워요."</div>
-                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
-                                    평점: 4.2/5.0 | 교양과정
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 강의평가 작성 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">강의평가 작성</h3>
-                            <span class="card-icon">✍️</span>
-                        </div>
-                        <div style="padding: 1rem; text-align: center;">
-                            <p style="color: #94a3b8; margin-bottom: 1.5rem;">
-                                수강 중인 강의에 대한 솔직한 평가를 남겨주세요
-                            </p>
-                            <button class="btn btn-primary" onclick="alert('강의평가 작성 페이지로 이동합니다.')">
-                                강의평가 작성하기
-                            </button>
-                        </div>
+                        <div class="notice-title">창업 아이디어 경진대회</div>
                     </div>
                 </div>
-            </div>
-            <!-- 공지사항 콘텐츠 -->
-            <div id="noticesContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1 class="page-title">공지사항</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>공지사항</span>
+
+                <!-- 인기 맛집 위젯 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">인기 맛집</h3>
+                        <span class="card-icon">🍽️</span>
+                    </div>
+                    <div class="restaurant-grid" id="restaurantGrid">
+                        <div class="restaurant-card">
+                            <div class="restaurant-image">🍲</div>
+                            <div class="restaurant-info">
+                                <div class="restaurant-name">지지고 안양 연성대점</div>
+                                <div class="restaurant-category">한식</div>
+                                <div class="restaurant-discount">학생증 제시 시 15% 할인</div>
+                                <div class="restaurant-likes">👍 3</div>
+                            </div>
+                        </div>
+                        <div class="restaurant-card">
+                            <div class="restaurant-image">🍜</div>
+                            <div class="restaurant-info">
+                                <div class="restaurant-name">갯마을 칼국수</div>
+                                <div class="restaurant-category">한식</div>
+                                <div class="restaurant-discount">할인 없음</div>
+                                <div class="restaurant-likes">👍 5</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="notice-list" id="fullNoticeList">
-                    <!-- 공지사항이 동적으로 생성됩니다 -->
+                <!-- 최근 공지사항 위젯 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">최근 공지사항</h3>
+                        <span class="card-icon">📢</span>
+                    </div>
+                    <div class="notice-list">
+                        <div class="notice-item">
+                            <div class="notice-header">
+                                <span class="notice-category">학사</span>
+                                <span class="notice-date">2025.04.08</span>
+                            </div>
+                            <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+                        </div>
+                        <div class="notice-item">
+                            <div class="notice-header">
+                                <span class="notice-category">장학</span>
+                                <span class="notice-date">2025.04.07</span>
+                            </div>
+                            <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -1769,11 +1031,7 @@
         let naverMap;
         let mapMarkers = [];
         let infoWindows = [];
-        let userMarker = null;
-        let userLocation = null;
-        let selectedShuttleRoute = 1;
-        let currentContent = 'home';
-        let unreadNotifications = 3;
+        let currentUser = null;
 
         // 건물 데이터
         const buildingData = [
@@ -1806,139 +1064,38 @@
                 name: '공학2관',
                 description: '공학계열 실습실, 연구실',
                 position: { lat: 37.396789747114205, lng: 126.90737406929797 }
-            },
-            {
-                id: '문화1관',
-                name: '문화1관',
-                description: '인문사회계열 강의실',
-                position: { lat: 37.39576992475254, lng: 126.90812350405056 }
-            },
-            {
-                id: '연곡문화센터',
-                name: '연곡문화센터',
-                description: '기숙사, 컨벤션홀, 평생교육원',
-                position: { lat: 37.398046192024914, lng: 126.90966512810492 }
-            },
-            {
-                id: '창조관',
-                name: '창조관',
-                description: '학과 사무실, 강의실',
-                position: { lat: 37.39730791148064, lng: 126.91039726900274 }
-            },
-            {
-                id: '학생복지센터',
-                name: '학생복지센터',
-                description: '학생지원 시설',
-                position: { lat: 37.3962916630711, lng: 126.90994109780426 }
-            },
-            {
-                id: '창의교육센터',
-                name: '창의교육센터',
-                description: '항공서비스과 항공실습실, 카페',
-                position: { lat: 37.39737971014044, lng: 126.91002449732869 }
             }
         ];
 
-        // 공지사항 데이터
-        const noticesData = [
-            {
-                id: 'notice1',
-                category: '학사',
-                title: '2025학년도 1학기 중간고사 일정 안내',
-                summary: '4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.',
-                date: '2025.04.08'
-            },
-            {
-                id: 'notice2',
-                category: '장학',
-                title: '국가장학금 2차 신청 마감 안내',
-                summary: '국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.',
-                date: '2025.04.07'
-            },
-            {
-                id: 'notice3',
-                category: '취업',
-                title: '삼성전자 대규모 채용설명회 개최 안내',
-                summary: '4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.',
-                date: '2025.04.06'
-            },
-            {
-                id: 'notice4',
-                category: '행사',
-                title: '2025 연성대 축제 개최 안내',
-                summary: '5월 15일-17일 3일간 연성대 봄축제가 개최됩니다. 다양한 공연과 이벤트가 준비되어 있으니 많은 참여 바랍니다.',
-                date: '2025.04.05'
-            },
-            {
-                id: 'notice5',
-                category: '학사',
-                title: '도서관 시설 개선 공사 안내',
-                summary: '4월 20일-30일 기간 중 도서관 일부 구역에서 시설 개선 공사가 진행됩니다. 이용에 불편을 드려 죄송합니다.',
-                date: '2025.04.04'
-            }
-        ];
+        // 요일 이름 배열
+        const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 
-        // 페이지 로드 시 이벤트 리스너 추가
+        // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            
-            // Escape 키로 드롭다운 닫기
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeAllDropdowns();
-                }
-            });
-            
-            // 검색 입력 이벤트
-            const searchInput = document.getElementById('globalSearch');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        handleGlobalSearch();
-                    }
-                });
-            }
-
-            // 외부 클릭 시 드롭다운 닫기
-            document.addEventListener('click', function(event) {
-                const notificationBtn = event.target.closest('.notification-btn');
-                const userProfile = event.target.closest('.user-profile');
-                
-                if (!notificationBtn) {
-                    closeNotificationDropdown();
-                }
-                if (!userProfile) {
-                    closeUserDropdown();
-                }
-            });
-        });
-
-        // 앱 초기화
-        function initializeApp() {
-            console.log('앱 초기화 시작');
+            console.log('페이지 로드 완료');
             
             // 지도 초기화
             initNaverMap();
             
-            // 건물 그리드 생성
-            createBuildingGrid();
-            
-            // 공지사항 목록 생성
-            createNoticeList();
-            
-            // 셔틀버스 정보 업데이트
-            updateShuttleBusInfo();
-            
             // 사용자 상태 확인
             checkUserStatus();
-            
-            // 알림 카운트 업데이트
-            updateNotificationCount();
             
             // 시간표 업데이트
             updateTimetable();
             
-            console.log('앱 초기화 완료');
+            // 현재 날짜 표시
+            updateCurrentDate();
+            
+            // 정기적 업데이트 (1분마다)
+            setInterval(updateTimetable, 60000);
+        });
+
+        // 현재 날짜 표시
+        function updateCurrentDate() {
+            const now = new Date();
+            const today = dayNames[now.getDay()];
+            const dateStr = `${now.getMonth() + 1}월 ${now.getDate()}일 ${today}`;
+            document.getElementById('currentDate').textContent = dateStr;
         }
 
         // 네이버 지도 초기화
@@ -2001,19 +1158,56 @@
             }
         }
 
-        // 시간표 업데이트 (실제 시간표 페이지 데이터 연동)
+        // 사용자 상태 확인
+        function checkUserStatus() {
+            currentUser = localStorage.getItem('currentLoggedInUser');
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            
+            if (currentUser) {
+                const userName = localStorage.getItem(`user_${currentUser}_name`) || '사용자';
+                const department = localStorage.getItem(`user_${currentUser}_department`) || '';
+                const departmentName = department ? getDepartmentName(department) : '학생';
+                
+                userNameElement.textContent = userName;
+                userRoleElement.textContent = departmentName;
+                
+                updateProfileImage(currentUser);
+            } else {
+                userNameElement.textContent = '게스트';
+                userRoleElement.textContent = '방문자';
+            }
+        }
+
+        // 학과명 변환
+        function getDepartmentName(department) {
+            const deptMap = {
+                'computerScience': '컴퓨터정보학과',
+                'business': '경영학과',
+                'nursing': '간호학과',
+                'engineering': '공학계열',
+                'arts': '예술계열'
+            };
+            return deptMap[department] || department;
+        }
+
+        // 프로필 이미지 업데이트
+        function updateProfileImage(userId) {
+            const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
+            const profileImage = localStorage.getItem(`user_${userId}_profileImage`) || '👤';
+            const avatarElement = document.getElementById('userAvatar');
+            
+            if (profileImageType === 'emoji') {
+                avatarElement.textContent = profileImage;
+            } else {
+                avatarElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" alt="프로필">`;
+            }
+        }
+
+        // 시간표 업데이트 - 실제 시간표 데이터 연동
         function updateTimetable() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
             if (!currentUser) {
-                // 로그인하지 않은 경우 기본 메시지 표시
-                const timetableContent = document.getElementById('timetableContent');
-                if (timetableContent) {
-                    timetableContent.innerHTML = `
-                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                            <p>로그인하여 개인 시간표를 확인하세요</p>
-                        </div>
-                    `;
-                }
+                showNoLoginMessage();
                 return;
             }
 
@@ -2023,60 +1217,75 @@
             const currentTime = now.getHours() * 60 + now.getMinutes();
 
             // 현재 학기 설정
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth() + 1;
-            let semester = { year: currentYear, term: 1 };
-            
-            if (currentMonth >= 3 && currentMonth <= 6) {
-                semester = { year: currentYear, term: 1 };
-            } else if (currentMonth >= 9 && currentMonth <= 12) {
-                semester = { year: currentYear, term: 2 };
-            } else if (currentMonth >= 1 && currentMonth <= 2) {
-                semester = { year: currentYear - 1, term: 2 };
-            } else {
-                semester = { year: currentYear, term: 1 };
-            }
+            const semester = getCurrentSemester(now);
 
             // 현재 시간표 정보 가져오기
-            const savedCurrentTimetable = localStorage.getItem(`currentTimetable_user_${currentUser}`);
-            let currentTimetableId = 1;
-            if (savedCurrentTimetable) {
-                const timetableInfo = JSON.parse(savedCurrentTimetable);
-                currentTimetableId = timetableInfo.id;
-            }
+            const currentTimetableId = getCurrentTimetableId();
 
             // 시간표 데이터 로드
-            const semesterKey = `courses_${semester.year}_${semester.term}_${currentTimetableId}_user_${currentUser}`;
-            const savedCourses = localStorage.getItem(semesterKey);
-            let courses = [];
-            
-            if (savedCourses) {
-                courses = JSON.parse(savedCourses);
-            }
+            const courses = loadTimetableCourses(semester, currentTimetableId);
 
-            const timetableContent = document.getElementById('timetableContent');
-            if (!timetableContent) return;
-
-            // 과목이 없는 경우
             if (courses.length === 0) {
-                timetableContent.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                        <p>등록된 과목이 없습니다</p>
-                        <button class="btn btn-primary" onclick="openQuickLink('timetable')" style="margin-top: 1rem;">
-                            시간표 작성하기
-                        </button>
-                    </div>
-                `;
+                showNoCourses();
                 return;
             }
 
-            // 오늘의 수업 필터링 및 시간 계산
+            // 오늘의 수업 필터링 및 처리
+            const todayCourses = getTodayCourses(courses, currentDay, currentTime);
+
+            if (todayCourses.length === 0) {
+                showNoClassesToday();
+                return;
+            }
+
+            // 시간표 UI 업데이트
+            displayTodayCourses(todayCourses);
+            
+            // 상단 통계 업데이트
+            updateTodayStats(todayCourses);
+        }
+
+        // 현재 학기 가져오기
+        function getCurrentSemester(now) {
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            
+            if (currentMonth >= 3 && currentMonth <= 6) {
+                return { year: currentYear, term: 1 };
+            } else if (currentMonth >= 9 && currentMonth <= 12) {
+                return { year: currentYear, term: 2 };
+            } else if (currentMonth >= 1 && currentMonth <= 2) {
+                return { year: currentYear - 1, term: 2 };
+            } else {
+                return { year: currentYear, term: 1 };
+            }
+        }
+
+        // 현재 시간표 ID 가져오기
+        function getCurrentTimetableId() {
+            const savedCurrentTimetable = localStorage.getItem(`currentTimetable_user_${currentUser}`);
+            if (savedCurrentTimetable) {
+                const timetableInfo = JSON.parse(savedCurrentTimetable);
+                return timetableInfo.id;
+            }
+            return 1; // 기본 시간표 ID
+        }
+
+        // 시간표 과목 데이터 로드
+        function loadTimetableCourses(semester, timetableId) {
+            const semesterKey = `courses_${semester.year}_${semester.term}_${timetableId}_user_${currentUser}`;
+            const savedCourses = localStorage.getItem(semesterKey);
+            return savedCourses ? JSON.parse(savedCourses) : [];
+        }
+
+        // 오늘의 수업 가져오기
+        function getTodayCourses(courses, currentDay, currentTime) {
             const todayCourses = [];
             
             courses.forEach(course => {
                 course.times.forEach(time => {
                     // 요일 매칭 (시간표의 1=월요일을 실제 요일과 매칭)
-                    if (time.day === currentDay || (currentDay === 0 && time.day === 6)) { // 일요일은 토요일 수업으로 처리
+                    if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
                         // 시작 시간 계산 (9시부터 시작, 30분 시작)
                         const startHour = 8 + time.start;
                         const startMinute = 30;
@@ -2122,46 +1331,10 @@
             });
 
             // 시간순으로 정렬
-            todayCourses.sort((a, b) => a.startTime - b.startTime);
-
-            if (todayCourses.length === 0) {
-                timetableContent.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                        <p>오늘은 수업이 없습니다</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // HTML 생성
-            timetableContent.innerHTML = '';
-
-            todayCourses.forEach(classInfo => {
-                const statusText = {
-                    'current': '진행중',
-                    'upcoming': '예정',
-                    'finished': '종료'
-                };
-
-                const classItem = document.createElement('div');
-                classItem.className = 'class-item';
-                classItem.innerHTML = `
-                    <div class="class-time">
-                        <div class="class-time-main">${classInfo.displayTime}</div>
-                        <div class="class-time-remaining">${classInfo.timeInfo}</div>
-                    </div>
-                    <div class="class-info">
-                        <div class="class-name">${classInfo.name}</div>
-                        <div class="class-location">${classInfo.room || '강의실 미정'} | ${classInfo.professor || '교수명 미정'}</div>
-                    </div>
-                    <div class="class-status status-${classInfo.status}">${statusText[classInfo.status]}</div>
-                `;
-                
-                timetableContent.appendChild(classItem);
-            });
+            return todayCourses.sort((a, b) => a.startTime - b.startTime);
         }
 
-        // 시간 포맷팅 함수
+        // 시간 포맷팅
         function formatTimeRemaining(minutes, suffix) {
             if (minutes < 60) {
                 return `${minutes}분 ${suffix}`;
@@ -2176,65 +1349,166 @@
             }
         }
 
-        // 알림 기능들
-        function toggleNotifications() {
-            const dropdown = document.getElementById('notificationDropdown');
-            const isVisible = dropdown.classList.contains('show');
+        // 오늘의 수업 표시
+        function displayTodayCourses(todayCourses) {
+            const timetableContent = document.getElementById('timetableContent');
+            const classCount = document.getElementById('classCount');
             
-            if (isVisible) {
-                closeNotificationDropdown();
-            } else {
-                showNotificationDropdown();
-            }
-        }
+            // 수업 개수 업데이트
+            classCount.textContent = `${todayCourses.length}개 수업`;
+            
+            // HTML 생성
+            timetableContent.innerHTML = '';
 
-        function showNotificationDropdown() {
-            const dropdown = document.getElementById('notificationDropdown');
-            if (dropdown) {
-                // 다른 드롭다운이 열려있다면 닫기
-                closeUserDropdown();
+            todayCourses.forEach(classInfo => {
+                const statusText = {
+                    'current': '진행중',
+                    'upcoming': '예정',
+                    'finished': '종료'
+                };
+
+                const classItem = document.createElement('div');
+                classItem.className = `class-item ${classInfo.status}`;
+                classItem.innerHTML = `
+                    <div class="class-time">
+                        <div class="class-time-main">${classInfo.displayTime}</div>
+                        <div class="class-time-remaining">${classInfo.timeInfo}</div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-name">${classInfo.name}</div>
+                        <div class="class-location">
+                            📍 ${classInfo.room || '강의실 미정'}
+                        </div>
+                        <div class="class-professor">👨‍🏫 ${classInfo.professor || '교수명 미정'}</div>
+                    </div>
+                    <div class="class-status status-${classInfo.status}">${statusText[classInfo.status]}</div>
+                `;
                 
-                dropdown.classList.add('show');
-            }
-        }
-
-        function closeNotificationDropdown() {
-            const dropdown = document.getElementById('notificationDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('show');
-            }
-        }
-
-        function markAsRead(notificationElement) {
-            if (notificationElement.classList.contains('unread')) {
-                notificationElement.classList.remove('unread');
-                unreadNotifications--;
-                updateNotificationCount();
-            }
-        }
-
-        function markAllAsRead() {
-            const unreadItems = document.querySelectorAll('.notification-item.unread');
-            unreadItems.forEach(item => {
-                item.classList.remove('unread');
+                timetableContent.appendChild(classItem);
             });
-            unreadNotifications = 0;
-            updateNotificationCount();
-            
-            // 성공 메시지 표시
-            showMessage('모든 알림을 읽음 처리했습니다.', 'success');
+
+            // 시간표 페이지로 가는 버튼 추가
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'timetable-actions';
+            actionsDiv.innerHTML = `
+                <button class="btn btn-outline" onclick="openQuickLink('timetable')">
+                    📅 전체 시간표 보기
+                </button>
+            `;
+            timetableContent.appendChild(actionsDiv);
         }
 
-        function updateNotificationCount() {
-            const countElement = document.getElementById('notificationCount');
-            const dotElement = document.getElementById('notificationDot');
+        // 상단 통계 업데이트
+        function updateTodayStats(todayCourses) {
+            const todayEventsElement = document.getElementById('todayEvents');
+            const todayEventsStatusElement = document.getElementById('todayEventsStatus');
             
-            if (countElement) {
-                countElement.textContent = unreadNotifications;
+            todayEventsElement.textContent = todayCourses.length;
+            
+            const currentCourses = todayCourses.filter(course => course.status === 'current');
+            const upcomingCourses = todayCourses.filter(course => course.status === 'upcoming');
+            
+            if (currentCourses.length > 0) {
+                todayEventsStatusElement.textContent = '진행중';
+                todayEventsStatusElement.style.color = '#10b981';
+            } else if (upcomingCourses.length > 0) {
+                todayEventsStatusElement.textContent = '예정';
+                todayEventsStatusElement.style.color = '#f59e0b';
+            } else {
+                todayEventsStatusElement.textContent = '완료';
+                todayEventsStatusElement.style.color = '#6b7280';
             }
+        }
+
+        // 로그인하지 않은 경우 메시지
+        function showNoLoginMessage() {
+            const timetableContent = document.getElementById('timetableContent');
+            const classCount = document.getElementById('classCount');
             
-            if (dotElement) {
-                dotElement.style.display = unreadNotifications > 0 ? 'block' : 'none';
+            classCount.textContent = '로그인 필요';
+            
+            timetableContent.innerHTML = `
+                <div class="no-classes">
+                    <div class="no-classes-icon">🔐</div>
+                    <p>로그인하여 개인 시간표를 확인하세요</p>
+                    <div class="timetable-actions">
+                        <button class="btn btn-primary" onclick="window.open('login.html', '_blank')">
+                            🔑 로그인하기
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 상단 통계 업데이트
+            document.getElementById('todayEvents').textContent = '0';
+            document.getElementById('todayEventsStatus').textContent = '로그인 필요';
+            document.getElementById('todayEventsStatus').style.color = '#94a3b8';
+        }
+
+        // 등록된 과목이 없는 경우
+        function showNoCourses() {
+            const timetableContent = document.getElementById('timetableContent');
+            const classCount = document.getElementById('classCount');
+            
+            classCount.textContent = '과목 없음';
+            
+            timetableContent.innerHTML = `
+                <div class="no-classes">
+                    <div class="no-classes-icon">📚</div>
+                    <p>등록된 과목이 없습니다</p>
+                    <div class="timetable-actions">
+                        <button class="btn btn-primary" onclick="openQuickLink('timetable')">
+                            📅 시간표 작성하기
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 상단 통계 업데이트
+            document.getElementById('todayEvents').textContent = '0';
+            document.getElementById('todayEventsStatus').textContent = '과목 없음';
+            document.getElementById('todayEventsStatus').style.color = '#94a3b8';
+        }
+
+        // 오늘 수업이 없는 경우
+        function showNoClassesToday() {
+            const timetableContent = document.getElementById('timetableContent');
+            const classCount = document.getElementById('classCount');
+            
+            classCount.textContent = '수업 없음';
+            
+            timetableContent.innerHTML = `
+                <div class="no-classes">
+                    <div class="no-classes-icon">😌</div>
+                    <p>오늘은 수업이 없습니다</p>
+                    <div class="timetable-actions">
+                        <button class="btn btn-outline" onclick="openQuickLink('timetable')">
+                            📅 주간 시간표 보기
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 상단 통계 업데이트
+            document.getElementById('todayEvents').textContent = '0';
+            document.getElementById('todayEventsStatus').textContent = '수업 없음';
+            document.getElementById('todayEventsStatus').style.color = '#94a3b8';
+        }
+
+        // 빠른 링크 함수들
+        function openQuickLink(type) {
+            const links = {
+                'timetable': 'timetable.html',
+                'shuttle': 'shuttle_bus_tracker.html',
+                'activities': 'activities.html',
+                'deals': 'student-deals.html',
+                'academic-calendar': 'academic-calendar.html'
+            };
+            
+            if (links[type]) {
+                window.open(links[type], '_blank');
+            } else {
+                alert(`${type} 서비스는 준비 중입니다.`);
             }
         }
 
@@ -2270,11 +1544,7 @@
                 function(position) {
                     const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
                     
-                    if (userMarker) {
-                        userMarker.setMap(null);
-                    }
-
-                    userMarker = new naver.maps.Marker({
+                    const userMarker = new naver.maps.Marker({
                         position: userPos,
                         map: naverMap,
                         icon: {
@@ -2285,7 +1555,6 @@
 
                     naverMap.setCenter(userPos);
                     naverMap.setZoom(18);
-                    userLocation = position.coords;
                 },
                 function(error) {
                     console.error('위치 추적 오류:', error);
@@ -2294,296 +1563,8 @@
             );
         }
 
-        // 건물 그리드 생성
-        function createBuildingGrid() {
-            const buildingGrid = document.getElementById('buildingGrid');
-            if (!buildingGrid) return;
-
-            buildingGrid.innerHTML = '';
-
-            buildingData.forEach(building => {
-                const buildingCard = document.createElement('div');
-                buildingCard.className = 'building-card';
-                buildingCard.innerHTML = `
-                    <h3 class="building-name">${building.name}</h3>
-                    <p class="building-desc">${building.description}</p>
-                    <div class="building-actions">
-                        <button class="btn btn-primary" onclick="showBuildingOnMap('${building.id}')">
-                            📍 지도에서 보기
-                        </button>
-                        <button class="btn btn-outline" onclick="getBuildingDirections('${building.id}')">
-                            🧭 길찾기
-                        </button>
-                    </div>
-                `;
-                buildingGrid.appendChild(buildingCard);
-            });
-        }
-
-        // 공지사항 목록 생성
-        function createNoticeList() {
-            const noticeList = document.getElementById('fullNoticeList');
-            if (!noticeList) return;
-
-            noticeList.innerHTML = '';
-
-            noticesData.forEach(notice => {
-                const noticeItem = document.createElement('div');
-                noticeItem.className = 'notice-item';
-                noticeItem.onclick = () => viewNoticeDetail(notice.id);
-                noticeItem.innerHTML = `
-                    <div class="notice-header">
-                        <span class="notice-category">${notice.category}</span>
-                        <span class="notice-date">${notice.date}</span>
-                    </div>
-                    <div class="notice-title">${notice.title}</div>
-                    <div class="notice-summary">${notice.summary}</div>
-                `;
-                noticeList.appendChild(noticeItem);
-            });
-        }
-
-        // 콘텐츠 전환
-        function showContent(contentType) {
-            // 모든 콘텐츠 숨기기
-            const contents = ['homeContent', 'buildingsContent', 'noticesContent', 'servicesContent', 'communityContent', 'lecture-reviewContent'];
-            contents.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) element.style.display = 'none';
-            });
-
-            // 선택된 콘텐츠 표시
-            const targetContent = document.getElementById(contentType + 'Content');
-            if (targetContent) {
-                targetContent.style.display = 'block';
-                targetContent.classList.add('fade-in');
-            }
-
-            // 네비게이션 활성화 상태 업데이트
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            event.target.closest('.nav-item').classList.add('active');
-            currentContent = contentType;
-
-            // 지도 갱신 (건물 페이지인 경우)
-            if (contentType === 'buildings' && naverMap) {
-                setTimeout(() => {
-                    naverMap.refresh();
-                }, 100);
-            }
-        }
-
-        // 셔틀버스 노선 선택
-        function selectShuttleRoute(routeId) {
-            selectedShuttleRoute = routeId;
-            
-            // 탭 활성화 상태 업데이트
-            document.querySelectorAll('.route-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            updateShuttleBusInfo();
-        }
-
-        // 셔틀버스 정보 업데이트
-        function updateShuttleBusInfo() {
-            // 간단한 더미 데이터로 업데이트
-            const routes = {
-                1: { name: '인천 남동구', time: '15분 후', desc: '학교 → 안양역 경유 (14:30)', status: 'running' },
-                2: { name: '시화지역', time: '25분 후', desc: '학교 → 시화역 경유 (14:40)', status: 'running' },
-                3: { name: '서울 목동', time: '운행종료', desc: '다음 운행: 내일 08:30', status: 'stopped' }
-            };
-
-            const route = routes[selectedShuttleRoute];
-            
-            document.getElementById('shuttleTime').textContent = route.time;
-            document.getElementById('shuttleDesc').textContent = route.desc;
-            
-            const statusElement = document.getElementById('shuttleStatus');
-            statusElement.className = `status-badge status-${route.status}`;
-            statusElement.innerHTML = route.status === 'running' ? 
-                '<span>🟢</span><span>운행중</span>' : 
-                '<span>🔴</span><span>운행종료</span>';
-        }
-
-        // 빠른 링크 함수들
-        function openQuickLink(type) {
-            const links = {
-                'timetable': 'timetable.html',
-                'shuttle': 'shuttle_bus_tracker.html',
-                'activities': 'activities.html',
-                'deals': 'student-deals.html',
-                'academic-calendar': 'academic-calendar.html'
-            };
-            
-            if (links[type]) {
-                window.open(links[type], '_blank');
-            } else {
-                alert(`${type} 서비스는 준비 중입니다.`);
-            }
-        }
-
-        // 건물 관련 함수들
-        function showBuildingOnMap(buildingId) {
-            const building = buildingData.find(b => b.id === buildingId);
-            if (!building || !naverMap) return;
-
-            showContent('buildings');
-            
-            setTimeout(() => {
-                const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-                naverMap.setCenter(position);
-                naverMap.setZoom(18);
-                
-                // 해당 마커의 정보창 열기
-                const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
-                if (markerIndex !== -1) {
-                    infoWindows.forEach(window => window.close());
-                    infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
-                }
-            }, 500);
-        }
-
-        function getBuildingDirections(buildingId) {
-            const building = buildingData.find(b => b.id === buildingId);
-            if (!building) return;
-
-            if (!userLocation) {
-                alert('먼저 현재 위치를 확인해주세요.');
-                trackUserLocation();
-                return;
-            }
-
-            // 간단한 길찾기 안내
-            const distance = calculateDistance(
-                userLocation.latitude, userLocation.longitude,
-                building.position.lat, building.position.lng
-            );
-
-            alert(`${building.name}까지 직선거리 약 ${Math.round(distance)}m입니다.`);
-        }
-
-        // 거리 계산 함수
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371000; // 지구 반지름 (미터)
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
-
-        // 사용자 상태 확인
-        function checkUserStatus() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            const userNameElement = document.getElementById('userName');
-            const userRoleElement = document.getElementById('userRole');
-            const dropdownUserNameElement = document.getElementById('dropdownUserName');
-            const dropdownUserRoleElement = document.getElementById('dropdownUserRole');
-            
-            if (currentUser) {
-                const userName = localStorage.getItem(`user_${currentUser}_name`) || '사용자';
-                const department = localStorage.getItem(`user_${currentUser}_department`) || '';
-                const departmentName = department ? getDepartmentName(department) : '학생';
-                
-                // 상단 프로필 업데이트
-                userNameElement.textContent = userName;
-                userRoleElement.textContent = departmentName;
-                
-                // 드롭다운 프로필 업데이트
-                if (dropdownUserNameElement) dropdownUserNameElement.textContent = userName;
-                if (dropdownUserRoleElement) dropdownUserRoleElement.textContent = departmentName;
-                
-                // 프로필 이미지 업데이트
-                updateProfileImage(currentUser);
-            } else {
-                userNameElement.textContent = '게스트';
-                userRoleElement.textContent = '방문자';
-                
-                if (dropdownUserNameElement) dropdownUserNameElement.textContent = '게스트';
-                if (dropdownUserRoleElement) dropdownUserRoleElement.textContent = '방문자';
-            }
-        }
-
-        // 학과명 변환
-        function getDepartmentName(department) {
-            const deptMap = {
-                'computerScience': '컴퓨터정보학과',
-                'business': '경영학과',
-                'nursing': '간호학과',
-                'engineering': '공학계열',
-                'arts': '예술계열'
-            };
-            return deptMap[department] || department;
-        }
-
-        // 프로필 이미지 업데이트
-        function updateProfileImage(userId) {
-            const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
-            const profileImage = localStorage.getItem(`user_${userId}_profileImage`) || '👤';
-            const avatarElement = document.getElementById('userAvatar');
-            
-            if (profileImageType === 'emoji') {
-                avatarElement.textContent = profileImage;
-            } else {
-                avatarElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" alt="프로필">`;
-            }
-        }
-
-        // 검색 기능
-        function handleGlobalSearch() {
-            const searchInput = document.getElementById('globalSearch');
-            const query = searchInput.value.trim().toLowerCase();
-            
-            if (!query) return;
-
-            // 건물 검색
-            const foundBuilding = buildingData.find(building => 
-                building.name.toLowerCase().includes(query) || 
-                building.description.toLowerCase().includes(query)
-            );
-
-            if (foundBuilding) {
-                showBuildingOnMap(foundBuilding.id);
-                searchInput.value = '';
-                return;
-            }
-
-            // 공지사항 검색
-            const foundNotice = noticesData.find(notice => 
-                notice.title.toLowerCase().includes(query) || 
-                notice.summary.toLowerCase().includes(query)
-            );
-
-            if (foundNotice) {
-                showContent('notices');
-                searchInput.value = '';
-                return;
-            }
-
-            alert('검색 결과를 찾을 수 없습니다.');
-        }
-
-        // 공지사항 상세 보기
-        function viewNoticeDetail(noticeId) {
-            const notice = noticesData.find(n => n.id === noticeId);
-            if (notice) {
-                alert(`${notice.title}\n\n${notice.summary}\n\n작성일: ${notice.date}`);
-            }
-        }
-
         // 사용자 메뉴 토글
         function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            
-            // 로그인하지 않은 경우 로그인 페이지로 이동
             if (!currentUser) {
                 const action = confirm('로그인하시겠습니까?');
                 if (action) {
@@ -2592,139 +1573,13 @@
                 return;
             }
             
-            // 드롭다운 토글
-            if (dropdown) {
-                const isVisible = dropdown.classList.contains('show');
-                if (isVisible) {
-                    closeUserDropdown();
-                } else {
-                    showUserDropdown();
-                }
-            }
+            // 사용자 메뉴 기능 구현 가능
+            alert('사용자 메뉴 기능은 준비 중입니다.');
         }
 
-        // 사용자 드롭다운 표시
-        function showUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) {
-                // 다른 드롭다운이 열려있다면 닫기
-                closeNotificationDropdown();
-                
-                dropdown.classList.add('show');
-            }
-        }
-
-        // 사용자 드롭다운 닫기
-        function closeUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('show');
-            }
-        }
-
-        // 모든 드롭다운 닫기
-        function closeAllDropdowns() {
-            closeNotificationDropdown();
-            closeUserDropdown();
-        }
-
-        // 프로필 표시
-        function showProfile() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            if (currentUser) {
-                window.open('profile-edit.html', '_blank');
-            } else {
-                alert('로그인이 필요한 서비스입니다.');
-            }
-            closeUserDropdown();
-        }
-
-        // 설정 표시
-        function showSettings() {
-            alert('설정 페이지는 준비 중입니다.');
-            closeUserDropdown();
-        }
-
-        // 로그아웃
-        function handleLogout() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            if (currentUser) {
-                // 로그아웃 확인 다이얼로그
-                const confirmLogout = confirm('로그아웃 하시겠습니까?');
-                if (confirmLogout) {
-                    // 로그아웃 처리
-                    localStorage.removeItem('currentLoggedInUser');
-                    
-                    // 드롭다운 닫기
-                    closeUserDropdown();
-                    
-                    // 사용자 상태 업데이트
-                    checkUserStatus();
-                    
-                    // 성공 메시지
-                    showLogoutSuccess();
-                    
-                    // 시간표 다시 업데이트
-                    updateTimetable();
-                }
-            } else {
-                alert('로그인 상태가 아닙니다.');
-            }
-            
-            // 드롭다운 닫기 (에러 상황에서도)
-            closeUserDropdown();
-        }
-
-        // 로그아웃 성공 메시지
-        function showLogoutSuccess() {
-            showMessage('로그아웃 되었습니다', 'success');
-        }
-
-        // 메시지 표시 함수
-        function showMessage(message, type = 'info') {
-            const notification = document.createElement('div');
-            const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 
-                            type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 
-                            'rgba(59, 130, 246, 0.9)';
-            
-            const icon = type === 'success' ? '✅' : 
-                        type === 'error' ? '❌' : 
-                        'ℹ️';
-
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: ${bgColor};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-                z-index: 10000;
-                font-weight: 600;
-                backdrop-filter: blur(20px);
-                border: 1px solid ${bgColor.replace('0.9', '0.3')};
-                animation: slideInRight 0.3s ease-out;
-            `;
-            
-            notification.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>${icon}</span>
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // 3초 후 자동 제거
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease-in';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
+        // 알림 토글
+        function toggleNotifications() {
+            alert('알림 기능은 준비 중입니다.');
         }
 
         // 사이드바 토글 (모바일)
@@ -2733,95 +1588,13 @@
             sidebar.classList.toggle('open');
         }
 
-        // 데이터 업데이트 함수들
-        function updateActivityStats() {
-            // 로컬 스토리지에서 활동 통계 가져오기
-            const statsData = localStorage.getItem('activityStats');
-            if (statsData) {
-                const stats = JSON.parse(statsData);
-                
-                const contestElement = document.getElementById('contestCount');
-                const clubElement = document.getElementById('clubCount');
-                const externalElement = document.getElementById('externalCount');
-                
-                if (contestElement) contestElement.textContent = stats.contestCount || 12;
-                if (clubElement) clubElement.textContent = stats.clubCount || 8;
-                if (externalElement) externalElement.textContent = stats.externalCount || 15;
-            }
-        }
-
-        function updateRestaurantInfo() {
-            // 로컬 스토리지에서 맛집 정보 가져오기
-            const restaurantsData = localStorage.getItem('restaurants');
-            if (restaurantsData) {
-                try {
-                    const restaurants = JSON.parse(restaurantsData);
-                    const popularRestaurants = restaurants
-                        .sort((a, b) => (b.likes || 0) - (a.likes || 0))
-                        .slice(0, 2);
-                    
-                    const restaurantGrid = document.getElementById('restaurantGrid');
-                    if (restaurantGrid && popularRestaurants.length > 0) {
-                        restaurantGrid.innerHTML = '';
-                        
-                        popularRestaurants.forEach(restaurant => {
-                            const categoryEmoji = getCategoryEmoji(restaurant.category || '한식');
-                            const restaurantCard = document.createElement('div');
-                            restaurantCard.className = 'restaurant-card';
-                            restaurantCard.onclick = () => window.open(`student-deals.html?id=${restaurant.id}`, '_blank');
-                            
-                            restaurantCard.innerHTML = `
-                                <div class="restaurant-image">${categoryEmoji}</div>
-                                <div class="restaurant-info">
-                                    <div class="restaurant-name">${restaurant.name}</div>
-                                    <div class="restaurant-category">${restaurant.category || '한식'}</div>
-                                    <div class="restaurant-discount">${restaurant.discount || '할인 없음'}</div>
-                                    <div class="restaurant-likes">👍 ${restaurant.likes || 0}</div>
-                                </div>
-                            `;
-                            
-                            restaurantGrid.appendChild(restaurantCard);
-                        });
-                    }
-                } catch (error) {
-                    console.error('맛집 정보 업데이트 오류:', error);
-                }
-            }
-        }
-
-        // 카테고리 이모지 반환
-        function getCategoryEmoji(category) {
-            const emojiMap = {
-                '한식': '🍲',
-                '중식': '🥢',
-                '일식': '🍣',
-                '양식': '🍝',
-                '분식': '🍜',
-                '카페': '☕',
-                '술집': '🍺'
-            };
-            return emojiMap[category] || '🍽️';
-        }
-
-        // 정기적 업데이트
-        setInterval(() => {
-            updateShuttleBusInfo();
-            updateTimetable();
-            updateActivityStats();
-            updateRestaurantInfo();
-        }, 60000); // 1분마다 업데이트
-
         // Storage 이벤트 리스너 (다른 탭에서 데이터 변경 감지)
         window.addEventListener('storage', function(event) {
-            if (event.key === 'activityStats') {
-                updateActivityStats();
-            } else if (event.key === 'restaurants') {
-                updateRestaurantInfo();
-            } else if (event.key === 'currentLoggedInUser' || event.key && event.key.includes('_profileImage')) {
+            if (event.key === 'currentLoggedInUser' || 
+                (event.key && event.key.includes('_profileImage')) ||
+                (event.key && event.key.includes('courses_'))) {
                 checkUserStatus();
-                updateTimetable(); // 로그인 상태 변경 시 시간표도 업데이트
-            } else if (event.key && event.key.includes('courses_')) {
-                updateTimetable(); // 시간표 데이터 변경 시 업데이트
+                updateTimetable();
             }
         });
 
@@ -2829,18 +1602,278 @@
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 checkUserStatus();
-                updateActivityStats();
-                updateRestaurantInfo();
                 updateTimetable();
             }
         });
 
-        // 초기 데이터 로드
-        setTimeout(() => {
-            updateActivityStats();
-            updateRestaurantInfo();
-            updateTimetable();
-        }, 1000);
+        // 추가 스타일
+        const additionalStyles = `
+            .shuttle-routes {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .route-tab {
+                flex: 1;
+                padding: 0.75rem;
+                background: rgba(15, 23, 42, 0.3);
+                border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 8px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .route-tab.active {
+                background: rgba(59, 130, 246, 0.2);
+                border-color: #3b82f6;
+            }
+
+            .route-name {
+                font-weight: 600;
+                color: #f1f5f9;
+                font-size: 0.9rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .route-desc {
+                font-size: 0.75rem;
+                color: #94a3b8;
+            }
+
+            .shuttle-status {
+                background: rgba(15, 23, 42, 0.3);
+                border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 12px;
+                padding: 1.5rem;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .shuttle-time {
+                font-size: 2rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.5rem;
+            }
+
+            .shuttle-desc {
+                color: #94a3b8;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+            }
+
+            .status-running {
+                background: rgba(16, 185, 129, 0.2);
+                color: #10b981;
+            }
+
+            .status-stopped {
+                background: rgba(239, 68, 68, 0.2);
+                color: #ef4444;
+            }
+
+            .activity-stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .activity-stat {
+                background: rgba(15, 23, 42, 0.3);
+                border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 12px;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .activity-number {
+                font-size: 1.8rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.25rem;
+            }
+
+            .activity-label {
+                color: #94a3b8;
+                font-size: 0.8rem;
+            }
+
+            .notice-item {
+                background: rgba(15, 23, 42, 0.3);
+                border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 12px;
+                padding: 1.5rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-bottom: 1rem;
+            }
+
+            .notice-item:hover {
+                background: rgba(59, 130, 246, 0.1);
+                border-color: rgba(59, 130, 246, 0.3);
+                transform: translateX(4px);
+            }
+
+            .notice-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+
+            .notice-category {
+                background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                color: white;
+                padding: 0.25rem 0.75rem;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
+
+            .notice-date {
+                color: #94a3b8;
+                font-size: 0.85rem;
+            }
+
+            .notice-title {
+                font-weight: 600;
+                color: #f1f5f9;
+                margin-bottom: 0.5rem;
+                font-size: 1.1rem;
+            }
+
+            .notice-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .restaurant-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .restaurant-card {
+                display: flex;
+                background: rgba(15, 23, 42, 0.3);
+                border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 12px;
+                padding: 1rem;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            .restaurant-card:hover {
+                background: rgba(59, 130, 246, 0.1);
+                border-color: rgba(59, 130, 246, 0.3);
+            }
+
+            .restaurant-image {
+                width: 80px;
+                height: 80px;
+                border-radius: 8px;
+                background: rgba(59, 130, 246, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2rem;
+                margin-right: 1rem;
+            }
+
+            .restaurant-info {
+                flex: 1;
+            }
+
+            .restaurant-name {
+                font-weight: 600;
+                color: #f1f5f9;
+                margin-bottom: 0.25rem;
+            }
+
+            .restaurant-category {
+                color: #3b82f6;
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .restaurant-discount {
+                color: #ef4444;
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+
+            .restaurant-likes {
+                color: #94a3b8;
+                font-size: 0.8rem;
+                margin-top: 0.5rem;
+            }
+        `;
+
+        // 스타일 추가
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = additionalStyles;
+        document.head.appendChild(styleSheet);
+
+        // 셔틀버스 관련 함수
+        function selectShuttleRoute(routeId) {
+            // 탭 활성화 상태 업데이트
+            document.querySelectorAll('.route-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 클릭된 탭 활성화
+            const clickedTab = event.target.closest('.route-tab');
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            }
+            
+            // 셔틀버스 정보 업데이트
+            updateShuttleBusInfo(routeId);
+        }
+
+        function updateShuttleBusInfo(routeId = 1) {
+            const routes = {
+                1: { name: '인천 남동구', time: '15분 후', desc: '학교 → 안양역 경유 (14:30)', status: 'running' },
+                2: { name: '시화지역', time: '25분 후', desc: '학교 → 시화역 경유 (14:40)', status: 'running' },
+                3: { name: '서울 목동', time: '운행종료', desc: '다음 운행: 내일 08:30', status: 'stopped' }
+            };
+
+            const route = routes[routeId];
+            
+            if (route) {
+                document.getElementById('shuttleTime').textContent = route.time;
+                document.getElementById('shuttleDesc').textContent = route.desc;
+                
+                const statusElement = document.getElementById('shuttleStatus');
+                statusElement.className = `status-badge status-${route.status}`;
+                statusElement.innerHTML = route.status === 'running' ? 
+                    '<span>🟢</span><span>운행중</span>' : 
+                    '<span>🔴</span><span>운행종료</span>';
+            }
+        }
+
+        // 초기 셔틀버스 정보 설정
+        updateShuttleBusInfo(1);
     </script>
 </body>
 </html>
