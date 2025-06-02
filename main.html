@@ -2404,7 +2404,27 @@
                 return;
             }
 
-            // 3. 교수님 이름 검색
+            // 3. 강의평가 페이지에서 검색
+            const lectureKeywords = ['영어회화', '웹프로그래밍', '웹 프로그래밍', '마케팅 원론', '마케팅', '경영통계학', '컴퓨터활용'];
+            const foundLecture = lectureKeywords.find(lecture => 
+                lecture.toLowerCase().includes(query) || query.includes(lecture.toLowerCase())
+            );
+
+            if (foundLecture) {
+                console.log('강의 발견:', foundLecture);
+                showContent('lecture-review');
+                searchInput.value = '';
+                
+                // 검색어에 맞는 강의평가만 필터링해서 표시
+                setTimeout(() => {
+                    filterLectureReviews(query);
+                }, 100);
+                
+                showMessage(`"${query}" 검색 결과를 표시합니다.`, 'success');
+                return;
+            }
+
+            // 4. 교수님 이름 검색
             const professorKeywords = ['김민수', '이지영', 'john smith', '박성호', '정민지'];
             const foundProfessor = professorKeywords.find(prof => 
                 prof.toLowerCase().includes(query) || query.includes(prof.toLowerCase())
@@ -2414,11 +2434,17 @@
                 console.log('교수님 발견:', foundProfessor);
                 showContent('lecture-review');
                 searchInput.value = '';
-                showMessage(`"${foundProfessor}" 교수님 관련 강의평가를 찾았습니다.`, 'success');
+                
+                // 해당 교수님 강의평가만 필터링해서 표시
+                setTimeout(() => {
+                    filterLectureReviews(query);
+                }, 100);
+                
+                showMessage(`"${query}" 교수님 관련 강의평가를 표시합니다.`, 'success');
                 return;
             }
 
-            // 4. 강의실 검색
+            // 5. 강의실 검색
             const classroomKeywords = ['301호', '201호', '101호', '공학1관', '문화1관', '문화2관'];
             const foundClassroom = classroomKeywords.find(room => 
                 room.toLowerCase().includes(query) || query.includes(room.toLowerCase())
@@ -2439,20 +2465,6 @@
                 }
                 searchInput.value = '';
                 showMessage(`"${foundClassroom}" 강의실 정보를 찾았습니다.`, 'success');
-                return;
-            }
-
-            // 5. 강의명 검색
-            const courseKeywords = ['웹프로그래밍', '웹 프로그래밍', '마케팅', '영어회화', '영어', '경영통계학', '컴퓨터활용'];
-            const foundCourse = courseKeywords.find(course => 
-                course.toLowerCase().includes(query) || query.includes(course.toLowerCase())
-            );
-
-            if (foundCourse) {
-                console.log('강의 발견:', foundCourse);
-                showContent('lecture-review');
-                searchInput.value = '';
-                showMessage(`"${foundCourse}" 강의 관련 정보를 찾았습니다.`, 'success');
                 return;
             }
 
@@ -2495,6 +2507,130 @@
             // 검색 결과가 없는 경우
             console.log('검색 결과 없음');
             showMessage(`"${query}"에 대한 검색 결과를 찾을 수 없습니다.`, 'error');
+        }
+
+        // 강의평가 필터링 함수
+        function filterLectureReviews(query) {
+            const lectureReviewContent = document.getElementById('lecture-reviewContent');
+            if (!lectureReviewContent) return;
+
+            // 모든 강의평가 카드 가져오기
+            const allCards = lectureReviewContent.querySelectorAll('.card');
+            
+            allCards.forEach(card => {
+                const noticeItems = card.querySelectorAll('.notice-item');
+                let hasMatchingItems = false;
+
+                noticeItems.forEach(item => {
+                    const title = item.querySelector('.notice-title');
+                    const summary = item.querySelector('.notice-summary');
+                    
+                    if (title && summary) {
+                        const titleText = title.textContent.toLowerCase();
+                        const summaryText = summary.textContent.toLowerCase();
+                        
+                        // 검색어가 제목이나 내용에 포함되어 있는지 확인
+                        if (titleText.includes(query.toLowerCase()) || summaryText.includes(query.toLowerCase())) {
+                            item.style.display = 'block';
+                            hasMatchingItems = true;
+                            
+                            // 검색어 하이라이트 표시
+                            highlightSearchTerm(title, query);
+                            highlightSearchTerm(summary, query);
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
+                });
+
+                // 카드에 일치하는 항목이 있으면 카드 표시, 없으면 숨김
+                if (hasMatchingItems) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // 검색 결과 개수 표시
+            const visibleItems = lectureReviewContent.querySelectorAll('.notice-item[style*="block"]');
+            if (visibleItems.length === 0) {
+                // 검색 결과가 없을 때 메시지 표시
+                showNoResultsMessage(lectureReviewContent, query);
+            }
+        }
+
+        // 검색어 하이라이트 함수
+        function highlightSearchTerm(element, query) {
+            if (!element || !query) return;
+            
+            const text = element.textContent;
+            const regex = new RegExp(`(${query})`, 'gi');
+            const highlightedText = text.replace(regex, '<mark style="background: #3b82f6; color: white; padding: 0.1rem 0.2rem; border-radius: 3px;">$1</mark>');
+            element.innerHTML = highlightedText;
+        }
+
+        // 검색 결과 없음 메시지 표시
+        function showNoResultsMessage(container, query) {
+            // 기존 메시지 제거
+            const existingMessage = container.querySelector('.no-results-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // 새 메시지 생성
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'no-results-message';
+            messageDiv.style.cssText = `
+                text-align: center;
+                padding: 3rem;
+                color: #94a3b8;
+                background: rgba(30, 41, 59, 0.5);
+                border-radius: 12px;
+                margin: 2rem 0;
+            `;
+            messageDiv.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                <h3 style="color: #f1f5f9; margin-bottom: 0.5rem;">"${query}"에 대한 검색 결과가 없습니다</h3>
+                <p>다른 검색어를 시도해보세요.</p>
+                <button onclick="clearSearchFilter()" style="
+                    background: #3b82f6;
+                    color: white;
+                    border: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    margin-top: 1rem;
+                    cursor: pointer;
+                ">전체 보기</button>
+            `;
+            
+            container.appendChild(messageDiv);
+        }
+
+        // 검색 필터 초기화
+        function clearSearchFilter() {
+            const lectureReviewContent = document.getElementById('lecture-reviewContent');
+            if (!lectureReviewContent) return;
+
+            // 모든 카드와 아이템 다시 표시
+            const allCards = lectureReviewContent.querySelectorAll('.card');
+            const allItems = lectureReviewContent.querySelectorAll('.notice-item');
+            
+            allCards.forEach(card => card.style.display = 'block');
+            allItems.forEach(item => item.style.display = 'block');
+
+            // 하이라이트 제거
+            const highlightedElements = lectureReviewContent.querySelectorAll('mark');
+            highlightedElements.forEach(mark => {
+                mark.outerHTML = mark.textContent;
+            });
+
+            // 검색 결과 없음 메시지 제거
+            const noResultsMessage = lectureReviewContent.querySelector('.no-results-message');
+            if (noResultsMessage) {
+                noResultsMessage.remove();
+            }
+
+            showMessage('전체 강의평가를 표시합니다.', 'success');
         }
 
         // 공지사항 상세 보기
