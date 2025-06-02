@@ -121,6 +121,140 @@
             border-radius: 50%;
         }
 
+        /* 알림 드롭다운 메뉴 */
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 0.5rem 0;
+            min-width: 350px;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1100;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .notification-dropdown.show {
+            display: block;
+            animation: fadeInDown 0.3s ease-out;
+        }
+
+        .notification-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-subtitle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .notification-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+        }
+
+        .notification-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .notification-item.unread {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.academic {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .notification-icon.scholarship {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .notification-icon.shuttle {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-text {
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .notification-badge {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 0.5rem;
+        }
+
+        .notification-footer {
+            padding: 0.75rem 1.5rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            text-align: center;
+        }
+
+        .notification-footer button {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .notification-footer button:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         .user-profile {
             display: flex;
             align-items: center;
@@ -1024,9 +1158,59 @@
             </div>
             
             <div class="user-menu">
-                <button class="notification-btn" onclick="showNotifications()">
+                <button class="notification-btn" onclick="toggleNotifications()">
                     🔔
                     <div class="notification-dot"></div>
+                    <!-- 알림 드롭다운 메뉴 -->
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <div class="notification-title">알림</div>
+                            <div class="notification-subtitle">새로운 알림 3개</div>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-item unread" onclick="readNotification(1)">
+                                <div class="notification-icon academic">📚</div>
+                                <div class="notification-content">
+                                    <div class="notification-text">중간고사 일정이 안내되었습니다</div>
+                                    <div class="notification-time">2분 전</div>
+                                </div>
+                                <div class="notification-badge"></div>
+                            </div>
+                            <div class="notification-item unread" onclick="readNotification(2)">
+                                <div class="notification-icon scholarship">💰</div>
+                                <div class="notification-content">
+                                    <div class="notification-text">국가장학금 신청 마감이 임박했습니다</div>
+                                    <div class="notification-time">1시간 전</div>
+                                </div>
+                                <div class="notification-badge"></div>
+                            </div>
+                            <div class="notification-item unread" onclick="readNotification(3)">
+                                <div class="notification-icon shuttle">🚌</div>
+                                <div class="notification-content">
+                                    <div class="notification-text">셔틀버스 운행 시간이 변경되었습니다</div>
+                                    <div class="notification-time">3시간 전</div>
+                                </div>
+                                <div class="notification-badge"></div>
+                            </div>
+                            <div class="notification-item" onclick="readNotification(4)">
+                                <div class="notification-icon academic">🎓</div>
+                                <div class="notification-content">
+                                    <div class="notification-text">새로운 강의평가가 등록되었습니다</div>
+                                    <div class="notification-time">1일 전</div>
+                                </div>
+                            </div>
+                            <div class="notification-item" onclick="readNotification(5)">
+                                <div class="notification-icon shuttle">🍽️</div>
+                                <div class="notification-content">
+                                    <div class="notification-text">새로운 맛집 할인 정보가 추가되었습니다</div>
+                                    <div class="notification-time">2일 전</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <button onclick="markAllAsRead()">모두 읽음으로 표시</button>
+                        </div>
+                    </div>
                 </button>
                 
                 <div class="user-profile" onclick="toggleUserMenu()">
@@ -1569,7 +1753,7 @@
                         </div>
                     </div>
 
-                        <!-- 강의평가 작성 -->
+                    <!-- 강의평가 작성 -->
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">강의평가 작성</h3>
@@ -1586,6 +1770,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- 공지사항 콘텐츠 -->
             <div id="noticesContent" style="display: none;">
                 <div class="content-header">
@@ -2163,9 +2348,128 @@
             }
         }
 
-        // 알림 표시
-        function showNotifications() {
-            alert('새로운 알림이 3개 있습니다:\n\n1. 중간고사 일정 안내\n2. 장학금 신청 마감\n3. 셔틀버스 운행 변경');
+        // 알림 관련 함수들
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            
+            if (dropdown) {
+                const isVisible = dropdown.classList.contains('show');
+                if (isVisible) {
+                    closeNotificationDropdown();
+                } else {
+                    showNotificationDropdown();
+                }
+            }
+        }
+
+        // 알림 드롭다운 표시
+        function showNotificationDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            if (dropdown) {
+                // 다른 드롭다운이 열려있다면 닫기
+                closeAllDropdowns();
+                
+                dropdown.classList.add('show');
+                
+                // 외부 클릭 시 닫기
+                setTimeout(() => {
+                    document.addEventListener('click', handleNotificationOutsideClick);
+                }, 100);
+            }
+        }
+
+        // 알림 드롭다운 닫기
+        function closeNotificationDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+                document.removeEventListener('click', handleNotificationOutsideClick);
+            }
+        }
+
+        // 알림 외부 클릭 처리
+        function handleNotificationOutsideClick(event) {
+            const notificationBtn = event.target.closest('.notification-btn');
+            if (!notificationBtn) {
+                closeNotificationDropdown();
+            }
+        }
+
+        // 알림 읽기
+        function readNotification(notificationId) {
+            const notificationItem = event.target.closest('.notification-item');
+            if (notificationItem) {
+                notificationItem.classList.remove('unread');
+                const badge = notificationItem.querySelector('.notification-badge');
+                if (badge) {
+                    badge.remove();
+                }
+                
+                // 읽지 않은 알림 수 업데이트
+                updateUnreadCount();
+            }
+            
+            // 알림 상세 처리 (예: 관련 페이지로 이동)
+            handleNotificationClick(notificationId);
+        }
+
+        // 모든 알림을 읽음으로 표시
+        function markAllAsRead() {
+            const unreadItems = document.querySelectorAll('.notification-item.unread');
+            unreadItems.forEach(item => {
+                item.classList.remove('unread');
+                const badge = item.querySelector('.notification-badge');
+                if (badge) {
+                    badge.remove();
+                }
+            });
+            
+            // 알림 점 숨기기
+            const notificationDot = document.querySelector('.notification-dot');
+            if (notificationDot) {
+                notificationDot.style.display = 'none';
+            }
+            
+            // 헤더 업데이트
+            const subtitle = document.querySelector('.notification-subtitle');
+            if (subtitle) {
+                subtitle.textContent = '새로운 알림이 없습니다';
+            }
+            
+            closeNotificationDropdown();
+        }
+
+        // 읽지 않은 알림 수 업데이트
+        function updateUnreadCount() {
+            const unreadItems = document.querySelectorAll('.notification-item.unread');
+            const count = unreadItems.length;
+            
+            const notificationDot = document.querySelector('.notification-dot');
+            const subtitle = document.querySelector('.notification-subtitle');
+            
+            if (count === 0) {
+                if (notificationDot) notificationDot.style.display = 'none';
+                if (subtitle) subtitle.textContent = '새로운 알림이 없습니다';
+            } else {
+                if (notificationDot) notificationDot.style.display = 'block';
+                if (subtitle) subtitle.textContent = `새로운 알림 ${count}개`;
+            }
+        }
+
+        // 알림 클릭 처리
+        function handleNotificationClick(notificationId) {
+            const actions = {
+                1: () => showContent('notices'), // 중간고사 일정 -> 공지사항
+                2: () => alert('장학금 신청 페이지로 이동합니다'), // 장학금
+                3: () => openQuickLink('shuttle'), // 셔틀버스
+                4: () => showContent('lecture-review'), // 강의평가
+                5: () => openQuickLink('deals') // 맛집 정보
+            };
+            
+            if (actions[notificationId]) {
+                actions[notificationId]();
+                closeNotificationDropdown();
+            }
         }
 
         // 사용자 메뉴 토글
@@ -2223,7 +2527,11 @@
             document.querySelectorAll('.user-dropdown').forEach(dropdown => {
                 dropdown.classList.remove('show');
             });
+            document.querySelectorAll('.notification-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
             document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener('click', handleNotificationOutsideClick);
         }
 
         // 외부 클릭 처리
