@@ -121,7 +121,7 @@
             border-radius: 50%;
         }
 
-        /* 알림 드롭다운 메뉴 */
+        /* 개선된 알림 드롭다운 메뉴 */
         .notification-dropdown {
             position: absolute;
             top: 100%;
@@ -131,8 +131,8 @@
             border: 1px solid rgba(148, 163, 184, 0.2);
             border-radius: 12px;
             padding: 0.5rem 0;
-            min-width: 350px;
-            max-width: 400px;
+            min-width: 380px;
+            max-width: 420px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             z-index: 1100;
             display: none;
@@ -166,56 +166,82 @@
             overflow-y: auto;
         }
 
+        /* 개선된 알림 아이템 */
         .notification-item {
             display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            padding: 1rem 1.5rem;
+            align-items: center;
+            gap: 0;
+            padding: 1.25rem 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+            position: relative;
         }
 
         .notification-item:hover {
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(59, 130, 246, 0.08);
         }
 
         .notification-item.unread {
-            background: rgba(59, 130, 246, 0.05);
+            background: rgba(59, 130, 246, 0.04);
         }
 
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* 개선된 알림 아이콘 */
         .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             flex-shrink: 0;
+            margin-right: 0.75rem;
         }
 
         .notification-icon.academic {
-            background: rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .notification-icon.scholarship {
-            background: rgba(245, 158, 11, 0.2);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .notification-icon.shuttle {
-            background: rgba(16, 185, 129, 0.2);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
+        .notification-icon.food {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* 개선된 알림 콘텐츠 */
         .notification-content {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
 
         .notification-text {
             font-weight: 500;
             color: #f1f5f9;
-            margin-bottom: 0.25rem;
             font-size: 0.9rem;
             line-height: 1.4;
         }
@@ -225,13 +251,15 @@
             color: #94a3b8;
         }
 
+        /* 개선된 알림 뱃지 */
         .notification-badge {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: #3b82f6;
             border-radius: 50%;
             flex-shrink: 0;
-            margin-top: 0.5rem;
+            margin-left: auto;
+            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.95);
         }
 
         .notification-footer {
@@ -1161,7 +1189,7 @@
                 <button class="notification-btn" onclick="toggleNotifications()">
                     🔔
                     <div class="notification-dot"></div>
-                    <!-- 알림 드롭다운 메뉴 -->
+                    <!-- 개선된 알림 드롭다운 메뉴 -->
                     <div class="notification-dropdown" id="notificationDropdown">
                         <div class="notification-header">
                             <div class="notification-title">알림</div>
@@ -1200,7 +1228,7 @@
                                 </div>
                             </div>
                             <div class="notification-item" onclick="readNotification(5)">
-                                <div class="notification-icon shuttle">🍽️</div>
+                                <div class="notification-icon food">🍽️</div>
                                 <div class="notification-content">
                                     <div class="notification-text">새로운 맛집 할인 정보가 추가되었습니다</div>
                                     <div class="notification-time">2일 전</div>
