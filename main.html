@@ -678,8 +678,22 @@
         .class-time {
             font-weight: 700;
             color: #3b82f6;
-            min-width: 60px;
+            min-width: 100px;
             font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .class-time-main {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .class-time-remaining {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 400;
         }
 
         .class-info {
@@ -703,6 +717,7 @@
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .status-current {
@@ -1381,30 +1396,7 @@
                             <span class="card-icon">📅</span>
                         </div>
                         <div id="timetableContent">
-                            <div class="class-item">
-                                <div class="class-time">09:30</div>
-                                <div class="class-info">
-                                    <div class="class-name">웹 프로그래밍 실습</div>
-                                    <div class="class-location">공학1관 301호 | 김민수 교수님</div>
-                                </div>
-                                <div class="class-status status-current">진행중</div>
-                            </div>
-                            <div class="class-item">
-                                <div class="class-time">11:30</div>
-                                <div class="class-info">
-                                    <div class="class-name">마케팅 원론</div>
-                                    <div class="class-location">문화1관 201호 | 이지영 교수님</div>
-                                </div>
-                                <div class="class-status status-upcoming">예정</div>
-                            </div>
-                            <div class="class-item">
-                                <div class="class-time">14:30</div>
-                                <div class="class-info">
-                                    <div class="class-name">영어회화</div>
-                                    <div class="class-location">문화2관 101호 | John Smith 교수님</div>
-                                </div>
-                                <div class="class-status status-upcoming">예정</div>
-                            </div>
+                            <!-- 시간표 데이터가 동적으로 생성됩니다 -->
                         </div>
                     </div>
 
@@ -1943,6 +1935,9 @@
             // 알림 카운트 업데이트
             updateNotificationCount();
             
+            // 시간표 업데이트
+            updateTimetable();
+            
             console.log('앱 초기화 완료');
         }
 
@@ -2003,6 +1998,181 @@
                 console.log('네이버 지도 초기화 완료');
             } catch (error) {
                 console.error('지도 초기화 오류:', error);
+            }
+        }
+
+        // 시간표 업데이트 (실제 시간표 페이지 데이터 연동)
+        function updateTimetable() {
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            if (!currentUser) {
+                // 로그인하지 않은 경우 기본 메시지 표시
+                const timetableContent = document.getElementById('timetableContent');
+                if (timetableContent) {
+                    timetableContent.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                            <p>로그인하여 개인 시간표를 확인하세요</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            // 현재 시간 정보
+            const now = new Date();
+            const currentDay = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+            // 현재 학기 설정
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            let semester = { year: currentYear, term: 1 };
+            
+            if (currentMonth >= 3 && currentMonth <= 6) {
+                semester = { year: currentYear, term: 1 };
+            } else if (currentMonth >= 9 && currentMonth <= 12) {
+                semester = { year: currentYear, term: 2 };
+            } else if (currentMonth >= 1 && currentMonth <= 2) {
+                semester = { year: currentYear - 1, term: 2 };
+            } else {
+                semester = { year: currentYear, term: 1 };
+            }
+
+            // 현재 시간표 정보 가져오기
+            const savedCurrentTimetable = localStorage.getItem(`currentTimetable_user_${currentUser}`);
+            let currentTimetableId = 1;
+            if (savedCurrentTimetable) {
+                const timetableInfo = JSON.parse(savedCurrentTimetable);
+                currentTimetableId = timetableInfo.id;
+            }
+
+            // 시간표 데이터 로드
+            const semesterKey = `courses_${semester.year}_${semester.term}_${currentTimetableId}_user_${currentUser}`;
+            const savedCourses = localStorage.getItem(semesterKey);
+            let courses = [];
+            
+            if (savedCourses) {
+                courses = JSON.parse(savedCourses);
+            }
+
+            const timetableContent = document.getElementById('timetableContent');
+            if (!timetableContent) return;
+
+            // 과목이 없는 경우
+            if (courses.length === 0) {
+                timetableContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <p>등록된 과목이 없습니다</p>
+                        <button class="btn btn-primary" onclick="openQuickLink('timetable')" style="margin-top: 1rem;">
+                            시간표 작성하기
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // 오늘의 수업 필터링 및 시간 계산
+            const todayCourses = [];
+            
+            courses.forEach(course => {
+                course.times.forEach(time => {
+                    // 요일 매칭 (시간표의 1=월요일을 실제 요일과 매칭)
+                    if (time.day === currentDay || (currentDay === 0 && time.day === 6)) { // 일요일은 토요일 수업으로 처리
+                        // 시작 시간 계산 (9시부터 시작, 30분 시작)
+                        const startHour = 8 + time.start;
+                        const startMinute = 30;
+                        const startTime = startHour * 60 + startMinute;
+                        
+                        // 종료 시간 계산 (각 교시는 50분, 20분 종료)
+                        const endHour = 8 + time.end + 1;
+                        const endMinute = 20;
+                        const endTime = endHour * 60 + endMinute;
+
+                        // 상태 판단
+                        let status = 'upcoming';
+                        let timeInfo = '';
+                        
+                        if (currentTime >= startTime && currentTime < endTime) {
+                            status = 'current';
+                            const remainingMinutes = endTime - currentTime;
+                            timeInfo = formatTimeRemaining(remainingMinutes, '종료까지');
+                        } else if (currentTime >= endTime) {
+                            status = 'finished';
+                            timeInfo = '수업 종료';
+                        } else {
+                            status = 'upcoming';
+                            const minutesToStart = startTime - currentTime;
+                            if (minutesToStart > 0) {
+                                timeInfo = formatTimeRemaining(minutesToStart, '시작까지');
+                            } else {
+                                timeInfo = '곧 시작';
+                            }
+                        }
+
+                        todayCourses.push({
+                            ...course,
+                            time: time,
+                            status: status,
+                            timeInfo: timeInfo,
+                            startTime: startTime,
+                            endTime: endTime,
+                            displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`
+                        });
+                    }
+                });
+            });
+
+            // 시간순으로 정렬
+            todayCourses.sort((a, b) => a.startTime - b.startTime);
+
+            if (todayCourses.length === 0) {
+                timetableContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <p>오늘은 수업이 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // HTML 생성
+            timetableContent.innerHTML = '';
+
+            todayCourses.forEach(classInfo => {
+                const statusText = {
+                    'current': '진행중',
+                    'upcoming': '예정',
+                    'finished': '종료'
+                };
+
+                const classItem = document.createElement('div');
+                classItem.className = 'class-item';
+                classItem.innerHTML = `
+                    <div class="class-time">
+                        <div class="class-time-main">${classInfo.displayTime}</div>
+                        <div class="class-time-remaining">${classInfo.timeInfo}</div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-name">${classInfo.name}</div>
+                        <div class="class-location">${classInfo.room || '강의실 미정'} | ${classInfo.professor || '교수명 미정'}</div>
+                    </div>
+                    <div class="class-status status-${classInfo.status}">${statusText[classInfo.status]}</div>
+                `;
+                
+                timetableContent.appendChild(classItem);
+            });
+        }
+
+        // 시간 포맷팅 함수
+        function formatTimeRemaining(minutes, suffix) {
+            if (minutes < 60) {
+                return `${minutes}분 ${suffix}`;
+            } else {
+                const hours = Math.floor(minutes / 60);
+                const remainingMinutes = minutes % 60;
+                if (remainingMinutes === 0) {
+                    return `${hours}시간 ${suffix}`;
+                } else {
+                    return `${hours}시간 ${remainingMinutes}분 ${suffix}`;
+                }
             }
         }
 
@@ -2493,6 +2663,9 @@
                     
                     // 성공 메시지
                     showLogoutSuccess();
+                    
+                    // 시간표 다시 업데이트
+                    updateTimetable();
                 }
             } else {
                 alert('로그인 상태가 아닙니다.');
@@ -2630,57 +2803,6 @@
             return emojiMap[category] || '🍽️';
         }
 
-        // 시간표 업데이트
-        function updateTimetable() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            if (!currentUser) return;
-
-            // 현재 시간 정보
-            const now = new Date();
-            const currentDay = now.getDay();
-            const currentTime = now.getHours() * 60 + now.getMinutes();
-
-            // 더미 시간표 데이터 (실제로는 로컬 스토리지에서 가져와야 함)
-            const classes = [
-                { name: '웹 프로그래밍 실습', time: '09:30', location: '공학1관 301호', professor: '김민수', startMinutes: 570, endMinutes: 620 },
-                { name: '마케팅 원론', time: '11:30', location: '문화1관 201호', professor: '이지영', startMinutes: 690, endMinutes: 740 },
-                { name: '영어회화', time: '14:30', location: '문화2관 101호', professor: 'John Smith', startMinutes: 870, endMinutes: 920 }
-            ];
-
-            const timetableContent = document.getElementById('timetableContent');
-            if (timetableContent) {
-                timetableContent.innerHTML = '';
-
-                classes.forEach(classInfo => {
-                    let status = 'upcoming';
-                    if (currentTime >= classInfo.startMinutes && currentTime < classInfo.endMinutes) {
-                        status = 'current';
-                    } else if (currentTime >= classInfo.endMinutes) {
-                        status = 'finished';
-                    }
-
-                    const statusText = {
-                        'current': '진행중',
-                        'upcoming': '예정',
-                        'finished': '종료'
-                    };
-
-                    const classItem = document.createElement('div');
-                    classItem.className = 'class-item';
-                    classItem.innerHTML = `
-                        <div class="class-time">${classInfo.time}</div>
-                        <div class="class-info">
-                            <div class="class-name">${classInfo.name}</div>
-                            <div class="class-location">${classInfo.location} | ${classInfo.professor} 교수님</div>
-                        </div>
-                        <div class="class-status status-${status}">${statusText[status]}</div>
-                    `;
-                    
-                    timetableContent.appendChild(classItem);
-                });
-            }
-        }
-
         // 정기적 업데이트
         setInterval(() => {
             updateShuttleBusInfo();
@@ -2697,6 +2819,9 @@
                 updateRestaurantInfo();
             } else if (event.key === 'currentLoggedInUser' || event.key && event.key.includes('_profileImage')) {
                 checkUserStatus();
+                updateTimetable(); // 로그인 상태 변경 시 시간표도 업데이트
+            } else if (event.key && event.key.includes('courses_')) {
+                updateTimetable(); // 시간표 데이터 변경 시 업데이트
             }
         });
 
