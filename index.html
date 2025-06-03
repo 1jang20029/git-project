@@ -73,7 +73,10 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <!-- 설정 메뉴를 settings.html로 이동하도록 수정 -->
+            <button class="dropdown-item" onclick="toggleTheme()">
+              <span>🌗</span>
+              <span>다크/라이트 모드</span>
+            </button>
             <button class="dropdown-item" onclick="window.location.href='settings.html'">
               <span>⚙️</span>
               <span>설정</span>
@@ -95,24 +98,24 @@
       <div class="sidebar-section">
         <div class="sidebar-title">메인 메뉴</div>
         <ul class="nav-list">
-          <li class="nav-item active" onclick="showContent('home')">
+          <li class="nav-item" onclick="showContent('home')" id="nav-home">
             <span class="nav-icon" title="대시보드">🏠</span>
             <span>대시보드</span>
           </li>
-          <li class="nav-item" onclick="showContent('buildings')">
+          <li class="nav-item" onclick="showContent('buildings')" id="nav-buildings">
             <span class="nav-icon" title="건물 & 시설">🏢</span>
             <span>건물 &amp; 시설</span>
           </li>
-          <!-- 삭제된 학생 서비스 메뉴 -->
-          <li class="nav-item" onclick="showContent('community')">
+          <!-- ▶ “설정” 메뉴는 메인 메뉴에서 완전히 제거 -->
+          <li class="nav-item" onclick="showContent('community')" id="nav-community">
             <span class="nav-icon" title="커뮤니티">💬</span>
             <span>커뮤니티</span>
           </li>
-          <li class="nav-item" onclick="showContent('lecture-review')">
+          <li class="nav-item" onclick="showContent('lecture-review')" id="nav-lecture-review">
             <span class="nav-icon" title="강의평가">⭐</span>
             <span>강의평가</span>
           </li>
-          <li class="nav-item" onclick="showContent('notices')">
+          <li class="nav-item" onclick="showContent('notices')" id="nav-notices">
             <span class="nav-icon" title="공지사항">📢</span>
             <span>공지사항</span>
           </li>
@@ -122,16 +125,15 @@
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="openQuickLink('timetable')">
+          <li class="nav-item" onclick="openQuickLink('timetable')" id="nav-timetable">
             <span class="nav-icon" title="내 시간표">📅</span>
             <span>내 시간표</span>
           </li>
-          <li class="nav-item" onclick="openQuickLink('shuttle')">
+          <li class="nav-item" onclick="openQuickLink('shuttle')" id="nav-shuttle">
             <span class="nav-icon" title="셔틀버스">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <!-- 삭제된 학내 일정 메뉴 -->
-          <li class="nav-item" onclick="openQuickLink('academic-calendar')">
+          <li class="nav-item" onclick="openQuickLink('academic-calendar')" id="nav-academic-calendar">
             <span class="nav-icon" title="학사일정">🗓️</span>
             <span>학사일정</span>
           </li>
@@ -141,16 +143,15 @@
       <div class="sidebar-section">
         <div class="sidebar-title">계정</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="showProfile()">
+          <li class="nav-item" onclick="showProfile()" id="nav-profile">
             <span class="nav-icon" title="프로필">👤</span>
             <span>프로필</span>
           </li>
-          <!-- 설정 메뉴를 settings.html로 이동하도록 수정 -->
-          <li class="nav-item" onclick="window.location.href='settings.html'">
+          <li class="nav-item" onclick="window.location.href='settings.html'" id="nav-settings">
             <span class="nav-icon" title="설정">⚙️</span>
             <span>설정</span>
           </li>
-          <li class="nav-item" onclick="handleLogout()">
+          <li class="nav-item" onclick="handleLogout()" id="nav-logout">
             <span class="nav-icon" title="로그아웃">🚪</span>
             <span>로그아웃</span>
           </li>

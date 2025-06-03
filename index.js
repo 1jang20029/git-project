@@ -1,3 +1,9 @@
+// =============================================================================
+// index.js
+// ──────────────────────────────────────────────────────────────────────────────
+// 메인 페이지 동작 로직 (해시(#) 기반 탭 전환 기능 추가됨)
+// =============================================================================
+
 // 전역 변수
 let naverMap;
 let mapMarkers = [];
@@ -8,7 +14,48 @@ let currentContent = 'home';
 let unreadNotifications = 0;
 
 // ---------------------------
-// 데이터 로드 함수들
+// 해시(#) 기반 초기 탭 열기
+// ---------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) URL에 해시(#buildings, #community 등)이 있으면 해당 탭 열기
+  const hash = window.location.hash.slice(1);
+  if (hash && document.getElementById(hash + 'Content')) {
+    showContent(hash);
+  } else {
+    // 기본값: 홈 탭 열기
+    showContent('home');
+  }
+
+  initializeApp();
+
+  // ESC 누르면 드롭다운 닫기
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeAllDropdowns();
+    }
+  });
+
+  // 검색 입력 엔터 처리
+  const searchInput = document.getElementById('globalSearch');
+  if (searchInput) {
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleGlobalSearch();
+      }
+    });
+  }
+
+  // 빈 공간 클릭 시 드롭다운 닫기
+  document.addEventListener('click', (event) => {
+    const ntBtn = event.target.closest('.notification-btn');
+    const upBtn = event.target.closest('.user-profile');
+    if (!ntBtn) closeNotificationDropdown();
+    if (!upBtn) closeUserDropdown();
+  });
+});
+
+// ---------------------------
+// 데이터 로드 함수들 (생략 없이 모두 포함됨)
 // ---------------------------
 
 // 알림 데이터 로드
@@ -773,8 +820,9 @@ async function handleGlobalSearch() {
     );
     if (res.ok) {
       const foundBuilding = await res.json();
-      showBuildingOnMap(foundBuilding.id);
-      document.getElementById('globalSearch').value = '';
+      // 해당 건물 탭으로 이동
+      window.location.hash = 'buildings';
+      window.location.reload();
       return;
     }
   } catch {}
@@ -785,8 +833,9 @@ async function handleGlobalSearch() {
     );
     if (res.ok) {
       const foundNotice = await res.json();
-      showContent('notices');
-      document.getElementById('globalSearch').value = '';
+      // 해당 공지 탭으로 이동
+      window.location.hash = 'notices';
+      window.location.reload();
       return;
     }
   } catch {}
@@ -802,7 +851,6 @@ function showContent(type) {
     'homeContent',
     'buildingsContent',
     'noticesContent',
-    'servicesContent',
     'communityContent',
     'lecture-reviewContent',
   ];
@@ -818,8 +866,11 @@ function showContent(type) {
   document.querySelectorAll('.nav-item').forEach((item) => {
     item.classList.remove('active');
   });
-  event.target.closest('.nav-item').classList.add('active');
+  const navItem = document.getElementById('nav-' + type);
+  if (navItem) navItem.classList.add('active');
   currentContent = type;
+  // 해시도 업데이트
+  window.location.hash = type;
   if (type === 'buildings' && naverMap) {
     setTimeout(() => naverMap.refresh(), 100);
   }
@@ -949,34 +1000,8 @@ function showMessage(message, type = 'info') {
 }
 
 // ---------------------------
-// 이벤트 & 초기화
+// 초기화 함수
 // ---------------------------
-
-document.addEventListener('DOMContentLoaded', () => {
-  initializeApp();
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeAllDropdowns();
-    }
-  });
-
-  const searchInput = document.getElementById('globalSearch');
-  if (searchInput) {
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        handleGlobalSearch();
-      }
-    });
-  }
-
-  document.addEventListener('click', (event) => {
-    const ntBtn = event.target.closest('.notification-btn');
-    const upBtn = event.target.closest('.user-profile');
-    if (!ntBtn) closeNotificationDropdown();
-    if (!upBtn) closeUserDropdown();
-  });
-});
 
 async function initializeApp() {
   initNaverMap();
