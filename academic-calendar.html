@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>2025학년도 학사일정</title>
-    <link rel="stylesheet" href="academic-calendar.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="academic-calendar.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
 </head>
 <body>
     <div class="container">
         <!-- 헤더 -->
         <header class="header">
             <div class="header-content">
-                <!-- 뒤로 가기 버튼 추가 -->
+                <!-- 뒤로 가기 버튼 -->
                 <button class="back-button" onclick="goBackToMain()">
+                    <i class="fas fa-arrow-left"></i>
                     <span>메인으로</span>
                 </button>
-                
                 <div class="university-info">
                     <h1 class="title">
-                        <i class="fas fa-university"></i>
-                        연성대학교
+                        <i class="fas fa-university"></i> 연성대학교
                     </h1>
                     <p class="subtitle">2025학년도 학사일정</p>
                 </div>
@@ -38,11 +40,10 @@
         <!-- 주요 일정 요약 -->
         <div class="schedule-summary">
             <h2 class="summary-title">
-                <i class="fas fa-star"></i>
-                주요 일정
+                <i class="fas fa-star"></i> 주요 일정
             </h2>
             <div class="summary-cards" id="summaryCards">
-                <!-- 주요 일정 카드들이 JavaScript로 동적 생성됩니다 -->
+                <!-- JS가 동적으로 주요 일정 카드를 생성합니다 -->
             </div>
         </div>
 
@@ -56,12 +57,11 @@
                 <i class="fas fa-chevron-right"></i>
             </button>
             <button class="today-btn" onclick="goToToday()">
-                <i class="fas fa-calendar-day"></i>
-                오늘
+                <i class="fas fa-calendar-day"></i> 오늘
             </button>
         </div>
 
-        <!-- 캘린더 -->
+        <!-- 캘린더: JS가 이 안에서 날짜 셀과 이벤트를 동적으로 생성 -->
         <div class="calendar">
             <div class="calendar-header">
                 <div class="day-header sunday">일</div>
@@ -73,7 +73,7 @@
                 <div class="day-header saturday">토</div>
             </div>
             <div class="calendar-body" id="calendarBody">
-                <!-- 캘린더 날짜들이 JavaScript로 동적 생성됩니다 -->
+                <!-- JS에서 6주 × 7일 그리드로 날짜를 채웁니다 -->
             </div>
         </div>
 
@@ -91,11 +91,11 @@
                 <button class="filter-btn" data-type="event" onclick="filterEvents('event')">행사</button>
             </div>
             <div class="events-list" id="eventsList">
-                <!-- 일정 목록이 JavaScript로 동적 생성됩니다 -->
+                <!-- JS가 각 월의 이벤트 카드를 동적으로 생성합니다 -->
             </div>
         </div>
 
-        <!-- 학사일정 범례 -->
+        <!-- 범례 (CSS에서 숨김 처리) -->
         <div class="legend">
             <h4 class="legend-title">범례</h4>
             <div class="legend-items">
