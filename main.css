@@ -2,42 +2,42 @@
   CSS 변수 정의: 다크/라이트 모드 전환 시 변수를 토글
 */
 :root {
-  --bg-body: #0a0e27;
-  --color-text: #ffffff;
-  --nav-bg: rgba(15, 23, 42, 0.95);
-  --nav-border: rgba(148, 163, 184, 0.1);
-  --card-bg: rgba(30, 41, 59, 0.5);
-  --card-border: rgba(148, 163, 184, 0.1);
-  --blur-bg: rgba(15, 23, 42, 0.3);
-  --hover-bg: rgba(59, 130, 246, 0.1);
-  --dim-text: #94a3b8;
-  --input-bg: rgba(30, 41, 59, 0.8);
-  --input-border: rgba(148, 163, 184, 0.2);
+  --bg-body: #0a0e27;                         /* 다크 모드 배경 */
+  --color-text: #ffffff;                      /* 다크 모드 텍스트 */
+  --nav-bg: rgba(15, 23, 42, 0.95);           /* 다크 모드 네비게이션/사이드 */
+  --nav-border: rgba(148, 163, 184, 0.1);     /* 다크 모드 경계선 */
+  --card-bg: rgba(30, 41, 59, 0.5);            /* 다크 모드 카드 배경 */
+  --card-border: rgba(148, 163, 184, 0.1);     /* 다크 모드 카드 테두리 */
+  --blur-bg: rgba(15, 23, 42, 0.3);           /* 다크 모드 블러용 배경 */
+  --hover-bg: rgba(59, 130, 246, 0.1);        /* 다크 모드 호버 시 */
+  --dim-text: #94a3b8;                        /* 다크 모드 보조 텍스트(밝은 회색) */
+  --input-bg: rgba(30, 41, 59, 0.8);          /* 다크 모드 입력란 배경 */
+  --input-border: rgba(148, 163, 184, 0.2);   /* 다크 모드 입력란 테두리 */
 }
 
 /* 라이트 모드 변수 오버라이드 */
 .light-theme {
-  /* 백그라운드 전체: 연한 회색 계열 */
+  /* 전체 배경을 연한 회색으로 */
   --bg-body: #f5f5f5;
-  /* 텍스트는 진한 회색 */
+  /* 텍스트를 짙은 회색으로 */
   --color-text: #333333;
-  /* 네비게이션/사이드바 바탕: 거의 흰색(약한 회색) */
+  /* 네비게이션/사이드바 배경을 거의 흰색으로 */
   --nav-bg: #ffffff;
-  /* 네비게이션/사이드바 테두리: 연한 회색 */
+  /* 네비/사이드 경계선을 연한 회색으로 */
   --nav-border: rgba(200, 200, 200, 0.5);
-  /* 카드 배경: 순백(약간 그림자만) */
+  /* 카드 배경을 순백(약한 그림자) */
   --card-bg: #ffffff;
-  /* 카드 테두리: 연한 회색 */
+  /* 카드 테두리 연한 회색 */
   --card-border: rgba(200, 200, 200, 0.5);
-  /* 블러 처리 배경: 아주 연한 회색 */
+  /* 블러 배경을 아주 연한 회색 */
   --blur-bg: rgba(240, 240, 240, 0.8);
-  /* 호버 시 배경: 약간 연한 회색 */
+  /* 호버 시 배경을 연한 회색 */
   --hover-bg: #f0f0f0;
-  /* 보조 텍스트: 짙은 회색 */
+  /* 보조 텍스트(라이트모드에서는 짙은 회색) */
   --dim-text: #555555;
-  /* 입력란 배경: 순백(약간 투명) */
+  /* 입력란 배경을 순백 투명 */
   --input-bg: rgba(255, 255, 255, 0.8);
-  /* 입력란 테두리: 연한 회색 */
+  /* 입력란 테두리를 연한 회색으로 */
   --input-border: rgba(200, 200, 200, 0.5);
 }
 
@@ -116,15 +116,10 @@ body {
   font-size: 1.1rem;
 }
 
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  position: relative;
-}
+/* 알림 버튼(🔔) */
 .notification-btn {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: var(--nav-bg);
+  border: 1px solid var(--nav-border);
   border-radius: 8px;
   padding: 0.75rem;
   color: var(--dim-text);
@@ -154,7 +149,7 @@ body {
   right: 0;
   background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--nav-border);
   border-radius: 12px;
   padding: 0;
   min-width: 350px;
@@ -172,7 +167,7 @@ body {
 }
 .notification-header {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -196,7 +191,7 @@ body {
 }
 .notification-item {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -241,7 +236,7 @@ body {
 }
 .notification-footer {
   padding: 1rem 1.5rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-top: 1px solid var(--nav-border);
   text-align: center;
 }
 .mark-all-read {
@@ -260,13 +255,13 @@ body {
   background: var(--hover-bg);
 }
 
-/* 사용자 프로필 */
+/* 사용자 프로필(👤) 버튼 */
 .user-profile {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: var(--nav-bg);
+  border: 1px solid var(--nav-border);
   border-radius: 12px;
   padding: 0.5rem 1rem;
   cursor: pointer;
@@ -285,7 +280,7 @@ body {
   right: 0;
   background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--nav-border);
   border-radius: 12px;
   padding: 0.5rem 0;
   min-width: 200px;
@@ -317,12 +312,12 @@ body {
 }
 .dropdown-divider {
   height: 1px;
-  background: rgba(148, 163, 184, 0.1);
+  background: var(--nav-border);
   margin: 0.5rem 0;
 }
 .dropdown-user-info {
   padding: 1rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   margin-bottom: 0.5rem;
 }
 .dropdown-user-name {
@@ -432,6 +427,9 @@ body {
   font-size: 1.25rem;
   width: 20px;
   text-align: center;
+  /* 아이콘은 기본적으로 글자 형태이므로, 별도 색상 지정이 없어도 
+     var(--dim-text)이나 var(--color-text) 규칙을 따릅니다. 
+     (다크 모드 = 밝은 회색, 라이트 모드 = 짙은 회색) */
 }
 
 /* 메인 콘텐츠 */
@@ -446,13 +444,10 @@ body {
   align-items: center;
   margin-bottom: 2rem;
 }
-.content-header h1 {
+.dashboard-title {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-text); /* 흰색(다크모드), 짙은 회색(라이트모드) */
 }
 .breadcrumb {
   display: flex;
@@ -507,10 +502,11 @@ body {
 .restaurant-card:hover,
 .building-card:hover,
 .notice-item:hover {
-  background: rgba(255, 255, 255, 0.9); /* 라이트 모드에서 살짝 연하게 보이도록 */
+  background: rgba(255, 255, 255, 0.9); /* 라이트 모드에서 호버 시 연한 회색 */
   border-color: rgba(200, 200, 200, 0.7);
   transform: translateY(-2px);
 }
+
 .stat-number,
 .activity-number {
   font-size: 2.5rem;
@@ -540,6 +536,7 @@ body {
 }
 .card-icon {
   font-size: 1.5rem;
+  /* 아이콘은 고정 그라데이션 텍스트로 처리 -> 다크/라이트 모드 모두 선명하게 보임 */
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -592,7 +589,7 @@ body {
 .map-control {
   background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--nav-border);
   border-radius: 8px;
   padding: 0.75rem;
   color: var(--dim-text);
@@ -675,74 +672,24 @@ body {
   color: #6b7280;
 }
 
-/* 셔틀버스 위젯 */
-.shuttle-routes {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-.route-tab {
-  flex: 1;
-  padding: 0.75rem;
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 8px;
+/* 활동 통계 */
+.activity-stat {
   text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.route-tab.active {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: #3b82f6;
-}
-.route-name {
-  font-weight: 600;
-  color: var(--color-text);
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-}
-.route-desc {
-  font-size: 0.75rem;
-  color: var(--dim-text);
-}
-.shuttle-status {
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-  margin-bottom: 1rem;
+  padding: 1rem;
 }
-.shuttle-time {
-  font-size: 2rem;
+.activity-number {
+  font-size: 1.8rem;
   font-weight: 700;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
-.shuttle-desc {
+.activity-label {
   color: var(--dim-text);
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-}
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 600;
-}
-.status-running {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-}
-.status-stopped {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
 }
 
 /* 공지사항 */
@@ -784,25 +731,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* 건물 카드 */
-.building-card {
-  cursor: pointer;
-}
-.building-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 0.5rem;
-}
-.building-desc {
-  color: var(--dim-text);
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-}
-.building-actions {
-  display: flex;
-  gap: 0.75rem;
-}
+/* 부가적인 CSS(예: 버튼, 반응형 등) */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -834,75 +763,6 @@ body {
   border-color: #3b82f6;
   color: #3b82f6;
   background: var(--hover-bg);
-}
-
-/* 활동 통계 */
-.activity-stat {
-  text-align: center;
-  border-radius: 12px;
-  padding: 1rem;
-}
-.activity-number {
-  font-size: 1.8rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.25rem;
-}
-.activity-label {
-  color: var(--dim-text);
-  font-size: 0.8rem;
-}
-
-/* 맛집 카드 */
-.restaurant-card {
-  display: flex;
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 12px;
-  padding: 1rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-.restaurant-card:hover {
-  background: var(--hover-bg);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-.restaurant-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
-  background: rgba(59, 130, 246, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  margin-right: 1rem;
-}
-.restaurant-info {
-  flex: 1;
-}
-.restaurant-name {
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 0.25rem;
-}
-.restaurant-category {
-  color: #3b82f6;
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
-}
-.restaurant-discount {
-  color: #ef4444;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-.restaurant-likes {
-  color: var(--dim-text);
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
 }
 
 /* 반응형 디자인 */

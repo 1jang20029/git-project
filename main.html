@@ -128,12 +128,12 @@
             <span class="nav-icon">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <!-- “교내활동” 제거 -->
+          <!-- “교내활동” 삭제 -->
           <!-- <li class="nav-item" onclick="openQuickLink('activities')">
             <span class="nav-icon">🌟</span>
             <span>교내활동</span>
           </li> -->
-          <!-- “맛집정보” 제거 -->
+          <!-- “맛집정보” 삭제 -->
           <!-- <li class="nav-item" onclick="openQuickLink('deals')">
             <span class="nav-icon">🍽️</span>
             <span>맛집정보</span>
@@ -152,7 +152,6 @@
             <span class="nav-icon">👤</span>
             <span>프로필</span>
           </li>
-          <!-- 설정 메뉴를 계정 섹션에 다시 추가 -->
           <li class="nav-item" onclick="openSettingsModal()">
             <span class="nav-icon">⚙️</span>
             <span>설정</span>
@@ -171,7 +170,8 @@
       <div id="homeContent" class="fade-in">
         <div class="content-header">
           <div>
-            <h1>대시보드</h1>
+            <!-- 글자 색상을 var(--color-text)로 통일 -->
+            <h1 class="dashboard-title">대시보드</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -204,7 +204,7 @@
             </div>
           </div>
 
-          <!-- 시간표 위젯 -->
+          <!-- 오늘의 시간표 카드 -->
           <div class="card timetable-card">
             <div class="card-header">
               <h3 class="card-title">오늘의 시간표</h3>
@@ -215,23 +215,23 @@
             </div>
           </div>
 
-          <!-- 셔틀버스 위젯 -->
+          <!-- “셔틀버스 현황” 제거 -->
+          <!--
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">셔틀버스 현황</h3>
               <span class="card-icon">🚌</span>
             </div>
-            <div class="shuttle-routes" id="shuttleRoutes">
-              <!-- 노선 탭이 동적으로 생성됩니다 -->
-            </div>
+            <div class="shuttle-routes" id="shuttleRoutes"></div>
             <div class="shuttle-status">
               <div class="shuttle-time" id="shuttleTime">--</div>
               <div class="shuttle-desc" id="shuttleDesc">--</div>
               <div class="status-badge" id="shuttleStatus">--</div>
             </div>
           </div>
+          -->
 
-          <!-- 교내 활동 위젯 (사이드바에는 제거됨) -->
+          <!-- 교내 활동 위젯(빠른 접근에서 제거되었지만, 대시보드에 그대로 남겨 둠) -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">교내 활동 현황</h3>
@@ -242,16 +242,16 @@
             </div>
           </div>
 
-          <!-- 인기 맛집 위젯 -->
+          <!-- “인기 맛집” 제거 -->
+          <!--
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 맛집</h3>
               <span class="card-icon">🍽️</span>
             </div>
-            <div class="restaurant-grid" id="restaurantGrid">
-              <!-- 맛집 카드가 동적으로 생성됩니다 -->
-            </div>
+            <div class="restaurant-grid" id="restaurantGrid"></div>
           </div>
+          -->
 
           <!-- 최근 공지사항 위젯 -->
           <div class="card">
@@ -270,7 +270,7 @@
       <div id="buildingsContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>건물 & 시설 안내</h1>
+            <h1 class="dashboard-title">건물 & 시설 안내</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -304,7 +304,7 @@
       <div id="communityContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>실시간 커뮤니티</h1>
+            <h1 class="dashboard-title">실시간 커뮤니티</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -342,7 +342,7 @@
       <div id="lecture-reviewContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>강의평가</h1>
+            <h1 class="dashboard-title">강의평가</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -381,7 +381,7 @@
               <span class="card-icon">✍️</span>
             </div>
             <div style="padding: 1rem; text-align: center;">
-              <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+              <p style="color: var(--dim-text); margin-bottom: 1.5rem;">
                 수강 중인 강의에 대한 솔직한 평가를 남겨주세요
               </p>
               <button
@@ -399,7 +399,7 @@
       <div id="noticesContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>공지사항</h1>
+            <h1 class="dashboard-title">공지사항</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
