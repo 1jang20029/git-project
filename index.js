@@ -2,6 +2,7 @@
 // index.js
 // ──────────────────────────────────────────────────────────────────────────────
 // 메인 페이지 동작 로직 (SPA: 탭 전환 포함) + “빠른 접근” 활성화
+// 및 설정(Settings)에서 저장된 값 반영
 // =============================================================================
 
 let naverMap;
@@ -11,6 +12,7 @@ let userMarker = null;
 let userLocation = null;
 let currentContent = 'home';
 let unreadNotifications = 0;
+let autoRefreshTimer = null;
 
 // ---------------------------
 // 페이지 로드 시: 해시 기반 초기 탭 열기 + 초기화
@@ -21,7 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (hash && document.getElementById(hash + 'Content')) {
     showContent(hash);
   } else {
-    showContent('home');
+    // 해시가 없으면 로컬스토리지의 “기본 탭”을 읽어서 이동
+    const savedDefaultTab = localStorage.getItem('defaultTab') || 'home';
+    showContent(savedDefaultTab);
   }
 
   initializeApp();
@@ -50,6 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!ntBtn) closeNotificationDropdown();
     if (!upBtn) closeUserDropdown();
   });
+
+  // “자동 새로고침 주기”가 변경되었을 때 재설정
+  window.addEventListener('autoRefreshChanged', () => {
+    resetAutoRefresh();
+  });
 });
 
 // ---------------------------
@@ -64,7 +73,10 @@ async function loadNotifications() {
     const listEl = document.getElementById('notificationList');
     const countEl = document.getElementById('notificationCount');
     listEl.innerHTML = '';
+    // 이전에 기록된 unreadNotifications와 비교하여 새 알림이 있으면 소리 재생
+    const prevCount = unreadNotifications;
     unreadNotifications = 0;
+
     notifications.forEach((n) => {
       const item = document.createElement('div');
       item.className = 'notification-item' + (n.unread ? ' unread' : '');
@@ -80,6 +92,12 @@ async function loadNotifications() {
       listEl.appendChild(item);
       if (n.unread) unreadNotifications++;
     });
+
+    // 새로운 알림이 있으면 알림음 재생
+    if (unreadNotifications > prevCount) {
+      playNotificationSound();
+    }
+
     countEl.textContent = unreadNotifications;
     document.getElementById('notificationDot').style.display =
       unreadNotifications > 0 ? 'block' : 'none';
@@ -94,6 +112,7 @@ async function loadStats() {
     const res = await fetch('/api/stats');
     const stats = await res.json();
     const statsGrid = document.getElementById('statsGrid');
+    if (!statsGrid) return;
     statsGrid.innerHTML = `
       <div class="stat-card">
         <div class="stat-number">${stats.totalBuildings}</div>
@@ -139,6 +158,7 @@ async function loadBuildings() {
     const res = await fetch('/api/buildings');
     const buildings = await res.json();
     const grid = document.getElementById('buildingGrid');
+    if (!grid) return;
     grid.innerHTML = '';
     buildings.forEach((b) => {
       const card = document.createElement('div');
@@ -170,6 +190,7 @@ async function loadNotices() {
     const notices = await res.json();
     const recentEl = document.getElementById('recentNotices');
     const fullEl = document.getElementById('fullNoticeList');
+    if (!recentEl || !fullEl) return;
     recentEl.innerHTML = '';
     fullEl.innerHTML = '';
     notices.forEach((n, idx) => {
@@ -200,6 +221,7 @@ async function loadShuttleInfo() {
     const res = await fetch('/api/shuttle/routes');
     const routes = await res.json();
     const tabs = document.getElementById('shuttleRoutes');
+    if (!tabs) return;
     tabs.innerHTML = '';
     routes.forEach((r, idx) => {
       const tab = document.createElement('div');
@@ -325,6 +347,7 @@ async function loadCommunityPosts() {
     const hotPosts = await hotRes.json();
     const liveEl = document.getElementById('livePosts');
     const hotEl = document.getElementById('hotPosts');
+    if (!liveEl || !hotEl) return;
     liveEl.innerHTML = '';
     hotEl.innerHTML = '';
     livePosts.forEach((p) => {
@@ -375,6 +398,7 @@ async function loadLectureReviews() {
     const recent = await recRes.json();
     const popEl = document.getElementById('popularReviews');
     const recEl = document.getElementById('recentReviews');
+    if (!popEl || !recEl) return;
     popEl.innerHTML = '';
     recEl.innerHTML = '';
     popular.forEach((r) => {
@@ -426,13 +450,16 @@ function initNaverMap() {
   }
   const mapContainer = document.getElementById('naverMap');
   if (!mapContainer) return;
+
+  // 설정에서 불러온 기본 줌 레벨
+  const savedZoom = parseInt(localStorage.getItem('mapDefaultZoom'), 10) || 16;
   const yeonsung = new naver.maps.LatLng(
     37.39661657434427,
     126.90772437800818
   );
   const mapOptions = {
     center: yeonsung,
-    zoom: 16,
+    zoom: savedZoom,
     minZoom: 14,
     maxZoom: 19,
     zoomControl: false,
@@ -483,6 +510,8 @@ function addMapMarkers(buildings) {
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
+  if (!contentEl) return;
+
   if (!currentUser) {
     contentEl.innerHTML = `
       <div style="text-align: center; padding: 2rem; color: #94a3b8;">
@@ -491,6 +520,7 @@ function updateTimetable() {
     `;
     return;
   }
+
   fetch(`/api/timetable?user=${encodeURIComponent(currentUser)}`)
     .then((res) => res.json())
     .then((courses) => {
@@ -498,6 +528,7 @@ function updateTimetable() {
       const currentDay = now.getDay();
       const currentTime = now.getHours() * 60 + now.getMinutes();
       const todayCourses = [];
+
       courses.forEach((course) => {
         course.times.forEach((time) => {
           if (
@@ -510,8 +541,10 @@ function updateTimetable() {
             const endHour = 8 + time.end + 1;
             const endMinute = 20;
             const endTime = endHour * 60 + endMinute;
+
             let status = 'upcoming';
             let timeInfo = '';
+
             if (currentTime >= startTime && currentTime < endTime) {
               status = 'current';
               const remaining = endTime - currentTime;
@@ -529,6 +562,7 @@ function updateTimetable() {
                 timeInfo = '곧 시작';
               }
             }
+
             todayCourses.push({
               name: course.name,
               room: course.room,
@@ -544,7 +578,9 @@ function updateTimetable() {
           }
         });
       });
+
       todayCourses.sort((a, b) => a.startTime - b.startTime);
+
       if (todayCourses.length === 0) {
         contentEl.innerHTML = `
           <div style="text-align: center; padding: 2rem; color: #94a3b8;">
@@ -553,6 +589,7 @@ function updateTimetable() {
         `;
         return;
       }
+
       contentEl.innerHTML = '';
       todayCourses.forEach((ci) => {
         const statusText = {
@@ -560,6 +597,7 @@ function updateTimetable() {
           upcoming: '예정',
           finished: '종료',
         }[ci.status];
+
         const div = document.createElement('div');
         div.className = 'class-item';
         div.innerHTML = `
@@ -813,7 +851,7 @@ function checkUserStatus() {
     userNameEl.textContent = '게스트';
     userRoleEl.textContent = '방문자';
     if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
-    if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
+    if (dropdownRoleEl) dropdownRoleEl.textContent = '게스트';
     document.getElementById('userAvatar').textContent = '👤';
   }
 }
@@ -899,12 +937,31 @@ async function initializeApp() {
   await loadLectureReviews();
   checkUserStatus();
   updateTimetable();
-  setInterval(() => {
+  resetAutoRefresh();
+}
+
+// ---------------------------
+// “자동 새로고침” 설정에 맞춰 타이머 재설정
+// ---------------------------
+function resetAutoRefresh() {
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
+  const intervalSec = parseInt(localStorage.getItem('autoRefresh'), 10) || 60;
+  autoRefreshTimer = setInterval(() => {
+    // 새로고침 기능: 필요에 따라 원하는 데이터만 다시 로드
+    loadStats();
+    loadNotifications();
+    loadBuildings();
+    loadNotices();
     loadShuttleInfo();
-    updateTimetable();
     loadActivityStats();
     loadRestaurantInfo();
-  }, 60000);
+    loadCommunityPosts();
+    loadLectureReviews();
+    updateTimetable();
+  }, intervalSec * 1000);
 }
 
 window.addEventListener('storage', (event) => {
@@ -938,20 +995,38 @@ function toggleSidebar() {
 // ---------------------------
 function toggleTheme() {
   document.body.classList.toggle('light-mode');
+  // 설정에서 저장된 값과 항상 동기화
+  const isLight = document.body.classList.contains('light-mode');
+  localStorage.setItem('lightMode', isLight);
 }
 
-
+// ---------------------------
 // 내 시간표 페이지로 이동
+// ---------------------------
 function navigateToTimetable() {
   window.location.href = 'timetable.html';
 }
 
+// ---------------------------
 // 셔틀버스 페이지로 이동
+// ---------------------------
 function navigateToShuttle() {
   window.location.href = 'shuttle.html';
 }
 
+// ---------------------------
 // 학사일정 페이지로 이동
+// ---------------------------
 function navigateToCalendar() {
   window.location.href = 'calendar.html';
+}
+
+// ---------------------------
+// 알림 음향 재생 (settings.js용 헬퍼)
+// ---------------------------
+function playNotificationSound() {
+  const enabled = localStorage.getItem('enableSound') === 'true';
+  if (!enabled) return;
+  const audio = new Audio('notification.mp3'); // 프로젝트에 알림 음원 파일을 넣어두세요.
+  audio.play();
 }

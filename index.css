@@ -4,6 +4,11 @@
    전체 페이지 공통 스타일 및 레이아웃
    ============================================================================= */
 
+/* ─────────── 사용자 폰트 크기 변수 ─────────── */
+:root {
+  --user-font-size: 16px; /* 기본 폰트 크기 */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,6 +17,7 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: var(--user-font-size);
   background: #0a0e27;
   color: #ffffff;
   overflow-x: hidden;
@@ -389,7 +395,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  /* li에만 padding을 주어 li 전체가 클릭 영역이 되도록 한다 */
+  /* li에만 padding을 주어 li 전체가 클릭 영역이 되도록 함 */
   padding: 0.75rem 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -439,9 +445,14 @@ body {
   display: none;
 }
 
+/* 활성화 시 페이드 인 애니메이션 */
+.fade-in {
+  animation: fadeInUp 0.6s ease-out;
+}
+
 .content-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   margin-bottom: 2rem;
 }
 
@@ -892,13 +903,17 @@ body {
   font-size: 1rem;
 }
 
-/* ─────────── Settings 화면 스타일 ─────────── */
+/* ─────────── 설정 화면 스타일 ─────────── */
+/* (아래는 index.html 내부의 “설정” 탭을 위한 CSS) */
+
+/* 설정 화면 전체 컨테이너 */
 .settings-container {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
 }
 
+/* 개별 설정 항목 */
 .setting-item {
   display: flex;
   align-items: center;
@@ -906,66 +921,164 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* 라벨 텍스트 스타일 */
 .setting-item label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
 }
 
+/* 토글(checkbox) 기본 스타일 */
 .setting-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
 
+/* 체크된 토글 강조 색상 */
 .setting-item input[type="checkbox"]:checked {
   accent-color: #3b82f6;
 }
 
-/* ─────────── 반응형 디자인 ─────────── */
-@media (max-width: 1024px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .content-area {
-    margin-left: 0;
-  }
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .map-card {
-    grid-column: span 1;
-  }
+/* 언어 선택(select) 스타일 */
+.setting-item select {
+  background: rgba(30, 41, 59, 0.8);
+  color: #f1f5f9;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
+.setting-item select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* 폰트 크기 슬라이더 */
+#fontSizeRange {
+  width: 150px;
+  cursor: pointer;
+}
+
+#fontSizeRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+#fontSizeRange::-webkit-slider-runnable-track {
+  height: 6px;
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 3px;
+}
+
+#fontSizeRange:focus {
+  outline: none;
+}
+
+/* 알림 시간대 입력 */
+.time-settings .time-inputs {
+  display: flex;
+  gap: 1rem;
+}
+
+.time-settings .time-inputs div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-settings input[type="time"] {
+  background: rgba(30, 41, 59, 0.8);
+  color: #f1f5f9;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  padding: 0.3rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-settings input[type="time"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* 자동 새로고침(숫자 입력) */
+#autoRefreshInterval {
+  width: 80px;
+  padding: 0.3rem;
+  background: rgba(30, 41, 59, 0.8);
+  color: #f1f5f9;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+#autoRefreshInterval:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* 지도 기본 줌 레벨 슬라이더 */
+#mapZoomRange {
+  width: 150px;
+  cursor: pointer;
+}
+
+#mapZoomRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+#mapZoomRange::-webkit-slider-runnable-track {
+  height: 6px;
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 3px;
+}
+
+#mapZoomRange:focus {
+  outline: none;
+}
+
+/* 반응형: 좁은 화면에서 여백 축소 */
 @media (max-width: 768px) {
-  .top-nav {
-    padding: 1rem;
-  }
-  .search-input {
-    width: 200px;
-  }
   .content-area {
     padding: 1rem;
-  }
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  .dashboard-grid {
-    grid-template-columns: 1fr;
   }
   .settings-container {
     padding: 1rem;
   }
   .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
     margin-bottom: 1rem;
+  }
+  .time-settings .time-inputs {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -979,10 +1092,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.fade-in {
-  animation: fadeInUp 0.6s ease-out;
 }
 
 /* ─────────── 스크롤바 스타일 ─────────── */
@@ -1033,6 +1142,16 @@ body {
 @media (max-width: 1024px) {
   .mobile-menu-toggle {
     display: block;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .content-area {
+    margin-left: 0;
   }
 }
 
@@ -1094,6 +1213,7 @@ body.light-mode .content-area {
   color: #000000;
 }
 
+/* 카드/위젯 등 일부 요소도 밝게 바꿔줌 */
 body.light-mode .card,
 body.light-mode .stat-card,
 body.light-mode .activity-stat,
