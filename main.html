@@ -1176,10 +1176,33 @@
                     <div class="notification-dropdown" id="notificationDropdown">
                         <div class="notification-header">
                             <div class="notification-title">알림</div>
-                            <div class="notification-badge" id="notificationCount">0</div>
+                            <div class="notification-badge" id="notificationCount">3</div>
                         </div>
                         <div class="notification-list" id="notificationList">
-                            <!-- 동적 알림 생성 -->
+                            <div class="notification-item unread" onclick="markAsRead(this)">
+                                <div class="notification-meta">
+                                    <span class="notification-category">학사</span>
+                                    <span class="notification-time">5분 전</span>
+                                </div>
+                                <div class="notification-content">중간고사 일정 안내</div>
+                                <div class="notification-summary">4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다.</div>
+                            </div>
+                            <div class="notification-item unread" onclick="markAsRead(this)">
+                                <div class="notification-meta">
+                                    <span class="notification-category">장학</span>
+                                    <span class="notification-time">1시간 전</span>
+                                </div>
+                                <div class="notification-content">장학금 신청 마감</div>
+                                <div class="notification-summary">국가장학금 2차 신청이 이번 주 금요일에 마감됩니다.</div>
+                            </div>
+                            <div class="notification-item unread" onclick="markAsRead(this)">
+                                <div class="notification-meta">
+                                    <span class="notification-category">교통</span>
+                                    <span class="notification-time">2시간 전</span>
+                                </div>
+                                <div class="notification-content">셔틀버스 운행 변경</div>
+                                <div class="notification-summary">노선 3번이 일시적으로 운행을 중단합니다.</div>
+                            </div>
                         </div>
                         <div class="notification-footer">
                             <button class="mark-all-read" onclick="markAllAsRead()">모두 읽음 처리</button>
@@ -1314,32 +1337,32 @@
                 <!-- 통계 카드 -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-number" id="totalBuildings">0</div>
+                        <div class="stat-number" id="totalBuildings">15</div>
                         <div class="stat-label">캠퍼스 건물</div>
                         <div class="stat-change positive">
-                            <span>📊</span>
-                            <span>업데이트됨</span>
+                            <span>↗</span>
+                            <span>+2 신규</span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="totalStudents">0</div>
-                        <div class="stat-label">등록된 사용자</div>
+                        <div class="stat-number" id="totalStudents">8,500</div>
+                        <div class="stat-label">재학생 수</div>
                         <div class="stat-change positive">
-                            <span>👥</span>
-                            <span>활성 사용자</span>
+                            <span>↗</span>
+                            <span>+3.2%</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="activeServices">25</div>
                         <div class="stat-label">운영 서비스</div>
                         <div class="stat-change positive">
-                            <span>⚡</span>
-                            <span>모든 서비스 정상</span>
+                            <span>↗</span>
+                            <span>+1 추가</span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="todayEvents">0</div>
-                        <div class="stat-label">오늘 활동</div>
+                        <div class="stat-number" id="todayEvents">12</div>
+                        <div class="stat-label">오늘 일정</div>
                         <div class="stat-change">
                             <span>📅</span>
                             <span>진행중</span>
@@ -1415,20 +1438,24 @@
                         </div>
                         <div class="activity-stats">
                             <div class="activity-stat">
-                                <div class="activity-number" id="contestCount">0</div>
+                                <div class="activity-number" id="contestCount">12</div>
                                 <div class="activity-label">진행중 공모전</div>
                             </div>
                             <div class="activity-stat">
-                                <div class="activity-number" id="clubCount">0</div>
+                                <div class="activity-number" id="clubCount">8</div>
                                 <div class="activity-label">신입 모집 동아리</div>
                             </div>
                             <div class="activity-stat">
-                                <div class="activity-number" id="externalCount">0</div>
+                                <div class="activity-number" id="externalCount">15</div>
                                 <div class="activity-label">대외활동 기회</div>
                             </div>
                         </div>
-                        <div id="latestActivityNotice">
-                            <!-- 최신 활동 공지가 동적으로 표시됩니다 -->
+                        <div class="notice-item">
+                            <div class="notice-header">
+                                <span class="notice-category">마감임박</span>
+                                <span class="notice-date">22일 남음</span>
+                            </div>
+                            <div class="notice-title">창업 아이디어 경진대회</div>
                         </div>
                     </div>
 
@@ -1439,7 +1466,24 @@
                             <span class="card-icon">🍽️</span>
                         </div>
                         <div class="restaurant-grid" id="restaurantGrid">
-                            <!-- 맛집 정보가 동적으로 로드됩니다 -->
+                            <div class="restaurant-card">
+                                <div class="restaurant-image">🍲</div>
+                                <div class="restaurant-info">
+                                    <div class="restaurant-name">지지고 안양 연성대점</div>
+                                    <div class="restaurant-category">한식</div>
+                                    <div class="restaurant-discount">학생증 제시 시 15% 할인</div>
+                                    <div class="restaurant-likes">👍 3</div>
+                                </div>
+                            </div>
+                            <div class="restaurant-card">
+                                <div class="restaurant-image">🍜</div>
+                                <div class="restaurant-info">
+                                    <div class="restaurant-name">갯마을 칼국수</div>
+                                    <div class="restaurant-category">한식</div>
+                                    <div class="restaurant-discount">할인 없음</div>
+                                    <div class="restaurant-likes">👍 5</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1449,8 +1493,21 @@
                             <h3 class="card-title">최근 공지사항</h3>
                             <span class="card-icon">📢</span>
                         </div>
-                        <div class="notice-list" id="recentNotices">
-                            <!-- 공지사항이 동적으로 로드됩니다 -->
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">학사</span>
+                                    <span class="notice-date">2025.04.08</span>
+                                </div>
+                                <div class="notice-title">2025학년도 1학기 중간고사 일정 안내</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">장학</span>
+                                    <span class="notice-date">2025.04.07</span>
+                                </div>
+                                <div class="notice-title">국가장학금 2차 신청 마감 안내</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1510,8 +1567,40 @@
                             <h3 class="card-title">실시간 게시글</h3>
                             <span class="card-icon">💬</span>
                         </div>
-                        <div class="notice-list" id="realtimePosts">
-                            <!-- 실시간 게시글이 동적으로 로드됩니다 -->
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">자유게시판</span>
+                                    <span class="notice-date">3분 전</span>
+                                </div>
+                                <div class="notice-title">중간고사 스터디 그룹 모집해요!</div>
+                                <div class="notice-summary">웹프, 마케팅 같이 공부할 분들 찾습니다. 카톡 주세요 ㅠㅠ</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 12 💬 8
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">정보게시판</span>
+                                    <span class="notice-date">12분 전</span>
+                                </div>
+                                <div class="notice-title">김민수 교수님 수업 꿀팁 공유</div>
+                                <div class="notice-summary">과제 미리 준비하면 중간고사 때 편해요. 특히 포트폴리오는...</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 24 💬 15
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">취업게시판</span>
+                                    <span class="notice-date">32분 전</span>
+                                </div>
+                                <div class="notice-title">삼성전자 채용설명회 후기</div>
+                                <div class="notice-summary">어제 참가했는데 생각보다 경쟁률이 높더라고요. 준비 팁 공유합니다.</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 45 💬 23
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1521,8 +1610,29 @@
                             <h3 class="card-title">인기 게시글</h3>
                             <span class="card-icon">🔥</span>
                         </div>
-                        <div class="notice-list" id="popularPosts">
-                            <!-- 인기 게시글이 동적으로 로드됩니다 -->
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">강의평가</span>
+                                    <span class="notice-date">HOT</span>
+                                </div>
+                                <div class="notice-title">이지영 교수님 마케팅 원론 후기</div>
+                                <div class="notice-summary">진짜 꿀강의! 실무 사례가 많아서 재미있어요. 추천!</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 118 💬 56
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">생활정보</span>
+                                    <span class="notice-date">HOT</span>
+                                </div>
+                                <div class="notice-title">연성대 근처 맛집 총정리</div>
+                                <div class="notice-summary">4년 다니면서 발견한 진짜 맛집들만 모았습니다</div>
+                                <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.8rem;">
+                                    👍 89 💬 34
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1548,8 +1658,40 @@
                             <h3 class="card-title">인기 강의평가</h3>
                             <span class="card-icon">⭐</span>
                         </div>
-                        <div class="notice-list" id="popularReviews">
-                            <!-- 인기 강의평가가 동적으로 로드됩니다 -->
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">전공필수</span>
+                                    <span class="notice-date" style="color: #f59e0b;">★★★★★</span>
+                                </div>
+                                <div class="notice-title">웹 프로그래밍 실습 - 김민수 교수님</div>
+                                <div class="notice-summary">"과제는 많지만 실력이 확실히 늘어요! 취업에 큰 도움이 됩니다."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.8/5.0 | 컴퓨터정보학과
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">전공선택</span>
+                                    <span class="notice-date" style="color: #f59e0b;">★★★★☆</span>
+                                </div>
+                                <div class="notice-title">마케팅 원론 - 이지영 교수님</div>
+                                <div class="notice-summary">"실제 사례를 많이 다루어서 이해하기 쉽고 재미있어요."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.5/5.0 | 경영학과
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">교양</span>
+                                    <span class="notice-date" style="color: #f59e0b;">★★★★☆</span>
+                                </div>
+                                <div class="notice-title">영어회화 - John Smith 교수님</div>
+                                <div class="notice-summary">"원어민 교수님과 실제 대화를 많이 할 수 있어서 좋아요."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.3/5.0 | 교양과정
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1559,8 +1701,29 @@
                             <h3 class="card-title">최근 강의평가</h3>
                             <span class="card-icon">🕒</span>
                         </div>
-                        <div class="notice-list" id="recentReviews">
-                            <!-- 최근 강의평가가 동적으로 로드됩니다 -->
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">전공필수</span>
+                                    <span class="notice-date">1시간 전</span>
+                                </div>
+                                <div class="notice-title">경영통계학 - 박성호 교수님</div>
+                                <div class="notice-summary">"내용이 어렵지만 설명을 잘 해주세요. 시험은 까다로운 편."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 3.7/5.0 | 경영학과
+                                </div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-header">
+                                    <span class="notice-category">교양</span>
+                                    <span class="notice-date">3시간 전</span>
+                                </div>
+                                <div class="notice-title">컴퓨터활용 - 정민지 교수님</div>
+                                <div class="notice-summary">"기초부터 차근차근 가르쳐주셔서 초보자도 따라하기 쉬워요."</div>
+                                <div style="margin-top: 0.5rem; color: #3b82f6; font-size: 0.9rem; font-weight: 600;">
+                                    평점: 4.2/5.0 | 교양과정
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1581,7 +1744,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- 공지사항 콘텐츠 -->
             <div id="noticesContent" style="display: none;">
                 <div class="content-header">
@@ -1611,75 +1773,110 @@
         let userLocation = null;
         let selectedShuttleRoute = 1;
         let currentContent = 'home';
-        let unreadNotifications = 0;
+        let unreadNotifications = 3;
 
-        // 기본 캠퍼스 좌표 (연성대학교)
-        const DEFAULT_CAMPUS_COORDS = {
-            lat: 37.39661657434427,
-            lng: 126.90772437800818
-        };
-
-        // 데이터 로딩 함수들
-        function loadBuildingData() {
-            const savedBuildings = localStorage.getItem('campusBuildings');
-            if (savedBuildings) {
-                try {
-                    return JSON.parse(savedBuildings);
-                } catch (error) {
-                    console.error('건물 데이터 파싱 오류:', error);
-                }
+        // 건물 데이터
+        const buildingData = [
+            {
+                id: '공학1관',
+                name: '공학1관',
+                description: '공학계열 강의실, 실험실',
+                position: { lat: 37.39632767479923, lng: 126.90699348692698 }
+            },
+            {
+                id: '자연과학관',
+                name: '자연과학관',
+                description: '반려동물보건학, 반려동물산업학',
+                position: { lat: 37.39669466288283, lng: 126.90676716508685 }
+            },
+            {
+                id: '식품과학관',
+                name: '식품과학관',
+                description: '식품영양학과, 조리실습실',
+                position: { lat: 37.39714809720343, lng: 126.90762208499473 }
+            },
+            {
+                id: '도의관',
+                name: '도의관',
+                description: '교양 수업, 강당',
+                position: { lat: 37.39679932128769, lng: 126.90809683728425 }
+            },
+            {
+                id: '공학2관',
+                name: '공학2관',
+                description: '공학계열 실습실, 연구실',
+                position: { lat: 37.396789747114205, lng: 126.90737406929797 }
+            },
+            {
+                id: '문화1관',
+                name: '문화1관',
+                description: '인문사회계열 강의실',
+                position: { lat: 37.39576992475254, lng: 126.90812350405056 }
+            },
+            {
+                id: '연곡문화센터',
+                name: '연곡문화센터',
+                description: '기숙사, 컨벤션홀, 평생교육원',
+                position: { lat: 37.398046192024914, lng: 126.90966512810492 }
+            },
+            {
+                id: '창조관',
+                name: '창조관',
+                description: '학과 사무실, 강의실',
+                position: { lat: 37.39730791148064, lng: 126.91039726900274 }
+            },
+            {
+                id: '학생복지센터',
+                name: '학생복지센터',
+                description: '학생지원 시설',
+                position: { lat: 37.3962916630711, lng: 126.90994109780426 }
+            },
+            {
+                id: '창의교육센터',
+                name: '창의교육센터',
+                description: '항공서비스과 항공실습실, 카페',
+                position: { lat: 37.39737971014044, lng: 126.91002449732869 }
             }
-            // 기본 건물 데이터가 없으면 빈 배열 반환
-            return [];
-        }
+        ];
 
-        function loadNoticesData() {
-            const savedNotices = localStorage.getItem('campusNotices');
-            if (savedNotices) {
-                try {
-                    return JSON.parse(savedNotices);
-                } catch (error) {
-                    console.error('공지사항 데이터 파싱 오류:', error);
-                }
+        // 공지사항 데이터
+        const noticesData = [
+            {
+                id: 'notice1',
+                category: '학사',
+                title: '2025학년도 1학기 중간고사 일정 안내',
+                summary: '4월 22일(월)부터 4월 26일(금)까지 중간고사가 진행됩니다. 자세한 시간표는 학과 사무실에서 확인하세요.',
+                date: '2025.04.08'
+            },
+            {
+                id: 'notice2',
+                category: '장학',
+                title: '국가장학금 2차 신청 마감 안내',
+                summary: '국가장학금 2차 신청이 이번 주 금요일(4/11)에 마감됩니다. 아직 신청하지 않은 학생들은 서둘러 신청해주세요.',
+                date: '2025.04.07'
+            },
+            {
+                id: 'notice3',
+                category: '취업',
+                title: '삼성전자 대규모 채용설명회 개최 안내',
+                summary: '4월 15일(화) 오후 2시 대강당에서 삼성전자 채용설명회가 진행됩니다. 참석을 원하는 학생은 사전 신청 바랍니다.',
+                date: '2025.04.06'
+            },
+            {
+                id: 'notice4',
+                category: '행사',
+                title: '2025 연성대 축제 개최 안내',
+                summary: '5월 15일-17일 3일간 연성대 봄축제가 개최됩니다. 다양한 공연과 이벤트가 준비되어 있으니 많은 참여 바랍니다.',
+                date: '2025.04.05'
+            },
+            {
+                id: 'notice5',
+                category: '학사',
+                title: '도서관 시설 개선 공사 안내',
+                summary: '4월 20일-30일 기간 중 도서관 일부 구역에서 시설 개선 공사가 진행됩니다. 이용에 불편을 드려 죄송합니다.',
+                date: '2025.04.04'
             }
-            return [];
-        }
-
-        function loadActivitiesData() {
-            const savedActivities = localStorage.getItem('activities');
-            if (savedActivities) {
-                try {
-                    return JSON.parse(savedActivities);
-                } catch (error) {
-                    console.error('활동 데이터 파싱 오류:', error);
-                }
-            }
-            return [];
-        }
-
-        function loadRestaurantsData() {
-            const savedRestaurants = localStorage.getItem('restaurants');
-            if (savedRestaurants) {
-                try {
-                    return JSON.parse(savedRestaurants);
-                } catch (error) {
-                    console.error('맛집 데이터 파싱 오류:', error);
-                }
-            }
-            return [];
-        }
-
-        function loadNotificationsData() {
-            const savedNotifications = localStorage.getItem('notifications');
-            if (savedNotifications) {
-                try {
-                    return JSON.parse(savedNotifications);
-                } catch (error) {
-                    console.error('알림 데이터 파싱 오류:', error);
-                }
-            }
-            return [];
-        }
+        ];
 
         // 페이지 로드 시 이벤트 리스너 추가
         document.addEventListener('DOMContentLoaded', function() {
@@ -1723,17 +1920,259 @@
             // 지도 초기화
             initNaverMap();
             
-           
-        // 프로필 이미지 업데이트
-        function updateProfileImage(userId) {
-            const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
-            const profileImage = localStorage.getItem(`user_${userId}_profileImage`) || '👤';
-            const avatarElement = document.getElementById('userAvatar');
+            // 건물 그리드 생성
+            createBuildingGrid();
             
-            if (profileImageType === 'emoji') {
-                avatarElement.textContent = profileImage;
+            // 공지사항 목록 생성
+            createNoticeList();
+            
+            // 셔틀버스 정보 업데이트
+            updateShuttleBusInfo();
+            
+            // 사용자 상태 확인
+            checkUserStatus();
+            
+            // 알림 카운트 업데이트
+            updateNotificationCount();
+            
+            // 시간표 업데이트
+            updateTimetable();
+            
+            console.log('앱 초기화 완료');
+        }
+
+        // 네이버 지도 초기화
+        function initNaverMap() {
+            if (typeof naver === 'undefined' || !naver.maps) {
+                console.error('네이버 지도 API가 로드되지 않았습니다.');
+                return;
+            }
+
+            try {
+                const mapContainer = document.getElementById('naverMap');
+                if (!mapContainer) return;
+
+                const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+                const mapOptions = {
+                    center: yeonsung,
+                    zoom: 16,
+                    minZoom: 14,
+                    maxZoom: 19,
+                    zoomControl: false,
+                    logoControl: false,
+                    mapDataControl: false,
+                    scaleControl: false
+                };
+
+                naverMap = new naver.maps.Map(mapContainer, mapOptions);
+
+                // 마커 생성
+                buildingData.forEach(building => {
+                    const marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(building.position.lat, building.position.lng),
+                        map: naverMap,
+                        title: building.name
+                    });
+
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: `
+                            <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
+                                <strong style="color: #3b82f6;">${building.name}</strong><br>
+                                <span style="color: #94a3b8;">${building.description}</span>
+                            </div>
+                        `,
+                        backgroundColor: 'transparent',
+                        borderWidth: 0,
+                        anchorSize: new naver.maps.Size(0, 0)
+                    });
+
+                    naver.maps.Event.addListener(marker, 'click', () => {
+                        infoWindows.forEach(iw => iw.close());
+                        infoWindow.open(naverMap, marker);
+                    });
+
+                    mapMarkers.push(marker);
+                    infoWindows.push(infoWindow);
+                });
+
+                console.log('네이버 지도 초기화 완료');
+            } catch (error) {
+                console.error('지도 초기화 오류:', error);
+            }
+        }
+
+        // 시간표 업데이트 (실제 시간표 페이지 데이터 연동)
+        function updateTimetable() {
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            if (!currentUser) {
+                // 로그인하지 않은 경우 기본 메시지 표시
+                const timetableContent = document.getElementById('timetableContent');
+                if (timetableContent) {
+                    timetableContent.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                            <p>로그인하여 개인 시간표를 확인하세요</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            // 현재 시간 정보
+            const now = new Date();
+            const currentDay = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+            // 현재 학기 설정
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            let semester = { year: currentYear, term: 1 };
+            
+            if (currentMonth >= 3 && currentMonth <= 6) {
+                semester = { year: currentYear, term: 1 };
+            } else if (currentMonth >= 9 && currentMonth <= 12) {
+                semester = { year: currentYear, term: 2 };
+            } else if (currentMonth >= 1 && currentMonth <= 2) {
+                semester = { year: currentYear - 1, term: 2 };
             } else {
-                avatarElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" alt="프로필">`;
+                semester = { year: currentYear, term: 1 };
+            }
+
+            // 현재 시간표 정보 가져오기
+            const savedCurrentTimetable = localStorage.getItem(`currentTimetable_user_${currentUser}`);
+            let currentTimetableId = 1;
+            if (savedCurrentTimetable) {
+                const timetableInfo = JSON.parse(savedCurrentTimetable);
+                currentTimetableId = timetableInfo.id;
+            }
+
+            // 시간표 데이터 로드
+            const semesterKey = `courses_${semester.year}_${semester.term}_${currentTimetableId}_user_${currentUser}`;
+            const savedCourses = localStorage.getItem(semesterKey);
+            let courses = [];
+            
+            if (savedCourses) {
+                courses = JSON.parse(savedCourses);
+            }
+
+            const timetableContent = document.getElementById('timetableContent');
+            if (!timetableContent) return;
+
+            // 과목이 없는 경우
+            if (courses.length === 0) {
+                timetableContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <p>등록된 과목이 없습니다</p>
+                        <button class="btn btn-primary" onclick="openQuickLink('timetable')" style="margin-top: 1rem;">
+                            시간표 작성하기
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // 오늘의 수업 필터링 및 시간 계산
+            const todayCourses = [];
+            
+            courses.forEach(course => {
+                course.times.forEach(time => {
+                    // 요일 매칭 (시간표의 1=월요일을 실제 요일과 매칭)
+                    if (time.day === currentDay || (currentDay === 0 && time.day === 6)) { // 일요일은 토요일 수업으로 처리
+                        // 시작 시간 계산 (9시부터 시작, 30분 시작)
+                        const startHour = 8 + time.start;
+                        const startMinute = 30;
+                        const startTime = startHour * 60 + startMinute;
+                        
+                        // 종료 시간 계산 (각 교시는 50분, 20분 종료)
+                        const endHour = 8 + time.end + 1;
+                        const endMinute = 20;
+                        const endTime = endHour * 60 + endMinute;
+
+                        // 상태 판단
+                        let status = 'upcoming';
+                        let timeInfo = '';
+                        
+                        if (currentTime >= startTime && currentTime < endTime) {
+                            status = 'current';
+                            const remainingMinutes = endTime - currentTime;
+                            timeInfo = formatTimeRemaining(remainingMinutes, '종료까지');
+                        } else if (currentTime >= endTime) {
+                            status = 'finished';
+                            timeInfo = '수업 종료';
+                        } else {
+                            status = 'upcoming';
+                            const minutesToStart = startTime - currentTime;
+                            if (minutesToStart > 0) {
+                                timeInfo = formatTimeRemaining(minutesToStart, '시작까지');
+                            } else {
+                                timeInfo = '곧 시작';
+                            }
+                        }
+
+                        todayCourses.push({
+                            ...course,
+                            time: time,
+                            status: status,
+                            timeInfo: timeInfo,
+                            startTime: startTime,
+                            endTime: endTime,
+                            displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`
+                        });
+                    }
+                });
+            });
+
+            // 시간순으로 정렬
+            todayCourses.sort((a, b) => a.startTime - b.startTime);
+
+            if (todayCourses.length === 0) {
+                timetableContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <p>오늘은 수업이 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // HTML 생성
+            timetableContent.innerHTML = '';
+
+            todayCourses.forEach(classInfo => {
+                const statusText = {
+                    'current': '진행중',
+                    'upcoming': '예정',
+                    'finished': '종료'
+                };
+
+                const classItem = document.createElement('div');
+                classItem.className = 'class-item';
+                classItem.innerHTML = `
+                    <div class="class-time">
+                        <div class="class-time-main">${classInfo.displayTime}</div>
+                        <div class="class-time-remaining">${classInfo.timeInfo}</div>
+                    </div>
+                    <div class="class-info">
+                        <div class="class-name">${classInfo.name}</div>
+                        <div class="class-location">${classInfo.room || '강의실 미정'} | ${classInfo.professor || '교수명 미정'}</div>
+                    </div>
+                    <div class="class-status status-${classInfo.status}">${statusText[classInfo.status]}</div>
+                `;
+                
+                timetableContent.appendChild(classItem);
+            });
+        }
+
+        // 시간 포맷팅 함수
+        function formatTimeRemaining(minutes, suffix) {
+            if (minutes < 60) {
+                return `${minutes}분 ${suffix}`;
+            } else {
+                const hours = Math.floor(minutes / 60);
+                const remainingMinutes = minutes % 60;
+                if (remainingMinutes === 0) {
+                    return `${hours}시간 ${suffix}`;
+                } else {
+                    return `${hours}시간 ${remainingMinutes}분 ${suffix}`;
+                }
             }
         }
 
@@ -1752,7 +2191,9 @@
         function showNotificationDropdown() {
             const dropdown = document.getElementById('notificationDropdown');
             if (dropdown) {
+                // 다른 드롭다운이 열려있다면 닫기
                 closeUserDropdown();
+                
                 dropdown.classList.add('show');
             }
         }
@@ -1779,6 +2220,8 @@
             });
             unreadNotifications = 0;
             updateNotificationCount();
+            
+            // 성공 메시지 표시
             showMessage('모든 알림을 읽음 처리했습니다.', 'success');
         }
 
@@ -1810,7 +2253,7 @@
 
         function resetMapView() {
             if (naverMap) {
-                const yeonsung = new naver.maps.LatLng(DEFAULT_CAMPUS_COORDS.lat, DEFAULT_CAMPUS_COORDS.lng);
+                const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
                 naverMap.setCenter(yeonsung);
                 naverMap.setZoom(16);
                 infoWindows.forEach(iw => iw.close());
@@ -1849,6 +2292,55 @@
                     alert('위치 정보를 가져올 수 없습니다.');
                 }
             );
+        }
+
+        // 건물 그리드 생성
+        function createBuildingGrid() {
+            const buildingGrid = document.getElementById('buildingGrid');
+            if (!buildingGrid) return;
+
+            buildingGrid.innerHTML = '';
+
+            buildingData.forEach(building => {
+                const buildingCard = document.createElement('div');
+                buildingCard.className = 'building-card';
+                buildingCard.innerHTML = `
+                    <h3 class="building-name">${building.name}</h3>
+                    <p class="building-desc">${building.description}</p>
+                    <div class="building-actions">
+                        <button class="btn btn-primary" onclick="showBuildingOnMap('${building.id}')">
+                            📍 지도에서 보기
+                        </button>
+                        <button class="btn btn-outline" onclick="getBuildingDirections('${building.id}')">
+                            🧭 길찾기
+                        </button>
+                    </div>
+                `;
+                buildingGrid.appendChild(buildingCard);
+            });
+        }
+
+        // 공지사항 목록 생성
+        function createNoticeList() {
+            const noticeList = document.getElementById('fullNoticeList');
+            if (!noticeList) return;
+
+            noticeList.innerHTML = '';
+
+            noticesData.forEach(notice => {
+                const noticeItem = document.createElement('div');
+                noticeItem.className = 'notice-item';
+                noticeItem.onclick = () => viewNoticeDetail(notice.id);
+                noticeItem.innerHTML = `
+                    <div class="notice-header">
+                        <span class="notice-category">${notice.category}</span>
+                        <span class="notice-date">${notice.date}</span>
+                    </div>
+                    <div class="notice-title">${notice.title}</div>
+                    <div class="notice-summary">${notice.summary}</div>
+                `;
+                noticeList.appendChild(noticeItem);
+            });
         }
 
         // 콘텐츠 전환
@@ -1896,6 +2388,27 @@
             updateShuttleBusInfo();
         }
 
+        // 셔틀버스 정보 업데이트
+        function updateShuttleBusInfo() {
+            // 간단한 더미 데이터로 업데이트
+            const routes = {
+                1: { name: '인천 남동구', time: '15분 후', desc: '학교 → 안양역 경유 (14:30)', status: 'running' },
+                2: { name: '시화지역', time: '25분 후', desc: '학교 → 시화역 경유 (14:40)', status: 'running' },
+                3: { name: '서울 목동', time: '운행종료', desc: '다음 운행: 내일 08:30', status: 'stopped' }
+            };
+
+            const route = routes[selectedShuttleRoute];
+            
+            document.getElementById('shuttleTime').textContent = route.time;
+            document.getElementById('shuttleDesc').textContent = route.desc;
+            
+            const statusElement = document.getElementById('shuttleStatus');
+            statusElement.className = `status-badge status-${route.status}`;
+            statusElement.innerHTML = route.status === 'running' ? 
+                '<span>🟢</span><span>운행중</span>' : 
+                '<span>🔴</span><span>운행종료</span>';
+        }
+
         // 빠른 링크 함수들
         function openQuickLink(type) {
             const links = {
@@ -1915,30 +2428,26 @@
 
         // 건물 관련 함수들
         function showBuildingOnMap(buildingId) {
-            const buildingData = loadBuildingData();
             const building = buildingData.find(b => b.id === buildingId);
             if (!building || !naverMap) return;
 
             showContent('buildings');
             
             setTimeout(() => {
-                if (building.position) {
-                    const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
-                    naverMap.setCenter(position);
-                    naverMap.setZoom(18);
-                    
-                    // 해당 마커의 정보창 열기
-                    const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
-                    if (markerIndex !== -1) {
-                        infoWindows.forEach(window => window.close());
-                        infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
-                    }
+                const position = new naver.maps.LatLng(building.position.lat, building.position.lng);
+                naverMap.setCenter(position);
+                naverMap.setZoom(18);
+                
+                // 해당 마커의 정보창 열기
+                const markerIndex = mapMarkers.findIndex(marker => marker.getTitle() === building.name);
+                if (markerIndex !== -1) {
+                    infoWindows.forEach(window => window.close());
+                    infoWindows[markerIndex].open(naverMap, mapMarkers[markerIndex]);
                 }
             }, 500);
         }
 
         function getBuildingDirections(buildingId) {
-            const buildingData = loadBuildingData();
             const building = buildingData.find(b => b.id === buildingId);
             if (!building) return;
 
@@ -1948,15 +2457,13 @@
                 return;
             }
 
-            if (building.position) {
-                // 간단한 길찾기 안내
-                const distance = calculateDistance(
-                    userLocation.latitude, userLocation.longitude,
-                    building.position.lat, building.position.lng
-                );
+            // 간단한 길찾기 안내
+            const distance = calculateDistance(
+                userLocation.latitude, userLocation.longitude,
+                building.position.lat, building.position.lng
+            );
 
-                alert(`${building.name}까지 직선거리 약 ${Math.round(distance)}m입니다.`);
-            }
+            alert(`${building.name}까지 직선거리 약 ${Math.round(distance)}m입니다.`);
         }
 
         // 거리 계산 함수
@@ -1972,6 +2479,63 @@
             return R * c;
         }
 
+        // 사용자 상태 확인
+        function checkUserStatus() {
+            const currentUser = localStorage.getItem('currentLoggedInUser');
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            const dropdownUserNameElement = document.getElementById('dropdownUserName');
+            const dropdownUserRoleElement = document.getElementById('dropdownUserRole');
+            
+            if (currentUser) {
+                const userName = localStorage.getItem(`user_${currentUser}_name`) || '사용자';
+                const department = localStorage.getItem(`user_${currentUser}_department`) || '';
+                const departmentName = department ? getDepartmentName(department) : '학생';
+                
+                // 상단 프로필 업데이트
+                userNameElement.textContent = userName;
+                userRoleElement.textContent = departmentName;
+                
+                // 드롭다운 프로필 업데이트
+                if (dropdownUserNameElement) dropdownUserNameElement.textContent = userName;
+                if (dropdownUserRoleElement) dropdownUserRoleElement.textContent = departmentName;
+                
+                // 프로필 이미지 업데이트
+                updateProfileImage(currentUser);
+            } else {
+                userNameElement.textContent = '게스트';
+                userRoleElement.textContent = '방문자';
+                
+                if (dropdownUserNameElement) dropdownUserNameElement.textContent = '게스트';
+                if (dropdownUserRoleElement) dropdownUserRoleElement.textContent = '방문자';
+            }
+        }
+
+        // 학과명 변환
+        function getDepartmentName(department) {
+            const deptMap = {
+                'computerScience': '컴퓨터정보학과',
+                'business': '경영학과',
+                'nursing': '간호학과',
+                'engineering': '공학계열',
+                'arts': '예술계열'
+            };
+            return deptMap[department] || department;
+        }
+
+        // 프로필 이미지 업데이트
+        function updateProfileImage(userId) {
+            const profileImageType = localStorage.getItem(`user_${userId}_profileImageType`) || 'emoji';
+            const profileImage = localStorage.getItem(`user_${userId}_profileImage`) || '👤';
+            const avatarElement = document.getElementById('userAvatar');
+            
+            if (profileImageType === 'emoji') {
+                avatarElement.textContent = profileImage;
+            } else {
+                avatarElement.innerHTML = `<img src="${profileImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" alt="프로필">`;
+            }
+        }
+
         // 검색 기능
         function handleGlobalSearch() {
             const searchInput = document.getElementById('globalSearch');
@@ -1980,10 +2544,9 @@
             if (!query) return;
 
             // 건물 검색
-            const buildingData = loadBuildingData();
             const foundBuilding = buildingData.find(building => 
                 building.name.toLowerCase().includes(query) || 
-                (building.description && building.description.toLowerCase().includes(query))
+                building.description.toLowerCase().includes(query)
             );
 
             if (foundBuilding) {
@@ -1993,10 +2556,9 @@
             }
 
             // 공지사항 검색
-            const noticesData = loadNoticesData();
             const foundNotice = noticesData.find(notice => 
                 notice.title.toLowerCase().includes(query) || 
-                (notice.summary && notice.summary.toLowerCase().includes(query))
+                notice.summary.toLowerCase().includes(query)
             );
 
             if (foundNotice) {
@@ -2010,10 +2572,9 @@
 
         // 공지사항 상세 보기
         function viewNoticeDetail(noticeId) {
-            const noticesData = loadNoticesData();
             const notice = noticesData.find(n => n.id === noticeId);
             if (notice) {
-                alert(`${notice.title}\n\n${notice.summary || '상세 내용이 없습니다.'}\n\n작성일: ${notice.date}`);
+                alert(`${notice.title}\n\n${notice.summary}\n\n작성일: ${notice.date}`);
             }
         }
 
@@ -2046,7 +2607,9 @@
         function showUserDropdown() {
             const dropdown = document.getElementById('userDropdown');
             if (dropdown) {
+                // 다른 드롭다운이 열려있다면 닫기
                 closeNotificationDropdown();
+                
                 dropdown.classList.add('show');
             }
         }
@@ -2170,34 +2733,95 @@
             sidebar.classList.toggle('open');
         }
 
+        // 데이터 업데이트 함수들
+        function updateActivityStats() {
+            // 로컬 스토리지에서 활동 통계 가져오기
+            const statsData = localStorage.getItem('activityStats');
+            if (statsData) {
+                const stats = JSON.parse(statsData);
+                
+                const contestElement = document.getElementById('contestCount');
+                const clubElement = document.getElementById('clubCount');
+                const externalElement = document.getElementById('externalCount');
+                
+                if (contestElement) contestElement.textContent = stats.contestCount || 12;
+                if (clubElement) clubElement.textContent = stats.clubCount || 8;
+                if (externalElement) externalElement.textContent = stats.externalCount || 15;
+            }
+        }
+
+        function updateRestaurantInfo() {
+            // 로컬 스토리지에서 맛집 정보 가져오기
+            const restaurantsData = localStorage.getItem('restaurants');
+            if (restaurantsData) {
+                try {
+                    const restaurants = JSON.parse(restaurantsData);
+                    const popularRestaurants = restaurants
+                        .sort((a, b) => (b.likes || 0) - (a.likes || 0))
+                        .slice(0, 2);
+                    
+                    const restaurantGrid = document.getElementById('restaurantGrid');
+                    if (restaurantGrid && popularRestaurants.length > 0) {
+                        restaurantGrid.innerHTML = '';
+                        
+                        popularRestaurants.forEach(restaurant => {
+                            const categoryEmoji = getCategoryEmoji(restaurant.category || '한식');
+                            const restaurantCard = document.createElement('div');
+                            restaurantCard.className = 'restaurant-card';
+                            restaurantCard.onclick = () => window.open(`student-deals.html?id=${restaurant.id}`, '_blank');
+                            
+                            restaurantCard.innerHTML = `
+                                <div class="restaurant-image">${categoryEmoji}</div>
+                                <div class="restaurant-info">
+                                    <div class="restaurant-name">${restaurant.name}</div>
+                                    <div class="restaurant-category">${restaurant.category || '한식'}</div>
+                                    <div class="restaurant-discount">${restaurant.discount || '할인 없음'}</div>
+                                    <div class="restaurant-likes">👍 ${restaurant.likes || 0}</div>
+                                </div>
+                            `;
+                            
+                            restaurantGrid.appendChild(restaurantCard);
+                        });
+                    }
+                } catch (error) {
+                    console.error('맛집 정보 업데이트 오류:', error);
+                }
+            }
+        }
+
+        // 카테고리 이모지 반환
+        function getCategoryEmoji(category) {
+            const emojiMap = {
+                '한식': '🍲',
+                '중식': '🥢',
+                '일식': '🍣',
+                '양식': '🍝',
+                '분식': '🍜',
+                '카페': '☕',
+                '술집': '🍺'
+            };
+            return emojiMap[category] || '🍽️';
+        }
+
         // 정기적 업데이트
         setInterval(() => {
             updateShuttleBusInfo();
             updateTimetable();
             updateActivityStats();
             updateRestaurantInfo();
-            updateNotifications();
         }, 60000); // 1분마다 업데이트
 
         // Storage 이벤트 리스너 (다른 탭에서 데이터 변경 감지)
         window.addEventListener('storage', function(event) {
-            if (event.key === 'activities') {
+            if (event.key === 'activityStats') {
                 updateActivityStats();
             } else if (event.key === 'restaurants') {
                 updateRestaurantInfo();
-            } else if (event.key === 'campusBuildings') {
-                createBuildingGrid();
-                // 지도 마커도 다시 생성
-                initNaverMap();
-            } else if (event.key === 'campusNotices') {
-                createNoticeList();
-            } else if (event.key === 'currentLoggedInUser' || (event.key && event.key.includes('_profileImage'))) {
+            } else if (event.key === 'currentLoggedInUser' || event.key && event.key.includes('_profileImage')) {
                 checkUserStatus();
-                updateTimetable();
+                updateTimetable(); // 로그인 상태 변경 시 시간표도 업데이트
             } else if (event.key && event.key.includes('courses_')) {
-                updateTimetable();
-            } else if (event.key === 'notifications') {
-                updateNotifications();
+                updateTimetable(); // 시간표 데이터 변경 시 업데이트
             }
         });
 
@@ -2208,9 +2832,6 @@
                 updateActivityStats();
                 updateRestaurantInfo();
                 updateTimetable();
-                updateNotifications();
-                createBuildingGrid();
-                createNoticeList();
             }
         });
 
@@ -2219,9 +2840,7 @@
             updateActivityStats();
             updateRestaurantInfo();
             updateTimetable();
-            updateNotifications();
         }, 1000);
-    }
     </script>
 </body>
 </html>
