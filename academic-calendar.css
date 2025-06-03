@@ -1,6 +1,4 @@
-/* ==================================================================
-   전체 공통 리셋 및 컨테이너
-   ================================================================== */
+/* 기본 스타일 리셋 */
 * {
     margin: 0;
     padding: 0;
@@ -24,9 +22,7 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* ==================================================================
-   헤더 (메인 페이지와 동일한 그라데이션, 폰트 스타일 유지)
-   ================================================================== */
+/* 헤더 스타일 - 상단 고정 */
 .header {
     background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%);
     color: white;
@@ -34,9 +30,10 @@ body {
     border-radius: 20px;
     margin-bottom: 30px;
     box-shadow: 0 15px 35px rgba(46, 139, 87, 0.3);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; /* 스크롤 시 상단 고정 */
+    top: 0; /* 상단에서 0px 위치에 고정 */
+    z-index: 100; /* 다른 요소들보다 위에 표시 */
+    overflow: hidden;
 }
 
 .header::before {
@@ -58,7 +55,7 @@ body {
     z-index: 1;
 }
 
-/* 뒤로 가기 버튼 스타일 (메인 페이지와 동일) */
+/* 뒤로 가기 버튼 스타일 */
 .back-button {
     background: rgba(255, 255, 255, 0.2);
     color: white;
@@ -86,7 +83,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* 대학 정보 텍스트 (메인 페이지와 통일) */
 .university-info .title {
     font-size: 2.8rem;
     font-weight: 700;
@@ -102,7 +98,6 @@ body {
     font-weight: 300;
 }
 
-/* 학기 선택 셀렉트박스 (메인 페이지와 동일 스타일) */
 .semester-selector select {
     background: rgba(255, 255, 255, 0.2);
     color: white;
@@ -127,9 +122,7 @@ body {
     color: white;
 }
 
-/* ==================================================================
-   주요 일정 요약 (스와이프 카드)
-   ================================================================== */
+/* 주요 일정 요약 */
 .schedule-summary {
     margin-bottom: 30px;
 }
@@ -143,6 +136,7 @@ body {
     gap: 10px;
 }
 
+/* 스와이프 컨테이너 스타일 */
 .summary-cards {
     overflow: hidden;
     position: relative;
@@ -163,6 +157,30 @@ body {
     display: none; /* Chrome/Safari */
 }
 
+.swipe-container .summary-card {
+    flex: 0 0 280px; /* 고정 너비 */
+    min-width: 280px;
+}
+
+/* 과거 일정 스타일 */
+.summary-card.past-event {
+    opacity: 0.7;
+    border-left-color: #95a5a6;
+}
+
+.summary-card.past-event h4 {
+    color: #7f8c8d;
+}
+
+.summary-card.past-event .date {
+    color: #95a5a6;
+}
+
+.summary-card.past-event .description {
+    color: #95a5a6;
+}
+
+/* 주요 일정 카드 기본 스타일 */
 .summary-card {
     background: white;
     border-radius: 15px;
@@ -179,21 +197,28 @@ body {
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
-.summary-card.past-event {
-    opacity: 0.7;
-    border-left-color: #95a5a6;
+.summary-card.exam {
+    border-left-color: #e74c3c;
 }
 
-.summary-card.past-event h4 {
-    color: #7f8c8d;
+.summary-card.holiday {
+    border-left-color: #27ae60;
 }
 
-.summary-card.past-event .date {
-    color: #95a5a6;
+.summary-card.registration {
+    border-left-color: #6AC1C5;
 }
 
-.summary-card.past-event .description {
-    color: #95a5a6;
+.summary-card.registration {
+    border-left-color: #f39c12;
+}
+
+.summary-card.event {
+    border-left-color: #9b59b6;
+}
+
+.summary-card.academic {
+    border-left-color: #B8E985;
 }
 
 .summary-card h4 {
@@ -213,78 +238,78 @@ body {
     font-size: 0.95rem;
 }
 
-/* ==================================================================
-   캘린더 네비게이션 (메인 페이지 버튼 스타일과 통일)
-   ================================================================== */
+/* 캘린더 네비게이션 */
 .calendar-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
     background: white;
-    padding: 20px 30px;
+    padding: 25px;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
+/* 네비게이션 버튼 색상 업데이트 */
 .nav-btn, .today-btn {
-    background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%);
+    background: #B8E985;
     color: white;
     border: none;
-    padding: 12px 18px;
+    padding: 15px 20px;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .nav-btn:hover, .today-btn:hover {
-    background: linear-gradient(135deg, #20B2AA 0%, #2E8B57 100%);
+    background: #6AC1C5;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+    box-shadow: 0 5px 15px rgba(184, 233, 133, 0.4);
 }
 
 .current-month {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 700;
     color: #2c3e50;
     text-align: center;
 }
 
-/* ==================================================================
-   캘린더 (전체 배경, 그리드, 셀 등)
-   ================================================================== */
+/* 캘린더 스타일 - 모든 월 동일한 크기로 고정 */
 .calendar {
     background: white;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
+    height: 900px; /* 캘린더 전체 높이 고정 */
     display: flex;
     flex-direction: column;
 }
 
-/* 캘린더 헤더 – 메인 페이지 그라데이션과 비슷하게 변경 */
+/* 캘린더 헤더 색상 업데이트 - 글자 가독성 개선 */
 .calendar-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%);
+    background: linear-gradient(135deg, #B8E985 0%, #6AC1C5 100%);
     color: white;
-    height: 60px;
-    flex-shrink: 0;
+    height: 60px; /* 헤더 높이 고정 */
+    flex-shrink: 0; /* 헤더 크기 고정 */
 }
 
 .day-header {
-    padding: 15px 8px;
+    padding: 20px 10px;
     text-align: center;
     font-weight: 700;
     font-size: 1.1rem;
     color: white;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    word-break: keep-all;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -303,30 +328,32 @@ body {
 .calendar-body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr); /* 항상 6주 표시로 고정 */
     gap: 1px;
     background: #f0f2f5;
-    flex: 1;
-    min-height: 600px; /* 가변 높이로 변경 */
+    flex: 1; /* 나머지 공간 모두 사용 */
+    height: 840px; /* 캘린더 본체 높이 고정 (900px - 60px) */
 }
 
-/* 개별 날짜 셀 스타일 */
+/* 캘린더 날짜 셀 높이 고정 */
 .calendar-day {
-    background: white;
+    height: 140px; /* 고정 높이 */
     padding: 8px 6px;
     position: relative;
-    overflow: hidden;
+    background: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
     display: flex;
     flex-direction: column;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid #f0f2f5;
+    overflow: hidden;
 }
 
 .calendar-day:hover {
-    background: #fafcff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    background: #f8f9ff;
+    transform: scale(1.02);
+    z-index: 2;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-day.other-month {
@@ -352,61 +379,69 @@ body {
     color: white;
 }
 
-/* 날짜 숫자 스타일 */
 .day-number {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     color: #2c3e50;
+    flex-shrink: 0;
     text-align: center;
-    height: 24px;
+    height: 24px; /* 날짜 숫자 영역 높이 고정 */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 이벤트가 들어갈 영역 */
+/* 이벤트 컨테이너 스타일 개선 */
 .day-events {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    overflow-y: hidden;
-    max-height: calc(100% - 24px - 8px); /* 숫자 영역 제외 */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    gap: 1px;
+    flex: 1; /* 남은 공간 모두 사용 */
+    overflow-y: hidden; /* 스크롤바 제거 */
+    max-height: calc(140px - 30px); /* 날짜 숫자 공간 제외한 나머지 */
+    min-height: 110px; /* 최소 높이 보장 */
+    scrollbar-width: none; /* Firefox 스크롤바 숨김 */
+    -ms-overflow-style: none; /* IE/Edge 스크롤바 숨김 */
 }
 
+/* Webkit 기반 브라우저 스크롤바 숨김 */
 .day-events::-webkit-scrollbar {
     display: none;
 }
 
-/* ==================================================================
-   이벤트 아이템 (카드 스타일과 색상)
-   ================================================================== */
+/* 개별 색상을 위한 기본 이벤트 스타일 개선 */
 .event-item {
     padding: 3px 5px;
     border-radius: 3px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
     color: white;
+    margin-bottom: 1px;
+    min-height: 16px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    line-height: 1.1;
+    word-break: break-word;
+    hyphens: auto;
+    flex-shrink: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    transition: all 0.2s ease;
 }
 
+/* 긴 제목은 줄임표 처리 */
 .event-item:hover {
-    white-space: normal;
+    white-space: normal; /* 호버 시 전체 제목 표시 */
     z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
+    transform: scale(1.02);
 }
 
-/* 이벤트 타입별 기본 색상 (배경 그라데이션) */
+/* 이벤트 타입별 색상 */
 .event-item.academic {
     background: linear-gradient(135deg, #3498db, #2980b9);
 }
@@ -427,82 +462,7 @@ body {
     background: linear-gradient(135deg, #f39c12, #d68910);
 }
 
-/* 다일정(멀티데이) 표시를 위한 클래스 */
-.event-item.multi-day-start {
-    border-radius: 3px 0 0 3px;
-    margin-right: -1px;
-}
-
-.event-item.multi-day-middle {
-    border-radius: 0;
-    margin-left: -1px;
-    margin-right: -1px;
-}
-
-.event-item.multi-day-end {
-    border-radius: 0 3px 3px 0;
-    margin-left: -1px;
-}
-
-/* 연결선 효과 */
-.event-item.multi-day-start::after,
-.event-item.multi-day-middle::after {
-    content: '';
-    position: absolute;
-    right: -1px;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: rgba(255, 255, 255, 0.3);
-    z-index: 1;
-}
-
-.event-item.multi-day-middle::before,
-.event-item.multi-day-end::before {
-    content: '';
-    position: absolute;
-    left: -1px;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: rgba(255, 255, 255, 0.3);
-    z-index: 1;
-}
-
-/* 연속 일정 색상 통일 */
-.event-item.academic.multi-day-start,
-.event-item.academic.multi-day-middle,
-.event-item.academic.multi-day-end {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-}
-
-.event-item.exam.multi-day-start,
-.event-item.exam.multi-day-middle,
-.event-item.exam.multi-day-end {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-}
-
-.event-item.holiday.multi-day-start,
-.event-item.holiday.multi-day-middle,
-.event-item.holiday.multi-day-end {
-    background: linear-gradient(135deg, #27ae60, #229954);
-}
-
-.event-item.event.multi-day-start,
-.event-item.event.multi-day-middle,
-.event-item.event.multi-day-end {
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
-}
-
-.event-item.registration.multi-day-start,
-.event-item.registration.multi-day-middle,
-.event-item.registration.multi-day-end {
-    background: linear-gradient(135deg, #f39c12, #d68910);
-}
-
-/* ==================================================================
-   이벤트 목록 (리스트 뷰)
-   ================================================================== */
+/* 일정 필터 및 목록 */
 .events-section {
     background: white;
     border-radius: 20px;
@@ -514,13 +474,13 @@ body {
 .events-title {
     font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     color: #2c3e50;
     display: flex;
     align-items: center;
     gap: 12px;
-    border-bottom: 3px solid #2E8B57;
-    padding-bottom: 10px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
 }
 
 .events-filter {
@@ -531,7 +491,7 @@ body {
 }
 
 .filter-btn {
-    padding: 10px 18px;
+    padding: 12px 20px;
     border: 2px solid #e0e6ed;
     background: white;
     color: #666;
@@ -542,14 +502,15 @@ body {
 }
 
 .filter-btn:hover {
-    border-color: #2E8B57;
-    color: #2E8B57;
+    border-color: #B8E985;
+    color: #B8E985;
 }
 
+/* 필터 버튼 활성화 색상 */
 .filter-btn.active {
-    background: #2E8B57;
+    background: #B8E985;
     color: white;
-    border-color: #2E8B57;
+    border-color: #B8E985;
 }
 
 .events-list {
@@ -557,15 +518,15 @@ body {
     gap: 15px;
 }
 
+/* 이벤트 카드 테두리 색상 업데이트 */
 .event-card {
     background: #f8f9ff;
     border: 1px solid #e0e6ed;
     border-radius: 12px;
-    padding: 18px 20px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 15px;
 }
 
 .event-card:hover {
@@ -573,34 +534,65 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
+.event-card.academic {
+    border-left-color: #B8E985;
+    background: #f0fdf4;
+}
+
+.event-card.exam {
+    border-left-color: #e74c3c;
+    background: #fdf2f2;
+}
+
+.event-card.holiday {
+    border-left-color: #27ae60;
+    background: #eafaf1;
+}
+
+.event-card.event {
+    border-left-color: #9b59b6;
+    background: #f4ecf7;
+}
+
+.event-card.registration {
+    border-left-color: #6AC1C5;
+    background: #f0fdfa;
+}
+
+.event-card.registration {
+    border-left-color: #f39c12;
+    background: #fef9e7;
+}
+
 .event-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 12px;
 }
 
 .event-card-title {
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: #2c3e50;
     line-height: 1.4;
 }
 
 .event-card-date {
     color: #7f8c8d;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .event-card-description {
     color: #5a6c7d;
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    line-height: 1.4;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
 }
 
+/* 이벤트 타입 라벨 스타일 */
 .event-type {
     display: inline-flex;
     align-items: center;
@@ -611,6 +603,7 @@ body {
     font-weight: 600;
 }
 
+/* 이벤트 타입 라벨 색상 */
 .event-type.academic {
     background: #e8f5e8;
     color: #2e7d32;
@@ -636,16 +629,62 @@ body {
     color: #00695c;
 }
 
-/* ==================================================================
-   범례 (주석 처리하여 숨김)
-   ================================================================== */
+/* 범례 관련 CSS 제거 */
 .legend {
     display: none;
 }
 
-/* ==================================================================
-   모달 (상세보기)
-   ================================================================== */
+.legend-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-color.academic {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.legend-color.exam {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.legend-color.holiday {
+    background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.legend-color.event {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.legend-color.registration {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+}
+
+.legend-text {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* 모달 스타일 */
 .modal {
     display: none;
     position: fixed;
@@ -681,10 +720,11 @@ body {
     }
 }
 
+/* 모달 헤더 색상 업데이트 */
 .modal-header {
-    background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%);
+    background: linear-gradient(135deg, #B8E985 0%, #6AC1C5 100%);
     color: white;
-    padding: 20px 25px;
+    padding: 25px;
     border-radius: 20px 20px 0 0;
     display: flex;
     justify-content: space-between;
@@ -692,7 +732,7 @@ body {
 }
 
 .modal-header h3 {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 700;
 }
 
@@ -700,9 +740,9 @@ body {
     background: none;
     border: none;
     color: white;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     cursor: pointer;
-    padding: 6px;
+    padding: 8px;
     border-radius: 50%;
     transition: all 0.3s ease;
 }
@@ -713,25 +753,25 @@ body {
 }
 
 .event-detail {
-    padding: 25px 30px;
+    padding: 30px;
 }
 
 .detail-item {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 15px;
 }
 
 .detail-item i {
     color: #667eea;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     margin-top: 2px;
     min-width: 20px;
 }
 
 .detail-item strong {
-    min-width: 70px;
+    min-width: 80px;
     color: #2c3e50;
     font-weight: 700;
 }
@@ -742,15 +782,13 @@ body {
     flex: 1;
 }
 
-/* ==================================================================
-   푸터
-   ================================================================== */
+/* 푸터 */
 .footer {
     background: #2c3e50;
     color: white;
     text-align: center;
-    padding: 25px;
-    margin-top: 30px;
+    padding: 30px;
+    margin-top: 50px;
     border-radius: 20px 20px 0 0;
 }
 
@@ -759,41 +797,182 @@ body {
     opacity: 0.9;
 }
 
-/* ==================================================================
-   유틸리티 · 빈 셀 스타일
-   ================================================================== */
+/* 빈 셀 스타일 */
 .calendar-day.empty-cell {
     background: transparent;
     border: none;
+    height: 140px; /* 빈 셀도 동일한 높이 */
 }
 
-/* 공휴일 날짜 빨간색 강조 */
+/* 공휴일 날짜 빨간색 */
 .day-number.holiday-date {
     color: #e74c3c !important;
     font-weight: bold;
 }
 
-/* ==================================================================
-   반응형
-   ================================================================== */
+/* 연속 일정 스타일 - 네이버 캘린더 스타일 */
+.event-item.multi-day-start {
+    border-radius: 3px 0 0 3px;
+    margin-right: -1px;
+}
+
+.event-item.multi-day-middle {
+    border-radius: 0;
+    margin-left: -1px;
+    margin-right: -1px;
+}
+
+.event-item.multi-day-end {
+    border-radius: 0 3px 3px 0;
+    margin-left: -1px;
+}
+
+/* 연속 일정 시각적 연결 */
+.event-item.multi-day-start::after,
+.event-item.multi-day-middle::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: inherit;
+    z-index: 1;
+}
+
+.event-item.multi-day-middle::before,
+.event-item.multi-day-end::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: inherit;
+    z-index: 1;
+}
+
+/* 연속 일정 연결선 효과 */
+.event-item.multi-day-start::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.event-item.multi-day-middle::before,
+.event-item.multi-day-middle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.event-item.multi-day-middle::before {
+    left: -1px;
+}
+
+.event-item.multi-day-middle::after {
+    right: -1px;
+}
+
+.event-item.multi-day-end::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 각 이벤트 타입별 연속 일정 색상 통일 */
+.event-item.academic.multi-day-start,
+.event-item.academic.multi-day-middle,
+.event-item.academic.multi-day-end {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.event-item.exam.multi-day-start,
+.event-item.exam.multi-day-middle,
+.event-item.exam.multi-day-end {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.event-item.holiday.multi-day-start,
+.event-item.holiday.multi-day-middle,
+.event-item.holiday.multi-day-end {
+    background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.event-item.event.multi-day-start,
+.event-item.event.multi-day-middle,
+.event-item.event.multi-day-end {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.event-item.registration.multi-day-start,
+.event-item.registration.multi-day-middle,
+.event-item.registration.multi-day-end {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+}
+
+/* 연속 일정 호버 효과 */
+.calendar-day:hover .event-item.multi-day-start,
+.calendar-day:hover .event-item.multi-day-middle,
+.calendar-day:hover .event-item.multi-day-end {
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 빈 연속 일정 블록 (중간/끝) 최소 높이 보장 */
+.event-item.multi-day-middle:empty,
+.event-item.multi-day-end:empty {
+    min-height: 16px;
+    display: block;
+}
+
+/* 반응형 디자인 개선 */
 @media (max-width: 1024px) {
     .container {
         padding: 15px;
     }
-    .calendar-body {
-        min-height: 550px;
+    
+    .summary-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
+    
     .calendar {
-        margin-bottom: 20px;
+        height: 800px; /* 태블릿에서는 약간 줄임 */
     }
-    .day-number {
-        font-size: 1rem;
+    
+    .calendar-body {
+        height: 740px;
     }
+    
+    .calendar-day {
+        height: 123px; /* 비례적으로 줄임 */
+    }
+    
+    .day-events {
+        max-height: calc(123px - 30px);
+        min-height: 93px;
+    }
+    
     .event-item {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         padding: 2px 4px;
+        min-height: 14px;
     }
+    
     .day-header {
+        padding: 15px 8px;
         font-size: 1rem;
     }
 }
@@ -804,49 +983,78 @@ body {
         gap: 15px;
         align-items: center;
     }
+    
     .back-button {
         align-self: flex-start;
         padding: 10px 16px;
         font-size: 0.9rem;
     }
+    
     .university-info {
         text-align: center;
     }
+    
     .university-info .title {
         font-size: 2.2rem;
     }
+    
     .calendar-nav {
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 15px;
         justify-content: center;
     }
+    
     .current-month {
         order: -1;
         width: 100%;
-        font-size: 1.6rem;
+        font-size: 1.8rem;
     }
+    
     .calendar {
-        margin-bottom: 20px;
+        height: 700px; /* 모바일에서는 더 줄임 */
     }
+    
     .calendar-body {
-        min-height: 480px;
+        height: 640px;
     }
+    
+    .calendar-day {
+        height: 106px;
+    }
+    
+    .day-events {
+        max-height: calc(106px - 24px);
+        min-height: 82px;
+    }
+    
     .day-number {
-        font-size: 1rem;
+        font-size: 1.1rem;
+        height: 20px;
+        margin-bottom: 4px;
     }
+    
     .event-item {
         font-size: 0.6rem;
+        padding: 1px 3px;
+        min-height: 12px;
     }
+    
     .events-filter {
         justify-content: center;
     }
+    
+    .legend-items {
+        justify-content: center;
+    }
+    
     .modal-content {
         margin: 10% auto;
         width: 95%;
     }
+    
     .day-header {
-        font-size: 0.9rem;
         padding: 12px 6px;
+        font-size: 0.9rem;
     }
 }
 
@@ -854,26 +1062,55 @@ body {
     .back-button span {
         display: none; /* 작은 화면에서는 텍스트 숨김 */
     }
+    
     .back-button {
         padding: 10px 12px;
         min-width: 44px;
         justify-content: center;
     }
+    
     .university-info .title {
         font-size: 1.8rem;
     }
+    
+    .calendar {
+        height: 600px; /* 작은 모바일에서는 더 줄임 */
+    }
+    
     .calendar-body {
-        min-height: 380px;
+        height: 540px;
     }
+    
+    .calendar-day {
+        height: 90px;
+    }
+    
+    .day-events {
+        gap: 1px;
+        max-height: calc(90px - 20px);
+        min-height: 70px;
+    }
+    
     .day-number {
-        font-size: 0.9rem;
+        font-size: 1rem;
+        height: 18px;
+        margin-bottom: 2px;
     }
+    
     .event-item {
         font-size: 0.55rem;
         padding: 1px 2px;
+        min-height: 10px;
     }
+    
+    .event-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
     .day-header {
-        font-size: 0.8rem;
         padding: 10px 4px;
+        font-size: 0.8rem;
     }
 }
