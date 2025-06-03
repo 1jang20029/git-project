@@ -836,7 +836,6 @@ body {
 }
 
 /* 맛집 카드 */
-/* “맛집 정보” 섹션 자체를 제거했으므로 아래 CSS는 남아 있어도 무방합니다 */
 .restaurant-card {
   display: flex;
   background: rgba(15, 23, 42, 0.3);
