@@ -123,17 +123,24 @@
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="showContent('timetable')" id="nav-timetable">
-            <span class="nav-icon" title="내 시간표">📅</span>
-            <span>내 시간표</span>
+          <!-- 이제 external 페이지(새 탭 또는 전체 페이지)로 이동하도록 <a> 태그 사용 -->
+          <li class="nav-item">
+            <a href="timetable.html" target="_blank" style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="nav-icon" title="내 시간표">📅</span>
+              <span>내 시간표</span>
+            </a>
           </li>
-          <li class="nav-item" onclick="showContent('shuttle')" id="nav-shuttle">
-            <span class="nav-icon" title="셔틀버스">🚌</span>
-            <span>셔틀버스</span>
+          <li class="nav-item">
+            <a href="shuttle_bus.html" target="_blank" style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="nav-icon" title="셔틀버스">🚌</span>
+              <span>셔틀버스</span>
+            </a>
           </li>
-          <li class="nav-item" onclick="showContent('academic-calendar')" id="nav-academic-calendar">
-            <span class="nav-icon" title="학사일정">🗓️</span>
-            <span>학사일정</span>
+          <li class="nav-item">
+            <a href="academic-calendar.html" target="_blank" style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="nav-icon" title="학사일정">🗓️</span>
+              <span>학사일정</span>
+            </a>
           </li>
         </ul>
       </div>
@@ -329,46 +336,7 @@
         <div class="notice-list" id="fullNoticeList"><!-- 동적 로드 --></div>
       </div>
 
-      <!-- 6) 내 시간표 (빠른 접근) -->
-      <div id="timetableContentPane" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>내 시간표</h1>
-          <div class="breadcrumb">
-            <span>홈</span>
-            <span>›</span>
-            <span>내 시간표</span>
-          </div>
-        </div>
-        <div id="timetableContentDetailed"><!-- 필요 시 로드 --></div>
-      </div>
-
-      <!-- 7) 셔틀버스 (빠른 접근) -->
-      <div id="shuttleContentPane" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>셔틀버스</h1>
-          <div class="breadcrumb">
-            <span>홈</span>
-            <span>›</span>
-            <span>셔틀버스</span>
-          </div>
-        </div>
-        <!-- 셔틀 상세 로드 부분 -->
-      </div>
-
-      <!-- 8) 학사일정 (빠른 접근) -->
-      <div id="academic-calendarContentPane" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>학사일정</h1>
-          <div class="breadcrumb">
-            <span>홈</span>
-            <span>›</span>
-            <span>학사일정</span>
-          </div>
-        </div>
-        <!-- 학사일정 상세 로드 부분 -->
-      </div>
-
-      <!-- 9) 프로필 (계정) -->
+      <!-- 6) 프로필 (계정) -->
       <div id="profileContentPane" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>프로필</h1>
@@ -381,7 +349,7 @@
         <!-- 프로필 편집 부분 -->
       </div>
 
-      <!-- 10) 설정 -->
+      <!-- 7) 설정 -->
       <div id="settingsContent" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>설정</h1>
