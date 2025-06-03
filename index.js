@@ -7,6 +7,41 @@ let userLocation = null;
 let currentContent = 'home';
 let unreadNotifications = 0;
 
+// 테마 저장 키
+const THEME_STORAGE_KEY = 'theme-preference';
+
+// ---------------------------
+// 다크/라이트 모드 & 설정 모달
+// ---------------------------
+function showSettings() {
+  document.getElementById('settingsModalOverlay').classList.add('show');
+}
+function closeSettingsModal() {
+  document.getElementById('settingsModalOverlay').classList.remove('show');
+}
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('themeToggleCheckbox').checked = true;
+  } else {
+    document.body.classList.remove('light-mode');
+    document.getElementById('themeToggleCheckbox').checked = false;
+  }
+}
+function toggleTheme() {
+  const current = localStorage.getItem(THEME_STORAGE_KEY) === 'light' ? 'light' : 'dark';
+  const next = current === 'light' ? 'dark' : 'light';
+  localStorage.setItem(THEME_STORAGE_KEY, next);
+  applyTheme(next);
+}
+function saveSettings() {
+  const isLight = document.getElementById('themeToggleCheckbox').checked;
+  const nextTheme = isLight ? 'light' : 'dark';
+  localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  applyTheme(nextTheme);
+  closeSettingsModal();
+}
+
 // ---------------------------
 // 데이터 로드 함수들
 // ---------------------------
@@ -227,41 +262,12 @@ async function loadActivityStats() {
   }
 }
 
-// 맛집 정보 로드
+// 맛집 정보 로드 (“인기 맛집” 섹션이 삭제되어 화면에 사용되지 않습니다)
 async function loadRestaurantInfo() {
   try {
     const res = await fetch('/api/restaurants');
     const restaurants = await res.json();
-    restaurants.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-    const popular = restaurants.slice(0, 2);
-    const grid = document.getElementById('restaurantGrid');
-    grid.innerHTML = '';
-    const emojiMap = {
-      한식: '🍲',
-      중식: '🥢',
-      일식: '🍣',
-      양식: '🍝',
-      분식: '🍜',
-      카페: '☕',
-      술집: '🍺',
-    };
-    popular.forEach((r) => {
-      const card = document.createElement('div');
-      card.className = 'restaurant-card';
-      card.onclick = () =>
-        window.open(`student-deals.html?id=${encodeURIComponent(r.id)}`, '_blank');
-      const icon = emojiMap[r.category] || '🍽️';
-      card.innerHTML = `
-        <div class="restaurant-image">${icon}</div>
-        <div class="restaurant-info">
-          <div class="restaurant-name">${r.name}</div>
-          <div class="restaurant-category">${r.category}</div>
-          <div class="restaurant-discount">${r.discount || '할인 없음'}</div>
-          <div class="restaurant-likes">👍 ${r.likes || 0}</div>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
+    // 인기 맛집 UI 자체가 삭제되어 실제 렌더링하지 않습니다.
   } catch (err) {
     console.error('맛집 정보 로드 오류:', err);
   }
@@ -290,8 +296,8 @@ async function loadCommunityPosts() {
         </div>
         <div class="notice-title">${p.title}</div>
         <div class="notice-summary">${p.summary}</div>
-        <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-          👍 ${p.likes} 💬 ${p.comments}
+        <div style="margin-top:0.5rem; color:var(--text-secondary); font-size:0.8rem;">
+          👍 ${p.likes} &nbsp; 💬 ${p.comments}
         </div>
       `;
       liveEl.appendChild(item);
@@ -306,8 +312,8 @@ async function loadCommunityPosts() {
         </div>
         <div class="notice-title">${p.title}</div>
         <div class="notice-summary">${p.summary}</div>
-        <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-          👍 ${p.likes} 💬 ${p.comments}
+        <div style="margin-top:0.5rem; color:var(--text-secondary); font-size:0.8rem;">
+          👍 ${p.likes} &nbsp; 💬 ${p.comments}
         </div>
       `;
       hotEl.appendChild(item);
@@ -342,8 +348,8 @@ async function loadLectureReviews() {
         </div>
         <div class="notice-title">${r.title}</div>
         <div class="notice-summary">"${r.comment}"</div>
-        <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-          평점: ${r.rating}/5.0 | ${r.department}
+        <div style="margin-top:0.5rem; color:var(--accent); font-size:0.9rem; font-weight:600;">
+          평점: ${r.rating}/5.0 &nbsp; | &nbsp; ${r.department}
         </div>
       `;
       popEl.appendChild(item);
@@ -358,8 +364,8 @@ async function loadLectureReviews() {
         </div>
         <div class="notice-title">${r.title}</div>
         <div class="notice-summary">"${r.comment}"</div>
-        <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-          평점: ${r.rating}/5.0 | ${r.department}
+        <div style="margin-top:0.5rem; color:var(--accent); font-size:0.9rem; font-weight:600;">
+          평점: ${r.rating}/5.0 &nbsp; | &nbsp; ${r.department}
         </div>
       `;
       recEl.appendChild(item);
@@ -372,7 +378,6 @@ async function loadLectureReviews() {
 // ---------------------------
 // 지도 초기화 및 마커
 // ---------------------------
-
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
@@ -413,8 +418,8 @@ function addMapMarkers(buildings) {
     });
     const infoWindow = new naver.maps.InfoWindow({
       content: `
-        <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
-          <strong style="color: #3b82f6;">${b.name}</strong><br>
+        <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid var(--accent);">
+          <strong style="color: var(--accent);">${b.name}</strong><br>
           <span style="color: #94a3b8;">${b.description}</span>
         </div>
       `,
@@ -434,13 +439,12 @@ function addMapMarkers(buildings) {
 // ---------------------------
 // 시간표 업데이트
 // ---------------------------
-
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
   if (!currentUser) {
     contentEl.innerHTML = `
-      <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+      <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
         <p>로그인하여 개인 시간표를 확인하세요</p>
       </div>
     `;
@@ -502,7 +506,7 @@ function updateTimetable() {
       todayCourses.sort((a, b) => a.startTime - b.startTime);
       if (todayCourses.length === 0) {
         contentEl.innerHTML = `
-          <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+          <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
             <p>오늘은 수업이 없습니다</p>
           </div>
         `;
@@ -510,11 +514,12 @@ function updateTimetable() {
       }
       contentEl.innerHTML = '';
       todayCourses.forEach((ci) => {
-        const statusText = {
+        const statusTextMap = {
           current: '진행중',
           upcoming: '예정',
           finished: '종료',
-        }[ci.status];
+        };
+        const statusText = statusTextMap[ci.status];
         const div = document.createElement('div');
         div.className = 'class-item';
         div.innerHTML = `
@@ -555,7 +560,6 @@ function formatTimeRemaining(minutes, suffix) {
 // ---------------------------
 // 알림 함수들
 // ---------------------------
-
 function toggleNotifications() {
   const dd = document.getElementById('notificationDropdown');
   if (dd.classList.contains('show')) closeNotificationDropdown();
@@ -595,7 +599,6 @@ function updateNotificationCount() {
 // ---------------------------
 // 사용자 메뉴 함수
 // ---------------------------
-
 function toggleUserMenu() {
   const dropdown = document.getElementById('userDropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -628,10 +631,6 @@ function showProfile() {
   }
   closeUserDropdown();
 }
-function showSettings() {
-  alert('설정 페이지는 준비 중입니다.');
-  closeUserDropdown();
-}
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -650,7 +649,6 @@ function handleLogout() {
 // ---------------------------
 // 지도 컨트롤
 // ---------------------------
-
 function zoomIn() {
   if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1);
 }
@@ -684,7 +682,7 @@ function trackUserLocation() {
         position: userPos,
         map: naverMap,
         icon: {
-          content: '<div style="background: #3b82f6; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>',
+          content: '<div style="background: var(--accent); width: 15px; height: 15px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>',
           anchor: new naver.maps.Point(10, 10),
         },
       });
@@ -702,7 +700,6 @@ function trackUserLocation() {
 // ---------------------------
 // 건물 관련 함수
 // ---------------------------
-
 function showBuildingOnMap(buildingId) {
   fetch(`/api/buildings/${buildingId}`)
     .then((res) => res.json())
@@ -760,7 +757,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // ---------------------------
 // 검색 기능
 // ---------------------------
-
 async function handleGlobalSearch() {
   const query = document.getElementById('globalSearch').value
     .trim()
@@ -796,7 +792,6 @@ async function handleGlobalSearch() {
 // ---------------------------
 // 콘텐츠 전환
 // ---------------------------
-
 function showContent(type) {
   const contents = [
     'homeContent',
@@ -818,7 +813,10 @@ function showContent(type) {
   document.querySelectorAll('.nav-item').forEach((item) => {
     item.classList.remove('active');
   });
-  event.target.closest('.nav-item').classList.add('active');
+  if (event && event.target) {
+    const navItem = event.target.closest('.nav-item');
+    if (navItem) navItem.classList.add('active');
+  }
   currentContent = type;
   if (type === 'buildings' && naverMap) {
     setTimeout(() => naverMap.refresh(), 100);
@@ -828,13 +826,11 @@ function showContent(type) {
 // ---------------------------
 // 빠른 링크
 // ---------------------------
-
 function openQuickLink(type) {
   const links = {
     timetable: 'timetable.html',
     shuttle: 'shuttle_bus_tracker.html',
-    activities: 'activities.html',
-    deals: 'student-deals.html',
+    // “activities”(교내활동)와 “deals”(맛집정보)는 삭제되었습니다.
     'academic-calendar': 'academic-calendar.html',
   };
   if (links[type]) {
@@ -847,7 +843,6 @@ function openQuickLink(type) {
 // ---------------------------
 // 유저 상태 확인
 // ---------------------------
-
 function checkUserStatus() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const userNameEl = document.getElementById('userName');
@@ -874,6 +869,7 @@ function checkUserStatus() {
         userRoleEl.textContent = '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = '사용자';
         if (dropdownRoleEl) dropdownRoleEl.textContent = '학생';
+        document.getElementById('userAvatar').textContent = '👤';
       });
   } else {
     userNameEl.textContent = '게스트';
@@ -903,9 +899,8 @@ function updateProfileImage(user) {
 }
 
 // ---------------------------
-// 메시지 표시
+// 메시지 표시 (토스트)
 // ---------------------------
-
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
@@ -951,16 +946,38 @@ function showMessage(message, type = 'info') {
 // ---------------------------
 // 이벤트 & 초기화
 // ---------------------------
-
 document.addEventListener('DOMContentLoaded', () => {
-  initializeApp();
+  // 1) 로컬스토리지에 저장된 테마(라이트/다크) 적용
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
+  applyTheme(saved === 'light' ? 'light' : 'dark');
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeAllDropdowns();
+  // 2) “설정” 버튼(⚙️) 클릭 시 모달 열기
+  document.querySelectorAll('.dropdown-item').forEach((btn) => {
+    if (btn.textContent.includes('설정')) {
+      btn.addEventListener('click', () => {
+        showSettings();
+        closeUserDropdown();
+      });
     }
   });
 
+  // 3) 토글 체크박스 변경 시 즉시 테마 변경
+  const themeCheckbox = document.getElementById('themeToggleCheckbox');
+  if (themeCheckbox) {
+    themeCheckbox.addEventListener('change', () => {
+      toggleTheme();
+    });
+  }
+
+  // 4) ESC 키 누르면 드롭다운 & 모달 닫기
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeAllDropdowns();
+      closeSettingsModal();
+    }
+  });
+
+  // 5) 검색바에서 Enter 입력 시 검색 실행
   const searchInput = document.getElementById('globalSearch');
   if (searchInput) {
     searchInput.addEventListener('keypress', (e) => {
@@ -970,12 +987,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 6) 화면 아무 곳이나 클릭 시 드롭다운 닫기
   document.addEventListener('click', (event) => {
     const ntBtn = event.target.closest('.notification-btn');
     const upBtn = event.target.closest('.user-profile');
     if (!ntBtn) closeNotificationDropdown();
     if (!upBtn) closeUserDropdown();
   });
+
+  // 7) 초기 데이터 로드
+  initializeApp();
 });
 
 async function initializeApp() {
@@ -986,7 +1007,7 @@ async function initializeApp() {
   await loadNotices();
   await loadShuttleInfo();
   await loadActivityStats();
-  await loadRestaurantInfo();
+  await loadRestaurantInfo(); // 화면에서 렌더링되지 않음
   await loadCommunityPosts();
   await loadLectureReviews();
   checkUserStatus();
@@ -1021,7 +1042,6 @@ window.addEventListener('pageshow', (event) => {
 // ---------------------------
 // 사이드바 토글
 // ---------------------------
-
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
 }
