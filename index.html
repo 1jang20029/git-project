@@ -75,7 +75,6 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <!-- 다크/라이트 모드 토글은 제거됨 -->
             <button class="dropdown-item" onclick="showContent('settings')">
               <span>⚙️</span>
               <span>설정</span>
@@ -125,23 +124,21 @@
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list">
-          <!-- 1) 내 시간표 -->
-          <li class="nav-item" id="nav-timetable">
-            <a href="timetable.html" target="_blank" onclick="activateQuick('nav-timetable')">
+          <!-- li 전체가 링크 역할을 합니다. 내부에 별도 패딩을 주지 않습니다. -->
+          <li class="nav-item" id="nav-timetable" onclick="activateQuick('nav-timetable')">
+            <a href="timetable.html" target="_blank">
               <span class="nav-icon" title="내 시간표">📅</span>
               <span>내 시간표</span>
             </a>
           </li>
-          <!-- 2) 셔틀버스 -->
-          <li class="nav-item" id="nav-shuttle">
-            <a href="shuttle_bus.html" target="_blank" onclick="activateQuick('nav-shuttle')">
+          <li class="nav-item" id="nav-shuttle" onclick="activateQuick('nav-shuttle')">
+            <a href="shuttle_bus.html" target="_blank">
               <span class="nav-icon" title="셔틀버스">🚌</span>
               <span>셔틀버스</span>
             </a>
           </li>
-          <!-- 3) 학사일정 -->
-          <li class="nav-item" id="nav-calendar">
-            <a href="academic-calendar.html" target="_blank" onclick="activateQuick('nav-calendar')">
+          <li class="nav-item" id="nav-calendar" onclick="activateQuick('nav-calendar')">
+            <a href="academic-calendar.html" target="_blank">
               <span class="nav-icon" title="학사일정">🗓️</span>
               <span>학사일정</span>
             </a>
@@ -355,7 +352,7 @@
             <span>프로필</span>
           </div>
         </div>
-        <!-- 프로필 편집 영역 (예: 이름, 학과, 프로필 사진 등) -->
+        <!-- 프로필 편집 영역 -->
       </div>
 
       <!-- 7) 설정 -->

@@ -426,6 +426,7 @@ body {
   margin-bottom: 1rem;
 }
 
+/* ─────────── 공용 nav-list ─────────── */
 .nav-list {
   list-style: none;
   display: flex;
@@ -438,7 +439,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  /* 이 패딩은 li 자체가 클릭 가능한 박스로 보이도록 한다 */
+  /* li 자체에만 패딩을 주어 바깥 박스가 클릭 범위가 되도록 한다 */
   padding: 0.75rem 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -448,13 +449,13 @@ body {
   position: relative;
 }
 
-/* 호버 시 배경 및 컬러 변화 (메인 메뉴와 동일) */
+/* 호버 시 배경 + 컬러 변화 */
 .nav-item:hover {
   background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
 }
 
-/* 활성화된 메뉴 옆 왼쪽에 파란 바 + 배경 강조 */
+/* 활성화된 메뉴(메인 메뉴, 빠른 접근 모두)에 .active가 붙으면 파란 바 + 배경 강조 */
 .nav-item.active {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
@@ -478,10 +479,10 @@ body {
   color: inherit;
 }
 
-/* ─────────── “빠른 접근” 섹션 내 추가 스타일 ─────────── */
-/*
-   1) <li class="nav-item"> 내부의 <a> 태그가 li 전체 영역을 채워
-      클릭 시 박스 전체가 링크로 작동하도록 만든다.
+/* ─────────── “빠른 접근” 섹션 내부 a 태그 ─────────── */
+/* 
+   a 태그가 li 전체 영역을 채우도록 width:100%, height:100%를 주었으나 
+   내부에 추가 패딩은 주지 않습니다. li의 padding이 그대로 박스 여백 역할을 합니다.
 */
 .sidebar .nav-list .nav-item a {
   display: flex;
@@ -489,13 +490,11 @@ body {
   gap: 0.75rem;
   width: 100%;
   height: 100%;
-  /* li와 동일한 패딩으로 맞춘다 */
-  padding: 0.75rem 1rem;
   color: inherit;
   text-decoration: none;
 }
 
-/* 2) a 태그에 마우스 올렸을 때 li.hover 효과와 동일하게 */
+/* a 태그 호버 시에도 같은 효과 */
 .sidebar .nav-list .nav-item a:hover {
   background: rgba(59, 130, 246, 0.1);
   border-radius: 8px;
