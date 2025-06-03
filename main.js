@@ -8,15 +8,17 @@ let currentContent = 'home';
 let unreadNotifications = 0;
 
 // ---------------------------
-// 테마(다크/라이트) 토글
+// 테마(다크/라이트) 토글 및 설정 모달
 // ---------------------------
 const THEME_KEY = 'theme-preference';
 
 function applyTheme(theme) {
   if (theme === 'light') {
     document.documentElement.classList.add('light-theme');
+    document.getElementById('themeToggleCheckbox').checked = true;
   } else {
     document.documentElement.classList.remove('light-theme');
+    document.getElementById('themeToggleCheckbox').checked = false;
   }
 }
 
@@ -27,18 +29,44 @@ function toggleTheme() {
   applyTheme(next);
 }
 
+function openSettingsModal() {
+  document.getElementById('settingsModalOverlay').classList.add('show');
+}
+
+function closeSettingsModal() {
+  document.getElementById('settingsModalOverlay').classList.remove('show');
+}
+
+function saveSettings() {
+  // 예시로 다크/라이트 모드 저장만 수행
+  const isLight = document.getElementById('themeToggleCheckbox').checked;
+  const nextTheme = isLight ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, nextTheme);
+  applyTheme(nextTheme);
+
+  // TODO: 나머지 설정(알림, 자동 로그인 등) 로직을 이곳에서 처리하면 됩니다.
+  closeSettingsModal();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // 로컬 스토리지에 테마 설정이 있으면 적용, 없으면 다크 모드 기본
   const saved = localStorage.getItem(THEME_KEY);
   applyTheme(saved === 'light' ? 'light' : 'dark');
 
-  // 설정(톱니바퀴 아이콘) 클릭 시 테마 전환
-  const toggleBtn = document.getElementById('toggleThemeBtn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      toggleTheme();
-      // 드롭다운 메뉴 닫기
+  // 설정(톱니바퀴 아이콘) 클릭 시 모달 오픈
+  const openSetBtn = document.getElementById('openSettingsBtn');
+  if (openSetBtn) {
+    openSetBtn.addEventListener('click', () => {
+      openSettingsModal();
       closeUserDropdown();
+    });
+  }
+
+  // 모달 내부 토글 체크박스 클릭 시 바로 테마 즉시 전환
+  const themeCheckbox = document.getElementById('themeToggleCheckbox');
+  if (themeCheckbox) {
+    themeCheckbox.addEventListener('change', () => {
+      toggleTheme();
     });
   }
 });
@@ -833,8 +861,8 @@ function openQuickLink(type) {
   const links = {
     timetable: 'timetable.html',
     shuttle: 'shuttle_bus_tracker.html',
-    activities: 'activities.html',
-    deals: 'student-deals.html',
+    // activities: 'activities.html',    ← 제거됨
+    // deals: 'student-deals.html',      ← 제거됨
     'academic-calendar': 'academic-calendar.html',
   };
   if (links[type]) {

@@ -11,6 +11,8 @@
   --blur-bg: rgba(15, 23, 42, 0.3);
   --hover-bg: rgba(59, 130, 246, 0.1);
   --dim-text: #94a3b8;
+  --input-bg: rgba(30, 41, 59, 0.8);
+  --input-border: rgba(148, 163, 184, 0.2);
 }
 
 /* 라이트 모드 변수 오버라이드 */
@@ -24,6 +26,8 @@
   --blur-bg: rgba(240, 240, 240, 0.5);
   --hover-bg: rgba(220, 220, 220, 0.6);
   --dim-text: #555555;
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --input-border: rgba(200, 200, 200, 0.3);
 }
 
 * {
@@ -78,8 +82,8 @@ body {
   align-items: center;
 }
 .search-input {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 12px;
   padding: 0.75rem 1rem 0.75rem 3rem;
   width: 300px;
@@ -91,7 +95,7 @@ body {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: rgba(30, 41, 59, 0.95);
+  background: var(--input-bg);
 }
 .search-icon {
   position: absolute;
@@ -116,7 +120,7 @@ body {
   position: relative;
 }
 .notification-btn:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   border-color: #3b82f6;
   color: #3b82f6;
 }
@@ -957,6 +961,16 @@ body {
     transform: translateX(100px);
   }
 }
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .fade-in {
   animation: fadeInUp 0.6s ease-out;
 }
@@ -1005,4 +1019,131 @@ body {
   .mobile-menu-toggle {
     display: block;
   }
+}
+
+/* =========================
+   설정 모달 스타일
+========================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--nav-border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--nav-border);
+}
+.modal-header h2 {
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--dim-text);
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+}
+.setting-section {
+  margin-bottom: 1.5rem;
+}
+.setting-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+
+/* 토글 스위치 CSS */
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.toggle-switch input {
+  display: none;
+}
+.toggle-switch .slider {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.toggle-switch .slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.toggle-switch input:checked + .slider {
+  background: #3b82f6;
+}
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(26px);
+}
+.toggle-switch .toggle-label {
+  color: var(--dim-text);
+}
+
+/* 체크박스 스타일 */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+}
+
+/* 모달 푸터 */
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--nav-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }

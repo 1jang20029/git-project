@@ -13,7 +13,6 @@
 
   <!-- 메인 CSS -->
   <link rel="stylesheet" href="main.css" />
-
 </head>
 <body>
   <!-- 상단 네비게이션 -->
@@ -74,7 +73,9 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button class="dropdown-item" id="toggleThemeBtn">
+            <!-- 사이드바에서 제거된 “설정”은
+                 여기에만 남겨두고, 클릭하면 모달이 오픈되도록 한다 -->
+            <button class="dropdown-item" id="openSettingsBtn">
               <span>⚙️</span>
               <span>설정</span>
             </button>
@@ -103,7 +104,6 @@
             <span class="nav-icon">🏢</span>
             <span>건물 & 시설</span>
           </li>
-          <!-- “학생 서비스” 메뉴 제거됨 -->
           <li class="nav-item" onclick="showContent('community')">
             <span class="nav-icon">💬</span>
             <span>커뮤니티</span>
@@ -130,14 +130,16 @@
             <span class="nav-icon">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <li class="nav-item" onclick="openQuickLink('activities')">
+          <!-- “교내활동” 제거 -->
+          <!-- <li class="nav-item" onclick="openQuickLink('activities')">
             <span class="nav-icon">🌟</span>
             <span>교내활동</span>
-          </li>
-          <li class="nav-item" onclick="openQuickLink('deals')">
+          </li> -->
+          <!-- “맛집정보” 제거 -->
+          <!-- <li class="nav-item" onclick="openQuickLink('deals')">
             <span class="nav-icon">🍽️</span>
             <span>맛집정보</span>
-          </li>
+          </li> -->
           <li class="nav-item" onclick="openQuickLink('academic-calendar')">
             <span class="nav-icon">📅</span>
             <span>학사일정</span>
@@ -226,7 +228,7 @@
             </div>
           </div>
 
-          <!-- 교내 활동 위젯 -->
+          <!-- 교내 활동 위젯 (사이드바에서 제거되었지만, 코드 상엔 남겨둠) -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">교내 활동 현황</h3>
@@ -408,6 +410,57 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- 설정 모달 -->
+  <div class="modal-overlay" id="settingsModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>설정</h2>
+        <button class="modal-close-btn" onclick="closeSettingsModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- 다크/라이트 테마 토글 섹션 -->
+        <section class="setting-section">
+          <h3>테마</h3>
+          <label class="toggle-switch">
+            <input type="checkbox" id="themeToggleCheckbox" />
+            <span class="slider"></span>
+            <span class="toggle-label">라이트 모드 사용</span>
+          </label>
+        </section>
+
+        <hr />
+
+        <!-- 추가 설정 예시 -->
+        <section class="setting-section">
+          <h3>알림 설정</h3>
+          <label class="checkbox-label">
+            <input type="checkbox" id="notifyEmail" />
+            이메일 알림 받기
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="notifySMS" />
+            SMS 알림 받기
+          </label>
+        </section>
+
+        <hr />
+
+        <section class="setting-section">
+          <h3>기타 설정</h3>
+          <label class="checkbox-label">
+            <input type="checkbox" id="autoLogin" />
+            자동 로그인 사용
+          </label>
+          <!-- 원하시는 만큼 설정 항목을 추가하시면 됩니다 -->
+        </section>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeSettingsModal()">취소</button>
+        <button class="btn btn-primary" onclick="saveSettings()">저장</button>
+      </div>
+    </div>
   </div>
 
   <!-- 메인 JS -->
