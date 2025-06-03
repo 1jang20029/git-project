@@ -12,7 +12,7 @@
   ></script>
 
   <!-- 분리한 CSS -->
-  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="main.css" />
 </head>
 <body>
   <!-- 상단 네비게이션 -->
@@ -73,10 +73,6 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button class="dropdown-item" onclick="toggleTheme()">
-              <span>🌗</span>
-              <span>다크/라이트 모드</span>
-            </button>
             <button class="dropdown-item" onclick="showSettings()">
               <span>⚙️</span>
               <span>설정</span>
@@ -99,27 +95,27 @@
         <div class="sidebar-title">메인 메뉴</div>
         <ul class="nav-list">
           <li class="nav-item active" onclick="showContent('home')">
-            <span class="nav-icon" title="대시보드">🏠</span>
+            <span class="nav-icon">🏠</span>
             <span>대시보드</span>
           </li>
           <li class="nav-item" onclick="showContent('buildings')">
-            <span class="nav-icon" title="건물 & 시설">🏢</span>
-            <span>건물 &amp; 시설</span>
+            <span class="nav-icon">🏢</span>
+            <span>건물 & 시설</span>
           </li>
-          <!-- <li class="nav-item" onclick="showContent('services')">
-            <span class="nav-icon" title="학생 서비스">🎯</span>
+          <li class="nav-item" onclick="showContent('services')">
+            <span class="nav-icon">🎯</span>
             <span>학생 서비스</span>
-          </li>  ← 삭제됨 -->
+          </li>
           <li class="nav-item" onclick="showContent('community')">
-            <span class="nav-icon" title="커뮤니티">💬</span>
+            <span class="nav-icon">💬</span>
             <span>커뮤니티</span>
           </li>
           <li class="nav-item" onclick="showContent('lecture-review')">
-            <span class="nav-icon" title="강의평가">⭐</span>
+            <span class="nav-icon">⭐</span>
             <span>강의평가</span>
           </li>
           <li class="nav-item" onclick="showContent('notices')">
-            <span class="nav-icon" title="공지사항">📢</span>
+            <span class="nav-icon">📢</span>
             <span>공지사항</span>
           </li>
         </ul>
@@ -129,19 +125,23 @@
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list">
           <li class="nav-item" onclick="openQuickLink('timetable')">
-            <span class="nav-icon" title="내 시간표">📅</span>
+            <span class="nav-icon">📅</span>
             <span>내 시간표</span>
           </li>
           <li class="nav-item" onclick="openQuickLink('shuttle')">
-            <span class="nav-icon" title="셔틀버스">🚌</span>
+            <span class="nav-icon">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <!-- <li class="nav-item" onclick="openQuickLink('activities')">
-            <span class="nav-icon" title="학내 일정">📆</span>
-            <span>학내 일정</span>
-          </li>  ← 삭제됨 -->
+          <li class="nav-item" onclick="openQuickLink('activities')">
+            <span class="nav-icon">🌟</span>
+            <span>교내활동</span>
+          </li>
+          <li class="nav-item" onclick="openQuickLink('deals')">
+            <span class="nav-icon">🍽️</span>
+            <span>맛집정보</span>
+          </li>
           <li class="nav-item" onclick="openQuickLink('academic-calendar')">
-            <span class="nav-icon" title="학사일정">🗓️</span>
+            <span class="nav-icon">📅</span>
             <span>학사일정</span>
           </li>
         </ul>
@@ -151,15 +151,15 @@
         <div class="sidebar-title">계정</div>
         <ul class="nav-list">
           <li class="nav-item" onclick="showProfile()">
-            <span class="nav-icon" title="프로필">👤</span>
+            <span class="nav-icon">👤</span>
             <span>프로필</span>
           </li>
           <li class="nav-item" onclick="showSettings()">
-            <span class="nav-icon" title="설정">⚙️</span>
+            <span class="nav-icon">⚙️</span>
             <span>설정</span>
           </li>
           <li class="nav-item" onclick="handleLogout()">
-            <span class="nav-icon" title="로그아웃">🚪</span>
+            <span class="nav-icon">🚪</span>
             <span>로그아웃</span>
           </li>
         </ul>
@@ -232,9 +232,27 @@
             </div>
           </div>
 
-          <!-- 교내 활동 위젯 (삭제됨) -->
+          <!-- 교내 활동 위젯 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">교내 활동 현황</h3>
+              <span class="card-icon">🌟</span>
+            </div>
+            <div class="activity-stats" id="activityStats">
+              <!-- 활동 통계 카드가 동적으로 생성됩니다 -->
+            </div>
+          </div>
 
-          <!-- 인기 맛집 위젯 (원래 삭제되어 있음) -->
+          <!-- 인기 맛집 위젯 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">인기 맛집</h3>
+              <span class="card-icon">🍽️</span>
+            </div>
+            <div class="restaurant-grid" id="restaurantGrid">
+              <!-- 맛집 카드가 동적으로 생성됩니다 -->
+            </div>
+          </div>
 
           <!-- 최근 공지사항 위젯 -->
           <div class="card">
@@ -253,7 +271,7 @@
       <div id="buildingsContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>건물 &amp; 시설 안내</h1>
+            <h1>건물 & 시설 안내</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -399,6 +417,6 @@
   </div>
 
   <!-- 분리한 JS -->
-  <script src="index.js" defer></script>
+  <script src="main.js" defer></script>
 </body>
 </html>
