@@ -17,17 +17,28 @@
 
 /* 라이트 모드 변수 오버라이드 */
 .light-theme {
+  /* 백그라운드 전체: 연한 회색 계열 */
   --bg-body: #f5f5f5;
-  --color-text: #1a1a1a;
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --nav-border: rgba(200, 200, 200, 0.3);
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --card-border: rgba(200, 200, 200, 0.3);
-  --blur-bg: rgba(240, 240, 240, 0.5);
-  --hover-bg: rgba(220, 220, 220, 0.6);
+  /* 텍스트는 진한 회색 */
+  --color-text: #333333;
+  /* 네비게이션/사이드바 바탕: 거의 흰색(약한 회색) */
+  --nav-bg: #ffffff;
+  /* 네비게이션/사이드바 테두리: 연한 회색 */
+  --nav-border: rgba(200, 200, 200, 0.5);
+  /* 카드 배경: 순백(약간 그림자만) */
+  --card-bg: #ffffff;
+  /* 카드 테두리: 연한 회색 */
+  --card-border: rgba(200, 200, 200, 0.5);
+  /* 블러 처리 배경: 아주 연한 회색 */
+  --blur-bg: rgba(240, 240, 240, 0.8);
+  /* 호버 시 배경: 약간 연한 회색 */
+  --hover-bg: #f0f0f0;
+  /* 보조 텍스트: 짙은 회색 */
   --dim-text: #555555;
+  /* 입력란 배경: 순백(약간 투명) */
   --input-bg: rgba(255, 255, 255, 0.8);
-  --input-border: rgba(200, 200, 200, 0.3);
+  /* 입력란 테두리: 연한 회색 */
+  --input-border: rgba(200, 200, 200, 0.5);
 }
 
 * {
@@ -76,6 +87,7 @@ body {
   align-items: center;
   gap: 1rem;
 }
+
 .search-bar {
   position: relative;
   display: flex;
@@ -87,7 +99,7 @@ body {
   border-radius: 12px;
   padding: 0.75rem 1rem 0.75rem 3rem;
   width: 300px;
-  color: #f1f5f9;
+  color: var(--color-text);
   font-size: 0.9rem;
   transition: all 0.3s ease;
 }
@@ -103,6 +115,7 @@ body {
   color: var(--dim-text);
   font-size: 1.1rem;
 }
+
 .user-menu {
   display: flex;
   align-items: center;
@@ -247,6 +260,7 @@ body {
   background: var(--hover-bg);
 }
 
+/* 사용자 프로필 */
 .user-profile {
   display: flex;
   align-items: center;
@@ -356,7 +370,7 @@ body {
   width: 280px;
   background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(148, 163, 184, 0.1);
+  border-right: 1px solid var(--nav-border);
   padding: 2rem 0;
   position: fixed;
   top: 80px;
@@ -493,8 +507,8 @@ body {
 .restaurant-card:hover,
 .building-card:hover,
 .notice-item:hover {
-  background: rgba(30, 41, 59, 0.7);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.9); /* 라이트 모드에서 살짝 연하게 보이도록 */
+  border-color: rgba(200, 200, 200, 0.7);
   transform: translateY(-2px);
 }
 .stat-number,

@@ -73,8 +73,6 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <!-- 사이드바에서 제거된 “설정”은
-                 여기에만 남겨두고, 클릭하면 모달이 오픈되도록 한다 -->
             <button class="dropdown-item" id="openSettingsBtn">
               <span>⚙️</span>
               <span>설정</span>
@@ -154,6 +152,11 @@
             <span class="nav-icon">👤</span>
             <span>프로필</span>
           </li>
+          <!-- 설정 메뉴를 계정 섹션에 다시 추가 -->
+          <li class="nav-item" onclick="openSettingsModal()">
+            <span class="nav-icon">⚙️</span>
+            <span>설정</span>
+          </li>
           <li class="nav-item" onclick="handleLogout()">
             <span class="nav-icon">🚪</span>
             <span>로그아웃</span>
@@ -228,7 +231,7 @@
             </div>
           </div>
 
-          <!-- 교내 활동 위젯 (사이드바에서 제거되었지만, 코드 상엔 남겨둠) -->
+          <!-- 교내 활동 위젯 (사이드바에는 제거됨) -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">교내 활동 현황</h3>
