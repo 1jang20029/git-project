@@ -7,7 +7,9 @@ let userLocation = null;
 let currentContent = 'home';
 let unreadNotifications = 0;
 
-// ─────────── 데이터 로드 함수들 ───────────
+// ---------------------------
+// 데이터 로드 함수들
+// ---------------------------
 
 // 알림 데이터 로드
 async function loadNotifications() {
@@ -225,8 +227,45 @@ async function loadActivityStats() {
   }
 }
 
-// 맛집 정보 로드 (이제 사용되지 않음 → UI에서 제거됨)
-// function loadRestaurantInfo() { ... }
+// 맛집 정보 로드
+async function loadRestaurantInfo() {
+  try {
+    const res = await fetch('/api/restaurants');
+    const restaurants = await res.json();
+    restaurants.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    const popular = restaurants.slice(0, 2);
+    const grid = document.getElementById('restaurantGrid');
+    grid.innerHTML = '';
+    const emojiMap = {
+      한식: '🍲',
+      중식: '🥢',
+      일식: '🍣',
+      양식: '🍝',
+      분식: '🍜',
+      카페: '☕',
+      술집: '🍺',
+    };
+    popular.forEach((r) => {
+      const card = document.createElement('div');
+      card.className = 'restaurant-card';
+      card.onclick = () =>
+        window.open(`student-deals.html?id=${encodeURIComponent(r.id)}`, '_blank');
+      const icon = emojiMap[r.category] || '🍽️';
+      card.innerHTML = `
+        <div class="restaurant-image">${icon}</div>
+        <div class="restaurant-info">
+          <div class="restaurant-name">${r.name}</div>
+          <div class="restaurant-category">${r.category}</div>
+          <div class="restaurant-discount">${r.discount || '할인 없음'}</div>
+          <div class="restaurant-likes">👍 ${r.likes || 0}</div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  } catch (err) {
+    console.error('맛집 정보 로드 오류:', err);
+  }
+}
 
 // 실시간 커뮤니티 로드
 async function loadCommunityPosts() {
@@ -330,7 +369,9 @@ async function loadLectureReviews() {
   }
 }
 
-// ─────────── 지도 초기화 및 마커 ───────────
+// ---------------------------
+// 지도 초기화 및 마커
+// ---------------------------
 
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
@@ -390,7 +431,9 @@ function addMapMarkers(buildings) {
   });
 }
 
-// ─────────── 시간표 업데이트 ───────────
+// ---------------------------
+// 시간표 업데이트
+// ---------------------------
 
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -509,7 +552,9 @@ function formatTimeRemaining(minutes, suffix) {
   }
 }
 
-// ─────────── 알림 함수들 ───────────
+// ---------------------------
+// 알림 함수들
+// ---------------------------
 
 function toggleNotifications() {
   const dd = document.getElementById('notificationDropdown');
@@ -547,7 +592,9 @@ function updateNotificationCount() {
   dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
 }
 
-// ─────────── 사용자 메뉴 함수 ───────────
+// ---------------------------
+// 사용자 메뉴 함수
+// ---------------------------
 
 function toggleUserMenu() {
   const dropdown = document.getElementById('userDropdown');
@@ -600,28 +647,9 @@ function handleLogout() {
   closeUserDropdown();
 }
 
-// ─────────── 다크/라이트 모드 토글 ───────────
-
-function toggleTheme() {
-  const body = document.body;
-  if (body.classList.contains('light-mode')) {
-    body.classList.remove('light-mode');
-    localStorage.setItem('theme', 'dark');
-  } else {
-    body.classList.add('light-mode');
-    localStorage.setItem('theme', 'light');
-  }
-}
-function applyTheme() {
-  const saved = localStorage.getItem('theme');
-  if (saved === 'light') {
-    document.body.classList.add('light-mode');
-  } else {
-    document.body.classList.remove('light-mode');
-  }
-}
-
-// ─────────── 지도 컨트롤 ───────────
+// ---------------------------
+// 지도 컨트롤
+// ---------------------------
 
 function zoomIn() {
   if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1);
@@ -671,7 +699,9 @@ function trackUserLocation() {
   );
 }
 
-// ─────────── 건물 관련 함수 ───────────
+// ---------------------------
+// 건물 관련 함수
+// ---------------------------
 
 function showBuildingOnMap(buildingId) {
   fetch(`/api/buildings/${buildingId}`)
@@ -727,7 +757,9 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-// ─────────── 검색 기능 ───────────
+// ---------------------------
+// 검색 기능
+// ---------------------------
 
 async function handleGlobalSearch() {
   const query = document.getElementById('globalSearch').value
@@ -761,7 +793,9 @@ async function handleGlobalSearch() {
   alert('검색 결과를 찾을 수 없습니다.');
 }
 
-// ─────────── 콘텐츠 전환 ───────────
+// ---------------------------
+// 콘텐츠 전환
+// ---------------------------
 
 function showContent(type) {
   const contents = [
@@ -791,13 +825,16 @@ function showContent(type) {
   }
 }
 
-// ─────────── 빠른 링크 ───────────
+// ---------------------------
+// 빠른 링크
+// ---------------------------
 
 function openQuickLink(type) {
   const links = {
     timetable: 'timetable.html',
     shuttle: 'shuttle_bus_tracker.html',
     activities: 'activities.html',
+    deals: 'student-deals.html',
     'academic-calendar': 'academic-calendar.html',
   };
   if (links[type]) {
@@ -807,7 +844,9 @@ function openQuickLink(type) {
   }
 }
 
-// ─────────── 유저 상태 확인 ───────────
+// ---------------------------
+// 유저 상태 확인
+// ---------------------------
 
 function checkUserStatus() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -863,7 +902,9 @@ function updateProfileImage(user) {
   }
 }
 
-// ─────────── 메시지 표시 ───────────
+// ---------------------------
+// 메시지 표시
+// ---------------------------
 
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
@@ -907,10 +948,11 @@ function showMessage(message, type = 'info') {
   }, 3000);
 }
 
-// ─────────── 이벤트 & 초기화 ───────────
+// ---------------------------
+// 이벤트 & 초기화
+// ---------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
-  applyTheme();                // 테마 적용
   initializeApp();
 
   document.addEventListener('keydown', (event) => {
@@ -944,7 +986,7 @@ async function initializeApp() {
   await loadNotices();
   await loadShuttleInfo();
   await loadActivityStats();
-  // loadRestaurantInfo();  // 인기 맛집 관련 UI 자체가 제거되었으므로 호출하지 않음
+  await loadRestaurantInfo();
   await loadCommunityPosts();
   await loadLectureReviews();
   checkUserStatus();
@@ -953,7 +995,7 @@ async function initializeApp() {
     loadShuttleInfo();
     updateTimetable();
     loadActivityStats();
-    // loadRestaurantInfo(); // 제거
+    loadRestaurantInfo();
   }, 60000);
 }
 
@@ -971,12 +1013,14 @@ window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     checkUserStatus();
     loadActivityStats();
-    // loadRestaurantInfo(); // 제거
+    loadRestaurantInfo();
     updateTimetable();
   }
 });
 
-// ─────────── 사이드바 토글 ───────────
+// ---------------------------
+// 사이드바 토글
+// ---------------------------
 
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');

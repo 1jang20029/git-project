@@ -9,7 +9,8 @@ body {
   color: #ffffff;
   overflow-x: hidden;
 }
-/* ─────────── 상단 네비게이션 ─────────── */
+
+/* 상단 네비게이션 */
 .top-nav {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
@@ -336,13 +337,15 @@ body {
   font-size: 0.75rem;
   color: #94a3b8;
 }
-/* ─────────── 메인 컨테이너 ─────────── */
+
+/* 메인 컨테이너 */
 .main-container {
   margin-top: 80px;
   display: flex;
   min-height: calc(100vh - 80px);
 }
-/* ─────────── 사이드바 ─────────── */
+
+/* 사이드바 */
 .sidebar {
   width: 280px;
   background: rgba(15, 23, 42, 0.95);
@@ -356,7 +359,10 @@ body {
   overflow-y: auto;
   z-index: 900;
 }
-.sidebar-section { margin-bottom: 2rem; padding: 0 1.5rem; }
+.sidebar-section {
+  margin-bottom: 2rem;
+  padding: 0 1.5rem;
+}
 .sidebar-title {
   font-size: 0.75rem;
   font-weight: 600;
@@ -401,14 +407,13 @@ body {
   background: #3b82f6;
   border-radius: 0 2px 2px 0;
 }
-/* 아이콘에 title 속성 추가 → 툴팁으로 식별 가능 */
 .nav-icon {
   font-size: 1.25rem;
   width: 20px;
   text-align: center;
-  color: inherit;
 }
-/* ─────────── 메인 콘텐츠 ─────────── */
+
+/* 메인 콘텐츠 */
 .content-area {
   margin-left: 280px;
   flex: 1;
@@ -436,22 +441,36 @@ body {
   font-size: 0.9rem;
   color: #64748b;
 }
-/* ─────────── 그리드 & 카드 ─────────── */
+
+/* 그리드 & 카드 */
 .dashboard-grid,
 .stats-grid,
 .activity-stats,
+.restaurant-grid,
 .building-grid {
   display: grid;
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
-.stats-grid { grid-template-columns: repeat(4, 1fr); }
-.dashboard-grid { grid-template-columns: repeat(2, 1fr); }
-.activity-stats { grid-template-columns: repeat(3, 1fr); }
-.building-grid { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
+.stats-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+.dashboard-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+.activity-stats {
+  grid-template-columns: repeat(3, 1fr);
+}
+.restaurant-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+.building-grid {
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
 .card,
 .stat-card,
 .activity-stat,
+.restaurant-card,
 .building-card,
 .notice-item {
   background: rgba(30, 41, 59, 0.5);
@@ -464,6 +483,7 @@ body {
 .card:hover,
 .stat-card:hover,
 .activity-stat:hover,
+.restaurant-card:hover,
 .building-card:hover,
 .notice-item:hover {
   background: rgba(30, 41, 59, 0.7);
@@ -504,7 +524,29 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-/* ─────────── 지도 카드 ─────────── */
+
+/* 통계 카드 */
+.stat-card {
+  text-align: center;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+.stat-change {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+.stat-change.positive {
+  color: #10b981;
+}
+.stat-change.negative {
+  color: #ef4444;
+}
+
+/* 지도 카드 */
 .map-card {
   grid-column: span 2;
   height: 400px;
@@ -541,7 +583,8 @@ body {
   color: #3b82f6;
   border-color: #3b82f6;
 }
-/* ─────────── 시간표 위젯 ─────────── */
+
+/* 시간표 위젯 */
 .timetable-card {
   max-height: 500px;
   overflow-y: auto;
@@ -610,7 +653,8 @@ body {
   background: rgba(107, 114, 128, 0.2);
   color: #6b7280;
 }
-/* ─────────── 셔틀버스 위젯 ─────────── */
+
+/* 셔틀버스 위젯 */
 .shuttle-routes {
   display: flex;
   gap: 0.5rem;
@@ -679,7 +723,8 @@ body {
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
 }
-/* ─────────── 공지사항 ─────────── */
+
+/* 공지사항 */
 .notice-list {
   display: flex;
   flex-direction: column;
@@ -717,7 +762,8 @@ body {
   line-height: 1.6;
   font-size: 0.9rem;
 }
-/* ─────────── 건물 카드 ─────────── */
+
+/* 건물 카드 */
 .building-card {
   cursor: pointer;
 }
@@ -768,7 +814,8 @@ body {
   color: #3b82f6;
   background: rgba(59, 130, 246, 0.1);
 }
-/* ─────────── 활동 통계 ─────────── */
+
+/* 활동 통계 */
 .activity-stat {
   text-align: center;
   border-radius: 12px;
@@ -787,7 +834,57 @@ body {
   color: #94a3b8;
   font-size: 0.8rem;
 }
-/* ─────────── 반응형 디자인 ─────────── */
+
+/* 맛집 카드 */
+.restaurant-card {
+  display: flex;
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.restaurant-card:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.restaurant-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+.restaurant-info {
+  flex: 1;
+}
+.restaurant-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+.restaurant-category {
+  color: #3b82f6;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+.restaurant-discount {
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.restaurant-likes {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* 반응형 디자인 */
 @media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
@@ -826,7 +923,8 @@ body {
     grid-template-columns: 1fr;
   }
 }
-/* ─────────── 애니메이션 ─────────── */
+
+/* 애니메이션 */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -840,7 +938,8 @@ body {
 .fade-in {
   animation: fadeInUp 0.6s ease-out;
 }
-/* ─────────── 스크롤바 스타일 ─────────── */
+
+/* 스크롤바 스타일 */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -854,7 +953,8 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(59, 130, 246, 0.7);
 }
-/* ─────────── 로딩 스피너 ─────────── */
+
+/* 로딩 스피너 */
 .loading-spinner {
   display: inline-block;
   width: 20px;
@@ -869,7 +969,8 @@ body {
     transform: rotate(360deg);
   }
 }
-/* ─────────── 모바일 메뉴 토글 ─────────── */
+
+/* 모바일 메뉴 토글 */
 .mobile-menu-toggle {
   display: none;
   background: none;
@@ -882,116 +983,4 @@ body {
   .mobile-menu-toggle {
     display: block;
   }
-}
-
-/* ─────────── 다크/라이트 모드 토글 ─────────── */
-/* body에 .light-mode 클래스가 붙으면 라이트 모드로 변경 */
-body.light-mode {
-  background: #ffffff;
-  color: #000000;
-}
-body.light-mode .top-nav {
-  background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
-}
-body.light-mode .top-nav .search-input {
-  background: rgba(240, 240, 240, 0.8);
-  color: #000000;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-body.light-mode .top-nav .search-input:focus {
-  background: rgba(240, 240, 240, 1);
-}
-body.light-mode .notification-btn {
-  background: rgba(240, 240, 240, 0.8);
-  color: #000000;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-body.light-mode .notification-btn:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-body.light-mode .sidebar {
-  background: rgba(255, 255, 255, 0.95);
-  color: #000000;
-  border-right: 1px solid rgba(148, 163, 184, 0.3);
-}
-body.light-mode .sidebar .nav-item {
-  color: #64748b;
-}
-body.light-mode .sidebar .nav-item:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-body.light-mode .sidebar .nav-item.active {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-}
-body.light-mode .content-area {
-  background: #f1f5f9;
-  color: #000000;
-}
-body.light-mode .card,
-body.light-mode .stat-card,
-body.light-mode .activity-stat,
-body.light-mode .building-card,
-body.light-mode .notice-item {
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  color: #000000;
-}
-body.light-mode .card:hover,
-body.light-mode .stat-card:hover,
-body.light-mode .activity-stat:hover,
-body.light-mode .building-card:hover,
-body.light-mode .notice-item:hover {
-  background: #ffffff;
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #000000;
-}
-body.light-mode .map-control {
-  background: rgba(255, 255, 255, 0.9);
-  color: #000000;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-body.light-mode .map-control:hover {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-  border-color: #3b82f6;
-}
-body.light-mode .btn-primary {
-  background: #3b82f6;
-  color: #ffffff;
-}
-body.light-mode .btn-primary:hover {
-  background: #2563eb;
-}
-body.light-mode .btn-outline {
-  color: #64748b;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-body.light-mode .btn-outline:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-body.light-mode .route-tab {
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-}
-body.light-mode .route-tab.active {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: #3b82f6;
-}
-body.light-mode .shuttle-status {
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-}
-body.light-mode .notice-category {
-  background: #3b82f6;
-  color: #ffffff;
-}
-body.light-mode .notice-date {
-  color: #64748b;
 }
