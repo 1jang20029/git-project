@@ -1,17 +1,17 @@
 /* =============================================================================
    settings.css
    ──────────────────────────────────────────────────────────────────────────────
-   설정 화면 전용 스타일
+   설정 뷰 전용 스타일
    ============================================================================= */
 
-/* ─────────── 설정 전체 레이아웃 ─────────── */
+/* 설정 화면 전체 컨테이너 */
 .settings-container {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
 }
 
-/* ─────────── 각 설정 항목 ─────────── */
+/* 개별 설정 항목 */
 .setting-item {
   display: flex;
   align-items: center;
@@ -19,114 +19,31 @@
   margin-bottom: 1.5rem;
 }
 
-/* 라벨 텍스트 */
+/* 라벨 텍스트 스타일 */
 .setting-item label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
 }
 
-/* 토글(checkbox) 기본 스타일 */
+/* 토글 체크박스 기본 스타일 */
 .setting-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
 
-/* 체크된 토글 강조 색상 */
+/* 토글 상태에 따른 강조 */
 .setting-item input[type="checkbox"]:checked {
   accent-color: #3b82f6;
 }
 
-/* ─────────── 언어 선택(select) ─────────── */
-.setting-item select {
-  background: rgba(30, 41, 59, 0.8);
-  color: #f1f5f9;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.setting-item select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  background: rgba(30, 41, 59, 0.95);
-}
-
-/* ─────────── 폰트 크기 슬라이더 ─────────── */
-#fontSizeRange {
-  width: 150px;
-  cursor: pointer;
-}
-
-#fontSizeRange::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  background: #3b82f6;
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-}
-
-#fontSizeRange::-webkit-slider-runnable-track {
-  height: 6px;
-  background: rgba(148, 163, 184, 0.4);
-  border-radius: 3px;
-}
-
-#fontSizeRange:focus {
-  outline: none;
-}
-
-/* ─────────── 알림 시간대 입력 ─────────── */
-.time-settings .time-inputs {
-  display: flex;
-  gap: 1rem;
-}
-
-.time-settings .time-inputs div {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.time-settings input[type="time"] {
-  background: rgba(30, 41, 59, 0.8);
-  color: #f1f5f9;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 6px;
-  padding: 0.3rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.time-settings input[type="time"]:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  background: rgba(30, 41, 59, 0.95);
-}
-
-/* ─────────── 반응형 조정 ─────────── */
+/* 반응형: 좁은 화면에서 여백 축소 */
 @media (max-width: 768px) {
   .settings-container {
     padding: 1rem;
   }
   .setting-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
     margin-bottom: 1rem;
-  }
-  .time-settings .time-inputs {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
