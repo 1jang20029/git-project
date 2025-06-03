@@ -75,7 +75,7 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <!-- 다크/라이트 모드 토글은 제거 -->
+            <!-- 다크/라이트 모드 토글은 제거됨 -->
             <button class="dropdown-item" onclick="showContent('settings')">
               <span>⚙️</span>
               <span>설정</span>
@@ -145,7 +145,10 @@
             <span class="nav-icon" title="프로필">👤</span>
             <span>프로필</span>
           </li>
-          <!-- 메인 메뉴에서 “설정” 완전히 제거 -->
+          <li class="nav-item" onclick="showContent('settings')" id="nav-settings">
+            <span class="nav-icon" title="설정">⚙️</span>
+            <span>설정</span>
+          </li>
           <li class="nav-item" onclick="handleLogout()" id="nav-logout">
             <span class="nav-icon" title="로그아웃">🚪</span>
             <span>로그아웃</span>
