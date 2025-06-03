@@ -121,24 +121,25 @@
         </ul>
       </div>
 
-      <!-- 빠른 접근 섹션: 외부 페이지로 이동 -->
+      <!-- 빠른 접근 섹션 (외부 페이지 링크) -->
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list">
+          <!-- 전체 박스 클릭 시 이동 -->
           <li class="nav-item">
-            <a href="timetable.html" target="_blank" style="display: flex; align-items: center; gap: 0.75rem; color: inherit; text-decoration: none;">
+            <a href="timetable.html" target="_blank">
               <span class="nav-icon" title="내 시간표">📅</span>
               <span>내 시간표</span>
             </a>
           </li>
           <li class="nav-item">
-            <a href="shuttle_bus.html" target="_blank" style="display: flex; align-items: center; gap: 0.75rem; color: inherit; text-decoration: none;">
+            <a href="shuttle_bus.html" target="_blank">
               <span class="nav-icon" title="셔틀버스">🚌</span>
               <span>셔틀버스</span>
             </a>
           </li>
           <li class="nav-item">
-            <a href="academic-calendar.html" target="_blank" style="display: flex; align-items: center; gap: 0.75rem; color: inherit; text-decoration: none;">
+            <a href="academic-calendar.html" target="_blank">
               <span class="nav-icon" title="학사일정">🗓️</span>
               <span>학사일정</span>
             </a>
@@ -178,8 +179,9 @@
             <span>대시보드</span>
           </div>
         </div>
-        <div class="stats-grid" id="statsGrid"><!-- 동적 로드 --></div>
+        <div class="stats-grid" id="statsGrid"></div>
         <div class="dashboard-grid">
+          <!-- 지도 카드 -->
           <div class="card map-card">
             <div class="card-header">
               <h3 class="card-title">캠퍼스 지도</h3>
@@ -195,31 +197,34 @@
               </div>
             </div>
           </div>
+          <!-- 오늘의 시간표 -->
           <div class="card timetable-card">
             <div class="card-header">
               <h3 class="card-title">오늘의 시간표</h3>
               <span class="card-icon">📅</span>
             </div>
-            <div id="timetableContent"><!-- 동적 로드: 개인 시간표 --></div>
+            <div id="timetableContent"></div>
           </div>
+          <!-- 셔틀버스 현황 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">셔틀버스 현황</h3>
               <span class="card-icon">🚌</span>
             </div>
-            <div class="shuttle-routes" id="shuttleRoutes"><!-- 동적 로드: 셔틀 노선 목록 --></div>
+            <div class="shuttle-routes" id="shuttleRoutes"></div>
             <div class="shuttle-status">
               <div class="shuttle-time" id="shuttleTime">--</div>
               <div class="shuttle-desc" id="shuttleDesc">--</div>
               <div class="status-badge" id="shuttleStatus">--</div>
             </div>
           </div>
+          <!-- 최근 공지사항 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">최근 공지사항</h3>
               <span class="card-icon">📢</span>
             </div>
-            <div class="notice-list" id="recentNotices"><!-- 동적 로드: 최근 공지사항 --></div>
+            <div class="notice-list" id="recentNotices"></div>
           </div>
         </div>
       </div>
@@ -249,7 +254,7 @@
             </div>
           </div>
         </div>
-        <div class="building-grid" id="buildingGrid"><!-- 동적 로드: 건물 카드들 --></div>
+        <div class="building-grid" id="buildingGrid"></div>
       </div>
 
       <!-- 3) 커뮤니티 -->
@@ -268,14 +273,14 @@
               <h3 class="card-title">실시간 게시글</h3>
               <span class="card-icon">💬</span>
             </div>
-            <div class="notice-list" id="livePosts"><!-- 동적 로드: 실시간 게시글 --></div>
+            <div class="notice-list" id="livePosts"></div>
           </div>
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 게시글</h3>
               <span class="card-icon">🔥</span>
             </div>
-            <div class="notice-list" id="hotPosts"><!-- 동적 로드: 인기 게시글 --></div>
+            <div class="notice-list" id="hotPosts"></div>
           </div>
         </div>
       </div>
@@ -296,14 +301,14 @@
               <h3 class="card-title">인기 강의평가</h3>
               <span class="card-icon">⭐</span>
             </div>
-            <div class="notice-list" id="popularReviews"><!-- 동적 로드: 인기 리뷰 --></div>
+            <div class="notice-list" id="popularReviews"></div>
           </div>
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">최근 강의평가</h3>
               <span class="card-icon">🕒</span>
             </div>
-            <div class="notice-list" id="recentReviews"><!-- 동적 로드: 최근 리뷰 --></div>
+            <div class="notice-list" id="recentReviews"></div>
           </div>
           <div class="card">
             <div class="card-header">
@@ -335,10 +340,10 @@
             <span>공지사항</span>
           </div>
         </div>
-        <div class="notice-list" id="fullNoticeList"><!-- 동적 로드: 전체 공지사항 --></div>
+        <div class="notice-list" id="fullNoticeList"></div>
       </div>
 
-      <!-- 6) 프로필 (계정) -->
+      <!-- 6) 프로필 -->
       <div id="profileContentPane" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>프로필</h1>
