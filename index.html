@@ -13,6 +13,8 @@
 
   <!-- 분리한 CSS -->
   <link rel="stylesheet" href="index.css" />
+  <!-- 설정 전용 CSS -->
+  <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
   <!-- 상단 네비게이션 -->
@@ -77,7 +79,8 @@
               <span>🌗</span>
               <span>다크/라이트 모드</span>
             </button>
-            <button class="dropdown-item" onclick="window.location.href='settings.html'">
+            <!-- 설정 뷰로 이동 -->
+            <button class="dropdown-item" onclick="showContent('settings')">
               <span>⚙️</span>
               <span>설정</span>
             </button>
@@ -106,7 +109,6 @@
             <span class="nav-icon" title="건물 & 시설">🏢</span>
             <span>건물 &amp; 시설</span>
           </li>
-          <!-- ▶ “설정” 메뉴는 메인 메뉴에서 완전히 제거 -->
           <li class="nav-item" onclick="showContent('community')" id="nav-community">
             <span class="nav-icon" title="커뮤니티">💬</span>
             <span>커뮤니티</span>
@@ -125,15 +127,15 @@
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="openQuickLink('timetable')" id="nav-timetable">
+          <li class="nav-item" onclick="showContent('timetable')" id="nav-timetable">
             <span class="nav-icon" title="내 시간표">📅</span>
             <span>내 시간표</span>
           </li>
-          <li class="nav-item" onclick="openQuickLink('shuttle')" id="nav-shuttle">
+          <li class="nav-item" onclick="showContent('shuttle')" id="nav-shuttle">
             <span class="nav-icon" title="셔틀버스">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <li class="nav-item" onclick="openQuickLink('academic-calendar')" id="nav-academic-calendar">
+          <li class="nav-item" onclick="showContent('academic-calendar')" id="nav-academic-calendar">
             <span class="nav-icon" title="학사일정">🗓️</span>
             <span>학사일정</span>
           </li>
@@ -143,14 +145,11 @@
       <div class="sidebar-section">
         <div class="sidebar-title">계정</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="showProfile()" id="nav-profile">
+          <li class="nav-item" onclick="showContent('profile')" id="nav-profile">
             <span class="nav-icon" title="프로필">👤</span>
             <span>프로필</span>
           </li>
-          <li class="nav-item" onclick="window.location.href='settings.html'" id="nav-settings">
-            <span class="nav-icon" title="설정">⚙️</span>
-            <span>설정</span>
-          </li>
+          <!-- ▶ 메인 메뉴에서는 “설정” 항목을 완전히 제거했다! -->
           <li class="nav-item" onclick="handleLogout()" id="nav-logout">
             <span class="nav-icon" title="로그아웃">🚪</span>
             <span>로그아웃</span>
@@ -159,29 +158,20 @@
       </div>
     </aside>
 
-    <!-- 메인 콘텐츠 -->
+    <!-- 메인 콘텐츠 영역 -->
     <main class="content-area">
-      <!-- 홈 대시보드 -->
-      <div id="homeContent" class="fade-in">
+      <!-- 1) 홈 대시보드 -->
+      <div id="homeContent" class="content-pane">
         <div class="content-header">
-          <div>
-            <h1>대시보드</h1>
-            <div class="breadcrumb">
-              <span>홈</span>
-              <span>›</span>
-              <span>대시보드</span>
-            </div>
+          <h1>대시보드</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>대시보드</span>
           </div>
         </div>
-
-        <!-- 통계 카드 -->
-        <div class="stats-grid" id="statsGrid">
-          <!-- 통계 카드가 동적으로 로드됩니다 -->
-        </div>
-
-        <!-- 메인 위젯 그리드 -->
+        <div class="stats-grid" id="statsGrid"><!-- 동적 로드 --></div>
         <div class="dashboard-grid">
-          <!-- 지도 카드 -->
           <div class="card map-card">
             <div class="card-header">
               <h3 class="card-title">캠퍼스 지도</h3>
@@ -197,60 +187,45 @@
               </div>
             </div>
           </div>
-
-          <!-- 시간표 위젯 -->
           <div class="card timetable-card">
             <div class="card-header">
               <h3 class="card-title">오늘의 시간표</h3>
               <span class="card-icon">📅</span>
             </div>
-            <div id="timetableContent">
-              <!-- 시간표 데이터가 동적으로 생성됩니다 -->
-            </div>
+            <div id="timetableContent"><!-- 동적 로드 --></div>
           </div>
-
-          <!-- 셔틀버스 위젯 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">셔틀버스 현황</h3>
               <span class="card-icon">🚌</span>
             </div>
-            <div class="shuttle-routes" id="shuttleRoutes">
-              <!-- 노선 탭이 동적으로 생성됩니다 -->
-            </div>
+            <div class="shuttle-routes" id="shuttleRoutes"><!-- 동적 로드 --></div>
             <div class="shuttle-status">
               <div class="shuttle-time" id="shuttleTime">--</div>
               <div class="shuttle-desc" id="shuttleDesc">--</div>
               <div class="status-badge" id="shuttleStatus">--</div>
             </div>
           </div>
-
-          <!-- 최근 공지사항 위젯 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">최근 공지사항</h3>
               <span class="card-icon">📢</span>
             </div>
-            <div class="notice-list" id="recentNotices">
-              <!-- 최근 공지사항이 동적으로 생성됩니다 -->
-            </div>
+            <div class="notice-list" id="recentNotices"><!-- 동적 로드 --></div>
           </div>
         </div>
       </div>
 
-      <!-- 건물 안내 콘텐츠 -->
-      <div id="buildingsContent" style="display: none;">
+      <!-- 2) 건물 & 시설 -->
+      <div id="buildingsContent" class="content-pane" style="display: none;">
         <div class="content-header">
-          <div>
-            <h1>건물 &amp; 시설 안내</h1>
-            <div class="breadcrumb">
-              <span>홈</span>
-              <span>›</span>
-              <span>건물 안내</span>
-            </div>
+          <h1>건물 &amp; 시설 안내</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>건물 안내</span>
           </div>
         </div>
-
         <div class="card map-card" style="margin-bottom: 2rem;">
           <div class="card-header">
             <h3 class="card-title">캠퍼스 지도</h3>
@@ -266,87 +241,62 @@
             </div>
           </div>
         </div>
-
-        <div class="building-grid" id="buildingGrid">
-          <!-- 건물 카드들이 동적으로 생성됩니다 -->
-        </div>
+        <div class="building-grid" id="buildingGrid"><!-- 동적 로드 --></div>
       </div>
 
-      <!-- 커뮤니티 콘텐츠 -->
-      <div id="communityContent" style="display: none;">
+      <!-- 3) 커뮤니티 -->
+      <div id="communityContent" class="content-pane" style="display: none;">
         <div class="content-header">
-          <div>
-            <h1>실시간 커뮤니티</h1>
-            <div class="breadcrumb">
-              <span>홈</span>
-              <span>›</span>
-              <span>커뮤니티</span>
-            </div>
+          <h1>실시간 커뮤니티</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>커뮤니티</span>
           </div>
         </div>
-
         <div class="dashboard-grid">
-          <!-- 실시간 게시글 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">실시간 게시글</h3>
               <span class="card-icon">💬</span>
             </div>
-            <div class="notice-list" id="livePosts">
-              <!-- 실시간 게시글이 동적으로 생성됩니다 -->
-            </div>
+            <div class="notice-list" id="livePosts"><!-- 동적 로드 --></div>
           </div>
-
-          <!-- 인기 게시글 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 게시글</h3>
               <span class="card-icon">🔥</span>
             </div>
-            <div class="notice-list" id="hotPosts">
-              <!-- 인기 게시글이 동적으로 생성됩니다 -->
-            </div>
+            <div class="notice-list" id="hotPosts"><!-- 동적 로드 --></div>
           </div>
         </div>
       </div>
 
-      <!-- 강의평가 콘텐츠 -->
-      <div id="lecture-reviewContent" style="display: none;">
+      <!-- 4) 강의평가 -->
+      <div id="lecture-reviewContent" class="content-pane" style="display: none;">
         <div class="content-header">
-          <div>
-            <h1>강의평가</h1>
-            <div class="breadcrumb">
-              <span>홈</span>
-              <span>›</span>
-              <span>강의평가</span>
-            </div>
+          <h1>강의평가</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>강의평가</span>
           </div>
         </div>
-
         <div class="dashboard-grid">
-          <!-- 인기 강의평가 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 강의평가</h3>
               <span class="card-icon">⭐</span>
             </div>
-            <div class="notice-list" id="popularReviews">
-              <!-- 인기 리뷰가 동적으로 생성됩니다 -->
-            </div>
+            <div class="notice-list" id="popularReviews"><!-- 동적 로드 --></div>
           </div>
-
-          <!-- 최근 강의평가 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">최근 강의평가</h3>
               <span class="card-icon">🕒</span>
             </div>
-            <div class="notice-list" id="recentReviews">
-              <!-- 최근 리뷰가 동적으로 생성됩니다 -->
-            </div>
+            <div class="notice-list" id="recentReviews"><!-- 동적 로드 --></div>
           </div>
-
-          <!-- 강의평가 작성 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">강의평가 작성</h3>
@@ -367,27 +317,100 @@
         </div>
       </div>
 
-      <!-- 공지사항 콘텐츠 -->
-      <div id="noticesContent" style="display: none;">
+      <!-- 5) 공지사항 -->
+      <div id="noticesContent" class="content-pane" style="display: none;">
         <div class="content-header">
-          <div>
-            <h1>공지사항</h1>
-            <div class="breadcrumb">
-              <span>홈</span>
-              <span>›</span>
-              <span>공지사항</span>
-            </div>
+          <h1>공지사항</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>공지사항</span>
           </div>
         </div>
+        <div class="notice-list" id="fullNoticeList"><!-- 동적 로드 --></div>
+      </div>
 
-        <div class="notice-list" id="fullNoticeList">
-          <!-- 전체 공지사항이 동적으로 생성됩니다 -->
+      <!-- 6) 내 시간표 (빠른 접근) -->
+      <div id="timetableContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>내 시간표</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>내 시간표</span>
+          </div>
+        </div>
+        <div id="timetableContentDetailed"><!-- 필요하다면 여기에 내 시간표 상세를 --></div>
+      </div>
+
+      <!-- 7) 셔틀버스 (빠른 접근) -->
+      <div id="shuttleContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>셔틀버스</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>셔틀버스</span>
+          </div>
+        </div>
+        <!-- 셔틀 상세 내용이 필요하면 여기에 로드 -->
+      </div>
+
+      <!-- 8) 학사일정 (빠른 접근) -->
+      <div id="academic-calendarContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>학사일정</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>학사일정</span>
+          </div>
+        </div>
+        <!-- 학사일정 상세 내용이 필요하면 여기에 로드 -->
+      </div>
+
+      <!-- 9) 프로필 (계정) -->
+      <div id="profileContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>프로필</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>프로필</span>
+          </div>
+        </div>
+        <!-- 프로필 편집 내용이 필요하면 여기에 로드 -->
+      </div>
+
+      <!-- 10) 설정 -->
+      <div id="settingsContent" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>설정</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>설정</span>
+          </div>
+        </div>
+        <div class="settings-container">
+          <!-- 다크/라이트 모드 토글 -->
+          <div class="setting-item">
+            <label for="themeToggle">다크/라이트 모드</label>
+            <input type="checkbox" id="themeToggle" />
+          </div>
+
+          <!-- 알림 받기 토글 -->
+          <div class="setting-item">
+            <label for="notificationToggle">알림 받기</label>
+            <input type="checkbox" id="notificationToggle" />
+          </div>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- 분리한 JS -->
+  <!-- 외부 JS들 -->
   <script src="index.js" defer></script>
+  <script src="settings.js" defer></script>
 </body>
 </html>
