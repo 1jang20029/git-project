@@ -225,9 +225,6 @@ async function loadActivityStats() {
   }
 }
 
-// 맛집 정보 로드 (이제 사용되지 않음 → UI에서 제거됨)
-// function loadRestaurantInfo() { ... }
-
 // 실시간 커뮤니티 로드
 async function loadCommunityPosts() {
   try {
@@ -944,7 +941,6 @@ async function initializeApp() {
   await loadNotices();
   await loadShuttleInfo();
   await loadActivityStats();
-  // loadRestaurantInfo();  // 인기 맛집 관련 UI 자체가 제거되었으므로 호출하지 않음
   await loadCommunityPosts();
   await loadLectureReviews();
   checkUserStatus();
@@ -953,7 +949,6 @@ async function initializeApp() {
     loadShuttleInfo();
     updateTimetable();
     loadActivityStats();
-    // loadRestaurantInfo(); // 제거
   }, 60000);
 }
 
@@ -971,7 +966,6 @@ window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     checkUserStatus();
     loadActivityStats();
-    // loadRestaurantInfo(); // 제거
     updateTimetable();
   }
 });
