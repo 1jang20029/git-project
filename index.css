@@ -1,20 +1,58 @@
+/* =========================
+   CSS 변수 정의: 다크/라이트 모드 전환 시 사용
+   ========================= */
+:root {
+  --bg-body: #0a0e27;                         /* 다크 모드 배경 */
+  --color-text: #ffffff;                      /* 다크 모드 텍스트 */
+  --nav-bg: rgba(15, 23, 42, 0.95);           /* 다크 모드 네비/사이드바 배경 */
+  --nav-border: rgba(148, 163, 184, 0.1);     /* 다크 모드 경계선 */
+  --card-bg: rgba(30, 41, 59, 0.5);            /* 다크 모드 카드 배경 */
+  --card-border: rgba(148, 163, 184, 0.1);     /* 다크 모드 카드 테두리 */
+  --blur-bg: rgba(15, 23, 42, 0.3);           /* 다크 모드 블러용 배경 */
+  --hover-bg: rgba(59, 130, 246, 0.1);        /* 다크 모드 호버 배경 */
+  --dim-text: #94a3b8;                        /* 다크 모드 보조 텍스트 */
+  --input-bg: rgba(30, 41, 59, 0.8);          /* 다크 모드 입력란 배경 */
+  --input-border: rgba(148, 163, 184, 0.2);   /* 다크 모드 입력란 테두리 */
+}
+
+/* 라이트 모드 변수 오버라이드 */
+.light-theme {
+  --bg-body: #f5f5f5;                         /* 라이트 모드 전체 배경 */
+  --color-text: #333333;                      /* 라이트 모드 텍스트(짙은 회색) */
+  --nav-bg: #ffffff;                          /* 라이트 모드 네비/사이드바 배경 */
+  --nav-border: rgba(200, 200, 200, 0.5);     /* 라이트 모드 경계선 */
+  --card-bg: #ffffff;                         /* 라이트 모드 카드 배경 */
+  --card-border: rgba(200, 200, 200, 0.5);     /* 라이트 모드 카드 테두리 */
+  --blur-bg: rgba(240, 240, 240, 0.8);        /* 라이트 모드 블러 배경 */
+  --hover-bg: #f0f0f0;                        /* 라이트 모드 호버 배경 */
+  --dim-text: #555555;                        /* 라이트 모드 보조 텍스트 */
+  --input-bg: rgba(255, 255, 255, 0.8);       /* 라이트 모드 입력란 배경 */
+  --input-border: rgba(200, 200, 200, 0.5);   /* 라이트 모드 입력란 테두리 */
+}
+
+/* =========================
+   기본 리셋
+   ========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0a0e27;
-  color: #ffffff;
+  background: var(--bg-body);
+  color: var(--color-text);
   overflow-x: hidden;
 }
 
-/* 상단 네비게이션 */
+/* =========================
+   상단 네비게이션
+   ========================= */
 .top-nav {
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   padding: 1rem 2rem;
   position: fixed;
   top: 0;
@@ -43,18 +81,19 @@ body {
   align-items: center;
   gap: 1rem;
 }
+
 .search-bar {
   position: relative;
   display: flex;
   align-items: center;
 }
 .search-input {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 12px;
   padding: 0.75rem 1rem 0.75rem 3rem;
   width: 300px;
-  color: #f1f5f9;
+  color: var(--color-text);
   font-size: 0.9rem;
   transition: all 0.3s ease;
 }
@@ -62,32 +101,28 @@ body {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: rgba(30, 41, 59, 0.95);
+  background: var(--input-bg);
 }
 .search-icon {
   position: absolute;
   left: 1rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 1.1rem;
 }
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  position: relative;
-}
+
+/* 알림 버튼(🔔) */
 .notification-btn {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: var(--nav-bg);
+  border: 1px solid var(--nav-border);
   border-radius: 8px;
   padding: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
 }
 .notification-btn:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   border-color: #3b82f6;
   color: #3b82f6;
 }
@@ -100,14 +135,15 @@ body {
   background: #ef4444;
   border-radius: 50%;
 }
+
 /* 알림 드롭다운 */
 .notification-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--nav-border);
   border-radius: 12px;
   padding: 0;
   min-width: 350px;
@@ -125,7 +161,7 @@ body {
 }
 .notification-header {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -133,7 +169,7 @@ body {
 .notification-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
 }
 .notification-badge {
   background: #ef4444;
@@ -149,12 +185,12 @@ body {
 }
 .notification-item {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .notification-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
 }
 .notification-item:last-child {
   border-bottom: none;
@@ -178,29 +214,29 @@ body {
   font-weight: 600;
 }
 .notification-time {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.75rem;
 }
 .notification-content {
-  color: #f1f5f9;
+  color: var(--color-text);
   font-weight: 500;
   margin-bottom: 0.25rem;
   line-height: 1.4;
 }
 .notification-summary {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.85rem;
   line-height: 1.3;
 }
 .notification-footer {
   padding: 1rem 1.5rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-top: 1px solid var(--nav-border);
   text-align: center;
 }
 .mark-all-read {
   background: none;
   border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #94a3b8;
+  color: var(--dim-text);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -210,14 +246,18 @@ body {
 .mark-all-read:hover {
   border-color: #3b82f6;
   color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
 }
+
+/* =========================
+   사용자 프로필(👤) 버튼
+   ========================= */
 .user-profile {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: var(--nav-bg);
+  border: 1px solid var(--nav-border);
   border-radius: 12px;
   padding: 0.5rem 1rem;
   cursor: pointer;
@@ -225,17 +265,18 @@ body {
   position: relative;
 }
 .user-profile:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   border-color: #3b82f6;
 }
+
 /* 사용자 드롭다운 메뉴 */
 .user-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--nav-border);
   border-radius: 12px;
   padding: 0.5rem 0;
   min-width: 200px;
@@ -253,7 +294,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  color: #f1f5f9;
+  color: var(--color-text);
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
@@ -262,57 +303,27 @@ body {
   text-align: left;
 }
 .dropdown-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   color: #3b82f6;
 }
 .dropdown-divider {
   height: 1px;
-  background: rgba(148, 163, 184, 0.1);
+  background: var(--nav-border);
   margin: 0.5rem 0;
 }
 .dropdown-user-info {
   padding: 1rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   margin-bottom: 0.5rem;
 }
 .dropdown-user-name {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 .dropdown-user-role {
   font-size: 0.85rem;
-  color: #94a3b8;
-}
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes slideOutRight {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100px);
-  }
+  color: var(--dim-text);
 }
 .avatar {
   width: 32px;
@@ -331,14 +342,16 @@ body {
 .user-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
 }
 .user-role {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
 }
 
-/* 메인 컨테이너 */
+/* =========================
+   메인 컨테이너 & 사이드바
+   ========================= */
 .main-container {
   margin-top: 80px;
   display: flex;
@@ -348,9 +361,9 @@ body {
 /* 사이드바 */
 .sidebar {
   width: 280px;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(148, 163, 184, 0.1);
+  border-right: 1px solid var(--nav-border);
   padding: 2rem 0;
   position: fixed;
   top: 80px;
@@ -358,6 +371,7 @@ body {
   bottom: 0;
   overflow-y: auto;
   z-index: 900;
+  transition: transform 0.3s ease;
 }
 .sidebar-section {
   margin-bottom: 2rem;
@@ -366,7 +380,7 @@ body {
 .sidebar-title {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--dim-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 1rem;
@@ -385,12 +399,12 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-weight: 500;
   position: relative;
 }
 .nav-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   color: #3b82f6;
 }
 .nav-item.active {
@@ -411,27 +425,27 @@ body {
   font-size: 1.25rem;
   width: 20px;
   text-align: center;
+  /* 아이콘 색상은 var(--dim-text) 또는 var(--color-text)를 따름 */
 }
 
-/* 메인 콘텐츠 */
+/* =========================
+   메인 콘텐츠
+   ========================= */
 .content-area {
   margin-left: 280px;
   flex: 1;
   padding: 2rem;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, var(--nav-bg) 0%, var(--card-bg) 100%);
 }
 .content-header {
   display: flex;
   align-items: center;
   margin-bottom: 2rem;
 }
-.content-header h1 {
+.dashboard-title {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-text);
 }
 .breadcrumb {
   display: flex;
@@ -439,7 +453,7 @@ body {
   gap: 0.5rem;
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--dim-text);
 }
 
 /* 그리드 & 카드 */
@@ -467,15 +481,16 @@ body {
 .building-grid {
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 }
+
 .card,
 .stat-card,
 .activity-stat,
 .restaurant-card,
 .building-card,
 .notice-item {
-  background: rgba(30, 41, 59, 0.5);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
@@ -486,10 +501,11 @@ body {
 .restaurant-card:hover,
 .building-card:hover,
 .notice-item:hover {
-  background: rgba(30, 41, 59, 0.7);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.9); /* 라이트 모드 호버 시 */
+  border-color: rgba(200, 200, 200, 0.7);
   transform: translateY(-2px);
 }
+
 .stat-number,
 .activity-number {
   font-size: 2.5rem;
@@ -503,7 +519,7 @@ body {
 .stat-label,
 .activity-label {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-weight: 500;
 }
 .card-header {
@@ -515,7 +531,7 @@ body {
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
 }
 .card-icon {
   font-size: 1.5rem;
@@ -569,17 +585,17 @@ body {
   z-index: 100;
 }
 .map-control {
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--nav-border);
   border-radius: 8px;
   padding: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .map-control:hover {
-  background: rgba(59, 130, 246, 0.2);
+  background: var(--hover-bg);
   color: #3b82f6;
   border-color: #3b82f6;
 }
@@ -600,7 +616,7 @@ body {
   transition: all 0.3s ease;
 }
 .class-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   border-color: rgba(59, 130, 246, 0.3);
 }
 .class-time {
@@ -618,7 +634,7 @@ body {
 }
 .class-time-remaining {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-weight: 400;
 }
 .class-info {
@@ -627,12 +643,12 @@ body {
 }
 .class-name {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 .class-location {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--dim-text);
 }
 .class-status {
   padding: 0.25rem 0.75rem;
@@ -654,74 +670,24 @@ body {
   color: #6b7280;
 }
 
-/* 셔틀버스 위젯 */
-.shuttle-routes {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-.route-tab {
-  flex: 1;
-  padding: 0.75rem;
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 8px;
+/* 활동 통계 */
+.activity-stat {
   text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.route-tab.active {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: #3b82f6;
-}
-.route-name {
-  font-weight: 600;
-  color: #f1f5f9;
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-}
-.route-desc {
-  font-size: 0.75rem;
-  color: #94a3b8;
-}
-.shuttle-status {
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-  margin-bottom: 1rem;
+  padding: 1rem;
 }
-.shuttle-time {
-  font-size: 2rem;
+.activity-number {
+  font-size: 1.8rem;
   font-weight: 700;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
-.shuttle-desc {
-  color: #94a3b8;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-}
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+.activity-label {
+  color: var(--dim-text);
   font-size: 0.8rem;
-  font-weight: 600;
-}
-.status-running {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-}
-.status-stopped {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
 }
 
 /* 공지사항 */
@@ -748,40 +714,22 @@ body {
   font-weight: 600;
 }
 .notice-date {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.85rem;
 }
 .notice-title {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
 }
 .notice-summary {
-  color: #94a3b8;
+  color: var(--dim-text);
   line-height: 1.6;
   font-size: 0.9rem;
 }
 
-/* 건물 카드 */
-.building-card {
-  cursor: pointer;
-}
-.building-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #f1f5f9;
-  margin-bottom: 0.5rem;
-}
-.building-desc {
-  color: #94a3b8;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-}
-.building-actions {
-  display: flex;
-  gap: 0.75rem;
-}
+/* 부가적인 CSS(버튼, 반응형 등) */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -807,88 +755,18 @@ body {
 .btn-outline {
   background: transparent;
   border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #94a3b8;
+  color: var(--dim-text);
 }
 .btn-outline:hover {
   border-color: #3b82f6;
   color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
-}
-
-/* 활동 통계 */
-.activity-stat {
-  text-align: center;
-  border-radius: 12px;
-  padding: 1rem;
-}
-.activity-number {
-  font-size: 1.8rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.25rem;
-}
-.activity-label {
-  color: #94a3b8;
-  font-size: 0.8rem;
-}
-
-/* 맛집 카드 */
-.restaurant-card {
-  display: flex;
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 12px;
-  padding: 1rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-.restaurant-card:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-.restaurant-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
-  background: rgba(59, 130, 246, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  margin-right: 1rem;
-}
-.restaurant-info {
-  flex: 1;
-}
-.restaurant-name {
-  font-weight: 600;
-  color: #f1f5f9;
-  margin-bottom: 0.25rem;
-}
-.restaurant-category {
-  color: #3b82f6;
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
-}
-.restaurant-discount {
-  color: #ef4444;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-.restaurant-likes {
-  color: #94a3b8;
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
+  background: var(--hover-bg);
 }
 
 /* 반응형 디자인 */
 @media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
   }
   .sidebar.open {
     transform: translateX(0);
@@ -925,6 +803,16 @@ body {
 }
 
 /* 애니메이션 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -933,6 +821,26 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
   }
 }
 .fade-in {
@@ -975,7 +883,7 @@ body {
   display: none;
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -983,4 +891,131 @@ body {
   .mobile-menu-toggle {
     display: block;
   }
+}
+
+/* =========================
+   설정 모달 스타일
+   ========================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--nav-border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--nav-border);
+}
+.modal-header h2 {
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--dim-text);
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+}
+.setting-section {
+  margin-bottom: 1.5rem;
+}
+.setting-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+
+/* 토글 스위치 CSS */
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.toggle-switch input {
+  display: none;
+}
+.toggle-switch .slider {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.toggle-switch .slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.toggle-switch input:checked + .slider {
+  background: #3b82f6;
+}
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(26px);
+}
+.toggle-switch .toggle-label {
+  color: var(--dim-text);
+}
+
+/* 체크박스 스타일 (필요 시 확장) */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+}
+
+/* 모달 푸터 */
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--nav-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
