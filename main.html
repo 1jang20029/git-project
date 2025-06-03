@@ -11,7 +11,7 @@
     defer
   ></script>
 
-  <!-- 메인 CSS -->
+  <!-- 분리한 CSS -->
   <link rel="stylesheet" href="main.css" />
 </head>
 <body>
@@ -73,7 +73,7 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button class="dropdown-item" id="openSettingsBtn">
+            <button class="dropdown-item" onclick="showSettings()">
               <span>⚙️</span>
               <span>설정</span>
             </button>
@@ -102,6 +102,10 @@
             <span class="nav-icon">🏢</span>
             <span>건물 & 시설</span>
           </li>
+          <li class="nav-item" onclick="showContent('services')">
+            <span class="nav-icon">🎯</span>
+            <span>학생 서비스</span>
+          </li>
           <li class="nav-item" onclick="showContent('community')">
             <span class="nav-icon">💬</span>
             <span>커뮤니티</span>
@@ -128,16 +132,14 @@
             <span class="nav-icon">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <!-- “교내활동” 삭제 -->
-          <!-- <li class="nav-item" onclick="openQuickLink('activities')">
+          <li class="nav-item" onclick="openQuickLink('activities')">
             <span class="nav-icon">🌟</span>
             <span>교내활동</span>
-          </li> -->
-          <!-- “맛집정보” 삭제 -->
-          <!-- <li class="nav-item" onclick="openQuickLink('deals')">
+          </li>
+          <li class="nav-item" onclick="openQuickLink('deals')">
             <span class="nav-icon">🍽️</span>
             <span>맛집정보</span>
-          </li> -->
+          </li>
           <li class="nav-item" onclick="openQuickLink('academic-calendar')">
             <span class="nav-icon">📅</span>
             <span>학사일정</span>
@@ -152,7 +154,7 @@
             <span class="nav-icon">👤</span>
             <span>프로필</span>
           </li>
-          <li class="nav-item" onclick="openSettingsModal()">
+          <li class="nav-item" onclick="showSettings()">
             <span class="nav-icon">⚙️</span>
             <span>설정</span>
           </li>
@@ -170,8 +172,7 @@
       <div id="homeContent" class="fade-in">
         <div class="content-header">
           <div>
-            <!-- 글자 색상을 var(--color-text)로 통일 -->
-            <h1 class="dashboard-title">대시보드</h1>
+            <h1>대시보드</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -204,7 +205,7 @@
             </div>
           </div>
 
-          <!-- 오늘의 시간표 카드 -->
+          <!-- 시간표 위젯 -->
           <div class="card timetable-card">
             <div class="card-header">
               <h3 class="card-title">오늘의 시간표</h3>
@@ -215,23 +216,23 @@
             </div>
           </div>
 
-          <!-- “셔틀버스 현황” 제거 -->
-          <!--
+          <!-- 셔틀버스 위젯 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">셔틀버스 현황</h3>
               <span class="card-icon">🚌</span>
             </div>
-            <div class="shuttle-routes" id="shuttleRoutes"></div>
+            <div class="shuttle-routes" id="shuttleRoutes">
+              <!-- 노선 탭이 동적으로 생성됩니다 -->
+            </div>
             <div class="shuttle-status">
               <div class="shuttle-time" id="shuttleTime">--</div>
               <div class="shuttle-desc" id="shuttleDesc">--</div>
               <div class="status-badge" id="shuttleStatus">--</div>
             </div>
           </div>
-          -->
 
-          <!-- 교내 활동 위젯(빠른 접근에서 제거되었지만, 대시보드에 그대로 남겨 둠) -->
+          <!-- 교내 활동 위젯 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">교내 활동 현황</h3>
@@ -242,16 +243,16 @@
             </div>
           </div>
 
-          <!-- “인기 맛집” 제거 -->
-          <!--
+          <!-- 인기 맛집 위젯 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 맛집</h3>
               <span class="card-icon">🍽️</span>
             </div>
-            <div class="restaurant-grid" id="restaurantGrid"></div>
+            <div class="restaurant-grid" id="restaurantGrid">
+              <!-- 맛집 카드가 동적으로 생성됩니다 -->
+            </div>
           </div>
-          -->
 
           <!-- 최근 공지사항 위젯 -->
           <div class="card">
@@ -270,7 +271,7 @@
       <div id="buildingsContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1 class="dashboard-title">건물 & 시설 안내</h1>
+            <h1>건물 & 시설 안내</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -304,7 +305,7 @@
       <div id="communityContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1 class="dashboard-title">실시간 커뮤니티</h1>
+            <h1>실시간 커뮤니티</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -342,7 +343,7 @@
       <div id="lecture-reviewContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1 class="dashboard-title">강의평가</h1>
+            <h1>강의평가</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -381,7 +382,7 @@
               <span class="card-icon">✍️</span>
             </div>
             <div style="padding: 1rem; text-align: center;">
-              <p style="color: var(--dim-text); margin-bottom: 1.5rem;">
+              <p style="color: #94a3b8; margin-bottom: 1.5rem;">
                 수강 중인 강의에 대한 솔직한 평가를 남겨주세요
               </p>
               <button
@@ -399,7 +400,7 @@
       <div id="noticesContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1 class="dashboard-title">공지사항</h1>
+            <h1>공지사항</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -415,58 +416,7 @@
     </main>
   </div>
 
-  <!-- 설정 모달 -->
-  <div class="modal-overlay" id="settingsModalOverlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>설정</h2>
-        <button class="modal-close-btn" onclick="closeSettingsModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <!-- 다크/라이트 테마 토글 섹션 -->
-        <section class="setting-section">
-          <h3>테마</h3>
-          <label class="toggle-switch">
-            <input type="checkbox" id="themeToggleCheckbox" />
-            <span class="slider"></span>
-            <span class="toggle-label">라이트 모드 사용</span>
-          </label>
-        </section>
-
-        <hr />
-
-        <!-- 추가 설정 예시 -->
-        <section class="setting-section">
-          <h3>알림 설정</h3>
-          <label class="checkbox-label">
-            <input type="checkbox" id="notifyEmail" />
-            이메일 알림 받기
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="notifySMS" />
-            SMS 알림 받기
-          </label>
-        </section>
-
-        <hr />
-
-        <section class="setting-section">
-          <h3>기타 설정</h3>
-          <label class="checkbox-label">
-            <input type="checkbox" id="autoLogin" />
-            자동 로그인 사용
-          </label>
-          <!-- 원하시는 만큼 설정 항목을 추가하시면 됩니다 -->
-        </section>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeSettingsModal()">취소</button>
-        <button class="btn btn-primary" onclick="saveSettings()">저장</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 메인 JS -->
+  <!-- 분리한 JS -->
   <script src="main.js" defer></script>
 </body>
 </html>
