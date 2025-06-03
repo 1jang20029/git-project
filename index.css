@@ -389,7 +389,6 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  /* li에만 padding을 주어 li 전체가 클릭 영역이 되도록 한다 */
   padding: 0.75rem 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -425,6 +424,26 @@ body {
   width: 20px;
   text-align: center;
   color: inherit;
+}
+
+/* ─────────── “빠른 접근” a 태그 (li 전체를 덮도록) ─────────── */
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: inherit;                /* li의 color를 따르도록 */
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+}
+
+/* a:hover일 때 li:hover와 동일하게 보이도록 처리 */
+.nav-item a:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border-radius: 8px;
+  display: block;
+  padding: 0.75rem 1rem;
 }
 
 /* ─────────── 메인 콘텐츠 ─────────── */
@@ -880,16 +899,6 @@ body {
 .activity-label {
   color: #94a3b8;
   font-size: 0.8rem;
-}
-
-/* ─────────── 빠른 접근 탭 콘텐츠 예시 스타일 ─────────── */
-.sample-text {
-  background: rgba(30, 41, 59, 0.5);
-  padding: 2rem;
-  border-radius: 12px;
-  color: #f1f5f9;
-  line-height: 1.6;
-  font-size: 1rem;
 }
 
 /* ─────────── Settings 화면 스타일 ─────────── */

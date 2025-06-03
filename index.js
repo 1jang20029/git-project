@@ -1,7 +1,7 @@
 // =============================================================================
 // index.js
 // ──────────────────────────────────────────────────────────────────────────────
-// 메인 페이지 동작 로직 (SPA: 탭 전환 포함) + “빠른 접근” 활성화
+// 메인 페이지 동작 로직 (SPA: 탭 전환 포함) + “빠른 접근” 은 별도 페이지로 이동
 // =============================================================================
 
 let naverMap;
@@ -712,15 +712,6 @@ function showContent(type) {
       break;
     case 'notices':
       target = document.getElementById('noticesContent');
-      break;
-    case 'timetable':
-      target = document.getElementById('timetableContentPane');
-      break;
-    case 'shuttle':
-      target = document.getElementById('shuttleContentPane');
-      break;
-    case 'calendar':
-      target = document.getElementById('calendarContentPane');
       break;
     case 'profile':
       target = document.getElementById('profileContentPane');
