@@ -118,20 +118,20 @@
         </ul>
       </div>
 
-      <!-- ▶ 빠른 접근 섹션 (SPA 전환) -->
+      <!-- ▶ 빠른 접근 섹션 (별도 HTML 페이지로 이동) -->
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list quick-access">
-          <!-- li 전체를 클릭하면 showContent('timetable') 호출 -->
-          <li class="nav-item" id="nav-timetable" onclick="showContent('timetable')">
+          <!-- li 전체를 클릭하면 별도 HTML 페이지로 이동 -->
+          <li class="nav-item" id="nav-timetable" onclick="navigateToTimetable()">
             <span class="nav-icon" title="내 시간표">📅</span>
             <span>내 시간표</span>
           </li>
-          <li class="nav-item" id="nav-shuttle" onclick="showContent('shuttle')">
+          <li class="nav-item" id="nav-shuttle" onclick="navigateToShuttle()">
             <span class="nav-icon" title="셔틀버스">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <li class="nav-item" id="nav-calendar" onclick="showContent('calendar')">
+          <li class="nav-item" id="nav-calendar" onclick="navigateToCalendar()">
             <span class="nav-icon" title="학사일정">🗓️</span>
             <span>학사일정</span>
           </li>
@@ -336,7 +336,7 @@
         <div class="notice-list" id="fullNoticeList"></div>
       </div>
 
-      <!-- 6) 내 시간표 (빠른 접근 탭) -->
+      <!-- 6) 내 시간표 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
       <div id="timetableContentPane" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>내 시간표</h1>
@@ -352,7 +352,7 @@
         </div>
       </div>
 
-      <!-- 7) 셔틀버스 (빠른 접근 탭) -->
+      <!-- 7) 셔틀버스 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
       <div id="shuttleContentPane" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>셔틀버스 정보</h1>
@@ -368,7 +368,7 @@
         </div>
       </div>
 
-      <!-- 8) 학사일정 (빠른 접근 탭) -->
+      <!-- 8) 학사일정 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
       <div id="calendarContentPane" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>학사일정</h1>

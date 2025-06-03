@@ -939,3 +939,19 @@ function toggleSidebar() {
 function toggleTheme() {
   document.body.classList.toggle('light-mode');
 }
+
+
+// 내 시간표 페이지로 이동
+function navigateToTimetable() {
+  window.location.href = 'timetable.html';
+}
+
+// 셔틀버스 페이지로 이동
+function navigateToShuttle() {
+  window.location.href = 'shuttle.html';
+}
+
+// 학사일정 페이지로 이동
+function navigateToCalendar() {
+  window.location.href = 'calendar.html';
+}
