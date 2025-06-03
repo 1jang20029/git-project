@@ -1,7 +1,7 @@
 // =============================================================================
 // index.js
 // ──────────────────────────────────────────────────────────────────────────────
-// 메인 페이지 동작 로직 (해시 기반 탭 전환 포함)
+// 메인 페이지 동작 로직 (SPA: 해시 기반 탭 전환 포함)
 // =============================================================================
 
 let naverMap;
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---------------------------
-// 데이터 로드 함수들 (생략 없이 모두 포함)
+// 데이터 로드 함수들
 // ---------------------------
 
 // 알림 데이터 로드
@@ -194,7 +194,7 @@ async function loadNotices() {
   }
 }
 
-// 셔틀버스 데이터 로드
+// 셔틀버스 데이터 로드 (대시보드 위젯용)
 async function loadShuttleInfo() {
   try {
     const res = await fetch('/api/shuttle/routes');
@@ -246,7 +246,7 @@ async function selectShuttleRoute(routeId) {
   }
 }
 
-// 활동 통계 데이터 로드
+// 활동 통계 데이터 로드 (대시보드 위젯용)
 async function loadActivityStats() {
   try {
     const res = await fetch('/api/activity-stats');
@@ -478,7 +478,7 @@ function addMapMarkers(buildings) {
 }
 
 // ---------------------------
-// 시간표 업데이트
+// 시간표 위젯 업데이트
 // ---------------------------
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -688,7 +688,7 @@ function handleLogout() {
 
 // ---------------------------
 // 콘텐츠 전환 함수
-// ---------------------------
+// ---------------------------  
 function showContent(type) {
   // 1) 모든 .content-pane 숨기기
   document.querySelectorAll('.content-pane').forEach((el) => {
@@ -744,13 +744,6 @@ async function handleGlobalSearch() {
     }
   } catch {}
   alert('검색 결과를 찾을 수 없습니다.');
-}
-
-// ---------------------------
-// 빠른 접근 (예시 구현)
-// ---------------------------
-function openQuickLink(type) {
-  showContent(type);
 }
 
 // ---------------------------
