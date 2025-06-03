@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="index.css" />
 </head>
 <body>
-  <!-- ─────────── 상단 네비게이션 ─────────── -->
+  <!-- 상단 네비게이션 -->
   <nav class="top-nav">
     <div class="nav-brand">
       <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
@@ -89,7 +89,7 @@
   </nav>
 
   <div class="main-container">
-    <!-- ─────────── 사이드바 ─────────── -->
+    <!-- 사이드바 -->
     <aside class="sidebar" id="sidebar">
       <!-- ▶ 메인 메뉴 섹션 -->
       <div class="sidebar-section">
@@ -118,28 +118,22 @@
         </ul>
       </div>
 
-      <!-- ▶ 빠른 접근 섹션 (별도 페이지로 이동하도록 링크 설정) -->
+      <!-- ▶ 빠른 접근 섹션 (SPA 전환) -->
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
-        <ul class="nav-list">
-          <!-- li 전체를 <a> 태그로 감싸고, CSS에서 a를 block으로 처리하여 li 전체가 클릭 영역이 되도록 함 -->
-          <li class="nav-item">
-            <a href="timetable.html" class="quick-link">
-              <span class="nav-icon" title="내 시간표">📅</span>
-              <span>내 시간표</span>
-            </a>
+        <ul class="nav-list quick-access">
+          <!-- li 전체를 클릭하면 showContent('timetable') 호출 -->
+          <li class="nav-item" id="nav-timetable" onclick="showContent('timetable')">
+            <span class="nav-icon" title="내 시간표">📅</span>
+            <span>내 시간표</span>
           </li>
-          <li class="nav-item">
-            <a href="shuttle.html" class="quick-link">
-              <span class="nav-icon" title="셔틀버스">🚌</span>
-              <span>셔틀버스</span>
-            </a>
+          <li class="nav-item" id="nav-shuttle" onclick="showContent('shuttle')">
+            <span class="nav-icon" title="셔틀버스">🚌</span>
+            <span>셔틀버스</span>
           </li>
-          <li class="nav-item">
-            <a href="calendar.html" class="quick-link">
-              <span class="nav-icon" title="학사일정">🗓️</span>
-              <span>학사일정</span>
-            </a>
+          <li class="nav-item" id="nav-calendar" onclick="showContent('calendar')">
+            <span class="nav-icon" title="학사일정">🗓️</span>
+            <span>학사일정</span>
           </li>
         </ul>
       </div>
@@ -164,7 +158,7 @@
       </div>
     </aside>
 
-    <!-- ─────────── 메인 콘텐츠 영역 ─────────── -->
+    <!-- ▶ 메인 콘텐츠 영역 -->
     <main class="content-area">
       <!-- 1) 홈 대시보드 -->
       <div id="homeContent" class="content-pane">
@@ -342,7 +336,55 @@
         <div class="notice-list" id="fullNoticeList"></div>
       </div>
 
-      <!-- 6) 프로필 -->
+      <!-- 6) 내 시간표 (빠른 접근 탭) -->
+      <div id="timetableContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>내 시간표</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>내 시간표</span>
+          </div>
+        </div>
+        <div class="sample-text">
+          여기에 사용자의 개인 시간표 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <!-- 7) 셔틀버스 (빠른 접근 탭) -->
+      <div id="shuttleContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>셔틀버스 정보</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>셔틀버스</span>
+          </div>
+        </div>
+        <div class="sample-text">
+          여기에 셔틀버스 노선 및 실시간 운행 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <!-- 8) 학사일정 (빠른 접근 탭) -->
+      <div id="calendarContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>학사일정</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>학사일정</span>
+          </div>
+        </div>
+        <div class="sample-text">
+          여기에 학사일정 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <!-- 9) 프로필 -->
       <div id="profileContentPane" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>프로필</h1>
@@ -358,7 +400,7 @@
         </div>
       </div>
 
-      <!-- 7) 설정 -->
+      <!-- 10) 설정 -->
       <div id="settingsContent" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>설정</h1>
