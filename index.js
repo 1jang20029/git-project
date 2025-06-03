@@ -1,10 +1,9 @@
 // =============================================================================
 // index.js
 // ──────────────────────────────────────────────────────────────────────────────
-// 메인 페이지 동작 로직 (해시(#) 기반 탭 전환 기능 추가됨)
+// 메인 페이지 동작 로직 (해시 기반 탭 전환 포함)
 // =============================================================================
 
-// 전역 변수
 let naverMap;
 let mapMarkers = [];
 let infoWindows = [];
@@ -14,28 +13,27 @@ let currentContent = 'home';
 let unreadNotifications = 0;
 
 // ---------------------------
-// 해시(#) 기반 초기 탭 열기
+// 페이지 로드 시: 해시 기반 초기 탭 열기 + 초기화
 // ---------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  // 1) URL에 해시(#buildings, #community 등)이 있으면 해당 탭 열기
+  // 1) URL 해시 읽어서 해당 탭 보여주기
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
     showContent(hash);
   } else {
-    // 기본값: 홈 탭 열기
     showContent('home');
   }
 
   initializeApp();
 
-  // ESC 누르면 드롭다운 닫기
+  // ESC 키 누르면 드롭다운 닫기
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeAllDropdowns();
     }
   });
 
-  // 검색 입력 엔터 처리
+  // 검색창 엔터 처리
   const searchInput = document.getElementById('globalSearch');
   if (searchInput) {
     searchInput.addEventListener('keypress', (e) => {
@@ -45,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 빈 공간 클릭 시 드롭다운 닫기
+  // 빈 공간 클릭하면 드롭다운 닫기
   document.addEventListener('click', (event) => {
     const ntBtn = event.target.closest('.notification-btn');
     const upBtn = event.target.closest('.user-profile');
@@ -55,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---------------------------
-// 데이터 로드 함수들 (생략 없이 모두 포함됨)
+// 데이터 로드 함수들 (생략 없이 모두 포함)
 // ---------------------------
 
 // 알림 데이터 로드
@@ -254,6 +252,7 @@ async function loadActivityStats() {
     const res = await fetch('/api/activity-stats');
     const stats = await res.json();
     const container = document.getElementById('activityStats');
+    if (!container) return;
     container.innerHTML = '';
     const labels = {
       contestCount: '진행중 공모전',
@@ -274,15 +273,15 @@ async function loadActivityStats() {
   }
 }
 
-// 맛집 정보 로드
+// 맛집 정보 로드 (예시)
 async function loadRestaurantInfo() {
   try {
     const res = await fetch('/api/restaurants');
     const restaurants = await res.json();
+    const grid = document.getElementById('restaurantGrid');
+    if (!grid) return;
     restaurants.sort((a, b) => (b.likes || 0) - (a.likes || 0));
     const popular = restaurants.slice(0, 2);
-    const grid = document.getElementById('restaurantGrid');
-    grid.innerHTML = '';
     const emojiMap = {
       한식: '🍲',
       중식: '🥢',
@@ -292,6 +291,7 @@ async function loadRestaurantInfo() {
       카페: '☕',
       술집: '🍺',
     };
+    grid.innerHTML = '';
     popular.forEach((r) => {
       const card = document.createElement('div');
       card.className = 'restaurant-card';
@@ -419,7 +419,6 @@ async function loadLectureReviews() {
 // ---------------------------
 // 지도 초기화 및 마커
 // ---------------------------
-
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
@@ -481,7 +480,6 @@ function addMapMarkers(buildings) {
 // ---------------------------
 // 시간표 업데이트
 // ---------------------------
-
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
@@ -602,7 +600,6 @@ function formatTimeRemaining(minutes, suffix) {
 // ---------------------------
 // 알림 함수들
 // ---------------------------
-
 function toggleNotifications() {
   const dd = document.getElementById('notificationDropdown');
   if (dd.classList.contains('show')) closeNotificationDropdown();
@@ -642,7 +639,6 @@ function updateNotificationCount() {
 // ---------------------------
 // 사용자 메뉴 함수
 // ---------------------------
-
 function toggleUserMenu() {
   const dropdown = document.getElementById('userDropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -669,14 +665,10 @@ function closeAllDropdowns() {
 function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
-    window.open('profile-edit.html', '_blank');
+    showContent('profile');
   } else {
     alert('로그인이 필요한 서비스입니다.');
   }
-  closeUserDropdown();
-}
-function showSettings() {
-  alert('설정 페이지는 준비 중입니다.');
   closeUserDropdown();
 }
 function handleLogout() {
@@ -686,7 +678,7 @@ function handleLogout() {
       localStorage.removeItem('currentLoggedInUser');
       checkUserStatus();
       showMessage('로그아웃 되었습니다', 'success');
-      updateTimetable();
+      showContent('home');
     }
   } else {
     alert('로그인 상태가 아닙니다.');
@@ -695,147 +687,59 @@ function handleLogout() {
 }
 
 // ---------------------------
-// 지도 컨트롤
+// 콘텐츠 전환 함수
 // ---------------------------
+function showContent(type) {
+  // 1) 모든 .content-pane 숨기기
+  document.querySelectorAll('.content-pane').forEach((el) => {
+    el.style.display = 'none';
+  });
 
-function zoomIn() {
-  if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1);
-}
-function zoomOut() {
-  if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1);
-}
-function resetMapView() {
-  if (naverMap) {
-    const yeonsung = new naver.maps.LatLng(
-      37.39661657434427,
-      126.90772437800818
-    );
-    naverMap.setCenter(yeonsung);
-    naverMap.setZoom(16);
-    infoWindows.forEach((iw) => iw.close());
+  // 2) 선택된 type의 pane만 보이기
+  const target = document.getElementById(type + 'Content') ||
+                 document.getElementById(type + 'ContentPane');
+  if (target) {
+    target.style.display = 'block';
+    target.classList.add('fade-in');
+  }
+
+  // 3) 사이드바 메뉴 활성/비활성 처리
+  document.querySelectorAll('.nav-item').forEach((item) => {
+    item.classList.remove('active');
+  });
+  const navItem = document.getElementById('nav-' + type);
+  if (navItem) navItem.classList.add('active');
+
+  // 4) URL 해시 변경
+  window.location.hash = type;
+
+  // 5) 필요한 추가 작업
+  if (type === 'buildings' && naverMap) {
+    setTimeout(() => naverMap.refresh(), 100);
   }
 }
-function trackUserLocation() {
-  if (!navigator.geolocation) {
-    alert('이 브라우저에서는 위치 추적 기능을 지원하지 않습니다.');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const userPos = new naver.maps.LatLng(
-        pos.coords.latitude,
-        pos.coords.longitude
-      );
-      if (userMarker) userMarker.setMap(null);
-      userMarker = new naver.maps.Marker({
-        position: userPos,
-        map: naverMap,
-        icon: {
-          content: '<div style="background: #3b82f6; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>',
-          anchor: new naver.maps.Point(10, 10),
-        },
-      });
-      naverMap.setCenter(userPos);
-      naverMap.setZoom(18);
-      userLocation = pos.coords;
-    },
-    (err) => {
-      console.error('위치 추적 오류:', err);
-      alert('위치 정보를 가져올 수 없습니다.');
-    }
-  );
-}
 
 // ---------------------------
-// 건물 관련 함수
+// 검색 기능 (샘플 구현)
 // ---------------------------
-
-function showBuildingOnMap(buildingId) {
-  fetch(`/api/buildings/${buildingId}`)
-    .then((res) => res.json())
-    .then((b) => {
-      showContent('buildings');
-      setTimeout(() => {
-        const position = new naver.maps.LatLng(
-          b.position.lat,
-          b.position.lng
-        );
-        naverMap.setCenter(position);
-        naverMap.setZoom(18);
-        const idx = mapMarkers.findIndex((m) => m.getTitle() === b.name);
-        if (idx !== -1) {
-          infoWindows.forEach((iw) => iw.close());
-          infoWindows[idx].open(naverMap, mapMarkers[idx]);
-        }
-      }, 500);
-    })
-    .catch((err) => console.error('단일 건물 로드 오류:', err));
-}
-function getBuildingDirections(buildingId) {
-  if (!userLocation) {
-    alert('먼저 현재 위치를 확인해주세요.');
-    trackUserLocation();
-    return;
-  }
-  fetch(`/api/buildings/${buildingId}`)
-    .then((res) => res.json())
-    .then((b) => {
-      const distance = calculateDistance(
-        userLocation.latitude,
-        userLocation.longitude,
-        b.position.lat,
-        b.position.lng
-      );
-      alert(`${b.name}까지 직선거리 약 ${Math.round(distance)}m입니다.`);
-    })
-    .catch((err) => console.error('길찾기 오류:', err));
-}
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-// ---------------------------
-// 검색 기능
-// ---------------------------
-
 async function handleGlobalSearch() {
-  const query = document.getElementById('globalSearch').value
-    .trim()
-    .toLowerCase();
+  const query = document.getElementById('globalSearch').value.trim().toLowerCase();
   if (!query) return;
-  // 건물 검색
+  // 건물 검색 예시
   try {
-    const res = await fetch(
-      `/api/buildings/search?q=${encodeURIComponent(query)}`
-    );
+    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
-      const foundBuilding = await res.json();
-      // 해당 건물 탭으로 이동
-      window.location.hash = 'buildings';
-      window.location.reload();
+      showContent('buildings');
+      document.getElementById('globalSearch').value = '';
       return;
     }
   } catch {}
-  // 공지사항 검색
+  // 공지사항 검색 예시
   try {
-    const res = await fetch(
-      `/api/notices/search?q=${encodeURIComponent(query)}`
-    );
+    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
-      const foundNotice = await res.json();
-      // 해당 공지 탭으로 이동
-      window.location.hash = 'notices';
-      window.location.reload();
+      showContent('notices');
+      document.getElementById('globalSearch').value = '';
       return;
     }
   } catch {}
@@ -843,62 +747,15 @@ async function handleGlobalSearch() {
 }
 
 // ---------------------------
-// 콘텐츠 전환
+// 빠른 접근 (예시 구현)
 // ---------------------------
-
-function showContent(type) {
-  const contents = [
-    'homeContent',
-    'buildingsContent',
-    'noticesContent',
-    'communityContent',
-    'lecture-reviewContent',
-  ];
-  contents.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-  const target = document.getElementById(type + 'Content');
-  if (target) {
-    target.style.display = 'block';
-    target.classList.add('fade-in');
-  }
-  document.querySelectorAll('.nav-item').forEach((item) => {
-    item.classList.remove('active');
-  });
-  const navItem = document.getElementById('nav-' + type);
-  if (navItem) navItem.classList.add('active');
-  currentContent = type;
-  // 해시도 업데이트
-  window.location.hash = type;
-  if (type === 'buildings' && naverMap) {
-    setTimeout(() => naverMap.refresh(), 100);
-  }
-}
-
-// ---------------------------
-// 빠른 링크
-// ---------------------------
-
 function openQuickLink(type) {
-  const links = {
-    timetable: 'timetable.html',
-    shuttle: 'shuttle_bus_tracker.html',
-    activities: 'activities.html',
-    deals: 'student-deals.html',
-    'academic-calendar': 'academic-calendar.html',
-  };
-  if (links[type]) {
-    window.open(links[type], '_blank');
-  } else {
-    alert(`${type} 서비스는 준비 중입니다.`);
-  }
+  showContent(type);
 }
 
 // ---------------------------
-// 유저 상태 확인
+// 유저 상태 확인, 프로필 정보 로드
 // ---------------------------
-
 function checkUserStatus() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const userNameEl = document.getElementById('userName');
@@ -954,9 +811,8 @@ function updateProfileImage(user) {
 }
 
 // ---------------------------
-// 메시지 표시
+// 메시지 표시 함수
 // ---------------------------
-
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
@@ -1000,9 +856,8 @@ function showMessage(message, type = 'info') {
 }
 
 // ---------------------------
-// 초기화 함수
+// 모든 초기화 호출
 // ---------------------------
-
 async function initializeApp() {
   initNaverMap();
   await loadStats();
@@ -1046,7 +901,6 @@ window.addEventListener('pageshow', (event) => {
 // ---------------------------
 // 사이드바 토글
 // ---------------------------
-
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
 }

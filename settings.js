@@ -1,14 +1,14 @@
 // =============================================================================
 // settings.js
 // ──────────────────────────────────────────────────────────────────────────────
-// 별도의 설정 페이지 동작 로직
+// “설정” 뷰 내 토글 동작 관리
 // =============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
   const themeToggle = document.getElementById('themeToggle');
   const notificationToggle = document.getElementById('notificationToggle');
 
-  // ----- 1) 다크/라이트 모드 초기 상태 로드 -----
+  // ----- 다크/라이트 모드 초기 상태 로드 -----
   const savedLightMode = localStorage.getItem('lightMode');
   const isLightMode = savedLightMode === 'true';
 
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ----- 2) 알림 받기 설정 초기 상태 로드 -----
+  // ----- 알림 받기 설정 초기 상태 로드 -----
   const savedNotify = localStorage.getItem('enableNotification');
   const isNotifyEnabled = savedNotify === 'true';
 
