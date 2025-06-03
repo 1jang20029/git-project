@@ -953,5 +953,5 @@ function navigateToShuttle() {
 
 // 학사일정 페이지로 이동
 function navigateToCalendar() {
-  window.location.href = 'calendar.html';
+  window.location.href = 'academic-calendar.html';
 }
