@@ -480,25 +480,22 @@ body {
 }
 
 /* ─────────── “빠른 접근” 섹션 내부 a 태그 ─────────── */
-/* 
-   a 태그가 li 전체 영역을 채우도록 width:100%, height:100%를 주었으나 
-   내부에 추가 패딩은 주지 않습니다. li의 padding이 그대로 박스 여백 역할을 합니다.
-*/
-.sidebar .nav-list .nav-item a {
-  display: flex;
+/* a 태그는 li 전체를 클릭 불러들이는 역할만 하며, 별도 padding이나 background는 제거 */
+.sidebar .nav-list .quick-access .nav-item a {
+  display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
   height: 100%;
   color: inherit;
   text-decoration: none;
+  /* 내부 a 태그에는 padding/배경을 전혀 주지 않음 */
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
 }
 
-/* a 태그 호버 시에도 같은 효과 */
-.sidebar .nav-list .nav-item a:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-radius: 8px;
-}
+/* a:hover 시 li:hover와 동일하게 보이도록 처리하되, li에 이미 hover 스타일이 있으므로 a:hover는 특별히 정의하지 않습니다. */
 
 /* ─────────── 메인 콘텐츠 ─────────── */
 .content-area {
