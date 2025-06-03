@@ -1,2316 +1,2433 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>연성대학교 스마트 캠퍼스</title>
-    <!-- 네이버 지도 API -->
-    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0e27;
-            color: #ffffff;
-            overflow-x: hidden;
-        }
-        /* 상단 네비게이션 */
-        .top-nav {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            padding: 1rem 2rem;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 80px;
-        }
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.3rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            white-space: nowrap;
-        }
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .search-bar {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .search-input {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0.75rem 1rem 0.75rem 3rem;
-            width: 300px;
-            color: #f1f5f9;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-        .search-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            background: rgba(30, 41, 59, 0.95);
-        }
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            color: #94a3b8;
-            font-size: 1.1rem;
-        }
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            position: relative;
-        }
-        .notification-btn {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .notification-btn:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: #3b82f6;
-            color: #3b82f6;
-        }
-        .notification-dot {
-            position: absolute;
-            top: 0.25rem;
-            right: 0.25rem;
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-        }
-        /* 알림 드롭다운 */
-        .notification-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0;
-            min-width: 350px;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            z-index: 1100;
-            display: none;
-            margin-top: 0.5rem;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        .notification-dropdown.show {
-            display: block;
-            animation: fadeInDown 0.3s ease-out;
-        }
-        .notification-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .notification-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-        .notification-badge {
-            background: #ef4444;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .notification-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .notification-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .notification-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-        }
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-        .notification-item.unread {
-            background: rgba(59, 130, 246, 0.05);
-            border-left: 3px solid #3b82f6;
-        }
-        .notification-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        .notification-category {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .notification-time {
-            color: #94a3b8;
-            font-size: 0.75rem;
-        }
-        .notification-content {
-            color: #f1f5f9;
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-            line-height: 1.4;
-        }
-        .notification-summary {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            line-height: 1.3;
-        }
-        .notification-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
-            text-align: center;
-        }
-        .mark-all-read {
-            background: none;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            color: #94a3b8;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-        }
-        .mark-all-read:hover {
-            border-color: #3b82f6;
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-        }
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .user-profile:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: #3b82f6;
-        }
-        /* 사용자 드롭다운 메뉴 */
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 0.5rem 0;
-            min-width: 200px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            z-index: 1100;
-            display: none;
-            margin-top: 0.5rem;
-        }
-        .user-dropdown.show {
-            display: block;
-            animation: fadeInDown 0.3s ease-out;
-        }
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            color: #f1f5f9;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-        .dropdown-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-        .dropdown-divider {
-            height: 1px;
-            background: rgba(148, 163, 184, 0.1);
-            margin: 0.5rem 0;
-        }
-        .dropdown-user-info {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            margin-bottom: 0.5rem;
-        }
-        .dropdown-user-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-        }
-        .dropdown-user-role {
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        @keyframes slideOutRight {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-        }
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .user-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-        .user-role {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-        /* 메인 컨테이너 */
-        .main-container {
-            margin-top: 80px;
-            display: flex;
-            min-height: calc(100vh - 80px);
-        }
-        /* 사이드바 */
-        .sidebar {
-            width: 280px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(148, 163, 184, 0.1);
-            padding: 2rem 0;
-            position: fixed;
-            top: 80px;
-            left: 0;
-            bottom: 0;
-            overflow-y: auto;
-            z-index: 900;
-        }
-        .sidebar-section {
-            margin-bottom: 2rem;
-            padding: 0 1.5rem;
-        }
-        .sidebar-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 1rem;
-        }
-        .nav-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #94a3b8;
-            font-weight: 500;
-            position: relative;
-        }
-        .nav-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-        .nav-item.active {
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
-        }
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: #3b82f6;
-            border-radius: 0 2px 2px 0;
-        }
-        .nav-icon {
-            font-size: 1.25rem;
-            width: 20px;
-            text-align: center;
-        }
-        /* 메인 콘텐츠 */
-        .content-area {
-            margin-left: 280px;
-            flex: 1;
-            padding: 2rem;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-        .content-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .content-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #f1f5f9, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: #64748b;
-        }
-        /* 그리드 & 카드 */
-        .dashboard-grid, .stats-grid, .activity-stats, .restaurant-grid, .building-grid {
-            display: grid;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .stats-grid {
-            grid-template-columns: repeat(4, 1fr);
-        }
-        .dashboard-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .activity-stats {
-            grid-template-columns: repeat(3, 1fr);
-        }
-        .restaurant-grid {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-        .building-grid {
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        }
-        .card, .stat-card, .activity-stat, .restaurant-card, .building-card, .notice-item {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        .card:hover, .stat-card:hover, .activity-stat:hover, .restaurant-card:hover, .building-card:hover, .notice-item:hover {
-            background: rgba(30, 41, 59, 0.7);
-            border-color: rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
-        }
-        .stat-number, .activity-number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-        .stat-label, .activity-label {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-        .card-icon {
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        /* 통계 카드 */
-        .stat-card {
-            text-align: center;
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-        .stat-change {
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.25rem;
-            margin-top: 0.5rem;
-        }
-        .stat-change.positive {
-            color: #10b981;
-        }
-        .stat-change.negative {
-            color: #ef4444;
-        }
-        /* 지도 카드 */
-        .map-card {
-            grid-column: span 2;
-            height: 400px;
-            position: relative;
-            overflow: hidden;
-        }
-        .map-container {
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .map-overlay {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            z-index: 100;
-        }
-        .map-control {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .map-control:hover {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            border-color: #3b82f6;
-        }
-        /* 시간표 위젯 */
-        .timetable-card {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        .class-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-        .class-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-        .class-time {
-            font-weight: 700;
-            color: #3b82f6;
-            min-width: 100px;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .class-time-main {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-        .class-time-remaining {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            font-weight: 400;
-        }
-        .class-info {
-            margin-left: 1rem;
-            flex: 1;
-        }
-        .class-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-        }
-        .class-location {
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-        .class-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .status-current {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-        .status-upcoming {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-        .status-finished {
-            background: rgba(107, 114, 128, 0.2);
-            color: #6b7280;
-        }
-        /* 셔틀버스 위젯 */
-        .shuttle-routes {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .route-tab {
-            flex: 1;
-            padding: 0.75rem;
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .route-tab.active {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: #3b82f6;
-        }
-        .route-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-        .route-desc {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-        .shuttle-status {
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-        .shuttle-time {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-        .shuttle-desc {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .status-running {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-        .status-stopped {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        /* 공지사항 */
-        .notice-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .notice-item {
-            cursor: pointer;
-        }
-        .notice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        .notice-category {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .notice-date {
-            color: #94a3b8;
-            font-size: 0.85rem;
-        }
-        .notice-title {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-        .notice-summary {
-            color: #94a3b8;
-            line-height: 1.6;
-            font-size: 0.9rem;
-        }
-        /* 건물 카드 */
-        .building-card {
-            cursor: pointer;
-        }
-        .building-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.5rem;
-        }
-        .building-desc {
-            color: #94a3b8;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
-        }
-        .building-actions {
-            display: flex;
-            gap: 0.75rem;
-        }
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            color: #94a3b8;
-        }
-        .btn-outline:hover {
-            border-color: #3b82f6;
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-        }
-        /* 활동 통계 */
-        .activity-stat {
-            text-align: center;
-            border-radius: 12px;
-            padding: 1rem;
-        }
-        .activity-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.25rem;
-        }
-        .activity-label {
-            color: #94a3b8;
-            font-size: 0.8rem;
-        }
-        /* 맛집 카드 */
-        .restaurant-card {
-            display: flex;
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .restaurant-card:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-        .restaurant-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            background: rgba(59, 130, 246, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin-right: 1rem;
-        }
-        .restaurant-info {
-            flex: 1;
-        }
-        .restaurant-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.25rem;
-        }
-        .restaurant-category {
-            color: #3b82f6;
-            font-size: 0.85rem;
-            margin-bottom: 0.25rem;
-        }
-        .restaurant-discount {
-            color: #ef4444;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        .restaurant-likes {
-            color: #94a3b8;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-        }
-        /* 반응형 디자인 */
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .content-area {
-                margin-left: 0;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            .map-card {
-                grid-column: span 1;
-            }
-        }
-        @media (max-width: 768px) {
-            .top-nav {
-                padding: 1rem;
-            }
-            .search-input {
-                width: 200px;
-            }
-            .content-area {
-                padding: 1rem;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        /* 애니메이션 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .fade-in {
-            animation: fadeInUp 0.6s ease-out;
-        }
-        /* 스크롤바 스타일 */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.3);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.5);
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(59, 130, 246, 0.7);
-        }
-        /* 로딩 스피너 */
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(148, 163, 184, 0.3);
-            border-radius: 50%;
-            border-top-color: #3b82f6;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        /* 모바일 메뉴 토글 */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        @media (max-width: 1024px) {
-            .mobile-menu-toggle {
-                display: block;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>연성대학교 스마트 캠퍼스</title>
+  <!-- 네이버 지도 API (defer) -->
+  <script
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
+    defer
+  ></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0e27;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* 상단 네비게이션 */
+    .top-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 80px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .search-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-input {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      width: 300px;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background: rgba(30, 41, 59, 0.95);
+    }
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+    }
+    .notification-btn {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .notification-btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+    .notification-dot {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+    }
+    /* 알림 드롭다운 */
+    .notification-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 0;
+      min-width: 350px;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      z-index: 1100;
+      display: none;
+      margin-top: 0.5rem;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .notification-dropdown.show {
+      display: block;
+      animation: fadeInDown 0.3s ease-out;
+    }
+    .notification-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .notification-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .notification-badge {
+      background: #ef4444;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .notification-item {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .notification-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    .notification-item.unread {
+      background: rgba(59, 130, 246, 0.05);
+      border-left: 3px solid #3b82f6;
+    }
+    .notification-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .notification-category {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .notification-time {
+      color: #94a3b8;
+      font-size: 0.75rem;
+    }
+    .notification-content {
+      color: #f1f5f9;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      line-height: 1.4;
+    }
+    .notification-summary {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
+    .notification-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.1);
+      text-align: center;
+    }
+    .mark-all-read {
+      background: none;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #94a3b8;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+    .mark-all-read:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .user-profile:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: #3b82f6;
+    }
+    /* 사용자 드롭다운 메뉴 */
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 0.5rem 0;
+      min-width: 200px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      z-index: 1100;
+      display: none;
+      margin-top: 0.5rem;
+    }
+    .user-dropdown.show {
+      display: block;
+      animation: fadeInDown 0.3s ease-out;
+    }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #f1f5f9;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .dropdown-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    .dropdown-divider {
+      height: 1px;
+      background: rgba(148, 163, 184, 0.1);
+      margin: 0.5rem 0;
+    }
+    .dropdown-user-info {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      margin-bottom: 0.5rem;
+    }
+    .dropdown-user-name {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
+    }
+    .dropdown-user-role {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    @keyframes slideOutRight {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .user-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .user-role {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    /* 메인 컨테이너 */
+    .main-container {
+      margin-top: 80px;
+      display: flex;
+      min-height: calc(100vh - 80px);
+    }
+
+    /* 사이드바 */
+    .sidebar {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(148, 163, 184, 0.1);
+      padding: 2rem 0;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 900;
+    }
+    .sidebar-section {
+      margin-bottom: 2rem;
+      padding: 0 1.5rem;
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #94a3b8;
+      font-weight: 500;
+      position: relative;
+    }
+    .nav-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    .nav-item.active {
+      background: rgba(59, 130, 246, 0.15);
+      color: #3b82f6;
+    }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #3b82f6;
+      border-radius: 0 2px 2px 0;
+    }
+    .nav-icon {
+      font-size: 1.25rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* 메인 콘텐츠 */
+    .content-area {
+      margin-left: 280px;
+      flex: 1;
+      padding: 2rem;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+    .content-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .content-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    /* 그리드 & 카드 */
+    .dashboard-grid,
+    .stats-grid,
+    .activity-stats,
+    .restaurant-grid,
+    .building-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .dashboard-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .activity-stats {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .restaurant-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    .building-grid {
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+    .card,
+    .stat-card,
+    .activity-stat,
+    .restaurant-card,
+    .building-card,
+    .notice-item {
+      background: rgba(30, 41, 59, 0.5);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .card:hover,
+    .stat-card:hover,
+    .activity-stat:hover,
+    .restaurant-card:hover,
+    .building-card:hover,
+    .notice-item:hover {
+      background: rgba(30, 41, 59, 0.7);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+    }
+    .stat-number,
+    .activity-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .stat-label,
+    .activity-label {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .card-icon {
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* 통계 카드 */
+    .stat-card {
+      text-align: center;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .stat-change {
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      margin-top: 0.5rem;
+    }
+    .stat-change.positive {
+      color: #10b981;
+    }
+    .stat-change.negative {
+      color: #ef4444;
+    }
+
+    /* 지도 카드 */
+    .map-card {
+      grid-column: span 2;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+    .map-container {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .map-overlay {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+    .map-control {
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .map-control:hover {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      border-color: #3b82f6;
+    }
+
+    /* 시간표 위젯 */
+    .timetable-card {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .class-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .class-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .class-time {
+      font-weight: 700;
+      color: #3b82f6;
+      min-width: 100px;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .class-time-main {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    .class-time-remaining {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .class-info {
+      margin-left: 1rem;
+      flex: 1;
+    }
+    .class-name {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
+    }
+    .class-location {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .class-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-current {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+    .status-upcoming {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+    .status-finished {
+      background: rgba(107, 114, 128, 0.2);
+      color: #6b7280;
+    }
+
+    /* 셔틀버스 위젯 */
+    .shuttle-routes {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .route-tab {
+      flex: 1;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .route-tab.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+    }
+    .route-name {
+      font-weight: 600;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .route-desc {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .shuttle-status {
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .shuttle-time {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .shuttle-desc {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-running {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+    .status-stopped {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    /* 공지사항 */
+    .notice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .notice-item {
+      cursor: pointer;
+    }
+    .notice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .notice-category {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .notice-date {
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+    .notice-title {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .notice-summary {
+      color: #94a3b8;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+    /* 건물 카드 */
+    .building-card {
+      cursor: pointer;
+    }
+    .building-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+    .building-desc {
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .building-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #94a3b8;
+    }
+    .btn-outline:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* 활동 통계 */
+    .activity-stat {
+      text-align: center;
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .activity-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+    .activity-label {
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    /* 맛집 카드 */
+    .restaurant-card {
+      display: flex;
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .restaurant-card:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .restaurant-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      background: rgba(59, 130, 246, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-right: 1rem;
+    }
+    .restaurant-info {
+      flex: 1;
+    }
+    .restaurant-name {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
+    }
+    .restaurant-category {
+      color: #3b82f6;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+    .restaurant-discount {
+      color: #ef4444;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .restaurant-likes {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .content-area {
+        margin-left: 0;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .map-card {
+        grid-column: span 1;
+      }
+    }
+    @media (max-width: 768px) {
+      .top-nav {
+        padding: 1rem;
+      }
+      .search-input {
+        width: 200px;
+      }
+      .content-area {
+        padding: 1rem;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 애니메이션 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .fade-in {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* 스크롤바 스타일 */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.3);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.5);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.7);
+    }
+
+    /* 로딩 스피너 */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(148, 163, 184, 0.3);
+      border-radius: 50%;
+      border-top-color: #3b82f6;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* 모바일 메뉴 토글 */
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    @media (max-width: 1024px) {
+      .mobile-menu-toggle {
+        display: block;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- 상단 네비게이션 -->
-    <nav class="top-nav">
-        <div class="nav-brand">
-            <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
-            <span>🎓</span>
-            <span>연성대학교 스마트 캠퍼스</span>
-        </div>
-        
-        <div class="nav-controls">
-            <div class="search-bar">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" placeholder="건물, 교수님, 강의실 검색..." id="globalSearch">
-            </div>
-            
-            <div class="user-menu">
-                <div class="notification-btn" onclick="toggleNotifications()">
-                    🔔
-                    <div class="notification-dot" id="notificationDot"></div>
-                    <!-- 알림 드롭다운 -->
-                    <div class="notification-dropdown" id="notificationDropdown">
-                        <div class="notification-header">
-                            <div class="notification-title">알림</div>
-                            <div class="notification-badge" id="notificationCount">0</div>
-                        </div>
-                        <div class="notification-list" id="notificationList">
-                            <!-- 알림 항목이 동적으로 로드됩니다 -->
-                        </div>
-                        <div class="notification-footer">
-                            <button class="mark-all-read" onclick="markAllAsRead()">모두 읽음 처리</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="user-profile" onclick="toggleUserMenu()">
-                    <div class="avatar" id="userAvatar">👤</div>
-                    <div class="user-info">
-                        <div class="user-name" id="userName">게스트</div>
-                        <div class="user-role" id="userRole">방문자</div>
-                    </div>
-                    <!-- 사용자 드롭다운 메뉴 -->
-                    <div class="user-dropdown" id="userDropdown">
-                        <div class="dropdown-user-info">
-                            <div class="dropdown-user-name" id="dropdownUserName">게스트</div>
-                            <div class="dropdown-user-role" id="dropdownUserRole">방문자</div>
-                        </div>
-                        <button class="dropdown-item" onclick="showProfile()">
-                            <span>👤</span>
-                            <span>프로필</span>
-                        </button>
-                        <button class="dropdown-item" onclick="showSettings()">
-                            <span>⚙️</span>
-                            <span>설정</span>
-                        </button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
-                            <span>🚪</span>
-                            <span>로그아웃</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="main-container">
-        <!-- 사이드바 -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-title">메인 메뉴</div>
-                <ul class="nav-list">
-                    <li class="nav-item active" onclick="showContent('home')">
-                        <span class="nav-icon">🏠</span>
-                        <span>대시보드</span>
-                    </li>
-                    <li class="nav-item" onclick="showContent('buildings')">
-                        <span class="nav-icon">🏢</span>
-                        <span>건물 & 시설</span>
-                    </li>
-                    <li class="nav-item" onclick="showContent('services')">
-                        <span class="nav-icon">🎯</span>
-                        <span>학생 서비스</span>
-                    </li>
-                    <li class="nav-item" onclick="showContent('community')">
-                        <span class="nav-icon">💬</span>
-                        <span>커뮤니티</span>
-                    </li>
-                    <li class="nav-item" onclick="showContent('lecture-review')">
-                        <span class="nav-icon">⭐</span>
-                        <span>강의평가</span>
-                    </li>
-                    <li class="nav-item" onclick="showContent('notices')">
-                        <span class="nav-icon">📢</span>
-                        <span>공지사항</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="sidebar-section">
-                <div class="sidebar-title">빠른 접근</div>
-                <ul class="nav-list">
-                    <li class="nav-item" onclick="openQuickLink('timetable')">
-                        <span class="nav-icon">📅</span>
-                        <span>내 시간표</span>
-                    </li>
-                    <li class="nav-item" onclick="openQuickLink('shuttle')">
-                        <span class="nav-icon">🚌</span>
-                        <span>셔틀버스</span>
-                    </li>
-                    <li class="nav-item" onclick="openQuickLink('activities')">
-                        <span class="nav-icon">🌟</span>
-                        <span>교내활동</span>
-                    </li>
-                    <li class="nav-item" onclick="openQuickLink('deals')">
-                        <span class="nav-icon">🍽️</span>
-                        <span>맛집정보</span>
-                    </li>
-                    <li class="nav-item" onclick="openQuickLink('academic-calendar')">
-                        <span class="nav-icon">📅</span>
-                        <span>학사일정</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="sidebar-section">
-                <div class="sidebar-title">계정</div>
-                <ul class="nav-list">
-                    <li class="nav-item" onclick="showProfile()">
-                        <span class="nav-icon">👤</span>
-                        <span>프로필</span>
-                    </li>
-                    <li class="nav-item" onclick="showSettings()">
-                        <span class="nav-icon">⚙️</span>
-                        <span>설정</span>
-                    </li>
-                    <li class="nav-item" onclick="handleLogout()">
-                        <span class="nav-icon">🚪</span>
-                        <span>로그아웃</span>
-                    </li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- 메인 콘텐츠 -->
-        <main class="content-area">
-            <!-- 홈 대시보드 -->
-            <div id="homeContent" class="fade-in">
-                <div class="content-header">
-                    <div>
-                        <h1>대시보드</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>대시보드</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 통계 카드 -->
-                <div class="stats-grid" id="statsGrid">
-                    <!-- 통계 카드가 동적으로 로드됩니다 -->
-                </div>
-
-                <!-- 메인 위젯 그리드 -->
-                <div class="dashboard-grid">
-                    <!-- 지도 카드 -->
-                    <div class="card map-card">
-                        <div class="card-header">
-                            <h3 class="card-title">캠퍼스 지도</h3>
-                            <span class="card-icon">🗺️</span>
-                        </div>
-                        <div class="map-container">
-                            <div id="naverMap" style="width: 100%; height: 100%;"></div>
-                            <div class="map-overlay">
-                                <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
-                                <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
-                                <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
-                                <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 시간표 위젯 -->
-                    <div class="card timetable-card">
-                        <div class="card-header">
-                            <h3 class="card-title">오늘의 시간표</h3>
-                            <span class="card-icon">📅</span>
-                        </div>
-                        <div id="timetableContent">
-                            <!-- 시간표 데이터가 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-
-                    <!-- 셔틀버스 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">셔틀버스 현황</h3>
-                            <span class="card-icon">🚌</span>
-                        </div>
-                        <div class="shuttle-routes" id="shuttleRoutes">
-                            <!-- 노선 탭이 동적으로 생성됩니다 -->
-                        </div>
-                        <div class="shuttle-status">
-                            <div class="shuttle-time" id="shuttleTime">--</div>
-                            <div class="shuttle-desc" id="shuttleDesc">--</div>
-                            <div class="status-badge" id="shuttleStatus">
-                                -- 
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 교내 활동 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">교내 활동 현황</h3>
-                            <span class="card-icon">🌟</span>
-                        </div>
-                        <div class="activity-stats" id="activityStats">
-                            <!-- 활동 통계 카드가 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-
-                    <!-- 인기 맛집 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">인기 맛집</h3>
-                            <span class="card-icon">🍽️</span>
-                        </div>
-                        <div class="restaurant-grid" id="restaurantGrid">
-                            <!-- 맛집 카드가 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-
-                    <!-- 최근 공지사항 위젯 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">최근 공지사항</h3>
-                            <span class="card-icon">📢</span>
-                        </div>
-                        <div class="notice-list" id="recentNotices">
-                            <!-- 최근 공지사항이 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 건물 안내 콘텐츠 -->
-            <div id="buildingsContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1>건물 & 시설 안내</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>건물 안내</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card map-card" style="margin-bottom: 2rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">캠퍼스 지도</h3>
-                        <span class="card-icon">🗺️</span>
-                    </div>
-                    <div class="map-container">
-                        <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
-                        <div class="map-overlay">
-                            <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
-                            <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
-                            <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
-                            <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="building-grid" id="buildingGrid">
-                    <!-- 건물 카드들이 동적으로 생성됩니다 -->
-                </div>
-            </div>
-
-            <!-- 커뮤니티 콘텐츠 -->
-            <div id="communityContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1>실시간 커뮤니티</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>커뮤니티</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid">
-                    <!-- 실시간 게시글 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">실시간 게시글</h3>
-                            <span class="card-icon">💬</span>
-                        </div>
-                        <div class="notice-list" id="livePosts">
-                            <!-- 실시간 게시글이 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-
-                    <!-- 인기 게시글 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">인기 게시글</h3>
-                            <span class="card-icon">🔥</span>
-                        </div>
-                        <div class="notice-list" id="hotPosts">
-                            <!-- 인기 게시글이 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 강의평가 콘텐츠 -->
-            <div id="lecture-reviewContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1>강의평가</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>강의평가</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid">
-                    <!-- 인기 강의평가 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">인기 강의평가</h3>
-                            <span class="card-icon">⭐</span>
-                        </div>
-                        <div class="notice-list" id="popularReviews">
-                            <!-- 인기 리뷰가 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-
-                    <!-- 최근 강의평가 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">최근 강의평가</h3>
-                            <span class="card-icon">🕒</span>
-                        </div>
-                        <div class="notice-list" id="recentReviews">
-                            <!-- 최근 리뷰가 동적으로 생성됩니다 -->
-                        </div>
-                    </div>
-
-                    <!-- 강의평가 작성 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">강의평가 작성</h3>
-                            <span class="card-icon">✍️</span>
-                        </div>
-                        <div style="padding: 1rem; text-align: center;">
-                            <p style="color: #94a3b8; margin-bottom: 1.5rem;">
-                                수강 중인 강의에 대한 솔직한 평가를 남겨주세요
-                            </p>
-                            <button class="btn btn-primary" onclick="alert('강의평가 작성 페이지로 이동합니다.')">
-                                강의평가 작성하기
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 공지사항 콘텐츠 -->
-            <div id="noticesContent" style="display: none;">
-                <div class="content-header">
-                    <div>
-                        <h1>공지사항</h1>
-                        <div class="breadcrumb">
-                            <span>홈</span>
-                            <span>›</span>
-                            <span>공지사항</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="notice-list" id="fullNoticeList">
-                    <!-- 전체 공지사항이 동적으로 생성됩니다 -->
-                </div>
-            </div>
-        </main>
+  <!-- 상단 네비게이션 -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+      <span>🎓</span>
+      <span>연성대학교 스마트 캠퍼스</span>
     </div>
 
-    <script>
-        // 전역 변수
-        let naverMap;
-        let mapMarkers = [];
-        let infoWindows = [];
-        let userMarker = null;
-        let userLocation = null;
-        let selectedShuttleRoute = null;
-        let currentContent = 'home';
-        let unreadNotifications = 0;
+    <div class="nav-controls">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="건물, 교수님, 강의실 검색..."
+          id="globalSearch"
+        />
+      </div>
 
-        // ---------------------------
-        // 데이터 로드 함수들
-        // ---------------------------
+      <div class="user-menu">
+        <div class="notification-btn" onclick="toggleNotifications()">
+          🔔
+          <div class="notification-dot" id="notificationDot"></div>
+          <!-- 알림 드롭다운 -->
+          <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header">
+              <div class="notification-title">알림</div>
+              <div class="notification-badge" id="notificationCount">0</div>
+            </div>
+            <div class="notification-list" id="notificationList">
+              <!-- 알림 항목이 동적으로 로드됩니다 -->
+            </div>
+            <div class="notification-footer">
+              <button class="mark-all-read" onclick="markAllAsRead()">
+                모두 읽음 처리
+              </button>
+            </div>
+          </div>
+        </div>
 
-        // 알림 데이터 로드
-        async function loadNotifications() {
-            try {
-                const res = await fetch('/api/notifications');
-                const notifications = await res.json();
-                const listEl = document.getElementById('notificationList');
-                const countEl = document.getElementById('notificationCount');
-                notifications.forEach(n => {
-                    const item = document.createElement('div');
-                    item.className = 'notification-item' + (n.unread ? ' unread' : '');
-                    item.onclick = () => markAsRead(item, n.id);
-                    item.innerHTML = `
-                        <div class="notification-meta">
-                            <span class="notification-category">${n.category}</span>
-                            <span class="notification-time">${n.time}</span>
-                        </div>
-                        <div class="notification-content">${n.title}</div>
-                        <div class="notification-summary">${n.summary}</div>
-                    `;
-                    listEl.appendChild(item);
-                    if (n.unread) unreadNotifications++;
-                });
-                countEl.textContent = unreadNotifications;
-                document.getElementById('notificationDot').style.display = unreadNotifications > 0 ? 'block' : 'none';
-            } catch (err) {
-                console.error('알림 로드 오류:', err);
-            }
+        <div class="user-profile" onclick="toggleUserMenu()">
+          <div class="avatar" id="userAvatar">👤</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">게스트</div>
+            <div class="user-role" id="userRole">방문자</div>
+          </div>
+          <!-- 사용자 드롭다운 메뉴 -->
+          <div class="user-dropdown" id="userDropdown">
+            <div class="dropdown-user-info">
+              <div class="dropdown-user-name" id="dropdownUserName">게스트</div>
+              <div class="dropdown-user-role" id="dropdownUserRole">
+                방문자
+              </div>
+            </div>
+            <button class="dropdown-item" onclick="showProfile()">
+              <span>👤</span>
+              <span>프로필</span>
+            </button>
+            <button class="dropdown-item" onclick="showSettings()">
+              <span>⚙️</span>
+              <span>설정</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
+              <span>🚪</span>
+              <span>로그아웃</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <!-- 사이드바 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">메인 메뉴</div>
+        <ul class="nav-list">
+          <li class="nav-item active" onclick="showContent('home')">
+            <span class="nav-icon">🏠</span>
+            <span>대시보드</span>
+          </li>
+          <li class="nav-item" onclick="showContent('buildings')">
+            <span class="nav-icon">🏢</span>
+            <span>건물 & 시설</span>
+          </li>
+          <li class="nav-item" onclick="showContent('services')">
+            <span class="nav-icon">🎯</span>
+            <span>학생 서비스</span>
+          </li>
+          <li class="nav-item" onclick="showContent('community')">
+            <span class="nav-icon">💬</span>
+            <span>커뮤니티</span>
+          </li>
+          <li class="nav-item" onclick="showContent('lecture-review')">
+            <span class="nav-icon">⭐</span>
+            <span>강의평가</span>
+          </li>
+          <li class="nav-item" onclick="showContent('notices')">
+            <span class="nav-icon">📢</span>
+            <span>공지사항</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">빠른 접근</div>
+        <ul class="nav-list">
+          <li class="nav-item" onclick="openQuickLink('timetable')">
+            <span class="nav-icon">📅</span>
+            <span>내 시간표</span>
+          </li>
+          <li class="nav-item" onclick="openQuickLink('shuttle')">
+            <span class="nav-icon">🚌</span>
+            <span>셔틀버스</span>
+          </li>
+          <li class="nav-item" onclick="openQuickLink('activities')">
+            <span class="nav-icon">🌟</span>
+            <span>교내활동</span>
+          </li>
+          <li class="nav-item" onclick="openQuickLink('deals')">
+            <span class="nav-icon">🍽️</span>
+            <span>맛집정보</span>
+          </li>
+          <li class="nav-item" onclick="openQuickLink('academic-calendar')">
+            <span class="nav-icon">📅</span>
+            <span>학사일정</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">계정</div>
+        <ul class="nav-list">
+          <li class="nav-item" onclick="showProfile()">
+            <span class="nav-icon">👤</span>
+            <span>프로필</span>
+          </li>
+          <li class="nav-item" onclick="showSettings()">
+            <span class="nav-icon">⚙️</span>
+            <span>설정</span>
+          </li>
+          <li class="nav-item" onclick="handleLogout()">
+            <span class="nav-icon">🚪</span>
+            <span>로그아웃</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="content-area">
+      <!-- 홈 대시보드 -->
+      <div id="homeContent" class="fade-in">
+        <div class="content-header">
+          <div>
+            <h1>대시보드</h1>
+            <div class="breadcrumb">
+              <span>홈</span>
+              <span>›</span>
+              <span>대시보드</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="stats-grid" id="statsGrid">
+          <!-- 통계 카드가 동적으로 로드됩니다 -->
+        </div>
+
+        <!-- 메인 위젯 그리드 -->
+        <div class="dashboard-grid">
+          <!-- 지도 카드 -->
+          <div class="card map-card">
+            <div class="card-header">
+              <h3 class="card-title">캠퍼스 지도</h3>
+              <span class="card-icon">🗺️</span>
+            </div>
+            <div class="map-container">
+              <div id="naverMap" style="width: 100%; height: 100%;"></div>
+              <div class="map-overlay">
+                <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
+                <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
+                <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
+                <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 시간표 위젯 -->
+          <div class="card timetable-card">
+            <div class="card-header">
+              <h3 class="card-title">오늘의 시간표</h3>
+              <span class="card-icon">📅</span>
+            </div>
+            <div id="timetableContent">
+              <!-- 시간표 데이터가 동적으로 생성됩니다 -->
+            </div>
+          </div>
+
+          <!-- 셔틀버스 위젯 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">셔틀버스 현황</h3>
+              <span class="card-icon">🚌</span>
+            </div>
+            <div class="shuttle-routes" id="shuttleRoutes">
+              <!-- 노선 탭이 동적으로 생성됩니다 -->
+            </div>
+            <div class="shuttle-status">
+              <div class="shuttle-time" id="shuttleTime">--</div>
+              <div class="shuttle-desc" id="shuttleDesc">--</div>
+              <div class="status-badge" id="shuttleStatus">--</div>
+            </div>
+          </div>
+
+          <!-- 교내 활동 위젯 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">교내 활동 현황</h3>
+              <span class="card-icon">🌟</span>
+            </div>
+            <div class="activity-stats" id="activityStats">
+              <!-- 활동 통계 카드가 동적으로 생성됩니다 -->
+            </div>
+          </div>
+
+          <!-- 인기 맛집 위젯 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">인기 맛집</h3>
+              <span class="card-icon">🍽️</span>
+            </div>
+            <div class="restaurant-grid" id="restaurantGrid">
+              <!-- 맛집 카드가 동적으로 생성됩니다 -->
+            </div>
+          </div>
+
+          <!-- 최근 공지사항 위젯 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">최근 공지사항</h3>
+              <span class="card-icon">📢</span>
+            </div>
+            <div class="notice-list" id="recentNotices">
+              <!-- 최근 공지사항이 동적으로 생성됩니다 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 건물 안내 콘텐츠 -->
+      <div id="buildingsContent" style="display: none;">
+        <div class="content-header">
+          <div>
+            <h1>건물 & 시설 안내</h1>
+            <div class="breadcrumb">
+              <span>홈</span>
+              <span>›</span>
+              <span>건물 안내</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card map-card" style="margin-bottom: 2rem;">
+          <div class="card-header">
+            <h3 class="card-title">캠퍼스 지도</h3>
+            <span class="card-icon">🗺️</span>
+          </div>
+          <div class="map-container">
+            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
+            <div class="map-overlay">
+              <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
+              <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
+              <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
+              <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="building-grid" id="buildingGrid">
+          <!-- 건물 카드들이 동적으로 생성됩니다 -->
+        </div>
+      </div>
+
+      <!-- 커뮤니티 콘텐츠 -->
+      <div id="communityContent" style="display: none;">
+        <div class="content-header">
+          <div>
+            <h1>실시간 커뮤니티</h1>
+            <div class="breadcrumb">
+              <span>홈</span>
+              <span>›</span>
+              <span>커뮤니티</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- 실시간 게시글 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">실시간 게시글</h3>
+              <span class="card-icon">💬</span>
+            </div>
+            <div class="notice-list" id="livePosts">
+              <!-- 실시간 게시글이 동적으로 생성됩니다 -->
+            </div>
+          </div>
+
+          <!-- 인기 게시글 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">인기 게시글</h3>
+              <span class="card-icon">🔥</span>
+            </div>
+            <div class="notice-list" id="hotPosts">
+              <!-- 인기 게시글이 동적으로 생성됩니다 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 강의평가 콘텐츠 -->
+      <div id="lecture-reviewContent" style="display: none;">
+        <div class="content-header">
+          <div>
+            <h1>강의평가</h1>
+            <div class="breadcrumb">
+              <span>홈</span>
+              <span>›</span>
+              <span>강의평가</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- 인기 강의평가 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">인기 강의평가</h3>
+              <span class="card-icon">⭐</span>
+            </div>
+            <div class="notice-list" id="popularReviews">
+              <!-- 인기 리뷰가 동적으로 생성됩니다 -->
+            </div>
+          </div>
+
+          <!-- 최근 강의평가 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">최근 강의평가</h3>
+              <span class="card-icon">🕒</span>
+            </div>
+            <div class="notice-list" id="recentReviews">
+              <!-- 최근 리뷰가 동적으로 생성됩니다 -->
+            </div>
+          </div>
+
+          <!-- 강의평가 작성 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">강의평가 작성</h3>
+              <span class="card-icon">✍️</span>
+            </div>
+            <div style="padding: 1rem; text-align: center;">
+              <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+                수강 중인 강의에 대한 솔직한 평가를 남겨주세요
+              </p>
+              <button
+                class="btn btn-primary"
+                onclick="alert('강의평가 작성 페이지로 이동합니다.')"
+              >
+                강의평가 작성하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 공지사항 콘텐츠 -->
+      <div id="noticesContent" style="display: none;">
+        <div class="content-header">
+          <div>
+            <h1>공지사항</h1>
+            <div class="breadcrumb">
+              <span>홈</span>
+              <span>›</span>
+              <span>공지사항</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice-list" id="fullNoticeList">
+          <!-- 전체 공지사항이 동적으로 생성됩니다 -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 전역 변수
+    let naverMap;
+    let mapMarkers = [];
+    let infoWindows = [];
+    let userMarker = null;
+    let userLocation = null;
+    let currentContent = 'home';
+    let unreadNotifications = 0;
+
+    // ---------------------------
+    // 데이터 로드 함수들
+    // ---------------------------
+
+    // 알림 데이터 로드
+    async function loadNotifications() {
+      try {
+        const res = await fetch('/api/notifications');
+        const notifications = await res.json();
+        const listEl = document.getElementById('notificationList');
+        const countEl = document.getElementById('notificationCount');
+        listEl.innerHTML = '';
+        unreadNotifications = 0;
+        notifications.forEach((n) => {
+          const item = document.createElement('div');
+          item.className = 'notification-item' + (n.unread ? ' unread' : '');
+          item.onclick = () => markAsRead(item, n.id);
+          item.innerHTML = `
+            <div class="notification-meta">
+              <span class="notification-category">${n.category}</span>
+              <span class="notification-time">${n.time}</span>
+            </div>
+            <div class="notification-content">${n.title}</div>
+            <div class="notification-summary">${n.summary}</div>
+          `;
+          listEl.appendChild(item);
+          if (n.unread) unreadNotifications++;
+        });
+        countEl.textContent = unreadNotifications;
+        document.getElementById('notificationDot').style.display =
+          unreadNotifications > 0 ? 'block' : 'none';
+      } catch (err) {
+        console.error('알림 로드 오류:', err);
+      }
+    }
+
+    // 통계 데이터 로드
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const stats = await res.json();
+        const statsGrid = document.getElementById('statsGrid');
+        statsGrid.innerHTML = `
+          <div class="stat-card">
+            <div class="stat-number">${stats.totalBuildings}</div>
+            <div class="stat-label">캠퍼스 건물</div>
+            <div class="stat-change positive">
+              <span>↗</span>
+              <span>${stats.newBuildingsText}</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.totalStudents}</div>
+            <div class="stat-label">재학생 수</div>
+            <div class="stat-change positive">
+              <span>↗</span>
+              <span>${stats.studentGrowthText}</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.activeServices}</div>
+            <div class="stat-label">운영 서비스</div>
+            <div class="stat-change positive">
+              <span>↗</span>
+              <span>${stats.newServicesText}</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.todayEvents}</div>
+            <div class="stat-label">오늘 일정</div>
+            <div class="stat-change">
+              <span>📅</span>
+              <span>진행중</span>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        console.error('통계 로드 오류:', err);
+      }
+    }
+
+    // 건물 데이터 로드
+    async function loadBuildings() {
+      try {
+        const res = await fetch('/api/buildings');
+        const buildings = await res.json();
+        const grid = document.getElementById('buildingGrid');
+        grid.innerHTML = '';
+        buildings.forEach((b) => {
+          const card = document.createElement('div');
+          card.className = 'building-card';
+          card.innerHTML = `
+            <h3 class="building-name">${b.name}</h3>
+            <p class="building-desc">${b.description}</p>
+            <div class="building-actions">
+              <button class="btn btn-primary" onclick="showBuildingOnMap('${b.id}')">
+                📍 지도에서 보기
+              </button>
+              <button class="btn btn-outline" onclick="getBuildingDirections('${b.id}')">
+                🧭 길찾기
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+        addMapMarkers(buildings);
+      } catch (err) {
+        console.error('건물 로드 오류:', err);
+      }
+    }
+
+    // 공지사항 데이터 로드 (전체 & 최근)
+    async function loadNotices() {
+      try {
+        const res = await fetch('/api/notices');
+        const notices = await res.json();
+        const recentEl = document.getElementById('recentNotices');
+        const fullEl = document.getElementById('fullNoticeList');
+        recentEl.innerHTML = '';
+        fullEl.innerHTML = '';
+        notices.forEach((n, idx) => {
+          const item = document.createElement('div');
+          item.className = 'notice-item';
+          item.onclick = () => viewNoticeDetail(n.id);
+          item.innerHTML = `
+            <div class="notice-header">
+              <span class="notice-category">${n.category}</span>
+              <span class="notice-date">${n.date}</span>
+            </div>
+            <div class="notice-title">${n.title}</div>
+            <div class="notice-summary">${n.summary}</div>
+          `;
+          fullEl.appendChild(item.cloneNode(true));
+          if (idx < 2) {
+            recentEl.appendChild(item);
+          }
+        });
+      } catch (err) {
+        console.error('공지사항 로드 오류:', err);
+      }
+    }
+
+    // 셔틀버스 데이터 로드
+    async function loadShuttleInfo() {
+      try {
+        const res = await fetch('/api/shuttle/routes');
+        const routes = await res.json();
+        const tabs = document.getElementById('shuttleRoutes');
+        tabs.innerHTML = '';
+        routes.forEach((r, idx) => {
+          const tab = document.createElement('div');
+          tab.className = 'route-tab' + (idx === 0 ? ' active' : '');
+          tab.onclick = () => selectShuttleRoute(r.id);
+          tab.innerHTML = `
+            <div class="route-name">${r.name}</div>
+            <div class="route-desc">${r.desc}</div>
+          `;
+          tabs.appendChild(tab);
+        });
+        if (routes.length > 0) {
+          selectShuttleRoute(routes[0].id);
         }
+      } catch (err) {
+        console.error('셔틀버스 로드 오류:', err);
+      }
+    }
 
-        // 통계 데이터 로드
-        async function loadStats() {
-            try {
-                const res = await fetch('/api/stats');
-                const stats = await res.json();
-                const statsGrid = document.getElementById('statsGrid');
-                // 예시: stats = { totalBuildings: 15, totalStudents: 8500, activeServices: 25, todayEvents: 12 }
-                statsGrid.innerHTML = `
-                    <div class="stat-card">
-                        <div class="stat-number">${stats.totalBuildings}</div>
-                        <div class="stat-label">캠퍼스 건물</div>
-                        <div class="stat-change positive">
-                            <span>↗</span>
-                            <span>${stats.newBuildingsText || '+0 신규'}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${stats.totalStudents}</div>
-                        <div class="stat-label">재학생 수</div>
-                        <div class="stat-change positive">
-                            <span>↗</span>
-                            <span>${stats.studentGrowthText || '+0%'}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${stats.activeServices}</div>
-                        <div class="stat-label">운영 서비스</div>
-                        <div class="stat-change positive">
-                            <span>↗</span>
-                            <span>${stats.newServicesText || '+0 추가'}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${stats.todayEvents}</div>
-                        <div class="stat-label">오늘 일정</div>
-                        <div class="stat-change">
-                            <span>📅</span>
-                            <span>진행중</span>
-                        </div>
-                    </div>
-                `;
-            } catch (err) {
-                console.error('통계 로드 오류:', err);
-            }
-        }
+    // 선택한 셔틀버스 정보 표시
+    async function selectShuttleRoute(routeId) {
+      try {
+        document.querySelectorAll('.route-tab').forEach((tab) => {
+          tab.classList.remove('active');
+        });
+        const tabs = Array.from(document.querySelectorAll('.route-tab'));
+        const selectedTab = tabs.find((t) =>
+          t.textContent.includes(routeId.toString())
+        );
+        if (selectedTab) selectedTab.classList.add('active');
 
-        // 건물 데이터 로드
-        async function loadBuildings() {
-            try {
-                const res = await fetch('/api/buildings');
-                const buildings = await res.json();
-                const grid = document.getElementById('buildingGrid');
-                grid.innerHTML = '';
-                buildings.forEach(b => {
-                    const card = document.createElement('div');
-                    card.className = 'building-card';
-                    card.innerHTML = `
-                        <h3 class="building-name">${b.name}</h3>
-                        <p class="building-desc">${b.description}</p>
-                        <div class="building-actions">
-                            <button class="btn btn-primary" onclick="showBuildingOnMap('${b.id}')">
-                                📍 지도에서 보기
-                            </button>
-                            <button class="btn btn-outline" onclick="getBuildingDirections('${b.id}')">
-                                🧭 길찾기
-                            </button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-                // 지도에 마커 표시
-                addMapMarkers(buildings);
-            } catch (err) {
-                console.error('건물 로드 오류:', err);
-            }
-        }
+        const res = await fetch(`/api/shuttle/routes/${routeId}`);
+        const route = await res.json();
+        document.getElementById('shuttleTime').textContent = route.time;
+        document.getElementById('shuttleDesc').textContent = route.desc;
+        const statusEl = document.getElementById('shuttleStatus');
+        statusEl.className = `status-badge status-${route.status}`;
+        statusEl.innerHTML =
+          route.status === 'running'
+            ? '<span>🟢</span><span>운행중</span>'
+            : '<span>🔴</span><span>운행종료</span>';
+      } catch (err) {
+        console.error('셔틀 노선 선택 오류:', err);
+      }
+    }
 
-        // 공지사항 데이터 로드 (전체 & 최근)
-        async function loadNotices() {
-            try {
-                const res = await fetch('/api/notices');
-                const notices = await res.json();
-                const recentEl = document.getElementById('recentNotices');
-                const fullEl = document.getElementById('fullNoticeList');
-                recentEl.innerHTML = '';
-                fullEl.innerHTML = '';
-                notices.forEach((n, idx) => {
-                    const item = document.createElement('div');
-                    item.className = 'notice-item';
-                    item.onclick = () => viewNoticeDetail(n.id);
-                    item.innerHTML = `
-                        <div class="notice-header">
-                            <span class="notice-category">${n.category}</span>
-                            <span class="notice-date">${n.date}</span>
-                        </div>
-                        <div class="notice-title">${n.title}</div>
-                        <div class="notice-summary">${n.summary}</div>
-                    `;
-                    fullEl.appendChild(item);
-                    if (idx < 2) {
-                        recentEl.appendChild(item.cloneNode(true));
-                    }
-                });
-            } catch (err) {
-                console.error('공지사항 로드 오류:', err);
-            }
-        }
+    // 활동 통계 데이터 로드
+    async function loadActivityStats() {
+      try {
+        const res = await fetch('/api/activity-stats');
+        const stats = await res.json();
+        const container = document.getElementById('activityStats');
+        container.innerHTML = '';
+        const labels = {
+          contestCount: '진행중 공모전',
+          clubCount: '신입 모집 동아리',
+          externalCount: '대외활동 기회',
+        };
+        ['contestCount', 'clubCount', 'externalCount'].forEach((key) => {
+          const stat = document.createElement('div');
+          stat.className = 'activity-stat';
+          stat.innerHTML = `
+            <div class="activity-number">${stats[key]}</div>
+            <div class="activity-label">${labels[key]}</div>
+          `;
+          container.appendChild(stat);
+        });
+      } catch (err) {
+        console.error('활동 통계 로드 오류:', err);
+      }
+    }
 
-        // 셔틀버스 데이터 로드
-        async function loadShuttleInfo() {
-            try {
-                const res = await fetch('/api/shuttle/routes');
-                const routes = await res.json(); 
-                // 예시 형식: [{ id:1, name: '인천 남동구', desc: '학교 → 안양역 경유 (14:30)', time:'15분 후', status:'running' }, ...]
-                const tabs = document.getElementById('shuttleRoutes');
-                tabs.innerHTML = '';
-                routes.forEach((r, idx) => {
-                    const tab = document.createElement('div');
-                    tab.className = 'route-tab' + (idx === 0 ? ' active' : '');
-                    tab.onclick = () => selectShuttleRoute(r.id);
-                    tab.innerHTML = `
-                        <div class="route-name">${r.name}</div>
-                        <div class="route-desc">${r.desc}</div>
-                    `;
-                    tabs.appendChild(tab);
-                });
-                if (routes.length > 0) {
-                    selectShuttleRoute(routes[0].id);
-                }
-            } catch (err) {
-                console.error('셔틀버스 로드 오류:', err);
-            }
-        }
+    // 맛집 정보 로드
+    async function loadRestaurantInfo() {
+      try {
+        const res = await fetch('/api/restaurants');
+        const restaurants = await res.json();
+        restaurants.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+        const popular = restaurants.slice(0, 2);
+        const grid = document.getElementById('restaurantGrid');
+        grid.innerHTML = '';
+        const emojiMap = {
+          한식: '🍲',
+          중식: '🥢',
+          일식: '🍣',
+          양식: '🍝',
+          분식: '🍜',
+          카페: '☕',
+          술집: '🍺',
+        };
+        popular.forEach((r) => {
+          const card = document.createElement('div');
+          card.className = 'restaurant-card';
+          card.onclick = () =>
+            window.open(`student-deals.html?id=${encodeURIComponent(r.id)}`, '_blank');
+          const icon = emojiMap[r.category] || '🍽️';
+          card.innerHTML = `
+            <div class="restaurant-image">${icon}</div>
+            <div class="restaurant-info">
+              <div class="restaurant-name">${r.name}</div>
+              <div class="restaurant-category">${r.category}</div>
+              <div class="restaurant-discount">${r.discount || '할인 없음'}</div>
+              <div class="restaurant-likes">👍 ${r.likes || 0}</div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (err) {
+        console.error('맛집 정보 로드 오류:', err);
+      }
+    }
 
-        // 선택한 셔틀버스 정보 표시
-        async function selectShuttleRoute(routeId) {
-            try {
-                document.querySelectorAll('.route-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                const tabs = Array.from(document.querySelectorAll('.route-tab'));
-                const selectedIndex = tabs.findIndex(tab => tab.innerText.includes(routeId.toString()));
-                if (tabs[selectedIndex]) tabs[selectedIndex].classList.add('active');
+    // 실시간 커뮤니티 로드
+    async function loadCommunityPosts() {
+      try {
+        const [liveRes, hotRes] = await Promise.all([
+          fetch('/api/community/live'),
+          fetch('/api/community/hot'),
+        ]);
+        const livePosts = await liveRes.json();
+        const hotPosts = await hotRes.json();
+        const liveEl = document.getElementById('livePosts');
+        const hotEl = document.getElementById('hotPosts');
+        liveEl.innerHTML = '';
+        hotEl.innerHTML = '';
+        livePosts.forEach((p) => {
+          const item = document.createElement('div');
+          item.className = 'notice-item';
+          item.innerHTML = `
+            <div class="notice-header">
+              <span class="notice-category">${p.category}</span>
+              <span class="notice-date">${p.time}</span>
+            </div>
+            <div class="notice-title">${p.title}</div>
+            <div class="notice-summary">${p.summary}</div>
+            <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
+              👍 ${p.likes} 💬 ${p.comments}
+            </div>
+          `;
+          liveEl.appendChild(item);
+        });
+        hotPosts.forEach((p) => {
+          const item = document.createElement('div');
+          item.className = 'notice-item';
+          item.innerHTML = `
+            <div class="notice-header">
+              <span class="notice-category">${p.category}</span>
+              <span class="notice-date">HOT</span>
+            </div>
+            <div class="notice-title">${p.title}</div>
+            <div class="notice-summary">${p.summary}</div>
+            <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
+              👍 ${p.likes} 💬 ${p.comments}
+            </div>
+          `;
+          hotEl.appendChild(item);
+        });
+      } catch (err) {
+        console.error('커뮤니티 게시글 로드 오류:', err);
+      }
+    }
 
-                const res = await fetch(`/api/shuttle/routes/${routeId}`);
-                const route = await res.json();
-                document.getElementById('shuttleTime').textContent = route.time;
-                document.getElementById('shuttleDesc').textContent = route.desc;
-                const statusEl = document.getElementById('shuttleStatus');
-                statusEl.className = `status-badge status-${route.status}`;
-                statusEl.innerHTML = route.status === 'running'
-                    ? '<span>🟢</span><span>운행중</span>'
-                    : '<span>🔴</span><span>운행종료</span>';
-            } catch (err) {
-                console.error('셔틀버스 선택 오류:', err);
-            }
-        }
+    // 강의평가 로드
+    async function loadLectureReviews() {
+      try {
+        const [popRes, recRes] = await Promise.all([
+          fetch('/api/reviews/popular'),
+          fetch('/api/reviews/recent'),
+        ]);
+        const popular = await popRes.json();
+        const recent = await recRes.json();
+        const popEl = document.getElementById('popularReviews');
+        const recEl = document.getElementById('recentReviews');
+        popEl.innerHTML = '';
+        recEl.innerHTML = '';
+        popular.forEach((r) => {
+          const item = document.createElement('div');
+          item.className = 'notice-item';
+          item.innerHTML = `
+            <div class="notice-header">
+              <span class="notice-category">${r.category}</span>
+              <span class="notice-date" style="color:#f59e0b;">
+                ${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}
+              </span>
+            </div>
+            <div class="notice-title">${r.title}</div>
+            <div class="notice-summary">"${r.comment}"</div>
+            <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
+              평점: ${r.rating}/5.0 | ${r.department}
+            </div>
+          `;
+          popEl.appendChild(item);
+        });
+        recent.forEach((r) => {
+          const item = document.createElement('div');
+          item.className = 'notice-item';
+          item.innerHTML = `
+            <div class="notice-header">
+              <span class="notice-category">${r.category}</span>
+              <span class="notice-date">${r.timeAgo}</span>
+            </div>
+            <div class="notice-title">${r.title}</div>
+            <div class="notice-summary">"${r.comment}"</div>
+            <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
+              평점: ${r.rating}/5.0 | ${r.department}
+            </div>
+          `;
+          recEl.appendChild(item);
+        });
+      } catch (err) {
+        console.error('강의평가 로드 오류:', err);
+      }
+    }
 
-        // 활동 통계 데이터 로드
-        async function loadActivityStats() {
-            try {
-                const res = await fetch('/api/activity-stats');
-                const stats = await res.json();
-                const container = document.getElementById('activityStats');
-                container.innerHTML = '';
-                // 예시 형식: { contestCount:12, clubCount:8, externalCount:15 }
-                ['contestCount','clubCount','externalCount'].forEach(key => {
-                    const stat = document.createElement('div');
-                    stat.className = 'activity-stat';
-                    stat.innerHTML = `
-                        <div class="activity-number">${stats[key]}</div>
-                        <div class="activity-label">${key === 'contestCount' ? '진행중 공모전' : key === 'clubCount' ? '신입 모집 동아리' : '대외활동 기회'}</div>
-                    `;
-                    container.appendChild(stat);
-                });
-            } catch (err) {
-                console.error('활동 통계 로드 오류:', err);
-            }
-        }
+    // ---------------------------
+    // 지도 초기화 및 마커
+    // ---------------------------
 
-        // 맛집 정보 로드
-        async function loadRestaurantInfo() {
-            try {
-                const res = await fetch('/api/restaurants');
-                const restaurants = await res.json();
-                // 예: [{ id:1, name:'지지고 안양 연성대점', category:'한식', discount:'학생증 제시 시 15% 할인', likes:3 }, ...]
-                restaurants.sort((a,b) => (b.likes || 0) - (a.likes || 0));
-                const popular = restaurants.slice(0, 2);
-                const grid = document.getElementById('restaurantGrid');
-                grid.innerHTML = '';
-                popular.forEach(r => {
-                    const card = document.createElement('div');
-                    card.className = 'restaurant-card';
-                    card.onclick = () => window.open(`student-deals.html?id=${r.id}`, '_blank');
-                    const emojiMap = { '한식':'🍲','중식':'🥢','일식':'🍣','양식':'🍝','분식':'🍜','카페':'☕','술집':'🍺' };
-                    const icon = emojiMap[r.category] || '🍽️';
-                    card.innerHTML = `
-                        <div class="restaurant-image">${icon}</div>
-                        <div class="restaurant-info">
-                            <div class="restaurant-name">${r.name}</div>
-                            <div class="restaurant-category">${r.category}</div>
-                            <div class="restaurant-discount">${r.discount || '할인 없음'}</div>
-                            <div class="restaurant-likes">👍 ${r.likes || 0}</div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (err) {
-                console.error('맛집 정보 로드 오류:', err);
-            }
-        }
+    function initNaverMap() {
+      if (typeof naver === 'undefined' || !naver.maps) {
+        console.error('네이버 지도 API가 로드되지 않았습니다.');
+        return;
+      }
+      const mapContainer = document.getElementById('naverMap');
+      if (!mapContainer) return;
+      const yeonsung = new naver.maps.LatLng(
+        37.39661657434427,
+        126.90772437800818
+      );
+      const mapOptions = {
+        center: yeonsung,
+        zoom: 16,
+        minZoom: 14,
+        maxZoom: 19,
+        zoomControl: false,
+        logoControl: false,
+        mapDataControl: false,
+        scaleControl: false,
+      };
+      naverMap = new naver.maps.Map(mapContainer, mapOptions);
+    }
 
-        // 실시간 커뮤니티 로드
-        async function loadCommunityPosts() {
-            try {
-                const liveRes = await fetch('/api/community/live');
-                const livePosts = await liveRes.json();
-                const hotRes = await fetch('/api/community/hot');
-                const hotPosts = await hotRes.json();
-                const liveEl = document.getElementById('livePosts');
-                const hotEl = document.getElementById('hotPosts');
-                liveEl.innerHTML = '';
-                hotEl.innerHTML = '';
-                livePosts.forEach(p => {
-                    const item = document.createElement('div');
-                    item.className = 'notice-item';
-                    item.innerHTML = `
-                        <div class="notice-header">
-                            <span class="notice-category">${p.category}</span>
-                            <span class="notice-date">${p.time}</span>
-                        </div>
-                        <div class="notice-title">${p.title}</div>
-                        <div class="notice-summary">${p.summary}</div>
-                        <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-                            👍 ${p.likes} 💬 ${p.comments}
-                        </div>
-                    `;
-                    liveEl.appendChild(item);
-                });
-                hotPosts.forEach(p => {
-                    const item = document.createElement('div');
-                    item.className = 'notice-item';
-                    item.innerHTML = `
-                        <div class="notice-header">
-                            <span class="notice-category">${p.category}</span>
-                            <span class="notice-date">HOT</span>
-                        </div>
-                        <div class="notice-title">${p.title}</div>
-                        <div class="notice-summary">${p.summary}</div>
-                        <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-                            👍 ${p.likes} 💬 ${p.comments}
-                        </div>
-                    `;
-                    hotEl.appendChild(item);
-                });
-            } catch (err) {
-                console.error('커뮤니티 게시글 로드 오류:', err);
-            }
-        }
+    function addMapMarkers(buildings) {
+      if (!naverMap) return;
+      // 기존 마커 제거
+      mapMarkers.forEach((m) => m.setMap(null));
+      infoWindows.forEach((iw) => iw.close());
+      mapMarkers = [];
+      infoWindows = [];
 
-        // 강의평가 로드
-        async function loadLectureReviews() {
-            try {
-                const popularRes = await fetch('/api/reviews/popular');
-                const popular = await popularRes.json();
-                const recentRes = await fetch('/api/reviews/recent');
-                const recent = await recentRes.json();
-                const popEl = document.getElementById('popularReviews');
-                const recEl = document.getElementById('recentReviews');
-                popEl.innerHTML = '';
-                recEl.innerHTML = '';
-                popular.forEach(r => {
-                    const item = document.createElement('div');
-                    item.className = 'notice-item';
-                    item.innerHTML = `
-                        <div class="notice-header">
-                            <span class="notice-category">${r.category}</span>
-                            <span class="notice-date" style="color:#f59e0b;">${'★'.repeat(r.rating) + '☆'.repeat(5-r.rating)}</span>
-                        </div>
-                        <div class="notice-title">${r.title}</div>
-                        <div class="notice-summary">"${r.comment}"</div>
-                        <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-                            평점: ${r.rating}/5.0 | ${r.department}
-                        </div>
-                    `;
-                    popEl.appendChild(item);
-                });
-                recent.forEach(r => {
-                    const item = document.createElement('div');
-                    item.className = 'notice-item';
-                    item.innerHTML = `
-                        <div class="notice-header">
-                            <span class="notice-category">${r.category}</span>
-                            <span class="notice-date">${r.timeAgo}</span>
-                        </div>
-                        <div class="notice-title">${r.title}</div>
-                        <div class="notice-summary">"${r.comment}"</div>
-                        <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-                            평점: ${r.rating}/5.0 | ${r.department}
-                        </div>
-                    `;
-                    recEl.appendChild(item);
-                });
-            } catch (err) {
-                console.error('강의평가 로드 오류:', err);
-            }
-        }
+      buildings.forEach((b) => {
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(b.position.lat, b.position.lng),
+          map: naverMap,
+          title: b.name,
+        });
+        const infoWindow = new naver.maps.InfoWindow({
+          content: `
+            <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
+              <strong style="color: #3b82f6;">${b.name}</strong><br>
+              <span style="color: #94a3b8;">${b.description}</span>
+            </div>
+          `,
+          backgroundColor: 'transparent',
+          borderWidth: 0,
+          anchorSize: new naver.maps.Size(0, 0),
+        });
+        naver.maps.Event.addListener(marker, 'click', () => {
+          infoWindows.forEach((iw) => iw.close());
+          infoWindow.open(naverMap, marker);
+        });
+        mapMarkers.push(marker);
+        infoWindows.push(infoWindow);
+      });
+    }
 
-        // ---------------------------
-        // 지도 초기화 및 마커
-        // ---------------------------
+    // ---------------------------
+    // 시간표 업데이트
+    // ---------------------------
 
-        function initNaverMap() {
-            if (typeof naver === 'undefined' || !naver.maps) {
-                console.error('네이버 지도 API가 로드되지 않았습니다.');
-                return;
-            }
-            const mapContainer = document.getElementById('naverMap');
-            if (!mapContainer) return;
-            const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-            const mapOptions = {
-                center: yeonsung,
-                zoom: 16,
-                minZoom: 14,
-                maxZoom: 19,
-                zoomControl: false,
-                logoControl: false,
-                mapDataControl: false,
-                scaleControl: false
-            };
-            naverMap = new naver.maps.Map(mapContainer, mapOptions);
-        }
-
-        function addMapMarkers(buildings) {
-            if (!naverMap) return;
-            // 기존 마커 제거
-            mapMarkers.forEach(m => m.setMap(null));
-            infoWindows.forEach(iw => iw.close());
-            mapMarkers = [];
-            infoWindows = [];
-
-            buildings.forEach(b => {
-                const marker = new naver.maps.Marker({
-                    position: new naver.maps.LatLng(b.position.lat, b.position.lng),
-                    map: naverMap,
-                    title: b.name
-                });
-                const infoWindow = new naver.maps.InfoWindow({
-                    content: `
-                        <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
-                            <strong style="color: #3b82f6;">${b.name}</strong><br>
-                            <span style="color: #94a3b8;">${b.description}</span>
-                        </div>
-                    `,
-                    backgroundColor: 'transparent',
-                    borderWidth: 0,
-                    anchorSize: new naver.maps.Size(0, 0)
-                });
-                naver.maps.Event.addListener(marker, 'click', () => {
-                    infoWindows.forEach(iw => iw.close());
-                    infoWindow.open(naverMap, marker);
-                });
-                mapMarkers.push(marker);
-                infoWindows.push(infoWindow);
-            });
-        }
-
-        // ---------------------------
-        // 시간표 업데이트
-        // ---------------------------
-
-        function updateTimetable() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            const contentEl = document.getElementById('timetableContent');
-            if (!currentUser) {
-                contentEl.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                        <p>로그인하여 개인 시간표를 확인하세요</p>
-                    </div>
-                `;
-                return;
-            }
-            // 프론트엔드에서 백엔드로 시간표 요청 예시:
-            fetch(`/api/timetable?user=${encodeURIComponent(currentUser)}`)
-                .then(res => res.json())
-                .then(courses => {
-                    const now = new Date();
-                    const currentDay = now.getDay();
-                    const currentTime = now.getHours() * 60 + now.getMinutes();
-                    // 서버에서 받은 courses 예시: [{ name, room, professor, times:[{ day:1,start:0,end:0 },...] }, ...]
-                    const todayCourses = [];
-                    courses.forEach(course => {
-                        course.times.forEach(time => {
-                            if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
-                                const startHour = 8 + time.start;
-                                const startMinute = 30;
-                                const startTime = startHour * 60 + startMinute;
-                                const endHour = 8 + time.end + 1;
-                                const endMinute = 20;
-                                const endTime = endHour * 60 + endMinute;
-                                let status = 'upcoming';
-                                let timeInfo = '';
-                                if (currentTime >= startTime && currentTime < endTime) {
-                                    status = 'current';
-                                    const remaining = endTime - currentTime;
-                                    timeInfo = formatTimeRemaining(remaining, '종료까지');
-                                } else if (currentTime >= endTime) {
-                                    status = 'finished';
-                                    timeInfo = '수업 종료';
-                                } else {
-                                    const toStart = startTime - currentTime;
-                                    if (toStart > 0) {
-                                        status = 'upcoming';
-                                        timeInfo = formatTimeRemaining(toStart, '시작까지');
-                                    } else {
-                                        status = 'upcoming';
-                                        timeInfo = '곧 시작';
-                                    }
-                                }
-                                todayCourses.push({
-                                    name: course.name,
-                                    room: course.room,
-                                    professor: course.professor,
-                                    status,
-                                    timeInfo,
-                                    displayTime: `${String(startHour).padStart(2,'0')}:${String(startMinute).padStart(2,'0')}`,
-                                    startTime,
-                                });
-                            }
-                        });
-                    });
-                    todayCourses.sort((a,b) => a.startTime - b.startTime);
-                    if (todayCourses.length === 0) {
-                        contentEl.innerHTML = `
-                            <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                                <p>오늘은 수업이 없습니다</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    contentEl.innerHTML = '';
-                    todayCourses.forEach(ci => {
-                        const statusText = {current:'진행중', upcoming:'예정', finished:'종료'}[ci.status];
-                        const div = document.createElement('div');
-                        div.className = 'class-item';
-                        div.innerHTML = `
-                            <div class="class-time">
-                                <div class="class-time-main">${ci.displayTime}</div>
-                                <div class="class-time-remaining">${ci.timeInfo}</div>
-                            </div>
-                            <div class="class-info">
-                                <div class="class-name">${ci.name}</div>
-                                <div class="class-location">${ci.room || '강의실 미정'} | ${ci.professor || '교수명 미정'}</div>
-                            </div>
-                            <div class="class-status status-${ci.status}">${statusText}</div>
-                        `;
-                        contentEl.appendChild(div);
-                    });
-                })
-                .catch(err => {
-                    console.error('시간표 로드 오류:', err);
-                });
-        }
-
-        function formatTimeRemaining(minutes, suffix) {
-            if (minutes < 60) {
-                return `${minutes}분 ${suffix}`;
-            } else {
-                const hours = Math.floor(minutes / 60);
-                const remain = minutes % 60;
-                if (remain === 0) {
-                    return `${hours}시간 ${suffix}`;
+    function updateTimetable() {
+      const currentUser = localStorage.getItem('currentLoggedInUser');
+      const contentEl = document.getElementById('timetableContent');
+      if (!currentUser) {
+        contentEl.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+            <p>로그인하여 개인 시간표를 확인하세요</p>
+          </div>
+        `;
+        return;
+      }
+      fetch(`/api/timetable?user=${encodeURIComponent(currentUser)}`)
+        .then((res) => res.json())
+        .then((courses) => {
+          const now = new Date();
+          const currentDay = now.getDay();
+          const currentTime = now.getHours() * 60 + now.getMinutes();
+          const todayCourses = [];
+          courses.forEach((course) => {
+            course.times.forEach((time) => {
+              if (
+                time.day === currentDay ||
+                (currentDay === 0 && time.day === 6)
+              ) {
+                const startHour = 8 + time.start;
+                const startMinute = 30;
+                const startTime = startHour * 60 + startMinute;
+                const endHour = 8 + time.end + 1;
+                const endMinute = 20;
+                const endTime = endHour * 60 + endMinute;
+                let status = 'upcoming';
+                let timeInfo = '';
+                if (currentTime >= startTime && currentTime < endTime) {
+                  status = 'current';
+                  const remaining = endTime - currentTime;
+                  timeInfo = formatTimeRemaining(remaining, '종료까지');
+                } else if (currentTime >= endTime) {
+                  status = 'finished';
+                  timeInfo = '수업 종료';
                 } else {
-                    return `${hours}시간 ${remain}분 ${suffix}`;
+                  const toStart = startTime - currentTime;
+                  if (toStart > 0) {
+                    status = 'upcoming';
+                    timeInfo = formatTimeRemaining(toStart, '시작까지');
+                  } else {
+                    status = 'upcoming';
+                    timeInfo = '곧 시작';
+                  }
                 }
-            }
-        }
-
-        // ---------------------------
-        // 알림 함수들
-        // ---------------------------
-
-        function toggleNotifications() {
-            const dd = document.getElementById('notificationDropdown');
-            if (dd.classList.contains('show')) closeNotificationDropdown();
-            else showNotificationDropdown();
-        }
-        function showNotificationDropdown() {
-            closeUserDropdown();
-            document.getElementById('notificationDropdown').classList.add('show');
-        }
-        function closeNotificationDropdown() {
-            document.getElementById('notificationDropdown').classList.remove('show');
-        }
-        function markAsRead(el, id) {
-            if (el.classList.contains('unread')) {
-                el.classList.remove('unread');
-                unreadNotifications--;
-                fetch(`/api/notifications/${id}/read`, { method: 'POST' });
-                updateNotificationCount();
-            }
-        }
-        function markAllAsRead() {
-            document.querySelectorAll('.notification-item.unread').forEach(item => {
-                item.classList.remove('unread');
-            });
-            fetch('/api/notifications/mark-all-read', { method: 'POST' });
-            unreadNotifications = 0;
-            updateNotificationCount();
-            showMessage('모든 알림을 읽음 처리했습니다.', 'success');
-        }
-        function updateNotificationCount() {
-            const countEl = document.getElementById('notificationCount');
-            const dotEl = document.getElementById('notificationDot');
-            countEl.textContent = unreadNotifications;
-            dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
-        }
-
-        // ---------------------------
-        // 사용자 메뉴 함수
-        // ---------------------------
-
-        function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            if (!currentUser) {
-                if (confirm('로그인하시겠습니까?')) {
-                    window.open('login.html', '_blank');
-                }
-                return;
-            }
-            if (dropdown.classList.contains('show')) closeUserDropdown();
-            else showUserDropdown();
-        }
-        function showUserDropdown() {
-            closeNotificationDropdown();
-            document.getElementById('userDropdown').classList.add('show');
-        }
-        function closeUserDropdown() {
-            document.getElementById('userDropdown').classList.remove('show');
-        }
-        function closeAllDropdowns() {
-            closeNotificationDropdown();
-            closeUserDropdown();
-        }
-        function showProfile() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            if (currentUser) {
-                window.open('profile-edit.html', '_blank');
-            } else {
-                alert('로그인이 필요한 서비스입니다.');
-            }
-            closeUserDropdown();
-        }
-        function showSettings() {
-            alert('설정 페이지는 준비 중입니다.');
-            closeUserDropdown();
-        }
-        function handleLogout() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            if (currentUser) {
-                if (confirm('로그아웃 하시겠습니까?')) {
-                    localStorage.removeItem('currentLoggedInUser');
-                    checkUserStatus();
-                    showMessage('로그아웃 되었습니다', 'success');
-                    updateTimetable();
-                }
-            } else {
-                alert('로그인 상태가 아닙니다.');
-            }
-            closeUserDropdown();
-        }
-        function showLogoutSuccess() {
-            showMessage('로그아웃 되었습니다', 'success');
-        }
-
-        // ---------------------------
-        // 지도 컨트롤
-        // ---------------------------
-
-        function zoomIn() {
-            if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1);
-        }
-        function zoomOut() {
-            if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1);
-        }
-        function resetMapView() {
-            if (naverMap) {
-                const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-                naverMap.setCenter(yeonsung);
-                naverMap.setZoom(16);
-                infoWindows.forEach(iw => iw.close());
-            }
-        }
-        function trackUserLocation() {
-            if (!navigator.geolocation) {
-                alert('이 브라우저에서는 위치 추적 기능을 지원하지 않습니다.');
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                pos => {
-                    const userPos = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-                    if (userMarker) userMarker.setMap(null);
-                    userMarker = new naver.maps.Marker({
-                        position: userPos,
-                        map: naverMap,
-                        icon: {
-                            content: '<div style="background: #3b82f6; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>',
-                            anchor: new naver.maps.Point(10, 10)
-                        }
-                    });
-                    naverMap.setCenter(userPos);
-                    naverMap.setZoom(18);
-                    userLocation = pos.coords;
-                },
-                err => {
-                    console.error('위치 추적 오류:', err);
-                    alert('위치 정보를 가져올 수 없습니다.');
-                }
-            );
-        }
-
-        // ---------------------------
-        // 건물 관련 함수
-        // ---------------------------
-
-        function showBuildingOnMap(buildingId) {
-            fetch(`/api/buildings/${buildingId}`)
-                .then(res => res.json())
-                .then(b => {
-                    showContent('buildings');
-                    setTimeout(() => {
-                        const position = new naver.maps.LatLng(b.position.lat, b.position.lng);
-                        naverMap.setCenter(position);
-                        naverMap.setZoom(18);
-                        const idx = mapMarkers.findIndex(m => m.getTitle() === b.name);
-                        if (idx !== -1) {
-                            infoWindows.forEach(iw => iw.close());
-                            infoWindows[idx].open(naverMap, mapMarkers[idx]);
-                        }
-                    }, 500);
-                })
-                .catch(err => console.error('단일 건물 로드 오류:', err));
-        }
-        function getBuildingDirections(buildingId) {
-            if (!userLocation) {
-                alert('먼저 현재 위치를 확인해주세요.');
-                trackUserLocation();
-                return;
-            }
-            fetch(`/api/buildings/${buildingId}`)
-                .then(res => res.json())
-                .then(b => {
-                    const distance = calculateDistance(
-                        userLocation.latitude, userLocation.longitude,
-                        b.position.lat, b.position.lng
-                    );
-                    alert(`${b.name}까지 직선거리 약 ${Math.round(distance)}m입니다.`);
-                })
-                .catch(err => console.error('길찾기 오류:', err));
-        }
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371000;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
-
-        // ---------------------------
-        // 검색 기능
-        // ---------------------------
-
-        async function handleGlobalSearch() {
-            const query = document.getElementById('globalSearch').value.trim().toLowerCase();
-            if (!query) return;
-            // 건물 검색
-            try {
-                const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
-                const foundBuilding = await res.json();
-                if (foundBuilding) {
-                    showBuildingOnMap(foundBuilding.id);
-                    document.getElementById('globalSearch').value = '';
-                    return;
-                }
-            } catch {}
-            // 공지사항 검색
-            try {
-                const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
-                const foundNotice = await res.json();
-                if (foundNotice) {
-                    showContent('notices');
-                    document.getElementById('globalSearch').value = '';
-                    return;
-                }
-            } catch {}
-            alert('검색 결과를 찾을 수 없습니다.');
-        }
-
-        // ---------------------------
-        // 콘텐츠 전환
-        // ---------------------------
-
-        function showContent(type) {
-            const contents = ['homeContent','buildingsContent','noticesContent','servicesContent','communityContent','lecture-reviewContent'];
-            contents.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            });
-            const target = document.getElementById(type + 'Content');
-            if (target) {
-                target.style.display = 'block';
-                target.classList.add('fade-in');
-            }
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
-            currentContent = type;
-            if (type === 'buildings' && naverMap) {
-                setTimeout(() => naverMap.refresh(), 100);
-            }
-        }
-
-        // ---------------------------
-        // 빠른 링크
-        // ---------------------------
-
-        function openQuickLink(type) {
-            const links = {
-                'timetable':'timetable.html',
-                'shuttle':'shuttle_bus_tracker.html',
-                'activities':'activities.html',
-                'deals':'student-deals.html',
-                'academic-calendar':'academic-calendar.html'
-            };
-            if (links[type]) {
-                window.open(links[type], '_blank');
-            } else {
-                alert(`${type} 서비스는 준비 중입니다.`);
-            }
-        }
-
-        // ---------------------------
-        // 유저 상태 확인
-        // ---------------------------
-
-        function checkUserStatus() {
-            const currentUser = localStorage.getItem('currentLoggedInUser');
-            const userNameEl = document.getElementById('userName');
-            const userRoleEl = document.getElementById('userRole');
-            const dropdownNameEl = document.getElementById('dropdownUserName');
-            const dropdownRoleEl = document.getElementById('dropdownUserRole');
-            if (currentUser) {
-                fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-                    .then(res => res.json())
-                    .then(user => {
-                        userNameEl.textContent = user.name || '사용자';
-                        userRoleEl.textContent = user.department ? getDepartmentName(user.department) : '학생';
-                        if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
-                        if (dropdownRoleEl) dropdownRoleEl.textContent = user.department ? getDepartmentName(user.department) : '학생';
-                        updateProfileImage(user);
-                    })
-                    .catch(() => {
-                        userNameEl.textContent = '사용자';
-                        userRoleEl.textContent = '학생';
-                        if (dropdownNameEl) dropdownNameEl.textContent = '사용자';
-                        if (dropdownRoleEl) dropdownRoleEl.textContent = '학생';
-                    });
-            } else {
-                userNameEl.textContent = '게스트';
-                userRoleEl.textContent = '방문자';
-                if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
-                if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
-                document.getElementById('userAvatar').textContent = '👤';
-            }
-        }
-        function getDepartmentName(dept) {
-            const map = {
-                'computerScience':'컴퓨터정보학과',
-                'business':'경영학과',
-                'nursing':'간호학과',
-                'engineering':'공학계열',
-                'arts':'예술계열'
-            };
-            return map[dept] || dept;
-        }
-        function updateProfileImage(user) {
-            const avatarEl = document.getElementById('userAvatar');
-            if (user.profileImageType === 'emoji') {
-                avatarEl.textContent = user.profileImage || '👤';
-            } else {
-                avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
-            }
-        }
-
-        // ---------------------------
-        // 메시지 표시
-        // ---------------------------
-
-        function showMessage(message, type='info') {
-            const notification = document.createElement('div');
-            const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.9)' :
-                            type === 'error' ? 'rgba(239, 68, 68, 0.9)' :
-                            'rgba(59, 130, 246, 0.9)';
-            const icon = type === 'success' ? '✅' :
-                         type === 'error' ? '❌' :
-                         'ℹ️';
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: ${bgColor};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-                z-index: 10000;
-                font-weight: 600;
-                backdrop-filter: blur(20px);
-                border: 1px solid ${bgColor.replace('0.9', '0.3')};
-                animation: slideInRight 0.3s ease-out;
-            `;
-            notification.innerHTML = `
-                <div style="display:flex;align-items:center;gap:0.5rem;">
-                    <span>${icon}</span>
-                    <span>${message}</span>
-                </div>
-            `;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease-in';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // ---------------------------
-        // 이벤트 & 초기화
-        // ---------------------------
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
-
-            document.addEventListener('keydown', event => {
-                if (event.key === 'Escape') {
-                    closeAllDropdowns();
-                }
-            });
-
-            const searchInput = document.getElementById('globalSearch');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', e => {
-                    if (e.key === 'Enter') {
-                        handleGlobalSearch();
-                    }
+                todayCourses.push({
+                  name: course.name,
+                  room: course.room,
+                  professor: course.professor,
+                  status,
+                  timeInfo,
+                  displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(
+                    2,
+                    '0'
+                  )}`,
+                  startTime,
                 });
-            }
-
-            document.addEventListener('click', event => {
-                const ntBtn = event.target.closest('.notification-btn');
-                const upBtn = event.target.closest('.user-profile');
-                if (!ntBtn) closeNotificationDropdown();
-                if (!upBtn) closeUserDropdown();
+              }
             });
+          });
+          todayCourses.sort((a, b) => a.startTime - b.startTime);
+          if (todayCourses.length === 0) {
+            contentEl.innerHTML = `
+              <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                <p>오늘은 수업이 없습니다</p>
+              </div>
+            `;
+            return;
+          }
+          contentEl.innerHTML = '';
+          todayCourses.forEach((ci) => {
+            const statusText = {
+              current: '진행중',
+              upcoming: '예정',
+              finished: '종료',
+            }[ci.status];
+            const div = document.createElement('div');
+            div.className = 'class-item';
+            div.innerHTML = `
+              <div class="class-time">
+                <div class="class-time-main">${ci.displayTime}</div>
+                <div class="class-time-remaining">${ci.timeInfo}</div>
+              </div>
+              <div class="class-info">
+                <div class="class-name">${ci.name}</div>
+                <div class="class-location">${ci.room || '강의실 미정'} | ${
+              ci.professor || '교수명 미정'
+            }</div>
+              </div>
+              <div class="class-status status-${ci.status}">${statusText}</div>
+            `;
+            contentEl.appendChild(div);
+          });
+        })
+        .catch((err) => {
+          console.error('시간표 로드 오류:', err);
         });
+    }
 
-        async function initializeApp() {
-            initNaverMap();
-            loadStats();
-            loadNotifications();
-            loadBuildings();
-            loadNotices();
-            loadShuttleInfo();
-            loadActivityStats();
-            loadRestaurantInfo();
-            loadCommunityPosts();
-            loadLectureReviews();
-            checkUserStatus();
-            updateTimetable();
-            setInterval(() => {
-                loadShuttleInfo();
-                updateTimetable();
-                loadActivityStats();
-                loadRestaurantInfo();
-            }, 60000);
+    function formatTimeRemaining(minutes, suffix) {
+      if (minutes < 60) {
+        return `${minutes}분 ${suffix}`;
+      } else {
+        const hours = Math.floor(minutes / 60);
+        const remain = minutes % 60;
+        if (remain === 0) {
+          return `${hours}시간 ${suffix}`;
+        } else {
+          return `${hours}시간 ${remain}분 ${suffix}`;
         }
+      }
+    }
 
-        window.addEventListener('storage', event => {
-            if (event.key === 'currentLoggedInUser' || (event.key && event.key.includes('_profileImage'))) {
-                checkUserStatus();
-                updateTimetable();
-            }
-        });
+    // ---------------------------
+    // 알림 함수들
+    // ---------------------------
 
-        window.addEventListener('pageshow', event => {
-            if (event.persisted) {
-                checkUserStatus();
-                loadActivityStats();
-                loadRestaurantInfo();
-                updateTimetable();
-            }
-        });
+    function toggleNotifications() {
+      const dd = document.getElementById('notificationDropdown');
+      if (dd.classList.contains('show')) closeNotificationDropdown();
+      else showNotificationDropdown();
+    }
+    function showNotificationDropdown() {
+      closeUserDropdown();
+      document.getElementById('notificationDropdown').classList.add('show');
+    }
+    function closeNotificationDropdown() {
+      document.getElementById('notificationDropdown').classList.remove('show');
+    }
+    function markAsRead(el, id) {
+      if (el.classList.contains('unread')) {
+        el.classList.remove('unread');
+        unreadNotifications--;
+        fetch(`/api/notifications/${id}/read`, { method: 'POST' });
+        updateNotificationCount();
+      }
+    }
+    function markAllAsRead() {
+      document.querySelectorAll('.notification-item.unread').forEach((item) => {
+        item.classList.remove('unread');
+      });
+      fetch('/api/notifications/mark-all-read', { method: 'POST' });
+      unreadNotifications = 0;
+      updateNotificationCount();
+      showMessage('모든 알림을 읽음 처리했습니다.', 'success');
+    }
+    function updateNotificationCount() {
+      const countEl = document.getElementById('notificationCount');
+      const dotEl = document.getElementById('notificationDot');
+      countEl.textContent = unreadNotifications;
+      dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
+    }
 
-        // ---------------------------
-        // 사이드바 토글
-        // ---------------------------
+    // ---------------------------
+    // 사용자 메뉴 함수
+    // ---------------------------
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
+    function toggleUserMenu() {
+      const dropdown = document.getElementById('userDropdown');
+      const currentUser = localStorage.getItem('currentLoggedInUser');
+      if (!currentUser) {
+        if (confirm('로그인하시겠습니까?')) {
+          window.open('login.html', '_blank');
         }
-    </script>
+        return;
+      }
+      if (dropdown.classList.contains('show')) closeUserDropdown();
+      else showUserDropdown();
+    }
+    function showUserDropdown() {
+      closeNotificationDropdown();
+      document.getElementById('userDropdown').classList.add('show');
+    }
+    function closeUserDropdown() {
+      document.getElementById('userDropdown').classList.remove('show');
+    }
+    function closeAllDropdowns() {
+      closeNotificationDropdown();
+      closeUserDropdown();
+    }
+    function showProfile() {
+      const currentUser = localStorage.getItem('currentLoggedInUser');
+      if (currentUser) {
+        window.open('profile-edit.html', '_blank');
+      } else {
+        alert('로그인이 필요한 서비스입니다.');
+      }
+      closeUserDropdown();
+    }
+    function showSettings() {
+      alert('설정 페이지는 준비 중입니다.');
+      closeUserDropdown();
+    }
+    function handleLogout() {
+      const currentUser = localStorage.getItem('currentLoggedInUser');
+      if (currentUser) {
+        if (confirm('로그아웃 하시겠습니까?')) {
+          localStorage.removeItem('currentLoggedInUser');
+          checkUserStatus();
+          showMessage('로그아웃 되었습니다', 'success');
+          updateTimetable();
+        }
+      } else {
+        alert('로그인 상태가 아닙니다.');
+      }
+      closeUserDropdown();
+    }
+
+    // ---------------------------
+    // 지도 컨트롤
+    // ---------------------------
+
+    function zoomIn() {
+      if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1);
+    }
+    function zoomOut() {
+      if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1);
+    }
+    function resetMapView() {
+      if (naverMap) {
+        const yeonsung = new naver.maps.LatLng(
+          37.39661657434427,
+          126.90772437800818
+        );
+        naverMap.setCenter(yeonsung);
+        naverMap.setZoom(16);
+        infoWindows.forEach((iw) => iw.close());
+      }
+    }
+    function trackUserLocation() {
+      if (!navigator.geolocation) {
+        alert('이 브라우저에서는 위치 추적 기능을 지원하지 않습니다.');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userPos = new naver.maps.LatLng(
+            pos.coords.latitude,
+            pos.coords.longitude
+          );
+          if (userMarker) userMarker.setMap(null);
+          userMarker = new naver.maps.Marker({
+            position: userPos,
+            map: naverMap,
+            icon: {
+              content: '<div style="background: #3b82f6; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>',
+              anchor: new naver.maps.Point(10, 10),
+            },
+          });
+          naverMap.setCenter(userPos);
+          naverMap.setZoom(18);
+          userLocation = pos.coords;
+        },
+        (err) => {
+          console.error('위치 추적 오류:', err);
+          alert('위치 정보를 가져올 수 없습니다.');
+        }
+      );
+    }
+
+    // ---------------------------
+    // 건물 관련 함수
+    // ---------------------------
+
+    function showBuildingOnMap(buildingId) {
+      fetch(`/api/buildings/${buildingId}`)
+        .then((res) => res.json())
+        .then((b) => {
+          showContent('buildings');
+          setTimeout(() => {
+            const position = new naver.maps.LatLng(
+              b.position.lat,
+              b.position.lng
+            );
+            naverMap.setCenter(position);
+            naverMap.setZoom(18);
+            const idx = mapMarkers.findIndex((m) => m.getTitle() === b.name);
+            if (idx !== -1) {
+              infoWindows.forEach((iw) => iw.close());
+              infoWindows[idx].open(naverMap, mapMarkers[idx]);
+            }
+          }, 500);
+        })
+        .catch((err) => console.error('단일 건물 로드 오류:', err));
+    }
+    function getBuildingDirections(buildingId) {
+      if (!userLocation) {
+        alert('먼저 현재 위치를 확인해주세요.');
+        trackUserLocation();
+        return;
+      }
+      fetch(`/api/buildings/${buildingId}`)
+        .then((res) => res.json())
+        .then((b) => {
+          const distance = calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            b.position.lat,
+            b.position.lng
+          );
+          alert(`${b.name}까지 직선거리 약 ${Math.round(distance)}m입니다.`);
+        })
+        .catch((err) => console.error('길찾기 오류:', err));
+    }
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) *
+          Math.cos((lat2 * Math.PI) / 180) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // ---------------------------
+    // 검색 기능
+    // ---------------------------
+
+    async function handleGlobalSearch() {
+      const query = document.getElementById('globalSearch').value
+        .trim()
+        .toLowerCase();
+      if (!query) return;
+      // 건물 검색
+      try {
+        const res = await fetch(
+          `/api/buildings/search?q=${encodeURIComponent(query)}`
+        );
+        if (res.ok) {
+          const foundBuilding = await res.json();
+          showBuildingOnMap(foundBuilding.id);
+          document.getElementById('globalSearch').value = '';
+          return;
+        }
+      } catch {}
+      // 공지사항 검색
+      try {
+        const res = await fetch(
+          `/api/notices/search?q=${encodeURIComponent(query)}`
+        );
+        if (res.ok) {
+          const foundNotice = await res.json();
+          showContent('notices');
+          document.getElementById('globalSearch').value = '';
+          return;
+        }
+      } catch {}
+      alert('검색 결과를 찾을 수 없습니다.');
+    }
+
+    // ---------------------------
+    // 콘텐츠 전환
+    // ---------------------------
+
+    function showContent(type) {
+      const contents = [
+        'homeContent',
+        'buildingsContent',
+        'noticesContent',
+        'servicesContent',
+        'communityContent',
+        'lecture-reviewContent',
+      ];
+      contents.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+      const target = document.getElementById(type + 'Content');
+      if (target) {
+        target.style.display = 'block';
+        target.classList.add('fade-in');
+      }
+      document.querySelectorAll('.nav-item').forEach((item) => {
+        item.classList.remove('active');
+      });
+      event.target.closest('.nav-item').classList.add('active');
+      currentContent = type;
+      if (type === 'buildings' && naverMap) {
+        setTimeout(() => naverMap.refresh(), 100);
+      }
+    }
+
+    // ---------------------------
+    // 빠른 링크
+    // ---------------------------
+
+    function openQuickLink(type) {
+      const links = {
+        timetable: 'timetable.html',
+        shuttle: 'shuttle_bus_tracker.html',
+        activities: 'activities.html',
+        deals: 'student-deals.html',
+        'academic-calendar': 'academic-calendar.html',
+      };
+      if (links[type]) {
+        window.open(links[type], '_blank');
+      } else {
+        alert(`${type} 서비스는 준비 중입니다.`);
+      }
+    }
+
+    // ---------------------------
+    // 유저 상태 확인
+    // ---------------------------
+
+    function checkUserStatus() {
+      const currentUser = localStorage.getItem('currentLoggedInUser');
+      const userNameEl = document.getElementById('userName');
+      const userRoleEl = document.getElementById('userRole');
+      const dropdownNameEl = document.getElementById('dropdownUserName');
+      const dropdownRoleEl = document.getElementById('dropdownUserRole');
+      if (currentUser) {
+        fetch(`/api/users/${encodeURIComponent(currentUser)}`)
+          .then((res) => res.json())
+          .then((user) => {
+            userNameEl.textContent = user.name || '사용자';
+            userRoleEl.textContent = user.department
+              ? getDepartmentName(user.department)
+              : '학생';
+            if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
+            if (dropdownRoleEl)
+              dropdownRoleEl.textContent = user.department
+                ? getDepartmentName(user.department)
+                : '학생';
+            updateProfileImage(user);
+          })
+          .catch(() => {
+            userNameEl.textContent = '사용자';
+            userRoleEl.textContent = '학생';
+            if (dropdownNameEl) dropdownNameEl.textContent = '사용자';
+            if (dropdownRoleEl) dropdownRoleEl.textContent = '학생';
+          });
+      } else {
+        userNameEl.textContent = '게스트';
+        userRoleEl.textContent = '방문자';
+        if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
+        if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
+        document.getElementById('userAvatar').textContent = '👤';
+      }
+    }
+    function getDepartmentName(dept) {
+      const map = {
+        computerScience: '컴퓨터정보학과',
+        business: '경영학과',
+        nursing: '간호학과',
+        engineering: '공학계열',
+        arts: '예술계열',
+      };
+      return map[dept] || dept;
+    }
+    function updateProfileImage(user) {
+      const avatarEl = document.getElementById('userAvatar');
+      if (user.profileImageType === 'emoji') {
+        avatarEl.textContent = user.profileImage || '👤';
+      } else {
+        avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
+      }
+    }
+
+    // ---------------------------
+    // 메시지 표시
+    // ---------------------------
+
+    function showMessage(message, type = 'info') {
+      const notification = document.createElement('div');
+      const bgColor =
+        type === 'success'
+          ? 'rgba(16, 185, 129, 0.9)'
+          : type === 'error'
+          ? 'rgba(239, 68, 68, 0.9)'
+          : 'rgba(59, 130, 246, 0.9)';
+      const icon =
+        type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+      notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: ${bgColor};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        backdrop-filter: blur(20px);
+        border: 1px solid ${bgColor.replace('0.9', '0.3')};
+        animation: slideInRight 0.3s ease-out;
+      `;
+      notification.innerHTML = `
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span>${icon}</span>
+          <span>${message}</span>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // ---------------------------
+    // 이벤트 & 초기화
+    // ---------------------------
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeApp();
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeAllDropdowns();
+        }
+      });
+
+      const searchInput = document.getElementById('globalSearch');
+      if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            handleGlobalSearch();
+          }
+        });
+      }
+
+      document.addEventListener('click', (event) => {
+        const ntBtn = event.target.closest('.notification-btn');
+        const upBtn = event.target.closest('.user-profile');
+        if (!ntBtn) closeNotificationDropdown();
+        if (!upBtn) closeUserDropdown();
+      });
+    });
+
+    async function initializeApp() {
+      initNaverMap();
+      await loadStats();
+      await loadNotifications();
+      await loadBuildings();
+      await loadNotices();
+      await loadShuttleInfo();
+      await loadActivityStats();
+      await loadRestaurantInfo();
+      await loadCommunityPosts();
+      await loadLectureReviews();
+      checkUserStatus();
+      updateTimetable();
+      setInterval(() => {
+        loadShuttleInfo();
+        updateTimetable();
+        loadActivityStats();
+        loadRestaurantInfo();
+      }, 60000);
+    }
+
+    window.addEventListener('storage', (event) => {
+      if (
+        event.key === 'currentLoggedInUser' ||
+        (event.key && event.key.includes('_profileImage'))
+      ) {
+        checkUserStatus();
+        updateTimetable();
+      }
+    });
+
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        checkUserStatus();
+        loadActivityStats();
+        loadRestaurantInfo();
+        updateTimetable();
+      }
+    });
+
+    // ---------------------------
+    // 사이드바 토글
+    // ---------------------------
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+  </script>
 </body>
 </html>
