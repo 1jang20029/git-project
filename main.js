@@ -8,6 +8,42 @@ let currentContent = 'home';
 let unreadNotifications = 0;
 
 // ---------------------------
+// 테마(다크/라이트) 토글
+// ---------------------------
+const THEME_KEY = 'theme-preference';
+
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.documentElement.classList.add('light-theme');
+  } else {
+    document.documentElement.classList.remove('light-theme');
+  }
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark';
+  const next = current === 'light' ? 'dark' : 'light';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 로컬 스토리지에 테마 설정이 있으면 적용, 없으면 다크 모드 기본
+  const saved = localStorage.getItem(THEME_KEY);
+  applyTheme(saved === 'light' ? 'light' : 'dark');
+
+  // 설정(톱니바퀴 아이콘) 클릭 시 테마 전환
+  const toggleBtn = document.getElementById('toggleThemeBtn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      toggleTheme();
+      // 드롭다운 메뉴 닫기
+      closeUserDropdown();
+    });
+  }
+});
+
+// ---------------------------
 // 데이터 로드 함수들
 // ---------------------------
 
@@ -180,6 +216,7 @@ async function selectShuttleRoute(routeId) {
     document.querySelectorAll('.route-tab').forEach((tab) => {
       tab.classList.remove('active');
     });
+    // route-tab에서 routeId가 들어간 텍스트를 찾아 active 추가
     const tabs = Array.from(document.querySelectorAll('.route-tab'));
     const selectedTab = tabs.find((t) =>
       t.textContent.includes(routeId.toString())
@@ -380,10 +417,7 @@ function initNaverMap() {
   }
   const mapContainer = document.getElementById('naverMap');
   if (!mapContainer) return;
-  const yeonsung = new naver.maps.LatLng(
-    37.39661657434427,
-    126.90772437800818
-  );
+  const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
   const mapOptions = {
     center: yeonsung,
     zoom: 16,
@@ -455,10 +489,7 @@ function updateTimetable() {
       const todayCourses = [];
       courses.forEach((course) => {
         course.times.forEach((time) => {
-          if (
-            time.day === currentDay ||
-            (currentDay === 0 && time.day === 6)
-          ) {
+          if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
             const startHour = 8 + time.start;
             const startMinute = 30;
             const startTime = startHour * 60 + startMinute;
@@ -490,10 +521,9 @@ function updateTimetable() {
               professor: course.professor,
               status,
               timeInfo,
-              displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(
-                2,
-                '0'
-              )}`,
+              displayTime: `${String(startHour).padStart(2, '0')}:${String(
+                startMinute
+              ).padStart(2, '0')}`,
               startTime,
             });
           }
@@ -628,10 +658,6 @@ function showProfile() {
   }
   closeUserDropdown();
 }
-function showSettings() {
-  alert('설정 페이지는 준비 중입니다.');
-  closeUserDropdown();
-}
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -659,10 +685,7 @@ function zoomOut() {
 }
 function resetMapView() {
   if (naverMap) {
-    const yeonsung = new naver.maps.LatLng(
-      37.39661657434427,
-      126.90772437800818
-    );
+    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
     naverMap.setCenter(yeonsung);
     naverMap.setZoom(16);
     infoWindows.forEach((iw) => iw.close());
@@ -675,10 +698,7 @@ function trackUserLocation() {
   }
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      const userPos = new naver.maps.LatLng(
-        pos.coords.latitude,
-        pos.coords.longitude
-      );
+      const userPos = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
       if (userMarker) userMarker.setMap(null);
       userMarker = new naver.maps.Marker({
         position: userPos,
@@ -709,10 +729,7 @@ function showBuildingOnMap(buildingId) {
     .then((b) => {
       showContent('buildings');
       setTimeout(() => {
-        const position = new naver.maps.LatLng(
-          b.position.lat,
-          b.position.lng
-        );
+        const position = new naver.maps.LatLng(b.position.lat, b.position.lng);
         naverMap.setCenter(position);
         naverMap.setZoom(18);
         const idx = mapMarkers.findIndex((m) => m.getTitle() === b.name);
@@ -724,6 +741,7 @@ function showBuildingOnMap(buildingId) {
     })
     .catch((err) => console.error('단일 건물 로드 오류:', err));
 }
+
 function getBuildingDirections(buildingId) {
   if (!userLocation) {
     alert('먼저 현재 위치를 확인해주세요.');
@@ -733,16 +751,12 @@ function getBuildingDirections(buildingId) {
   fetch(`/api/buildings/${buildingId}`)
     .then((res) => res.json())
     .then((b) => {
-      const distance = calculateDistance(
-        userLocation.latitude,
-        userLocation.longitude,
-        b.position.lat,
-        b.position.lng
-      );
+      const distance = calculateDistance(userLocation.latitude, userLocation.longitude, b.position.lat, b.position.lng);
       alert(`${b.name}까지 직선거리 약 ${Math.round(distance)}m입니다.`);
     })
     .catch((err) => console.error('길찾기 오류:', err));
 }
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -762,15 +776,11 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // ---------------------------
 
 async function handleGlobalSearch() {
-  const query = document.getElementById('globalSearch').value
-    .trim()
-    .toLowerCase();
+  const query = document.getElementById('globalSearch').value.trim().toLowerCase();
   if (!query) return;
   // 건물 검색
   try {
-    const res = await fetch(
-      `/api/buildings/search?q=${encodeURIComponent(query)}`
-    );
+    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
       const foundBuilding = await res.json();
       showBuildingOnMap(foundBuilding.id);
@@ -780,11 +790,8 @@ async function handleGlobalSearch() {
   } catch {}
   // 공지사항 검색
   try {
-    const res = await fetch(
-      `/api/notices/search?q=${encodeURIComponent(query)}`
-    );
+    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
-      const foundNotice = await res.json();
       showContent('notices');
       document.getElementById('globalSearch').value = '';
       return;
@@ -798,14 +805,7 @@ async function handleGlobalSearch() {
 // ---------------------------
 
 function showContent(type) {
-  const contents = [
-    'homeContent',
-    'buildingsContent',
-    'noticesContent',
-    'servicesContent',
-    'communityContent',
-    'lecture-reviewContent',
-  ];
+  const contents = ['homeContent', 'buildingsContent', 'noticesContent', 'communityContent', 'lecture-reviewContent'];
   contents.forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
@@ -859,14 +859,10 @@ function checkUserStatus() {
       .then((res) => res.json())
       .then((user) => {
         userNameEl.textContent = user.name || '사용자';
-        userRoleEl.textContent = user.department
-          ? getDepartmentName(user.department)
-          : '학생';
+        userRoleEl.textContent = user.department ? getDepartmentName(user.department) : '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
         if (dropdownRoleEl)
-          dropdownRoleEl.textContent = user.department
-            ? getDepartmentName(user.department)
-            : '학생';
+          dropdownRoleEl.textContent = user.department ? getDepartmentName(user.department) : '학생';
         updateProfileImage(user);
       })
       .catch(() => {
@@ -874,6 +870,7 @@ function checkUserStatus() {
         userRoleEl.textContent = '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = '사용자';
         if (dropdownRoleEl) dropdownRoleEl.textContent = '학생';
+        document.getElementById('userAvatar').textContent = '👤';
       });
   } else {
     userNameEl.textContent = '게스트';
@@ -883,6 +880,7 @@ function checkUserStatus() {
     document.getElementById('userAvatar').textContent = '👤';
   }
 }
+
 function getDepartmentName(dept) {
   const map = {
     computerScience: '컴퓨터정보학과',
@@ -914,8 +912,7 @@ function showMessage(message, type = 'info') {
       : type === 'error'
       ? 'rgba(239, 68, 68, 0.9)'
       : 'rgba(59, 130, 246, 0.9)';
-  const icon =
-    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
   notification.style.cssText = `
     position: fixed;
     top: 100px;

@@ -11,8 +11,9 @@
     defer
   ></script>
 
-  <!-- 분리한 CSS -->
+  <!-- 메인 CSS -->
   <link rel="stylesheet" href="main.css" />
+
 </head>
 <body>
   <!-- 상단 네비게이션 -->
@@ -73,7 +74,7 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button class="dropdown-item" onclick="showSettings()">
+            <button class="dropdown-item" id="toggleThemeBtn">
               <span>⚙️</span>
               <span>설정</span>
             </button>
@@ -102,10 +103,7 @@
             <span class="nav-icon">🏢</span>
             <span>건물 & 시설</span>
           </li>
-          <li class="nav-item" onclick="showContent('services')">
-            <span class="nav-icon">🎯</span>
-            <span>학생 서비스</span>
-          </li>
+          <!-- “학생 서비스” 메뉴 제거됨 -->
           <li class="nav-item" onclick="showContent('community')">
             <span class="nav-icon">💬</span>
             <span>커뮤니티</span>
@@ -153,10 +151,6 @@
           <li class="nav-item" onclick="showProfile()">
             <span class="nav-icon">👤</span>
             <span>프로필</span>
-          </li>
-          <li class="nav-item" onclick="showSettings()">
-            <span class="nav-icon">⚙️</span>
-            <span>설정</span>
           </li>
           <li class="nav-item" onclick="handleLogout()">
             <span class="nav-icon">🚪</span>
@@ -416,7 +410,7 @@
     </main>
   </div>
 
-  <!-- 분리한 JS -->
+  <!-- 메인 JS -->
   <script src="main.js" defer></script>
 </body>
 </html>

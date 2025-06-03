@@ -1,20 +1,49 @@
+/* 
+  CSS 변수 정의: 다크/라이트 모드 전환 시 변수를 토글
+*/
+:root {
+  --bg-body: #0a0e27;
+  --color-text: #ffffff;
+  --nav-bg: rgba(15, 23, 42, 0.95);
+  --nav-border: rgba(148, 163, 184, 0.1);
+  --card-bg: rgba(30, 41, 59, 0.5);
+  --card-border: rgba(148, 163, 184, 0.1);
+  --blur-bg: rgba(15, 23, 42, 0.3);
+  --hover-bg: rgba(59, 130, 246, 0.1);
+  --dim-text: #94a3b8;
+}
+
+/* 라이트 모드 변수 오버라이드 */
+.light-theme {
+  --bg-body: #f5f5f5;
+  --color-text: #1a1a1a;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-border: rgba(200, 200, 200, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(200, 200, 200, 0.3);
+  --blur-bg: rgba(240, 240, 240, 0.5);
+  --hover-bg: rgba(220, 220, 220, 0.6);
+  --dim-text: #555555;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0a0e27;
-  color: #ffffff;
+  background: var(--bg-body);
+  color: var(--color-text);
   overflow-x: hidden;
 }
 
 /* 상단 네비게이션 */
 .top-nav {
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid var(--nav-border);
   padding: 1rem 2rem;
   position: fixed;
   top: 0;
@@ -67,7 +96,7 @@ body {
 .search-icon {
   position: absolute;
   left: 1rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 1.1rem;
 }
 .user-menu {
@@ -81,7 +110,7 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
   padding: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -100,12 +129,13 @@ body {
   background: #ef4444;
   border-radius: 50%;
 }
+
 /* 알림 드롭다운 */
 .notification-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
@@ -133,7 +163,7 @@ body {
 .notification-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
 }
 .notification-badge {
   background: #ef4444;
@@ -154,7 +184,7 @@ body {
   transition: all 0.3s ease;
 }
 .notification-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
 }
 .notification-item:last-child {
   border-bottom: none;
@@ -178,17 +208,17 @@ body {
   font-weight: 600;
 }
 .notification-time {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.75rem;
 }
 .notification-content {
-  color: #f1f5f9;
+  color: var(--color-text);
   font-weight: 500;
   margin-bottom: 0.25rem;
   line-height: 1.4;
 }
 .notification-summary {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.85rem;
   line-height: 1.3;
 }
@@ -200,7 +230,7 @@ body {
 .mark-all-read {
   background: none;
   border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #94a3b8;
+  color: var(--dim-text);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -210,8 +240,9 @@ body {
 .mark-all-read:hover {
   border-color: #3b82f6;
   color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
 }
+
 .user-profile {
   display: flex;
   align-items: center;
@@ -225,15 +256,16 @@ body {
   position: relative;
 }
 .user-profile:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   border-color: #3b82f6;
 }
+
 /* 사용자 드롭다운 메뉴 */
 .user-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
@@ -253,7 +285,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  color: #f1f5f9;
+  color: var(--color-text);
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
@@ -262,7 +294,7 @@ body {
   text-align: left;
 }
 .dropdown-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   color: #3b82f6;
 }
 .dropdown-divider {
@@ -277,42 +309,12 @@ body {
 }
 .dropdown-user-name {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 .dropdown-user-role {
   font-size: 0.85rem;
-  color: #94a3b8;
-}
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes slideOutRight {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100px);
-  }
+  color: var(--dim-text);
 }
 .avatar {
   width: 32px;
@@ -331,11 +333,11 @@ body {
 .user-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
 }
 .user-role {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
 }
 
 /* 메인 컨테이너 */
@@ -348,7 +350,7 @@ body {
 /* 사이드바 */
 .sidebar {
   width: 280px;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(148, 163, 184, 0.1);
   padding: 2rem 0;
@@ -358,6 +360,7 @@ body {
   bottom: 0;
   overflow-y: auto;
   z-index: 900;
+  transition: transform 0.3s ease;
 }
 .sidebar-section {
   margin-bottom: 2rem;
@@ -366,7 +369,7 @@ body {
 .sidebar-title {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--dim-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 1rem;
@@ -385,12 +388,12 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-weight: 500;
   position: relative;
 }
 .nav-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   color: #3b82f6;
 }
 .nav-item.active {
@@ -418,7 +421,7 @@ body {
   margin-left: 280px;
   flex: 1;
   padding: 2rem;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, var(--nav-bg) 0%, var(--card-bg) 100%);
 }
 .content-header {
   display: flex;
@@ -439,7 +442,7 @@ body {
   gap: 0.5rem;
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--dim-text);
 }
 
 /* 그리드 & 카드 */
@@ -473,9 +476,9 @@ body {
 .restaurant-card,
 .building-card,
 .notice-item {
-  background: rgba(30, 41, 59, 0.5);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
@@ -503,7 +506,7 @@ body {
 .stat-label,
 .activity-label {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-weight: 500;
 }
 .card-header {
@@ -515,7 +518,7 @@ body {
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
 }
 .card-icon {
   font-size: 1.5rem;
@@ -569,17 +572,17 @@ body {
   z-index: 100;
 }
 .map-control {
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
   padding: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .map-control:hover {
-  background: rgba(59, 130, 246, 0.2);
+  background: var(--hover-bg);
   color: #3b82f6;
   border-color: #3b82f6;
 }
@@ -600,7 +603,7 @@ body {
   transition: all 0.3s ease;
 }
 .class-item:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   border-color: rgba(59, 130, 246, 0.3);
 }
 .class-time {
@@ -618,7 +621,7 @@ body {
 }
 .class-time-remaining {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-weight: 400;
 }
 .class-info {
@@ -627,12 +630,12 @@ body {
 }
 .class-name {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 .class-location {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--dim-text);
 }
 .class-status {
   padding: 0.25rem 0.75rem;
@@ -676,13 +679,13 @@ body {
 }
 .route-name {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
 }
 .route-desc {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--dim-text);
 }
 .shuttle-status {
   background: rgba(15, 23, 42, 0.3);
@@ -702,7 +705,7 @@ body {
   margin-bottom: 0.5rem;
 }
 .shuttle-desc {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
@@ -748,17 +751,17 @@ body {
   font-weight: 600;
 }
 .notice-date {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.85rem;
 }
 .notice-title {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
 }
 .notice-summary {
-  color: #94a3b8;
+  color: var(--dim-text);
   line-height: 1.6;
   font-size: 0.9rem;
 }
@@ -770,11 +773,11 @@ body {
 .building-name {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.5rem;
 }
 .building-desc {
-  color: #94a3b8;
+  color: var(--dim-text);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -807,12 +810,12 @@ body {
 .btn-outline {
   background: transparent;
   border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #94a3b8;
+  color: var(--dim-text);
 }
 .btn-outline:hover {
   border-color: #3b82f6;
   color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
 }
 
 /* 활동 통계 */
@@ -831,7 +834,7 @@ body {
   margin-bottom: 0.25rem;
 }
 .activity-label {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.8rem;
 }
 
@@ -846,7 +849,7 @@ body {
   cursor: pointer;
 }
 .restaurant-card:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg);
   border-color: rgba(59, 130, 246, 0.3);
 }
 .restaurant-image {
@@ -865,7 +868,7 @@ body {
 }
 .restaurant-name {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 .restaurant-category {
@@ -879,7 +882,7 @@ body {
   font-weight: 500;
 }
 .restaurant-likes {
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
@@ -888,7 +891,6 @@ body {
 @media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
   }
   .sidebar.open {
     transform: translateX(0);
@@ -925,14 +927,34 @@ body {
 }
 
 /* 애니메이션 */
-@keyframes fadeInUp {
+@keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
   }
 }
 .fade-in {
@@ -975,7 +997,7 @@ body {
   display: none;
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--dim-text);
   font-size: 1.5rem;
   cursor: pointer;
 }
