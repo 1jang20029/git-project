@@ -904,7 +904,7 @@ function updateProfileImage(user) {
 
 // ================================
 // 메시지 표시 (토스트)
-– ================================
+// ================================
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
