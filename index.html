@@ -13,8 +13,6 @@
 
   <!-- 메인 스타일 -->
   <link rel="stylesheet" href="index.css" />
-  <!-- 설정 뷰 전용 스타일 -->
-  <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
   <!-- 상단 네비게이션 -->
@@ -120,28 +118,22 @@
         </ul>
       </div>
 
-      <!-- ▶ 빠른 접근 섹션 -->
+      <!-- ▶ 빠른 접근 섹션 (SPA 전환) -->
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list quick-access">
-          <!-- li 전체를 클릭 가능한 하나의 박스로 만든다 -->
-          <li class="nav-item" id="nav-timetable" onclick="activateQuick('nav-timetable')">
-            <a href="timetable.html" target="_blank">
-              <span class="nav-icon" title="내 시간표">📅</span>
-              <span>내 시간표</span>
-            </a>
+          <!-- li 전체를 클릭하면 showContent('timetable') 호출 -->
+          <li class="nav-item" id="nav-timetable" onclick="showContent('timetable')">
+            <span class="nav-icon" title="내 시간표">📅</span>
+            <span>내 시간표</span>
           </li>
-          <li class="nav-item" id="nav-shuttle" onclick="activateQuick('nav-shuttle')">
-            <a href="shuttle_bus.html" target="_blank">
-              <span class="nav-icon" title="셔틀버스">🚌</span>
-              <span>셔틀버스</span>
-            </a>
+          <li class="nav-item" id="nav-shuttle" onclick="showContent('shuttle')">
+            <span class="nav-icon" title="셔틀버스">🚌</span>
+            <span>셔틀버스</span>
           </li>
-          <li class="nav-item" id="nav-calendar" onclick="activateQuick('nav-calendar')">
-            <a href="academic-calendar.html" target="_blank">
-              <span class="nav-icon" title="학사일정">🗓️</span>
-              <span>학사일정</span>
-            </a>
+          <li class="nav-item" id="nav-calendar" onclick="showContent('calendar')">
+            <span class="nav-icon" title="학사일정">🗓️</span>
+            <span>학사일정</span>
           </li>
         </ul>
       </div>
@@ -202,7 +194,9 @@
               <h3 class="card-title">오늘의 시간표</h3>
               <span class="card-icon">📅</span>
             </div>
-            <div id="timetableContent"></div>
+            <div id="timetableContent">
+              <!-- 오늘 시간표 데이터가 동적으로 생성됩니다 -->
+            </div>
           </div>
           <!-- 셔틀버스 현황 -->
           <div class="card">
@@ -342,7 +336,55 @@
         <div class="notice-list" id="fullNoticeList"></div>
       </div>
 
-      <!-- 6) 프로필 -->
+      <!-- 6) 내 시간표 (빠른 접근 탭) -->
+      <div id="timetableContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>내 시간표</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>내 시간표</span>
+          </div>
+        </div>
+        <div class="sample-text">
+          여기에 사용자의 개인 시간표 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <!-- 7) 셔틀버스 (빠른 접근 탭) -->
+      <div id="shuttleContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>셔틀버스 정보</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>셔틀버스</span>
+          </div>
+        </div>
+        <div class="sample-text">
+          여기에 셔틀버스 노선 및 실시간 운행 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <!-- 8) 학사일정 (빠른 접근 탭) -->
+      <div id="calendarContentPane" class="content-pane" style="display: none;">
+        <div class="content-header">
+          <h1>학사일정</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>학사일정</span>
+          </div>
+        </div>
+        <div class="sample-text">
+          여기에 학사일정 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <!-- 9) 프로필 -->
       <div id="profileContentPane" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>프로필</h1>
@@ -352,10 +394,13 @@
             <span>프로필</span>
           </div>
         </div>
-        <!-- 프로필 편집 영역 -->
+        <div class="sample-text">
+          여기에 프로필 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
       </div>
 
-      <!-- 7) 설정 -->
+      <!-- 10) 설정 -->
       <div id="settingsContent" class="content-pane" style="display: none;">
         <div class="content-header">
           <h1>설정</h1>
@@ -369,7 +414,7 @@
           <!-- 다크/라이트 모드 토글 -->
           <div class="setting-item">
             <label for="themeToggle">다크/라이트 모드</label>
-            <input type="checkbox" id="themeToggle" />
+            <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
           </div>
           <!-- 알림 받기 토글 -->
           <div class="setting-item">
@@ -383,6 +428,5 @@
 
   <!-- 자바스크립트 -->
   <script src="index.js" defer></script>
-  <script src="settings.js" defer></script>
 </body>
 </html>

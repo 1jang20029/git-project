@@ -1,7 +1,7 @@
 // =============================================================================
 // index.js
 // ──────────────────────────────────────────────────────────────────────────────
-// 메인 페이지 동작 로직 (SPA: 해시 기반 탭 전환 포함) + “빠른 접근” 활성화
+// 메인 페이지 동작 로직 (SPA: 탭 전환 포함) + “빠른 접근” 활성화
 // =============================================================================
 
 let naverMap;
@@ -478,7 +478,7 @@ function addMapMarkers(buildings) {
 }
 
 // ---------------------------
-// 시간표 위젯 업데이트
+// 시간표 업데이트 (대시보드 위젯) 
 // ---------------------------
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -687,7 +687,7 @@ function handleLogout() {
 }
 
 // ---------------------------
-// 콘텐츠 전환 함수
+// 콘텐츠 전환 함수 (SPA 탭 전환)
 // ---------------------------
 function showContent(type) {
   // 1) 모든 .content-pane 숨기기
@@ -696,8 +696,41 @@ function showContent(type) {
   });
 
   // 2) 선택된 type의 pane만 보이기
-  const target = document.getElementById(type + 'Content') ||
-                 document.getElementById(type + 'ContentPane');
+  let target = null;
+  switch (type) {
+    case 'home':
+      target = document.getElementById('homeContent');
+      break;
+    case 'buildings':
+      target = document.getElementById('buildingsContent');
+      break;
+    case 'community':
+      target = document.getElementById('communityContent');
+      break;
+    case 'lecture-review':
+      target = document.getElementById('lecture-reviewContent');
+      break;
+    case 'notices':
+      target = document.getElementById('noticesContent');
+      break;
+    case 'timetable':
+      target = document.getElementById('timetableContentPane');
+      break;
+    case 'shuttle':
+      target = document.getElementById('shuttleContentPane');
+      break;
+    case 'calendar':
+      target = document.getElementById('calendarContentPane');
+      break;
+    case 'profile':
+      target = document.getElementById('profileContentPane');
+      break;
+    case 'settings':
+      target = document.getElementById('settingsContent');
+      break;
+    default:
+      target = document.getElementById('homeContent');
+  }
   if (target) {
     target.style.display = 'block';
     target.classList.add('fade-in');
@@ -851,30 +884,6 @@ function showMessage(message, type = 'info') {
 }
 
 // ---------------------------
-// “빠른 접근” 활성화 표시 토글 함수
-// ---------------------------  
-/**
- * activateQuick(id)
- * - 파라미터 id: 클릭된 <li> 태그의 id 값 (예: 'nav-timetable')
- * - 클릭된 항목만 .active 클래스를 붙이고, 나머지는 모두 제거한다.
- */
-function activateQuick(id) {
-  // 1) 모든 빠른 접근 li에서 .active 제거
-  const quickItems = ['nav-timetable', 'nav-shuttle', 'nav-calendar'];
-  quickItems.forEach((quickId) => {
-    const el = document.getElementById(quickId);
-    if (el) {
-      el.classList.remove('active');
-    }
-  });
-  // 2) 클릭된 항목만 .active 추가
-  const clicked = document.getElementById(id);
-  if (clicked) {
-    clicked.classList.add('active');
-  }
-}
-
-// ---------------------------
 // 모든 초기화 호출
 // ---------------------------
 async function initializeApp() {
@@ -922,4 +931,11 @@ window.addEventListener('pageshow', (event) => {
 // ---------------------------
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ---------------------------
+// 다크/라이트 모드 토글
+// ---------------------------
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
 }
