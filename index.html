@@ -11,8 +11,8 @@
     defer
   ></script>
 
-  <!-- 분리한 CSS -->
-  <link rel="stylesheet" href="index.css" />
+  <!-- 외부 CSS -->
+  <link rel="stylesheet" href="main.css" />
 </head>
 <body>
   <!-- 상단 네비게이션 -->
@@ -35,6 +35,7 @@
       </div>
 
       <div class="user-menu">
+        <!-- 알림 버튼 -->
         <div class="notification-btn" onclick="toggleNotifications()">
           🔔
           <div class="notification-dot" id="notificationDot"></div>
@@ -55,6 +56,7 @@
           </div>
         </div>
 
+        <!-- 사용자 프로필 -->
         <div class="user-profile" onclick="toggleUserMenu()">
           <div class="avatar" id="userAvatar">👤</div>
           <div class="user-info">
@@ -73,12 +75,17 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button class="dropdown-item" onclick="showSettings()">
+            <!-- 설정 모달 열기 -->
+            <button class="dropdown-item" id="openSettingsBtn">
               <span>⚙️</span>
               <span>설정</span>
             </button>
             <div class="dropdown-divider"></div>
-            <button class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
+            <button
+              class="dropdown-item"
+              onclick="handleLogout()"
+              style="color: #ef4444;"
+            >
               <span>🚪</span>
               <span>로그아웃</span>
             </button>
@@ -87,6 +94,40 @@
       </div>
     </div>
   </nav>
+
+  <!-- 설정 모달 (다크/라이트 및 기타 설정용) -->
+  <div id="settingsModalOverlay" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>설정</h2>
+        <button
+          class="modal-close-btn"
+          onclick="closeSettingsModal()"
+        >
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-section">
+          <h3>테마</h3>
+          <label class="toggle-switch">
+            <input type="checkbox" id="themeToggleCheckbox" />
+            <span class="slider"></span>
+            <span class="toggle-label">라이트 모드</span>
+          </label>
+        </div>
+        <!-- TODO: 다른 설정 섹션을 여기에 추가하세요 -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeSettingsModal()">
+          취소
+        </button>
+        <button class="btn btn-primary" onclick="saveSettings()">
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="main-container">
     <!-- 사이드바 -->
@@ -100,11 +141,7 @@
           </li>
           <li class="nav-item" onclick="showContent('buildings')">
             <span class="nav-icon">🏢</span>
-            <span>건물 & 시설</span>
-          </li>
-          <li class="nav-item" onclick="showContent('services')">
-            <span class="nav-icon">🎯</span>
-            <span>학생 서비스</span>
+            <span>건물 &amp; 시설</span>
           </li>
           <li class="nav-item" onclick="showContent('community')">
             <span class="nav-icon">💬</span>
@@ -132,18 +169,11 @@
             <span class="nav-icon">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <li class="nav-item" onclick="openQuickLink('activities')">
-            <span class="nav-icon">🌟</span>
-            <span>교내활동</span>
-          </li>
-          <li class="nav-item" onclick="openQuickLink('deals')">
-            <span class="nav-icon">🍽️</span>
-            <span>맛집정보</span>
-          </li>
           <li class="nav-item" onclick="openQuickLink('academic-calendar')">
-            <span class="nav-icon">📅</span>
+            <span class="nav-icon">📆</span>
             <span>학사일정</span>
           </li>
+          <!-- “교내 활동”과 “맛집정보” 항목을 제거했습니다 -->
         </ul>
       </div>
 
@@ -153,10 +183,6 @@
           <li class="nav-item" onclick="showProfile()">
             <span class="nav-icon">👤</span>
             <span>프로필</span>
-          </li>
-          <li class="nav-item" onclick="showSettings()">
-            <span class="nav-icon">⚙️</span>
-            <span>설정</span>
           </li>
           <li class="nav-item" onclick="handleLogout()">
             <span class="nav-icon">🚪</span>
@@ -172,7 +198,7 @@
       <div id="homeContent" class="fade-in">
         <div class="content-header">
           <div>
-            <h1>대시보드</h1>
+            <h1 class="dashboard-title">대시보드</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -183,7 +209,7 @@
 
         <!-- 통계 카드 -->
         <div class="stats-grid" id="statsGrid">
-          <!-- 통계 카드가 동적으로 로드됩니다 -->
+          <!-- 동적으로 로드 -->
         </div>
 
         <!-- 메인 위젯 그리드 -->
@@ -197,33 +223,41 @@
             <div class="map-container">
               <div id="naverMap" style="width: 100%; height: 100%;"></div>
               <div class="map-overlay">
-                <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
-                <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
-                <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
-                <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
+                <button class="map-control" onclick="zoomIn()" title="확대">
+                  🔍+
+                </button>
+                <button class="map-control" onclick="zoomOut()" title="축소">
+                  🔍-
+                </button>
+                <button class="map-control" onclick="resetMapView()" title="초기화">
+                  🏠
+                </button>
+                <button class="map-control" onclick="trackUserLocation()" title="내 위치">
+                  📍
+                </button>
               </div>
             </div>
           </div>
 
-          <!-- 시간표 위젯 -->
+          <!-- 오늘의 시간표 -->
           <div class="card timetable-card">
             <div class="card-header">
               <h3 class="card-title">오늘의 시간표</h3>
               <span class="card-icon">📅</span>
             </div>
             <div id="timetableContent">
-              <!-- 시간표 데이터가 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
 
-          <!-- 셔틀버스 위젯 -->
+          <!-- 셔틀버스 현황 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">셔틀버스 현황</h3>
               <span class="card-icon">🚌</span>
             </div>
             <div class="shuttle-routes" id="shuttleRoutes">
-              <!-- 노선 탭이 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
             <div class="shuttle-status">
               <div class="shuttle-time" id="shuttleTime">--</div>
@@ -232,46 +266,46 @@
             </div>
           </div>
 
-          <!-- 교내 활동 위젯 -->
+          <!-- 교내 활동 현황 (※ 메뉴에서 제거했으므로 빈 자리 유지 혹은 삭제 가능) -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">교내 활동 현황</h3>
-              <span class="card-icon">🌟</span>
+              <span class="card-icon">🔧</span>
             </div>
             <div class="activity-stats" id="activityStats">
-              <!-- 활동 통계 카드가 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
 
-          <!-- 인기 맛집 위젯 -->
+          <!-- 인기 맛집 (메뉴에서 제거했으므로 이 카드 전체를 삭제하거나 빈 박스로 둡니다) -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 맛집</h3>
               <span class="card-icon">🍽️</span>
             </div>
             <div class="restaurant-grid" id="restaurantGrid">
-              <!-- 맛집 카드가 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
 
-          <!-- 최근 공지사항 위젯 -->
+          <!-- 최근 공지사항 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">최근 공지사항</h3>
               <span class="card-icon">📢</span>
             </div>
             <div class="notice-list" id="recentNotices">
-              <!-- 최근 공지사항이 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 건물 안내 콘텐츠 -->
+      <!-- 건물 안내 -->
       <div id="buildingsContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>건물 & 시설 안내</h1>
+            <h1 class="dashboard-title">건물 &amp; 시설 안내</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -288,24 +322,32 @@
           <div class="map-container">
             <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
             <div class="map-overlay">
-              <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
-              <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
-              <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
-              <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
+              <button class="map-control" onclick="zoomIn()" title="확대">
+                🔍+
+              </button>
+              <button class="map-control" onclick="zoomOut()" title="축소">
+                🔍-
+              </button>
+              <button class="map-control" onclick="resetMapView()" title="초기화">
+                🏠
+              </button>
+              <button class="map-control" onclick="trackUserLocation()" title="내 위치">
+                📍
+              </button>
             </div>
           </div>
         </div>
 
         <div class="building-grid" id="buildingGrid">
-          <!-- 건물 카드들이 동적으로 생성됩니다 -->
+          <!-- 동적으로 로드 -->
         </div>
       </div>
 
-      <!-- 커뮤니티 콘텐츠 -->
+      <!-- 커뮤니티 -->
       <div id="communityContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>실시간 커뮤니티</h1>
+            <h1 class="dashboard-title">실시간 커뮤니티</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -315,35 +357,33 @@
         </div>
 
         <div class="dashboard-grid">
-          <!-- 실시간 게시글 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">실시간 게시글</h3>
               <span class="card-icon">💬</span>
             </div>
             <div class="notice-list" id="livePosts">
-              <!-- 실시간 게시글이 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
 
-          <!-- 인기 게시글 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 게시글</h3>
               <span class="card-icon">🔥</span>
             </div>
             <div class="notice-list" id="hotPosts">
-              <!-- 인기 게시글이 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 강의평가 콘텐츠 -->
+      <!-- 강의평가 -->
       <div id="lecture-reviewContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>강의평가</h1>
+            <h1 class="dashboard-title">강의평가</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -353,36 +393,33 @@
         </div>
 
         <div class="dashboard-grid">
-          <!-- 인기 강의평가 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">인기 강의평가</h3>
               <span class="card-icon">⭐</span>
             </div>
             <div class="notice-list" id="popularReviews">
-              <!-- 인기 리뷰가 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
 
-          <!-- 최근 강의평가 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">최근 강의평가</h3>
               <span class="card-icon">🕒</span>
             </div>
             <div class="notice-list" id="recentReviews">
-              <!-- 최근 리뷰가 동적으로 생성됩니다 -->
+              <!-- 동적으로 로드 -->
             </div>
           </div>
 
-          <!-- 강의평가 작성 -->
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">강의평가 작성</h3>
               <span class="card-icon">✍️</span>
             </div>
             <div style="padding: 1rem; text-align: center;">
-              <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+              <p style="color: var(--dim-text); margin-bottom: 1.5rem;">
                 수강 중인 강의에 대한 솔직한 평가를 남겨주세요
               </p>
               <button
@@ -396,11 +433,11 @@
         </div>
       </div>
 
-      <!-- 공지사항 콘텐츠 -->
+      <!-- 공지사항 -->
       <div id="noticesContent" style="display: none;">
         <div class="content-header">
           <div>
-            <h1>공지사항</h1>
+            <h1 class="dashboard-title">공지사항</h1>
             <div class="breadcrumb">
               <span>홈</span>
               <span>›</span>
@@ -410,13 +447,13 @@
         </div>
 
         <div class="notice-list" id="fullNoticeList">
-          <!-- 전체 공지사항이 동적으로 생성됩니다 -->
+          <!-- 동적으로 로드 -->
         </div>
       </div>
     </main>
   </div>
 
-  <!-- 분리한 JS -->
-  <script src="index.js" defer></script>
+  <!-- 외부 JS -->
+  <script src="main.js"></script>
 </body>
 </html>
