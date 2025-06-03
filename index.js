@@ -1,7 +1,7 @@
 // =============================================================================
 // index.js
 // ──────────────────────────────────────────────────────────────────────────────
-// 메인 페이지 동작 로직 (SPA: 해시 기반 탭 전환 포함)
+// 메인 페이지 동작 로직 (SPA: 해시 기반 탭 전환 포함) + “빠른 접근” 활성화
 // =============================================================================
 
 let naverMap;
@@ -688,7 +688,7 @@ function handleLogout() {
 
 // ---------------------------
 // 콘텐츠 전환 함수
-// ---------------------------  
+// ---------------------------
 function showContent(type) {
   // 1) 모든 .content-pane 숨기기
   document.querySelectorAll('.content-pane').forEach((el) => {
@@ -784,6 +784,7 @@ function checkUserStatus() {
     document.getElementById('userAvatar').textContent = '👤';
   }
 }
+
 function getDepartmentName(dept) {
   const map = {
     computerScience: '컴퓨터정보학과',
@@ -794,6 +795,7 @@ function getDepartmentName(dept) {
   };
   return map[dept] || dept;
 }
+
 function updateProfileImage(user) {
   const avatarEl = document.getElementById('userAvatar');
   if (user.profileImageType === 'emoji') {
@@ -846,6 +848,30 @@ function showMessage(message, type = 'info') {
       }
     }, 300);
   }, 3000);
+}
+
+// ---------------------------
+// “빠른 접근” 활성화 표시 토글 함수
+// ---------------------------  
+/**
+ * activateQuick(id)
+ * - 파라미터 id: 클릭된 <li> 태그의 id 값 (예: 'nav-timetable')
+ * - 클릭된 항목만 .active 클래스를 붙이고, 나머지는 모두 제거한다.
+ */
+function activateQuick(id) {
+  // 1) 모든 빠른 접근 li에서 .active 제거
+  const quickItems = ['nav-timetable', 'nav-shuttle', 'nav-calendar'];
+  quickItems.forEach((quickId) => {
+    const el = document.getElementById(quickId);
+    if (el) {
+      el.classList.remove('active');
+    }
+  });
+  // 2) 클릭된 항목만 .active 추가
+  const clicked = document.getElementById(id);
+  if (clicked) {
+    clicked.classList.add('active');
+  }
 }
 
 // ---------------------------

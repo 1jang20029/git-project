@@ -433,10 +433,12 @@ body {
   gap: 0.25rem;
 }
 
+/* ─────────── nav-item 기본 ─────────── */
 .nav-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  /* 이 패딩은 li 자체가 클릭 가능한 박스로 보이도록 한다 */
   padding: 0.75rem 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -446,16 +448,17 @@ body {
   position: relative;
 }
 
+/* 호버 시 배경 및 컬러 변화 (메인 메뉴와 동일) */
 .nav-item:hover {
   background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
 }
 
+/* 활성화된 메뉴 옆 왼쪽에 파란 바 + 배경 강조 */
 .nav-item.active {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
 }
-
 .nav-item.active::before {
   content: '';
   position: absolute;
@@ -467,7 +470,7 @@ body {
   border-radius: 0 2px 2px 0;
 }
 
-/* 아이콘에 title 속성 추가 → 툴팁으로 식별 가능 */
+/* 아이콘이 들어가는 span */
 .nav-icon {
   font-size: 1.25rem;
   width: 20px;
@@ -475,18 +478,24 @@ body {
   color: inherit;
 }
 
-/* “빠른 접근” 섹션 내 전체 박스 클릭 가능하도록 스타일 추가 */
+/* ─────────── “빠른 접근” 섹션 내 추가 스타일 ─────────── */
+/*
+   1) <li class="nav-item"> 내부의 <a> 태그가 li 전체 영역을 채워
+      클릭 시 박스 전체가 링크로 작동하도록 만든다.
+*/
 .sidebar .nav-list .nav-item a {
-  display: flex;              /* 아이콘+텍스트 가로 정렬 */
-  align-items: center;        /* 세로 중앙 정렬 */
-  gap: 0.75rem;               /* 아이콘과 텍스트 사이 간격 */
-  width: 100%;                /* 부모 li 전체 너비 차지 */
-  height: 100%;               /* 부모 li 전체 높이 차지 */
-  padding: 0.75rem 1rem;      /* li와 동일한 여백 */
-  color: inherit;             /* 부모 텍스트 색상 유지 */
-  text-decoration: none;      /* 밑줄 제거 */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+  /* li와 동일한 패딩으로 맞춘다 */
+  padding: 0.75rem 1rem;
+  color: inherit;
+  text-decoration: none;
 }
 
+/* 2) a 태그에 마우스 올렸을 때 li.hover 효과와 동일하게 */
 .sidebar .nav-list .nav-item a:hover {
   background: rgba(59, 130, 246, 0.1);
   border-radius: 8px;
