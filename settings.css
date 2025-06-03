@@ -114,6 +114,52 @@
   background: rgba(30, 41, 59, 0.95);
 }
 
+/* ─────────── 자동 새로고침(숫자 입력) ─────────── */
+#autoRefreshInterval {
+  width: 80px;
+  padding: 0.3rem;
+  background: rgba(30, 41, 59, 0.8);
+  color: #f1f5f9;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+#autoRefreshInterval:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* ─────────── 지도 기본 줌 레벨 ─────────── */
+#mapZoomRange {
+  width: 150px;
+  cursor: pointer;
+}
+
+#mapZoomRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+#mapZoomRange::-webkit-slider-runnable-track {
+  height: 6px;
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 3px;
+}
+
+#mapZoomRange:focus {
+  outline: none;
+}
+
 /* ─────────── 반응형 조정 ─────────── */
 @media (max-width: 768px) {
   .settings-container {
