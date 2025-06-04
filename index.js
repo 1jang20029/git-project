@@ -1381,7 +1381,7 @@ function toggleSidebar() {
 }
 
 // ------------------------------
-// navigateToTimetable: 내 시간표 페이지로 이동 (현재는 별도 페이지로 설정된 링크)
+// navigateToTimetable: 내 시간표 페이지로 이동 
 // ------------------------------
 function navigateToTimetable() {
   window.location.href = 'timetable.html';
