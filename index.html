@@ -5,12 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
 
+  <!-- 네이버 지도 API -->
   <script
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
     defer
   ></script>
 
+  <!-- 공통 스타일 -->
   <link rel="stylesheet" href="index.css" />
+
+  <!-- 분리된 설정 화면 전용 스타일 -->
+  <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
   <nav id="top-nav">
@@ -39,8 +44,7 @@
               <div id="notification-title">알림</div>
               <div id="notification-badge">0</div>
             </div>
-            <div id="notification-list">
-            </div>
+            <div id="notification-list"></div>
             <div id="notification-footer">
               <button id="mark-all-read" onclick="markAllAsRead()">
                 모두 읽음 처리
@@ -58,9 +62,7 @@
           <div id="user-dropdown">
             <div id="dropdown-user-info">
               <div id="dropdown-user-name">게스트</div>
-              <div id="dropdown-user-role">
-                방문자
-              </div>
+              <div id="dropdown-user-role">방문자</div>
             </div>
             <button id="dropdown-item-profile" onclick="showProfile()">
               <span>👤</span>
@@ -147,6 +149,7 @@
     </aside>
 
     <main id="content-area">
+      <!-- 홈 (대시보드) 화면 -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -178,8 +181,7 @@
               <h3 id="card-title-timetable">오늘의 시간표</h3>
               <span id="card-icon-timetable">📅</span>
             </div>
-            <div id="timetableContent">
-            </div>
+            <div id="timetableContent"></div>
           </div>
           <div id="shuttle-card">
             <div id="card-header-shuttle">
@@ -203,6 +205,7 @@
         </div>
       </div>
 
+      <!-- 건물 & 시설 안내 화면 -->
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
@@ -230,6 +233,7 @@
         <div id="buildingGrid"></div>
       </div>
 
+      <!-- 커뮤니티 화면 -->
       <div id="communityContent" style="display: none;">
         <div id="content-header-community">
           <h1 id="title-community">실시간 커뮤니티</h1>
@@ -257,6 +261,7 @@
         </div>
       </div>
 
+      <!-- 강의평가 화면 -->
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
@@ -298,6 +303,7 @@
         </div>
       </div>
 
+      <!-- 공지사항 화면 -->
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
@@ -310,6 +316,7 @@
         <div id="fullNoticeList"></div>
       </div>
 
+      <!-- 내 시간표 화면 -->
       <div id="timetableContentPane" style="display: none;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
@@ -325,6 +332,7 @@
         </div>
       </div>
 
+      <!-- 셔틀버스 화면 -->
       <div id="shuttleContentPane" style="display: none;">
         <div id="content-header-shuttle-pane">
           <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
@@ -340,6 +348,7 @@
         </div>
       </div>
 
+      <!-- 학사일정 화면 -->
       <div id="calendarContentPane" style="display: none;">
         <div id="content-header-calendar-pane">
           <h1 id="title-calendar-pane">학사일정</h1>
@@ -355,6 +364,7 @@
         </div>
       </div>
 
+      <!-- 프로필 화면 -->
       <div id="profileContentPane" style="display: none;">
         <div id="content-header-profile-pane">
           <h1 id="title-profile-pane">프로필</h1>
@@ -370,78 +380,14 @@
         </div>
       </div>
 
-      <div id="settingsContent" style="display: none;">
-        <div id="content-header-settings">
-          <h1 id="title-settings">설정</h1>
-          <div id="breadcrumb-settings">
-            <span>홈</span>
-            <span>›</span>
-            <span>설정</span>
-          </div>
-        </div>
-        <div id="settings-container">
-          <!-- 기존 다크/라이트 모드 토글 -->
-          <div class="setting-item">
-            <label for="themeToggle">다크/라이트 모드</label>
-            <input type="checkbox" id="themeToggle" />
-          </div>
-
-          <!-- 알림 받기 토글(전체) -->
-          <div class="setting-item">
-            <label for="notificationToggle">알림 받기</label>
-            <input type="checkbox" id="notificationToggle" />
-          </div>
-
-          <!-- 카테고리별 알림 설정 -->
-          <div class="setting-item">
-            <label for="notifyNotices">공지사항 알림</label>
-            <input type="checkbox" id="notifyNotices" />
-          </div>
-          <div class="setting-item">
-            <label for="notifyCommunity">커뮤니티 알림</label>
-            <input type="checkbox" id="notifyCommunity" />
-          </div>
-          <div class="setting-item">
-            <label for="notifyShuttle">셔틀버스 알림</label>
-            <input type="checkbox" id="notifyShuttle" />
-          </div>
-          <div class="setting-item">
-            <label for="notifyTimetable">시간표 알림</label>
-            <input type="checkbox" id="notifyTimetable" />
-          </div>
-
-          <!-- 방해 금지 모드 설정 -->
-          <div class="setting-item">
-            <label for="dndStart">방해 금지 시작</label>
-            <input type="time" id="dndStart" />
-          </div>
-          <div class="setting-item">
-            <label for="dndEnd">방해 금지 종료</label>
-            <input type="time" id="dndEnd" />
-          </div>
-
-          <!-- 자동 로그아웃 설정 -->
-          <div class="setting-item">
-            <label for="autoLogout">자동 로그아웃 (분)</label>
-            <select id="autoLogout">
-              <option value="0">꺼짐</option>
-              <option value="5">5분</option>
-              <option value="15">15분</option>
-              <option value="30">30분</option>
-              <option value="60">60분</option>
-            </select>
-          </div>
-
-          <!-- 키보드 단축키 설정 -->
-          <div class="setting-item">
-            <label for="enableShortcuts">키보드 단축키 활성화</label>
-            <input type="checkbox" id="enableShortcuts" />
-          </div>
-        </div>
-      </div>
+      <!-- **설정 화면은 처음엔 빈 컨테이너, 동적으로 로드** -->
+      <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
+  <!-- 공통 자바스크립트 -->
   <script src="index.js" defer></script>
+  <!-- 분리된 설정 화면 전용 자바스크립트 -->
+  <script src="settings.js" defer></script>
 </body>
 </html>
