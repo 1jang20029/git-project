@@ -38,6 +38,25 @@
   accent-color: #3b82f6;
 }
 
+/* 드롭다운(SELECT) 기본 스타일 */
+.setting-item select {
+  background: rgba(30, 41, 59, 0.8);
+  color: #f1f5f9;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 4px;
+  padding: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 드롭다운 포커스 시 스타일 변경 */
+.setting-item select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: rgba(30, 41, 59, 0.95);
+}
+
 /* 반응형: 좁은 화면에서 여백 축소 */
 @media (max-width: 768px) {
   .settings-container {
