@@ -154,11 +154,13 @@ function initSettingsPage() {
   const shortcutToggleSidebar = document.getElementById('shortcutToggleSidebar');
   const shortcutOpenNotifications = document.getElementById('shortcutOpenNotifications');
   const shortcutGoToSettings = document.getElementById('shortcutGoToSettings');
+
   const defaultShortcuts = {
     toggleSidebar: 'F2',
     openNotifications: 'F3',
     goToSettings: 'F4'
   };
+
   const savedShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
 
   if (shortcutToggleSidebar && shortcutOpenNotifications && shortcutGoToSettings) {
@@ -167,7 +169,7 @@ function initSettingsPage() {
     shortcutOpenNotifications.value = savedShortcuts.openNotifications;
     shortcutGoToSettings.value = savedShortcuts.goToSettings;
 
-    // 클릭 시 포커스된 상태를 인지하도록
+    // 포커스 시 “키를 눌러주세요” 플레이스홀더 표시
     shortcutToggleSidebar.addEventListener('focus', () => {
       shortcutToggleSidebar.value = '';
       shortcutToggleSidebar.placeholder = '키를 눌러주세요';
@@ -181,18 +183,39 @@ function initSettingsPage() {
       shortcutGoToSettings.placeholder = '키를 눌러주세요';
     });
 
-    // 각 입력창에 keydown 리스너를 걸어, 누른 키를 즉시 저장하도록 구현
+    // 중복 검사를 위한 헬퍼 함수
+    function isDuplicateKey(key) {
+      const ks = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+      // 현재 저장된 키들 중 하나와 겹치는지 확인
+      return (
+        ks.toggleSidebar === key ||
+        ks.openNotifications === key ||
+        ks.goToSettings === key
+      );
+    }
+
+    // 단축키 설정 시, 다른 단축키와 중복되지 않도록 검사하고 저장
     shortcutToggleSidebar.addEventListener('keydown', (e) => {
       e.preventDefault();
       const val = e.key.toUpperCase();
       if (val.length === 1 || val.startsWith('F')) {
-        const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
-        current.toggleSidebar = val;
-        localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
-        shortcutToggleSidebar.value = val;
-        shortcutToggleSidebar.placeholder = shortcutToggleSidebar.getAttribute('data-default-placeholder');
-        showMessage(`“사이드바 토글” 단축키가 ${val}로 변경되었습니다`, 'success');
-        shortcutToggleSidebar.blur();
+        if (isDuplicateKey(val) && savedShortcuts.toggleSidebar !== val) {
+          // 이미 할당된 키이면 알림 후 변경하지 않음
+          showMessage(`이미 다른 기능에 사용 중인 키입니다: ${val}`, 'error');
+          // placeholder를 원래대로 돌려놓고 blur
+          shortcutToggleSidebar.placeholder = shortcutToggleSidebar.getAttribute('data-default-placeholder');
+          shortcutToggleSidebar.value = '';
+          shortcutToggleSidebar.blur();
+        } else {
+          // 중복이 아니면 저장
+          const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+          current.toggleSidebar = val;
+          localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+          shortcutToggleSidebar.value = val;
+          shortcutToggleSidebar.placeholder = shortcutToggleSidebar.getAttribute('data-default-placeholder');
+          showMessage(`“사이드바 토글” 단축키가 ${val}로 변경되었습니다`, 'success');
+          shortcutToggleSidebar.blur();
+        }
       }
     });
 
@@ -200,13 +223,20 @@ function initSettingsPage() {
       e.preventDefault();
       const val = e.key.toUpperCase();
       if (val.length === 1 || val.startsWith('F')) {
-        const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
-        current.openNotifications = val;
-        localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
-        shortcutOpenNotifications.value = val;
-        shortcutOpenNotifications.placeholder = shortcutOpenNotifications.getAttribute('data-default-placeholder');
-        showMessage(`“알림 열기” 단축키가 ${val}로 변경되었습니다`, 'success');
-        shortcutOpenNotifications.blur();
+        if (isDuplicateKey(val) && savedShortcuts.openNotifications !== val) {
+          showMessage(`이미 다른 기능에 사용 중인 키입니다: ${val}`, 'error');
+          shortcutOpenNotifications.placeholder = shortcutOpenNotifications.getAttribute('data-default-placeholder');
+          shortcutOpenNotifications.value = '';
+          shortcutOpenNotifications.blur();
+        } else {
+          const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+          current.openNotifications = val;
+          localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+          shortcutOpenNotifications.value = val;
+          shortcutOpenNotifications.placeholder = shortcutOpenNotifications.getAttribute('data-default-placeholder');
+          showMessage(`“알림 열기” 단축키가 ${val}로 변경되었습니다`, 'success');
+          shortcutOpenNotifications.blur();
+        }
       }
     });
 
@@ -214,17 +244,24 @@ function initSettingsPage() {
       e.preventDefault();
       const val = e.key.toUpperCase();
       if (val.length === 1 || val.startsWith('F')) {
-        const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
-        current.goToSettings = val;
-        localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
-        shortcutGoToSettings.value = val;
-        shortcutGoToSettings.placeholder = shortcutGoToSettings.getAttribute('data-default-placeholder');
-        showMessage(`“설정 화면” 단축키가 ${val}로 변경되었습니다`, 'success');
-        shortcutGoToSettings.blur();
+        if (isDuplicateKey(val) && savedShortcuts.goToSettings !== val) {
+          showMessage(`이미 다른 기능에 사용 중인 키입니다: ${val}`, 'error');
+          shortcutGoToSettings.placeholder = shortcutGoToSettings.getAttribute('data-default-placeholder');
+          shortcutGoToSettings.value = '';
+          shortcutGoToSettings.blur();
+        } else {
+          const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+          current.goToSettings = val;
+          localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+          shortcutGoToSettings.value = val;
+          shortcutGoToSettings.placeholder = shortcutGoToSettings.getAttribute('data-default-placeholder');
+          showMessage(`“설정 화면” 단축키가 ${val}로 변경되었습니다`, 'success');
+          shortcutGoToSettings.blur();
+        }
       }
     });
 
-    // 포커스가 벗어났을 때 빈 값으로 남지 않도록
+    // 블러(blur) 시 저장된 키가 항상 보이도록 설정
     shortcutToggleSidebar.addEventListener('blur', () => {
       const curr = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
       shortcutToggleSidebar.value = curr.toggleSidebar;
