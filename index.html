@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
 
-  <!-- 네이버 지도 API (defer) -->
   <script
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
     defer
   ></script>
 
-  <!-- 메인 스타일 -->
   <link rel="stylesheet" href="index.css" />
 </head>
 <body>
-  <!-- 상단 네비게이션 -->
   <nav id="top-nav">
     <div id="nav-brand">
       <button id="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
@@ -37,14 +34,12 @@
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
           <div id="notification-dot"></div>
-          <!-- 알림 드롭다운 -->
           <div id="notification-dropdown">
             <div id="notification-header">
               <div id="notification-title">알림</div>
               <div id="notification-badge">0</div>
             </div>
             <div id="notification-list">
-              <!-- 알림 항목이 동적으로 로드됩니다 -->
             </div>
             <div id="notification-footer">
               <button id="mark-all-read" onclick="markAllAsRead()">
@@ -60,7 +55,6 @@
             <div id="user-name">게스트</div>
             <div id="user-role">방문자</div>
           </div>
-          <!-- 사용자 드롭다운 메뉴 -->
           <div id="user-dropdown">
             <div id="dropdown-user-info">
               <div id="dropdown-user-name">게스트</div>
@@ -88,9 +82,7 @@
   </nav>
 
   <div id="main-container">
-    <!-- 사이드바 (메뉴 박스는 그대로 class로 유지) -->
     <aside class="sidebar" id="sidebar">
-      <!-- ▶ 메인 메뉴 섹션 -->
       <div class="sidebar-section">
         <div class="sidebar-title">메인 메뉴</div>
         <ul class="nav-list">
@@ -117,11 +109,9 @@
         </ul>
       </div>
 
-      <!-- ▶ 빠른 접근 섹션 (별도 HTML 페이지로 이동) -->
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
         <ul class="nav-list quick-access">
-          <!-- li 전체를 클릭하면 별도 HTML 페이지로 이동 -->
           <li class="nav-item" id="nav-timetable" onclick="navigateToTimetable()">
             <span class="nav-icon" title="내 시간표">📅</span>
             <span>내 시간표</span>
@@ -137,7 +127,6 @@
         </ul>
       </div>
 
-      <!-- ▶ 계정 섹션 -->
       <div class="sidebar-section">
         <div class="sidebar-title">계정</div>
         <ul class="nav-list">
@@ -157,9 +146,7 @@
       </div>
     </aside>
 
-    <!-- ▶ 메인 콘텐츠 영역 -->
     <main id="content-area">
-      <!-- 1) 홈 대시보드 -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -171,7 +158,6 @@
         </div>
         <div id="statsGrid"></div>
         <div id="dashboardGrid">
-          <!-- 지도 카드 -->
           <div id="map-card">
             <div id="card-header-map">
               <h3 id="card-title-map">캠퍼스 지도</h3>
@@ -187,17 +173,14 @@
               </div>
             </div>
           </div>
-          <!-- 오늘의 시간표 -->
           <div id="timetable-card">
             <div id="card-header-timetable">
               <h3 id="card-title-timetable">오늘의 시간표</h3>
               <span id="card-icon-timetable">📅</span>
             </div>
             <div id="timetableContent">
-              <!-- 오늘 시간표 데이터가 동적으로 생성됩니다 -->
             </div>
           </div>
-          <!-- 셔틀버스 현황 -->
           <div id="shuttle-card">
             <div id="card-header-shuttle">
               <h3 id="card-title-shuttle">셔틀버스 현황</h3>
@@ -210,7 +193,6 @@
               <div id="shuttleStatus">--</div>
             </div>
           </div>
-          <!-- 최근 공지사항 -->
           <div id="notice-card">
             <div id="card-header-notice">
               <h3 id="card-title-notice">최근 공지사항</h3>
@@ -221,7 +203,6 @@
         </div>
       </div>
 
-      <!-- 2) 건물 & 시설 -->
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
@@ -231,25 +212,9 @@
             <span>건물 안내</span>
           </div>
         </div>
-        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
-          <div id="card-header-buildings-map">
-            <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
-            <span id="card-icon-buildings-map">🗺️</span>
-          </div>
-          <div id="buildings-map-container">
-            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
-            <div id="buildings-map-overlay">
-              <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
-              <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
-              <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
-              <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
-            </div>
-          </div>
-        </div>
         <div id="buildingGrid"></div>
       </div>
 
-      <!-- 3) 커뮤니티 -->
       <div id="communityContent" style="display: none;">
         <div id="content-header-community">
           <h1 id="title-community">실시간 커뮤니티</h1>
@@ -277,7 +242,6 @@
         </div>
       </div>
 
-      <!-- 4) 강의평가 -->
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
@@ -319,7 +283,6 @@
         </div>
       </div>
 
-      <!-- 5) 공지사항 -->
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
@@ -332,55 +295,6 @@
         <div id="fullNoticeList"></div>
       </div>
 
-      <!-- 6) 내 시간표 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
-      <div id="timetableContentPane" style="display: none;">
-        <div id="content-header-timetable-pane">
-          <h1 id="title-timetable-pane">내 시간표</h1>
-          <div id="breadcrumb-timetable-pane">
-            <span>홈</span>
-            <span>›</span>
-            <span>내 시간표</span>
-          </div>
-        </div>
-        <div id="timetable-sample-text">
-          여기에 사용자의 개인 시간표 정보를 표시합니다.<br />
-          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
-        </div>
-      </div>
-
-      <!-- 7) 셔틀버스 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
-      <div id="shuttleContentPane" style="display: none;">
-        <div id="content-header-shuttle-pane">
-          <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
-          <div id="breadcrumb-shuttle-pane">
-            <span>홈</span>
-            <span>›</span>
-            <span>셔틀버스</span>
-          </div>
-        </div>
-        <div id="shuttle-sample-text">
-          여기에 셔틀버스 노선 및 실시간 운행 정보를 표시합니다.<br />
-          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
-        </div>
-      </div>
-
-      <!-- 8) 학사일정 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
-      <div id="calendarContentPane" style="display: none;">
-        <div id="content-header-calendar-pane">
-          <h1 id="title-calendar-pane">학사일정</h1>
-          <div id="breadcrumb-calendar-pane">
-            <span>홈</span>
-            <span>›</span>
-            <span>학사일정</span>
-          </div>
-        </div>
-        <div id="calendar-sample-text">
-          여기에 학사일정 정보를 표시합니다.<br />
-          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
-        </div>
-      </div>
-
-      <!-- 9) 프로필 -->
       <div id="profileContentPane" style="display: none;">
         <div id="content-header-profile-pane">
           <h1 id="title-profile-pane">프로필</h1>
@@ -396,7 +310,6 @@
         </div>
       </div>
 
-      <!-- 10) 설정 -->
       <div id="settingsContent" style="display: none;">
         <div id="content-header-settings">
           <h1 id="title-settings">설정</h1>
@@ -406,23 +319,103 @@
             <span>설정</span>
           </div>
         </div>
+        
         <div id="settings-container">
-          <!-- 다크/라이트 모드 토글 -->
-          <div id="setting-item-theme">
-            <label for="themeToggle">다크/라이트 모드</label>
-            <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
+          <div class="setting-category">
+            <h2 class="setting-category-title">🎨 테마 설정</h2>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">다크/라이트 모드</div>
+                <div class="setting-description">페이지의 색상 테마를 변경합니다</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="themeToggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">글꼴 크기</div>
+                <div class="setting-description">텍스트 크기를 조정합니다</div>
+              </div>
+              <div class="setting-control">
+                <div class="font-size-options">
+                  <div class="font-size-option" data-size="small">작게</div>
+                  <div class="font-size-option active" data-size="medium">보통</div>
+                  <div class="font-size-option" data-size="large">크게</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <!-- 알림 받기 토글 -->
-          <div id="setting-item-notification">
-            <label for="notificationToggle">알림 받기</label>
-            <input type="checkbox" id="notificationToggle" />
+
+          <div class="setting-category">
+            <h2 class="setting-category-title">🔔 알림 설정</h2>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">알림 받기</div>
+                <div class="setting-description">새로운 공지사항이나 업데이트 알림을 받습니다</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="notificationToggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">브라우저 알림</div>
+                <div class="setting-description">브라우저 푸시 알림을 허용합니다</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="browserNotificationToggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-category">
+            <h2 class="setting-category-title">♿ 접근성 설정</h2>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">애니메이션 줄이기</div>
+                <div class="setting-description">페이지 전환 및 애니메이션 효과를 최소화합니다</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="reduceAnimationToggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">고대비 모드</div>
+                <div class="setting-description">더 나은 가독성을 위해 대비를 높입니다</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="highContrastToggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- 자바스크립트 -->
   <script src="index.js" defer></script>
 </body>
 </html>

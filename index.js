@@ -1,9 +1,3 @@
-// =============================================================================
-// index.js
-// ──────────────────────────────────────────────────────────────────────────────
-// 메인 페이지 동작 로직 (SPA: 탭 전환 포함) + “빠른 접근” 활성화
-// =============================================================================
-
 let naverMap;
 let mapMarkers = [];
 let infoWindows = [];
@@ -12,12 +6,8 @@ let userLocation = null;
 let currentContent = 'home';
 let unreadNotifications = 0;
 
-// ➊ DB에서 불러온 “학과 코드 → 한글명” 매핑 저장용 전역 객체
 const departmentMap = {};
 
-// ---------------------------
-// 페이지 로드 시: 해시 기반 초기 탭 열기 + 초기화
-// ---------------------------
 document.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
@@ -27,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   initializeApp();
+  initializeSettings();
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -51,14 +42,203 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ---------------------------
-// ➍ 학과 데이터(코드→한글명) 로드
-// ---------------------------
+function initializeSettings() {
+  const themeToggle = document.getElementById('themeToggle');
+  const notificationToggle = document.getElementById('notificationToggle');
+  const browserNotificationToggle = document.getElementById('browserNotificationToggle');
+  const reduceAnimationToggle = document.getElementById('reduceAnimationToggle');
+  const highContrastToggle = document.getElementById('highContrastToggle');
+
+  if (themeToggle) {
+    themeToggle.addEventListener('change', handleThemeToggle);
+  }
+
+  if (notificationToggle) {
+    notificationToggle.addEventListener('change', handleNotificationToggle);
+  }
+
+  if (browserNotificationToggle) {
+    browserNotificationToggle.addEventListener('change', handleBrowserNotificationToggle);
+  }
+
+  if (reduceAnimationToggle) {
+    reduceAnimationToggle.addEventListener('change', handleReduceAnimationToggle);
+  }
+
+  if (highContrastToggle) {
+    highContrastToggle.addEventListener('change', handleHighContrastToggle);
+  }
+
+  const fontOptions = document.querySelectorAll('.font-size-option');
+  fontOptions.forEach(option => {
+    option.addEventListener('click', () => handleFontSizeChange(option.dataset.size));
+  });
+
+  loadUserSettings();
+}
+
+function loadUserSettings() {
+  const savedTheme = localStorage.getItem('lightMode');
+  const savedNotification = localStorage.getItem('enableNotification');
+  const savedBrowserNotification = localStorage.getItem('enableBrowserNotification');
+  const savedReduceAnimation = localStorage.getItem('reduceAnimation');
+  const savedHighContrast = localStorage.getItem('highContrast');
+  const savedFontSize = localStorage.getItem('fontSize') || 'medium';
+
+  const themeToggle = document.getElementById('themeToggle');
+  const notificationToggle = document.getElementById('notificationToggle');
+  const browserNotificationToggle = document.getElementById('browserNotificationToggle');
+  const reduceAnimationToggle = document.getElementById('reduceAnimationToggle');
+  const highContrastToggle = document.getElementById('highContrastToggle');
+
+  if (themeToggle) {
+    themeToggle.checked = savedTheme === 'true';
+    if (savedTheme === 'true') {
+      document.body.classList.add('light-mode');
+    }
+  }
+
+  if (notificationToggle) {
+    notificationToggle.checked = savedNotification === 'true';
+  }
+
+  if (browserNotificationToggle) {
+    browserNotificationToggle.checked = savedBrowserNotification === 'true';
+  }
+
+  if (reduceAnimationToggle) {
+    reduceAnimationToggle.checked = savedReduceAnimation === 'true';
+    if (savedReduceAnimation === 'true') {
+      document.body.classList.add('reduce-animation');
+    }
+  }
+
+  if (highContrastToggle) {
+    highContrastToggle.checked = savedHighContrast === 'true';
+    if (savedHighContrast === 'true') {
+      document.body.classList.add('high-contrast');
+    }
+  }
+
+  document.querySelectorAll('.font-size-option').forEach(option => {
+    option.classList.remove('active');
+    if (option.dataset.size === savedFontSize) {
+      option.classList.add('active');
+    }
+  });
+
+  document.documentElement.className = '';
+  document.documentElement.classList.add(`font-${savedFontSize}`);
+}
+
+function handleThemeToggle() {
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle.checked) {
+    document.body.classList.add('light-mode');
+    localStorage.setItem('lightMode', 'true');
+    showMessage('라이트 모드로 변경되었습니다', 'success');
+  } else {
+    document.body.classList.remove('light-mode');
+    localStorage.setItem('lightMode', 'false');
+    showMessage('다크 모드로 변경되었습니다', 'success');
+  }
+}
+
+function handleNotificationToggle() {
+  const notificationToggle = document.getElementById('notificationToggle');
+  const enabled = notificationToggle.checked;
+  localStorage.setItem('enableNotification', enabled);
+  
+  if (enabled) {
+    showMessage('알림이 활성화되었습니다', 'success');
+  } else {
+    showMessage('알림이 비활성화되었습니다', 'info');
+  }
+}
+
+function handleBrowserNotificationToggle() {
+  const browserNotificationToggle = document.getElementById('browserNotificationToggle');
+  const enabled = browserNotificationToggle.checked;
+  
+  if (enabled) {
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          localStorage.setItem('enableBrowserNotification', 'true');
+          showMessage('브라우저 알림이 허용되었습니다', 'success');
+        } else {
+          browserNotificationToggle.checked = false;
+          showMessage('브라우저 알림 권한이 거부되었습니다', 'error');
+        }
+      });
+    } else if (Notification.permission === 'granted') {
+      localStorage.setItem('enableBrowserNotification', 'true');
+      showMessage('브라우저 알림이 활성화되었습니다', 'success');
+    } else {
+      browserNotificationToggle.checked = false;
+      showMessage('브라우저 알림 권한이 필요합니다', 'error');
+    }
+  } else {
+    localStorage.setItem('enableBrowserNotification', 'false');
+    showMessage('브라우저 알림이 비활성화되었습니다', 'info');
+  }
+}
+
+function handleReduceAnimationToggle() {
+  const reduceAnimationToggle = document.getElementById('reduceAnimationToggle');
+  const enabled = reduceAnimationToggle.checked;
+  
+  if (enabled) {
+    document.body.classList.add('reduce-animation');
+    localStorage.setItem('reduceAnimation', 'true');
+    showMessage('애니메이션이 최소화되었습니다', 'success');
+  } else {
+    document.body.classList.remove('reduce-animation');
+    localStorage.setItem('reduceAnimation', 'false');
+    showMessage('애니메이션이 복원되었습니다', 'success');
+  }
+}
+
+function handleHighContrastToggle() {
+  const highContrastToggle = document.getElementById('highContrastToggle');
+  const enabled = highContrastToggle.checked;
+  
+  if (enabled) {
+    document.body.classList.add('high-contrast');
+    localStorage.setItem('highContrast', 'true');
+    showMessage('고대비 모드가 활성화되었습니다', 'success');
+  } else {
+    document.body.classList.remove('high-contrast');
+    localStorage.setItem('highContrast', 'false');
+    showMessage('고대비 모드가 비활성화되었습니다', 'success');
+  }
+}
+
+function handleFontSizeChange(size) {
+  document.querySelectorAll('.font-size-option').forEach(option => {
+    option.classList.remove('active');
+  });
+  
+  document.querySelector(`[data-size="${size}"]`).classList.add('active');
+  
+  document.documentElement.className = '';
+  document.documentElement.classList.add(`font-${size}`);
+  
+  localStorage.setItem('fontSize', size);
+  
+  const sizeNames = {
+    small: '작게',
+    medium: '보통',
+    large: '크게'
+  };
+  
+  showMessage(`글꼴 크기가 ${sizeNames[size]}로 변경되었습니다`, 'success');
+}
+
 async function loadDepartments() {
   try {
     const res = await fetch('/api/departments');
     const list = await res.json();
-    // list: [ { id, code, name }, ... ]
     list.forEach((item) => {
       departmentMap[item.code] = item.name;
     });
@@ -67,9 +247,6 @@ async function loadDepartments() {
   }
 }
 
-// ---------------------------
-// 알림 데이터 로드
-// ---------------------------
 async function loadNotifications() {
   try {
     const res = await fetch('/api/notifications');
@@ -101,7 +278,6 @@ async function loadNotifications() {
   }
 }
 
-// 통계 데이터 로드
 async function loadStats() {
   try {
     const res = await fetch('/api/stats');
@@ -146,7 +322,6 @@ async function loadStats() {
   }
 }
 
-// 건물 데이터 로드
 async function loadBuildings() {
   try {
     const res = await fetch('/api/buildings');
@@ -176,7 +351,6 @@ async function loadBuildings() {
   }
 }
 
-// 공지사항 데이터 로드 (전체 & 최근)
 async function loadNotices() {
   try {
     const res = await fetch('/api/notices');
@@ -207,7 +381,6 @@ async function loadNotices() {
   }
 }
 
-// 셔틀버스 데이터 로드 (대시보드 위젯용)
 async function loadShuttleInfo() {
   try {
     const res = await fetch('/api/shuttle/routes');
@@ -232,7 +405,6 @@ async function loadShuttleInfo() {
   }
 }
 
-// 선택한 셔틀버스 정보 표시
 async function selectShuttleRoute(routeId) {
   try {
     document.querySelectorAll('.route-tab').forEach((tab) => {
@@ -259,7 +431,6 @@ async function selectShuttleRoute(routeId) {
   }
 }
 
-// 활동 통계 데이터 로드 (대시보드 위젯용)
 async function loadActivityStats() {
   try {
     const res = await fetch('/api/activity-stats');
@@ -286,7 +457,6 @@ async function loadActivityStats() {
   }
 }
 
-// 맛집 정보 로드 (예시)
 async function loadRestaurantInfo() {
   try {
     const res = await fetch('/api/restaurants');
@@ -323,7 +493,6 @@ async function loadRestaurantInfo() {
   }
 }
 
-// 실시간 커뮤니티 로드
 async function loadCommunityPosts() {
   try {
     const [liveRes, hotRes] = await Promise.all([
@@ -373,7 +542,6 @@ async function loadCommunityPosts() {
   }
 }
 
-// 강의평가 로드
 async function loadLectureReviews() {
   try {
     const [popRes, recRes] = await Promise.all([
@@ -425,9 +593,6 @@ async function loadLectureReviews() {
   }
 }
 
-// ---------------------------
-// 지도 초기화 및 마커
-// ---------------------------
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
@@ -485,9 +650,6 @@ function addMapMarkers(buildings) {
   });
 }
 
-// ---------------------------
-// 시간표 업데이트 (대시보드 위젯)
-// ---------------------------
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
@@ -605,21 +767,21 @@ function formatTimeRemaining(minutes, suffix) {
   }
 }
 
-// ---------------------------
-// 알림 함수들
-// ---------------------------
 function toggleNotifications() {
   const dd = document.getElementById('notification-dropdown');
   if (dd.classList.contains('show')) closeNotificationDropdown();
   else showNotificationDropdown();
 }
+
 function showNotificationDropdown() {
   closeUserDropdown();
   document.getElementById('notification-dropdown').classList.add('show');
 }
+
 function closeNotificationDropdown() {
   document.getElementById('notification-dropdown').classList.remove('show');
 }
+
 function markAsRead(el, id) {
   if (el.classList.contains('unread')) {
     el.classList.remove('unread');
@@ -628,6 +790,7 @@ function markAsRead(el, id) {
     updateNotificationCount();
   }
 }
+
 function markAllAsRead() {
   document.querySelectorAll('.notification-item.unread').forEach((item) => {
     item.classList.remove('unread');
@@ -637,6 +800,7 @@ function markAllAsRead() {
   updateNotificationCount();
   showMessage('모든 알림을 읽음 처리했습니다.', 'success');
 }
+
 function updateNotificationCount() {
   const countEl = document.getElementById('notification-badge');
   const dotEl = document.getElementById('notification-dot');
@@ -644,9 +808,6 @@ function updateNotificationCount() {
   dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
 }
 
-// ---------------------------
-// 사용자 메뉴 함수
-// ---------------------------
 function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -659,17 +820,21 @@ function toggleUserMenu() {
   if (dropdown.classList.contains('show')) closeUserDropdown();
   else showUserDropdown();
 }
+
 function showUserDropdown() {
   closeNotificationDropdown();
   document.getElementById('user-dropdown').classList.add('show');
 }
+
 function closeUserDropdown() {
   document.getElementById('user-dropdown').classList.remove('show');
 }
+
 function closeAllDropdowns() {
   closeNotificationDropdown();
   closeUserDropdown();
 }
+
 function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -679,6 +844,7 @@ function showProfile() {
   }
   closeUserDropdown();
 }
+
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -694,9 +860,6 @@ function handleLogout() {
   closeUserDropdown();
 }
 
-// ---------------------------
-// 콘텐츠 전환 함수 (SPA 탭 전환)
-// ---------------------------
 function showContent(type) {
   const panes = [
     'homeContent', 'buildingsContent', 'communityContent',
@@ -705,7 +868,10 @@ function showContent(type) {
     'settingsContent'
   ];
   panes.forEach((id) => {
-    document.getElementById(id).style.display = 'none';
+    const element = document.getElementById(id);
+    if (element) {
+      element.style.display = 'none';
+    }
   });
 
   let targetId = 'homeContent';
@@ -722,6 +888,7 @@ function showContent(type) {
     case 'settings':       targetId = 'settingsContent'; break;
     default:               targetId = 'homeContent';
   }
+  
   const target = document.getElementById(targetId);
   if (target) {
     target.style.display = 'block';
@@ -734,15 +901,14 @@ function showContent(type) {
   const navItem = document.getElementById('nav-' + type);
   if (navItem) navItem.classList.add('active');
 
+  currentContent = type;
   window.location.hash = type;
+  
   if (type === 'buildings' && naverMap) {
     setTimeout(() => naverMap.refresh(), 100);
   }
 }
 
-// ---------------------------
-// 검색 기능 (샘플 구현)
-// ---------------------------
 async function handleGlobalSearch() {
   const query = document.getElementById('search-input').value.trim().toLowerCase();
   if (!query) return;
@@ -765,15 +931,13 @@ async function handleGlobalSearch() {
   alert('검색 결과를 찾을 수 없습니다.');
 }
 
-// ---------------------------
-// 유저 상태 확인, 프로필 정보 로드
-// ---------------------------
 function checkUserStatus() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const userNameEl = document.getElementById('user-name');
   const userRoleEl = document.getElementById('user-role');
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
+  
   if (currentUser) {
     fetch(`/api/users/${encodeURIComponent(currentUser)}`)
       .then((res) => res.json())
@@ -800,8 +964,6 @@ function checkUserStatus() {
   }
 }
 
-// getDepartmentName 함수는 더 이상 사용되지 않습니다.
-
 function updateProfileImage(user) {
   const avatarEl = document.getElementById('user-avatar');
   if (user.profileImageType === 'emoji') {
@@ -811,9 +973,6 @@ function updateProfileImage(user) {
   }
 }
 
-// ---------------------------
-// 메시지 표시 함수
-// ---------------------------
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
@@ -856,11 +1015,8 @@ function showMessage(message, type = 'info') {
   }, 3000);
 }
 
-// ---------------------------
-// 모든 초기화 호출
-// ---------------------------
 async function initializeApp() {
-  await loadDepartments();      // ➋ 학과 매핑 데이터를 먼저 불러옴
+  await loadDepartments();
   initNaverMap();
   await loadStats();
   await loadNotifications();
@@ -900,31 +1056,28 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
-// ---------------------------
-// 사이드바 토글
-// ---------------------------
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
 }
 
-// ---------------------------
-// 다크/라이트 모드 토글
-// ---------------------------
 function toggleTheme() {
-  document.body.classList.toggle('light-mode');
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.checked = !themeToggle.checked;
+    handleThemeToggle();
+  } else {
+    document.body.classList.toggle('light-mode');
+  }
 }
 
-// 내 시간표 페이지로 이동
 function navigateToTimetable() {
   window.location.href = 'timetable.html';
 }
 
-// 셔틀버스 페이지로 이동
 function navigateToShuttle() {
   window.location.href = 'shuttle.html';
 }
 
-// 학사일정 페이지로 이동
 function navigateToCalendar() {
   window.location.href = 'academic-calendar.html';
 }
