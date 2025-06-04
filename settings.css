@@ -38,13 +38,14 @@
 }
 
 /* ----------------------------------------------------------------------------- 
-   섹션 제목 스타일 (카테고리별 알림 구분) 
+   섹션 제목 스타일 
 ----------------------------------------------------------------------------- */
 .setting-section-title {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
   font-size: 1rem;
   font-weight: 600;
   color: #94a3b8;
-  margin: 1.5rem 0 0.5rem 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -98,11 +99,76 @@
 }
 
 /* ----------------------------------------------------------------------------- 
+   시간 입력 (type="time") 스타일 
+----------------------------------------------------------------------------- */
+.setting-item input[type="time"] {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 0.4rem;
+  color: #f1f5f9;
+  font-size: 0.9rem;
+  width: 120px;
+  transition: all 0.3s ease;
+}
+
+.setting-item input[type="time"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* ----------------------------------------------------------------------------- 
+   숫자 입력 (자동 로그아웃 시간) 스타일 
+----------------------------------------------------------------------------- */
+.setting-item input[type="number"] {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  color: #f1f5f9;
+  font-size: 0.9rem;
+  width: 80px;
+  transition: all 0.3s ease;
+}
+
+.setting-item input[type="number"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* ----------------------------------------------------------------------------- 
+   텍스트 입력 (키보드 단축키) 스타일 
+----------------------------------------------------------------------------- */
+.setting-item input[type="text"] {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  color: #f1f5f9;
+  font-size: 0.9rem;
+  width: 100px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.setting-item input[type="text"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* ----------------------------------------------------------------------------- 
    라이트 모드 적용 시 색상 반전 
 ----------------------------------------------------------------------------- */
 body.light-mode #settings-container {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .setting-section-title {
+  color: #6b7280;
 }
 
 body.light-mode .setting-item {
@@ -113,6 +179,21 @@ body.light-mode .setting-item label {
   color: #1f2937;
 }
 
+body.light-mode .setting-item input[type="time"],
+body.light-mode .setting-item input[type="number"],
+body.light-mode .setting-item input[type="text"] {
+  background: rgba(240, 240, 240, 0.8);
+  color: #1f2937;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .setting-item input[type="time"]:focus,
+body.light-mode .setting-item input[type="number"]:focus,
+body.light-mode .setting-item input[type="text"]:focus {
+  background: rgba(240, 240, 240, 1);
+  color: #1f2937;
+}
+
 /* ----------------------------------------------------------------------------- 
    반응형: 화면 너비가 좁을 때 여백 및 폰트 크기 조정 
 ----------------------------------------------------------------------------- */
@@ -120,17 +201,25 @@ body.light-mode .setting-item label {
   #settings-container {
     padding: 1rem;
   }
+  .setting-section-title {
+    font-size: 0.9rem;
+  }
   .setting-item {
     margin-bottom: 1rem;
-    padding: 1.5rem 0;
+    padding: 1rem 0;
   }
   .setting-item label {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   .setting-item input[type="checkbox"] {
     width: 28px;
     height: 28px;
     transform: scale(1.4);
+  }
+  .setting-item input[type="time"],
+  .setting-item input[type="number"],
+  .setting-item input[type="text"] {
+    width: 100%;
   }
 }
 

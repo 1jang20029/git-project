@@ -1,347 +1,208 @@
-// =============================================================================
 // settings.js
-//
+
+// =============================================================================
 // 분리된 설정 화면 전용 자바스크립트
 // =============================================================================
 
-// 설정 가능한 알림 카테고리 목록
-const notificationCategories = [
-  { id: 'notice', label: '공지사항' },
-  { id: 'community', label: '커뮤니티' },
-  { id: 'shuttle', label: '셔틀버스' },
-  { id: 'timetable', label: '시간표' }
-];
-
-// 단축키 설정할 기능 목록
-const shortcutActions = [
-  { id: 'home', label: '대시보드로 이동', handler: () => showContent('home') },
-  { id: 'buildings', label: '건물 페이지로 이동', handler: () => showContent('buildings') },
-  { id: 'community', label: '커뮤니티 페이지로 이동', handler: () => showContent('community') },
-  { id: 'notices', label: '공지사항 페이지로 이동', handler: () => showContent('notices') }
-];
-
-// 전역 단축키 매핑 객체
-let shortcutMap = {}; // 예: { 'KeyH': () => showContent('home'), ... }
-
-// =============================================================================
-// initSettingsPage: settings.html 삽입 후 호출되어 설정 화면 동작을 초기화
-// =============================================================================
+// 이 함수는 index.js가 settings.html을 삽입한 직후 호출해서
+// “토글 클릭 리스너 연결 + 초기 상태 반영”을 수행합니다.
 function initSettingsPage() {
-  // 1. 다크/라이트 모드 토글 & 알림 전체 모드 토글
-  initThemeToggle();
-  initGlobalNotificationToggle();
-
-  // 2. 카테고리별 알림 토글 생성 & 초기화
-  initCategoryNotificationToggles();
-
-  // 3. DND 모드 시간 설정
-  initDoNotDisturbSettings();
-
-  // 4. 자동 로그아웃 설정
-  initAutoLogoutSettings();
-
-  // 5. 단축키 설정 생성 & 초기화
-  initShortcutSettings();
-
-  // 6. 전역 키보드 리스너 등록
-  registerGlobalKeyboardListener();
-}
-
-// =============================================================================
-// 1. 다크/라이트 모드 토글 초기화
-// =============================================================================
-function initThemeToggle() {
+  // 1) 다크/라이트 모드
   const themeToggle = document.getElementById('themeToggle');
-  if (!themeToggle) return;
+  const savedLightMode = localStorage.getItem('lightMode');
+  const isLightMode = savedLightMode === 'true';
 
-  const savedLightMode = localStorage.getItem('lightMode') === 'true';
-  themeToggle.checked = savedLightMode;
-  applyTheme(savedLightMode);
+  if (themeToggle) {
+    // 초기 상태 반영
+    if (isLightMode) {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+    themeToggle.checked = isLightMode;
 
-  themeToggle.addEventListener('change', () => {
-    const isLight = themeToggle.checked;
-    applyTheme(isLight);
-    localStorage.setItem('lightMode', isLight);
-    showMessage(isLight ? '라이트 모드로 변경되었습니다' : '다크 모드로 변경되었습니다', 'success');
-  });
-}
-
-function applyTheme(isLight) {
-  if (isLight) {
-    document.body.classList.add('light-mode');
-  } else {
-    document.body.classList.remove('light-mode');
+    // 체크박스 상태 변경 이벤트 바인딩
+    themeToggle.addEventListener('change', () => {
+      const isLight = themeToggle.checked;
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        localStorage.setItem('lightMode', 'true');
+        showMessage('라이트 모드로 변경되었습니다', 'success', '');
+      } else {
+        document.body.classList.remove('light-mode');
+        localStorage.setItem('lightMode', 'false');
+        showMessage('다크 모드로 변경되었습니다', 'success', '');
+      }
+    });
   }
-}
 
-// =============================================================================
-// 2. 알림 전체 모드 토글 초기화
-// =============================================================================
-function initGlobalNotificationToggle() {
-  const globalToggle = document.getElementById('globalNotificationToggle');
-  if (!globalToggle) return;
+  // 2) 알림 받기 ON/OFF
+  const notificationToggle = document.getElementById('notificationToggle');
+  const savedNotify = localStorage.getItem('enableNotification');
+  const isNotifyEnabled = savedNotify === 'true';
 
-  // 저장된 값 없으면 기본 true
-  const saved = localStorage.getItem('enableAllNotifications');
-  const enabled = saved === null ? true : saved === 'true';
-  globalToggle.checked = enabled;
+  if (notificationToggle) {
+    notificationToggle.checked = isNotifyEnabled;
+    notificationToggle.addEventListener('change', () => {
+      const enabled = notificationToggle.checked;
+      localStorage.setItem('enableNotification', enabled);
+      if (enabled) {
+        showMessage('알림이 활성화되었습니다', 'success', '');
+      } else {
+        showMessage('알림이 비활성화되었습니다', 'info', '');
+      }
+    });
+  }
 
-  // 초기 상태에 따라 개별 카테고리 토글도 모두 체크/해제
-  toggleAllCategoryCheckboxes(enabled);
-
-  globalToggle.addEventListener('change', () => {
-    const isEnabled = globalToggle.checked;
-    localStorage.setItem('enableAllNotifications', isEnabled);
-    toggleAllCategoryCheckboxes(isEnabled);
-    showMessage(isEnabled ? '모든 알림이 활성화되었습니다' : '모든 알림이 비활성화되었습니다', 'info');
-  });
-}
-
-function toggleAllCategoryCheckboxes(enabled) {
-  notificationCategories.forEach(({ id }) => {
-    const checkbox = document.getElementById(`${id}NotificationToggle`);
+  // 3) 카테고리별 알림 설정 (key: notificationCategories)
+  //    저장형식: { "공지사항": true, "커뮤니티": true, "셔틀버스": true, "강의평가": true }
+  const defaultCatSettings = {
+    '공지사항': true,
+    '커뮤니티': true,
+    '셔틀버스': true,
+    '강의평가': true
+  };
+  const savedCatSettings = JSON.parse(localStorage.getItem('notificationCategories')) || defaultCatSettings;
+  Object.keys(defaultCatSettings).forEach((cat) => {
+    const checkbox = document.getElementById(`notifCategory-${cat}`);
     if (checkbox) {
-      checkbox.checked = enabled;
-      localStorage.setItem(`${id}Notifications`, enabled);
+      checkbox.checked = savedCatSettings[cat] === true;
+      checkbox.addEventListener('change', () => {
+        const updated = JSON.parse(localStorage.getItem('notificationCategories')) || defaultCatSettings;
+        updated[cat] = checkbox.checked;
+        localStorage.setItem('notificationCategories', JSON.stringify(updated));
+        showMessage(`${cat} 알림이 ${checkbox.checked ? '활성화' : '비활성화'}되었습니다`, 'success', cat);
+      });
     }
   });
-}
 
-// =============================================================================
-// 3. 카테고리별 알림 토글 생성 및 초기화
-// =============================================================================
-function initCategoryNotificationToggles() {
-  const container = document.getElementById('categoryNotificationsContainer');
-  if (!container) return;
+  // 4) Do Not Disturb (DND) 설정
+  //    저장형식: { enabled: true/false, startHour: int, startMinute: int, endHour: int, endMinute: int }
+  const dndToggle = document.getElementById('dndToggle');
+  const dndStart = document.getElementById('dndStart');
+  const dndEnd = document.getElementById('dndEnd');
+  const savedDND = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false, startHour: 21, startMinute: 0, endHour: 7, endMinute: 0 };
 
-  notificationCategories.forEach(({ id, label }) => {
-    // 토글 HTML 생성
-    const div = document.createElement('div');
-    div.className = 'setting-item';
-    div.innerHTML = `
-      <label for="${id}NotificationToggle">${label} 알림 받기</label>
-      <input type="checkbox" id="${id}NotificationToggle" />
-    `;
-    container.appendChild(div);
+  if (dndToggle && dndStart && dndEnd) {
+    dndToggle.checked = savedDND.enabled;
+    // 시각 초기값
+    dndStart.value = `${String(savedDND.startHour).padStart(2, '0')}:${String(savedDND.startMinute).padStart(2, '0')}`;
+    dndEnd.value = `${String(savedDND.endHour).padStart(2, '0')}:${String(savedDND.endMinute).padStart(2, '0')}`;
 
-    // 초기 상태 로드
-    const saved = localStorage.getItem(`${id}Notifications`);
-    const enabled = saved === null ? true : saved === 'true';
-    const checkbox = document.getElementById(`${id}NotificationToggle`);
-    checkbox.checked = enabled;
-
-    // 변경 시 로컬스토리지에 저장
-    checkbox.addEventListener('change', () => {
-      localStorage.setItem(`${id}Notifications`, checkbox.checked);
-      showMessage(`${label} 알림이 ${checkbox.checked ? '활성화' : '비활성화'}되었습니다`, 'info');
-
-      // 전체 토글 상태 업데이트
-      updateGlobalNotificationToggle();
+    // 토글 이벤트
+    dndToggle.addEventListener('change', () => {
+      const val = dndToggle.checked;
+      const current = JSON.parse(localStorage.getItem('doNotDisturb')) || savedDND;
+      current.enabled = val;
+      localStorage.setItem('doNotDisturb', JSON.stringify(current));
+      showMessage(`DND 모드가 ${val ? '활성화' : '비활성화'}되었습니다`, 'success', '');
     });
-  });
 
-  // 전체 토글 상태 초기화
-  updateGlobalNotificationToggle();
-}
-
-function updateGlobalNotificationToggle() {
-  const globalToggle = document.getElementById('globalNotificationToggle');
-  if (!globalToggle) return;
-
-  const allEnabled = notificationCategories.every(({ id }) => {
-    return localStorage.getItem(`${id}Notifications`) === 'true';
-  });
-  globalToggle.checked = allEnabled;
-  localStorage.setItem('enableAllNotifications', allEnabled);
-}
-
-// =============================================================================
-// 4. Do Not Disturb(DND) 모드 초기화
-// =============================================================================
-function initDoNotDisturbSettings() {
-  const dndStart = document.getElementById('dndStartTime');
-  const dndEnd = document.getElementById('dndEndTime');
-  if (!dndStart || !dndEnd) return;
-
-  // 로컬스토리지에서 값 로드 (HH:MM 형식)
-  const savedStart = localStorage.getItem('dndStart') || '21:00';
-  const savedEnd = localStorage.getItem('dndEnd') || '07:00';
-  dndStart.value = savedStart;
-  dndEnd.value = savedEnd;
-
-  dndStart.addEventListener('change', () => {
-    localStorage.setItem('dndStart', dndStart.value);
-    showMessage(`DND 시작 시간이 ${dndStart.value}로 설정되었습니다`, 'success');
-  });
-  dndEnd.addEventListener('change', () => {
-    localStorage.setItem('dndEnd', dndEnd.value);
-    showMessage(`DND 종료 시간이 ${dndEnd.value}로 설정되었습니다`, 'success');
-  });
-}
-
-// =============================================================================
-// 5. 자동 로그아웃 설정 초기화
-// =============================================================================
-let autoLogoutTimer = null;
-
-function initAutoLogoutSettings() {
-  const logoutInput = document.getElementById('autoLogoutTimeout');
-  if (!logoutInput) return;
-
-  // 저장된 값 로드 (분 단위)
-  const saved = localStorage.getItem('autoLogoutMinutes') || '15';
-  logoutInput.value = saved;
-
-  logoutInput.addEventListener('change', () => {
-    const minutes = parseInt(logoutInput.value, 10) || 0;
-    localStorage.setItem('autoLogoutMinutes', minutes);
-    showMessage(`자동 로그아웃 시간이 ${minutes}분으로 설정되었습니다`, 'success');
-    resetAutoLogoutTimer();
-  });
-
-  // 페이지 로드 시 타이머 설정
-  resetAutoLogoutTimer();
-
-  // 사용자 활동 이벤트로 타이머 리셋
-  ['mousemove', 'keydown', 'click', 'touchstart'].forEach((evt) => {
-    document.addEventListener(evt, resetAutoLogoutTimer);
-  });
-}
-
-function resetAutoLogoutTimer() {
-  if (autoLogoutTimer) {
-    clearTimeout(autoLogoutTimer);
-  }
-  const minutes = parseInt(localStorage.getItem('autoLogoutMinutes'), 10) || 0;
-  if (minutes > 0) {
-    autoLogoutTimer = setTimeout(() => {
-      handleAutoLogout();
-    }, minutes * 60 * 1000);
-  }
-}
-
-function handleAutoLogout() {
-  // 실제 로그아웃 로직 호출
-  showMessage('자동 로그아웃되었습니다', 'info');
-  localStorage.removeItem('currentLoggedInUser');
-  checkUserStatus();
-  showContent('home');
-}
-
-// =============================================================================
-// 6. 단축키 설정 생성 및 초기화
-// =============================================================================
-function initShortcutSettings() {
-  const container = document.getElementById('shortcutSettingsContainer');
-  if (!container) return;
-
-  shortcutActions.forEach(({ id, label }) => {
-    // HTML 생성
-    const div = document.createElement('div');
-    div.className = 'setting-item';
-    div.innerHTML = `
-      <label for="${id}ShortcutKey">${label} 단축키</label>
-      <input type="text" id="${id}ShortcutKey" placeholder="예: Ctrl+H" readonly />
-    `;
-    container.appendChild(div);
-
-    const input = document.getElementById(`${id}ShortcutKey`);
-    // 로컬스토리지에서 키 로드
-    const savedKey = localStorage.getItem(`${id}Shortcut`) || '';
-    input.value = savedKey;
-
-    // 클릭 시 키 입력 받기
-    input.addEventListener('focus', () => {
-      input.value = '';
-      input.placeholder = '키를 누른 뒤 Enter';
-      // 키다운 리스너 일시 등록
-      const keyHandler = (e) => {
-        e.preventDefault();
-        const combo = formatKeyCombo(e);
-        input.value = combo;
-        localStorage.setItem(`${id}Shortcut`, combo);
-        showMessage(`${label} 단축키가 ${combo}로 설정되었습니다`, 'success');
-        // 매핑 업데이트
-        setupShortcutMapping(id, combo);
-        // 포커스 해제 및 핸들러 제거
-        input.blur();
-      };
-      input.addEventListener('keydown', keyHandler, { once: true });
+    // 시작 시간 변경 이벤트
+    dndStart.addEventListener('change', () => {
+      const [h, m] = dndStart.value.split(':').map(Number);
+      const current = JSON.parse(localStorage.getItem('doNotDisturb')) || savedDND;
+      current.startHour = h;
+      current.startMinute = m;
+      localStorage.setItem('doNotDisturb', JSON.stringify(current));
+      showMessage(`DND 시작 시간이 ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}로 변경되었습니다`, 'success', '');
     });
-  });
 
-  // 초기 매핑 구성
-  shortcutActions.forEach(({ id }) => {
-    const saved = localStorage.getItem(`${id}Shortcut`) || '';
-    if (saved) setupShortcutMapping(id, saved);
-  });
-}
-
-// 키보드 이벤트에서 ‘Ctrl+Shift+X’ 등으로 포맷팅
-function formatKeyCombo(e) {
-  const parts = [];
-  if (e.ctrlKey) parts.push('Ctrl');
-  if (e.altKey) parts.push('Alt');
-  if (e.shiftKey) parts.push('Shift');
-  const key = e.key.toUpperCase();
-  if (!['CONTROL', 'SHIFT', 'ALT', 'META'].includes(key)) {
-    parts.push(key.length === 1 ? key : key);
+    // 종료 시간 변경 이벤트
+    dndEnd.addEventListener('change', () => {
+      const [h, m] = dndEnd.value.split(':').map(Number);
+      const current = JSON.parse(localStorage.getItem('doNotDisturb')) || savedDND;
+      current.endHour = h;
+      current.endMinute = m;
+      localStorage.setItem('doNotDisturb', JSON.stringify(current));
+      showMessage(`DND 종료 시간이 ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}로 변경되었습니다`, 'success', '');
+    });
   }
-  return parts.join('+');
-}
 
-// 특정 액션 ID와 키 조합을 매핑
-function setupShortcutMapping(actionId, combo) {
-  // 기존 매핑에서 제거
-  Object.keys(shortcutMap).forEach((k) => {
-    if (shortcutMap[k].actionId === actionId) {
-      delete shortcutMap[k];
-    }
-  });
-  if (!combo) return;
+  // 5) 자동 로그아웃 설정
+  //    저장형식: { enabled: true/false, timeoutMinutes: int }
+  const autoLogoutToggle = document.getElementById('autoLogoutToggle');
+  const autoLogoutTimeout = document.getElementById('autoLogoutTimeout');
+  const savedAutoLogout = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 15 };
 
-  // 콤보를 고유 키로 변환 (예: "Ctrl+H" -> "Control+KeyH")
-  const keyParts = combo.split('+').map((p) => p.trim());
-  const normalized = keyParts
-    .map((p) => {
-      if (p === 'Ctrl') return 'Control';
-      if (p === 'Shift') return 'Shift';
-      if (p === 'Alt') return 'Alt';
-      return p.length === 1 ? `Key${p}` : p;
-    })
-    .join('+');
-  // 저장
-  const action = shortcutActions.find((a) => a.id === actionId);
-  if (action) {
-    shortcutMap[normalized] = { handler: action.handler, actionId };
+  if (autoLogoutToggle && autoLogoutTimeout) {
+    autoLogoutToggle.checked = savedAutoLogout.enabled;
+    autoLogoutTimeout.value = savedAutoLogout.timeoutMinutes;
+
+    autoLogoutToggle.addEventListener('change', () => {
+      const val = autoLogoutToggle.checked;
+      const current = JSON.parse(localStorage.getItem('autoLogout')) || savedAutoLogout;
+      current.enabled = val;
+      localStorage.setItem('autoLogout', JSON.stringify(current));
+      showMessage(`자동 로그아웃이 ${val ? '활성화' : '비활성화'}되었습니다`, 'success', '');
+    });
+
+    autoLogoutTimeout.addEventListener('change', () => {
+      let val = parseInt(autoLogoutTimeout.value, 10);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > 120) val = 120;
+      autoLogoutTimeout.value = val;
+      const current = JSON.parse(localStorage.getItem('autoLogout')) || savedAutoLogout;
+      current.timeoutMinutes = val;
+      localStorage.setItem('autoLogout', JSON.stringify(current));
+      showMessage(`자동 로그아웃 대기 시간이 ${val}분으로 설정되었습니다`, 'success', '');
+    });
+  }
+
+  // 6) 키보드 단축키 설정
+  //    저장형식: { toggleSidebar: 'F2', openNotifications: 'F3', goToSettings: 'F4' }
+  const shortcutToggleSidebar = document.getElementById('shortcutToggleSidebar');
+  const shortcutOpenNotifications = document.getElementById('shortcutOpenNotifications');
+  const shortcutGoToSettings = document.getElementById('shortcutGoToSettings');
+  const defaultShortcuts = {
+    toggleSidebar: 'F2',
+    openNotifications: 'F3',
+    goToSettings: 'F4'
+  };
+  const savedShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+
+  if (shortcutToggleSidebar && shortcutOpenNotifications && shortcutGoToSettings) {
+    shortcutToggleSidebar.value = savedShortcuts.toggleSidebar;
+    shortcutOpenNotifications.value = savedShortcuts.openNotifications;
+    shortcutGoToSettings.value = savedShortcuts.goToSettings;
+
+    shortcutToggleSidebar.addEventListener('change', () => {
+      const val = shortcutToggleSidebar.value.toUpperCase();
+      const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+      current.toggleSidebar = val;
+      localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+      showMessage(`“사이드바 토글” 단축키가 ${val}로 변경되었습니다`, 'success', '');
+    });
+
+    shortcutOpenNotifications.addEventListener('change', () => {
+      const val = shortcutOpenNotifications.value.toUpperCase();
+      const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+      current.openNotifications = val;
+      localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+      showMessage(`“알림 열기” 단축키가 ${val}로 변경되었습니다`, 'success', '');
+    });
+
+    shortcutGoToSettings.addEventListener('change', () => {
+      const val = shortcutGoToSettings.value.toUpperCase();
+      const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+      current.goToSettings = val;
+      localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+      showMessage(`“설정 화면” 단축키가 ${val}로 변경되었습니다`, 'success', '');
+    });
   }
 }
 
-// =============================================================================
-// 7. 전역 키보드 리스너 등록 (단축키 동작)
-// =============================================================================
-function registerGlobalKeyboardListener() {
-  document.addEventListener('keydown', (e) => {
-    const parts = [];
-    if (e.ctrlKey) parts.push('Control');
-    if (e.altKey) parts.push('Alt');
-    if (e.shiftKey) parts.push('Shift');
-    const keyName = e.key.toUpperCase();
-    if (!['CONTROL', 'SHIFT', 'ALT', 'META'].includes(keyName)) {
-      parts.push(keyName.length === 1 ? `Key${keyName}` : keyName);
-    }
-    const combo = parts.join('+');
-    if (shortcutMap[combo]) {
-      e.preventDefault();
-      shortcutMap[combo].handler();
-    }
-  });
-}
+// 공통으로 쓰는 슬라이드 알림 메시지 함수 (index.js의 showMessage와 동일 로직)
+function showMessage(message, type = 'info', category = '') {
+  // 1) 카테고리 구분이 필요한 알림이라면, 해당 카테고리가 꺼져 있으면 표시하지 않음
+  if (category && !isCategoryEnabled(category)) {
+    return;
+  }
+  // 2) Do Not Disturb 시간대라면 표시하지 않음
+  if (!shouldShowNotification()) {
+    return;
+  }
 
-// =============================================================================
-// 공통 슬라이드 알림 메시지 함수
-// =============================================================================
-function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
     type === 'success'
@@ -349,7 +210,8 @@ function showMessage(message, type = 'info') {
       : type === 'error'
       ? 'rgba(239, 68, 68, 0.9)'
       : 'rgba(59, 130, 246, 0.9)';
-  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  const icon =
+    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
 
   notification.style.cssText = `
     position: fixed;
@@ -385,6 +247,36 @@ function showMessage(message, type = 'info') {
       }
     }, 300);
   }, 3000);
+}
+
+// ------------------------------
+// shouldShowNotification: Do Not Disturb 모드 검사 (설정 페이지와 동일 로직)
+// ------------------------------
+function shouldShowNotification() {
+  const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
+  if (!dnd.enabled) return true;
+
+  const now = new Date();
+  const hh = now.getHours();
+  const mm = now.getMinutes();
+  const totalMinutes = hh * 60 + mm;
+
+  const startHM = dnd.startHour * 60 + dnd.startMinute;
+  const endHM = dnd.endHour * 60 + dnd.endMinute;
+
+  if (startHM < endHM) {
+    return !(totalMinutes >= startHM && totalMinutes < endHM);
+  } else {
+    return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
+  }
+}
+
+// ------------------------------
+// isCategoryEnabled: 설정 페이지에서 지정한 카테고리별 알림 수신 여부
+// ------------------------------
+function isCategoryEnabled(category) {
+  const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
+  return catSettings[category] === true;
 }
 
 // 전역에 initSettingsPage 함수 등록
