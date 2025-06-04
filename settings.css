@@ -3,7 +3,6 @@
    설정 화면 전용 스타일
    ============================================================================= */
 
-/* 설정 화면 전체 컨테이너 */
 #settings-container {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
@@ -52,7 +51,7 @@
   accent-color: #3b82f6;
 }
 
-/* 라이트 모드에서의 스타일 반전 */
+/* 라이트 모드에서 색상 반전 */
 body.light-mode #settings-container {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.2);

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
 
+  <!-- 네이버 지도 API -->
   <script
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
     defer
@@ -12,6 +13,7 @@
 
   <!-- 공통 스타일 -->
   <link rel="stylesheet" href="index.css" />
+
   <!-- 분리된 설정 화면 전용 스타일 -->
   <link rel="stylesheet" href="settings.css" />
 </head>
@@ -147,7 +149,7 @@
     </aside>
 
     <main id="content-area">
-      <!-- 기타 비즈니스 화면(대시보드, 건물, 커뮤니티 등)은 그대로 둡니다 -->
+      <!-- 대시보드, 건물, 커뮤니티, 강의평가, 공지 등 기존 화면들은 그대로 두고… -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -203,7 +205,6 @@
         </div>
       </div>
 
-      <!-- 건물 & 시설 -->
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
@@ -231,7 +232,6 @@
         <div id="buildingGrid"></div>
       </div>
 
-      <!-- 실시간 커뮤니티 -->
       <div id="communityContent" style="display: none;">
         <div id="content-header-community">
           <h1 id="title-community">실시간 커뮤니티</h1>
@@ -259,7 +259,6 @@
         </div>
       </div>
 
-      <!-- 강의평가 -->
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
@@ -301,7 +300,6 @@
         </div>
       </div>
 
-      <!-- 공지사항 -->
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
@@ -314,7 +312,6 @@
         <div id="fullNoticeList"></div>
       </div>
 
-      <!-- 내 시간표 (별도 페이지로 이동) -->
       <div id="timetableContentPane" style="display: none;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
@@ -330,7 +327,6 @@
         </div>
       </div>
 
-      <!-- 셔틀버스 정보 (별도 페이지로 이동) -->
       <div id="shuttleContentPane" style="display: none;">
         <div id="content-header-shuttle-pane">
           <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
@@ -346,7 +342,6 @@
         </div>
       </div>
 
-      <!-- 학사일정 (별도 페이지로 이동) -->
       <div id="calendarContentPane" style="display: none;">
         <div id="content-header-calendar-pane">
           <h1 id="title-calendar-pane">학사일정</h1>
@@ -362,7 +357,6 @@
         </div>
       </div>
 
-      <!-- 프로필 -->
       <div id="profileContentPane" style="display: none;">
         <div id="content-header-profile-pane">
           <h1 id="title-profile-pane">프로필</h1>
@@ -378,7 +372,7 @@
         </div>
       </div>
 
-      <!-- **설정 화면만 빈 컨테이너로 두고, 외부 HTML을 동적으로 로드** -->
+      <!-- **설정 화면은 처음엔 빈 컨테이너, 동적으로 로드** -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>

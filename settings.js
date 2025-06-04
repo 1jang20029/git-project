@@ -3,15 +3,18 @@
 // 분리된 설정 화면 전용 자바스크립트
 // =============================================================================
 
-document.addEventListener('DOMContentLoaded', () => {
-  // “설정” 화면이 실제로 DOM에 삽입된 후, 토글을 연결합니다.
+// 이 함수는 index.js가 settings.html을 삽입한 직후 호출해서
+// “토글 클릭 리스너 연결 + 초기 상태 반영”을 수행합니다.
+function initSettingsPage() {
   const themeToggle = document.getElementById('themeToggle');
   const notificationToggle = document.getElementById('notificationToggle');
 
+  // 첫 방문 시 로컬스토리지에 저장된 값 읽어서 토글 체크 상태 결정
+  const savedLightMode = localStorage.getItem('lightMode');
+  const isLightMode = savedLightMode === 'true';
+
   if (themeToggle) {
-    // 초기 상태 적용
-    const savedLightMode = localStorage.getItem('lightMode');
-    const isLightMode = savedLightMode === 'true';
+    // 초기 상태
     if (isLightMode) {
       document.body.classList.add('light-mode');
     } else {
@@ -19,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     themeToggle.checked = isLightMode;
 
-    // 상태 변경 리스너
+    // 체크박스 상태 변경 이벤트 바인딩
     themeToggle.addEventListener('change', () => {
       const isLight = themeToggle.checked;
       if (isLight) {
@@ -35,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (notificationToggle) {
-    // 초기 상태 적용
+    // 초기 상태
     const savedNotify = localStorage.getItem('enableNotification');
     const isNotifyEnabled = savedNotify === 'true';
     notificationToggle.checked = isNotifyEnabled;
@@ -50,9 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
+}
 
-// 공통적으로 사용하는 알림 메시지 함수(슬라이드 인·아웃)
+// 공통으로 쓰는 슬라이드 알림 메시지 함수
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
@@ -98,3 +101,6 @@ function showMessage(message, type = 'info') {
     }, 300);
   }, 3000);
 }
+
+// 전역에 initSettingsPage 함수 등록
+window.initSettingsPage = initSettingsPage;
