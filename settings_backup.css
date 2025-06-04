@@ -1,26 +1,41 @@
 /* =============================================================================
    settings.css
    ──────────────────────────────────────────────────────────────────────────────
-   설정 화면 전용 스타일
+   설정(Setting) 화면 전용 스타일 시트
+   - index.css를 불러온 뒤, 여기에 추가적인 스타일을 작성합니다.
    ============================================================================= */
 
-/* ─────────── 설정 콘텐츠 헤더 ─────────── */
-#content-header-settings {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  margin-bottom: 2rem;
+/* --------------------------------------------------
+   1) 설정 화면 전체 컨테이너
+   -------------------------------------------------- */
+/* 페이지 여백을 확보하고, 배경과 테두리를 둥글게 처리 */
+#settingsContainer {
+  padding: 2rem;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 12px;
+  margin: 2rem; /* 메인 콘텐츠와 떨어뜨리기 위한 외부 여백 */
 }
 
-#content-header-settings h1 {
+/* --------------------------------------------------
+   2) 설정 화면 헤더 (제목 + 브레드크럼)
+   -------------------------------------------------- */
+/* 헤더 컨테이너 안에서 제목과 브레드크럼을 배치 */
+#settingsHeader {
+  margin-bottom: 1.5rem;
+}
+
+/* 제목(큰 글씨) 스타일 */
+#settingsHeader h1 {
   font-size: 2rem;
   font-weight: 700;
   background: linear-gradient(135deg, #f1f5f9, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
 }
 
-#breadcrumb-settings {
+/* 브레드크럼(“홈 › 설정”) 스타일 */
+#settingsBreadcrumb {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -28,125 +43,97 @@
   color: #64748b;
 }
 
-/* ─────────── 설정 카드 레이아웃 ─────────── */
-.settings-card {
-  background: rgba(30, 41, 59, 0.5);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 600px;
-  margin: 0 auto;
+/* 브레드크럼 아이템 간의 구분자(›) */
+#settingsBreadcrumb span:nth-of-type(2) {
+  color: #94a3b8;
+}
+
+/* --------------------------------------------------
+   3) 설정 폼 (각종 토글·선택 박스)
+   -------------------------------------------------- */
+/* 설정 폼 전체 컨테이너 */
+#settingsForm {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.5rem; /* 각 항목 간 간격 */
 }
 
-/* 개별 설정 항목 행 */
-.setting-row {
+/* 개별 설정 항목 래퍼 */
+.settingsItem {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
-/* 라벨 영역 */
-.setting-label {
-  font-size: 1rem;
+/* 라벨(왼쪽 텍스트) 스타일 */
+.settingsItem label {
   color: #f1f5f9;
+  font-size: 1rem;
   font-weight: 600;
 }
 
-/* 셀렉트 박스 기본 스타일 */
-.setting-select {
+/* 토글 스위치(체크박스) 공통 스타일 */
+.settingsItem input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #3b82f6; /* 체크박스 체크 색상 */
+}
+
+/* 셀렉트 박스(글꼴 크기, 언어 선택) 공통 스타일 */
+.settingsItem select {
+  padding: 0.4rem 0.6rem;
   background: rgba(30, 41, 59, 0.8);
-  color: #f1f5f9;
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
+  color: #f1f5f9;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.setting-select:hover,
-.setting-select:focus {
+.settingsItem select:focus {
+  outline: none;
   border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: rgba(30, 41, 59, 0.95);
 }
 
-/* ─────────── 커스텀 토글 스위치 ─────────── */
-/* 스위치 컨테이너 */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 48px;
-  height: 24px;
-}
-
-/* 실제 체크박스는 숨김 */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* 스위치 배경 */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(148, 163, 184, 0.4);
-  border-radius: 34px;
-  transition: 0.3s;
-}
-
-/* 원형 핸들 */
-.slider::before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 2px;
-  bottom: 2px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-
-/* 체크되었을 때 배경과 핸들 위치 변경 */
-.switch input:checked + .slider {
-  background-color: #3b82f6;
-}
-.switch input:checked + .slider::before {
-  transform: translateX(24px);
-}
-
-/* ─────────── 반응형 디자인 ─────────── */
-@media (max-width: 768px) {
-  .settings-card {
+/* --------------------------------------------------
+   4) 반응형: 화면이 좁아질 때 여백/간격 축소
+   -------------------------------------------------- */
+@media (max-width: 1024px) {
+  #settingsContainer {
+    margin: 1rem;
     padding: 1.5rem;
-    gap: 1rem;
   }
-  .setting-label {
+  .settingsItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .settingsItem label,
+  .settingsItem select,
+  .settingsItem input[type="checkbox"] {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  #settingsContainer {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  #settingsHeader h1 {
+    font-size: 1.75rem;
+  }
+  #settingsBreadcrumb {
+    font-size: 0.85rem;
+  }
+  .settingsItem {
+    gap: 0.25rem;
+  }
+  .settingsItem label {
     font-size: 0.95rem;
-  }
-  .setting-select {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-  }
-  .switch {
-    width: 42px;
-    height: 20px;
-  }
-  .slider::before {
-    height: 16px;
-    width: 16px;
-    left: 2px;
-    bottom: 2px;
-  }
-  .switch input:checked + .slider::before {
-    transform: translateX(22px);
   }
 }
