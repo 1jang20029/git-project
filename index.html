@@ -16,69 +16,68 @@
 </head>
 <body>
   <!-- 상단 네비게이션 -->
-  <nav class="top-nav">
-    <div class="nav-brand">
-      <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+  <nav id="top-nav">
+    <div id="nav-brand">
+      <button id="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
       <span>🎓</span>
       <span>연성대학교 스마트 캠퍼스</span>
     </div>
 
-    <div class="nav-controls">
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
+    <div id="nav-controls">
+      <div id="search-bar">
+        <span id="search-icon">🔍</span>
         <input
           type="text"
-          class="search-input"
+          id="search-input"
           placeholder="건물, 교수님, 강의실 검색..."
-          id="globalSearch"
         />
       </div>
 
-      <div class="user-menu">
-        <div class="notification-btn" onclick="toggleNotifications()">
+      <div id="user-menu">
+        <div id="notification-btn" onclick="toggleNotifications()">
           🔔
-          <div class="notification-dot" id="notificationDot"></div>
+          <div id="notification-dot"></div>
           <!-- 알림 드롭다운 -->
-          <div class="notification-dropdown" id="notificationDropdown">
-            <div class="notification-header">
-              <div class="notification-title">알림</div>
-              <div class="notification-badge" id="notificationCount">0</div>
+          <div id="notification-dropdown">
+            <div id="notification-header">
+              <div id="notification-title">알림</div>
+              <div id="notification-badge">0</div>
             </div>
-            <div class="notification-list" id="notificationList">
+            <div id="notification-list">
               <!-- 알림 항목이 동적으로 로드됩니다 -->
             </div>
-            <div class="notification-footer">
-              <button class="mark-all-read" onclick="markAllAsRead()">
+            <div id="notification-footer">
+              <button id="mark-all-read" onclick="markAllAsRead()">
                 모두 읽음 처리
               </button>
             </div>
           </div>
         </div>
 
-        <div class="user-profile" onclick="toggleUserMenu()">
-          <div class="avatar" id="userAvatar">👤</div>
-          <div class="user-info">
-            <div class="user-name" id="userName">게스트</div>
-            <div class="user-role" id="userRole">방문자</div>
+        <div id="user-profile" onclick="toggleUserMenu()">
+          <div id="user-avatar">👤</div>
+          <div id="user-info">
+            <div id="user-name">게스트</div>
+            <div id="user-role">방문자</div>
           </div>
           <!-- 사용자 드롭다운 메뉴 -->
-          <div class="user-dropdown" id="userDropdown">
-            <div class="dropdown-user-info">
-              <div class="dropdown-user-name" id="dropdownUserName">게스트</div>
-              <div class="dropdown-user-role" id="dropdownUserRole">
+          <div id="user-dropdown">
+            <div id="dropdown-user-info">
+              <div id="dropdown-user-name">게스트</div>
+              <div id="dropdown-user-role">
                 방문자
               </div>
             </div>
-            <button class="dropdown-item" onclick="showProfile()">
+            <button id="dropdown-item-profile" onclick="showProfile()">
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button class="dropdown-item" onclick="showContent('settings')">
+            <button id="dropdown-item-settings" onclick="showContent('settings')">
               <span>⚙️</span>
               <span>설정</span>
             </button>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
+            <div id="dropdown-divider"></div>
+            <button id="dropdown-item-logout" onclick="handleLogout()" style="color: #ef4444;">
               <span>🚪</span>
               <span>로그아웃</span>
             </button>
@@ -88,8 +87,8 @@
     </div>
   </nav>
 
-  <div class="main-container">
-    <!-- 사이드바 -->
+  <div id="main-container">
+    <!-- 사이드바 (메뉴 박스는 그대로 class로 유지) -->
     <aside class="sidebar" id="sidebar">
       <!-- ▶ 메인 메뉴 섹션 -->
       <div class="sidebar-section">
@@ -159,163 +158,160 @@
     </aside>
 
     <!-- ▶ 메인 콘텐츠 영역 -->
-    <main class="content-area">
+    <main id="content-area">
       <!-- 1) 홈 대시보드 -->
-      <div id="homeContent" class="content-pane">
-        <div class="content-header">
-          <h1>대시보드</h1>
-          <div class="breadcrumb">
+      <div id="homeContent">
+        <div id="content-header-home">
+          <h1 id="title-home">대시보드</h1>
+          <div id="breadcrumb-home">
             <span>홈</span>
             <span>›</span>
             <span>대시보드</span>
           </div>
         </div>
-        <div class="stats-grid" id="statsGrid"></div>
-        <div class="dashboard-grid">
+        <div id="statsGrid"></div>
+        <div id="dashboardGrid">
           <!-- 지도 카드 -->
-          <div class="card map-card">
-            <div class="card-header">
-              <h3 class="card-title">캠퍼스 지도</h3>
-              <span class="card-icon">🗺️</span>
+          <div id="map-card">
+            <div id="card-header-map">
+              <h3 id="card-title-map">캠퍼스 지도</h3>
+              <span id="card-icon-map">🗺️</span>
             </div>
-            <div class="map-container">
+            <div id="map-container">
               <div id="naverMap" style="width: 100%; height: 100%;"></div>
-              <div class="map-overlay">
-                <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
-                <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
-                <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
-                <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
+              <div id="map-overlay">
+                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
+                <button id="map-reset" onclick="resetMapView()" title="초기화">🏠</button>
+                <button id="map-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
               </div>
             </div>
           </div>
           <!-- 오늘의 시간표 -->
-          <div class="card timetable-card">
-            <div class="card-header">
-              <h3 class="card-title">오늘의 시간표</h3>
-              <span class="card-icon">📅</span>
+          <div id="timetable-card">
+            <div id="card-header-timetable">
+              <h3 id="card-title-timetable">오늘의 시간표</h3>
+              <span id="card-icon-timetable">📅</span>
             </div>
             <div id="timetableContent">
               <!-- 오늘 시간표 데이터가 동적으로 생성됩니다 -->
             </div>
           </div>
           <!-- 셔틀버스 현황 -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">셔틀버스 현황</h3>
-              <span class="card-icon">🚌</span>
+          <div id="shuttle-card">
+            <div id="card-header-shuttle">
+              <h3 id="card-title-shuttle">셔틀버스 현황</h3>
+              <span id="card-icon-shuttle">🚌</span>
             </div>
-            <div class="shuttle-routes" id="shuttleRoutes"></div>
-            <div class="shuttle-status">
-              <div class="shuttle-time" id="shuttleTime">--</div>
-              <div class="shuttle-desc" id="shuttleDesc">--</div>
-              <div class="status-badge" id="shuttleStatus">--</div>
+            <div id="shuttleRoutes"></div>
+            <div id="shuttle-status">
+              <div id="shuttle-time">--</div>
+              <div id="shuttle-desc">--</div>
+              <div id="shuttleStatus">--</div>
             </div>
           </div>
           <!-- 최근 공지사항 -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">최근 공지사항</h3>
-              <span class="card-icon">📢</span>
+          <div id="notice-card">
+            <div id="card-header-notice">
+              <h3 id="card-title-notice">최근 공지사항</h3>
+              <span id="card-icon-notice">📢</span>
             </div>
-            <div class="notice-list" id="recentNotices"></div>
+            <div id="recentNotices"></div>
           </div>
         </div>
       </div>
 
       <!-- 2) 건물 & 시설 -->
-      <div id="buildingsContent" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>건물 &amp; 시설 안내</h1>
-          <div class="breadcrumb">
+      <div id="buildingsContent" style="display: none;">
+        <div id="content-header-buildings">
+          <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
+          <div id="breadcrumb-buildings">
             <span>홈</span>
             <span>›</span>
             <span>건물 안내</span>
           </div>
         </div>
-        <div class="card map-card" style="margin-bottom: 2rem;">
-          <div class="card-header">
-            <h3 class="card-title">캠퍼스 지도</h3>
-            <span class="card-icon">🗺️</span>
+        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
+          <div id="card-header-buildings-map">
+            <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
+            <span id="card-icon-buildings-map">🗺️</span>
           </div>
-          <div class="map-container">
+          <div id="buildings-map-container">
             <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
-            <div class="map-overlay">
-              <button class="map-control" onclick="zoomIn()" title="확대">🔍+</button>
-              <button class="map-control" onclick="zoomOut()" title="축소">🔍-</button>
-              <button class="map-control" onclick="resetMapView()" title="초기화">🏠</button>
-              <button class="map-control" onclick="trackUserLocation()" title="내 위치">📍</button>
+            <div id="buildings-map-overlay">
+              <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+              <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
+              <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
+              <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
             </div>
           </div>
         </div>
-        <div class="building-grid" id="buildingGrid"></div>
+        <div id="buildingGrid"></div>
       </div>
 
       <!-- 3) 커뮤니티 -->
-      <div id="communityContent" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>실시간 커뮤니티</h1>
-          <div class="breadcrumb">
+      <div id="communityContent" style="display: none;">
+        <div id="content-header-community">
+          <h1 id="title-community">실시간 커뮤니티</h1>
+          <div id="breadcrumb-community">
             <span>홈</span>
             <span>›</span>
             <span>커뮤니티</span>
           </div>
         </div>
-        <div class="dashboard-grid">
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">실시간 게시글</h3>
-              <span class="card-icon">💬</span>
+        <div id="dashboardGrid-community">
+          <div id="live-posts-card">
+            <div id="card-header-live-posts">
+              <h3 id="card-title-live-posts">실시간 게시글</h3>
+              <span id="card-icon-live-posts">💬</span>
             </div>
-            <div class="notice-list" id="livePosts"></div>
+            <div id="livePosts"></div>
           </div>
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">인기 게시글</h3>
-              <span class="card-icon">🔥</span>
+          <div id="hot-posts-card">
+            <div id="card-header-hot-posts">
+              <h3 id="card-title-hot-posts">인기 게시글</h3>
+              <span id="card-icon-hot-posts">🔥</span>
             </div>
-            <div class="notice-list" id="hotPosts"></div>
+            <div id="hotPosts"></div>
           </div>
         </div>
       </div>
 
       <!-- 4) 강의평가 -->
-      <div id="lecture-reviewContent" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>강의평가</h1>
-          <div class="breadcrumb">
+      <div id="lecture-reviewContent" style="display: none;">
+        <div id="content-header-lecture-review">
+          <h1 id="title-lecture-review">강의평가</h1>
+          <div id="breadcrumb-lecture-review">
             <span>홈</span>
             <span>›</span>
             <span>강의평가</span>
           </div>
         </div>
-        <div class="dashboard-grid">
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">인기 강의평가</h3>
-              <span class="card-icon">⭐</span>
+        <div id="dashboardGrid-lecture-review">
+          <div id="popular-reviews-card">
+            <div id="card-header-popular-reviews">
+              <h3 id="card-title-popular-reviews">인기 강의평가</h3>
+              <span id="card-icon-popular-reviews">⭐</span>
             </div>
-            <div class="notice-list" id="popularReviews"></div>
+            <div id="popularReviews"></div>
           </div>
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">최근 강의평가</h3>
-              <span class="card-icon">🕒</span>
+          <div id="recent-reviews-card">
+            <div id="card-header-recent-reviews">
+              <h3 id="card-title-recent-reviews">최근 강의평가</h3>
+              <span id="card-icon-recent-reviews">🕒</span>
             </div>
-            <div class="notice-list" id="recentReviews"></div>
+            <div id="recentReviews"></div>
           </div>
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">강의평가 작성</h3>
-              <span class="card-icon">✍️</span>
+          <div id="write-review-card">
+            <div id="card-header-write-review">
+              <h3 id="card-title-write-review">강의평가 작성</h3>
+              <span id="card-icon-write-review">✍️</span>
             </div>
-            <div style="padding: 1rem; text-align: center;">
+            <div id="write-review-desc" style="padding: 1rem; text-align: center;">
               <p style="color: #94a3b8; margin-bottom: 1.5rem;">
                 수강 중인 강의에 대한 솔직한 평가를 남겨주세요
               </p>
-              <button
-                class="btn btn-primary"
-                onclick="alert('강의평가 작성 페이지로 이동합니다.')"
-              >
+              <button id="write-review-button" onclick="alert('강의평가 작성 페이지로 이동합니다.')">
                 강의평가 작성하기
               </button>
             </div>
@@ -324,100 +320,100 @@
       </div>
 
       <!-- 5) 공지사항 -->
-      <div id="noticesContent" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>공지사항</h1>
-          <div class="breadcrumb">
+      <div id="noticesContent" style="display: none;">
+        <div id="content-header-notices">
+          <h1 id="title-notices">공지사항</h1>
+          <div id="breadcrumb-notices">
             <span>홈</span>
             <span>›</span>
             <span>공지사항</span>
           </div>
         </div>
-        <div class="notice-list" id="fullNoticeList"></div>
+        <div id="fullNoticeList"></div>
       </div>
 
       <!-- 6) 내 시간표 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
-      <div id="timetableContentPane" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>내 시간표</h1>
-          <div class="breadcrumb">
+      <div id="timetableContentPane" style="display: none;">
+        <div id="content-header-timetable-pane">
+          <h1 id="title-timetable-pane">내 시간표</h1>
+          <div id="breadcrumb-timetable-pane">
             <span>홈</span>
             <span>›</span>
             <span>내 시간표</span>
           </div>
         </div>
-        <div class="sample-text">
+        <div id="timetable-sample-text">
           여기에 사용자의 개인 시간표 정보를 표시합니다.<br />
           (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
         </div>
       </div>
 
       <!-- 7) 셔틀버스 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
-      <div id="shuttleContentPane" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>셔틀버스 정보</h1>
-          <div class="breadcrumb">
+      <div id="shuttleContentPane" style="display: none;">
+        <div id="content-header-shuttle-pane">
+          <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
+          <div id="breadcrumb-shuttle-pane">
             <span>홈</span>
             <span>›</span>
             <span>셔틀버스</span>
           </div>
         </div>
-        <div class="sample-text">
+        <div id="shuttle-sample-text">
           여기에 셔틀버스 노선 및 실시간 운행 정보를 표시합니다.<br />
           (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
         </div>
       </div>
 
       <!-- 8) 학사일정 (빠른 접근 탭) - 더 이상 사용되지 않음 -->
-      <div id="calendarContentPane" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>학사일정</h1>
-          <div class="breadcrumb">
+      <div id="calendarContentPane" style="display: none;">
+        <div id="content-header-calendar-pane">
+          <h1 id="title-calendar-pane">학사일정</h1>
+          <div id="breadcrumb-calendar-pane">
             <span>홈</span>
             <span>›</span>
             <span>학사일정</span>
           </div>
         </div>
-        <div class="sample-text">
+        <div id="calendar-sample-text">
           여기에 학사일정 정보를 표시합니다.<br />
           (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
         </div>
       </div>
 
       <!-- 9) 프로필 -->
-      <div id="profileContentPane" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>프로필</h1>
-          <div class="breadcrumb">
+      <div id="profileContentPane" style="display: none;">
+        <div id="content-header-profile-pane">
+          <h1 id="title-profile-pane">프로필</h1>
+          <div id="breadcrumb-profile-pane">
             <span>홈</span>
             <span>›</span>
             <span>프로필</span>
           </div>
         </div>
-        <div class="sample-text">
+        <div id="profile-sample-text">
           여기에 프로필 정보를 표시합니다.<br />
           (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
         </div>
       </div>
 
       <!-- 10) 설정 -->
-      <div id="settingsContent" class="content-pane" style="display: none;">
-        <div class="content-header">
-          <h1>설정</h1>
-          <div class="breadcrumb">
+      <div id="settingsContent" style="display: none;">
+        <div id="content-header-settings">
+          <h1 id="title-settings">설정</h1>
+          <div id="breadcrumb-settings">
             <span>홈</span>
             <span>›</span>
             <span>설정</span>
           </div>
         </div>
-        <div class="settings-container">
+        <div id="settings-container">
           <!-- 다크/라이트 모드 토글 -->
-          <div class="setting-item">
+          <div id="setting-item-theme">
             <label for="themeToggle">다크/라이트 모드</label>
             <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
           </div>
           <!-- 알림 받기 토글 -->
-          <div class="setting-item">
+          <div id="setting-item-notification">
             <label for="notificationToggle">알림 받기</label>
             <input type="checkbox" id="notificationToggle" />
           </div>
