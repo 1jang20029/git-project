@@ -1,4 +1,5 @@
 // settings.js
+
 // =============================================================================
 // 분리된 설정 화면 전용 자바스크립트
 // =============================================================================
@@ -55,7 +56,7 @@ function initSettingsPage() {
   }
 }
 
-// 공통으로 쓰는 슬라이드 알림 메시지 함수
+// 공통으로 쓰는 슬라이드 알림 메시지 함수 (index.js의 showMessage와 동일 로직)
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =

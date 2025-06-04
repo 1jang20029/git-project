@@ -1341,26 +1341,22 @@ body.light-mode #profile-sample-text {
   #settings-container {
     padding: 1rem;
   }
-.setting-item {
+  .setting-item {
     margin-bottom: 1rem;
     padding: 1.5rem 0;
   }
-
   .setting-item label {
     font-size: 1.1rem;
   }
-
   .setting-item input[type="checkbox"] {
     width: 28px;
     height: 28px;
     transform: scale(1.4);
   }
-
   .building-actions {
     flex-direction: column;
     gap: 0.5rem;
   }
-
   .btn {
     width: 100%;
     text-align: center;
@@ -1371,18 +1367,15 @@ body.light-mode #profile-sample-text {
   #nav-brand span:last-child {
     display: none;
   }
-
   #search-input {
     width: 150px;
     font-size: 0.8rem;
   }
-
   .setting-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-
   .setting-item input[type="checkbox"] {
     align-self: flex-end;
   }
