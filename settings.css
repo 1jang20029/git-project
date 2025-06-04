@@ -158,11 +158,10 @@
   border-color: #3b82f6;
 }
 
-/* 포커스 시 강조 효과 */
 .setting-item input[type="text"]:focus {
   outline: none;
   border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.9);
+  background: rgba(30, 41, 59, 0.95);
 }
 
 /* ----------------------------------------------------------------------------- 

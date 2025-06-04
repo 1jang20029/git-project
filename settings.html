@@ -20,19 +20,19 @@
   </div>
 
   <div id="settings-container">
-    <!-- 다크/라이트 모드 토글 -->
+    <!-- 1. 다크/라이트 모드 토글 -->
     <div class="setting-item">
       <label for="themeToggle">다크/라이트 모드</label>
       <input type="checkbox" id="themeToggle" />
     </div>
 
-    <!-- 알림 받기 ON/OFF -->
+    <!-- 2. 알림 받기 ON/OFF -->
     <div class="setting-item">
       <label for="notificationToggle">알림 받기</label>
       <input type="checkbox" id="notificationToggle" />
     </div>
 
-    <!-- 카테고리별 알림 설정 -->
+    <!-- 3. 카테고리별 알림 설정 -->
     <div class="setting-section-title">카테고리별 알림 설정</div>
     <div class="setting-item">
       <label for="notifCategory-공지사항">공지사항</label>
@@ -51,7 +51,7 @@
       <input type="checkbox" id="notifCategory-강의평가" />
     </div>
 
-    <!-- Do Not Disturb (DND) 모드 -->
+    <!-- 4. Do Not Disturb (DND) 모드 -->
     <div class="setting-section-title">Do Not Disturb (DND)</div>
     <div class="setting-item">
       <label for="dndToggle">DND 모드 활성화</label>
@@ -66,7 +66,7 @@
       <input type="time" id="dndEnd" />
     </div>
 
-    <!-- 자동 로그아웃 -->
+    <!-- 5. 자동 로그아웃 설정 -->
     <div class="setting-section-title">자동 로그아웃 (비활성 시)</div>
     <div class="setting-item">
       <label for="autoLogoutToggle">자동 로그아웃 활성화</label>
@@ -77,41 +77,14 @@
       <input type="number" id="autoLogoutTimeout" min="1" max="120" />
     </div>
 
-    <!-- 키보드 단축키 설정 (PC 전용) -->
+    <!-- 6. 키보드 단축키 설정 (PC 전용) -->
     <div class="setting-section-title">키보드 단축키 설정 (PC)</div>
-    <div class="setting-item">
-      <label for="shortcutToggleSidebar">사이드바 토글</label>
-      <input
-        type="text"
-        id="shortcutToggleSidebar"
-        placeholder="예: F2"
-        maxlength="5"
-        readonly
-        data-default-placeholder="예: F2"
-      />
+    <div id="shortcut-list-container">
+      <!-- 단축키 항목들이 이곳에 렌더링됩니다 -->
     </div>
-    <div class="setting-item">
-      <label for="shortcutOpenNotifications">알림 열기</label>
-      <input
-        type="text"
-        id="shortcutOpenNotifications"
-        placeholder="예: F3"
-        maxlength="5"
-        readonly
-        data-default-placeholder="예: F3"
-      />
-    </div>
-    <div class="setting-item">
-      <label for="shortcutGoToSettings">설정 화면</label>
-      <input
-        type="text"
-        id="shortcutGoToSettings"
-        placeholder="예: F4"
-        maxlength="5"
-        readonly
-        data-default-placeholder="예: F4"
-      />
-    </div>
+    <button id="addShortcutBtn" class="btn btn-outline add-shortcut-btn">
+      + 단축키 추가
+    </button>
   </div>
 
   <!-- Settings 전용 JS -->
