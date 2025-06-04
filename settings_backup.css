@@ -1,18 +1,17 @@
 /* =============================================================================
-   settings_backup.css
+   settings.css
    ──────────────────────────────────────────────────────────────────────────────
-   “설정” 화면 전용 스타일
+   설정 뷰 전용 스타일
    ============================================================================= */
 
-/* 설정 화면 전체 컨테이너 배경 및 패딩 */
+/* 설정 화면 전체 컨테이너 */
 .settings-container {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
-  margin: 1rem;
 }
 
-/* 각 설정 항목: 레이블과 컨트롤(체크박스/드롭다운)을 가로로 정렬 */
+/* 개별 설정 항목 */
 .setting-item {
   display: flex;
   align-items: center;
@@ -20,54 +19,31 @@
   margin-bottom: 1.5rem;
 }
 
-/* 레이블 텍스트 스타일 */
+/* 라벨 텍스트 스타일 */
 .setting-item label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
 }
 
-/* 체크박스 토글 기본 스타일 */
+/* 토글 체크박스 기본 스타일 */
 .setting-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #3b82f6; /* 체크박스 색상 지정 (파란색) */
 }
 
-/* 셀렉트(드롭다운) 기본 스타일 보정 */
-.setting-item select {
-  background: rgba(30, 41, 59, 0.8);
-  color: #f1f5f9;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  cursor: pointer;
-  min-width: 120px;
-  font-size: 0.9rem;
+/* 토글 상태에 따른 강조 */
+.setting-item input[type="checkbox"]:checked {
+  accent-color: #3b82f6;
 }
 
-/* 드롭다운 hover/포커스 시 보정 */
-.setting-item select:focus,
-.setting-item select:hover {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: rgba(30, 41, 59, 0.95);
-}
-
-/* 반응형: 화면이 좁을 때(모바일) 여백 축소 및 항목 세로 정렬 */
+/* 반응형: 좁은 화면에서 여백 축소 */
 @media (max-width: 768px) {
   .settings-container {
     padding: 1rem;
-    margin: 0.5rem;
   }
   .setting-item {
-    flex-direction: column;
-    align-items: flex-start;
     margin-bottom: 1rem;
-  }
-  .setting-item label {
-    margin-bottom: 0.5rem;
   }
 }

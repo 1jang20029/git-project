@@ -5,74 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>설정 - 연성대학교 스마트 캠퍼스</title>
 
-  <!-- ① /index.css 그대로 로드 -->
-  <!-- 만약 실제 배포 환경에서 CSS 경로가 다르다면, 경로를 적절히 수정해 주세요. -->
+  <!-- 기존 index.css 불러오기 -->
   <link rel="stylesheet" href="index.css" />
 
-  <!-- ② /settings_backup.css (설정 전용 CSS) -->
-  <link rel="stylesheet" href="settings_backup.css" />
+  <!-- 설정 전용 CSS -->
+  <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
-  <!-- ─────────── 상단 네비게이션 (index.html과 동일) ─────────── -->
-  <nav id="top-nav">
-    <div id="nav-brand">
-      <button id="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+  <!-- 상단 네비게이션 (index.html과 동일) -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
       <span>🎓</span>
       <span>연성대학교 스마트 캠퍼스</span>
     </div>
 
-    <div id="nav-controls">
-      <div id="search-bar">
-        <span id="search-icon">🔍</span>
+    <div class="nav-controls">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
         <input
           type="text"
-          id="globalSearch"
+          class="search-input"
           placeholder="건물, 교수님, 강의실 검색..."
+          id="globalSearch"
         />
       </div>
 
-      <div id="user-menu">
-        <div id="notification-btn" onclick="toggleNotifications()">
+      <div class="user-menu">
+        <div class="notification-btn" onclick="toggleNotifications()">
           🔔
-          <div id="notification-dot"></div>
-          <div id="notification-dropdown">
-            <div id="notification-header">
-              <div id="notification-title">알림</div>
-              <div id="notification-badge">0</div>
+          <div class="notification-dot" id="notificationDot"></div>
+          <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header">
+              <div class="notification-title">알림</div>
+              <div class="notification-badge" id="notificationCount">0</div>
             </div>
-            <div id="notification-list">
+            <div class="notification-list" id="notificationList">
               <!-- 알림 항목이 동적으로 로드됩니다 -->
             </div>
-            <div id="notification-footer">
-              <button id="mark-all-read" onclick="markAllAsRead()">
+            <div class="notification-footer">
+              <button class="mark-all-read" onclick="markAllAsRead()">
                 모두 읽음 처리
               </button>
             </div>
           </div>
         </div>
 
-        <div id="user-profile" onclick="toggleUserMenu()">
-          <div id="user-avatar">👤</div>
-          <div id="user-info">
-            <div id="user-name">게스트</div>
-            <div id="user-role">방문자</div>
+        <div class="user-profile" onclick="toggleUserMenu()">
+          <div class="avatar" id="userAvatar">👤</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">게스트</div>
+            <div class="user-role" id="userRole">방문자</div>
           </div>
-          <div id="user-dropdown">
-            <div id="dropdown-user-info">
-              <div id="dropdown-user-name">게스트</div>
-              <div id="dropdown-user-role">방문자</div>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="dropdown-user-info">
+              <div class="dropdown-user-name" id="dropdownUserName">게스트</div>
+              <div class="dropdown-user-role" id="dropdownUserRole">
+                방문자
+              </div>
             </div>
-            <button id="dropdown-item-profile" onclick="showProfile()">
+            <button class="dropdown-item" onclick="showProfile()">
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <!-- “설정” 메뉴를 누르면 지금 열어 보고 있는 settings_backup.html로 이동 -->
-            <button id="dropdown-item-settings" onclick="location.href='settings_backup.html'">
+            <button class="dropdown-item" onclick="toggleTheme()">
+              <span>🌗</span>
+              <span>다크/라이트 모드</span>
+            </button>
+            <button class="dropdown-item" onclick="showSettings()">
               <span>⚙️</span>
               <span>설정</span>
             </button>
-            <div id="dropdown-divider"></div>
-            <button id="dropdown-item-logout" onclick="handleLogout()" style="color: #ef4444;">
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
               <span>🚪</span>
               <span>로그아웃</span>
             </button>
@@ -82,47 +87,51 @@
     </div>
   </nav>
 
-  <div id="main-container">
-    <!-- ─────────── 사이드바 (index.html과 동일) ─────────── -->
+  <div class="main-container">
+    <!-- 사이드바 (index.html과 동일하되, '설정' 항목에 active 클래스 추가) -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-title">메인 메뉴</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="location.href='index.html#home'">
+          <li class="nav-item" onclick="showContent('home')">
             <span class="nav-icon" title="대시보드">🏠</span>
             <span>대시보드</span>
           </li>
-          <li class="nav-item" onclick="location.href='index.html#buildings'">
-            <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
+          <li class="nav-item" onclick="showContent('buildings')">
+            <span class="nav-icon" title="건물 & 시설">🏢</span>
             <span>건물 &amp; 시설</span>
           </li>
-          <li class="nav-item" onclick="location.href='index.html#community'">
+          <li class="nav-item" onclick="showContent('community')">
             <span class="nav-icon" title="커뮤니티">💬</span>
             <span>커뮤니티</span>
           </li>
-          <li class="nav-item" onclick="location.href='index.html#lecture-review'">
+          <li class="nav-item" onclick="showContent('lecture-review')">
             <span class="nav-icon" title="강의평가">⭐</span>
             <span>강의평가</span>
           </li>
-          <li class="nav-item" onclick="location.href='index.html#notices'">
+          <li class="nav-item" onclick="showContent('notices')">
             <span class="nav-icon" title="공지사항">📢</span>
             <span>공지사항</span>
+          </li>
+          <li class="nav-item active" onclick="showContent('settings')">
+            <span class="nav-icon" title="설정">⚙️</span>
+            <span>설정</span>
           </li>
         </ul>
       </div>
 
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
-        <ul class="nav-list quick-access">
-          <li class="nav-item" onclick="location.href='index.html#timetable'">
+        <ul class="nav-list">
+          <li class="nav-item" onclick="openQuickLink('timetable')">
             <span class="nav-icon" title="내 시간표">📅</span>
             <span>내 시간표</span>
           </li>
-          <li class="nav-item" onclick="location.href='index.html#shuttle'">
+          <li class="nav-item" onclick="openQuickLink('shuttle')">
             <span class="nav-icon" title="셔틀버스">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <li class="nav-item" onclick="location.href='index.html#calendar'">
+          <li class="nav-item" onclick="openQuickLink('academic-calendar')">
             <span class="nav-icon" title="학사일정">🗓️</span>
             <span>학사일정</span>
           </li>
@@ -132,12 +141,11 @@
       <div class="sidebar-section">
         <div class="sidebar-title">계정</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="location.href='index.html#profile'">
+          <li class="nav-item" onclick="showProfile()">
             <span class="nav-icon" title="프로필">👤</span>
             <span>프로필</span>
           </li>
-          <!-- 현재 보고 있는 파일: settings_backup.html 이므로 active -->
-          <li class="nav-item active" onclick="location.href='settings_backup.html'">
+          <li class="nav-item" onclick="showSettings()">
             <span class="nav-icon" title="설정">⚙️</span>
             <span>설정</span>
           </li>
@@ -149,20 +157,21 @@
       </div>
     </aside>
 
-    <!-- ─────────── 메인 콘텐츠 영역 ─────────── -->
-    <main id="content-area">
-      <!-- “설정” 페이지 전용: 여기서부터 설정 UI가 시작 -->
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="content-area">
+      <!-- 설정 페이지 콘텐츠 -->
       <div id="settingsContent">
-        <div id="content-header-settings">
-          <h1>설정</h1>
-          <div id="breadcrumb-settings">
-            <span>홈</span>
-            <span>›</span>
-            <span>설정</span>
+        <div class="content-header">
+          <div>
+            <h1>설정</h1>
+            <div class="breadcrumb">
+              <span>홈</span>
+              <span>›</span>
+              <span>설정</span>
+            </div>
           </div>
         </div>
 
-        <!-- ▶ 설정 UI 전체 배치 -->
         <div class="settings-container">
           <!-- 다크/라이트 모드 토글 -->
           <div class="setting-item">
@@ -170,36 +179,19 @@
             <input type="checkbox" id="themeToggle" />
           </div>
 
-          <!-- 푸시 알림 받기 토글 -->
+          <!-- 알림 받기 토글 -->
           <div class="setting-item">
-            <label for="notificationToggle">푸시 알림 받기</label>
+            <label for="notificationToggle">알림 받기</label>
             <input type="checkbox" id="notificationToggle" />
-          </div>
-
-          <!-- 글꼴 크기 선택 드롭다운 -->
-          <div class="setting-item">
-            <label for="fontSizeSelect">글꼴 크기</label>
-            <select id="fontSizeSelect">
-              <option value="small">작게</option>
-              <option value="normal">보통</option>
-              <option value="large">크게</option>
-            </select>
-          </div>
-
-          <!-- 언어 선택 드롭다운 -->
-          <div class="setting-item">
-            <label for="languageSelect">언어 선택</label>
-            <select id="languageSelect">
-              <option value="ko">한국어</option>
-              <option value="en">English</option>
-              <option value="jp">日本語</option>
-              <!-- 필요 시 옵션 추가 -->
-            </select>
           </div>
         </div>
       </div>
     </main>
   </div>
-  <script src="settings_backup.js" defer></script>
+
+  <!-- 설정 전용 JavaScript -->
+  <script src="settings.js" defer></script>
+  <!-- 기존 index.js 기능(검색, 드롭다운, 사이드바 토글 등)을 사용하려면 아래를 추가 -->
+  <script src="index.js" defer></script>
 </body>
 </html>
