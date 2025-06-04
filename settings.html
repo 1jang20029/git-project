@@ -1,5 +1,4 @@
 <!-- settings.html -->
-
 <div class="content-header">
   <div>
     <h1>설정</h1>
@@ -18,13 +17,13 @@
     <input type="checkbox" id="themeToggle" />
   </div>
 
-  <!-- 알림 받기 토글 -->
+  <!-- 알림 받기 ON/OFF -->
   <div class="setting-item">
     <label for="notificationToggle">알림 받기</label>
     <input type="checkbox" id="notificationToggle" />
   </div>
 
-  <!-- 카테고리별 알림 수신 여부 -->
+  <!-- 카테고리별 알림 설정 -->
   <div class="setting-section-title">카테고리별 알림 설정</div>
   <div class="setting-item">
     <label for="notifCategory-공지사항">공지사항</label>
@@ -43,7 +42,7 @@
     <input type="checkbox" id="notifCategory-강의평가" />
   </div>
 
-  <!-- Do Not Disturb 모드 -->
+  <!-- Do Not Disturb (DND) 모드 -->
   <div class="setting-section-title">Do Not Disturb (DND)</div>
   <div class="setting-item">
     <label for="dndToggle">DND 모드 활성화</label>
@@ -73,14 +72,36 @@
   <div class="setting-section-title">키보드 단축키 설정 (PC)</div>
   <div class="setting-item">
     <label for="shortcutToggleSidebar">사이드바 토글</label>
-    <input type="text" id="shortcutToggleSidebar" placeholder="예: F2" maxlength="5" />
+    <!-- readonly 속성 추가 -->
+    <input
+      type="text"
+      id="shortcutToggleSidebar"
+      placeholder="예: F2"
+      maxlength="5"
+      readonly
+    />
   </div>
   <div class="setting-item">
     <label for="shortcutOpenNotifications">알림 열기</label>
-    <input type="text" id="shortcutOpenNotifications" placeholder="예: F3" maxlength="5" />
+    <input
+      type="text"
+      id="shortcutOpenNotifications"
+      placeholder="예: F3"
+      maxlength="5"
+      readonly
+    />
   </div>
   <div class="setting-item">
     <label for="shortcutGoToSettings">설정 화면</label>
-    <input type="text" id="shortcutGoToSettings" placeholder="예: F4" maxlength="5" />
+    <input
+      type="text"
+      id="shortcutGoToSettings"
+      placeholder="예: F4"
+      maxlength="5"
+      readonly
+    />
   </div>
 </div>
+
+<!-- settings.js를 불러옵니다 -->
+<script src="settings.js" defer></script>

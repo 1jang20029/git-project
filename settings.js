@@ -27,11 +27,11 @@ function initSettingsPage() {
       if (isLight) {
         document.body.classList.add('light-mode');
         localStorage.setItem('lightMode', 'true');
-        showMessage('라이트 모드로 변경되었습니다', 'success', '');
+        showMessage('라이트 모드로 변경되었습니다', 'success');
       } else {
         document.body.classList.remove('light-mode');
         localStorage.setItem('lightMode', 'false');
-        showMessage('다크 모드로 변경되었습니다', 'success', '');
+        showMessage('다크 모드로 변경되었습니다', 'success');
       }
     });
   }
@@ -47,9 +47,9 @@ function initSettingsPage() {
       const enabled = notificationToggle.checked;
       localStorage.setItem('enableNotification', enabled);
       if (enabled) {
-        showMessage('알림이 활성화되었습니다', 'success', '');
+        showMessage('알림이 활성화되었습니다', 'success');
       } else {
-        showMessage('알림이 비활성화되었습니다', 'info', '');
+        showMessage('알림이 비활성화되었습니다', 'info');
       }
     });
   }
@@ -95,7 +95,7 @@ function initSettingsPage() {
       const current = JSON.parse(localStorage.getItem('doNotDisturb')) || savedDND;
       current.enabled = val;
       localStorage.setItem('doNotDisturb', JSON.stringify(current));
-      showMessage(`DND 모드가 ${val ? '활성화' : '비활성화'}되었습니다`, 'success', '');
+      showMessage(`DND 모드가 ${val ? '활성화' : '비활성화'}되었습니다`, 'success');
     });
 
     // 시작 시간 변경 이벤트
@@ -105,7 +105,7 @@ function initSettingsPage() {
       current.startHour = h;
       current.startMinute = m;
       localStorage.setItem('doNotDisturb', JSON.stringify(current));
-      showMessage(`DND 시작 시간이 ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}로 변경되었습니다`, 'success', '');
+      showMessage(`DND 시작 시간이 ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}로 변경되었습니다`, 'success');
     });
 
     // 종료 시간 변경 이벤트
@@ -115,7 +115,7 @@ function initSettingsPage() {
       current.endHour = h;
       current.endMinute = m;
       localStorage.setItem('doNotDisturb', JSON.stringify(current));
-      showMessage(`DND 종료 시간이 ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}로 변경되었습니다`, 'success', '');
+      showMessage(`DND 종료 시간이 ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}로 변경되었습니다`, 'success');
     });
   }
 
@@ -134,7 +134,7 @@ function initSettingsPage() {
       const current = JSON.parse(localStorage.getItem('autoLogout')) || savedAutoLogout;
       current.enabled = val;
       localStorage.setItem('autoLogout', JSON.stringify(current));
-      showMessage(`자동 로그아웃이 ${val ? '활성화' : '비활성화'}되었습니다`, 'success', '');
+      showMessage(`자동 로그아웃이 ${val ? '활성화' : '비활성화'}되었습니다`, 'success');
     });
 
     autoLogoutTimeout.addEventListener('change', () => {
@@ -145,7 +145,7 @@ function initSettingsPage() {
       const current = JSON.parse(localStorage.getItem('autoLogout')) || savedAutoLogout;
       current.timeoutMinutes = val;
       localStorage.setItem('autoLogout', JSON.stringify(current));
-      showMessage(`자동 로그아웃 대기 시간이 ${val}분으로 설정되었습니다`, 'success', '');
+      showMessage(`자동 로그아웃 대기 시간이 ${val}분으로 설정되었습니다`, 'success');
     });
   }
 
@@ -162,32 +162,63 @@ function initSettingsPage() {
   const savedShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
 
   if (shortcutToggleSidebar && shortcutOpenNotifications && shortcutGoToSettings) {
+    // 초기 값 반영
     shortcutToggleSidebar.value = savedShortcuts.toggleSidebar;
     shortcutOpenNotifications.value = savedShortcuts.openNotifications;
     shortcutGoToSettings.value = savedShortcuts.goToSettings;
 
-    shortcutToggleSidebar.addEventListener('change', () => {
-      const val = shortcutToggleSidebar.value.toUpperCase();
-      const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
-      current.toggleSidebar = val;
-      localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
-      showMessage(`“사이드바 토글” 단축키가 ${val}로 변경되었습니다`, 'success', '');
+    // 각 입력창에 keydown 리스너를 걸어, 누른 키를 즉시 저장하도록 구현
+    //  - e.key 를 toUpperCase() 한 뒤 로컬스토리지에 저장
+    //  - Backspace, Tab, Shift 등 특수키를 걸러야 할 경우 추가로 분기 처리 가능
+    shortcutToggleSidebar.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      const val = e.key.toUpperCase();
+      if (val.length === 1 || val.startsWith('F')) {
+        // 예: A, B, F1, F2 등
+        const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+        current.toggleSidebar = val;
+        localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+        shortcutToggleSidebar.value = val;
+        showMessage(`“사이드바 토글” 단축키가 ${val}로 변경되었습니다`, 'success');
+      }
     });
 
-    shortcutOpenNotifications.addEventListener('change', () => {
-      const val = shortcutOpenNotifications.value.toUpperCase();
-      const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
-      current.openNotifications = val;
-      localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
-      showMessage(`“알림 열기” 단축키가 ${val}로 변경되었습니다`, 'success', '');
+    shortcutOpenNotifications.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      const val = e.key.toUpperCase();
+      if (val.length === 1 || val.startsWith('F')) {
+        const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+        current.openNotifications = val;
+        localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+        shortcutOpenNotifications.value = val;
+        showMessage(`“알림 열기” 단축키가 ${val}로 변경되었습니다`, 'success');
+      }
     });
 
-    shortcutGoToSettings.addEventListener('change', () => {
-      const val = shortcutGoToSettings.value.toUpperCase();
-      const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
-      current.goToSettings = val;
-      localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
-      showMessage(`“설정 화면” 단축키가 ${val}로 변경되었습니다`, 'success', '');
+    shortcutGoToSettings.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      const val = e.key.toUpperCase();
+      if (val.length === 1 || val.startsWith('F')) {
+        const current = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+        current.goToSettings = val;
+        localStorage.setItem('keyboardShortcuts', JSON.stringify(current));
+        shortcutGoToSettings.value = val;
+        showMessage(`“설정 화면” 단축키가 ${val}로 변경되었습니다`, 'success');
+      }
+    });
+
+    // 포커스가 벗어났을 때 빈 값으로 남지 않도록
+    shortcutToggleSidebar.addEventListener('blur', () => {
+      const curr = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+      shortcutToggleSidebar.value = curr.toggleSidebar;
+    });
+    shortcutOpenNotifications.addEventListener('blur', () => {
+      const curr = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+      shortcutOpenNotifications.value = curr.openNotifications;
+    });
+    shortcutGoToSettings.addEventListener('blur', () => {
+      const curr = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+      shortcutGoToSettings.value = curr.goToSettings;
     });
   }
 }
