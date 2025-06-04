@@ -1,139 +1,73 @@
 /* =============================================================================
-   settings.css
+   settings_backup.css
    ──────────────────────────────────────────────────────────────────────────────
-   설정(Setting) 화면 전용 스타일 시트
-   - index.css를 불러온 뒤, 여기에 추가적인 스타일을 작성합니다.
+   “설정” 화면 전용 스타일
    ============================================================================= */
 
-/* --------------------------------------------------
-   1) 설정 화면 전체 컨테이너
-   -------------------------------------------------- */
-/* 페이지 여백을 확보하고, 배경과 테두리를 둥글게 처리 */
-#settingsContainer {
+/* 설정 화면 전체 컨테이너 배경 및 패딩 */
+.settings-container {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
-  margin: 2rem; /* 메인 콘텐츠와 떨어뜨리기 위한 외부 여백 */
+  margin: 1rem;
 }
 
-/* --------------------------------------------------
-   2) 설정 화면 헤더 (제목 + 브레드크럼)
-   -------------------------------------------------- */
-/* 헤더 컨테이너 안에서 제목과 브레드크럼을 배치 */
-#settingsHeader {
-  margin-bottom: 1.5rem;
-}
-
-/* 제목(큰 글씨) 스타일 */
-#settingsHeader h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
-}
-
-/* 브레드크럼(“홈 › 설정”) 스타일 */
-#settingsBreadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
-/* 브레드크럼 아이템 간의 구분자(›) */
-#settingsBreadcrumb span:nth-of-type(2) {
-  color: #94a3b8;
-}
-
-/* --------------------------------------------------
-   3) 설정 폼 (각종 토글·선택 박스)
-   -------------------------------------------------- */
-/* 설정 폼 전체 컨테이너 */
-#settingsForm {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem; /* 각 항목 간 간격 */
-}
-
-/* 개별 설정 항목 래퍼 */
-.settingsItem {
+/* 각 설정 항목: 레이블과 컨트롤(체크박스/드롭다운)을 가로로 정렬 */
+.setting-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 1.5rem;
 }
 
-/* 라벨(왼쪽 텍스트) 스타일 */
-.settingsItem label {
+/* 레이블 텍스트 스타일 */
+.setting-item label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
 }
 
-/* 토글 스위치(체크박스) 공통 스타일 */
-.settingsItem input[type="checkbox"] {
+/* 체크박스 토글 기본 스타일 */
+.setting-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #3b82f6; /* 체크박스 체크 색상 */
+  accent-color: #3b82f6; /* 체크박스 색상 지정 (파란색) */
 }
 
-/* 셀렉트 박스(글꼴 크기, 언어 선택) 공통 스타일 */
-.settingsItem select {
-  padding: 0.4rem 0.6rem;
+/* 셀렉트(드롭다운) 기본 스타일 보정 */
+.setting-item select {
   background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
   color: #f1f5f9;
-  font-size: 0.9rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
   cursor: pointer;
-  transition: all 0.3s ease;
+  min-width: 120px;
+  font-size: 0.9rem;
 }
 
-.settingsItem select:focus {
+/* 드롭다운 hover/포커스 시 보정 */
+.setting-item select:focus,
+.setting-item select:hover {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   background: rgba(30, 41, 59, 0.95);
 }
 
-/* --------------------------------------------------
-   4) 반응형: 화면이 좁아질 때 여백/간격 축소
-   -------------------------------------------------- */
-@media (max-width: 1024px) {
-  #settingsContainer {
-    margin: 1rem;
-    padding: 1.5rem;
+/* 반응형: 화면이 좁을 때(모바일) 여백 축소 및 항목 세로 정렬 */
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 1rem;
+    margin: 0.5rem;
   }
-  .settingsItem {
+  .setting-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
-  .settingsItem label,
-  .settingsItem select,
-  .settingsItem input[type="checkbox"] {
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  #settingsContainer {
-    margin: 0.5rem;
-    padding: 1rem;
-  }
-  #settingsHeader h1 {
-    font-size: 1.75rem;
-  }
-  #settingsBreadcrumb {
-    font-size: 0.85rem;
-  }
-  .settingsItem {
-    gap: 0.25rem;
-  }
-  .settingsItem label {
-    font-size: 0.95rem;
+  .setting-item label {
+    margin-bottom: 0.5rem;
   }
 }

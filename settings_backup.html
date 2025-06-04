@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>설정 - 연성대학교 스마트 캠퍼스</title>
 
-  <!-- ▶ 1) 기존 메인 스타일 시트 불러오기 -->
+  <!-- ① /index.css 그대로 로드 -->
+  <!-- 만약 실제 배포 환경에서 CSS 경로가 다르다면, 경로를 적절히 수정해 주세요. -->
   <link rel="stylesheet" href="index.css" />
 
-  <!-- ▶ 2) 설정 화면 전용 스타일 -->
-  <link rel="stylesheet" href="settings.css" />
+  <!-- ② /settings_backup.css (설정 전용 CSS) -->
+  <link rel="stylesheet" href="settings_backup.css" />
 </head>
 <body>
-  <!-- ▶ 3) 상단 네비게이션: index.html과 동일 -->
+  <!-- ─────────── 상단 네비게이션 (index.html과 동일) ─────────── -->
   <nav id="top-nav">
     <div id="nav-brand">
       <button id="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
@@ -25,9 +26,8 @@
         <span id="search-icon">🔍</span>
         <input
           type="text"
-          id="search-input"
+          id="globalSearch"
           placeholder="건물, 교수님, 강의실 검색..."
-          onkeypress="if(event.key==='Enter') handleGlobalSearch()"
         />
       </div>
 
@@ -41,7 +41,7 @@
               <div id="notification-badge">0</div>
             </div>
             <div id="notification-list">
-              <!-- 알림 항목이 동적으로 로드됩니다 (index.js 활용) -->
+              <!-- 알림 항목이 동적으로 로드됩니다 -->
             </div>
             <div id="notification-footer">
               <button id="mark-all-read" onclick="markAllAsRead()">
@@ -66,20 +66,13 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button id="dropdown-item-theme-toggle" onclick="toggleTheme()">
-              <span>🌗</span>
-              <span>다크/라이트 모드</span>
-            </button>
-            <button id="dropdown-item-settings" onclick="showSettings()">
+            <!-- “설정” 메뉴를 누르면 지금 열어 보고 있는 settings_backup.html로 이동 -->
+            <button id="dropdown-item-settings" onclick="location.href='settings_backup.html'">
               <span>⚙️</span>
               <span>설정</span>
             </button>
             <div id="dropdown-divider"></div>
-            <button
-              id="dropdown-item-logout"
-              onclick="handleLogout()"
-              style="color: #ef4444;"
-            >
+            <button id="dropdown-item-logout" onclick="handleLogout()" style="color: #ef4444;">
               <span>🚪</span>
               <span>로그아웃</span>
             </button>
@@ -89,55 +82,47 @@
     </div>
   </nav>
 
-  <!-- ▶ 4) 메인 컨테이너: 좌측 사이드바 + 우측 콘텐츠 영역 -->
   <div id="main-container">
-    <!-- ----------------------------------------------------------
-       4-1) 사이드바: index.html과 동일하되,
-       “설정” 메뉴 항목에 active 클래스 추가
-       ---------------------------------------------------------- -->
+    <!-- ─────────── 사이드바 (index.html과 동일) ─────────── -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-title">메인 메뉴</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="showContent('home')">
+          <li class="nav-item" onclick="location.href='index.html#home'">
             <span class="nav-icon" title="대시보드">🏠</span>
             <span>대시보드</span>
           </li>
-          <li class="nav-item" onclick="showContent('buildings')">
-            <span class="nav-icon" title="건물 & 시설">🏢</span>
+          <li class="nav-item" onclick="location.href='index.html#buildings'">
+            <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
             <span>건물 &amp; 시설</span>
           </li>
-          <li class="nav-item" onclick="showContent('community')">
+          <li class="nav-item" onclick="location.href='index.html#community'">
             <span class="nav-icon" title="커뮤니티">💬</span>
             <span>커뮤니티</span>
           </li>
-          <li class="nav-item" onclick="showContent('lecture-review')">
+          <li class="nav-item" onclick="location.href='index.html#lecture-review'">
             <span class="nav-icon" title="강의평가">⭐</span>
             <span>강의평가</span>
           </li>
-          <li class="nav-item" onclick="showContent('notices')">
+          <li class="nav-item" onclick="location.href='index.html#notices'">
             <span class="nav-icon" title="공지사항">📢</span>
             <span>공지사항</span>
-          </li>
-          <li class="nav-item active" onclick="showContent('settings')">
-            <span class="nav-icon" title="설정">⚙️</span>
-            <span>설정</span>
           </li>
         </ul>
       </div>
 
       <div class="sidebar-section">
         <div class="sidebar-title">빠른 접근</div>
-        <ul class="nav-list">
-          <li class="nav-item" onclick="navigateToTimetable()">
+        <ul class="nav-list quick-access">
+          <li class="nav-item" onclick="location.href='index.html#timetable'">
             <span class="nav-icon" title="내 시간표">📅</span>
             <span>내 시간표</span>
           </li>
-          <li class="nav-item" onclick="navigateToShuttle()">
+          <li class="nav-item" onclick="location.href='index.html#shuttle'">
             <span class="nav-icon" title="셔틀버스">🚌</span>
             <span>셔틀버스</span>
           </li>
-          <li class="nav-item" onclick="navigateToCalendar()">
+          <li class="nav-item" onclick="location.href='index.html#calendar'">
             <span class="nav-icon" title="학사일정">🗓️</span>
             <span>학사일정</span>
           </li>
@@ -147,11 +132,12 @@
       <div class="sidebar-section">
         <div class="sidebar-title">계정</div>
         <ul class="nav-list">
-          <li class="nav-item" onclick="showProfile()">
+          <li class="nav-item" onclick="location.href='index.html#profile'">
             <span class="nav-icon" title="프로필">👤</span>
             <span>프로필</span>
           </li>
-          <li class="nav-item active" onclick="showSettings()">
+          <!-- 현재 보고 있는 파일: settings_backup.html 이므로 active -->
+          <li class="nav-item active" onclick="location.href='settings_backup.html'">
             <span class="nav-icon" title="설정">⚙️</span>
             <span>설정</span>
           </li>
@@ -163,65 +149,57 @@
       </div>
     </aside>
 
-    <!-- ----------------------------------------------------------
-       4-2) 우측 콘텐츠 영역: 온전히 설정 화면만 보여줌
-       ---------------------------------------------------------- -->
+    <!-- ─────────── 메인 콘텐츠 영역 ─────────── -->
     <main id="content-area">
-      <!-- 설정 페이지 전용 콘텐츠 -->
+      <!-- “설정” 페이지 전용: 여기서부터 설정 UI가 시작 -->
       <div id="settingsContent">
-        <!-- 1) 헤더: 제목 + 브레드크럼 -->
-        <div id="settingsHeader">
+        <div id="content-header-settings">
           <h1>설정</h1>
-          <div id="settingsBreadcrumb">
+          <div id="breadcrumb-settings">
             <span>홈</span>
             <span>›</span>
             <span>설정</span>
           </div>
         </div>
 
-        <!-- 2) 설정 폼: 다양한 토글 및 선택 기능 -->
-        <div id="settingsContainer">
-          <form id="settingsForm">
-            <!-- 다크/라이트 모드 토글 -->
-            <div class="settingsItem">
-              <label for="themeToggle">다크/라이트 모드</label>
-              <input type="checkbox" id="themeToggle" />
-            </div>
+        <!-- ▶ 설정 UI 전체 배치 -->
+        <div class="settings-container">
+          <!-- 다크/라이트 모드 토글 -->
+          <div class="setting-item">
+            <label for="themeToggle">다크/라이트 모드</label>
+            <input type="checkbox" id="themeToggle" />
+          </div>
 
-            <!-- 푸시 알림 받기 토글 -->
-            <div class="settingsItem">
-              <label for="notificationToggle">푸시 알림 받기</label>
-              <input type="checkbox" id="notificationToggle" />
-            </div>
+          <!-- 푸시 알림 받기 토글 -->
+          <div class="setting-item">
+            <label for="notificationToggle">푸시 알림 받기</label>
+            <input type="checkbox" id="notificationToggle" />
+          </div>
 
-            <!-- 글꼴 크기 선택 -->
-            <div class="settingsItem">
-              <label for="fontSizeSelect">글꼴 크기</label>
-              <select id="fontSizeSelect">
-                <option value="small">작게</option>
-                <option value="medium" selected>보통</option>
-                <option value="large">크게</option>
-              </select>
-            </div>
+          <!-- 글꼴 크기 선택 드롭다운 -->
+          <div class="setting-item">
+            <label for="fontSizeSelect">글꼴 크기</label>
+            <select id="fontSizeSelect">
+              <option value="small">작게</option>
+              <option value="normal">보통</option>
+              <option value="large">크게</option>
+            </select>
+          </div>
 
-            <!-- 언어 선택 (한국어/English) -->
-            <div class="settingsItem">
-              <label for="languageSelect">언어 선택</label>
-              <select id="languageSelect">
-                <option value="ko" selected>한국어</option>
-                <option value="en">English</option>
-              </select>
-            </div>
-          </form>
+          <!-- 언어 선택 드롭다운 -->
+          <div class="setting-item">
+            <label for="languageSelect">언어 선택</label>
+            <select id="languageSelect">
+              <option value="ko">한국어</option>
+              <option value="en">English</option>
+              <option value="jp">日本語</option>
+              <!-- 필요 시 옵션 추가 -->
+            </select>
+          </div>
         </div>
       </div>
     </main>
   </div>
-
-  <!-- ▶ 5) 설정 전용 JavaScript -->
-  <script src="settings.js" defer></script>
-
-  <!-- ▶ 6) 기존 index.js 로직 (검색, 알림, 사이드바 토글 등) -->
-  <script src="index.js" defer></script>
+  <script src="settings_backup.js" defer></script>
 </body>
 </html>
