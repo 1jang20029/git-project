@@ -1,111 +1,151 @@
 /* =============================================================================
    settings.css
    ──────────────────────────────────────────────────────────────────────────────
-   “설정” 뷰 전용 스타일
+   설정 화면 전용 스타일
    ============================================================================= */
 
-/* 전체 설정 화면 컨테이너 */
-#settings-container {
-  padding: 2rem;
+/* ─────────── 설정 콘텐츠 헤더 ─────────── */
+#content-header-settings {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+#content-header-settings h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#breadcrumb-settings {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* ─────────── 설정 카드 레이아웃 ─────────── */
+.settings-card {
   background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-/* 다크/라이트 모드 토글 항목 */
-#setting-item-theme {
+/* 개별 설정 항목 행 */
+.setting-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-#setting-item-theme label {
-  color: #f1f5f9;
-  font-size: 1rem;
-  font-weight: 600;
-}
-#setting-item-theme input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-#setting-item-theme input[type="checkbox"]:checked {
-  accent-color: #3b82f6;
+  align-items: center;
 }
 
-/* 푸시 알림 받기 토글 항목 */
-#setting-item-notification {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-#setting-item-notification label {
-  color: #f1f5f9;
+/* 라벨 영역 */
+.setting-label {
   font-size: 1rem;
+  color: #f1f5f9;
   font-weight: 600;
-}
-#setting-item-notification input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-#setting-item-notification input[type="checkbox"]:checked {
-  accent-color: #3b82f6;
 }
 
-/* 글꼴 크기 선택 셀렉트 박스 항목 */
-#setting-item-font-size {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-#setting-item-font-size label {
-  color: #f1f5f9;
-  font-size: 1rem;
-  font-weight: 600;
-}
-#fontSizeSelect {
+/* 셀렉트 박스 기본 스타일 */
+.setting-select {
   background: rgba(30, 41, 59, 0.8);
   color: #f1f5f9;
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  padding: 0.5rem;
-  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+.setting-select:hover,
+.setting-select:focus {
+  border-color: #3b82f6;
 }
 
-/* 언어 선택 셀렉트 박스 항목 */
-#setting-item-language {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-#setting-item-language label {
-  color: #f1f5f9;
-  font-size: 1rem;
-  font-weight: 600;
-}
-#languageSelect {
-  background: rgba(30, 41, 59, 0.8);
-  color: #f1f5f9;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.5rem;
-  font-size: 0.9rem;
-  cursor: pointer;
+/* ─────────── 커스텀 토글 스위치 ─────────── */
+/* 스위치 컨테이너 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
 }
 
-/* 반응형: 좁은 화면에서 여백 축소 */
+/* 실제 체크박스는 숨김 */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 스위치 배경 */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 34px;
+  transition: 0.3s;
+}
+
+/* 원형 핸들 */
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+/* 체크되었을 때 배경과 핸들 위치 변경 */
+.switch input:checked + .slider {
+  background-color: #3b82f6;
+}
+.switch input:checked + .slider::before {
+  transform: translateX(24px);
+}
+
+/* ─────────── 반응형 디자인 ─────────── */
 @media (max-width: 768px) {
-  #settings-container {
-    padding: 1rem;
+  .settings-card {
+    padding: 1.5rem;
+    gap: 1rem;
   }
-  #setting-item-theme,
-  #setting-item-notification,
-  #setting-item-font-size,
-  #setting-item-language {
-    margin-bottom: 1rem;
+  .setting-label {
+    font-size: 0.95rem;
+  }
+  .setting-select {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  .switch {
+    width: 42px;
+    height: 20px;
+  }
+  .slider::before {
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+  }
+  .switch input:checked + .slider::before {
+    transform: translateX(22px);
   }
 }
