@@ -2,10 +2,6 @@
    settings.css
    ──────────────────────────────────────────────────────────────────────────────
    설정 뷰 전용 스타일
-   -----------------------------------------------------------------------------
-   1) 테마 모드 select
-   2) 시간대별 예약 time-picker
-   3) 알림 받기 체크박스
    ============================================================================= */
 
 /* 설정 화면 전체 컨테이너 */
@@ -13,10 +9,9 @@
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
-  margin-top: 1rem;
 }
 
-/* 개별 설정 항목: 가로 정렬 (label + input) */
+/* 개별 설정 항목 */
 .setting-item {
   display: flex;
   align-items: center;
@@ -31,67 +26,24 @@
   font-weight: 600;
 }
 
-/* 1) 테마 모드 select 박스 스타일 */
-#themeModeSelect {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  color: #f1f5f9;
-  padding: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-/* 2) 자동 모드일 때만 보이는 time-picker 그룹 */
-#themeScheduleTimes {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
-  margin-left: 1.5rem; /* select 영역 아래에 살짝 들여쓰기 */
-}
-
-/* time-picker 각 그룹: 라벨 + input */
-.schedule-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-/* time-picker input 스타일 */
-#themeScheduleTimes input[type="time"] {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  color: #f1f5f9;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-/* 3) 알림 받기 체크박스 스타일 */
+/* 토글 체크박스 기본 스타일 */
 .setting-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
 
-/* 체크박스가 체크된 상태 강조 색상 */
+/* 토글 상태에 따른 강조 */
 .setting-item input[type="checkbox"]:checked {
   accent-color: #3b82f6;
 }
 
-/* ────────────────────────────────────────────────────────────────────────── */
-/* 반응형: 화면 너비 768px 이하에서는 time-picker 영역을 세로 정렬 */
+/* 반응형: 좁은 화면에서 여백 축소 */
 @media (max-width: 768px) {
   .settings-container {
     padding: 1rem;
   }
   .setting-item {
     margin-bottom: 1rem;
-  }
-  #themeScheduleTimes {
-    flex-direction: column;
-    gap: 1rem;
-    margin-left: 0;
   }
 }
