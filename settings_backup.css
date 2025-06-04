@@ -12,7 +12,7 @@
   border-radius: 12px;
 }
 
-/* 개별 설정 항목 */
+/* 개별 설정 항목: Flex layout */
 .setting-item {
   display: flex;
   align-items: center;
@@ -27,7 +27,7 @@
   font-weight: 600;
 }
 
-/* select 박스 스타일 */
+/* 1) 테마 모드 select 박스 스타일 */
 #themeModeSelect {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
@@ -38,16 +38,15 @@
   cursor: pointer;
 }
 
-/* time-picker 스타일 */
+/* 2) 시간대별 예약 time-picker 스타일 */
 #themeScheduleTimes {
   display: flex;
   gap: 2rem;
   align-items: center;
-  /* select 아래쪽으로 살짝 들여쓰기 */
-  margin-left: 1.5rem;
+  margin-left: 1.5rem; /* select 아래쪽 들여쓰기 */
 }
 
-/* 시간 입력 그룹 (label + time) */
+/* 각 시간 입력 그룹 (라벨 + 시간 입력) */
 .schedule-group {
   display: flex;
   flex-direction: column;
@@ -65,19 +64,20 @@
   cursor: pointer;
 }
 
-/* 알림 토글 체크박스 스타일 */
+/* 3) 알림 토글 체크박스 스타일 */
 .setting-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
 
-/* 체크박스 체크 시 강조 색상 */
+/* 체크박스 체크 상태 강조 색상 */
 .setting-item input[type="checkbox"]:checked {
   accent-color: #3b82f6;
 }
 
-/* 반응형: 좁은 화면에서 여백 축소 */
+/* ────────────────────────────────────────────────────────────────────────── */
+/* 반응형(좁은 화면): time-picker 영역 세로 정렬 */
 @media (max-width: 768px) {
   .settings-container {
     padding: 1rem;
