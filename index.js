@@ -45,9 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeSettings() {
   const themeToggle = document.getElementById('themeToggle');
   const notificationToggle = document.getElementById('notificationToggle');
-  const browserNotificationToggle = document.getElementById('browserNotificationToggle');
-  const reduceAnimationToggle = document.getElementById('reduceAnimationToggle');
-  const highContrastToggle = document.getElementById('highContrastToggle');
 
   if (themeToggle) {
     themeToggle.addEventListener('change', handleThemeToggle);
@@ -57,39 +54,15 @@ function initializeSettings() {
     notificationToggle.addEventListener('change', handleNotificationToggle);
   }
 
-  if (browserNotificationToggle) {
-    browserNotificationToggle.addEventListener('change', handleBrowserNotificationToggle);
-  }
-
-  if (reduceAnimationToggle) {
-    reduceAnimationToggle.addEventListener('change', handleReduceAnimationToggle);
-  }
-
-  if (highContrastToggle) {
-    highContrastToggle.addEventListener('change', handleHighContrastToggle);
-  }
-
-  const fontOptions = document.querySelectorAll('.font-size-option');
-  fontOptions.forEach(option => {
-    option.addEventListener('click', () => handleFontSizeChange(option.dataset.size));
-  });
-
   loadUserSettings();
 }
 
 function loadUserSettings() {
   const savedTheme = localStorage.getItem('lightMode');
   const savedNotification = localStorage.getItem('enableNotification');
-  const savedBrowserNotification = localStorage.getItem('enableBrowserNotification');
-  const savedReduceAnimation = localStorage.getItem('reduceAnimation');
-  const savedHighContrast = localStorage.getItem('highContrast');
-  const savedFontSize = localStorage.getItem('fontSize') || 'medium';
 
   const themeToggle = document.getElementById('themeToggle');
   const notificationToggle = document.getElementById('notificationToggle');
-  const browserNotificationToggle = document.getElementById('browserNotificationToggle');
-  const reduceAnimationToggle = document.getElementById('reduceAnimationToggle');
-  const highContrastToggle = document.getElementById('highContrastToggle');
 
   if (themeToggle) {
     themeToggle.checked = savedTheme === 'true';
@@ -101,34 +74,6 @@ function loadUserSettings() {
   if (notificationToggle) {
     notificationToggle.checked = savedNotification === 'true';
   }
-
-  if (browserNotificationToggle) {
-    browserNotificationToggle.checked = savedBrowserNotification === 'true';
-  }
-
-  if (reduceAnimationToggle) {
-    reduceAnimationToggle.checked = savedReduceAnimation === 'true';
-    if (savedReduceAnimation === 'true') {
-      document.body.classList.add('reduce-animation');
-    }
-  }
-
-  if (highContrastToggle) {
-    highContrastToggle.checked = savedHighContrast === 'true';
-    if (savedHighContrast === 'true') {
-      document.body.classList.add('high-contrast');
-    }
-  }
-
-  document.querySelectorAll('.font-size-option').forEach(option => {
-    option.classList.remove('active');
-    if (option.dataset.size === savedFontSize) {
-      option.classList.add('active');
-    }
-  });
-
-  document.documentElement.className = '';
-  document.documentElement.classList.add(`font-${savedFontSize}`);
 }
 
 function handleThemeToggle() {
@@ -154,85 +99,6 @@ function handleNotificationToggle() {
   } else {
     showMessage('알림이 비활성화되었습니다', 'info');
   }
-}
-
-function handleBrowserNotificationToggle() {
-  const browserNotificationToggle = document.getElementById('browserNotificationToggle');
-  const enabled = browserNotificationToggle.checked;
-  
-  if (enabled) {
-    if (Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          localStorage.setItem('enableBrowserNotification', 'true');
-          showMessage('브라우저 알림이 허용되었습니다', 'success');
-        } else {
-          browserNotificationToggle.checked = false;
-          showMessage('브라우저 알림 권한이 거부되었습니다', 'error');
-        }
-      });
-    } else if (Notification.permission === 'granted') {
-      localStorage.setItem('enableBrowserNotification', 'true');
-      showMessage('브라우저 알림이 활성화되었습니다', 'success');
-    } else {
-      browserNotificationToggle.checked = false;
-      showMessage('브라우저 알림 권한이 필요합니다', 'error');
-    }
-  } else {
-    localStorage.setItem('enableBrowserNotification', 'false');
-    showMessage('브라우저 알림이 비활성화되었습니다', 'info');
-  }
-}
-
-function handleReduceAnimationToggle() {
-  const reduceAnimationToggle = document.getElementById('reduceAnimationToggle');
-  const enabled = reduceAnimationToggle.checked;
-  
-  if (enabled) {
-    document.body.classList.add('reduce-animation');
-    localStorage.setItem('reduceAnimation', 'true');
-    showMessage('애니메이션이 최소화되었습니다', 'success');
-  } else {
-    document.body.classList.remove('reduce-animation');
-    localStorage.setItem('reduceAnimation', 'false');
-    showMessage('애니메이션이 복원되었습니다', 'success');
-  }
-}
-
-function handleHighContrastToggle() {
-  const highContrastToggle = document.getElementById('highContrastToggle');
-  const enabled = highContrastToggle.checked;
-  
-  if (enabled) {
-    document.body.classList.add('high-contrast');
-    localStorage.setItem('highContrast', 'true');
-    showMessage('고대비 모드가 활성화되었습니다', 'success');
-  } else {
-    document.body.classList.remove('high-contrast');
-    localStorage.setItem('highContrast', 'false');
-    showMessage('고대비 모드가 비활성화되었습니다', 'success');
-  }
-}
-
-function handleFontSizeChange(size) {
-  document.querySelectorAll('.font-size-option').forEach(option => {
-    option.classList.remove('active');
-  });
-  
-  document.querySelector(`[data-size="${size}"]`).classList.add('active');
-  
-  document.documentElement.className = '';
-  document.documentElement.classList.add(`font-${size}`);
-  
-  localStorage.setItem('fontSize', size);
-  
-  const sizeNames = {
-    small: '작게',
-    medium: '보통',
-    large: '크게'
-  };
-  
-  showMessage(`글꼴 크기가 ${sizeNames[size]}로 변경되었습니다`, 'success');
 }
 
 async function loadDepartments() {
@@ -1080,4 +946,73 @@ function navigateToShuttle() {
 
 function navigateToCalendar() {
   window.location.href = 'academic-calendar.html';
+}
+
+function zoomIn() {
+  if (naverMap) {
+    naverMap.setZoom(naverMap.getZoom() + 1);
+  }
+}
+
+function zoomOut() {
+  if (naverMap) {
+    naverMap.setZoom(naverMap.getZoom() - 1);
+  }
+}
+
+function resetMapView() {
+  if (naverMap) {
+    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+    naverMap.setCenter(yeonsung);
+    naverMap.setZoom(16);
+  }
+}
+
+function trackUserLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const userPos = new naver.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+      
+      if (userMarker) {
+        userMarker.setMap(null);
+      }
+      
+      userMarker = new naver.maps.Marker({
+        position: userPos,
+        map: naverMap,
+        icon: {
+          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+          anchor: new naver.maps.Point(10, 10)
+        }
+      });
+      
+      naverMap.setCenter(userPos);
+      naverMap.setZoom(17);
+      showMessage('현재 위치를 찾았습니다', 'success');
+    }, (error) => {
+      showMessage('위치를 찾을 수 없습니다', 'error');
+    });
+  } else {
+    showMessage('위치 서비스를 지원하지 않습니다', 'error');
+  }
+}
+
+function showBuildingOnMap(buildingId) {
+  showContent('buildings');
+  setTimeout(() => {
+    if (naverMap) {
+      naverMap.refresh();
+    }
+  }, 100);
+}
+
+function getBuildingDirections(buildingId) {
+  showMessage('길찾기 기능은 준비 중입니다', 'info');
+}
+
+function viewNoticeDetail(noticeId) {
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info');
 }
