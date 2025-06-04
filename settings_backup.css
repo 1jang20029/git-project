@@ -1,6 +1,5 @@
+/* settings.css */
 /* =============================================================================
-   settings.css
-   ──────────────────────────────────────────────────────────────────────────────
    설정 뷰 전용 스타일
    ============================================================================= */
 
@@ -27,15 +26,23 @@
 }
 
 /* 토글 체크박스 기본 스타일 */
-.setting-item input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+.setting-item input[type="checkbox"],
+.setting-item select {
   cursor: pointer;
 }
 
-/* 토글 상태에 따른 강조 */
+/* 다크/라이트 & 알림 토글 체크박스 강조 */
 .setting-item input[type="checkbox"]:checked {
   accent-color: #3b82f6;
+}
+
+/* 글꼴 크기 드롭다운 */
+#fontSizeSelect {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #f1f5f9;
+  padding: 0.5rem;
 }
 
 /* 반응형: 좁은 화면에서 여백 축소 */
