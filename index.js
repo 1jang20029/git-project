@@ -1316,16 +1316,19 @@ function resetAutoLogoutTimer() {
 
 // ------------------------------
 // applyKeyboardShortcuts: 설정된 키보드 단축키 로드 및 바인딩
+//   → 누를 때마다 localStorage를 참조하도록 변경하여 즉시 업데이트 반영
 // ------------------------------
 function applyKeyboardShortcuts() {
-  const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
-    toggleSidebar: 'F2',
-    openNotifications: 'F3',
-    goToSettings: 'F4'
-  };
   document.addEventListener('keydown', (e) => {
     resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
     const key = e.key.toUpperCase();
+
+    // 항상 최신 설정을 가져오기 위해 로컬스토리지 읽기
+    const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
+      toggleSidebar: 'F2',
+      openNotifications: 'F3',
+      goToSettings: 'F4'
+    };
 
     // 사이드바 토글
     if (key === (shortcuts.toggleSidebar || '').toUpperCase()) {
@@ -1346,7 +1349,8 @@ function applyKeyboardShortcuts() {
 }
 
 // ------------------------------
-// window 이벤트: 로컬스토리지 변경 시 사용자 상태 갱신
+// window 이벤트: 로컬스토리지 변경 시
+//   → 로그인 상태 및 시간표만 갱신 (단축키는 applyKeyboardShortcuts가 실시간 참조하므로 추가 조치 불필요)
 // ------------------------------
 window.addEventListener('storage', (event) => {
   if (
@@ -1431,14 +1435,14 @@ function resetMapView() {
 // ------------------------------
 function trackUserLocation() {
   if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
+    showMessage('위치 서비스를 지원하지 않습니다', 'error');
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
       if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
+        showMessage('지도가 초기화되지 않았습니다', 'error');
         return;
       }
 
@@ -1462,7 +1466,7 @@ function trackUserLocation() {
 
       naverMap.setCenter(userPos);
       naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
+      showMessage('현재 위치를 찾았습니다', 'success');
     },
     (error) => {
       let message = '위치를 찾을 수 없습니다';
@@ -1477,7 +1481,7 @@ function trackUserLocation() {
           message = '위치 요청 시간이 초과되었습니다';
           break;
       }
-      showMessage(message, 'error', '');
+      showMessage(message, 'error');
     }
   );
 }
@@ -1496,12 +1500,12 @@ function showBuildingOnMap(buildingId) {
 // getBuildingDirections: 길찾기 기능 (준비 중)
 // ------------------------------
 function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
+  showMessage('길찾기 기능은 준비 중입니다', 'info');
 }
 
 // ------------------------------
 // viewNoticeDetail: 공지사항 상세 보기 (준비 중)
 // ------------------------------
 function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info');
 }
