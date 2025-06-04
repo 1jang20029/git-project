@@ -78,13 +78,19 @@
     </div>
 
     <!-- 6. 키보드 단축키 설정 (PC 전용) -->
-    <div class="setting-section-title">키보드 단축키 설정 (PC)</div>
+    <div class="setting-section-title">키보드 단축키 설정 (최대 5개)</div>
     <div id="shortcut-list-container">
-      <!-- 단축키 항목들이 이곳에 렌더링됩니다 -->
+      <!-- 단축키 항목들이 이곳에 동적으로 렌더링됩니다 -->
     </div>
     <button id="addShortcutBtn" class="btn btn-outline add-shortcut-btn">
       + 단축키 추가
     </button>
+
+    <!-- 저장 / 취소 버튼 -->
+    <div class="action-buttons">
+      <button id="saveSettingsBtn" class="btn save-btn">저장</button>
+      <button id="cancelSettingsBtn" class="btn cancel-btn">취소</button>
+    </div>
   </div>
 
   <!-- Settings 전용 JS -->

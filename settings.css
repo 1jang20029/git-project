@@ -184,7 +184,7 @@
   background: rgba(30, 41, 59, 0.95);
 }
 
-/* 키 입력용 읽기전용 텍스트 입력 */
+/* 키 입력용 readonly 텍스트 입력 */
 .shortcut-item input.key-input {
   width: 100px;
   background: rgba(30, 41, 59, 0.8);
@@ -236,12 +236,54 @@
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-bottom: 1rem;
 }
 
 .add-shortcut-btn:hover {
   background: rgba(59, 130, 246, 0.1);
   border-color: #3b82f6;
   color: #3b82f6;
+}
+
+/* ----------------------------------------------------------------------------- 
+   저장/취소 버튼 컨테이너 
+----------------------------------------------------------------------------- */
+.action-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* 저장 버튼 */
+.save-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  background: #10b981;
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+  background: #059669;
+}
+
+/* 취소 버튼 */
+.cancel-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #dc2626;
 }
 
 /* ----------------------------------------------------------------------------- 
@@ -356,6 +398,9 @@ body.light-mode .shortcut-item button.remove-shortcut-btn {
   .add-shortcut-btn {
     width: 100%;
     text-align: center;
+  }
+  .action-buttons {
+    flex-direction: column;
   }
 }
 
