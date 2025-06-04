@@ -1,8 +1,18 @@
-// index.js
+// =============================================================================
+// index.js (메인 페이지 스크립트)
+// =============================================================================
 
-// ------------------------------
-// 전역 변수 선언
-// ------------------------------
+// ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
+(function() {
+  const savedMode = localStorage.getItem('lightMode');
+  if (savedMode === 'true') {
+    document.body.classList.add('light-mode');
+  } else {
+    document.body.classList.remove('light-mode');
+  }
+})();
+
+// ─────────── 전역 변수 선언 (기존 코드 유지) ───────────
 let naverMap;
 let mapMarkers = [];
 let infoWindows = [];
@@ -15,15 +25,13 @@ let isOnline = navigator.onLine;
 // 학과 코드 ↔ 이름 매핑 객체
 const departmentMap = {};
 
-// 설정 화면을 한 번 로드했는지 여부
+// 설정 화면 로드 여부
 let settingsLoaded = false;
 
-// 자동 로그아웃을 위한 타이머 ID
+// 자동 로그아웃 타이머 ID
 let autoLogoutTimer = null;
 
-// ------------------------------
-// 최초 로드 시 실행할 로직
-// ------------------------------
+// ─────────── 최초 로드 시 실행할 로직 ───────────
 document.addEventListener('DOMContentLoaded', () => {
   // URL hash에 따라 초기 화면 결정
   const hash = window.location.hash.slice(1);
@@ -36,7 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeApp();
   setupNetworkListeners();
   setupAutoLogout();             // 자동 로그아웃 로직 초기화
-  applyKeyboardShortcuts();      // 키보드 단축키 로드
+  applyKeyboardShortcuts();      // 기존 키보드 단축키 로드
+
+  // “새로 추가된 단축키”도 동작하도록 전역 리스너 추가
+  applyUserShortcuts();
 
   // ESC 키 누르면 드롭다운 닫기
   document.addEventListener('keydown', (event) => {
@@ -67,9 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ------------------------------
-// 네트워크 상태 변화 감지
-// ------------------------------
+// ─────────── 네트워크 상태 변화 감지 ───────────
 function setupNetworkListeners() {
   window.addEventListener('online', () => {
     isOnline = true;
@@ -83,9 +92,7 @@ function setupNetworkListeners() {
   });
 }
 
-// ------------------------------
-// showContent: SPA처럼 화면 전환 처리
-// ------------------------------
+// ─────────── showContent: SPA처럼 화면 전환 처리 ───────────
 function showContent(type) {
   const panes = [
     'homeContent',
@@ -134,7 +141,7 @@ function showContent(type) {
         .then((html) => {
           container.innerHTML = html;
           settingsLoaded = true;
-          // HTML 삽입 후 바로 초기화 함수 호출
+          // HTML 삽입 후 즉시 initSettingsPage 호출
           if (window.initSettingsPage) {
             window.initSettingsPage();
           }
@@ -176,9 +183,7 @@ function showContent(type) {
   }
 }
 
-// ------------------------------
-// initializeApp: 앱 초기화 (데이터 로드, 지도 초기화 등)
-// ------------------------------
+// ─────────── initializeApp: 앱 초기화 ───────────
 async function initializeApp() {
   try {
     await loadDepartments();
@@ -209,9 +214,7 @@ async function initializeApp() {
   }
 }
 
-// ------------------------------
-// loadDepartments: 학과 데이터 로드
-// ------------------------------
+// ─────────── loadDepartments: 학과 데이터 로드 ───────────
 async function loadDepartments() {
   try {
     if (!isOnline) {
@@ -228,9 +231,7 @@ async function loadDepartments() {
   }
 }
 
-// ------------------------------
-// loadNotifications: 알림 데이터 로드
-// ------------------------------
+// ─────────── loadNotifications: 알림 데이터 로드 ───────────
 async function loadNotifications() {
   try {
     if (!isOnline) {
@@ -246,10 +247,7 @@ async function loadNotifications() {
   }
 }
 
-// ------------------------------
-// renderNotifications: 알림 목록 렌더링
-//   → 원하는 카테고리만 표시, Do Not Disturb 시간 고려
-// ------------------------------
+// ─────────── renderNotifications: 알림 목록 렌더링 ───────────
 function renderNotifications(notifications) {
   const listEl = document.getElementById('notification-list');
   const countEl = document.getElementById('notification-badge');
@@ -291,9 +289,7 @@ function renderNotifications(notifications) {
   }
 }
 
-// ------------------------------
-// markAsRead: 개별 알림 읽음 처리
-// ------------------------------
+// ─────────── markAsRead: 개별 알림 읽음 처리 ───────────
 function markAsRead(el, id, category) {
   if (el.classList.contains('unread')) {
     el.classList.remove('unread');
@@ -308,9 +304,7 @@ function markAsRead(el, id, category) {
   }
 }
 
-// ------------------------------
-// markAllAsRead: 모든 알림 읽음 처리
-// ------------------------------
+// ─────────── markAllAsRead: 모든 알림 읽음 처리 ───────────
 function markAllAsRead() {
   document.querySelectorAll('.notification-item.unread').forEach((item) => {
     item.classList.remove('unread');
@@ -326,9 +320,7 @@ function markAllAsRead() {
   showMessage('모든 알림을 읽음 처리했습니다.', 'success');
 }
 
-// ------------------------------
-// updateNotificationCount: 알림 뱃지 갱신
-// ------------------------------
+// ─────────── updateNotificationCount: 알림 뱃지 갱신 ───────────
 function updateNotificationCount() {
   const countEl = document.getElementById('notification-badge');
   const dotEl = document.getElementById('notification-dot');
@@ -337,9 +329,7 @@ function updateNotificationCount() {
   if (dotEl) dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
 }
 
-// ------------------------------
-// loadStats: 통계 데이터 로드
-// ------------------------------
+// ─────────── loadStats: 통계 데이터 로드 ───────────
 async function loadStats() {
   try {
     if (!isOnline) {
@@ -363,9 +353,7 @@ async function loadStats() {
   }
 }
 
-// ------------------------------
-// renderStats: 통계 데이터 렌더링
-// ------------------------------
+// ─────────── renderStats: 통계 데이터 렌더링 ───────────
 function renderStats(stats) {
   const statsGrid = document.getElementById('statsGrid');
   if (!statsGrid) return;
@@ -406,9 +394,7 @@ function renderStats(stats) {
   `;
 }
 
-// ------------------------------
-// loadBuildings: 건물 데이터 로드
-// ------------------------------
+// ─────────── loadBuildings: 건물 데이터 로드 ───────────
 async function loadBuildings() {
   try {
     if (!isOnline) {
@@ -426,9 +412,7 @@ async function loadBuildings() {
   }
 }
 
-// ------------------------------
-// renderBuildings: 건물 카드 렌더링
-// ------------------------------
+// ─────────── renderBuildings: 건물 카드 렌더링 ───────────
 function renderBuildings(buildings) {
   const grid = document.getElementById('buildingGrid');
   if (!grid) return;
@@ -453,9 +437,7 @@ function renderBuildings(buildings) {
   });
 }
 
-// ------------------------------
-// loadNotices: 공지사항 데이터 로드
-// ------------------------------
+// ─────────── loadNotices: 공지사항 데이터 로드 ───────────
 async function loadNotices() {
   try {
     if (!isOnline) {
@@ -471,17 +453,15 @@ async function loadNotices() {
   }
 }
 
-// ------------------------------
-// renderNotices: 공지사항 렌더링
-// ------------------------------
+// ─────────── renderNotices: 공지사항 렌더링 ───────────
 function renderNotices(notices) {
   const recentEl = document.getElementById('recentNotices');
-  const fullEl = document.getElementById('fullNoticeList');
+  const fullEl   = document.getElementById('fullNoticeList');
 
   if (!recentEl || !fullEl) return;
 
   recentEl.innerHTML = '';
-  fullEl.innerHTML = '';
+  fullEl.innerHTML   = '';
 
   notices.forEach((n, idx) => {
     const item = document.createElement('div');
@@ -502,9 +482,7 @@ function renderNotices(notices) {
   });
 }
 
-// ------------------------------
-// loadShuttleInfo: 셔틀버스 데이터 로드
-// ------------------------------
+// ─────────── loadShuttleInfo: 셔틀버스 데이터 로드 ───────────
 async function loadShuttleInfo() {
   try {
     if (!isOnline) {
@@ -524,9 +502,7 @@ async function loadShuttleInfo() {
   }
 }
 
-// ------------------------------
-// renderShuttleRoutes: 셔틀 루트 탭 렌더링
-// ------------------------------
+// ─────────── renderShuttleRoutes: 셔틀 루트 탭 렌더링 ───────────
 function renderShuttleRoutes(routes) {
   const tabs = document.getElementById('shuttleRoutes');
   if (!tabs) return;
@@ -544,9 +520,7 @@ function renderShuttleRoutes(routes) {
   });
 }
 
-// ------------------------------
-// selectShuttleRoute: 셔틀 루트 선택 및 상태 렌더링
-// ------------------------------
+// ─────────── selectShuttleRoute: 셔틀 루트 선택 및 상태 렌더링 ───────────
 async function selectShuttleRoute(routeId, route) {
   try {
     document.querySelectorAll('.route-tab').forEach((tab) => {
@@ -568,12 +542,10 @@ async function selectShuttleRoute(routeId, route) {
   }
 }
 
-// ------------------------------
-// renderShuttleStatus: 셔틀 상태 렌더링
-// ------------------------------
+// ─────────── renderShuttleStatus: 셔틀 상태 렌더링 ───────────
 function renderShuttleStatus(route) {
-  const timeEl = document.getElementById('shuttle-time');
-  const descEl = document.getElementById('shuttle-desc');
+  const timeEl   = document.getElementById('shuttle-time');
+  const descEl   = document.getElementById('shuttle-desc');
   const statusEl = document.getElementById('shuttleStatus');
 
   if (timeEl) timeEl.textContent = route.time || '--';
@@ -588,9 +560,7 @@ function renderShuttleStatus(route) {
   }
 }
 
-// ------------------------------
-// loadCommunityPosts: 커뮤니티 게시글 로드
-// ------------------------------
+// ─────────── loadCommunityPosts: 커뮤니티 게시글 로드 ───────────
 async function loadCommunityPosts() {
   try {
     if (!isOnline) {
@@ -604,7 +574,7 @@ async function loadCommunityPosts() {
     if (!liveRes.ok || !hotRes.ok) throw new Error('API 응답 오류');
 
     const livePosts = await liveRes.json();
-    const hotPosts = await hotRes.json();
+    const hotPosts  = await hotRes.json();
     renderCommunityPosts(livePosts, hotPosts);
   } catch (err) {
     console.error('커뮤니티 데이터 로드 실패:', err);
@@ -612,17 +582,15 @@ async function loadCommunityPosts() {
   }
 }
 
-// ------------------------------
-// renderCommunityPosts: 커뮤니티 게시글 렌더링
-// ------------------------------
+// ─────────── renderCommunityPosts: 커뮤니티 게시글 렌더링 ───────────
 function renderCommunityPosts(livePosts, hotPosts) {
   const liveEl = document.getElementById('livePosts');
-  const hotEl = document.getElementById('hotPosts');
+  const hotEl  = document.getElementById('hotPosts');
 
   if (!liveEl || !hotEl) return;
 
   liveEl.innerHTML = '';
-  hotEl.innerHTML = '';
+  hotEl.innerHTML  = '';
 
   livePosts.forEach((p) => {
     // 카테고리가 “커뮤니티”인 경우에도 표시 여부는 설정에서 결정
@@ -664,9 +632,7 @@ function renderCommunityPosts(livePosts, hotPosts) {
   });
 }
 
-// ------------------------------
-// loadLectureReviews: 강의평가 데이터 로드
-// ------------------------------
+// ─────────── loadLectureReviews: 강의평가 데이터 로드 ───────────
 async function loadLectureReviews() {
   try {
     if (!isOnline) {
@@ -680,7 +646,7 @@ async function loadLectureReviews() {
     if (!popRes.ok || !recRes.ok) throw new Error('API 응답 오류');
 
     const popular = await popRes.json();
-    const recent = await recRes.json();
+    const recent  = await recRes.json();
     renderLectureReviews(popular, recent);
   } catch (err) {
     console.error('강의평가 데이터 로드 실패:', err);
@@ -688,9 +654,7 @@ async function loadLectureReviews() {
   }
 }
 
-// ------------------------------
-// renderLectureReviews: 강의평가 렌더링
-// ------------------------------
+// ─────────── renderLectureReviews: 강의평가 렌더링 ───────────
 function renderLectureReviews(popular, recent) {
   const popEl = document.getElementById('popularReviews');
   const recEl = document.getElementById('recentReviews');
@@ -741,9 +705,7 @@ function renderLectureReviews(popular, recent) {
   });
 }
 
-// ------------------------------
-// initNaverMap: 네이버 지도 초기화
-// ------------------------------
+// ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
@@ -776,9 +738,7 @@ function initNaverMap() {
   }
 }
 
-// ------------------------------
-// addMapMarkers: 건물 마커 추가
-// ------------------------------
+// ─────────── addMapMarkers: 건물 마커 추가 ───────────
 function addMapMarkers(buildings) {
   if (!naverMap) return;
 
@@ -820,9 +780,7 @@ function addMapMarkers(buildings) {
   }
 }
 
-// ------------------------------
-// showErrorFallback: 에러 발생 시 화면 대체
-// ------------------------------
+// ─────────── showErrorFallback: 에러 발생 시 화면 대체 ───────────
 function showErrorFallback(containerId, message) {
   const container = document.getElementById(containerId);
   if (container) {
@@ -835,9 +793,7 @@ function showErrorFallback(containerId, message) {
   }
 }
 
-// ------------------------------
-// updateTimetable: 사용자 시간표 갱신
-// ------------------------------
+// ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
@@ -890,9 +846,7 @@ function updateTimetable() {
     });
 }
 
-// ------------------------------
-// renderTimetable: 오늘 시간표 렌더링
-// ------------------------------
+// ─────────── renderTimetable: 오늘 시간표 렌더링 ───────────
 function renderTimetable(courses) {
   const contentEl = document.getElementById('timetableContent');
   if (!contentEl) return;
@@ -989,9 +943,7 @@ function renderTimetable(courses) {
   });
 }
 
-// ------------------------------
-// formatTimeRemaining: 남은 시간 텍스트 생성
-// ------------------------------
+// ─────────── formatTimeRemaining: 남은 시간 텍스트 생성 ───────────
 function formatTimeRemaining(minutes, suffix) {
   if (minutes < 60) {
     return `${minutes}분 ${suffix}`;
@@ -1006,9 +958,7 @@ function formatTimeRemaining(minutes, suffix) {
   }
 }
 
-// ------------------------------
-// toggleNotifications: 알림 드롭다운 토글
-// ------------------------------
+// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
 function toggleNotifications() {
   const dd = document.getElementById('notification-dropdown');
   if (dd && dd.classList.contains('show')) {
@@ -1029,9 +979,7 @@ function closeNotificationDropdown() {
   if (dd) dd.classList.remove('show');
 }
 
-// ------------------------------
-// toggleUserMenu: 사용자 메뉴 토글
-// ------------------------------
+// ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
 function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -1066,9 +1014,7 @@ function closeAllDropdowns() {
   closeUserDropdown();
 }
 
-// ------------------------------
-// showProfile: 프로필 화면으로 이동
-// ------------------------------
+// ─────────── showProfile: 프로필 화면으로 이동 ───────────
 function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -1079,9 +1025,7 @@ function showProfile() {
   closeUserDropdown();
 }
 
-// ------------------------------
-// handleLogout: 로그아웃 처리
-// ------------------------------
+// ─────────── handleLogout: 로그아웃 처리 ───────────
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -1097,9 +1041,7 @@ function handleLogout() {
   closeUserDropdown();
 }
 
-// ------------------------------
-// handleGlobalSearch: 전역 검색 처리
-// ------------------------------
+// ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
 async function handleGlobalSearch() {
   const query = document.getElementById('search-input').value.trim().toLowerCase();
   if (!query) return;
@@ -1130,13 +1072,11 @@ async function handleGlobalSearch() {
   showMessage('검색 결과를 찾을 수 없습니다.', 'info');
 }
 
-// ------------------------------
-// checkUserStatus: 로그인 여부, 사용자 정보 업데이트
-// ------------------------------
+// ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
 function checkUserStatus() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
-  const userNameEl = document.getElementById('user-name');
-  const userRoleEl = document.getElementById('user-role');
+  const userNameEl  = document.getElementById('user-name');
+  const userRoleEl  = document.getElementById('user-role');
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
 
@@ -1147,8 +1087,8 @@ function checkUserStatus() {
         return res.json();
       })
       .then((user) => {
-        if (userNameEl) userNameEl.textContent = user.name || '사용자';
-        if (userRoleEl) userRoleEl.textContent = departmentMap[user.department] || '학생';
+        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
+        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
         if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
         updateProfileImage(user);
@@ -1161,26 +1101,22 @@ function checkUserStatus() {
   }
 }
 
-// ------------------------------
-// setGuestMode: 게스트 모드로 UI 초기화
-// ------------------------------
+// ─────────── setGuestMode: 게스트 모드로 UI 초기화 ───────────
 function setGuestMode() {
-  const userNameEl = document.getElementById('user-name');
-  const userRoleEl = document.getElementById('user-role');
+  const userNameEl    = document.getElementById('user-name');
+  const userRoleEl    = document.getElementById('user-role');
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl = document.getElementById('user-avatar');
+  const avatarEl      = document.getElementById('user-avatar');
 
-  if (userNameEl) userNameEl.textContent = '게스트';
-  if (userRoleEl) userRoleEl.textContent = '방문자';
+  if (userNameEl) userNameEl.textContent     = '게스트';
+  if (userRoleEl) userRoleEl.textContent     = '방문자';
   if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
   if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
-  if (avatarEl) avatarEl.textContent = '👤';
+  if (avatarEl) avatarEl.textContent         = '👤';
 }
 
-// ------------------------------
-// updateProfileImage: 사용자 프로필 이미지 적용
-// ------------------------------
+// ─────────── updateProfileImage: 사용자 프로필 이미지 적용 ───────────
 function updateProfileImage(user) {
   const avatarEl = document.getElementById('user-avatar');
   if (!avatarEl) return;
@@ -1194,10 +1130,7 @@ function updateProfileImage(user) {
   }
 }
 
-// ------------------------------
-// showMessage: 화면 우측 상단 슬라이드 알림 메시지
-//   → Do Not Disturb 모드, 카테고리 설정 등을 고려하여 호출 전 shouldShowNotification()을 검사
-// ------------------------------
+// ─────────── showMessage: 화면 우측 상단 슬라이드 알림 메시지 ───────────
 function showMessage(message, type = 'info', category = '') {
   // 1) 카테고리 구분이 필요한 알림이라면, 해당 카테고리가 꺼져 있으면 표시하지 않음
   if (category && !isCategoryEnabled(category)) {
@@ -1241,7 +1174,6 @@ function showMessage(message, type = 'info', category = '') {
       <span>${message}</span>
     </div>
   `;
-
   document.body.appendChild(notification);
 
   setTimeout(() => {
@@ -1254,10 +1186,7 @@ function showMessage(message, type = 'info', category = '') {
   }, 3000);
 }
 
-// ------------------------------
-// shouldShowNotification: Do Not Disturb 모드 검사
-//   → 설정 페이지에서 지정한 시작/끝 시간대 사이이면 알림 차단
-// ------------------------------
+// ─────────── shouldShowNotification: Do Not Disturb 모드 검사 ───────────
 function shouldShowNotification() {
   const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
   if (!dnd.enabled) return true;
@@ -1268,30 +1197,23 @@ function shouldShowNotification() {
   const totalMinutes = hh * 60 + mm;
 
   const startHM = dnd.startHour * 60 + dnd.startMinute;
-  const endHM = dnd.endHour * 60 + dnd.endMinute;
+  const endHM   = dnd.endHour * 60 + dnd.endMinute;
 
   if (startHM < endHM) {
-    // 예: 21:00(1260) ~ 07:00(420) 아닌 경우, 같은 날 차단
     return !(totalMinutes >= startHM && totalMinutes < endHM);
   } else {
-    // 예: 21:00(1260) ~ 07:00(420) (넘어가는 경우)
+    // 21:00 ~ 07:00 처럼 넘어가는 경우
     return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
   }
 }
 
-// ------------------------------
-// isCategoryEnabled: 설정 페이지에서 지정한 카테고리별 알림 수신 여부 확인
-// ------------------------------
+// ─────────── isCategoryEnabled: 설정에서 카테고리별 알림 여부 확인 ───────────
 function isCategoryEnabled(category) {
   const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
-  // 예시로 key: "공지사항", "커뮤니티", "셔틀버스", "강의평가" → true/false
   return catSettings[category] === true;
 }
 
-// ------------------------------
-// setupAutoLogout: 비활성 시 자동 로그아웃 로직 초기화
-//   → 설정 페이지에서 지정한 idleTimeout(분)만큼 입력 없으면 로그아웃
-// ------------------------------
+// ─────────── setupAutoLogout: 비활성 시 자동 로그아웃 로직 초기화 ───────────
 function setupAutoLogout() {
   document.addEventListener('mousemove', resetAutoLogoutTimer);
   document.addEventListener('keypress', resetAutoLogoutTimer);
@@ -1314,21 +1236,16 @@ function resetAutoLogoutTimer() {
   }, timeoutMs);
 }
 
-// ------------------------------
-// applyKeyboardShortcuts: 설정된 키보드 단축키 로드 및 바인딩
-//   → 누를 때마다 localStorage를 참조하도록 변경하여 즉시 업데이트 반영
-// ------------------------------
+// ─────────── applyKeyboardShortcuts: 기존 키보드 단축키 로드 ───────────
 function applyKeyboardShortcuts() {
+  const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
+    toggleSidebar: 'F2',
+    openNotifications: 'F3',
+    goToSettings: 'F4'
+  };
   document.addEventListener('keydown', (e) => {
     resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
     const key = e.key.toUpperCase();
-
-    // 항상 최신 설정을 가져오기 위해 로컬스토리지 읽기
-    const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
-      toggleSidebar: 'F2',
-      openNotifications: 'F3',
-      goToSettings: 'F4'
-    };
 
     // 사이드바 토글
     if (key === (shortcuts.toggleSidebar || '').toUpperCase()) {
@@ -1348,10 +1265,55 @@ function applyKeyboardShortcuts() {
   });
 }
 
-// ------------------------------
-// window 이벤트: 로컬스토리지 변경 시
-//   → 로그인 상태 및 시간표만 갱신 (단축키는 applyKeyboardShortcuts가 실시간 참조하므로 추가 조치 불필요)
-// ------------------------------
+// ─────────── applyUserShortcuts: 사용자 저장 단축키 바로 동작하도록 바인딩 ───────────
+function applyUserShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // 이미 기본 단축키에 걸렸다면 해당 로직이 먼저 실행되므로 뒤에 처리
+    const pressedKey = e.key.toUpperCase();
+    const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
+    userShortcuts.forEach((entry) => {
+      if (entry.key === pressedKey && entry.name) {
+        e.preventDefault();
+        // 아래는 예시 로직입니다. 
+        // entry.name(라벨)에 따라 원하는 동작을 구현하세요.
+        switch (entry.name) {
+          case '대시보드 이동':
+            showContent('home');
+            break;
+          case '알림 열기':
+            toggleNotifications();
+            break;
+          case '내 시간표':
+            showContent('timetable');
+            break;
+          case '셔틀버스 이동':
+            showContent('shuttle');
+            break;
+          case '프로필':
+            showContent('profile');
+            break;
+          // 필요에 따라 추가로 커스터마이즈:
+          default:
+            // 예: entry.name에 “이동” 키워드가 들어있으면
+            if (entry.name.includes('이동')) {
+              // entry.name 예시: “공지사항 이동” → showContent('notices')
+              // 라벨 규칙에 맞춰 처리
+              const lower = entry.name.replace(/\s*/g, '').toLowerCase();
+              if (lower.includes('공지사항')) showContent('notices');
+              if (lower.includes('건물')) showContent('buildings');
+              if (lower.includes('커뮤니티')) showContent('community');
+              if (lower.includes('강의평가')) showContent('lecture-review');
+              if (lower.includes('학사일정')) showContent('calendar');
+              // 추가로 필요한 매핑을 여기에 작성
+            }
+            break;
+        }
+      }
+    });
+  });
+}
+
+// ─────────── window 이벤트: 로컬스토리지 변경 시 사용자 상태 갱신 ───────────
 window.addEventListener('storage', (event) => {
   if (
     event.key === 'currentLoggedInUser' ||
@@ -1360,68 +1322,75 @@ window.addEventListener('storage', (event) => {
     checkUserStatus();
     updateTimetable();
   }
+
+  // 테마가 변경되었을 때 즉시 반영
+  if (event.key === 'lightMode') {
+    const savedMode = localStorage.getItem('lightMode');
+    if (savedMode === 'true') {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+  }
+
+  // 단축키가 변경되었을 때 리스너 재등록
+  if (event.key === 'keyboardShortcuts') {
+    applyUserShortcuts();
+  }
 });
 
-// ------------------------------
-// window 이벤트: 페이지 복원(persisted) 시 상태 갱신
-// ------------------------------
+// ─────────── window 이벤트: 페이지 복원(persisted) 시 상태 갱신 ───────────
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     checkUserStatus();
     updateTimetable();
   }
+  // 테마와 단축키도 다시 적용
+  const savedMode = localStorage.getItem('lightMode');
+  if (savedMode === 'true') {
+    document.body.classList.add('light-mode');
+  } else {
+    document.body.classList.remove('light-mode');
+  }
+  applyUserShortcuts();
 });
 
-// ------------------------------
-// toggleSidebar: 모바일 사이드바 열기/닫기
-// ------------------------------
+// ─────────── toggleSidebar: 모바일 사이드바 열기/닫기 ───────────
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) sidebar.classList.toggle('open');
 }
 
-// ------------------------------
-// navigateToTimetable: 내 시간표 페이지로 이동 
-// ------------------------------
+// ─────────── navigateToTimetable: 내 시간표 페이지로 이동 ───────────
 function navigateToTimetable() {
   window.location.href = 'timetable.html';
 }
 
-// ------------------------------
-// navigateToShuttle: 셔틀버스 페이지로 이동
-// ------------------------------
+// ─────────── navigateToShuttle: 셔틀버스 페이지로 이동 ───────────
 function navigateToShuttle() {
   window.location.href = 'shuttle.html';
 }
 
-// ------------------------------
-// navigateToCalendar: 학사일정 페이지로 이동
-// ------------------------------
+// ─────────── navigateToCalendar: 학사일정 페이지로 이동 ───────────
 function navigateToCalendar() {
   window.location.href = 'academic-calendar.html';
 }
 
-// ------------------------------
-// zoomIn: 지도 확대
-// ------------------------------
+// ─────────── zoomIn: 지도 확대 ───────────
 function zoomIn() {
   if (naverMap) {
     naverMap.setZoom(naverMap.getZoom() + 1);
   }
 }
 
-// ------------------------------
-// zoomOut: 지도 축소
-// ------------------------------
+// ─────────── zoomOut: 지도 축소 ───────────
 function zoomOut() {
   if (naverMap) {
     naverMap.setZoom(naverMap.getZoom() - 1);
   }
 }
 
-// ------------------------------
-// resetMapView: 지도 초기 위치로 리셋
-// ------------------------------
+// ─────────── resetMapView: 지도 초기 위치로 리셋 ───────────
 function resetMapView() {
   if (naverMap) {
     const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
@@ -1430,19 +1399,17 @@ function resetMapView() {
   }
 }
 
-// ------------------------------
-// trackUserLocation: 사용자의 현재 위치 추적
-// ------------------------------
+// ─────────── trackUserLocation: 사용자의 현재 위치 추적 ───────────
 function trackUserLocation() {
   if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error');
+    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
       if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error');
+        showMessage('지도가 초기화되지 않았습니다', 'error', '');
         return;
       }
 
@@ -1466,7 +1433,7 @@ function trackUserLocation() {
 
       naverMap.setCenter(userPos);
       naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success');
+      showMessage('현재 위치를 찾았습니다', 'success', '');
     },
     (error) => {
       let message = '위치를 찾을 수 없습니다';
@@ -1481,14 +1448,12 @@ function trackUserLocation() {
           message = '위치 요청 시간이 초과되었습니다';
           break;
       }
-      showMessage(message, 'error');
+      showMessage(message, 'error', '');
     }
   );
 }
 
-// ------------------------------
-// showBuildingOnMap: 특정 건물 지도에서 보기
-// ------------------------------
+// ─────────── showBuildingOnMap: 특정 건물 지도에서 보기 ───────────
 function showBuildingOnMap(buildingId) {
   showContent('buildings');
   setTimeout(() => {
@@ -1496,16 +1461,12 @@ function showBuildingOnMap(buildingId) {
   }, 100);
 }
 
-// ------------------------------
-// getBuildingDirections: 길찾기 기능 (준비 중)
-// ------------------------------
+// ─────────── getBuildingDirections: 길찾기 기능 (준비 중) ───────────
 function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info');
+  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
 }
 
-// ------------------------------
-// viewNoticeDetail: 공지사항 상세 보기 (준비 중)
-// ------------------------------
+// ─────────── viewNoticeDetail: 공지사항 상세 보기 (준비 중) ───────────
 function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info');
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
 }

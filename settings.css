@@ -225,14 +225,15 @@
 
 /* ----------------------------------------------------------------------------- 
    단축키 추가 버튼 
+   → 배경색/글자색을 명확히 지정하여 항상 보이도록 조정 
 ----------------------------------------------------------------------------- */
 .add-shortcut-btn {
   width: fit-content;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  background: transparent;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #94a3b8;
+  background: #3b82f6;          /* 진한 파란색 배경 */
+  border: none;
+  color: #ffffff;               /* 흰색 글자 */
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -240,9 +241,7 @@
 }
 
 .add-shortcut-btn:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  color: #3b82f6;
+  background: #2563eb;           /* 호버 시 약간 밝은 파란색 */
 }
 
 /* ----------------------------------------------------------------------------- 
@@ -258,7 +257,7 @@
 .save-btn {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
-  background: #10b981;
+  background: #10b981;    /* 녹색 배경 */
   color: white;
   border: none;
   font-weight: 600;
@@ -267,14 +266,14 @@
 }
 
 .save-btn:hover {
-  background: #059669;
+  background: #059669;    /* 호버 시 진한 녹색 */
 }
 
 /* 취소 버튼 */
 .cancel-btn {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
-  background: #ef4444;
+  background: #ef4444;    /* 붉은색 배경 */
   color: white;
   border: none;
   font-weight: 600;
@@ -283,11 +282,11 @@
 }
 
 .cancel-btn:hover {
-  background: #dc2626;
+  background: #dc2626;    /* 호버 시 진한 붉은색 */
 }
 
 /* ----------------------------------------------------------------------------- 
-   공통 버튼 스타일 (필요시 수정) 
+   공통 버튼 스타일 (필요 시 사용) 
 ----------------------------------------------------------------------------- */
 .btn {
   padding: 0.5rem 1rem;
@@ -339,7 +338,7 @@ body.light-mode .setting-item input[type="text"]:focus {
   color: #1f2937;
 }
 
-/* 라이트 모드 시 단축키 항목 bg/boarder */
+/* 라이트 모드 시 단축키 항목 bg/보더 */
 body.light-mode .shortcut-item {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
