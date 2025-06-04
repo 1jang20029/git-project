@@ -5,15 +5,20 @@
 // =============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 각각의 DOM 요소를 가져옵니다.
+  // ──────────────────────────────────────────────────
+  // 1) HTML 요소 가져오기
+  // ──────────────────────────────────────────────────
   const themeToggle        = document.getElementById('themeToggle');
   const notificationToggle = document.getElementById('notificationToggle');
   const fontSizeSelect     = document.getElementById('fontSizeSelect');
   const languageSelect     = document.getElementById('languageSelect');
 
-  // ── 1) 다크/라이트 모드 초기 상태 로드 ──
+  // ──────────────────────────────────────────────────
+  // 2) 다크/라이트 모드 초기 상태 설정
+  // ──────────────────────────────────────────────────
   const savedLightMode = localStorage.getItem('lightMode');
-  const isLightMode = (savedLightMode === 'true');
+  const isLightMode    = (savedLightMode === 'true');
+
   if (isLightMode) {
     document.body.classList.add('light-mode');
     themeToggle.checked = true;
@@ -32,9 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ── 2) 푸시 알림 받기 설정 초기 상태 ──
-  const savedNotify = localStorage.getItem('enableNotification');
-  const isNotifyEnabled = (savedNotify === 'true');
+
+  // ──────────────────────────────────────────────────
+  // 3) 푸시 알림 받기 초기 상태 설정
+  // ──────────────────────────────────────────────────
+  const savedNotify       = localStorage.getItem('enableNotification');
+  const isNotifyEnabled   = (savedNotify === 'true');
+
   notificationToggle.checked = isNotifyEnabled;
 
   notificationToggle.addEventListener('change', () => {
@@ -47,7 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ── 3) 글꼴 크기 선택 초기 상태 로드 ──
+
+  // ──────────────────────────────────────────────────
+  // 4) 글꼴 크기 초기 상태 설정
+  // ──────────────────────────────────────────────────
   const savedFontSize = localStorage.getItem('fontSize') || 'medium';
   fontSizeSelect.value = savedFontSize;
   applyFontSize(savedFontSize);
@@ -58,7 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFontSize(selectedSize);
   });
 
-  // ── 4) 언어 선택 초기 상태 로드 ──
+
+  // ──────────────────────────────────────────────────
+  // 5) 언어 선택 초기 상태 설정
+  // ──────────────────────────────────────────────────
   const savedLanguage = localStorage.getItem('language') || 'ko';
   languageSelect.value = savedLanguage;
   applyLanguage(savedLanguage);
@@ -73,29 +88,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * 글꼴 크기를 즉시 전체 문서에 적용합니다.
- * 'small' → 14px, 'medium' → 16px, 'large' → 18px 로 설정합니다.
- * @param {string} size 
+ * html 태그에 클래스를 붙였다가 제거하는 방식으로 관리합니다.
+ * 'small' → 14px, 'medium' → 16px, 'large' → 18px
  */
 function applyFontSize(size) {
   const htmlEl = document.documentElement;
   htmlEl.classList.remove('font-small', 'font-medium', 'font-large');
 
   if (size === 'small') {
-    htmlEl.classList.add('font-small');   // 14px
+    htmlEl.classList.add('font-small');
   } else if (size === 'medium') {
-    htmlEl.classList.add('font-medium');  // 16px
+    htmlEl.classList.add('font-medium');
   } else if (size === 'large') {
-    htmlEl.classList.add('font-large');   // 18px
+    htmlEl.classList.add('font-large');
   }
 }
 
 /**
  * 언어 선택을 즉시 반영합니다.
- * 여기서는 <html> 태그의 lang 속성만 변경하며,
- * 실제 다국어 번역 로직은 별도 라이브러리에 위임할 수 있습니다.
- * @param {string} langCode - 'ko' | 'en' | 'jp'
+ * 실제 다국어 번역은 별도 로직을 추가해야 하지만,
+ * 여기서는 일단 <html> 태그의 lang 속성만 변경해 둡니다.
  */
 function applyLanguage(langCode) {
   document.documentElement.lang = langCode;
-  // 실제 번역 엔진이 연결되어 있다면, 이 지점에서 번역 로직을 호출하세요.
+  // 실제 다국어 텍스트 교체가 필요하다면 이 지점에서 처리하세요.
 }

@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>설정 - 연성대학교 스마트 캠퍼스</title>
 
-  <!-- 공통 CSS (index.css를 그대로 사용) -->
+  <!-- ① 공통 CSS (index.css) -->
   <link rel="stylesheet" href="index.css" />
 
-  <!-- 설정 화면 전용 CSS -->
+  <!-- ② 설정 화면 전용 CSS -->
   <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
-  <!-- 상단 네비게이션 (공통 네비게이션을 그대로 가져옵니다) -->
+  <!-- ────────── 상단 네비게이션 (index.html과 완전히 동일) ────────── -->
   <nav id="top-nav">
     <div id="nav-brand">
       <button id="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
@@ -28,18 +28,20 @@
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
           <div id="notification-dot"></div>
-          <!-- 알림 드롭다운 (index.html과 동일) -->
           <div id="notification-dropdown">
             <div id="notification-header">
               <div id="notification-title">알림</div>
               <div id="notification-badge">0</div>
             </div>
-            <div id="notification-list"></div>
+            <div id="notification-list">
+              <!-- 알림 항목이 동적으로 로드됩니다 -->
+            </div>
             <div id="notification-footer">
               <button id="mark-all-read" onclick="markAllAsRead()">모두 읽음 처리</button>
             </div>
           </div>
         </div>
+
         <div id="user-profile" onclick="toggleUserMenu()">
           <div id="user-avatar">👤</div>
           <div id="user-info">
@@ -66,9 +68,10 @@
       </div>
     </div>
   </nav>
+  <!-- ────────────────────────────────────────────────────────────────────────── -->
 
   <div id="main-container">
-    <!-- 사이드바 (index.html과 동일) -->
+    <!-- ────────── 사이드바 (index.html과 동일) ────────── -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-title">메인 메뉴</div>
@@ -122,10 +125,12 @@
         </ul>
       </div>
     </aside>
+    <!-- ────────────────────────────────────────────────────────────────────────── -->
 
-    <!-- 메인 콘텐츠 영역 -->
+    <!-- ────────── 메인 콘텐츠 영역 ────────── -->
     <main id="content-area">
-      <!-- 홈, 건물 등 기존 콘텐츠들은 index.html에서 관리되므로 생략하고, 바로 설정 탭 영역을 보여줍니다 -->
+      <!-- 기존의 홈/건물/커뮤니티 등 모든 콘텐츠(div)을 index.html에서 유지하되
+           여기서는 설정 탭만 보이도록 처리합니다 -->
       <div id="settingsContent">
         <div id="content-header-settings">
           <h1>설정</h1>
@@ -134,17 +139,18 @@
           </div>
         </div>
 
-        <!-- 설정 항목들을 담는 카드 레이아웃 -->
+        <!-- ─── 설정 카드 ─── -->
         <div class="settings-card">
+          <!-- 1) 다크/라이트 모드 -->
           <div class="setting-row">
             <div class="setting-label">다크/라이트 모드</div>
-            <!-- 커스텀 토글 스위치 -->
             <label class="switch">
               <input type="checkbox" id="themeToggle" />
               <span class="slider"></span>
             </label>
           </div>
 
+          <!-- 2) 푸시 알림 -->
           <div class="setting-row">
             <div class="setting-label">푸시 알림 받기</div>
             <label class="switch">
@@ -153,6 +159,7 @@
             </label>
           </div>
 
+          <!-- 3) 글꼴 크기 -->
           <div class="setting-row">
             <div class="setting-label">글꼴 크기</div>
             <select id="fontSizeSelect" class="setting-select">
@@ -162,6 +169,7 @@
             </select>
           </div>
 
+          <!-- 4) 언어 선택 -->
           <div class="setting-row">
             <div class="setting-label">언어 선택</div>
             <select id="languageSelect" class="setting-select">
@@ -173,11 +181,12 @@
         </div>
       </div>
     </main>
+    <!-- ────────────────────────────────────────────────────────────────────────── -->
   </div>
 
-  <!-- 공통 기능을 위해 index.js 추가 (검색, 드롭다운 등) -->
+  <!-- ① 공통 기능을 사용하기 위한 index.js -->
   <script src="index.js" defer></script>
-  <!-- 설정 화면 전용 JavaScript -->
+  <!-- ② 설정 화면 전용 스크립트 -->
   <script src="settings.js" defer></script>
 </body>
 </html>
