@@ -138,128 +138,31 @@
 }
 
 /* ----------------------------------------------------------------------------- 
-   단축키 항목 컨테이너 
+   텍스트 입력 (단축키) 스타일 
+   → readonly이지만, 시각적으로 입력란처럼 보이도록 처리
 ----------------------------------------------------------------------------- */
-#shortcut-list-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-/* ----------------------------------------------------------------------------- 
-   단축키 개별 항목 
------------------------------------------------------------------------------ */
-.shortcut-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: rgba(30, 41, 59, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+.setting-item input[type="text"] {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.shortcut-item:hover {
-  background: rgba(30, 41, 59, 0.5);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* 라벨(설명)용 텍스트 입력 */
-.shortcut-item input.label-input {
-  flex: 2;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 6px;
   padding: 0.4rem 0.6rem;
   color: #f1f5f9;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.shortcut-item input.label-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.95);
-}
-
-/* 키 입력용 읽기전용 텍스트 입력 */
-.shortcut-item input.key-input {
   width: 100px;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 6px;
-  padding: 0.4rem 0.6rem;
-  color: #f1f5f9;
-  font-size: 0.9rem;
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer; /* 클릭 유도 */
 }
 
-.shortcut-item input.key-input:hover {
+.setting-item input[type="text"]:hover {
   border-color: #3b82f6;
 }
 
-/* 키 입력 영역 포커스 시 강조 */
-.shortcut-item input.key-input:focus {
+/* 포커스 시 강조 효과 */
+.setting-item input[type="text"]:focus {
   outline: none;
   border-color: #3b82f6;
   background: rgba(30, 41, 59, 0.9);
-}
-
-/* 제거 버튼 */
-.shortcut-item button.remove-shortcut-btn {
-  background: none;
-  border: none;
-  color: #ef4444;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.shortcut-item button.remove-shortcut-btn:hover {
-  transform: scale(1.2);
-}
-
-/* ----------------------------------------------------------------------------- 
-   단축키 추가 버튼 
------------------------------------------------------------------------------ */
-.add-shortcut-btn {
-  width: fit-content;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  background: transparent;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #94a3b8;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.add-shortcut-btn:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-
-/* ----------------------------------------------------------------------------- 
-   공통 버튼 스타일 (필요시 수정) 
------------------------------------------------------------------------------ */
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  background: #3b82f6;
-  color: white;
-  border: none;
-}
-
-.btn:hover {
-  background: #2563eb;
 }
 
 /* ----------------------------------------------------------------------------- 
@@ -297,23 +200,6 @@ body.light-mode .setting-item input[type="text"]:focus {
   color: #1f2937;
 }
 
-/* 라이트 모드 시 단축키 항목 bg/boarder */
-body.light-mode .shortcut-item {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-body.light-mode .shortcut-item input.label-input,
-body.light-mode .shortcut-item input.key-input {
-  background: rgba(240, 240, 240, 0.8);
-  color: #1f2937;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-body.light-mode .shortcut-item button.remove-shortcut-btn {
-  color: #b91c1c;
-}
-
 /* ----------------------------------------------------------------------------- 
    반응형: 화면 너비가 좁을 때 여백 및 폰트 크기 조정 
 ----------------------------------------------------------------------------- */
@@ -340,22 +226,6 @@ body.light-mode .shortcut-item button.remove-shortcut-btn {
   .setting-item input[type="number"],
   .setting-item input[type="text"] {
     width: 100%;
-  }
-  .shortcut-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-  .shortcut-item input.label-input,
-  .shortcut-item input.key-input {
-    width: 100%;
-  }
-  .shortcut-item button.remove-shortcut-btn {
-    align-self: flex-end;
-  }
-  .add-shortcut-btn {
-    width: 100%;
-    text-align: center;
   }
 }
 
