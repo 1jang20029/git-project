@@ -1,6 +1,8 @@
 /* settings.css */
 /* =============================================================================
-   설정 뷰 전용 스타일
+   설정 뷰 전용 스타일 
+   -----------------------------------------------------------------------------
+   1) 테마 모드 select, 2) 시간대별 예약 time-picker, 3) 알림 토글
    ============================================================================= */
 
 /* 설정 화면 전체 컨테이너 */
@@ -25,24 +27,54 @@
   font-weight: 600;
 }
 
-/* 토글 체크박스 기본 스타일 */
-.setting-item input[type="checkbox"],
-.setting-item select {
-  cursor: pointer;
-}
-
-/* 다크/라이트 & 알림 토글 체크박스 강조 */
-.setting-item input[type="checkbox"]:checked {
-  accent-color: #3b82f6;
-}
-
-/* 글꼴 크기 드롭다운 */
-#fontSizeSelect {
+/* select 박스 스타일 */
+#themeModeSelect {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
   color: #f1f5f9;
   padding: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* time-picker 스타일 */
+#themeScheduleTimes {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  /* select 아래쪽으로 살짝 들여쓰기 */
+  margin-left: 1.5rem;
+}
+
+/* 시간 입력 그룹 (label + time) */
+.schedule-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* time-picker input 형식 */
+#themeScheduleTimes input[type="time"] {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #f1f5f9;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* 알림 토글 체크박스 스타일 */
+.setting-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* 체크박스 체크 시 강조 색상 */
+.setting-item input[type="checkbox"]:checked {
+  accent-color: #3b82f6;
 }
 
 /* 반응형: 좁은 화면에서 여백 축소 */
@@ -52,5 +84,10 @@
   }
   .setting-item {
     margin-bottom: 1rem;
+  }
+  #themeScheduleTimes {
+    flex-direction: column;
+    gap: 1rem;
+    margin-left: 0;
   }
 }

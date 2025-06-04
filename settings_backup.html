@@ -173,26 +173,32 @@
         </div>
 
         <div class="settings-container">
-          <!-- 다크/라이트 모드 토글 -->
+          <!-- 1) 테마 모드 선택 -->
           <div class="setting-item">
-            <label for="themeToggle">다크/라이트 모드</label>
-            <input type="checkbox" id="themeToggle" />
+            <label for="themeModeSelect">테마 모드</label>
+            <select id="themeModeSelect">
+              <option value="auto" selected>시간대별 자동</option>
+              <option value="light">항상 라이트</option>
+              <option value="dark">항상 다크</option>
+            </select>
           </div>
 
-          <!-- 알림 받기 토글 -->
+          <!-- 2) 예약 시간 설정 (자동 모드를 선택했을 때만 보임) -->
+          <div class="setting-item" id="themeScheduleTimes">
+            <div class="schedule-group">
+              <label for="lightStartTime">라이트 모드 시작</label>
+              <input type="time" id="lightStartTime" value="07:00" />
+            </div>
+            <div class="schedule-group">
+              <label for="darkStartTime">다크 모드 시작</label>
+              <input type="time" id="darkStartTime" value="19:00" />
+            </div>
+          </div>
+
+          <!-- 3) 알림 받기 토글 -->
           <div class="setting-item">
             <label for="notificationToggle">알림 받기</label>
             <input type="checkbox" id="notificationToggle" />
-          </div>
-
-          <!-- 글꼴 크기 선택 -->
-          <div class="setting-item">
-            <label for="fontSizeSelect">글꼴 크기</label>
-            <select id="fontSizeSelect">
-              <option value="small">작게</option>
-              <option value="medium" selected>보통</option>
-              <option value="large">크게</option>
-            </select>
           </div>
         </div>
       </div>
@@ -201,7 +207,7 @@
 
   <!-- 설정 전용 JavaScript -->
   <script src="settings.js" defer></script>
-  <!-- 기존 index.js 기능(검색, 드롭다운, 사이드바 토글 등)을 사용하려면 아래를 추가 -->
+  <!-- 기존 index.js 기능(검색, 드롭다운, 사이드바 토글 등) 포함 -->
   <script src="index.js" defer></script>
 </body>
 </html>
