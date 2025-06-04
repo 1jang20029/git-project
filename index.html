@@ -10,7 +10,10 @@
     defer
   ></script>
 
+  <!-- 공통 스타일 -->
   <link rel="stylesheet" href="index.css" />
+  <!-- 분리된 설정 화면 전용 스타일 -->
+  <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
   <nav id="top-nav">
@@ -39,8 +42,7 @@
               <div id="notification-title">알림</div>
               <div id="notification-badge">0</div>
             </div>
-            <div id="notification-list">
-            </div>
+            <div id="notification-list"></div>
             <div id="notification-footer">
               <button id="mark-all-read" onclick="markAllAsRead()">
                 모두 읽음 처리
@@ -58,9 +60,7 @@
           <div id="user-dropdown">
             <div id="dropdown-user-info">
               <div id="dropdown-user-name">게스트</div>
-              <div id="dropdown-user-role">
-                방문자
-              </div>
+              <div id="dropdown-user-role">방문자</div>
             </div>
             <button id="dropdown-item-profile" onclick="showProfile()">
               <span>👤</span>
@@ -147,6 +147,7 @@
     </aside>
 
     <main id="content-area">
+      <!-- 기타 비즈니스 화면(대시보드, 건물, 커뮤니티 등)은 그대로 둡니다 -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -178,8 +179,7 @@
               <h3 id="card-title-timetable">오늘의 시간표</h3>
               <span id="card-icon-timetable">📅</span>
             </div>
-            <div id="timetableContent">
-            </div>
+            <div id="timetableContent"></div>
           </div>
           <div id="shuttle-card">
             <div id="card-header-shuttle">
@@ -203,6 +203,7 @@
         </div>
       </div>
 
+      <!-- 건물 & 시설 -->
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
@@ -230,6 +231,7 @@
         <div id="buildingGrid"></div>
       </div>
 
+      <!-- 실시간 커뮤니티 -->
       <div id="communityContent" style="display: none;">
         <div id="content-header-community">
           <h1 id="title-community">실시간 커뮤니티</h1>
@@ -257,6 +259,7 @@
         </div>
       </div>
 
+      <!-- 강의평가 -->
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
@@ -298,6 +301,7 @@
         </div>
       </div>
 
+      <!-- 공지사항 -->
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
@@ -310,6 +314,7 @@
         <div id="fullNoticeList"></div>
       </div>
 
+      <!-- 내 시간표 (별도 페이지로 이동) -->
       <div id="timetableContentPane" style="display: none;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
@@ -325,6 +330,7 @@
         </div>
       </div>
 
+      <!-- 셔틀버스 정보 (별도 페이지로 이동) -->
       <div id="shuttleContentPane" style="display: none;">
         <div id="content-header-shuttle-pane">
           <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
@@ -340,6 +346,7 @@
         </div>
       </div>
 
+      <!-- 학사일정 (별도 페이지로 이동) -->
       <div id="calendarContentPane" style="display: none;">
         <div id="content-header-calendar-pane">
           <h1 id="title-calendar-pane">학사일정</h1>
@@ -355,6 +362,7 @@
         </div>
       </div>
 
+      <!-- 프로필 -->
       <div id="profileContentPane" style="display: none;">
         <div id="content-header-profile-pane">
           <h1 id="title-profile-pane">프로필</h1>
@@ -370,29 +378,14 @@
         </div>
       </div>
 
-      <div id="settingsContent" style="display: none;">
-        <div id="content-header-settings">
-          <h1 id="title-settings">설정</h1>
-          <div id="breadcrumb-settings">
-            <span>홈</span>
-            <span>›</span>
-            <span>설정</span>
-          </div>
-        </div>
-        <div id="settings-container">
-          <div class="setting-item">
-            <label for="themeToggle">다크/라이트 모드</label>
-            <input type="checkbox" id="themeToggle" />
-          </div>
-          <div class="setting-item">
-            <label for="notificationToggle">알림 받기</label>
-            <input type="checkbox" id="notificationToggle" />
-          </div>
-        </div>
-      </div>
+      <!-- **설정 화면만 빈 컨테이너로 두고, 외부 HTML을 동적으로 로드** -->
+      <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
+  <!-- 공통 자바스크립트 -->
   <script src="index.js" defer></script>
+  <!-- 분리된 설정 화면 전용 자바스크립트 -->
+  <script src="settings.js" defer></script>
 </body>
 </html>
