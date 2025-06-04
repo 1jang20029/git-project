@@ -1,5 +1,3 @@
-// index.js
-
 // ------------------------------
 // 전역 변수 선언
 // ------------------------------
@@ -18,7 +16,7 @@ const departmentMap = {};
 // 설정 화면을 한 번 로드했는지 여부
 let settingsLoaded = false;
 
-// 자동 로그아웃을 위한 타이머 ID
+// 자동 로그아웃 타이머 ID
 let autoLogoutTimer = null;
 
 // ------------------------------
@@ -35,15 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeApp();
   setupNetworkListeners();
-  setupAutoLogout();             // 자동 로그아웃 로직 초기화
-  applyKeyboardShortcuts();      // 키보드 단축키 로드
+  applyKeyboardShortcuts();
+  setupAutoLogout();
 
   // ESC 키 누르면 드롭다운 닫기
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeAllDropdowns();
     }
-    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 자동 로그아웃 타이머 초기화
   });
 
   // 검색창 Enter 키 처리
@@ -54,10 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
         handleGlobalSearch();
       }
     });
-    searchInput.addEventListener('keydown', resetAutoLogoutTimer);
   }
 
-  // 화면 바깥 클릭 시 드롭다운 닫기
+  // 화면 바깥 클릭 시 드롭다운 닫기 & 자동 로그아웃 타이머 초기화
   document.addEventListener('click', (event) => {
     const ntBtn = event.target.closest('#notification-btn');
     const upBtn = event.target.closest('#user-profile');
@@ -229,7 +225,7 @@ async function loadDepartments() {
 }
 
 // ------------------------------
-// loadNotifications: 알림 데이터 로드
+// loadNotifications: 알림 데이터 로드 (카테고리/방해 금지 필터링 적용)
 // ------------------------------
 async function loadNotifications() {
   try {
@@ -238,7 +234,56 @@ async function loadNotifications() {
     }
     const res = await fetch('/api/notifications');
     if (!res.ok) throw new Error('API 응답 오류');
-    const notifications = await res.json();
+    let notifications = await res.json();
+
+    // 로컬스토리지에서 카테고리별 허용 설정 로드
+    const allowedCategories = JSON.parse(localStorage.getItem('notifyCategories')) || {
+      notices: true,
+      community: true,
+      shuttle: true,
+      timetable: true,
+      lecture: true
+    };
+
+    // 현재 시간이 방해 금지 모드인지 확인
+    const now = new Date();
+    const curH = now.getHours();
+    const curM = now.getMinutes();
+    const totalNow = curH * 60 + curM;
+
+    const dndStartStr = localStorage.getItem('dndStart') || '21:00';
+    const dndEndStr = localStorage.getItem('dndEnd') || '07:00';
+    const [dndSH, dndSM] = dndStartStr.split(':').map(Number);
+    const [dndEH, dndEM] = dndEndStr.split(':').map(Number);
+    const totalStart = dndSH * 60 + dndSM;
+    const totalEnd = dndEH * 60 + dndEM;
+
+    let inDnd = false;
+    if (totalStart < totalEnd) {
+      inDnd = totalNow >= totalStart && totalNow < totalEnd;
+    } else {
+      // 예: 21:00 ~ 다음날 07:00
+      inDnd = totalNow >= totalStart || totalNow < totalEnd;
+    }
+
+    // 방해 금지 모드면 알림 목록을 빈 배열로 처리
+    if (inDnd) {
+      renderNotifications([]);
+      return;
+    }
+
+    // 카테고리 필터링: 
+    notifications = notifications.filter((n) => {
+      const cat = n.category.toLowerCase();
+      if (cat.includes('공지')) return allowedCategories.notices;
+      if (cat.includes('커뮤니티') || cat.includes('게시글')) return allowedCategories.community;
+      if (cat.includes('셔틀')) return allowedCategories.shuttle;
+      if (cat.includes('시간표')) return allowedCategories.timetable;
+      if (cat.includes('강의')) return allowedCategories.lecture;
+      // 기타 카테고리는 허용
+      return true;
+    });
+
     renderNotifications(notifications);
   } catch (err) {
     console.error('알림 데이터 로드 실패:', err);
@@ -248,7 +293,6 @@ async function loadNotifications() {
 
 // ------------------------------
 // renderNotifications: 알림 목록 렌더링
-//   → 원하는 카테고리만 표시, Do Not Disturb 시간 고려
 // ------------------------------
 function renderNotifications(notifications) {
   const listEl = document.getElementById('notification-list');
@@ -260,18 +304,9 @@ function renderNotifications(notifications) {
   unreadNotifications = 0;
 
   notifications.forEach((n) => {
-    // 1) 카테고리별 수신 여부 확인
-    if (!isCategoryEnabled(n.category)) {
-      return; // 설정에서 해당 카테고리 알림을 껐으면 무시
-    }
-    // 2) Do Not Disturb 시간대에는 푸시/인앱 알림 표시하지 않기
-    if (!shouldShowNotification()) {
-      return;
-    }
-
     const item = document.createElement('div');
     item.className = 'notification-item' + (n.unread ? ' unread' : '');
-    item.onclick = () => markAsRead(item, n.id, n.category);
+    item.onclick = () => markAsRead(item, n.id);
     item.innerHTML = `
       <div class="notification-meta">
         <span class="notification-category">${n.category}</span>
@@ -294,7 +329,7 @@ function renderNotifications(notifications) {
 // ------------------------------
 // markAsRead: 개별 알림 읽음 처리
 // ------------------------------
-function markAsRead(el, id, category) {
+function markAsRead(el, id) {
   if (el.classList.contains('unread')) {
     el.classList.remove('unread');
     unreadNotifications--;
@@ -625,9 +660,6 @@ function renderCommunityPosts(livePosts, hotPosts) {
   hotEl.innerHTML = '';
 
   livePosts.forEach((p) => {
-    // 카테고리가 “커뮤니티”인 경우에도 표시 여부는 설정에서 결정
-    if (!isCategoryEnabled('커뮤니티')) return;
-
     const item = document.createElement('div');
     item.className = 'notice-item';
     item.innerHTML = `
@@ -645,8 +677,6 @@ function renderCommunityPosts(livePosts, hotPosts) {
   });
 
   hotPosts.forEach((p) => {
-    if (!isCategoryEnabled('커뮤니티')) return;
-
     const item = document.createElement('div');
     item.className = 'notice-item';
     item.innerHTML = `
@@ -701,8 +731,6 @@ function renderLectureReviews(popular, recent) {
   recEl.innerHTML = '';
 
   popular.forEach((r) => {
-    if (!isCategoryEnabled('강의평가')) return;
-
     const item = document.createElement('div');
     item.className = 'notice-item';
     item.innerHTML = `
@@ -722,8 +750,6 @@ function renderLectureReviews(popular, recent) {
   });
 
   recent.forEach((r) => {
-    if (!isCategoryEnabled('강의평가')) return;
-
     const item = document.createElement('div');
     item.className = 'notice-item';
     item.innerHTML = `
@@ -904,13 +930,10 @@ function renderTimetable(courses) {
 
   courses.forEach((course) => {
     course.times.forEach((time) => {
-      // time.day가 0(일요일인 경우)일 때 특수 처리: 한국 기준으로 “0”을 “6(토요일)”로 바꾼다거나
-      // UI/UX에 맞게 조정할 수 있음
       if (
         time.day === currentDay ||
         (currentDay === 0 && time.day === 6)
       ) {
-        // start, end는 “몇 교시”인지 나타낸다 (예: 0은 오전 8:30 시작, 1은 오전 9:30 시작 등)
         const startHour = 8 + time.start;
         const startMinute = 30;
         const startTime = startHour * 60 + startMinute;
@@ -1007,9 +1030,34 @@ function formatTimeRemaining(minutes, suffix) {
 }
 
 // ------------------------------
-// toggleNotifications: 알림 드롭다운 토글
+// toggleNotifications: 알림 드롭다운 토글 (방해 금지 체크 포함)
 // ------------------------------
 function toggleNotifications() {
+  // 방해 금지 모드 체크: 현재 시간에 알림 금지인지 확인
+  const now = new Date();
+  const curH = now.getHours();
+  const curM = now.getMinutes();
+  const totalNow = curH * 60 + curM;
+
+  const dndStartStr = localStorage.getItem('dndStart') || '21:00';
+  const dndEndStr = localStorage.getItem('dndEnd') || '07:00';
+  const [dndSH, dndSM] = dndStartStr.split(':').map(Number);
+  const [dndEH, dndEM] = dndEndStr.split(':').map(Number);
+  const totalStart = dndSH * 60 + dndSM;
+  const totalEnd = dndEH * 60 + dndEM;
+
+  let inDnd = false;
+  if (totalStart < totalEnd) {
+    inDnd = totalNow >= totalStart && totalNow < totalEnd;
+  } else {
+    inDnd = totalNow >= totalStart || totalNow < totalEnd;
+  }
+
+  if (inDnd) {
+    showMessage('방해 금지 모드 중입니다. 알림이 차단되었습니다.', 'info');
+    return;
+  }
+
   const dd = document.getElementById('notification-dropdown');
   if (dd && dd.classList.contains('show')) {
     closeNotificationDropdown();
@@ -1021,7 +1069,11 @@ function toggleNotifications() {
 function showNotificationDropdown() {
   closeUserDropdown();
   const dd = document.getElementById('notification-dropdown');
-  if (dd) dd.classList.add('show');
+  if (dd) {
+    dd.classList.add('show');
+    // 새로 알림을 불러오면서 카테고리 필터 및 DND도 함께 적용
+    loadNotifications();
+  }
 }
 
 function closeNotificationDropdown() {
@@ -1030,40 +1082,76 @@ function closeNotificationDropdown() {
 }
 
 // ------------------------------
-// toggleUserMenu: 사용자 메뉴 토글
+// applyKeyboardShortcuts: 키다운 때마다 최신 설정을 읽어와서 동작
 // ------------------------------
-function toggleUserMenu() {
-  const dropdown = document.getElementById('user-dropdown');
-  const currentUser = localStorage.getItem('currentLoggedInUser');
+function applyKeyboardShortcuts() {
+  // 기본값(사용자가 아무것도 설정하지 않았을 때 fallback으로 쓸 값)
+  const defaultShortcuts = {
+    toggleSidebar: 'F2',
+    openNotifications: 'F3',
+    goToSettings: 'F4'
+  };
 
-  if (!currentUser) {
-    if (confirm('로그인하시겠습니까?')) {
-      window.open('login.html', '_blank');
+  document.addEventListener('keydown', (e) => {
+    resetAutoLogoutTimer(); // 입력이 있을 때마다 자동 로그아웃 타이머 초기화
+
+    // 매번 LocalStorage에서 최신 키 설정을 읽어온다.
+    const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || defaultShortcuts;
+    const key = e.key.toUpperCase();
+
+    // 사이드바 토글
+    if (key === (shortcuts.toggleSidebar || defaultShortcuts.toggleSidebar).toUpperCase()) {
+      e.preventDefault();
+      toggleSidebar();
+      return;
     }
-    return;
+    // 알림 열기
+    if (key === (shortcuts.openNotifications || defaultShortcuts.openNotifications).toUpperCase()) {
+      e.preventDefault();
+      toggleNotifications();
+      return;
+    }
+    // 설정으로 이동
+    if (key === (shortcuts.goToSettings || defaultShortcuts.goToSettings).toUpperCase()) {
+      e.preventDefault();
+      showContent('settings');
+      return;
+    }
+  });
+}
+
+// ------------------------------
+// setupAutoLogout: 자동 로그아웃 초기 설정
+// ------------------------------
+function setupAutoLogout() {
+  // 페이지 로드 직후 타이머 초기화
+  resetAutoLogoutTimer();
+
+  // 사용자 조작(키/클릭) 시마다 타이머 초기화 이벤트 리스너(이미 document click/keydown에 걸려 있음)
+}
+
+// ------------------------------
+// resetAutoLogoutTimer: 자동 로그아웃 타이머 재설정
+// ------------------------------
+function resetAutoLogoutTimer() {
+  // 기존 타이머 클리어
+  if (autoLogoutTimer) {
+    clearTimeout(autoLogoutTimer);
   }
 
-  if (dropdown && dropdown.classList.contains('show')) {
-    closeUserDropdown();
-  } else {
-    showUserDropdown();
-  }
-}
+  // 로컬스토리지에서 설정한 시간(분) 읽어옴 (기본 30분)
+  const minutes = parseInt(localStorage.getItem('autoLogoutMinutes'), 10);
+  const timeoutMin = isNaN(minutes) ? 30 : minutes;
 
-function showUserDropdown() {
-  closeNotificationDropdown();
-  const dropdown = document.getElementById('user-dropdown');
-  if (dropdown) dropdown.classList.add('show');
-}
-
-function closeUserDropdown() {
-  const dropdown = document.getElementById('user-dropdown');
-  if (dropdown) dropdown.classList.remove('show');
-}
-
-function closeAllDropdowns() {
-  closeNotificationDropdown();
-  closeUserDropdown();
+  autoLogoutTimer = setTimeout(() => {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (currentUser) {
+      localStorage.removeItem('currentLoggedInUser');
+      showMessage('자동 로그아웃 되었습니다.', 'info');
+      checkUserStatus();
+      showContent('home');
+    }
+  }, timeoutMin * 60 * 1000);
 }
 
 // ------------------------------
@@ -1196,18 +1284,8 @@ function updateProfileImage(user) {
 
 // ------------------------------
 // showMessage: 화면 우측 상단 슬라이드 알림 메시지
-//   → Do Not Disturb 모드, 카테고리 설정 등을 고려하여 호출 전 shouldShowNotification()을 검사
 // ------------------------------
-function showMessage(message, type = 'info', category = '') {
-  // 1) 카테고리 구분이 필요한 알림이라면, 해당 카테고리가 꺼져 있으면 표시하지 않음
-  if (category && !isCategoryEnabled(category)) {
-    return;
-  }
-  // 2) Do Not Disturb 시간대라면 표시하지 않음
-  if (!shouldShowNotification()) {
-    return;
-  }
-
+function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
     type === 'success'
@@ -1215,8 +1293,7 @@ function showMessage(message, type = 'info', category = '') {
       : type === 'error'
       ? 'rgba(239, 68, 68, 0.9)'
       : 'rgba(59, 130, 246, 0.9)';
-  const icon =
-    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
 
   notification.style.cssText = `
     position: fixed;
@@ -1252,97 +1329,6 @@ function showMessage(message, type = 'info', category = '') {
       }
     }, 300);
   }, 3000);
-}
-
-// ------------------------------
-// shouldShowNotification: Do Not Disturb 모드 검사
-//   → 설정 페이지에서 지정한 시작/끝 시간대 사이이면 알림 차단
-// ------------------------------
-function shouldShowNotification() {
-  const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
-  if (!dnd.enabled) return true;
-
-  const now = new Date();
-  const hh = now.getHours();
-  const mm = now.getMinutes();
-  const totalMinutes = hh * 60 + mm;
-
-  const startHM = dnd.startHour * 60 + dnd.startMinute;
-  const endHM = dnd.endHour * 60 + dnd.endMinute;
-
-  if (startHM < endHM) {
-    // 예: 21:00(1260) ~ 07:00(420) 아닌 경우, 같은 날 차단
-    return !(totalMinutes >= startHM && totalMinutes < endHM);
-  } else {
-    // 예: 21:00(1260) ~ 07:00(420) (넘어가는 경우)
-    return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
-  }
-}
-
-// ------------------------------
-// isCategoryEnabled: 설정 페이지에서 지정한 카테고리별 알림 수신 여부 확인
-// ------------------------------
-function isCategoryEnabled(category) {
-  const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
-  // 예시로 key: "공지사항", "커뮤니티", "셔틀버스", "강의평가" → true/false
-  return catSettings[category] === true;
-}
-
-// ------------------------------
-// setupAutoLogout: 비활성 시 자동 로그아웃 로직 초기화
-//   → 설정 페이지에서 지정한 idleTimeout(분)만큼 입력 없으면 로그아웃
-// ------------------------------
-function setupAutoLogout() {
-  document.addEventListener('mousemove', resetAutoLogoutTimer);
-  document.addEventListener('keypress', resetAutoLogoutTimer);
-  document.addEventListener('click', resetAutoLogoutTimer);
-  resetAutoLogoutTimer();
-}
-
-function resetAutoLogoutTimer() {
-  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
-  const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
-  if (!cfg.enabled) return;
-
-  const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
-  autoLogoutTimer = setTimeout(() => {
-    // 실제 로그아웃 처리 (예: localStorage에서 사용자 정보 제거 후 홈으로)
-    localStorage.removeItem('currentLoggedInUser');
-    showMessage('자동 로그아웃되었습니다', 'info');
-    checkUserStatus();
-    showContent('home');
-  }, timeoutMs);
-}
-
-// ------------------------------
-// applyKeyboardShortcuts: 설정된 키보드 단축키 로드 및 바인딩
-// ------------------------------
-function applyKeyboardShortcuts() {
-  const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
-    toggleSidebar: 'F2',
-    openNotifications: 'F3',
-    goToSettings: 'F4'
-  };
-  document.addEventListener('keydown', (e) => {
-    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
-    const key = e.key.toUpperCase();
-
-    // 사이드바 토글
-    if (key === (shortcuts.toggleSidebar || '').toUpperCase()) {
-      e.preventDefault();
-      toggleSidebar();
-    }
-    // 알림 열기
-    if (key === (shortcuts.openNotifications || '').toUpperCase()) {
-      e.preventDefault();
-      toggleNotifications();
-    }
-    // 설정으로 이동
-    if (key === (shortcuts.goToSettings || '').toUpperCase()) {
-      e.preventDefault();
-      showContent('settings');
-    }
-  });
 }
 
 // ------------------------------
@@ -1431,14 +1417,14 @@ function resetMapView() {
 // ------------------------------
 function trackUserLocation() {
   if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
+    showMessage('위치 서비스를 지원하지 않습니다', 'error');
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
       if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
+        showMessage('지도가 초기화되지 않았습니다', 'error');
         return;
       }
 
@@ -1462,7 +1448,7 @@ function trackUserLocation() {
 
       naverMap.setCenter(userPos);
       naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
+      showMessage('현재 위치를 찾았습니다', 'success');
     },
     (error) => {
       let message = '위치를 찾을 수 없습니다';
@@ -1477,7 +1463,7 @@ function trackUserLocation() {
           message = '위치 요청 시간이 초과되었습니다';
           break;
       }
-      showMessage(message, 'error', '');
+      showMessage(message, 'error');
     }
   );
 }
@@ -1496,12 +1482,12 @@ function showBuildingOnMap(buildingId) {
 // getBuildingDirections: 길찾기 기능 (준비 중)
 // ------------------------------
 function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
+  showMessage('길찾기 기능은 준비 중입니다', 'info');
 }
 
 // ------------------------------
 // viewNoticeDetail: 공지사항 상세 보기 (준비 중)
 // ------------------------------
 function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info');
 }
