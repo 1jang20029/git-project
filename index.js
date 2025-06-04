@@ -1,10 +1,9 @@
 // =============================================================================
 // index.js
 // ──────────────────────────────────────────────────────────────────────────────
-// 메인 페이지 동작 로직 (SPA: 탭 전환 포함) + “快速 접근” + 설정 기능 추가
+// 메인 페이지 동작 로직 (SPA: 탭 전환 포함) + “빠른 접근” 활성화
 // =============================================================================
 
-// 전역 변수 선언
 let naverMap;
 let mapMarkers = [];
 let infoWindows = [];
@@ -13,20 +12,13 @@ let userLocation = null;
 let currentContent = 'home';
 let unreadNotifications = 0;
 
-// 학과 코드→한글명 매핑을 저장할 객체
+// ➊ DB에서 불러온 “학과 코드 → 한글명” 매핑 저장용 전역 객체
 const departmentMap = {};
 
-// LocalStorage에 사용할 키 모음
-const STORAGE_KEYS = {
-  THEME: 'smc_theme',           // dark or light
-  NOTIFICATION: 'smc_notification', // enabled or disabled
-  FONT_SIZE: 'smc_font_size',   // small / medium / large
-  LANGUAGE: 'smc_language'      // ko / en
-};
-
-// 문서 로딩이 완료되면 초기화 작업 수행
+// ---------------------------
+// 페이지 로드 시: 해시 기반 초기 탭 열기 + 초기화
+// ---------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  // URL 해시를 읽어 탭 전환 (예: #buildings → showContent('buildings'))
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
     showContent(hash);
@@ -36,14 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeApp();
 
-  // ESC 키를 누르면 모든 드롭다운 닫기
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeAllDropdowns();
     }
   });
 
-  // 검색창에서 Enter를 누르면 검색 실행
   const searchInput = document.getElementById('search-input');
   if (searchInput) {
     searchInput.addEventListener('keypress', (e) => {
@@ -53,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 빈 공간 클릭 시 드롭다운 닫기
   document.addEventListener('click', (event) => {
     const ntBtn = event.target.closest('#notification-btn');
     const upBtn = event.target.closest('#user-profile');
@@ -62,104 +51,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ====================================
-// ➊ 설정 초기값 로드 및 이벤트 바인딩
-// ====================================
-function loadUserSettings() {
-  // 1) 다크/라이트 모드
-  const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
-  if (savedTheme === 'dark') {
-    document.body.classList.remove('light-mode');
-    document.getElementById('themeToggle').checked = false;
-  } else {
-    document.body.classList.add('light-mode');
-    document.getElementById('themeToggle').checked = true;
-  }
-
-  // 2) 푸시 알림 허용/차단
-  const savedNotify = localStorage.getItem(STORAGE_KEYS.NOTIFICATION) || 'disabled';
-  document.getElementById('notificationToggle').checked = (savedNotify === 'enabled');
-
-  // 3) 글꼴 크기
-  const savedFontSize = localStorage.getItem(STORAGE_KEYS.FONT_SIZE) || 'medium';
-  document.getElementById('fontSizeSelect').value = savedFontSize;
-  applyFontSize(savedFontSize);
-
-  // 4) 언어 선택
-  const savedLang = localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'ko';
-  document.getElementById('languageSelect').value = savedLang;
-  applyLanguage(savedLang);
-}
-
-function bindSettingsEvents() {
-  // 다크/라이트 토글 이벤트
-  document.getElementById('themeToggle').addEventListener('change', (e) => {
-    if (e.target.checked) {
-      document.body.classList.add('light-mode');
-      localStorage.setItem(STORAGE_KEYS.THEME, 'light');
-    } else {
-      document.body.classList.remove('light-mode');
-      localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
-    }
-  });
-
-  // 푸시 알림 토글 이벤트
-  document.getElementById('notificationToggle').addEventListener('change', (e) => {
-    const enabled = e.target.checked;
-    localStorage.setItem(STORAGE_KEYS.NOTIFICATION, enabled ? 'enabled' : 'disabled');
-    // 실제 푸시 구독/구독해지를 처리해야 한다면 여기에 구현
-    if (enabled) {
-      alert('푸시 알림이 활성화되었습니다.');
-    } else {
-      alert('푸시 알림이 비활성화되었습니다.');
-    }
-  });
-
-  // 글꼴 크기 선택 이벤트
-  document.getElementById('fontSizeSelect').addEventListener('change', (e) => {
-    const size = e.target.value; // small / medium / large
-    applyFontSize(size);
-    localStorage.setItem(STORAGE_KEYS.FONT_SIZE, size);
-  });
-
-  // 언어 선택 이벤트
-  document.getElementById('languageSelect').addEventListener('change', (e) => {
-    const lang = e.target.value; // ko / en
-    applyLanguage(lang);
-    localStorage.setItem(STORAGE_KEYS.LANGUAGE, lang);
-  });
-}
-
-// 글꼴 크기를 body에 클래스 형태로 적용
-function applyFontSize(size) {
-  document.body.classList.remove('font-small', 'font-medium', 'font-large');
-  if (size === 'small') {
-    document.body.classList.add('font-small');
-  } else if (size === 'medium') {
-    document.body.classList.add('font-medium');
-  } else if (size === 'large') {
-    document.body.classList.add('font-large');
+// ---------------------------
+// ➍ 학과 데이터(코드→한글명) 로드
+// ---------------------------
+async function loadDepartments() {
+  try {
+    const res = await fetch('/api/departments');
+    const list = await res.json();
+    // list: [ { id, code, name }, ... ]
+    list.forEach((item) => {
+      departmentMap[item.code] = item.name;
+    });
+  } catch (err) {
+    console.error('학과 데이터 로드 오류:', err);
   }
 }
 
-// 언어를 선택하면 일부 고정 텍스트를 변경하는 예시
-function applyLanguage(lang) {
-  if (lang === 'en') {
-    // 실제 다국어 번역 시스템이 있으면 더 많은 요소를 바꿔야 하지만,
-    // 여기서는 대표적인 몇 가지 텍스트만 예시로 변경합니다.
-    document.getElementById('title-home').textContent = 'Dashboard';
-    document.getElementById('nav-home').querySelector('span:nth-child(2)').textContent = 'Dashboard';
-    document.getElementById('title-settings').textContent = 'Settings';
-  } else {
-    document.getElementById('title-home').textContent = '대시보드';
-    document.getElementById('nav-home').querySelector('span:nth-child(2)').textContent = '대시보드';
-    document.getElementById('title-settings').textContent = '설정';
-  }
-}
-
-// ====================================
-// ➋ API 호출 함수들 (알림, 통계, 건물, 공지, 셔틀, 커뮤니티, 강의평가 로드)
-// ====================================
+// ---------------------------
+// 알림 데이터 로드
+// ---------------------------
 async function loadNotifications() {
   try {
     const res = await fetch('/api/notifications');
@@ -168,7 +78,6 @@ async function loadNotifications() {
     const countEl = document.getElementById('notification-badge');
     listEl.innerHTML = '';
     unreadNotifications = 0;
-
     notifications.forEach((n) => {
       const item = document.createElement('div');
       item.className = 'notification-item' + (n.unread ? ' unread' : '');
@@ -184,15 +93,15 @@ async function loadNotifications() {
       listEl.appendChild(item);
       if (n.unread) unreadNotifications++;
     });
-
     countEl.textContent = unreadNotifications;
-    document.getElementById('notification-dot').style.display = 
+    document.getElementById('notification-dot').style.display =
       unreadNotifications > 0 ? 'block' : 'none';
   } catch (err) {
     console.error('알림 로드 오류:', err);
   }
 }
 
+// 통계 데이터 로드
 async function loadStats() {
   try {
     const res = await fetch('/api/stats');
@@ -237,6 +146,7 @@ async function loadStats() {
   }
 }
 
+// 건물 데이터 로드
 async function loadBuildings() {
   try {
     const res = await fetch('/api/buildings');
@@ -266,6 +176,7 @@ async function loadBuildings() {
   }
 }
 
+// 공지사항 데이터 로드 (전체 & 최근)
 async function loadNotices() {
   try {
     const res = await fetch('/api/notices');
@@ -274,7 +185,6 @@ async function loadNotices() {
     const fullEl = document.getElementById('fullNoticeList');
     recentEl.innerHTML = '';
     fullEl.innerHTML = '';
-
     notices.forEach((n, idx) => {
       const item = document.createElement('div');
       item.className = 'notice-item';
@@ -297,6 +207,7 @@ async function loadNotices() {
   }
 }
 
+// 셔틀버스 데이터 로드 (대시보드 위젯용)
 async function loadShuttleInfo() {
   try {
     const res = await fetch('/api/shuttle/routes');
@@ -321,6 +232,7 @@ async function loadShuttleInfo() {
   }
 }
 
+// 선택한 셔틀버스 정보 표시
 async function selectShuttleRoute(routeId) {
   try {
     document.querySelectorAll('.route-tab').forEach((tab) => {
@@ -347,6 +259,7 @@ async function selectShuttleRoute(routeId) {
   }
 }
 
+// 활동 통계 데이터 로드 (대시보드 위젯용)
 async function loadActivityStats() {
   try {
     const res = await fetch('/api/activity-stats');
@@ -359,7 +272,7 @@ async function loadActivityStats() {
       clubCount:    '신입 모집 동아리',
       externalCount:'대외활동 기회',
     };
-    ['contestCount', 'clubCount', 'externalCount'].forEach((key) => {
+    ['contestCount','clubCount','externalCount'].forEach((key) => {
       const stat = document.createElement('div');
       stat.className = 'activity-stat';
       stat.innerHTML = `
@@ -373,6 +286,7 @@ async function loadActivityStats() {
   }
 }
 
+// 맛집 정보 로드 (예시)
 async function loadRestaurantInfo() {
   try {
     const res = await fetch('/api/restaurants');
@@ -409,6 +323,7 @@ async function loadRestaurantInfo() {
   }
 }
 
+// 실시간 커뮤니티 로드
 async function loadCommunityPosts() {
   try {
     const [liveRes, hotRes] = await Promise.all([
@@ -416,12 +331,11 @@ async function loadCommunityPosts() {
       fetch('/api/community/hot'),
     ]);
     const livePosts = await liveRes.json();
-    const hotPosts = await hotRes.json();
+    const hotPosts  = await hotRes.json();
     const liveEl = document.getElementById('livePosts');
-    const hotEl = document.getElementById('hotPosts');
+    const hotEl  = document.getElementById('hotPosts');
     liveEl.innerHTML = '';
     hotEl.innerHTML = '';
-
     livePosts.forEach((p) => {
       const item = document.createElement('div');
       item.className = 'notice-item';
@@ -438,7 +352,6 @@ async function loadCommunityPosts() {
       `;
       liveEl.appendChild(item);
     });
-
     hotPosts.forEach((p) => {
       const item = document.createElement('div');
       item.className = 'notice-item';
@@ -460,6 +373,7 @@ async function loadCommunityPosts() {
   }
 }
 
+// 강의평가 로드
 async function loadLectureReviews() {
   try {
     const [popRes, recRes] = await Promise.all([
@@ -467,12 +381,11 @@ async function loadLectureReviews() {
       fetch('/api/reviews/recent'),
     ]);
     const popular = await popRes.json();
-    const recent = await recRes.json();
+    const recent  = await recRes.json();
     const popEl = document.getElementById('popularReviews');
     const recEl = document.getElementById('recentReviews');
     popEl.innerHTML = '';
     recEl.innerHTML = '';
-
     popular.forEach((r) => {
       const item = document.createElement('div');
       item.className = 'notice-item';
@@ -491,7 +404,6 @@ async function loadLectureReviews() {
       `;
       popEl.appendChild(item);
     });
-
     recent.forEach((r) => {
       const item = document.createElement('div');
       item.className = 'notice-item';
@@ -513,9 +425,9 @@ async function loadLectureReviews() {
   }
 }
 
-// ====================================
-// ➌ 네이버 맵 초기화 및 마커 처리
-// ====================================
+// ---------------------------
+// 지도 초기화 및 마커
+// ---------------------------
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
@@ -573,9 +485,9 @@ function addMapMarkers(buildings) {
   });
 }
 
-// ====================================
-// ➍ 개인 시간표 업데이트 (대시보드 위젯)
-// ====================================
+// ---------------------------
+// 시간표 업데이트 (대시보드 위젯)
+// ---------------------------
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
@@ -594,11 +506,12 @@ function updateTimetable() {
       const currentDay = now.getDay();
       const currentTime = now.getHours() * 60 + now.getMinutes();
       const todayCourses = [];
-
       courses.forEach((course) => {
         course.times.forEach((time) => {
-          // 요일 비교 (0: 일요일, 1: 월요일, …, 6: 토요일)
-          if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
+          if (
+            time.day === currentDay ||
+            (currentDay === 0 && time.day === 6)
+          ) {
             const startHour = 8 + time.start;
             const startMinute = 30;
             const startTime = startHour * 60 + startMinute;
@@ -607,7 +520,6 @@ function updateTimetable() {
             const endTime = endHour * 60 + endMinute;
             let status = 'upcoming';
             let timeInfo = '';
-
             if (currentTime >= startTime && currentTime < endTime) {
               status = 'current';
               const remaining = endTime - currentTime;
@@ -625,23 +537,22 @@ function updateTimetable() {
                 timeInfo = '곧 시작';
               }
             }
-
             todayCourses.push({
               name: course.name,
               room: course.room,
               professor: course.professor,
               status,
               timeInfo,
-              displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+              displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(
+                2,
+                '0'
+              )}`,
               startTime,
             });
           }
         });
       });
-
-      // 시작 시간 기준으로 정렬
       todayCourses.sort((a, b) => a.startTime - b.startTime);
-
       if (todayCourses.length === 0) {
         contentEl.innerHTML = `
           <div style="text-align: center; padding: 2rem; color: #94a3b8;">
@@ -650,7 +561,6 @@ function updateTimetable() {
         `;
         return;
       }
-
       contentEl.innerHTML = '';
       todayCourses.forEach((ci) => {
         const statusText = {
@@ -667,7 +577,9 @@ function updateTimetable() {
           </div>
           <div class="class-info">
             <div class="class-name">${ci.name}</div>
-            <div class="class-location">${ci.room || '강의실 미정'} | ${ci.professor || '교수명 미정'}</div>
+            <div class="class-location">${ci.room || '강의실 미정'} | ${
+          ci.professor || '교수명 미정'
+        }</div>
           </div>
           <div class="class-status status-${ci.status}">${statusText}</div>
         `;
@@ -679,7 +591,6 @@ function updateTimetable() {
     });
 }
 
-// 남은 시간을 적절한 단위(시간·분)로 표시
 function formatTimeRemaining(minutes, suffix) {
   if (minutes < 60) {
     return `${minutes}분 ${suffix}`;
@@ -694,23 +605,21 @@ function formatTimeRemaining(minutes, suffix) {
   }
 }
 
-// ====================================
-// ➎ 알림 관련 함수들
-// ====================================
+// ---------------------------
+// 알림 함수들
+// ---------------------------
 function toggleNotifications() {
   const dd = document.getElementById('notification-dropdown');
-  if (dd.classList.contains('show')) {
-    closeNotificationDropdown();
-  } else {
-    closeUserDropdown();
-    dd.classList.add('show');
-  }
+  if (dd.classList.contains('show')) closeNotificationDropdown();
+  else showNotificationDropdown();
 }
-
+function showNotificationDropdown() {
+  closeUserDropdown();
+  document.getElementById('notification-dropdown').classList.add('show');
+}
 function closeNotificationDropdown() {
   document.getElementById('notification-dropdown').classList.remove('show');
 }
-
 function markAsRead(el, id) {
   if (el.classList.contains('unread')) {
     el.classList.remove('unread');
@@ -719,7 +628,6 @@ function markAsRead(el, id) {
     updateNotificationCount();
   }
 }
-
 function markAllAsRead() {
   document.querySelectorAll('.notification-item.unread').forEach((item) => {
     item.classList.remove('unread');
@@ -729,7 +637,6 @@ function markAllAsRead() {
   updateNotificationCount();
   showMessage('모든 알림을 읽음 처리했습니다.', 'success');
 }
-
 function updateNotificationCount() {
   const countEl = document.getElementById('notification-badge');
   const dotEl = document.getElementById('notification-dot');
@@ -737,9 +644,9 @@ function updateNotificationCount() {
   dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
 }
 
-// ====================================
-// ➏ 사용자 메뉴 함수들
-// ====================================
+// ---------------------------
+// 사용자 메뉴 함수
+// ---------------------------
 function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -749,18 +656,20 @@ function toggleUserMenu() {
     }
     return;
   }
-  if (dropdown.classList.contains('show')) {
-    closeUserDropdown();
-  } else {
-    closeNotificationDropdown();
-    dropdown.classList.add('show');
-  }
+  if (dropdown.classList.contains('show')) closeUserDropdown();
+  else showUserDropdown();
 }
-
+function showUserDropdown() {
+  closeNotificationDropdown();
+  document.getElementById('user-dropdown').classList.add('show');
+}
 function closeUserDropdown() {
   document.getElementById('user-dropdown').classList.remove('show');
 }
-
+function closeAllDropdowns() {
+  closeNotificationDropdown();
+  closeUserDropdown();
+}
 function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -770,7 +679,6 @@ function showProfile() {
   }
   closeUserDropdown();
 }
-
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -786,11 +694,10 @@ function handleLogout() {
   closeUserDropdown();
 }
 
-// ====================================
-// ➐ SPA 탭 전환 함수
-// ====================================
+// ---------------------------
+// 콘텐츠 전환 함수 (SPA 탭 전환)
+// ---------------------------
 function showContent(type) {
-  // 모든 콘텐츠 숨기기
   const panes = [
     'homeContent', 'buildingsContent', 'communityContent',
     'lecture-reviewContent', 'noticesContent', 'timetableContentPane',
@@ -801,7 +708,6 @@ function showContent(type) {
     document.getElementById(id).style.display = 'none';
   });
 
-  // 선택된 콘텐츠 보이기
   let targetId = 'homeContent';
   switch (type) {
     case 'home':           targetId = 'homeContent'; break;
@@ -822,29 +728,24 @@ function showContent(type) {
     target.classList.add('fade-in');
   }
 
-  // 사이드바 메뉴 active 상태 변경
   document.querySelectorAll('.nav-item').forEach((item) => {
     item.classList.remove('active');
   });
   const navItem = document.getElementById('nav-' + type);
   if (navItem) navItem.classList.add('active');
 
-  // URL 해시 변경
   window.location.hash = type;
-
-  // 건물 탭일 경우, 지도 리프레시
   if (type === 'buildings' && naverMap) {
     setTimeout(() => naverMap.refresh(), 100);
   }
 }
 
-// ====================================
-// ➑ 검색 기능 (샘플 구현)
-// ====================================
+// ---------------------------
+// 검색 기능 (샘플 구현)
+// ---------------------------
 async function handleGlobalSearch() {
   const query = document.getElementById('search-input').value.trim().toLowerCase();
   if (!query) return;
-  // 건물 검색 시
   try {
     const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
@@ -853,7 +754,6 @@ async function handleGlobalSearch() {
       return;
     }
   } catch {}
-  // 공지사항 검색 시
   try {
     const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
@@ -865,16 +765,15 @@ async function handleGlobalSearch() {
   alert('검색 결과를 찾을 수 없습니다.');
 }
 
-// ====================================
-// ➒ 유저 상태 확인, 프로필 정보 로드
-// ====================================
+// ---------------------------
+// 유저 상태 확인, 프로필 정보 로드
+// ---------------------------
 function checkUserStatus() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const userNameEl = document.getElementById('user-name');
   const userRoleEl = document.getElementById('user-role');
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
-
   if (currentUser) {
     fetch(`/api/users/${encodeURIComponent(currentUser)}`)
       .then((res) => res.json())
@@ -882,7 +781,8 @@ function checkUserStatus() {
         userNameEl.textContent = user.name || '사용자';
         userRoleEl.textContent = departmentMap[user.department] || '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
-        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
+        if (dropdownRoleEl)
+          dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
         updateProfileImage(user);
       })
       .catch(() => {
@@ -900,6 +800,8 @@ function checkUserStatus() {
   }
 }
 
+// getDepartmentName 함수는 더 이상 사용되지 않습니다.
+
 function updateProfileImage(user) {
   const avatarEl = document.getElementById('user-avatar');
   if (user.profileImageType === 'emoji') {
@@ -909,9 +811,9 @@ function updateProfileImage(user) {
   }
 }
 
-// ====================================
-// ➓ 메시지 표시 함수 (Toast 형태)
-// ====================================
+// ---------------------------
+// 메시지 표시 함수
+// ---------------------------
 function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
@@ -920,7 +822,8 @@ function showMessage(message, type = 'info') {
       : type === 'error'
       ? 'rgba(239, 68, 68, 0.9)'
       : 'rgba(59, 130, 246, 0.9)';
-  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  const icon =
+    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
   notification.style.cssText = `
     position: fixed;
     top: 100px;
@@ -953,17 +856,12 @@ function showMessage(message, type = 'info') {
   }, 3000);
 }
 
-// ====================================
+// ---------------------------
 // 모든 초기화 호출
-// ====================================
+// ---------------------------
 async function initializeApp() {
-  // 학과 매핑 데이터를 먼저 불러옴
-  await loadDepartments();
-
-  // 지도 초기화
+  await loadDepartments();      // ➋ 학과 매핑 데이터를 먼저 불러옴
   initNaverMap();
-
-  // 주요 데이터 로드
   await loadStats();
   await loadNotifications();
   await loadBuildings();
@@ -973,16 +871,8 @@ async function initializeApp() {
   await loadRestaurantInfo();
   await loadCommunityPosts();
   await loadLectureReviews();
-
-  // 유저 상태 및 시간표 업데이트
   checkUserStatus();
   updateTimetable();
-
-  // 설정 초기값 불러오기 + 이벤트 바인딩
-  loadUserSettings();
-  bindSettingsEvents();
-
-  // 일정 시간마다 데이터 갱신 (예: 1분)
   setInterval(() => {
     loadShuttleInfo();
     updateTimetable();
@@ -1010,9 +900,18 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
+// ---------------------------
 // 사이드바 토글
+// ---------------------------
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ---------------------------
+// 다크/라이트 모드 토글
+// ---------------------------
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
 }
 
 // 내 시간표 페이지로 이동
