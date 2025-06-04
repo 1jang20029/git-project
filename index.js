@@ -9,115 +9,6 @@ let isOnline = navigator.onLine;
 
 const departmentMap = {};
 
-// Fallback 데이터
-const fallbackData = {
-  departments: [
-    { id: 1, code: 'CS', name: '컴퓨터공학과' },
-    { id: 2, code: 'EE', name: '전자공학과' },
-    { id: 3, code: 'ME', name: '기계공학과' }
-  ],
-  stats: {
-    totalBuildings: 15,
-    totalStudents: 8500,
-    activeServices: 12,
-    todayEvents: 3,
-    newBuildingsText: '신축 1동',
-    studentGrowthText: '전년 대비 5% 증가',
-    newServicesText: '신규 2개',
-  },
-  buildings: [
-    {
-      id: 'building1',
-      name: '공학관',
-      description: '컴퓨터공학과, 전자공학과 강의실',
-      position: { lat: 37.39661657434427, lng: 126.90772437800818 }
-    },
-    {
-      id: 'building2', 
-      name: '학생회관',
-      description: '학생 편의시설 및 동아리방',
-      position: { lat: 37.39561657434427, lng: 126.90672437800818 }
-    }
-  ],
-  notices: [
-    {
-      id: 1,
-      category: '학사',
-      date: '2024-06-04',
-      title: '2024년 2학기 수강신청 안내',
-      summary: '수강신청 일정 및 유의사항을 안내드립니다.'
-    },
-    {
-      id: 2,
-      category: '행사',
-      date: '2024-06-03',
-      title: '스마트 캠퍼스 시스템 오픈',
-      summary: '새로운 캠퍼스 정보 시스템이 정식 오픈되었습니다.'
-    }
-  ],
-  notifications: [
-    {
-      id: 1,
-      category: '시스템',
-      time: '방금 전',
-      title: '시스템 점검 완료',
-      summary: '정기 시스템 점검이 완료되었습니다.',
-      unread: true
-    }
-  ],
-  shuttleRoutes: [
-    {
-      id: 1,
-      name: 'A노선',
-      desc: '기숙사 ↔ 본관',
-      time: '5분 후 도착',
-      status: 'running'
-    }
-  ],
-  communityPosts: {
-    live: [
-      {
-        category: '자유',
-        time: '5분 전',
-        title: '오늘 점심 메뉴 추천해주세요',
-        summary: '학식 말고 다른 곳에서 먹고 싶어요',
-        likes: 3,
-        comments: 7
-      }
-    ],
-    hot: [
-      {
-        category: '정보',
-        title: '중간고사 일정 정리',
-        summary: '각 과목별 중간고사 일정을 정리했습니다',
-        likes: 25,
-        comments: 12
-      }
-    ]
-  },
-  lectureReviews: {
-    popular: [
-      {
-        category: '전공',
-        rating: 5,
-        title: '데이터구조 - 김교수님',
-        comment: '설명이 정말 이해하기 쉬워요',
-        department: 'CS'
-      }
-    ],
-    recent: [
-      {
-        category: '교양',
-        rating: 4,
-        title: '영어회화 - 이교수님', 
-        comment: '실용적인 영어를 배울 수 있어요',
-        department: 'EE',
-        timeAgo: '1시간 전'
-      }
-    ]
-  }
-};
-
 document.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
@@ -236,19 +127,14 @@ async function loadDepartments() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-    
     const res = await fetch('/api/departments');
     if (!res.ok) throw new Error('API 응답 오류');
-    
     const list = await res.json();
     list.forEach((item) => {
       departmentMap[item.code] = item.name;
     });
   } catch (err) {
-    console.warn('학과 데이터 로드 실패, fallback 데이터 사용:', err);
-    fallbackData.departments.forEach((item) => {
-      departmentMap[item.code] = item.name;
-    });
+    console.error('학과 데이터 로드 실패:', err);
   }
 }
 
@@ -257,15 +143,13 @@ async function loadNotifications() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-
     const res = await fetch('/api/notifications');
     if (!res.ok) throw new Error('API 응답 오류');
-    
     const notifications = await res.json();
     renderNotifications(notifications);
   } catch (err) {
-    console.warn('알림 데이터 로드 실패, fallback 데이터 사용:', err);
-    renderNotifications(fallbackData.notifications);
+    console.error('알림 데이터 로드 실패:', err);
+    renderNotifications([]);
   }
 }
 
@@ -306,15 +190,13 @@ async function loadStats() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-
     const res = await fetch('/api/stats');
     if (!res.ok) throw new Error('API 응답 오류');
-    
     const stats = await res.json();
     renderStats(stats);
   } catch (err) {
-    console.warn('통계 데이터 로드 실패, fallback 데이터 사용:', err);
-    renderStats(fallbackData.stats);
+    console.error('통계 데이터 로드 실패:', err);
+    renderStats({ totalBuildings: 0, totalStudents: 0, activeServices: 0, todayEvents: 0, newBuildingsText: '', studentGrowthText: '', newServicesText: '' });
   }
 }
 
@@ -363,17 +245,15 @@ async function loadBuildings() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-
     const res = await fetch('/api/buildings');
     if (!res.ok) throw new Error('API 응답 오류');
-    
     const buildings = await res.json();
     renderBuildings(buildings);
     addMapMarkers(buildings);
   } catch (err) {
-    console.warn('건물 데이터 로드 실패, fallback 데이터 사용:', err);
-    renderBuildings(fallbackData.buildings);
-    addMapMarkers(fallbackData.buildings);
+    console.error('건물 데이터 로드 실패:', err);
+    renderBuildings([]);
+    addMapMarkers([]);
   }
 }
 
@@ -406,15 +286,13 @@ async function loadNotices() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-
     const res = await fetch('/api/notices');
     if (!res.ok) throw new Error('API 응답 오류');
-    
     const notices = await res.json();
     renderNotices(notices);
   } catch (err) {
-    console.warn('공지사항 데이터 로드 실패, fallback 데이터 사용:', err);
-    renderNotices(fallbackData.notices);
+    console.error('공지사항 데이터 로드 실패:', err);
+    renderNotices([]);
   }
 }
 
@@ -451,21 +329,17 @@ async function loadShuttleInfo() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-
     const res = await fetch('/api/shuttle/routes');
     if (!res.ok) throw new Error('API 응답 오류');
-    
     const routes = await res.json();
     renderShuttleRoutes(routes);
     if (routes.length > 0) {
-      selectShuttleRoute(routes[0].id);
+      selectShuttleRoute(routes[0].id, routes[0]);
     }
   } catch (err) {
-    console.warn('셔틀버스 데이터 로드 실패, fallback 데이터 사용:', err);
-    renderShuttleRoutes(fallbackData.shuttleRoutes);
-    if (fallbackData.shuttleRoutes.length > 0) {
-      selectShuttleRoute(fallbackData.shuttleRoutes[0].id, fallbackData.shuttleRoutes[0]);
-    }
+    console.error('셔틀버스 데이터 로드 실패:', err);
+    renderShuttleRoutes([]);
+    selectShuttleRoute(null, null);
   }
 }
 
@@ -486,7 +360,7 @@ function renderShuttleRoutes(routes) {
   });
 }
 
-async function selectShuttleRoute(routeId, fallbackRoute = null) {
+async function selectShuttleRoute(routeId, route) {
   try {
     document.querySelectorAll('.route-tab').forEach((tab) => {
       tab.classList.remove('active');
@@ -494,28 +368,16 @@ async function selectShuttleRoute(routeId, fallbackRoute = null) {
     
     const tabs = Array.from(document.querySelectorAll('.route-tab'));
     const selectedTab = tabs.find((t) =>
-      t.textContent.includes(routeId.toString())
+      route && t.textContent.includes(route.name)
     );
     if (selectedTab) selectedTab.classList.add('active');
 
-    let route;
-    if (isOnline && !fallbackRoute) {
-      const res = await fetch(`/api/shuttle/routes/${routeId}`);
-      if (!res.ok) throw new Error('API 응답 오류');
-      route = await res.json();
-    } else {
-      route = fallbackRoute || fallbackData.shuttleRoutes.find(r => r.id === routeId);
-    }
+    if (!route) throw new Error('유효한 노선 없음');
 
-    if (route) {
-      renderShuttleStatus(route);
-    }
+    renderShuttleStatus(route);
   } catch (err) {
-    console.warn('셔틀 노선 선택 오류:', err);
-    const fallbackRoute = fallbackData.shuttleRoutes.find(r => r.id === routeId);
-    if (fallbackRoute) {
-      renderShuttleStatus(fallbackRoute);
-    }
+    console.error('셔틀 노선 선택 오류:', err);
+    renderShuttleStatus({ time: '--', desc: '--', status: 'stopped' });
   }
 }
 
@@ -524,12 +386,13 @@ function renderShuttleStatus(route) {
   const descEl = document.getElementById('shuttle-desc');
   const statusEl = document.getElementById('shuttleStatus');
   
-  if (timeEl) timeEl.textContent = route.time;
-  if (descEl) descEl.textContent = route.desc;
+  if (timeEl) timeEl.textContent = route.time || '--';
+  if (descEl) descEl.textContent = route.desc || '--';
   if (statusEl) {
-    statusEl.className = `status-badge status-${route.status}`;
+    const status = route.status === 'running' ? 'running' : 'stopped';
+    statusEl.className = `status-badge status-${status}`;
     statusEl.innerHTML =
-      route.status === 'running'
+      status === 'running'
         ? '<span>🟢</span><span>운행중</span>'
         : '<span>🔴</span><span>운행종료</span>';
   }
@@ -540,7 +403,6 @@ async function loadCommunityPosts() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-
     const [liveRes, hotRes] = await Promise.all([
       fetch('/api/community/live'),
       fetch('/api/community/hot'),
@@ -552,11 +414,8 @@ async function loadCommunityPosts() {
     const hotPosts = await hotRes.json();
     renderCommunityPosts(livePosts, hotPosts);
   } catch (err) {
-    console.warn('커뮤니티 데이터 로드 실패, fallback 데이터 사용:', err);
-    renderCommunityPosts(
-      fallbackData.communityPosts.live,
-      fallbackData.communityPosts.hot
-    );
+    console.error('커뮤니티 데이터 로드 실패:', err);
+    renderCommunityPosts([], []);
   }
 }
 
@@ -580,7 +439,7 @@ function renderCommunityPosts(livePosts, hotPosts) {
       <div class="notice-title">${p.title}</div>
       <div class="notice-summary">${p.summary}</div>
       <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-        👍 ${p.likes} 💬 ${p.comments}
+        👍 ${p.likes || 0} 💬 ${p.comments || 0}
       </div>
     `;
     liveEl.appendChild(item);
@@ -597,7 +456,7 @@ function renderCommunityPosts(livePosts, hotPosts) {
       <div class="notice-title">${p.title}</div>
       <div class="notice-summary">${p.summary}</div>
       <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-        👍 ${p.likes} 💬 ${p.comments}
+        👍 ${p.likes || 0} 💬 ${p.comments || 0}
       </div>
     `;
     hotEl.appendChild(item);
@@ -609,7 +468,6 @@ async function loadLectureReviews() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-
     const [popRes, recRes] = await Promise.all([
       fetch('/api/reviews/popular'),
       fetch('/api/reviews/recent'),
@@ -620,12 +478,9 @@ async function loadLectureReviews() {
     const popular = await popRes.json();
     const recent = await recRes.json();
     renderLectureReviews(popular, recent);
-} catch (err) {
-    console.warn('강의평가 데이터 로드 실패, fallback 데이터 사용:', err);
-    renderLectureReviews(
-      fallbackData.lectureReviews.popular,
-      fallbackData.lectureReviews.recent
-    );
+  } catch (err) {
+    console.error('강의평가 데이터 로드 실패:', err);
+    renderLectureReviews([], []);
   }
 }
 
@@ -802,7 +657,7 @@ function updateTimetable() {
       renderTimetable(courses);
     })
     .catch((err) => {
-      console.warn('시간표 로드 오류:', err);
+      console.error('시간표 로드 오류:', err);
       contentEl.innerHTML = `
         <div class="empty-state">
           <h3>📅 시간표 없음</h3>
@@ -946,7 +801,7 @@ function markAsRead(el, id) {
     
     if (isOnline) {
       fetch(`/api/notifications/${id}/read`, { method: 'POST' })
-        .catch(err => console.warn('알림 읽음 처리 실패:', err));
+        .catch(err => console.error('알림 읽음 처리 실패:', err));
     }
     
     updateNotificationCount();
@@ -960,7 +815,7 @@ function markAllAsRead() {
   
   if (isOnline) {
     fetch('/api/notifications/mark-all-read', { method: 'POST' })
-      .catch(err => console.warn('전체 알림 읽음 처리 실패:', err));
+      .catch(err => console.error('전체 알림 읽음 처리 실패:', err));
   }
   
   unreadNotifications = 0;
@@ -1369,9 +1224,7 @@ function trackUserLocation() {
 function showBuildingOnMap(buildingId) {
   showContent('buildings');
   setTimeout(() => {
-    if (naverMap) {
-      naverMap.refresh();
-    }
+    if (naverMap) naverMap.refresh();
   }, 100);
 }
 
