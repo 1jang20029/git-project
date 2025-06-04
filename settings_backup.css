@@ -1,8 +1,11 @@
-/* settings.css */
 /* =============================================================================
-   설정 뷰 전용 스타일 
+   settings.css
+   ──────────────────────────────────────────────────────────────────────────────
+   설정 뷰 전용 스타일
    -----------------------------------------------------------------------------
-   1) 테마 모드 select, 2) 시간대별 예약 time-picker, 3) 알림 토글
+   1) 테마 모드 select
+   2) 시간대별 예약 time-picker
+   3) 알림 받기 체크박스
    ============================================================================= */
 
 /* 설정 화면 전체 컨테이너 */
@@ -10,9 +13,10 @@
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
+  margin-top: 1rem;
 }
 
-/* 개별 설정 항목: Flex layout */
+/* 개별 설정 항목: 가로 정렬 (label + input) */
 .setting-item {
   display: flex;
   align-items: center;
@@ -38,22 +42,22 @@
   cursor: pointer;
 }
 
-/* 2) 시간대별 예약 time-picker 스타일 */
+/* 2) 자동 모드일 때만 보이는 time-picker 그룹 */
 #themeScheduleTimes {
   display: flex;
   gap: 2rem;
   align-items: center;
-  margin-left: 1.5rem; /* select 아래쪽 들여쓰기 */
+  margin-left: 1.5rem; /* select 영역 아래에 살짝 들여쓰기 */
 }
 
-/* 각 시간 입력 그룹 (라벨 + 시간 입력) */
+/* time-picker 각 그룹: 라벨 + input */
 .schedule-group {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-/* time-picker input 형식 */
+/* time-picker input 스타일 */
 #themeScheduleTimes input[type="time"] {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
@@ -64,20 +68,20 @@
   cursor: pointer;
 }
 
-/* 3) 알림 토글 체크박스 스타일 */
+/* 3) 알림 받기 체크박스 스타일 */
 .setting-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
 
-/* 체크박스 체크 상태 강조 색상 */
+/* 체크박스가 체크된 상태 강조 색상 */
 .setting-item input[type="checkbox"]:checked {
   accent-color: #3b82f6;
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* 반응형(좁은 화면): time-picker 영역 세로 정렬 */
+/* 반응형: 화면 너비 768px 이하에서는 time-picker 영역을 세로 정렬 */
 @media (max-width: 768px) {
   .settings-container {
     padding: 1rem;
