@@ -1,68 +1,111 @@
 /* =============================================================================
    settings.css
    ──────────────────────────────────────────────────────────────────────────────
-   설정 뷰 전용 스타일
+   “설정” 뷰 전용 스타일
    ============================================================================= */
 
-/* 설정 화면 전체 컨테이너 */
-.settings-container {
+/* 전체 설정 화면 컨테이너 */
+#settings-container {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
 }
 
-/* 개별 설정 항목 */
-.setting-item {
+/* 다크/라이트 모드 토글 항목 */
+#setting-item-theme {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
 }
-
-/* 라벨 텍스트 스타일 */
-.setting-item label {
+#setting-item-theme label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
 }
-
-/* 토글 체크박스 기본 스타일 */
-.setting-item input[type="checkbox"] {
+#setting-item-theme input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
-
-/* 토글 상태에 따른 강조 */
-.setting-item input[type="checkbox"]:checked {
+#setting-item-theme input[type="checkbox"]:checked {
   accent-color: #3b82f6;
 }
 
-/* 드롭다운(SELECT) 기본 스타일 */
-.setting-item select {
+/* 푸시 알림 받기 토글 항목 */
+#setting-item-notification {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+#setting-item-notification label {
+  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 600;
+}
+#setting-item-notification input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+#setting-item-notification input[type="checkbox"]:checked {
+  accent-color: #3b82f6;
+}
+
+/* 글꼴 크기 선택 셀렉트 박스 항목 */
+#setting-item-font-size {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+#setting-item-font-size label {
+  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 600;
+}
+#fontSizeSelect {
   background: rgba(30, 41, 59, 0.8);
   color: #f1f5f9;
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 4px;
-  padding: 0.3rem;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-/* 드롭다운 포커스 시 스타일 변경 */
-.setting-item select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: rgba(30, 41, 59, 0.95);
+/* 언어 선택 셀렉트 박스 항목 */
+#setting-item-language {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+#setting-item-language label {
+  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 600;
+}
+#languageSelect {
+  background: rgba(30, 41, 59, 0.8);
+  color: #f1f5f9;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 /* 반응형: 좁은 화면에서 여백 축소 */
 @media (max-width: 768px) {
-  .settings-container {
+  #settings-container {
     padding: 1rem;
   }
-  .setting-item {
+  #setting-item-theme,
+  #setting-item-notification,
+  #setting-item-font-size,
+  #setting-item-language {
     margin-bottom: 1rem;
   }
 }

@@ -15,19 +15,6 @@ body {
   background: #0a0e27;
   color: #ffffff;
   overflow-x: hidden;
-  /* 기본 글꼴 크기는 보통(medium) */
-  font-size: 16px;
-}
-
-/* 글꼴 크기 조절용 클래스들 */
-body.font-small {
-  font-size: 14px;
-}
-body.font-medium {
-  font-size: 16px;
-}
-body.font-large {
-  font-size: 18px;
 }
 
 /* ─────────── 상단 네비게이션 ─────────── */
@@ -129,7 +116,6 @@ body.font-large {
   height: 8px;
   background: #ef4444;
   border-radius: 50%;
-  display: none; /* 알림이 있을 때만 보여줌 */
 }
 
 /* 알림 드롭다운 */
@@ -321,7 +307,8 @@ body.font-large {
 
 #dropdown-item-profile,
 #dropdown-item-settings,
-#dropdown-item-logout {
+#dropdown-item-logout,
+#dropdown-item-theme {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -337,7 +324,8 @@ body.font-large {
 
 #dropdown-item-profile:hover,
 #dropdown-item-settings:hover,
-#dropdown-item-logout:hover {
+#dropdown-item-logout:hover,
+#dropdown-item-theme:hover {
   background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
 }
@@ -360,12 +348,14 @@ body.font-large {
   }
 }
 
+/* ─────────── 메인 컨테이너 ─────────── */
 #main-container {
   margin-top: 80px;
   display: flex;
   min-height: calc(100vh - 80px);
 }
 
+/* ─────────── 사이드바 (수정 없이 그대로) ─────────── */
 .sidebar {
   width: 280px;
   background: rgba(15, 23, 42, 0.95);
@@ -1005,58 +995,38 @@ body.font-large {
   font-size: 1rem;
 }
 
-/* ─────────── Settings 화면에서 사용된 스타일 ─────────── */
-/* 전체 설정 섹션 컨테이너 */
-.settings-container {
+/* ─────────── Settings 화면 스타일 ─────────── */
+#settings-container {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
 }
 
-/* 개별 설정 항목 */
-.setting-item {
+#setting-item-theme,
+#setting-item-notification {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
 }
 
-/* 설정 라벨 스타일 */
-.setting-item label {
+#setting-item-theme label,
+#setting-item-notification label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
 }
 
-/* 토글 체크박스 기본 스타일 */
-.setting-item input[type="checkbox"] {
+#setting-item-theme input[type="checkbox"],
+#setting-item-notification input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
 
-/* 토글 체크박스 체크 상태 강조 */
-.setting-item input[type="checkbox"]:checked {
+#setting-item-theme input[type="checkbox"]:checked,
+#setting-item-notification input[type="checkbox"]:checked {
   accent-color: #3b82f6;
-}
-
-/* 드롭다운(SELECT) 스타일 */
-.setting-item select {
-  background: rgba(30, 41, 59, 0.8);
-  color: #f1f5f9;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 4px;
-  padding: 0.3rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* SELECT 포커스 시 스타일 변경 */
-.setting-item select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: rgba(30, 41, 59, 0.95);
 }
 
 /* ─────────── 반응형 디자인 ─────────── */
@@ -1100,10 +1070,11 @@ body.font-large {
   #dashboardGrid-community {
     grid-template-columns: 1fr;
   }
-  .settings-container {
+  #settings-container {
     padding: 1rem;
   }
-  .setting-item {
+  #setting-item-theme,
+  #setting-item-notification {
     margin-bottom: 1rem;
   }
 }
@@ -1301,4 +1272,21 @@ body.light-mode .notice-category {
 
 body.light-mode .notice-date {
   color: #64748b;
+}
+
+/* =============================================================================
+   글꼴 크기(font-size) 조절용 클래스
+   ============================================================================= */
+
+/* HTML 루트 요소에 클래스 추가/제거 방식으로 글꼴 크기 변경 */
+html.font-small {
+  font-size: 14px;
+}
+
+html.font-medium {
+  font-size: 16px;
+}
+
+html.font-large {
+  font-size: 18px;
 }
