@@ -212,6 +212,21 @@
             <span>건물 안내</span>
           </div>
         </div>
+        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
+          <div id="card-header-buildings-map">
+            <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
+            <span id="card-icon-buildings-map">🗺️</span>
+          </div>
+          <div id="buildings-map-container">
+            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
+            <div id="buildings-map-overlay">
+              <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+              <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
+              <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
+              <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
+            </div>
+          </div>
+        </div>
         <div id="buildingGrid"></div>
       </div>
 
@@ -293,6 +308,51 @@
           </div>
         </div>
         <div id="fullNoticeList"></div>
+      </div>
+
+      <div id="timetableContentPane" style="display: none;">
+        <div id="content-header-timetable-pane">
+          <h1 id="title-timetable-pane">내 시간표</h1>
+          <div id="breadcrumb-timetable-pane">
+            <span>홈</span>
+            <span>›</span>
+            <span>내 시간표</span>
+          </div>
+        </div>
+        <div id="timetable-sample-text">
+          여기에 사용자의 개인 시간표 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <div id="shuttleContentPane" style="display: none;">
+        <div id="content-header-shuttle-pane">
+          <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
+          <div id="breadcrumb-shuttle-pane">
+            <span>홈</span>
+            <span>›</span>
+            <span>셔틀버스</span>
+          </div>
+        </div>
+        <div id="shuttle-sample-text">
+          여기에 셔틀버스 노선 및 실시간 운행 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
+
+      <div id="calendarContentPane" style="display: none;">
+        <div id="content-header-calendar-pane">
+          <h1 id="title-calendar-pane">학사일정</h1>
+          <div id="breadcrumb-calendar-pane">
+            <span>홈</span>
+            <span>›</span>
+            <span>학사일정</span>
+          </div>
+        </div>
+        <div id="calendar-sample-text">
+          여기에 학사일정 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
       </div>
 
       <div id="profileContentPane" style="display: none;">
