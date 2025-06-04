@@ -2,6 +2,7 @@ let naverMap;
 let mapMarkers = [];
 let infoWindows = [];
 let userMarker = null;
+let userLocation = null;
 let currentContent = 'home';
 let unreadNotifications = 0;
 let isOnline = navigator.onLine;
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   initializeApp();
+  initializeSettings();
   setupNetworkListeners();
 
   document.addEventListener('keydown', (event) => {
@@ -53,6 +55,71 @@ function setupNetworkListeners() {
     isOnline = false;
     showMessage('인터넷 연결이 끊어졌습니다. 일부 기능이 제한될 수 있습니다', 'error');
   });
+}
+
+function initializeSettings() {
+  const themeToggle = document.getElementById('themeToggle');
+  const notificationToggle = document.getElementById('notificationToggle');
+
+  if (themeToggle) {
+    themeToggle.addEventListener('change', handleThemeToggle);
+  }
+
+  if (notificationToggle) {
+    notificationToggle.addEventListener('change', handleNotificationToggle);
+  }
+
+  loadUserSettings();
+}
+
+function loadUserSettings() {
+  const savedTheme = localStorage.getItem('lightMode');
+  const savedNotification = localStorage.getItem('enableNotification');
+
+  const themeToggle = document.getElementById('themeToggle');
+  const notificationToggle = document.getElementById('notificationToggle');
+
+  if (themeToggle) {
+    themeToggle.checked = savedTheme === 'true';
+    applyTheme(savedTheme === 'true');
+  }
+
+  if (notificationToggle) {
+    notificationToggle.checked = savedNotification === 'true';
+  }
+}
+
+function applyTheme(isLight) {
+  if (isLight) {
+    document.body.classList.add('light-mode');
+  } else {
+    document.body.classList.remove('light-mode');
+  }
+}
+
+function handleThemeToggle() {
+  const themeToggle = document.getElementById('themeToggle');
+  const isLight = themeToggle.checked;
+  
+  applyTheme(isLight);
+  localStorage.setItem('lightMode', isLight);
+  
+  showMessage(
+    isLight ? '라이트 모드로 변경되었습니다' : '다크 모드로 변경되었습니다', 
+    'success'
+  );
+}
+
+function handleNotificationToggle() {
+  const notificationToggle = document.getElementById('notificationToggle');
+  const enabled = notificationToggle.checked;
+  localStorage.setItem('enableNotification', enabled);
+  
+  if (enabled) {
+    showMessage('알림이 활성화되었습니다', 'success');
+  } else {
+    showMessage('알림이 비활성화되었습니다', 'info');
+  }
 }
 
 async function loadDepartments() {
@@ -827,7 +894,8 @@ function showContent(type) {
   const panes = [
     'homeContent', 'buildingsContent', 'communityContent',
     'lecture-reviewContent', 'noticesContent', 'timetableContentPane',
-    'shuttleContentPane', 'calendarContentPane', 'profileContentPane'
+    'shuttleContentPane', 'calendarContentPane', 'profileContentPane',
+    'settingsContent'
   ];
   
   panes.forEach((id) => {
@@ -848,6 +916,7 @@ function showContent(type) {
     case 'shuttle':        targetId = 'shuttleContentPane'; break;
     case 'calendar':       targetId = 'calendarContentPane'; break;
     case 'profile':        targetId = 'profileContentPane'; break;
+    case 'settings':       targetId = 'settingsContent'; break;
     default:               targetId = 'homeContent';
   }
   
@@ -1055,6 +1124,16 @@ window.addEventListener('pageshow', (event) => {
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) sidebar.classList.toggle('open');
+}
+
+function toggleTheme() {
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.checked = !themeToggle.checked;
+    handleThemeToggle();
+  } else {
+    document.body.classList.toggle('light-mode');
+  }
 }
 
 function navigateToTimetable() {

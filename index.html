@@ -66,7 +66,7 @@
               <span>👤</span>
               <span>프로필</span>
             </button>
-            <button id="dropdown-item-settings" onclick="window.location.href='settings.html'">
+            <button id="dropdown-item-settings" onclick="showContent('settings')">
               <span>⚙️</span>
               <span>설정</span>
             </button>
@@ -134,7 +134,7 @@
             <span class="nav-icon" title="프로필">👤</span>
             <span>프로필</span>
           </li>
-          <li class="nav-item" onclick="window.location.href='settings.html'" id="nav-settings">
+          <li class="nav-item" onclick="showContent('settings')" id="nav-settings">
             <span class="nav-icon" title="설정">⚙️</span>
             <span>설정</span>
           </li>
@@ -178,7 +178,8 @@
               <h3 id="card-title-timetable">오늘의 시간표</h3>
               <span id="card-icon-timetable">📅</span>
             </div>
-            <div id="timetableContent"></div>
+            <div id="timetableContent">
+            </div>
           </div>
           <div id="shuttle-card">
             <div id="card-header-shuttle">
@@ -368,7 +369,27 @@
           (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
         </div>
       </div>
-      <!-- settingsContent 블록은 index.html에서 제거되었습니다 -->
+
+      <div id="settingsContent" style="display: none;">
+        <div id="content-header-settings">
+          <h1 id="title-settings">설정</h1>
+          <div id="breadcrumb-settings">
+            <span>홈</span>
+            <span>›</span>
+            <span>설정</span>
+          </div>
+        </div>
+        <div id="settings-container">
+          <div class="setting-item">
+            <label for="themeToggle">다크/라이트 모드</label>
+            <input type="checkbox" id="themeToggle" />
+          </div>
+          <div class="setting-item">
+            <label for="notificationToggle">알림 받기</label>
+            <input type="checkbox" id="notificationToggle" />
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
