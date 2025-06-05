@@ -100,6 +100,11 @@ body {
   display: inline-block;
   width: 24px;
   text-align: center;
+  /* Gradient 효과를 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 /* =========================
@@ -144,6 +149,11 @@ body {
   font-size: 1.1rem;
   width: 20px;
   text-align: center;
+  /* Gradient 효과 제거 */
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 /* =========================
@@ -708,10 +718,11 @@ body {
 #card-icon-write-review,
 #card-icon-buildings-map {
   font-size: 1.5rem;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Gradient 효과 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 /* 지도 카드 */
@@ -1052,13 +1063,6 @@ body {
 .nav-item.active .nav-icon,
 .nav-item.active span {
   color: #3b82f6;
-}
-
-.nav-item.active .nav-icon {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* 애니메이션 키프레임 */
