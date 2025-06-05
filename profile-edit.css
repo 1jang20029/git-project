@@ -1,394 +1,382 @@
-/* =============================================================================
-   profile-edit.css
-   "개인정보 수정" 페이지 전용 스타일
-   ============================================================================= */
+/* ==================================================
+   공통 리셋
+   ================================================== */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
 body {
-  background-color: #f5f5f5;
-  color: #333;
+    background-color: #f5f5f5;
+    color: #333;
 }
 
 .container {
-  max-width: 768px;
-  margin: 0 auto;
-  background-color: white;
-  min-height: 100vh;
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
 }
 
+/* 헤더 부분 */
 header {
-  background-color: #c62917;
-  color: white;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .back-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: white;
-  text-decoration: none;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .page-title {
-  font-size: 18px;
-  font-weight: bold;
+    font-size: 18px;
+    font-weight: bold;
 }
 
-.content-section {
-  padding: 16px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 12px;
-  color: #333;
-}
-
-.profile-form {
-  display: flex;
-  flex-direction: column;
-}
-
-/* 수정된 프로필 이미지 섹션 스타일 */
+/* 프로필 이미지 섹션 */
 .profile-image-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px 16px;
-  position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    position: relative;
 }
 
-/* 수정된 프로필 이미지 스타일 */
 .profile-image-container {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  margin-bottom: 16px;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 16px;
 }
 
 .profile-image {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 40px;
-  overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    overflow: hidden;
 }
 
 /* 헤더에 있는 프로필 이미지 스타일 */
 .header-profile {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  margin-left: auto; /* 우측으로 정렬 */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-left: auto; /* 우측으로 정렬 */
 }
 
-/* 수정된 편집 버튼 스타일 - 프로필과 겹치도록 */
+/* 편집 버튼 */
 .edit-image-button {
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32px;
-  height: 32px;
-  background-color: #c62917;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 10;
-  font-size: 18px;
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    background-color: #c62917;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 18px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+/* 폼 그룹 */
 .form-group {
-  margin-bottom: 14px;
-  position: relative;
+    margin-bottom: 14px;
+    position: relative;
 }
 
 .form-label {
-  display: block;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 6px;
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 6px;
 }
 
 .form-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 15px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
 }
 
 .form-select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 15px;
-  background-color: white;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+    background-color: white;
 }
 
 .form-readonly {
-  background-color: #f9f9f9;
-  color: #777;
+    background-color: #f9f9f9;
+    color: #777;
 }
 
+/* 자동완성 드롭다운 */
 .autocomplete-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1000;
-  display: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .autocomplete-category {
-  background-color: #f5f5f5;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: bold;
-  color: #666;
-  border-bottom: 1px solid #eee;
+    background-color: #f5f5f5;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 1px solid #eee;
 }
 
 .autocomplete-item {
-  padding: 12px;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 15px;
-  padding-left: 16px;
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 15px;
+    padding-left: 16px;
 }
 
 .autocomplete-item:hover {
-  background-color: #f5f5f5;
+    background-color: #f5f5f5;
 }
 
 .autocomplete-item:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 .autocomplete-item.highlighted {
-  background-color: #e8f4fd;
+    background-color: #e8f4fd;
 }
 
+/* 구분선 */
 .divider {
-  height: 1px;
-  background-color: #eee;
-  margin: 20px 0;
+    height: 1px;
+    background-color: #eee;
+    margin: 20px 0;
 }
 
+/* 버튼 그룹 */
 .button-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .save-button {
-  flex: 1;
-  padding: 14px;
-  background-color: #c62917;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
+    flex: 1;
+    padding: 14px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .cancel-button {
-  flex: 1;
-  padding: 14px;
-  background-color: #f0f0f0;
-  color: #333;
-  border: none;
-  border-radius: 4px;
-  font-size: 15px;
-  cursor: pointer;
+    flex: 1;
+    padding: 14px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
 }
 
+/* 섹션 구분선 */
 .section-divider {
-  padding: 8px 16px;
-  background-color: #f9f9f9;
-  font-weight: bold;
-  color: #555;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+    padding: 8px 16px;
+    background-color: #f9f9f9;
+    font-weight: bold;
+    color: #555;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
 }
 
+/* 에러 메시지 */
 .error-message {
-  color: #c62917;
-  font-size: 13px;
-  margin-top: 4px;
-  display: none;
+    color: #c62917;
+    font-size: 13px;
+    margin-top: 4px;
+    display: none;
 }
 
 .has-error .form-input {
-  border-color: #c62917;
+    border-color: #c62917;
 }
 
 .has-error .error-message {
-  display: block;
+    display: block;
 }
 
+/* 안내 문구 */
 .notice-text {
-  font-size: 13px;
-  color: #666;
-  margin-top: 6px;
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
 }
 
-/* =============================================================================
-   모달 스타일 (프로필 이미지 선택용)
-   ============================================================================= */
+/* 모달 스타일 */
 .modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal-content {
-  background-color: white;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 450px;
-  max-height: 90vh;
-  overflow-y: auto;
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-header {
-  padding: 16px;
-  border-bottom: 1px solid #eee;
-  text-align: center;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
 }
 
 .modal-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
 }
 
 .modal-section {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
 }
 
 .modal-section-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0 0 16px 0;
-  text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 16px 0;
+    text-align: center;
 }
 
 .upload-button {
-  display: block;
-  width: 100%;
-  padding: 14px 0;
-  background-color: #c62917;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  text-align: center;
-  margin-bottom: 16px;
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 16px;
 }
 
 .preview-container {
-  margin-top: 16px;
-  display: none;
-  text-align: center;
+    margin-top: 16px;
+    display: none;
+    text-align: center;
 }
 
 .preview-image {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin: 0 auto 16px;
-  display: block;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 16px;
+    display: block;
 }
 
 .apply-button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #c62917;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .image-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
 }
 
 .image-option {
-  aspect-ratio: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  cursor: pointer;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .image-option:hover {
-  border-color: #c62917;
-  background-color: #fff8f8;
+    border-color: #c62917;
+    background-color: #fff8f8;
 }
 
 .emoji-image {
-  font-size: 36px;
+    font-size: 36px;
 }
 
 .modal-footer {
-  padding: 16px;
-  text-align: center;
-  background-color: #f5f5f5;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  cursor: pointer;
-  font-weight: bold;
+    padding: 16px;
+    text-align: center;
+    background-color: #f5f5f5;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
 }

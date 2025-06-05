@@ -1,3 +1,5 @@
+/* index.css */
+
 /* ==================================================
    공통 리셋
    ================================================== */
@@ -100,11 +102,6 @@ body {
   display: inline-block;
   width: 24px;
   text-align: center;
-  /* Gradient 효과를 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
 }
 
 /* =========================
@@ -149,11 +146,6 @@ body {
   font-size: 1.1rem;
   width: 20px;
   text-align: center;
-  /* Gradient 효과 제거 */
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
 }
 
 /* =========================
@@ -718,11 +710,10 @@ body {
 #card-icon-write-review,
 #card-icon-buildings-map {
   font-size: 1.5rem;
-  /* Gradient 효과 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* 지도 카드 */
@@ -1065,6 +1056,13 @@ body {
   color: #3b82f6;
 }
 
+.nav-item.active .nav-icon {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* 애니메이션 키프레임 */
 @keyframes fadeInDown {
   from {
@@ -1293,37 +1291,19 @@ body.light-mode .setting-item label {
   color: #1f2937;
 }
 
-body.light-mode #map-zoom-in,
-body.light-mode #map-zoom-out,
-body.light-mode #map-reset,
-body.light-mode #map-track-user,
-body.light-mode #buildings-zoom-in,
-body.light-mode #buildings-zoom-out,
-body.light-mode #buildings-reset,
-body.light-mode #buildings-track-user {
-  background: rgba(255, 255, 255, 0.9);
-  color: #374151;
+body.light-mode .setting-item input[type="time"],
+body.light-mode .setting-item input[type="number"],
+body.light-mode .setting-item input[type="text"] {
+  background: rgba(240, 240, 240, 0.8);
+  color: #1f2937;
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-body.light-mode .btn-primary {
-  background: #3b82f6;
-  color: #ffffff;
-}
-
-body.light-mode .btn-primary:hover {
-  background: #2563eb;
-}
-
-body.light-mode .btn-outline {
-  color: #6b7280;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-body.light-mode .btn-outline:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  color: #3b82f6;
+body.light-mode .setting-item input[type="time"]:focus,
+body.light-mode .setting-item input[type="number"]:focus,
+body.light-mode .setting-item input[type="text"]:focus {
+  background: rgba(240, 240, 240, 1);
+  color: #1f2937;
 }
 
 body.light-mode .route-tab {
