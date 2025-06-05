@@ -103,7 +103,7 @@ function showContent(type) {
     'timetableContentPane',
     'shuttleContentPane',
     'calendarContentPane',
-    // 'profileContentPane',  // 이제 SPA 내부에 프로필 페이지가 없으므로 주석 처리
+    'profileContentPane',
     'settingsContent'
   ];
 
@@ -124,6 +124,7 @@ function showContent(type) {
     case 'timetable':      targetId = 'timetableContentPane'; break;
     case 'shuttle':        targetId = 'shuttleContentPane'; break;
     case 'calendar':       targetId = 'calendarContentPane'; break;
+    case 'profile':        targetId = 'profileContentPane'; break;
     case 'settings':       targetId = 'settingsContent'; break;
     default:               targetId = 'homeContent';
   }
@@ -1013,6 +1014,17 @@ function closeAllDropdowns() {
   closeUserDropdown();
 }
 
+// ─────────── showProfile: 프로필 화면으로 이동 ───────────
+function showProfile() {
+  const currentUser = localStorage.getItem('currentLoggedInUser');
+  if (currentUser) {
+    showContent('profile');
+  } else {
+    showMessage('로그인이 필요한 서비스입니다.', 'error');
+  }
+  closeUserDropdown();
+}
+
 // ─────────── handleLogout: 로그아웃 처리 ───────────
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -1278,17 +1290,22 @@ function applyUserShortcuts() {
             showContent('shuttle');
             break;
           case '프로필':
-            navigateToProfile();
+            showContent('profile');
             break;
           // 필요에 따라 추가로 커스터마이즈:
           default:
             // 예: entry.name에 “이동” 키워드가 들어있으면
-            const lower = entry.name.replace(/\s*/g, '').toLowerCase();
-            if (lower.includes('공지사항')) showContent('notices');
-            if (lower.includes('건물')) showContent('buildings');
-            if (lower.includes('커뮤니티')) showContent('community');
-            if (lower.includes('강의평가')) showContent('lecture-review');
-            if (lower.includes('학사일정')) showContent('calendar');
+            if (entry.name.includes('이동')) {
+              // entry.name 예시: “공지사항 이동” → showContent('notices')
+              // 라벨 규칙에 맞춰 처리
+              const lower = entry.name.replace(/\s*/g, '').toLowerCase();
+              if (lower.includes('공지사항')) showContent('notices');
+              if (lower.includes('건물')) showContent('buildings');
+              if (lower.includes('커뮤니티')) showContent('community');
+              if (lower.includes('강의평가')) showContent('lecture-review');
+              if (lower.includes('학사일정')) showContent('calendar');
+              // 추가로 필요한 매핑을 여기에 작성
+            }
             break;
         }
       }
@@ -1357,12 +1374,6 @@ function navigateToShuttle() {
 // ─────────── navigateToCalendar: 학사일정 페이지로 이동 ───────────
 function navigateToCalendar() {
   window.location.href = 'academic-calendar.html';
-}
-
-// ─────────── navigateToProfile: 프로필 페이지로 이동 ───────────
-function navigateToProfile() {
-  // 파일명을 profile.html 로 변경했으므로, 해당 경로로 이동합니다.
-  window.location.href = 'profile.html';
 }
 
 // ─────────── zoomIn: 지도 확대 ───────────
