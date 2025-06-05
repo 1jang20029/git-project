@@ -18,13 +18,41 @@
   <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
+  <!-- ==================================================
+       상단 네비게이션 바: 브랜드 + 메인메뉴 + 검색/알림/유저
+       ================================================== -->
   <nav id="top-nav">
+    <!-- 로고 + 텍스트 -->
     <div id="nav-brand">
-      <button id="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
       <span>🎓</span>
       <span>연성대학교 스마트 캠퍼스</span>
     </div>
 
+    <!-- 메인 메뉴: 대시보드, 건물&시설, 커뮤니티, 강의평가, 공지사항 -->
+    <ul id="nav-menu">
+      <li class="nav-item active" id="nav-home" onclick="showContent('home')">
+        <span class="nav-icon">🏠</span>
+        <span>대시보드</span>
+      </li>
+      <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
+        <span class="nav-icon">🏢</span>
+        <span>건물 &amp; 시설</span>
+      </li>
+      <li class="nav-item" id="nav-community" onclick="showContent('community')">
+        <span class="nav-icon">💬</span>
+        <span>커뮤니티</span>
+      </li>
+      <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
+        <span class="nav-icon">⭐</span>
+        <span>강의평가</span>
+      </li>
+      <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
+        <span class="nav-icon">📢</span>
+        <span>공지사항</span>
+      </li>
+    </ul>
+
+    <!-- 검색창 / 알림 버튼 / 사용자 메뉴 -->
     <div id="nav-controls">
       <div id="search-bar">
         <span id="search-icon">🔍</span>
@@ -36,6 +64,7 @@
       </div>
 
       <div id="user-menu">
+        <!-- 알림 버튼 -->
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
           <div id="notification-dot"></div>
@@ -53,6 +82,7 @@
           </div>
         </div>
 
+        <!-- 사용자 프로필 -->
         <div id="user-profile" onclick="toggleUserMenu()">
           <div id="user-avatar">👤</div>
           <div id="user-info">
@@ -83,71 +113,10 @@
     </div>
   </nav>
 
+  <!-- ==================================================
+       메인 컨테이너: 사이드바가 사라지고 콘텐츠만 남음
+       ================================================== -->
   <div id="main-container">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-title">메인 메뉴</div>
-        <ul class="nav-list">
-          <li class="nav-item" onclick="showContent('home')" id="nav-home">
-            <span class="nav-icon" title="대시보드">🏠</span>
-            <span>대시보드</span>
-          </li>
-          <li class="nav-item" onclick="showContent('buildings')" id="nav-buildings">
-            <span class="nav-icon" title="건물 & 시설">🏢</span>
-            <span>건물 &amp; 시설</span>
-          </li>
-          <li class="nav-item" onclick="showContent('community')" id="nav-community">
-            <span class="nav-icon" title="커뮤니티">💬</span>
-            <span>커뮤니티</span>
-          </li>
-          <li class="nav-item" onclick="showContent('lecture-review')" id="nav-lecture-review">
-            <span class="nav-icon" title="강의평가">⭐</span>
-            <span>강의평가</span>
-          </li>
-          <li class="nav-item" onclick="showContent('notices')" id="nav-notices">
-            <span class="nav-icon" title="공지사항">📢</span>
-            <span>공지사항</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">빠른 접근</div>
-        <ul class="nav-list quick-access">
-          <li class="nav-item" id="nav-timetable" onclick="navigateToTimetable()">
-            <span class="nav-icon" title="내 시간표">📅</span>
-            <span>내 시간표</span>
-          </li>
-          <li class="nav-item" id="nav-shuttle" onclick="navigateToShuttle()">
-            <span class="nav-icon" title="셔틀버스">🚌</span>
-            <span>셔틀버스</span>
-          </li>
-          <li class="nav-item" id="nav-calendar" onclick="navigateToCalendar()">
-            <span class="nav-icon" title="학사일정">🗓️</span>
-            <span>학사일정</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">계정</div>
-        <ul class="nav-list">
-          <li class="nav-item" onclick="showContent('profile')" id="nav-profile">
-            <span class="nav-icon" title="프로필">👤</span>
-            <span>프로필</span>
-          </li>
-          <li class="nav-item" onclick="showContent('settings')" id="nav-settings">
-            <span class="nav-icon" title="설정">⚙️</span>
-            <span>설정</span>
-          </li>
-          <li class="nav-item" onclick="handleLogout()" id="nav-logout">
-            <span class="nav-icon" title="로그아웃">🚪</span>
-            <span>로그아웃</span>
-          </li>
-        </ul>
-      </div>
-    </aside>
-
     <main id="content-area">
       <!-- 홈 (대시보드) 화면 -->
       <div id="homeContent">
@@ -380,7 +349,7 @@
         </div>
       </div>
 
-      <!-- **설정 화면은 처음엔 빈 컨테이너, 동적으로 로드** -->
+      <!-- 설정 화면: 처음엔 빈 컨테이너, 동적으로 로드 -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>

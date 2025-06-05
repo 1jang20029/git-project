@@ -165,8 +165,8 @@ function showContent(type) {
     target.classList.add('fade-in');
   }
 
-  // 사이드바 메뉴 활성화 표시
-  document.querySelectorAll('.nav-item').forEach((item) => {
+  // 상단메뉴 활성화 표시
+  document.querySelectorAll('#nav-menu .nav-item').forEach((item) => {
     item.classList.remove('active');
   });
   const navItem = document.getElementById('nav-' + type);
@@ -855,8 +855,7 @@ function renderTimetable(courses) {
 
   courses.forEach((course) => {
     course.times.forEach((time) => {
-      // time.day가 0(일요일인 경우)일 때 특수 처리: 한국 기준으로 “0”을 “6(토요일)”로 바꾼다거나
-      // UI/UX에 맞게 조정할 수 있음
+      // time.day가 0(일요일인 경우)일 때 특수 처리: 한국 기준으로 “0”을 “6(토요일)”로 변경 가능
       if (
         time.day === currentDay ||
         (currentDay === 0 && time.day === 6)
@@ -1244,12 +1243,7 @@ function applyKeyboardShortcuts() {
     resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
     const key = e.key.toUpperCase();
 
-    // 사이드바 토글
-    if (key === (shortcuts.toggleSidebar || '').toUpperCase()) {
-      e.preventDefault();
-      toggleSidebar();
-      return;
-    }
+    // 기존 사이드바 토글이 사라졌으므로 아무 동작 없음
     // 알림 열기
     if (key === (shortcuts.openNotifications || '').toUpperCase()) {
       e.preventDefault();
@@ -1302,17 +1296,14 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('내 시간표') || label.includes('시간표')) {
-      // 내부 페이지: SPA 방식으로 showContent('timetable')
       showContent('timetable');
       return;
     }
     if (label.includes('셔틀버스') || label.includes('셔틀')) {
-      // 내부 페이지: SPA 방식으로 showContent('shuttle')
       showContent('shuttle');
       return;
     }
     if (label.includes('학사일정') || label.includes('학사')) {
-      // 외부 페이지: 학사일정은 별도 HTML 파일로 이동
       navigateToCalendar(); // (‘academic-calendar.html’로 이동)
       return;
     }
@@ -1397,12 +1388,6 @@ window.addEventListener('pageshow', (event) => {
     document.body.classList.remove('light-mode');
   }
 });
-
-// ─────────── toggleSidebar: 모바일 사이드바 열기/닫기 ───────────
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  if (sidebar) sidebar.classList.toggle('open');
-}
 
 // ─────────── navigateToTimetable: 내 시간표 페이지로 이동 ───────────
 function navigateToTimetable() {
