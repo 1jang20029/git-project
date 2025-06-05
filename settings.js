@@ -8,7 +8,6 @@
 const LS_KEY_MODE        = 'lightMode';
 const LS_KEY_NOTIFY      = 'enableNotification';
 const LS_KEY_CATNOTIFY   = 'notificationCategories';
-const LS_KEY_DND         = 'doNotDisturb';
 const LS_KEY_AUTOLOGOUT  = 'autoLogout';
 const LS_KEY_SHORTCUTS   = 'keyboardShortcuts';
 
@@ -44,28 +43,20 @@ function loadSavedSettings() {
   const savedNotify    = localStorage.getItem(LS_KEY_NOTIFY);
   const isNotifyEnabled = savedNotify === 'true';
 
-  // 3) 카테고리별 알림 설정
+  // 3) 카테고리별 알림 설정 (강의평가 항목은 삭제되었으므로 3가지 카테고리만 다룸)
   const savedCatSettings = JSON.parse(localStorage.getItem(LS_KEY_CATNOTIFY)) || {
     '공지사항': true,
     '커뮤니티': true,
-    '셔틀버스': true,
-    '강의평가': true
+    '셔틀버스': true
   };
 
-  // 4) DND 설정
-  const savedDND = JSON.parse(localStorage.getItem(LS_KEY_DND)) || {
-    enabled: false,
-    startHour: 21, startMinute: 0,
-    endHour: 7,   endMinute: 0
-  };
-
-  // 5) 자동 로그아웃 설정
+  // 4) 자동 로그아웃 설정
   const savedAutoLogout = JSON.parse(localStorage.getItem(LS_KEY_AUTOLOGOUT)) || {
     enabled: false,
     timeoutMinutes: 15
   };
 
-  // 6) 단축키 설정
+  // 5) 단축키 설정
   let savedShortcuts = JSON.parse(localStorage.getItem(LS_KEY_SHORTCUTS));
   if (!Array.isArray(savedShortcuts) || savedShortcuts.length === 0) {
     savedShortcuts = JSON.parse(JSON.stringify(DEFAULT_SHORTCUTS));
@@ -77,7 +68,6 @@ function loadSavedSettings() {
     mode: isLightMode,
     notify: isNotifyEnabled,
     categories: savedCatSettings,
-    dnd: savedDND,
     autoLogout: savedAutoLogout,
     shortcuts: savedShortcuts
   };
@@ -99,16 +89,13 @@ function initSettingsPage() {
   // 3) 카테고리별 알림 설정
   initCategoryNotifications();
 
-  // 4) Do Not Disturb (DND) 설정
-  initDNDSettings();
-
-  // 5) 자동 로그아웃 설정
+  // 4) 자동 로그아웃 설정
   initAutoLogoutSettings();
 
-  // 6) 단축키 설정 초기화 및 이벤트 바인딩
+  // 5) 단축키 설정 초기화 및 이벤트 바인딩
   initShortcutSettings();
 
-  // 7) 저장 / 취소 버튼 이벤트 바인딩
+  // 6) 저장 / 취소 버튼 이벤트 바인딩
   initSaveCancelButtons();
 }
 
@@ -154,10 +141,10 @@ function initNotificationToggle() {
 }
 
 // =============================================================================
-// 3) 카테고리별 알림 설정 초기화
+// 3) 카테고리별 알림 설정 초기화 (강의평가 항목 제거됨)
 // =============================================================================
 function initCategoryNotifications() {
-  const cats = ['공지사항', '커뮤니티', '셔틀버스', '강의평가'];
+  const cats = ['공지사항', '커뮤니티', '셔틀버스'];
   cats.forEach((cat) => {
     const checkbox = document.getElementById(`notifCategory-${cat}`);
     if (!checkbox) return;
@@ -169,46 +156,7 @@ function initCategoryNotifications() {
 }
 
 // =============================================================================
-// 4) Do Not Disturb (DND) 설정 초기화
-// =============================================================================
-function initDNDSettings() {
-  const dndToggle = document.getElementById('dndToggle');
-  const dndStart  = document.getElementById('dndStart');
-  const dndEnd    = document.getElementById('dndEnd');
-
-  // 1) UI에 workingSettings.dnd 반영
-  if (dndToggle) {
-    dndToggle.checked = workingSettings.dnd.enabled;
-    dndToggle.addEventListener('change', () => {
-      workingSettings.dnd.enabled = dndToggle.checked;
-    });
-  }
-
-  if (dndStart) {
-    const hh = String(workingSettings.dnd.startHour).padStart(2, '0');
-    const mm = String(workingSettings.dnd.startMinute).padStart(2, '0');
-    dndStart.value = `${hh}:${mm}`;
-    dndStart.addEventListener('change', () => {
-      const [h, m] = dndStart.value.split(':').map(Number);
-      workingSettings.dnd.startHour   = h;
-      workingSettings.dnd.startMinute = m;
-    });
-  }
-
-  if (dndEnd) {
-    const hh = String(workingSettings.dnd.endHour).padStart(2, '0');
-    const mm = String(workingSettings.dnd.endMinute).padStart(2, '0');
-    dndEnd.value = `${hh}:${mm}`;
-    dndEnd.addEventListener('change', () => {
-      const [h, m] = dndEnd.value.split(':').map(Number);
-      workingSettings.dnd.endHour   = h;
-      workingSettings.dnd.endMinute = m;
-    });
-  }
-}
-
-// =============================================================================
-// 5) 자동 로그아웃 설정 초기화
+// 4) 자동 로그아웃 설정 초기화
 // =============================================================================
 function initAutoLogoutSettings() {
   const autoLogoutToggle  = document.getElementById('autoLogoutToggle');
@@ -234,7 +182,7 @@ function initAutoLogoutSettings() {
 }
 
 // =============================================================================
-// 6) 단축키 설정 초기화
+// 5) 단축키 설정 초기화
 // =============================================================================
 function initShortcutSettings() {
   const container = document.getElementById('shortcut-list-container');
@@ -367,7 +315,7 @@ function updateShortcutField(field, entry) {
 }
 
 // =============================================================================
-// 7) 저장 / 취소 버튼 초기화
+// 6) 저장 / 취소 버튼 초기화
 // =============================================================================
 function initSaveCancelButtons() {
   const saveBtn   = document.getElementById('saveSettingsBtn');
@@ -379,7 +327,6 @@ function initSaveCancelButtons() {
       localStorage.setItem(LS_KEY_MODE,        workingSettings.mode);
       localStorage.setItem(LS_KEY_NOTIFY,      workingSettings.notify);
       localStorage.setItem(LS_KEY_CATNOTIFY,   JSON.stringify(workingSettings.categories));
-      localStorage.setItem(LS_KEY_DND,         JSON.stringify(workingSettings.dnd));
       localStorage.setItem(LS_KEY_AUTOLOGOUT,  JSON.stringify(workingSettings.autoLogout));
       localStorage.setItem(LS_KEY_SHORTCUTS,   JSON.stringify(workingSettings.shortcuts));
 
@@ -403,16 +350,7 @@ function initSaveCancelButtons() {
 // =============================================================================
 // showMessage: 화면 우측 상단 슬라이드 알림 메시지
 // =============================================================================
-function showMessage(message, type = 'info', category = '') {
-  // 1) 카테고리 구분이 필요한 알림이라면, 해당 카테고리가 꺼져 있으면 표시하지 않음
-  if (category && !isCategoryEnabled(category)) {
-    return;
-  }
-  // 2) DND 모드일 때는 알림 차단
-  if (!shouldShowNotification()) {
-    return;
-  }
-
+function showMessage(message, type = 'info') {
   const notification = document.createElement('div');
   const bgColor =
     type === 'success'
@@ -456,29 +394,6 @@ function showMessage(message, type = 'info', category = '') {
       }
     }, 300);
   }, 3000);
-}
-
-// =============================================================================
-// shouldShowNotification: DND 모드 검사
-// =============================================================================
-function shouldShowNotification() {
-  const dnd = workingSettings.dnd || { enabled: false };
-  if (!dnd.enabled) return true;
-
-  const now = new Date();
-  const hh = now.getHours();
-  const mm = now.getMinutes();
-  const totalMinutes = hh * 60 + mm;
-
-  const startHM = dnd.startHour * 60 + dnd.startMinute;
-  const endHM   = dnd.endHour * 60 + dnd.endMinute;
-
-  if (startHM < endHM) {
-    return !(totalMinutes >= startHM && totalMinutes < endHM);
-  } else {
-    // 예: 21:00 ~ 07:00처럼 날짜 넘어갈 때
-    return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
-  }
 }
 
 // =============================================================================
