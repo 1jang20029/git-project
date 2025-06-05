@@ -172,20 +172,13 @@ function showContent(type) {
   }
 
   // 상단 메뉴 활성화 표시
-  document.querySelectorAll('#nav-menu .nav-item').forEach((item) => {
-    item.classList.remove('active');
-  });
-  // 사이드바 메뉴 활성화 표시
-  document.querySelectorAll('.sidebar .nav-item').forEach((item) => {
+  document.querySelectorAll('#main-menu .nav-item').forEach((item) => {
     item.classList.remove('active');
   });
 
   // 상단 메뉴 해당 항목 active
   const navItem = document.getElementById('nav-' + type);
   if (navItem) navItem.classList.add('active');
-  // 사이드바 메뉴 해당 항목 active (별도 id)
-  const navItemSidebar = document.getElementById('nav-' + type + '-sidebar');
-  if (navItemSidebar) navItemSidebar.classList.add('active');
 
   currentContent = type;
   window.location.hash = type;
@@ -978,11 +971,13 @@ function toggleNotifications() {
     showNotificationDropdown();
   }
 }
+
 function showNotificationDropdown() {
   closeUserDropdown();
   const dd = document.getElementById('notification-dropdown');
   if (dd) dd.classList.add('show');
 }
+
 function closeNotificationDropdown() {
   const dd = document.getElementById('notification-dropdown');
   if (dd) dd.classList.remove('show');
@@ -1006,11 +1001,13 @@ function toggleUserMenu() {
     showUserDropdown();
   }
 }
+
 function showUserDropdown() {
   closeNotificationDropdown();
   const dropdown = document.getElementById('user-dropdown');
   if (dropdown) dropdown.classList.add('show');
 }
+
 function closeUserDropdown() {
   const dropdown = document.getElementById('user-dropdown');
   if (dropdown) dropdown.classList.remove('show');
@@ -1025,8 +1022,12 @@ function closeAllDropdowns() {
 
 // ─────────── closeStudentServiceDropdown: 학생 서비스 드롭다운 닫기 ───────────
 function closeStudentServiceDropdown() {
+  // → dropdown.style.display = 'none' 대신 inline 스타일을 제거하여
+  //    CSS의 :hover 규칙에 의해 재표시될 수 있도록 수정합니다.
   const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
-  if (dropdown) dropdown.style.display = 'none';
+  if (dropdown) {
+    dropdown.removeAttribute('style');
+  }
 }
 
 // ─────────── showProfile: 프로필 화면으로 이동 ───────────
@@ -1236,6 +1237,7 @@ function setupAutoLogout() {
   document.addEventListener('click', resetAutoLogoutTimer);
   resetAutoLogoutTimer();
 }
+
 function resetAutoLogoutTimer() {
   if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
   const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
@@ -1262,12 +1264,6 @@ function applyKeyboardShortcuts() {
     resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
     const key = e.key.toUpperCase();
 
-    // 사이드바 토글
-    if (key === (shortcuts.toggleSidebar || '').toUpperCase()) {
-      e.preventDefault();
-      toggleSidebar();
-      return;
-    }
     // 알림 열기
     if (key === (shortcuts.openNotifications || '').toUpperCase()) {
       e.preventDefault();
@@ -1328,7 +1324,7 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('학사일정') || label.includes('학사')) {
-      navigateToCalendar();
+      showContent('calendar');
       return;
     }
     if (label.includes('프로필')) {
@@ -1413,25 +1409,19 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
-// ─────────── toggleSidebar: 모바일 사이드바 열기/닫기 ───────────
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  if (sidebar) sidebar.classList.toggle('open');
-}
-
 // ─────────── navigateToTimetable: 내 시간표 페이지로 이동 ───────────
 function navigateToTimetable() {
-  window.location.href = 'timetable.html';
+  showContent('timetable');
 }
 
 // ─────────── navigateToShuttle: 셔틀버스 페이지로 이동 ───────────
 function navigateToShuttle() {
-  window.location.href = 'shuttle.html';
+  showContent('shuttle');
 }
 
 // ─────────── navigateToCalendar: 학사일정 페이지로 이동 ───────────
 function navigateToCalendar() {
-  window.location.href = 'academic-calendar.html';
+  showContent('calendar');
 }
 
 // ─────────── zoomIn: 지도 확대 ───────────
