@@ -1022,8 +1022,12 @@ function closeAllDropdowns() {
 
 // ─────────── closeStudentServiceDropdown: 학생 서비스 드롭다운 닫기 ───────────
 function closeStudentServiceDropdown() {
+  // → dropdown.style.display = 'none' 대신 inline 스타일을 제거하여
+  //    CSS의 :hover 규칙에 의해 재표시될 수 있도록 수정합니다.
   const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
-  if (dropdown) dropdown.style.display = 'none';
+  if (dropdown) {
+    dropdown.removeAttribute('style');
+  }
 }
 
 // ─────────── showProfile: 프로필 화면으로 이동 ───────────
@@ -1320,7 +1324,7 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('학사일정') || label.includes('학사')) {
-      navigateToCalendar();
+      showContent('calendar');
       return;
     }
     if (label.includes('프로필')) {
