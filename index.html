@@ -19,41 +19,58 @@
 </head>
 <body>
   <!-- ==================================================
-       상단 네비게이션 바: 브랜드 + 메인메뉴 + 검색/알림/유저
+       상단 네비게이션 바: 브랜드 + 메인 메뉴 + 빠른 접근 + 검색/알림/유저
        ================================================== -->
   <nav id="top-nav">
-    <!-- 로고 + 텍스트 -->
+    <!-- 1) 로고 + 텍스트 -->
     <div id="nav-brand">
       <span>🎓</span>
       <span>연성대학교 스마트 캠퍼스</span>
     </div>
 
-    <!-- 메인 메뉴: 대시보드, 건물&시설, 커뮤니티, 강의평가, 공지사항 -->
-    <ul id="nav-menu">
+    <!-- 2) 메인 메뉴 (가로형) -->
+    <ul id="main-menu">
       <li class="nav-item active" id="nav-home" onclick="showContent('home')">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon" title="대시보드">🏠</span>
         <span>대시보드</span>
       </li>
       <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
-        <span class="nav-icon">🏢</span>
+        <span class="nav-icon" title="건물 & 시설">🏢</span>
         <span>건물 &amp; 시설</span>
       </li>
       <li class="nav-item" id="nav-community" onclick="showContent('community')">
-        <span class="nav-icon">💬</span>
+        <span class="nav-icon" title="커뮤니티">💬</span>
         <span>커뮤니티</span>
       </li>
       <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
-        <span class="nav-icon">⭐</span>
+        <span class="nav-icon" title="강의평가">⭐</span>
         <span>강의평가</span>
       </li>
       <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
-        <span class="nav-icon">📢</span>
+        <span class="nav-icon" title="공지사항">📢</span>
         <span>공지사항</span>
       </li>
     </ul>
 
-    <!-- 검색창 / 알림 버튼 / 사용자 메뉴 -->
+    <!-- 3) 빠른 접근 (가로형) -->
+    <ul id="quick-menu">
+      <li class="nav-item quick-item" id="nav-timetable" onclick="navigateToTimetable()">
+        <span class="nav-icon" title="내 시간표">📅</span>
+        <span>내 시간표</span>
+      </li>
+      <li class="nav-item quick-item" id="nav-shuttle" onclick="navigateToShuttle()">
+        <span class="nav-icon" title="셔틀버스">🚌</span>
+        <span>셔틀버스</span>
+      </li>
+      <li class="nav-item quick-item" id="nav-calendar" onclick="navigateToCalendar()">
+        <span class="nav-icon" title="학사일정">🗓️</span>
+        <span>학사일정</span>
+      </li>
+    </ul>
+
+    <!-- 4) 검색창 / 알림 버튼 / 사용자 메뉴 -->
     <div id="nav-controls">
+      <!-- 검색창 -->
       <div id="search-bar">
         <span id="search-icon">🔍</span>
         <input
@@ -63,8 +80,8 @@
         />
       </div>
 
+      <!-- 알림 -->
       <div id="user-menu">
-        <!-- 알림 버튼 -->
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
           <div id="notification-dot"></div>
@@ -114,11 +131,13 @@
   </nav>
 
   <!-- ==================================================
-       메인 컨테이너: 사이드바가 사라지고 콘텐츠만 남음
+       메인 컨테이너 (사이드바 없이 상단 메뉴로 통합)
        ================================================== -->
   <div id="main-container">
     <main id="content-area">
-      <!-- 홈 (대시보드) 화면 -->
+      <!-- --------------------------------------------------
+           홈 (대시보드) 화면
+           -------------------------------------------------- -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -174,7 +193,9 @@
         </div>
       </div>
 
-      <!-- 건물 & 시설 안내 화면 -->
+      <!-- --------------------------------------------------
+           건물 & 시설 안내 화면
+           -------------------------------------------------- -->
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
@@ -202,7 +223,9 @@
         <div id="buildingGrid"></div>
       </div>
 
-      <!-- 커뮤니티 화면 -->
+      <!-- --------------------------------------------------
+           커뮤니티 화면
+           -------------------------------------------------- -->
       <div id="communityContent" style="display: none;">
         <div id="content-header-community">
           <h1 id="title-community">실시간 커뮤니티</h1>
@@ -230,7 +253,9 @@
         </div>
       </div>
 
-      <!-- 강의평가 화면 -->
+      <!-- --------------------------------------------------
+           강의평가 화면
+           -------------------------------------------------- -->
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
@@ -272,7 +297,9 @@
         </div>
       </div>
 
-      <!-- 공지사항 화면 -->
+      <!-- --------------------------------------------------
+           공지사항 화면
+           -------------------------------------------------- -->
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
@@ -285,7 +312,9 @@
         <div id="fullNoticeList"></div>
       </div>
 
-      <!-- 내 시간표 화면 -->
+      <!-- --------------------------------------------------
+           내 시간표 화면
+           -------------------------------------------------- -->
       <div id="timetableContentPane" style="display: none;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
@@ -301,7 +330,9 @@
         </div>
       </div>
 
-      <!-- 셔틀버스 화면 -->
+      <!-- --------------------------------------------------
+           셔틀버스 화면
+           -------------------------------------------------- -->
       <div id="shuttleContentPane" style="display: none;">
         <div id="content-header-shuttle-pane">
           <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
@@ -317,7 +348,9 @@
         </div>
       </div>
 
-      <!-- 학사일정 화면 -->
+      <!-- --------------------------------------------------
+           학사일정 화면
+           -------------------------------------------------- -->
       <div id="calendarContentPane" style="display: none;">
         <div id="content-header-calendar-pane">
           <h1 id="title-calendar-pane">학사일정</h1>
@@ -333,7 +366,9 @@
         </div>
       </div>
 
-      <!-- 프로필 화면 -->
+      <!-- --------------------------------------------------
+           프로필 화면
+           -------------------------------------------------- -->
       <div id="profileContentPane" style="display: none;">
         <div id="content-header-profile-pane">
           <h1 id="title-profile-pane">프로필</h1>
@@ -349,12 +384,16 @@
         </div>
       </div>
 
-      <!-- 설정 화면: 처음엔 빈 컨테이너, 동적으로 로드 -->
+      <!-- --------------------------------------------------
+           설정 화면: 처음엔 빈 컨테이너, 동적으로 로드
+           -------------------------------------------------- -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
-  <!-- 공통 자바스크립트 -->
+  <!-- --------------------------------------------------
+       공통 자바스크립트
+       -------------------------------------------------- -->
   <script src="index.js" defer></script>
   <!-- 분리된 설정 화면 전용 자바스크립트 -->
   <script src="settings.js" defer></script>

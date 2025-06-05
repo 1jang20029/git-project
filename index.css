@@ -52,7 +52,7 @@ body {
 /* =========================
    상단 메인 메뉴 (가로)
    ========================= */
-#nav-menu {
+#main-menu {
   display: flex;
   align-items: center;
   list-style: none;
@@ -60,7 +60,7 @@ body {
   gap: 1rem;
 }
 
-#nav-menu .nav-item {
+#main-menu .nav-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -73,18 +73,18 @@ body {
   background: transparent;
 }
 
-#nav-menu .nav-item:hover {
+#main-menu .nav-item:hover {
   background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
 }
 
-#nav-menu .nav-item.active {
+#main-menu .nav-item.active {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
   position: relative;
 }
 
-#nav-menu .nav-item.active::before {
+#main-menu .nav-item.active::before {
   content: '';
   position: absolute;
   left: -3px;
@@ -95,10 +95,46 @@ body {
   border-radius: 0 2px 2px 0;
 }
 
-#nav-menu .nav-icon {
+#main-menu .nav-icon {
   font-size: 1.2rem;
   display: inline-block;
   width: 24px;
+  text-align: center;
+}
+
+/* =========================
+   상단 빠른 접근 메뉴 (가로)
+   ========================= */
+#quick-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin-left: 1.5rem;
+  gap: 0.75rem;
+}
+
+#quick-menu .quick-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #94a3b8;
+  font-weight: 500;
+  background: transparent;
+  font-size: 0.9rem;
+}
+
+#quick-menu .quick-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+#quick-menu .quick-item .nav-icon {
+  font-size: 1.1rem;
+  width: 20px;
   text-align: center;
 }
 
@@ -419,7 +455,6 @@ body {
    ================================================== */
 #main-container {
   margin-top: 80px; /* 상단 네비 높이만큼 띄워줌 */
-  min-height: calc(100vh - 80px);
 }
 
 #content-area {
@@ -969,7 +1004,7 @@ body {
   background: rgba(59, 130, 246, 0.1);
 }
 
-/* 활성화된 배경 속성(예: 대시보드 상단 메뉴 클릭 시) */
+/* 활성화된 메뉴 아이콘/텍스트 색상 */
 .nav-item.active .nav-icon,
 .nav-item.active span {
   color: #3b82f6;
@@ -1300,6 +1335,12 @@ body.light-mode #profile-sample-text {
   }
   #map-card {
     grid-column: span 1;
+  }
+  #main-menu {
+    display: none; /* 화면이 좁을 때는 메인 메뉴를 접어둘 수도 있습니다 */
+  }
+  #quick-menu {
+    display: none; /* 화면이 좁을 때 접어두거나, 햄버거/버튼으로 대체 가능합니다. */
   }
 }
 

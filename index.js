@@ -165,8 +165,8 @@ function showContent(type) {
     target.classList.add('fade-in');
   }
 
-  // 상단메뉴 활성화 표시
-  document.querySelectorAll('#nav-menu .nav-item').forEach((item) => {
+  // 상단메뉴 활성화 표시 (메인 메뉴에만 적용)
+  document.querySelectorAll('#main-menu .nav-item').forEach((item) => {
     item.classList.remove('active');
   });
   const navItem = document.getElementById('nav-' + type);
@@ -1296,11 +1296,11 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('내 시간표') || label.includes('시간표')) {
-      showContent('timetable');
+      navigateToTimetable();
       return;
     }
     if (label.includes('셔틀버스') || label.includes('셔틀')) {
-      showContent('shuttle');
+      navigateToShuttle();
       return;
     }
     if (label.includes('학사일정') || label.includes('학사')) {
@@ -1308,7 +1308,7 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('프로필')) {
-      showContent('profile');
+      showProfile();
       return;
     }
     if (label.includes('설정')) {
