@@ -1,6 +1,5 @@
-// settings.js
-
 // =============================================================================
+// settings.js
 // 분리된 설정 화면 전용 자바스크립트
 // =============================================================================
 
@@ -397,12 +396,6 @@ function showMessage(message, type = 'info') {
 }
 
 // =============================================================================
-// isCategoryEnabled: 카테고리별 알림 수신 여부 확인
-// =============================================================================
-function isCategoryEnabled(category) {
-  const catSettings = workingSettings.categories || {};
-  return catSettings[category] === true;
-}
-
 // 전역에 initSettingsPage 노출
+// =============================================================================
 window.initSettingsPage = initSettingsPage;
