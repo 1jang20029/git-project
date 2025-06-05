@@ -98,26 +98,6 @@
 }
 
 /* ----------------------------------------------------------------------------- 
-   시간 입력 (type="time") 스타일 
------------------------------------------------------------------------------ */
-.setting-item input[type="time"] {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.4rem;
-  color: #f1f5f9;
-  font-size: 0.9rem;
-  width: 120px;
-  transition: all 0.3s ease;
-}
-
-.setting-item input[type="time"]:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.95);
-}
-
-/* ----------------------------------------------------------------------------- 
    숫자 입력 (자동 로그아웃 시간) 스타일 
 ----------------------------------------------------------------------------- */
 .setting-item input[type="number"] {
@@ -232,12 +212,12 @@
   padding: 0.5rem 1rem;
   border-radius: 6px;
   background: #3b82f6;          /* 진한 파란색 배경 */
-  border: none;
-  color: #ffffff;               /* 흰색 글자 */
+  color: white !important;      /* 텍스트 색상을 강제로 흰색으로 */
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 1rem;
+  border: none;
 }
 
 .add-shortcut-btn:hover {
@@ -323,7 +303,6 @@ body.light-mode .setting-item label {
   color: #1f2937;
 }
 
-body.light-mode .setting-item input[type="time"],
 body.light-mode .setting-item input[type="number"],
 body.light-mode .setting-item input[type="text"] {
   background: rgba(240, 240, 240, 0.8);
@@ -331,7 +310,6 @@ body.light-mode .setting-item input[type="text"] {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-body.light-mode .setting-item input[type="time"]:focus,
 body.light-mode .setting-item input[type="number"]:focus,
 body.light-mode .setting-item input[type="text"]:focus {
   background: rgba(240, 240, 240, 1);
@@ -377,7 +355,6 @@ body.light-mode .shortcut-item button.remove-shortcut-btn {
     height: 28px;
     transform: scale(1.4);
   }
-  .setting-item input[type="time"],
   .setting-item input[type="number"],
   .setting-item input[type="text"] {
     width: 100%;
