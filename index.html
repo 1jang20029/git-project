@@ -18,72 +18,81 @@
   <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
-  <!-- ==================================================
-       상단 네비게이션 바: 브랜드 + 메인 메뉴 + (학생 서비스 드롭다운) + 검색/알림/유저
-       ================================================== -->
+  <!-- ───────────────────────────────────────────────────────────────────────── -->
+  <!-- 상단 네비게이션 바 시작                                                     -->
+  <!-- ───────────────────────────────────────────────────────────────────────── -->
   <nav id="top-nav">
-    <!-- 1) 로고 + 타이틀 -->
+    <!-- 왼쪽 로고/타이틀 -->
     <div id="nav-brand">
+      <button id="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
       <span>🎓</span>
       <span>연성대학교 스마트 캠퍼스</span>
     </div>
 
-    <!-- 2) 메인 메뉴 (가로) -->
-    <ul id="main-menu">
-      <li class="nav-item active" id="nav-home" onclick="showContent('home')">
+    <!-- 왼쪽 빈 공간: 메뉴를 가운데 정렬하기 위한 flex spacer -->
+    <div class="flex-spacer"></div>
+
+    <!-- 가운데 메뉴(메인 메뉴) -->
+    <ul id="nav-menu">
+      <!-- 대시보드 -->
+      <li class="nav-item" id="nav-home" onclick="showContent('home')">
         <span class="nav-icon" title="대시보드">🏠</span>
         <span>대시보드</span>
       </li>
+      <!-- 건물 & 시설 -->
       <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
-        <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
-        <span>건물 &amp; 시설</span>
+        <span class="nav-icon" title="건물 & 시설">🏢</span>
+        <span>건물&amp;시설</span>
       </li>
-      <!-- “학생 서비스” 드롭다운 추가 -->
-      <li class="nav-item dropdown" id="nav-student-services" onmouseenter="openStudentServices()" onmouseleave="closeStudentServices()">
+
+      <!-- 학생 서비스 (드롭다운) -->
+      <li class="nav-item has-dropdown" id="nav-student-services">
         <span class="nav-icon" title="학생 서비스">🎒</span>
         <span>학생 서비스 ▾</span>
-        <ul class="dropdown-menu" id="student-services-dropdown">
-          <li class="dropdown-item" onclick="showAllServices()">
-            <span class="dropdown-icon">📂</span>
-            <span>전체 서비스</span>
+        <!-- 하위 메뉴 목록 -->
+        <ul class="dropdown-menu">
+          <li onclick="showContent('allServices')">
+            <span>📋 전체 서비스</span>
           </li>
-          <li class="dropdown-item" onclick="handleGlobalSearch()">
-            <span class="dropdown-icon">🔍</span>
-            <span>통합 검색</span>
+          <li onclick="handleGlobalSearch()">
+            <span>🔍 통합 검색</span>
           </li>
-          <li class="dropdown-item" onclick="navigateToTimetable()">
-            <span class="dropdown-icon">📅</span>
-            <span>내 시간표</span>
+          <li onclick="navigateToTimetable()">
+            <span>📅 내 시간표</span>
           </li>
-          <li class="dropdown-item" onclick="navigateToShuttle()">
-            <span class="dropdown-icon">🚌</span>
-            <span>셔틀버스</span>
+          <li onclick="navigateToShuttle()">
+            <span>🚌 셔틀버스</span>
           </li>
-          <li class="dropdown-item" onclick="showCampusActivities()">
-            <span class="dropdown-icon">⭐</span>
-            <span>교내 활동</span>
+          <li onclick="showContent('campusActivities')">
+            <span>⭐ 교내 활동</span>
           </li>
-          <li class="dropdown-item" onclick="navigateToCalendar()">
-            <span class="dropdown-icon">🗓️</span>
-            <span>학사일정</span>
+          <li onclick="navigateToCalendar()">
+            <span>📆 학사일정</span>
           </li>
         </ul>
       </li>
+
+      <!-- 커뮤니티 -->
       <li class="nav-item" id="nav-community" onclick="showContent('community')">
         <span class="nav-icon" title="커뮤니티">💬</span>
         <span>커뮤니티</span>
       </li>
+      <!-- 강의평가 -->
       <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
         <span class="nav-icon" title="강의평가">⭐</span>
         <span>강의평가</span>
       </li>
+      <!-- 공지사항 -->
       <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
         <span class="nav-icon" title="공지사항">📢</span>
         <span>공지사항</span>
       </li>
     </ul>
 
-    <!-- 3) 검색창 / 알림 버튼 / 사용자 메뉴 -->
+    <!-- 오른쪽 빈 공간: 메뉴를 가운데 정렬하기 위한 flex spacer -->
+    <div class="flex-spacer"></div>
+
+    <!-- 오른쪽 검색창 + 알림 + 유저 메뉴 -->
     <div id="nav-controls">
       <!-- 검색창 -->
       <div id="search-bar">
@@ -95,7 +104,7 @@
         />
       </div>
 
-      <!-- 알림 -->
+      <!-- 알림 버튼 -->
       <div id="user-menu">
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
@@ -114,7 +123,7 @@
           </div>
         </div>
 
-        <!-- 사용자 프로필 -->
+        <!-- 사용자 프로필 (드롭다운) -->
         <div id="user-profile" onclick="toggleUserMenu()">
           <div id="user-avatar">👤</div>
           <div id="user-info">
@@ -144,15 +153,77 @@
       </div>
     </div>
   </nav>
+  <!-- ───────────────────────────────────────────────────────────────────────── -->
+  <!-- 상단 네비게이션 바 끝                                                       -->
+  <!-- ───────────────────────────────────────────────────────────────────────── -->
 
-  <!-- ==================================================
-       메인 컨테이너 (사이드바 없이 상단 메뉴로 통합)
-       ================================================== -->
   <div id="main-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">메인 메뉴</div>
+        <ul class="nav-list">
+          <li class="nav-item" onclick="showContent('home')" id="nav-home-sidebar">
+            <span class="nav-icon" title="대시보드">🏠</span>
+            <span>대시보드</span>
+          </li>
+          <li class="nav-item" onclick="showContent('buildings')" id="nav-buildings-sidebar">
+            <span class="nav-icon" title="건물 & 시설">🏢</span>
+            <span>건물 &amp; 시설</span>
+          </li>
+          <li class="nav-item" onclick="showContent('community')" id="nav-community-sidebar">
+            <span class="nav-icon" title="커뮤니티">💬</span>
+            <span>커뮤니티</span>
+          </li>
+          <li class="nav-item" onclick="showContent('lecture-review')" id="nav-lecture-review-sidebar">
+            <span class="nav-icon" title="강의평가">⭐</span>
+            <span>강의평가</span>
+          </li>
+          <li class="nav-item" onclick="showContent('notices')" id="nav-notices-sidebar">
+            <span class="nav-icon" title="공지사항">📢</span>
+            <span>공지사항</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">빠른 접근</div>
+        <ul class="nav-list quick-access">
+          <li class="nav-item" id="nav-timetable-sidebar" onclick="navigateToTimetable()">
+            <span class="nav-icon" title="내 시간표">📅</span>
+            <span>내 시간표</span>
+          </li>
+          <li class="nav-item" id="nav-shuttle-sidebar" onclick="navigateToShuttle()">
+            <span class="nav-icon" title="셔틀버스">🚌</span>
+            <span>셔틀버스</span>
+          </li>
+          <li class="nav-item" id="nav-calendar-sidebar" onclick="navigateToCalendar()">
+            <span class="nav-icon" title="학사일정">🗓️</span>
+            <span>학사일정</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">계정</div>
+        <ul class="nav-list">
+          <li class="nav-item" onclick="showContent('profile')" id="nav-profile-sidebar">
+            <span class="nav-icon" title="프로필">👤</span>
+            <span>프로필</span>
+          </li>
+          <li class="nav-item" onclick="showContent('settings')" id="nav-settings-sidebar">
+            <span class="nav-icon" title="설정">⚙️</span>
+            <span>설정</span>
+          </li>
+          <li class="nav-item" onclick="handleLogout()" id="nav-logout-sidebar">
+            <span class="nav-icon" title="로그아웃">🚪</span>
+            <span>로그아웃</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
     <main id="content-area">
-      <!-- --------------------------------------------------
-           홈 (대시보드) 화면
-           -------------------------------------------------- -->
+      <!-- 홈 (대시보드) 화면 -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -208,9 +279,7 @@
         </div>
       </div>
 
-      <!-- --------------------------------------------------
-           건물 & 시설 안내 화면
-           -------------------------------------------------- -->
+      <!-- 건물 & 시설 안내 화면 -->
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
@@ -238,9 +307,7 @@
         <div id="buildingGrid"></div>
       </div>
 
-      <!-- --------------------------------------------------
-           커뮤니티 화면
-           -------------------------------------------------- -->
+      <!-- 커뮤니티 화면 -->
       <div id="communityContent" style="display: none;">
         <div id="content-header-community">
           <h1 id="title-community">실시간 커뮤니티</h1>
@@ -268,9 +335,7 @@
         </div>
       </div>
 
-      <!-- --------------------------------------------------
-           강의평가 화면
-           -------------------------------------------------- -->
+      <!-- 강의평가 화면 -->
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
@@ -312,9 +377,7 @@
         </div>
       </div>
 
-      <!-- --------------------------------------------------
-           공지사항 화면
-           -------------------------------------------------- -->
+      <!-- 공지사항 화면 -->
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
@@ -327,9 +390,7 @@
         <div id="fullNoticeList"></div>
       </div>
 
-      <!-- --------------------------------------------------
-           내 시간표 화면
-           -------------------------------------------------- -->
+      <!-- 내 시간표 화면 -->
       <div id="timetableContentPane" style="display: none;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
@@ -345,9 +406,7 @@
         </div>
       </div>
 
-      <!-- --------------------------------------------------
-           셔틀버스 화면
-           -------------------------------------------------- -->
+      <!-- 셔틀버스 화면 -->
       <div id="shuttleContentPane" style="display: none;">
         <div id="content-header-shuttle-pane">
           <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
@@ -363,9 +422,7 @@
         </div>
       </div>
 
-      <!-- --------------------------------------------------
-           학사일정 화면
-           -------------------------------------------------- -->
+      <!-- 학사일정 화면 -->
       <div id="calendarContentPane" style="display: none;">
         <div id="content-header-calendar-pane">
           <h1 id="title-calendar-pane">학사일정</h1>
@@ -381,9 +438,7 @@
         </div>
       </div>
 
-      <!-- --------------------------------------------------
-           프로필 화면
-           -------------------------------------------------- -->
+      <!-- 프로필 화면 -->
       <div id="profileContentPane" style="display: none;">
         <div id="content-header-profile-pane">
           <h1 id="title-profile-pane">프로필</h1>
@@ -399,16 +454,12 @@
         </div>
       </div>
 
-      <!-- --------------------------------------------------
-           설정 화면: 처음엔 빈 컨테이너, 동적으로 로드
-           -------------------------------------------------- -->
+      <!-- **설정 화면은 처음엔 빈 컨테이너, 동적으로 로드** -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
-  <!-- --------------------------------------------------
-       공통 자바스크립트
-       -------------------------------------------------- -->
+  <!-- 공통 자바스크립트 -->
   <script src="index.js" defer></script>
   <!-- 분리된 설정 화면 전용 자바스크립트 -->
   <script src="settings.js" defer></script>
