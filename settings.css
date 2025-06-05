@@ -367,7 +367,7 @@ body.light-mode .shortcut-item button.remove-shortcut-btn {
   }
   .setting-item {
     margin-bottom: 1rem;
-    padding: 1rem 0;
+   	padding: 1rem 0;
   }
   .setting-item label {
     font-size: 1rem;
@@ -412,4 +412,4 @@ body.light-mode .shortcut-item button.remove-shortcut-btn {
   .setting-item input[type="checkbox"] {
     align-self: flex-end;
   }
-}
+}  
