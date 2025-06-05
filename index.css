@@ -7,6 +7,9 @@
   box-sizing: border-box;
 }
 
+/* ==================================================
+   바디 기본 스타일
+   ================================================== */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #0a0e27;
@@ -49,9 +52,9 @@ body {
   white-space: nowrap;
 }
 
-/* =========================
+/* ==================================================
    상단 메인 메뉴 (가로)
-   ========================= */
+   ================================================== */
 #main-menu {
   display: flex;
   align-items: center;
@@ -61,6 +64,7 @@ body {
 }
 
 #main-menu .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -81,7 +85,6 @@ body {
 #main-menu .nav-item.active {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
-  position: relative;
 }
 
 #main-menu .nav-item.active::before {
@@ -102,45 +105,61 @@ body {
   text-align: center;
 }
 
-/* =========================
-   상단 빠른 접근 메뉴 (가로)
-   ========================= */
-#quick-menu {
-  display: flex;
-  align-items: center;
-  list-style: none;
-  margin-left: 1.5rem;
-  gap: 0.75rem;
+/* ==================================================
+   “학생 서비스” 드롭다운 메커니즘
+   ================================================== */
+/* 드롭다운 전체 컨테이너 */
+#main-menu .dropdown {
+  position: relative;
 }
 
-#quick-menu .quick-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.4rem 0.8rem;
+/* 드롭다운을 숨긴 상태 */
+#student-services-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
+  padding: 0.5rem 0;
+  min-width: 200px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 1100;
+}
+
+/* 드롭다운 보이는 상태 */
+#student-services-dropdown.show {
+  display: block;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+/* 드롭다운 내부 항목 */
+#student-services-dropdown .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #94a3b8;
-  font-weight: 500;
-  background: transparent;
-  font-size: 0.9rem;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: #f1f5f9;
 }
 
-#quick-menu .quick-item:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-#quick-menu .quick-item .nav-icon {
-  font-size: 1.1rem;
+#student-services-dropdown .dropdown-item .dropdown-icon {
+  font-size: 1rem;
   width: 20px;
   text-align: center;
 }
 
-/* =========================
+#student-services-dropdown .dropdown-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* ==================================================
    검색창 / 알림 / 유저 메뉴
-   ========================= */
+   ================================================== */
 #nav-controls {
   display: flex;
   align-items: center;
@@ -1070,16 +1089,13 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: rgba(15, 23, 42, 0.3);
 }
-
 ::-webkit-scrollbar-thumb {
   background: rgba(59, 130, 246, 0.5);
   border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(59, 130, 246, 0.7);
 }
@@ -1139,7 +1155,8 @@ body.light-mode #user-role {
 }
 
 body.light-mode #notification-dropdown,
-body.light-mode #user-dropdown {
+body.light-mode #user-dropdown,
+body.light-mode #student-services-dropdown {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
@@ -1320,7 +1337,7 @@ body.light-mode #profile-sample-text {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-/* 반응형(portrait) */
+/* 반응형 */
 @media (max-width: 1024px) {
   #search-input {
     width: 200px;
@@ -1336,11 +1353,9 @@ body.light-mode #profile-sample-text {
   #map-card {
     grid-column: span 1;
   }
+  /* 메인 메뉴가 좁아질 때는 숨김하거나 햄버거 메뉴로 대체 가능 */
   #main-menu {
-    display: none; /* 화면이 좁을 때는 메인 메뉴를 접어둘 수도 있습니다 */
-  }
-  #quick-menu {
-    display: none; /* 화면이 좁을 때 접어두거나, 햄버거/버튼으로 대체 가능합니다. */
+    display: none;
   }
 }
 
