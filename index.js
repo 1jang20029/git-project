@@ -1302,15 +1302,18 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('내 시간표') || label.includes('시간표')) {
+      // 내부 페이지: SPA 방식으로 showContent('timetable')
       showContent('timetable');
       return;
     }
     if (label.includes('셔틀버스') || label.includes('셔틀')) {
+      // 내부 페이지: SPA 방식으로 showContent('shuttle')
       showContent('shuttle');
       return;
     }
     if (label.includes('학사일정') || label.includes('학사')) {
-      showContent('calendar');
+      // 외부 페이지: 학사일정은 별도 HTML 파일로 이동
+      navigateToCalendar(); // (‘academic-calendar.html’로 이동)
       return;
     }
     if (label.includes('프로필')) {
