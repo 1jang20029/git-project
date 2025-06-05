@@ -22,14 +22,14 @@ let currentContent = 'home';
 let unreadNotifications = 0;
 let isOnline = navigator.onLine;
 
-// ★ 자동 로그아웃 타이머 ID (전역 변수)
-let autoLogoutTimer = null;
-
 // 학과 코드 ↔ 이름 매핑 객체
 const departmentMap = {};
 
 // 설정 화면 로드 여부
 let settingsLoaded = false;
+
+// 자동 로그아웃 타이머 ID
+let autoLogoutTimer = null;
 
 // ─────────── 최초 로드 시 실행할 로직 ───────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,12 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeApp();
   setupNetworkListeners();
-
-  // ★ 자동 로그아웃 초기화 (설정 여부에 따라 타이머를 세팅하도록)
-  setupAutoLogout();
-
-  // 기존 키보드 단축키 로드
-  applyKeyboardShortcuts();
+  setupAutoLogout();             // 자동 로그아웃 로직 초기화
+  applyKeyboardShortcuts();      // 기존 키보드 단축키 로드
 
   // “새로 추가된 단축키”도 동작하도록 전역 리스너 추가
   applyUserShortcuts();
@@ -58,8 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.key === 'Escape') {
       closeAllDropdowns();
     }
-    // 사용자 활동이 있을 때마다 자동 로그아웃 타이머 리셋
-    resetAutoLogoutTimer();
+    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 자동 로그아웃 타이머 초기화
   });
 
   // 검색창 Enter 키 처리
@@ -192,7 +187,7 @@ function showContent(type) {
 async function initializeApp() {
   try {
     await loadDepartments();
-    initNaverMap();         // ★ 캠퍼스 지도 초기화 (오류 처리 포함)
+    initNaverMap();
     await Promise.all([
       loadStats(),
       loadNotifications(),
@@ -666,9 +661,6 @@ function renderLectureReviews(popular, recent) {
 
   if (!popEl || !recEl) return;
 
-  popEl.innerHTML = '';
-  recEl.innerHTML = '';
-
   popular.forEach((r) => {
     if (!isCategoryEnabled('강의평가')) return;
 
@@ -712,10 +704,9 @@ function renderLectureReviews(popular, recent) {
 
 // ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
-  // ★ naver.maps 객체가 정상적으로 로드되었는지 확인
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다 (API 인증 실패)');
+    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
     return;
   }
 
@@ -740,7 +731,7 @@ function initNaverMap() {
     naverMap = new naver.maps.Map(mapContainer, mapOptions);
   } catch (error) {
     console.error('지도 초기화 오류:', error);
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다 (인증 오류 또는 기타 오류)');
+    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
   }
 }
 
@@ -1192,7 +1183,7 @@ function showMessage(message, type = 'info', category = '') {
   }, 3000);
 }
 
-// ─────────── shouldShowNotification: Do Not Disturb 모드 검사 ───────────
+// ─────────── shouldShowNotification: DND 모드 검사 ───────────
 function shouldShowNotification() {
   const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
   if (!dnd.enabled) return true;
@@ -1221,48 +1212,20 @@ function isCategoryEnabled(category) {
 
 // ─────────── setupAutoLogout: 비활성 시 자동 로그아웃 로직 초기화 ───────────
 function setupAutoLogout() {
-  // 사용자 활동(마우스 이동, 키 입력, 클릭)이 있을 때마다 타이머 리셋
   document.addEventListener('mousemove', resetAutoLogoutTimer);
   document.addEventListener('keypress', resetAutoLogoutTimer);
   document.addEventListener('click', resetAutoLogoutTimer);
-  // 최초 한 번 타이머 설정 시도
   resetAutoLogoutTimer();
 }
 
-// ─────────── resetAutoLogoutTimer: 실제 재설정 로직 ───────────
 function resetAutoLogoutTimer() {
-  // 기존 타이머가 있으면 삭제
-  if (autoLogoutTimer) {
-    clearTimeout(autoLogoutTimer);
-    autoLogoutTimer = null;
-  }
+  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+  const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
+  if (!cfg.enabled) return;
 
-  // 로컬스토리지에서 { enabled: boolean, timeoutMinutes: number } 형태로 가져오도록 가정
-  // ★ 만약 해당 키가 없으면 { enabled: false, timeoutMinutes: 0 } 사용
-  let cfg;
-  try {
-    cfg = JSON.parse(localStorage.getItem('autoLogout'));
-    if (!cfg || typeof cfg !== 'object') {
-      cfg = { enabled: false, timeoutMinutes: 0 };
-    }
-  } catch {
-    cfg = { enabled: false, timeoutMinutes: 0 };
-  }
-
-  // 활성화가 되어 있지 않으면 타이머를 세팅하지 않고 종료
-  if (!cfg.enabled) {
-    return;
-  }
-
-  // timeoutMinutes가 0 이하이거나 숫자가 아니면 기본 1분 사용
-  let minutes = parseInt(cfg.timeoutMinutes, 10);
-  if (isNaN(minutes) || minutes <= 0) {
-    minutes = 1;
-  }
-
-  const timeoutMs = minutes * 60 * 1000;
+  const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
   autoLogoutTimer = setTimeout(() => {
-    // 실제 로그아웃 처리
+    // 실제 로그아웃 처리 (예: localStorage에서 사용자 정보 제거 후 홈으로)
     localStorage.removeItem('currentLoggedInUser');
     showMessage('자동 로그아웃되었습니다', 'info');
     checkUserStatus();
@@ -1285,64 +1248,112 @@ function applyKeyboardShortcuts() {
     if (key === (shortcuts.toggleSidebar || '').toUpperCase()) {
       e.preventDefault();
       toggleSidebar();
+      return;
     }
     // 알림 열기
     if (key === (shortcuts.openNotifications || '').toUpperCase()) {
       e.preventDefault();
       toggleNotifications();
+      return;
     }
     // 설정으로 이동
     if (key === (shortcuts.goToSettings || '').toUpperCase()) {
       e.preventDefault();
       showContent('settings');
+      return;
     }
   });
 }
 
-// ─────────── applyUserShortcuts: 사용자 저장 단축키 바로 동작하도록 바인딩 ───────────
+// ─────────── applyUserShortcuts: 사용자 정의 단축키 로컬스토리지 기반 실행 ───────────
 function applyUserShortcuts() {
   document.addEventListener('keydown', (e) => {
-    // 이미 기본 단축키에 걸렸다면 해당 로직이 먼저 실행되므로 뒤에 처리
+    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
     const pressedKey = e.key.toUpperCase();
     const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
-    userShortcuts.forEach((entry) => {
-      if (entry.key === pressedKey && entry.name) {
-        e.preventDefault();
-        // entry.name(라벨)에 따라 원하는 동작을 구현하세요.
-        switch (entry.name) {
-          case '대시보드 이동':
-            showContent('home');
-            break;
-          case '알림 열기':
-            toggleNotifications();
-            break;
-          case '내 시간표':
-            showContent('timetable');
-            break;
-          case '셔틀버스 이동':
-            showContent('shuttle');
-            break;
-          case '프로필':
-            showContent('profile');
-            break;
-          // 필요에 따라 추가로 커스터마이즈:
-          default:
-            // 예: entry.name에 “이동” 키워드가 들어있으면
-            if (entry.name.includes('이동')) {
-              // entry.name 예시: “공지사항 이동” → showContent('notices')
-              // 라벨 규칙에 맞춰 처리
-              const lower = entry.name.replace(/\s*/g, '').toLowerCase();
-              if (lower.includes('공지사항')) showContent('notices');
-              if (lower.includes('건물')) showContent('buildings');
-              if (lower.includes('커뮤니티')) showContent('community');
-              if (lower.includes('강의평가')) showContent('lecture-review');
-              if (lower.includes('학사일정')) showContent('calendar');
-              // 추가로 필요한 매핑을 여기에 작성
-            }
-            break;
-        }
+
+    // 눌린 키가 userShortcuts 중 하나의 key와 일치하는지 탐색
+    const matched = userShortcuts.find(entry => entry.key.toUpperCase() === pressedKey);
+    if (!matched) return;
+    if (!matched.name) return;
+
+    e.preventDefault();
+    const label = matched.name.toLowerCase();
+
+    // 레이블 내부 키워드 매핑
+    if (label.includes('대시보드')) {
+      showContent('home');
+      return;
+    }
+    if (label.includes('건물')) {
+      showContent('buildings');
+      return;
+    }
+    if (label.includes('커뮤니티')) {
+      showContent('community');
+      return;
+    }
+    if (label.includes('강의평가')) {
+      showContent('lecture-review');
+      return;
+    }
+    if (label.includes('공지사항')) {
+      showContent('notices');
+      return;
+    }
+    if (label.includes('내 시간표') || label.includes('시간표')) {
+      showContent('timetable');
+      return;
+    }
+    if (label.includes('셔틀버스') || label.includes('셔틀')) {
+      showContent('shuttle');
+      return;
+    }
+    if (label.includes('학사일정') || label.includes('학사')) {
+      showContent('calendar');
+      return;
+    }
+    if (label.includes('프로필')) {
+      showContent('profile');
+      return;
+    }
+    if (label.includes('설정')) {
+      showContent('settings');
+      return;
+    }
+    if (label.includes('알림')) {
+      toggleNotifications();
+      return;
+    }
+    if (label.includes('로그아웃')) {
+      handleLogout();
+      return;
+    }
+    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        themeToggle.checked = !themeToggle.checked;
+        themeToggle.dispatchEvent(new Event('change'));
       }
-    });
+      return;
+    }
+    if (label.includes('내 위치') || label.includes('위치')) {
+      trackUserLocation();
+      return;
+    }
+    if (label.includes('확대')) {
+      zoomIn();
+      return;
+    }
+    if (label.includes('축소')) {
+      zoomOut();
+      return;
+    }
+    if (label.includes('초기화') || label.includes('리셋')) {
+      resetMapView();
+      return;
+    }
+    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
   });
 }
 
@@ -1366,15 +1377,7 @@ window.addEventListener('storage', (event) => {
     }
   }
 
-  // 단축키가 변경되었을 때 리스너 재등록
-  if (event.key === 'keyboardShortcuts') {
-    applyUserShortcuts();
-  }
-
-  // ★ 자동 로그아웃 설정이 변경되었을 때 타이머 재설정
-  if (event.key === 'autoLogout') {
-    resetAutoLogoutTimer();
-  }
+  // 단축키가 변경되었을 때 리스너는 이미 동작 중이므로, 실제 배열만 업데이트하면 됨
 });
 
 // ─────────── window 이벤트: 페이지 복원(persisted) 시 상태 갱신 ───────────
@@ -1390,10 +1393,6 @@ window.addEventListener('pageshow', (event) => {
   } else {
     document.body.classList.remove('light-mode');
   }
-  applyUserShortcuts();
-
-  // 페이지 복원 시 자동 로그아웃 타이머 재설정
-  resetAutoLogoutTimer();
 });
 
 // ─────────── toggleSidebar: 모바일 사이드바 열기/닫기 ───────────
