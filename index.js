@@ -22,14 +22,14 @@ let currentContent = 'home';
 let unreadNotifications = 0;
 let isOnline = navigator.onLine;
 
+// ★ 자동 로그아웃 타이머 ID (전역 변수)
+let autoLogoutTimer = null;
+
 // 학과 코드 ↔ 이름 매핑 객체
 const departmentMap = {};
 
 // 설정 화면 로드 여부
 let settingsLoaded = false;
-
-// 자동 로그아웃 타이머 ID
-let autoLogoutTimer = null;
 
 // ─────────── 최초 로드 시 실행할 로직 ───────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,8 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeApp();
   setupNetworkListeners();
-  setupAutoLogout();             // 자동 로그아웃 로직 초기화
-  applyKeyboardShortcuts();      // 기존 키보드 단축키 로드
+
+  // ★ 자동 로그아웃 초기화 (설정 여부에 따라 타이머를 세팅하도록)
+  setupAutoLogout();
+
+  // 기존 키보드 단축키 로드
+  applyKeyboardShortcuts();
 
   // “새로 추가된 단축키”도 동작하도록 전역 리스너 추가
   applyUserShortcuts();
@@ -54,7 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.key === 'Escape') {
       closeAllDropdowns();
     }
-    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 자동 로그아웃 타이머 초기화
+    // 사용자 활동이 있을 때마다 자동 로그아웃 타이머 리셋
+    resetAutoLogoutTimer();
   });
 
   // 검색창 Enter 키 처리
@@ -187,7 +192,7 @@ function showContent(type) {
 async function initializeApp() {
   try {
     await loadDepartments();
-    initNaverMap();
+    initNaverMap();         // ★ 캠퍼스 지도 초기화 (오류 처리 포함)
     await Promise.all([
       loadStats(),
       loadNotifications(),
@@ -707,9 +712,10 @@ function renderLectureReviews(popular, recent) {
 
 // ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
+  // ★ naver.maps 객체가 정상적으로 로드되었는지 확인
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
+    showErrorFallback('naverMap', '지도를 불러올 수 없습니다 (API 인증 실패)');
     return;
   }
 
@@ -734,7 +740,7 @@ function initNaverMap() {
     naverMap = new naver.maps.Map(mapContainer, mapOptions);
   } catch (error) {
     console.error('지도 초기화 오류:', error);
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
+    showErrorFallback('naverMap', '지도를 불러올 수 없습니다 (인증 오류 또는 기타 오류)');
   }
 }
 
@@ -1215,20 +1221,48 @@ function isCategoryEnabled(category) {
 
 // ─────────── setupAutoLogout: 비활성 시 자동 로그아웃 로직 초기화 ───────────
 function setupAutoLogout() {
+  // 사용자 활동(마우스 이동, 키 입력, 클릭)이 있을 때마다 타이머 리셋
   document.addEventListener('mousemove', resetAutoLogoutTimer);
   document.addEventListener('keypress', resetAutoLogoutTimer);
   document.addEventListener('click', resetAutoLogoutTimer);
+  // 최초 한 번 타이머 설정 시도
   resetAutoLogoutTimer();
 }
 
+// ─────────── resetAutoLogoutTimer: 실제 재설정 로직 ───────────
 function resetAutoLogoutTimer() {
-  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
-  const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
-  if (!cfg.enabled) return;
+  // 기존 타이머가 있으면 삭제
+  if (autoLogoutTimer) {
+    clearTimeout(autoLogoutTimer);
+    autoLogoutTimer = null;
+  }
 
-  const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
+  // 로컬스토리지에서 { enabled: boolean, timeoutMinutes: number } 형태로 가져오도록 가정
+  // ★ 만약 해당 키가 없으면 { enabled: false, timeoutMinutes: 0 } 사용
+  let cfg;
+  try {
+    cfg = JSON.parse(localStorage.getItem('autoLogout'));
+    if (!cfg || typeof cfg !== 'object') {
+      cfg = { enabled: false, timeoutMinutes: 0 };
+    }
+  } catch {
+    cfg = { enabled: false, timeoutMinutes: 0 };
+  }
+
+  // 활성화가 되어 있지 않으면 타이머를 세팅하지 않고 종료
+  if (!cfg.enabled) {
+    return;
+  }
+
+  // timeoutMinutes가 0 이하이거나 숫자가 아니면 기본 1분 사용
+  let minutes = parseInt(cfg.timeoutMinutes, 10);
+  if (isNaN(minutes) || minutes <= 0) {
+    minutes = 1;
+  }
+
+  const timeoutMs = minutes * 60 * 1000;
   autoLogoutTimer = setTimeout(() => {
-    // 실제 로그아웃 처리 (예: localStorage에서 사용자 정보 제거 후 홈으로)
+    // 실제 로그아웃 처리
     localStorage.removeItem('currentLoggedInUser');
     showMessage('자동 로그아웃되었습니다', 'info');
     checkUserStatus();
@@ -1274,7 +1308,6 @@ function applyUserShortcuts() {
     userShortcuts.forEach((entry) => {
       if (entry.key === pressedKey && entry.name) {
         e.preventDefault();
-        // 아래는 예시 로직입니다. 
         // entry.name(라벨)에 따라 원하는 동작을 구현하세요.
         switch (entry.name) {
           case '대시보드 이동':
@@ -1337,6 +1370,11 @@ window.addEventListener('storage', (event) => {
   if (event.key === 'keyboardShortcuts') {
     applyUserShortcuts();
   }
+
+  // ★ 자동 로그아웃 설정이 변경되었을 때 타이머 재설정
+  if (event.key === 'autoLogout') {
+    resetAutoLogoutTimer();
+  }
 });
 
 // ─────────── window 이벤트: 페이지 복원(persisted) 시 상태 갱신 ───────────
@@ -1353,6 +1391,9 @@ window.addEventListener('pageshow', (event) => {
     document.body.classList.remove('light-mode');
   }
   applyUserShortcuts();
+
+  // 페이지 복원 시 자동 로그아웃 타이머 재설정
+  resetAutoLogoutTimer();
 });
 
 // ─────────── toggleSidebar: 모바일 사이드바 열기/닫기 ───────────
