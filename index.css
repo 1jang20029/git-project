@@ -61,6 +61,7 @@ body {
 }
 
 #main-menu .nav-item {
+  position: relative; /* 드롭다운을 부모 기준으로 위치시키기 위해 추가 */
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -71,7 +72,6 @@ body {
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  position: relative; /* dropdown 위치를 위한 기준 */
 }
 
 #main-menu .nav-item:hover {
@@ -95,55 +95,15 @@ body {
   border-radius: 0 2px 2px 0;
 }
 
+/* 네비게이션 아이콘 */
 #main-menu .nav-icon {
   font-size: 1.2rem;
   display: inline-block;
   width: 24px;
   text-align: center;
-}
-
-/* =========================
-   학생서비스 드롭다운 메뉴
-   ========================= */
-#nav-student-services .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  min-width: 180px;
-  padding: 0.5rem 0;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  display: none;
-  z-index: 1100;
-}
-
-#nav-student-services:hover .dropdown-menu {
-  display: block;
-}
-
-#nav-student-services .dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  color: #f1f5f9;
-  font-size: 0.9rem;
-}
-
-#nav-student-services .dropdown-item:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-#nav-student-services .dropdown-item .nav-icon {
-  font-size: 1.1rem;
-  width: 20px;
-  text-align: center;
+  /* ← 여기를 추가하여, 부모의 텍스트 색상을 무시하고
+         기본 이모지(또는 브라우저 기본 글자색)로 표시되게 함 */
+  color: initial;
 }
 
 /* =========================
@@ -180,6 +140,47 @@ body {
   font-size: 1.1rem;
   width: 20px;
   text-align: center;
+  /* ← 여기도 추가 */
+  color: initial;
+}
+
+/* =========================
+   학생서비스 드롭다운 메뉴
+   ========================= */
+#nav-student-services .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 0.5rem 0;
+  min-width: 180px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  display: none; /* 기본은 숨김 */
+  margin-top: 0.5rem;
+  z-index: 1100;
+}
+
+#nav-student-services .dropdown-menu li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#nav-student-services .dropdown-menu li:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* 부모에 hover 시 자식 드롭다운을 보이도록 */
+#nav-student-services:hover .dropdown-menu {
+  display: block;
 }
 
 /* =========================
@@ -760,7 +761,7 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
   padding: 0.75rem;
-  color: #94a3b9;
+  color: #94a3b8;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -1051,7 +1052,7 @@ body {
 /* 활성화된 메뉴 아이콘/텍스트 색상 */
 .nav-item.active .nav-icon,
 .nav-item.active span {
-  color: #3b82f6;
+  color: #3b82f6; /* 이 부분은 텍스트만 색상 변경, nav-icon은 위에서 초기화했으므로 영향 없음 */
 }
 
 .nav-item.active .nav-icon {
