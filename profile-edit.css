@@ -1,6 +1,3 @@
-/* ==================================================
-   공통 리셋
-   ================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -20,7 +17,6 @@ body {
     min-height: 100vh;
 }
 
-/* 헤더 부분 */
 header {
     background-color: #c62917;
     color: white;
@@ -44,7 +40,23 @@ header {
     font-weight: bold;
 }
 
-/* 프로필 이미지 섹션 */
+.content-section {
+    padding: 16px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 수정된 프로필 이미지 섹션 스타일 */
 .profile-image-section {
     display: flex;
     flex-direction: column;
@@ -53,6 +65,7 @@ header {
     position: relative;
 }
 
+/* 수정된 프로필 이미지 스타일 */
 .profile-image-container {
     position: relative;
     width: 100px;
@@ -85,7 +98,7 @@ header {
     margin-left: auto; /* 우측으로 정렬 */
 }
 
-/* 편집 버튼 */
+/* 수정된 편집 버튼 스타일 - 프로필과 겹치도록 */
 .edit-image-button {
     position: absolute;
     bottom: -12px;
@@ -106,7 +119,6 @@ header {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* 폼 그룹 */
 .form-group {
     margin-bottom: 14px;
     position: relative;
@@ -141,7 +153,6 @@ header {
     color: #777;
 }
 
-/* 자동완성 드롭다운 */
 .autocomplete-dropdown {
     position: absolute;
     top: 100%;
@@ -187,14 +198,12 @@ header {
     background-color: #e8f4fd;
 }
 
-/* 구분선 */
 .divider {
     height: 1px;
     background-color: #eee;
     margin: 20px 0;
 }
 
-/* 버튼 그룹 */
 .button-group {
     display: flex;
     gap: 10px;
@@ -224,7 +233,6 @@ header {
     cursor: pointer;
 }
 
-/* 섹션 구분선 */
 .section-divider {
     padding: 8px 16px;
     background-color: #f9f9f9;
@@ -234,7 +242,6 @@ header {
     border-bottom: 1px solid #eee;
 }
 
-/* 에러 메시지 */
 .error-message {
     color: #c62917;
     font-size: 13px;
@@ -250,14 +257,13 @@ header {
     display: block;
 }
 
-/* 안내 문구 */
 .notice-text {
     font-size: 13px;
     color: #666;
     margin-top: 6px;
 }
 
-/* 모달 스타일 */
+/* 모달 스타일 개선 */
 .modal-container {
     position: fixed;
     top: 0;

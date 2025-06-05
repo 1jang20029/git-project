@@ -1,4 +1,6 @@
+// =============================================================================
 // index.js (메인 페이지 스크립트)
+// =============================================================================
 
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
@@ -10,7 +12,7 @@
   }
 })();
 
-// ─────────── 전역 변수 선언 ───────────
+// ─────────── 전역 변수 선언 (기존 코드 유지) ───────────
 let naverMap;
 let mapMarkers = [];
 let infoWindows = [];
@@ -97,7 +99,7 @@ function setupNetworkListeners() {
 }
 
 // ─────────── showContent: SPA처럼 화면 전환 처리 ───────────
-async function showContent(type) {
+function showContent(type) {
   const panes = [
     'homeContent',
     'buildingsContent',
@@ -186,46 +188,6 @@ async function showContent(type) {
     setTimeout(() => {
       if (naverMap.refresh) naverMap.refresh();
     }, 100);
-  }
-
-  // 프로필 화면일 때, profile-edit.html 을 동적으로 로드
-  if (type === 'profile') {
-    const container = document.getElementById('profileContentPane');
-    // 컨테이너 내부를 비운 뒤
-    container.innerHTML = '';
-    // profile-edit.html fetch
-    fetch('profile-edit.html')
-      .then(res => {
-        if (!res.ok) throw new Error('profile-edit.html 불러오기 실패');
-        return res.text();
-      })
-      .then(html => {
-        container.innerHTML = html;
-        // CSS 및 JS 동적 로드
-        if (!document.getElementById('profile-edit-css')) {
-          const link = document.createElement('link');
-          link.id = 'profile-edit-css';
-          link.rel = 'stylesheet';
-          link.href = 'profile-edit.css';
-          document.head.appendChild(link);
-        }
-        if (!document.getElementById('profile-edit-js')) {
-          const script = document.createElement('script');
-          script.id = 'profile-edit-js';
-          script.src = 'profile-edit.js';
-          script.defer = true;
-          document.body.appendChild(script);
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        container.innerHTML = `
-          <div class="error-fallback">
-            <h3>⚠️ 오류 발생</h3>
-            <p>프로필 화면을 불러올 수 없습니다</p>
-          </div>
-        `;
-      });
   }
 }
 
@@ -684,444 +646,518 @@ async function loadLectureReviews() {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-    // 인기 강의평가 / 최근 강의평가 동시에 요청
-    const [popularRes, recentRes] = await Promise.all([
+    const [popRes, recRes] = await Promise.all([
       fetch('/api/reviews/popular'),
-      fetch('/api/reviews/recent')
+      fetch('/api/reviews/recent'),
     ]);
 
-    if (!popularRes.ok || !recentRes.ok) {
-      throw new Error('API 응답 오류');
-    }
+    if (!popRes.ok || !recRes.ok) throw new Error('API 응답 오류');
 
-    const popularReviews = await popularRes.json();
-    const recentReviews  = await recentRes.json();
-    renderLectureReviews(popularReviews, recentReviews);
+    const popular = await popRes.json();
+    const recent  = await recRes.json();
+    renderLectureReviews(popular, recent);
   } catch (err) {
     console.error('강의평가 데이터 로드 실패:', err);
-    // 빈 배열로 렌더링
     renderLectureReviews([], []);
   }
 }
 
 // ─────────── renderLectureReviews: 강의평가 렌더링 ───────────
-function renderLectureReviews(popularReviews, recentReviews) {
-  const popularEl = document.getElementById('popularReviews');
-  const recentEl  = document.getElementById('recentReviews');
+function renderLectureReviews(popular, recent) {
+  const popEl = document.getElementById('popularReviews');
+  const recEl = document.getElementById('recentReviews');
 
-  if (!popularEl || !recentEl) return;
+  if (!popEl || !recEl) return;
 
-  popularEl.innerHTML = '';
-  recentEl.innerHTML  = '';
-
-  // 인기 강의평가 항목 생성
-  popularReviews.forEach((r) => {
-    // 카테고리가 “강의평가”인 경우에도 설정에서 수신 여부 확인
+  popular.forEach((r) => {
     if (!isCategoryEnabled('강의평가')) return;
 
     const item = document.createElement('div');
     item.className = 'notice-item';
-    item.onclick = () => viewReviewDetail(r.id);
     item.innerHTML = `
       <div class="notice-header">
-        <span class="notice-category">강의평가</span>
-        <span class="notice-date">${r.rating} / 5.0</span>
+        <span class="notice-category">${r.category}</span>
+        <span class="notice-date" style="color:#f59e0b;">
+          ${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}
+        </span>
       </div>
-      <div class="notice-title">${r.courseName} - ${r.professor}</div>
-      <div class="notice-summary">${r.summary}</div>
-      <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-        👍 ${r.likes || 0} 💬 ${r.comments || 0}
+      <div class="notice-title">${r.title}</div>
+      <div class="notice-summary">"${r.comment}"</div>
+      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
+        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
       </div>
     `;
-    popularEl.appendChild(item);
+    popEl.appendChild(item);
   });
 
-  // 최근 강의평가 항목 생성
-  recentReviews.forEach((r) => {
+  recent.forEach((r) => {
     if (!isCategoryEnabled('강의평가')) return;
 
     const item = document.createElement('div');
     item.className = 'notice-item';
-    item.onclick = () => viewReviewDetail(r.id);
     item.innerHTML = `
       <div class="notice-header">
-        <span class="notice-category">강의평가</span>
-        <span class="notice-date">${r.date}</span>
+        <span class="notice-category">${r.category}</span>
+        <span class="notice-date">${r.timeAgo}</span>
       </div>
-      <div class="notice-title">${r.courseName} - ${r.professor}</div>
-      <div class="notice-summary">${r.summary}</div>
-      <div style="margin-top:0.5rem; color:#94a3b8; font-size:0.8rem;">
-        👍 ${r.likes || 0} 💬 ${r.comments || 0}
+      <div class="notice-title">${r.title}</div>
+      <div class="notice-summary">"${r.comment}"</div>
+      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
+        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
       </div>
     `;
-    recentEl.appendChild(item);
-  });
-}
-
-// ─────────── viewNoticeDetail: 공지사항 상세 보기 ───────────
-function viewNoticeDetail(noticeId) {
-  // 상세 페이지로 이동하거나 모달을 띄울 수 있습니다.
-  // 예시: window.location.href = `/notices/${noticeId}`;
-  alert(`공지사항 ${noticeId} 세부 정보를 불러옵니다.`);
-}
-
-// ─────────── viewReviewDetail: 강의평가 상세 보기 ───────────
-function viewReviewDetail(reviewId) {
-  // 상세 페이지로 이동하거나 모달을 띄울 수 있습니다.
-  // 예시: window.location.href = `/reviews/${reviewId}`;
-  alert(`강의평가 ${reviewId} 세부 정보를 불러옵니다.`);
-}
-
-// ─────────── showBuildingOnMap: 지도에서 건물 보기 ───────────
-function showBuildingOnMap(buildingId) {
-  // markers 배열에서 해당 건물 마커 찾기
-  const marker = mapMarkers.find(m => m.buildingId === buildingId);
-  if (marker && naverMap) {
-    naverMap.setCenter(marker.getPosition());
-    naverMap.setZoom(18);
-    // 인포윈도우 열기
-    const infoWindow = infoWindows.find(w => w.buildingId === buildingId);
-    if (infoWindow) {
-      infoWindow.open(naverMap, marker);
-    }
-  }
-}
-
-// ─────────── getBuildingDirections: 건물 길찾기 ───────────
-function getBuildingDirections(buildingId) {
-  // 현재 위치가 없으면 경고
-  if (!userLocation) {
-    showMessage('현재 위치를 먼저 확인해주세요.', 'error');
-    return;
-  }
-  // markers 배열에서 목적지 마커 찾기
-  const destMarker = mapMarkers.find(m => m.buildingId === buildingId);
-  if (!destMarker) {
-    showMessage('목적지 정보를 찾을 수 없습니다.', 'error');
-    return;
-  }
-
-  // 길찾기 요청
-  const directionsService = new naver.maps.DirectionsService();
-  const directionsLayer   = new naver.maps.DirectionsRenderer({
-    map: naverMap,
-    preserveViewport: false,
-    panel: null
-  });
-
-  directionsService.route({
-    origin: userLocation,
-    destination: destMarker.getPosition(),
-    travelMode: naver.maps.TravelMode.WALKING
-  }, (status, response) => {
-    if (status === naver.maps.DirectionsStatus.OK) {
-      directionsLayer.setDirections(response);
-    } else {
-      showMessage('길찾기를 실패했습니다.', 'error');
-      console.error('Directions 오류:', status);
-    }
+    recEl.appendChild(item);
   });
 }
 
 // ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
-  const mapContainer = document.getElementById('naverMap');
-  if (!mapContainer) return;
-
-  // 기본 위치를 캠퍼스 중심 좌표로 설정
-  const campusCenter = new naver.maps.LatLng(37.263573, 127.028601);
-
-  naverMap = new naver.maps.Map(mapContainer, {
-    center: campusCenter,
-    zoom: 15,
-    zoomControl: true,
-    zoomControlOptions: {
-      position: naver.maps.Position.TOP_RIGHT
-    },
-    mapTypeControl: true
-  });
-}
-
-// ─────────── addMapMarkers: 건물 위치 마커 추가 ───────────
-function addMapMarkers(buildings) {
-  if (!naverMap) return;
-
-  // 이전 마커 및 인포윈도우 삭제
-  mapMarkers.forEach(m => m.setMap(null));
-  infoWindows.forEach(w => w.close());
-  mapMarkers = [];
-  infoWindows = [];
-
-  buildings.forEach((b) => {
-    if (!b.latitude || !b.longitude) return;
-    const position = new naver.maps.LatLng(b.latitude, b.longitude);
-    const marker = new naver.maps.Marker({
-      position: position,
-      map: naverMap,
-      title: b.name
-    });
-    marker.buildingId = b.id;
-
-    const infoWindow = new naver.maps.InfoWindow({
-      content: `
-        <div style="padding:0.5rem; max-width:200px;">
-          <h4 style="margin:0 0 0.5rem 0;">${b.name}</h4>
-          <p style="margin:0 0 0.5rem 0;">${b.description}</p>
-          <button style="
-            background:#3b82f6;
-            color:#fff;
-            border:none;
-            padding:0.4rem 0.8rem;
-            border-radius:4px;
-            cursor:pointer;
-            font-size:0.85rem;
-          " onclick="getBuildingDirections('${b.id}')">
-            길찾기
-          </button>
-        </div>
-      `
-    });
-    infoWindow.buildingId = b.id;
-
-    marker.addListener('click', () => {
-      infoWindows.forEach(w => w.close());
-      infoWindow.open(naverMap, marker);
-    });
-
-    mapMarkers.push(marker);
-    infoWindows.push(infoWindow);
-  });
-}
-
-// ─────────── zoomIn: 지도 확대 ───────────
-function zoomIn() {
-  if (!naverMap) return;
-  const currZoom = naverMap.getZoom();
-  naverMap.setZoom(currZoom + 1, true);
-}
-
-// ─────────── zoomOut: 지도 축소 ───────────
-function zoomOut() {
-  if (!naverMap) return;
-  const currZoom = naverMap.getZoom();
-  naverMap.setZoom(currZoom - 1, true);
-}
-
-// ─────────── resetMapView: 지도 초기 뷰로 재설정 ───────────
-function resetMapView() {
-  if (!naverMap) return;
-  const campusCenter = new naver.maps.LatLng(37.263573, 127.028601);
-  naverMap.setCenter(campusCenter);
-  naverMap.setZoom(15);
-}
-
-// ─────────── trackUserLocation: 사용자 위치 추적 ───────────
-function trackUserLocation() {
-  if (!naverMap || !navigator.geolocation) {
-    showMessage('위치 정보를 불러올 수 없습니다.', 'error');
+  if (typeof naver === 'undefined' || !naver.maps) {
+    console.error('네이버 지도 API가 로드되지 않았습니다.');
+    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const latlng = new naver.maps.LatLng(
-        position.coords.latitude,
-        position.coords.longitude
-      );
-      userLocation = latlng;
+  const mapContainer = document.getElementById('naverMap');
+  if (!mapContainer) return;
 
-      if (userMarker) {
-        userMarker.setPosition(latlng);
-      } else {
-        userMarker = new naver.maps.Marker({
-          position: latlng,
-          map: naverMap,
-          icon: {
-            content: '<div style="background:#10b981; width:12px; height:12px; border-radius:50%; border:2px solid white;"></div>',
-            size: new naver.maps.Size(16, 16),
-            anchor: new naver.maps.Point(8, 8)
-          }
-        });
-      }
-
-      naverMap.setCenter(latlng);
-      naverMap.setZoom(17);
-    },
-    (err) => {
-      console.error('위치 정보 가져오기 실패:', err);
-      showMessage('위치 정보를 사용할 수 없습니다.', 'error');
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    }
-  );
+  try {
+    const yeonsung = new naver.maps.LatLng(
+      37.39661657434427,
+      126.90772437800818
+    );
+    const mapOptions = {
+      center: yeonsung,
+      zoom: 16,
+      minZoom: 14,
+      maxZoom: 19,
+      zoomControl: false,
+      logoControl: false,
+      mapDataControl: false,
+      scaleControl: false,
+    };
+    naverMap = new naver.maps.Map(mapContainer, mapOptions);
+  } catch (error) {
+    console.error('지도 초기화 오류:', error);
+    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
+  }
 }
 
-// ─────────── checkUserStatus: 로그인/비회원 상태 확인 ───────────
+// ─────────── addMapMarkers: 건물 마커 추가 ───────────
+function addMapMarkers(buildings) {
+  if (!naverMap) return;
+
+  try {
+    mapMarkers.forEach((m) => m.setMap(null));
+    infoWindows.forEach((iw) => iw.close());
+    mapMarkers = [];
+    infoWindows = [];
+
+    buildings.forEach((b) => {
+      const marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(b.position.lat, b.position.lng),
+        map: naverMap,
+        title: b.name,
+      });
+
+      const infoWindow = new naver.maps.InfoWindow({
+        content: `
+          <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
+            <strong style="color: #3b82f6;">${b.name}</strong><br>
+            <span style="color: #94a3b8;">${b.description}</span>
+          </div>
+        `,
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        anchorSize: new naver.maps.Size(0, 0),
+      });
+
+      naver.maps.Event.addListener(marker, 'click', () => {
+        infoWindows.forEach((iw) => iw.close());
+        infoWindow.open(naverMap, marker);
+      });
+
+      mapMarkers.push(marker);
+      infoWindows.push(infoWindow);
+    });
+  } catch (error) {
+    console.error('지도 마커 추가 오류:', error);
+  }
+}
+
+// ─────────── showErrorFallback: 에러 발생 시 화면 대체 ───────────
+function showErrorFallback(containerId, message) {
+  const container = document.getElementById(containerId);
+  if (container) {
+    container.innerHTML = `
+      <div class="error-fallback">
+        <h3>⚠️ 오류 발생</h3>
+        <p>${message}</p>
+      </div>
+    `;
+  }
+}
+
+// ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
+function updateTimetable() {
+  const currentUser = localStorage.getItem('currentLoggedInUser');
+  const contentEl = document.getElementById('timetableContent');
+
+  if (!contentEl) return;
+
+  if (!currentUser) {
+    contentEl.innerHTML = `
+      <div class="empty-state">
+        <h3>🔒 로그인 필요</h3>
+        <p>개인 시간표를 확인하려면 로그인하세요</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (!isOnline) {
+    contentEl.innerHTML = `
+      <div class="error-fallback">
+        <h3>📶 오프라인 상태</h3>
+        <p>시간표 정보를 불러올 수 없습니다</p>
+      </div>
+    `;
+    return;
+  }
+
+  contentEl.innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <span style="margin-left: 0.5rem;">시간표를 불러오는 중...</span>
+    </div>
+  `;
+
+  fetch(`/api/timetable?user=${encodeURIComponent(currentUser)}`)
+    .then((res) => {
+      if (!res.ok) throw new Error('API 응답 오류');
+      return res.json();
+    })
+    .then((courses) => {
+      renderTimetable(courses);
+    })
+    .catch((err) => {
+      console.error('시간표 로드 오류:', err);
+      contentEl.innerHTML = `
+        <div class="empty-state">
+          <h3>📅 시간표 없음</h3>
+          <p>등록된 시간표가 없거나 불러올 수 없습니다</p>
+        </div>
+      `;
+    });
+}
+
+// ─────────── renderTimetable: 오늘 시간표 렌더링 ───────────
+function renderTimetable(courses) {
+  const contentEl = document.getElementById('timetableContent');
+  if (!contentEl) return;
+
+  const now = new Date();
+  const currentDay = now.getDay();
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+  const todayCourses = [];
+
+  courses.forEach((course) => {
+    course.times.forEach((time) => {
+      // time.day가 0(일요일인 경우)일 때 특수 처리
+      if (
+        time.day === currentDay ||
+        (currentDay === 0 && time.day === 6)
+      ) {
+        // start, end는 “몇 교시”인지 나타낸다 (예: 0은 오전 8:30 시작, 1은 오전 9:30 시작 등)
+        const startHour = 8 + time.start;
+        const startMinute = 30;
+        const startTime = startHour * 60 + startMinute;
+        const endHour = 8 + time.end + 1;
+        const endMinute = 20;
+        const endTime = endHour * 60 + endMinute;
+
+        let status = 'upcoming';
+        let timeInfo = '';
+
+        if (currentTime >= startTime && currentTime < endTime) {
+          status = 'current';
+          const remaining = endTime - currentTime;
+          timeInfo = formatTimeRemaining(remaining, '종료까지');
+        } else if (currentTime >= endTime) {
+          status = 'finished';
+          timeInfo = '수업 종료';
+        } else {
+          const toStart = startTime - currentTime;
+          if (toStart > 0) {
+            status = 'upcoming';
+            timeInfo = formatTimeRemaining(toStart, '시작까지');
+          } else {
+            status = 'upcoming';
+            timeInfo = '곧 시작';
+          }
+        }
+
+        todayCourses.push({
+          name: course.name,
+          room: course.room,
+          professor: course.professor,
+          status,
+          timeInfo,
+          displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+          startTime,
+        });
+      }
+    });
+  });
+
+  todayCourses.sort((a, b) => a.startTime - b.startTime);
+
+  if (todayCourses.length === 0) {
+    contentEl.innerHTML = `
+      <div class="empty-state">
+        <h3>📅 오늘은 휴일</h3>
+        <p>오늘은 수업이 없습니다</p>
+      </div>
+    `;
+    return;
+  }
+
+  contentEl.innerHTML = '';
+  todayCourses.forEach((ci) => {
+    const statusText = {
+      current: '진행중',
+      upcoming: '예정',
+      finished: '종료',
+    }[ci.status];
+
+    const div = document.createElement('div');
+    div.className = 'class-item';
+    div.innerHTML = `
+      <div class="class-time">
+        <div class="class-time-main">${ci.displayTime}</div>
+        <div class="class-time-remaining">${ci.timeInfo}</div>
+      </div>
+      <div class="class-info">
+        <div class="class-name">${ci.name}</div>
+        <div class="class-location">${ci.room || '강의실 미정'} | ${ci.professor || '교수명 미정'}</div>
+      </div>
+      <div class="class-status status-${ci.status}">${statusText}</div>
+    `;
+    contentEl.appendChild(div);
+  });
+}
+
+// ─────────── formatTimeRemaining: 남은 시간 텍스트 생성 ───────────
+function formatTimeRemaining(minutes, suffix) {
+  if (minutes < 60) {
+    return `${minutes}분 ${suffix}`;
+  } else {
+    const hours = Math.floor(minutes / 60);
+    const remain = minutes % 60;
+    if (remain === 0) {
+      return `${hours}시간 ${suffix}`;
+    } else {
+      return `${hours}시간 ${remain}분 ${suffix}`;
+    }
+  }
+}
+
+// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
+function toggleNotifications() {
+  const dd = document.getElementById('notification-dropdown');
+  if (dd && dd.classList.contains('show')) {
+    closeNotificationDropdown();
+  } else {
+    showNotificationDropdown();
+  }
+}
+
+function showNotificationDropdown() {
+  closeUserDropdown();
+  const dd = document.getElementById('notification-dropdown');
+  if (dd) dd.classList.add('show');
+}
+
+function closeNotificationDropdown() {
+  const dd = document.getElementById('notification-dropdown');
+  if (dd) dd.classList.remove('show');
+}
+
+// ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
+function toggleUserMenu() {
+  const dropdown = document.getElementById('user-dropdown');
+  const currentUser = localStorage.getItem('currentLoggedInUser');
+
+  if (!currentUser) {
+    if (confirm('로그인하시겠습니까?')) {
+      window.open('login.html', '_blank');
+    }
+    return;
+  }
+
+  if (dropdown && dropdown.classList.contains('show')) {
+    closeUserDropdown();
+  } else {
+    showUserDropdown();
+  }
+}
+
+function showUserDropdown() {
+  closeNotificationDropdown();
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown) dropdown.classList.add('show');
+}
+
+function closeUserDropdown() {
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown) dropdown.classList.remove('show');
+}
+
+// ─────────── closeAllDropdowns: 모든 드롭다운 닫기 ───────────
+function closeAllDropdowns() {
+  closeNotificationDropdown();
+  closeUserDropdown();
+  closeStudentServiceDropdown();
+}
+
+// ─────────── closeStudentServiceDropdown: 학생 서비스 드롭다운 닫기 ───────────
+function closeStudentServiceDropdown() {
+  // → dropdown.style.display = 'none' 대신 inline 스타일을 제거하여
+  //    CSS의 :hover 규칙에 의해 재표시될 수 있도록 수정합니다.
+  const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
+  if (dropdown) {
+    dropdown.removeAttribute('style');
+  }
+}
+
+// ─────────── showProfile: 프로필 화면으로 이동 ───────────
+function showProfile() {
+  const currentUser = localStorage.getItem('currentLoggedInUser');
+  if (currentUser) {
+    showContent('profile');
+  } else {
+    showMessage('로그인이 필요한 서비스입니다.', 'error');
+  }
+  closeUserDropdown();
+}
+
+// ─────────── handleLogout: 로그아웃 처리 ───────────
+function handleLogout() {
+  const currentUser = localStorage.getItem('currentLoggedInUser');
+  if (currentUser) {
+    if (confirm('로그아웃 하시겠습니까?')) {
+      localStorage.removeItem('currentLoggedInUser');
+      checkUserStatus();
+      showMessage('로그아웃 되었습니다', 'success');
+      showContent('home');
+    }
+  } else {
+    showMessage('로그인 상태가 아닙니다.', 'error');
+  }
+  closeUserDropdown();
+}
+
+// ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
+async function handleGlobalSearch() {
+  const query = document.getElementById('search-input').value.trim().toLowerCase();
+  if (!query) return;
+
+  if (!isOnline) {
+    showMessage('오프라인 상태에서는 검색을 사용할 수 없습니다', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
+    if (res.ok) {
+      showContent('buildings');
+      document.getElementById('search-input').value = '';
+      return;
+    }
+  } catch {}
+
+  try {
+    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
+    if (res.ok) {
+      showContent('notices');
+      document.getElementById('search-input').value = '';
+      return;
+    }
+  } catch {}
+
+  showMessage('검색 결과를 찾을 수 없습니다.', 'info');
+}
+
+// ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
 function checkUserStatus() {
-  // 예시: 세션 또는 토큰 기반으로 사용자 상태 확인
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const userNameEl  = document.getElementById('user-name');
   const userRoleEl  = document.getElementById('user-role');
-  const avatarEl    = document.getElementById('user-avatar');
+  const dropdownNameEl = document.getElementById('dropdown-user-name');
+  const dropdownRoleEl = document.getElementById('dropdown-user-role');
+  const avatarEl   = document.getElementById('user-avatar');
 
-  if (currentUser) {
-    // 로그인된 상태라면 로컬스토리지에 저장된 정보 사용
-    const name = localStorage.getItem(`user_${currentUser}_name`) || '사용자';
-    const role = localStorage.getItem(`user_${currentUser}_role`) || '학생';
-    userNameEl.textContent = name;
-    userRoleEl.textContent = role;
-    // 프로필 이미지가 있으면 업데이트
-    const profileImageType = localStorage.getItem(`user_${currentUser}_profileImageType`);
-    const profileImage     = localStorage.getItem(`user_${currentUser}_profileImage`);
-    if (profileImageType === 'emoji') {
-      avatarEl.textContent = profileImage || '👤';
-    } else if (profileImageType === 'image') {
-      avatarEl.innerHTML = `<img src="${profileImage}" style="width:100%; height:100%; border-radius:50%;">`;
-    } else {
-      avatarEl.textContent = '👤';
-    }
-  } else {
-    // 비로그인 상태
-    userNameEl.textContent = '게스트';
-    userRoleEl.textContent = '방문자';
-    avatarEl.textContent   = '👤';
-  }
-}
-
-// ─────────── updateTimetable: 오늘 시간표 갱신 ───────────
-function updateTimetable() {
-  const timetableEl = document.getElementById('timetableContent');
-  if (!timetableEl) return;
-
-  // 사용자 학번 또는 토큰 기반으로 API 요청할 수 있음
-  fetch('/api/timetable/today')
-    .then(res => {
-      if (!res.ok) throw new Error('시간표 API 오류');
-      return res.json();
-    })
-    .then((classes) => {
-      timetableEl.innerHTML = '';
-      if (!Array.isArray(classes) || classes.length === 0) {
-        timetableEl.innerHTML = '<p style="color:#94a3b8; text-align:center;">오늘 일정이 없습니다.</p>';
-        return;
-      }
-      classes.forEach((c) => {
-        const item = document.createElement('div');
-        item.className = 'class-item';
-        item.innerHTML = `
-          <div class="class-time">
-            <div class="class-time-main">${c.startTime} - ${c.endTime}</div>
-            <div class="class-time-remaining">${c.remainingText}</div>
-          </div>
-          <div class="class-info">
-            <div class="class-name">${c.courseName}</div>
-            <div class="class-location">${c.building} ${c.room}</div>
-          </div>
-          <div class="class-status ${
-            c.status === 'current' ? 'status-current' :
-            c.status === 'upcoming' ? 'status-upcoming' : 'status-finished'
-          }">
-            ${c.status === 'current' ? '현재 수업' :
-              c.status === 'upcoming' ? '곧 시작' : '종료된 수업'}
-          </div>
-        `;
-        timetableEl.appendChild(item);
+  if (currentUser && isOnline) {
+    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('API 응답 오류');
+        return res.json();
+      })
+      .then((user) => {
+        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
+        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
+        if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
+        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
+        updateProfileImage(user);
+      })
+      .catch(() => {
+        setGuestMode();
       });
-    })
-    .catch((err) => {
-      console.error('시간표 로드 실패:', err);
-      timetableEl.innerHTML = '<p style="color:#ef4444; text-align:center;">시간표를 불러올 수 없습니다.</p>';
-    });
-}
-
-// ─────────── applyKeyboardShortcuts: 기본 단축키 바인딩 ───────────
-function applyKeyboardShortcuts() {
-  const savedShortcuts = JSON.parse(localStorage.getItem(LS_KEY_SHORTCUTS)) || [];
-  savedShortcuts.forEach((sc) => {
-    if (!sc.key) return;
-    window.addEventListener('keydown', (e) => {
-      if (e.key.toUpperCase() === sc.key) {
-        handleShortcutAction(sc.id);
-      }
-    });
-  });
-}
-
-// ─────────── applyUserShortcuts: 사용자 정의 단축키 바인딩 ───────────
-function applyUserShortcuts() {
-  if (!workingSettings || !workingSettings.shortcuts) return;
-  workingSettings.shortcuts.forEach((sc) => {
-    if (!sc.key) return;
-    window.addEventListener('keydown', (e) => {
-      if (e.key.toUpperCase() === sc.key) {
-        handleShortcutAction(sc.id);
-      }
-    });
-  });
-}
-
-// ─────────── handleShortcutAction: 단축키에 따른 동작 처리 ───────────
-function handleShortcutAction(actionId) {
-  switch (actionId) {
-    case 'shortcut-toggle-sidebar':
-      // 사이드바 토글 (현재는 상단 메뉴 구조이므로 필요 없다면 비워두기)
-      break;
-    case 'shortcut-open-notifications':
-      toggleNotifications();
-      break;
-    case 'shortcut-go-to-settings':
-      showContent('settings');
-      break;
-    default:
-      // 사용자 정의 ID: 화면 전환 등 직접 연결
-      // 예: actionId 값이 'profile-edit' 이면 프로필 화면 열기
-      if (actionId === 'shortcut-edit-profile') {
-        showContent('profile');
-      }
-      break;
+  } else {
+    setGuestMode();
   }
 }
 
-// ─────────── isCategoryEnabled: 카테고리별 알림 수신 여부 확인 ───────────
-function isCategoryEnabled(category) {
-  const catSettings = workingSettings && workingSettings.categories;
-  return catSettings ? catSettings[category] === true : true;
+// ─────────── setGuestMode: 게스트 모드로 UI 초기화 ───────────
+function setGuestMode() {
+  const userNameEl    = document.getElementById('user-name');
+  const userRoleEl    = document.getElementById('user-role');
+  const dropdownNameEl = document.getElementById('dropdown-user-name');
+  const dropdownRoleEl = document.getElementById('dropdown-user-role');
+  const avatarEl      = document.getElementById('user-avatar');
+
+  if (userNameEl) userNameEl.textContent     = '게스트';
+  if (userRoleEl) userRoleEl.textContent     = '방문자';
+  if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
+  if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
+  if (avatarEl) avatarEl.textContent         = '👤';
 }
 
-// ─────────── shouldShowNotification: Do Not Disturb 시간 확인 ───────────
-function shouldShowNotification() {
-  // 자동 로그아웃 타임아웃과는 별개로
-  // Do Not Disturb (DND) 설정이 있으면 체크
-  // 이 예시에서는 항상 true 반환
-  return true;
-}
+// ─────────── updateProfileImage: 사용자 프로필 이미지 적용 ───────────
+function updateProfileImage(user) {
+  const avatarEl = document.getElementById('user-avatar');
+  if (!avatarEl) return;
 
-// ─────────── setupAutoLogout: 자동 로그아웃 로직 초기화 ───────────
-function setupAutoLogout() {
-  const autoSettings = workingSettings && workingSettings.autoLogout;
-  if (autoSettings && autoSettings.enabled) {
-    resetAutoLogoutTimer();
+  if (user.profileImageType === 'emoji') {
+    avatarEl.textContent = user.profileImage || '👤';
+  } else if (user.profileImage) {
+    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
+  } else {
+    avatarEl.textContent = '👤';
   }
-}
-
-// ─────────── resetAutoLogoutTimer: 자동 로그아웃 타이머 리셋 ───────────
-function resetAutoLogoutTimer() {
-  const autoSettings = workingSettings && workingSettings.autoLogout;
-  if (!autoSettings || !autoSettings.enabled) return;
-  if (autoLogoutTimer) {
-    clearTimeout(autoLogoutTimer);
-  }
-  autoLogoutTimer = setTimeout(() => {
-    // 로그아웃 처리 (세션/토큰 삭제 후 로그인 페이지로 이동)
-    handleLogout(true);
-  }, autoSettings.timeoutMinutes * 60 * 1000);
 }
 
 // ─────────── showMessage: 화면 우측 상단 슬라이드 알림 메시지 ───────────
-function showMessage(message, type = 'info') {
+function showMessage(message, type = 'info', category = '') {
+  // 1) 카테고리 구분이 필요한 알림이라면, 해당 카테고리가 꺼져 있으면 표시하지 않음
+  if (category && !isCategoryEnabled(category)) {
+    return;
+  }
+  // 2) Do Not Disturb 시간대라면 표시하지 않음
+  if (!shouldShowNotification()) {
+    return;
+  }
+
   const notification = document.createElement('div');
   const bgColor =
     type === 'success'
@@ -1167,78 +1203,318 @@ function showMessage(message, type = 'info') {
   }, 3000);
 }
 
-// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
-function toggleNotifications() {
-  const dropdown = document.getElementById('notification-dropdown');
-  if (!dropdown) return;
-  dropdown.classList.toggle('show');
-  // 열 때 새로운 알림 표시
-  if (dropdown.classList.contains('show')) {
-    unreadNotifications = 0;
-    updateNotificationCount();
+// ─────────── shouldShowNotification: DND 모드 검사 ───────────
+function shouldShowNotification() {
+  const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
+  if (!dnd.enabled) return true;
+
+  const now = new Date();
+  const hh = now.getHours();
+  const mm = now.getMinutes();
+  const totalMinutes = hh * 60 + mm;
+
+  const startHM = dnd.startHour * 60 + dnd.startMinute;
+  const endHM   = dnd.endHour * 60 + dnd.endMinute;
+
+  if (startHM < endHM) {
+    return !(totalMinutes >= startHM && totalMinutes < endHM);
+  } else {
+    // 21:00 ~ 07:00 처럼 넘어가는 경우
+    return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
   }
 }
 
-// ─────────── closeNotificationDropdown: 알림 드롭다운 닫기 ───────────
-function closeNotificationDropdown() {
-  const dropdown = document.getElementById('notification-dropdown');
-  if (dropdown) dropdown.classList.remove('show');
+// ─────────── isCategoryEnabled: 설정에서 카테고리별 알림 여부 확인 ───────────
+function isCategoryEnabled(category) {
+  const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
+  return catSettings[category] === true;
 }
 
-// ─────────── toggleUserMenu: 사용자 드롭다운 토글 ───────────
-function toggleUserMenu() {
-  const dropdown = document.getElementById('user-dropdown');
-  if (!dropdown) return;
-  dropdown.classList.toggle('show');
+// ─────────── setupAutoLogout: 비활성 시 자동 로그아웃 로직 초기화 ───────────
+function setupAutoLogout() {
+  document.addEventListener('mousemove', resetAutoLogoutTimer);
+  document.addEventListener('keypress', resetAutoLogoutTimer);
+  document.addEventListener('click', resetAutoLogoutTimer);
+  resetAutoLogoutTimer();
 }
 
-// ─────────── closeUserDropdown: 사용자 드롭다운 닫기 ───────────
-function closeUserDropdown() {
-  const dropdown = document.getElementById('user-dropdown');
-  if (dropdown) dropdown.classList.remove('show');
+function resetAutoLogoutTimer() {
+  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+  const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
+  if (!cfg.enabled) return;
+
+  const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
+  autoLogoutTimer = setTimeout(() => {
+    // 실제 로그아웃 처리 (예: localStorage에서 사용자 정보 제거 후 홈으로)
+    localStorage.removeItem('currentLoggedInUser');
+    showMessage('자동 로그아웃되었습니다', 'info');
+    checkUserStatus();
+    showContent('home');
+  }, timeoutMs);
 }
 
-// ─────────── closeStudentServiceDropdown: 학생서비스 드롭다운 닫기 ───────────
-function closeStudentServiceDropdown() {
-  const ssMenu = document.querySelector('#nav-student-services .dropdown-menu');
-  if (ssMenu) ssMenu.style.display = 'none';
+// ─────────── applyKeyboardShortcuts: 기존 키보드 단축키 로드 ───────────
+function applyKeyboardShortcuts() {
+  const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
+    toggleSidebar: 'F2',
+    openNotifications: 'F3',
+    goToSettings: 'F4'
+  };
+  document.addEventListener('keydown', (e) => {
+    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
+    const key = e.key.toUpperCase();
+
+    // 알림 열기
+    if (key === (shortcuts.openNotifications || '').toUpperCase()) {
+      e.preventDefault();
+      toggleNotifications();
+      return;
+    }
+    // 설정으로 이동
+    if (key === (shortcuts.goToSettings || '').toUpperCase()) {
+      e.preventDefault();
+      showContent('settings');
+      return;
+    }
+  });
 }
 
-// ─────────── handleGlobalSearch: 검색창 엔터 처리 ───────────
-function handleGlobalSearch() {
-  const query = document.getElementById('search-input').value.trim();
-  if (!query) {
-    showMessage('검색어를 입력해주세요.', 'error');
-    return;
+// ─────────── applyUserShortcuts: 사용자 정의 단축키 로컬스토리지 기반 실행 ───────────
+function applyUserShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
+    const pressedKey = e.key.toUpperCase();
+    const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
+
+    // 눌린 키가 userShortcuts 중 하나의 key와 일치하는지 탐색
+    const matched = userShortcuts.find(entry => entry.key.toUpperCase() === pressedKey);
+    if (!matched) return;
+    if (!matched.name) return;
+
+    e.preventDefault();
+    const label = matched.name.toLowerCase();
+
+    // 레이블 내부 키워드 매핑
+    if (label.includes('대시보드')) {
+      showContent('home');
+      return;
+    }
+    if (label.includes('건물')) {
+      showContent('buildings');
+      return;
+    }
+    if (label.includes('커뮤니티')) {
+      showContent('community');
+      return;
+    }
+    if (label.includes('강의평가')) {
+      showContent('lecture-review');
+      return;
+    }
+    if (label.includes('공지사항')) {
+      showContent('notices');
+      return;
+    }
+    if (label.includes('내 시간표') || label.includes('시간표')) {
+      showContent('timetable');
+      return;
+    }
+    if (label.includes('셔틀버스') || label.includes('셔틀')) {
+      showContent('shuttle');
+      return;
+    }
+    if (label.includes('학사일정') || label.includes('학사')) {
+      showContent('calendar');
+      return;
+    }
+    if (label.includes('프로필')) {
+      showContent('profile');
+      return;
+    }
+    if (label.includes('설정')) {
+      showContent('settings');
+      return;
+    }
+    if (label.includes('알림')) {
+      toggleNotifications();
+      return;
+    }
+    if (label.includes('로그아웃')) {
+      handleLogout();
+      return;
+    }
+    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        themeToggle.checked = !themeToggle.checked;
+        themeToggle.dispatchEvent(new Event('change'));
+      }
+      return;
+    }
+    if (label.includes('내 위치') || label.includes('위치')) {
+      trackUserLocation();
+      return;
+    }
+    if (label.includes('확대')) {
+      zoomIn();
+      return;
+    }
+    if (label.includes('축소')) {
+      zoomOut();
+      return;
+    }
+    if (label.includes('초기화') || label.includes('리셋')) {
+      resetMapView();
+      return;
+    }
+    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
+  });
+}
+
+// ─────────── window 이벤트: 로컬스토리지 변경 시 사용자 상태 갱신 ───────────
+window.addEventListener('storage', (event) => {
+  if (
+    event.key === 'currentLoggedInUser' ||
+    (event.key && event.key.includes('_profileImage'))
+  ) {
+    checkUserStatus();
+    updateTimetable();
   }
-  // 예시: 건물 검색 시 해당 건물 페이지로 이동
-  // window.location.href = `/search?query=${encodeURIComponent(query)}`;
-  alert(`"${query}" 에 대해 검색을 실행합니다.`);
-}
 
-// ─────────── navigateToTimetable: 내 시간표 화면으로 이동 ───────────
+  // 테마가 변경되었을 때 즉시 반영
+  if (event.key === 'lightMode') {
+    const savedMode = localStorage.getItem('lightMode');
+    if (savedMode === 'true') {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+  }
+
+  // 단축키가 변경되었을 때 리스너는 이미 동작 중이므로, 실제 배열만 업데이트하면 됨
+});
+
+// ─────────── window 이벤트: 페이지 복원(persisted) 시 상태 갱신 ───────────
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    checkUserStatus();
+    updateTimetable();
+  }
+  // 테마와 단축키도 다시 적용
+  const savedMode = localStorage.getItem('lightMode');
+  if (savedMode === 'true') {
+    document.body.classList.add('light-mode');
+  } else {
+    document.body.classList.remove('light-mode');
+  }
+});
+
+// ─────────── navigateToTimetable: 내 시간표 페이지로 이동 ───────────
 function navigateToTimetable() {
   showContent('timetable');
 }
 
-// ─────────── navigateToCalendar: 학사일정 화면으로 이동 ───────────
-function navigateToCalendar() {
-  showContent('calendar');
-}
-
-// ─────────── navigateToShuttle: 셔틀버스 화면으로 이동 ───────────
+// ─────────── navigateToShuttle: 셔틀버스 페이지로 이동 ───────────
 function navigateToShuttle() {
   showContent('shuttle');
 }
 
-// ─────────── handleLogout: 로그아웃 처리 ───────────
-function handleLogout(auto = false) {
-  // 로컬스토리지에 저장된 로그인 정보 제거
-  localStorage.removeItem('currentLoggedInUser');
-  // 다른 세션/토큰이 있다면 제거
-  if (!auto) {
-    alert('로그아웃되었습니다.');
-  }
-  window.location.href = '/login';
+// ─────────── navigateToCalendar: 학사일정 페이지로 이동 ───────────
+function navigateToCalendar() {
+  showContent('calendar');
 }
 
+// ─────────── zoomIn: 지도 확대 ───────────
+function zoomIn() {
+  if (naverMap) {
+    naverMap.setZoom(naverMap.getZoom() + 1);
+  }
+}
+
+// ─────────── zoomOut: 지도 축소 ───────────
+function zoomOut() {
+  if (naverMap) {
+    naverMap.setZoom(naverMap.getZoom() - 1);
+  }
+}
+
+// ─────────── resetMapView: 지도 초기 위치로 리셋 ───────────
+function resetMapView() {
+  if (naverMap) {
+    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+    naverMap.setCenter(yeonsung);
+    naverMap.setZoom(16);
+  }
+}
+
+// ─────────── trackUserLocation: 사용자의 현재 위치 추적 ───────────
+function trackUserLocation() {
+  if (!navigator.geolocation) {
+    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      if (!naverMap) {
+        showMessage('지도가 초기화되지 않았습니다', 'error', '');
+        return;
+      }
+
+      const userPos = new naver.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+
+      if (userMarker) {
+        userMarker.setMap(null);
+      }
+
+      userMarker = new naver.maps.Marker({
+        position: userPos,
+        map: naverMap,
+        icon: {
+          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+          anchor: new naver.maps.Point(10, 10)
+        }
+      });
+
+      naverMap.setCenter(userPos);
+      naverMap.setZoom(17);
+      showMessage('현재 위치를 찾았습니다', 'success', '');
+    },
+    (error) => {
+      let message = '위치를 찾을 수 없습니다';
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          message = '위치 권한이 거부되었습니다';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          message = '위치 정보를 사용할 수 없습니다';
+          break;
+        case error.TIMEOUT:
+          message = '위치 요청 시간이 초과되었습니다';
+          break;
+      }
+      showMessage(message, 'error', '');
+    }
+  );
+}
+
+// ─────────── showBuildingOnMap: 특정 건물 지도에서 보기 ───────────
+function showBuildingOnMap(buildingId) {
+  showContent('buildings');
+  setTimeout(() => {
+    if (naverMap.refresh) naverMap.refresh();
+  }, 100);
+}
+
+// ─────────── getBuildingDirections: 길찾기 기능 (준비 중) ───────────
+function getBuildingDirections(buildingId) {
+  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
+}
+
+// ─────────── viewNoticeDetail: 공지사항 상세 보기 (준비 중) ───────────
+function viewNoticeDetail(noticeId) {
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
+}
