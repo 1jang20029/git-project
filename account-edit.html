@@ -3,91 +3,249 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>설정 – 연성대학교 스마트 캠퍼스</title>
-  <link rel="stylesheet" href="settings.css" />
+  <title>내 계정 – 연성대학교 스마트 캠퍼스</title>
+  <!-- Settings 화면과 동일한 스타일을 적용 -->
+  <link rel="stylesheet" href="account-edit.css" />
 </head>
 <body>
+  <!-- =======================================================
+       헤더: 페이지 타이틀 + Breadcrumb
+     ======================================================= -->
   <div class="content-header">
     <div>
-      <h1>설정</h1>
+      <h1>내 계정</h1>
       <div class="breadcrumb">
         <span>홈</span>
         <span>›</span>
-        <span>설정</span>
+        <span>내 계정</span>
       </div>
     </div>
   </div>
 
-  <!-- 설정 화면 내용 -->
-  <div id="settings-container">
-    <!-- 다크/라이트 모드 -->
-    <div class="settings-section">
-      <h2>테마 설정</h2>
-      <div class="setting-item">
-        <label for="themeToggle">라이트 모드</label>
-        <input type="checkbox" id="themeToggle" />
-      </div>
+  <!-- =======================================================
+       카드 스타일 컨테이너: 입력 폼 전체를 감쌈
+     ======================================================= -->
+  <div id="account-edit-container" class="card">
+    <!-- --------------------------------------------------
+         이름 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="accountName">이름</label>
+      <input
+        type="text"
+        id="accountName"
+        placeholder="홍길동"
+      />
     </div>
 
-    <!-- 알림 설정 -->
-    <div class="settings-section">
-      <h2>알림 설정</h2>
-      <div class="setting-item">
-        <label for="globalNotificationToggle">알림 받기</label>
-        <input type="checkbox" id="globalNotificationToggle" />
-      </div>
-      <div class="setting-item">
-        <label>카테고리별 알림</label>
-        <div style="display:flex; flex-direction:column; gap:0.5rem; margin-left: 1rem;">
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-notice">공지사항</label>
-            <input type="checkbox" id="notifyCategory-notice" />
-          </div>
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-community">커뮤니티</label>
-            <input type="checkbox" id="notifyCategory-community" />
-          </div>
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-review">강의평가</label>
-            <input type="checkbox" id="notifyCategory-review" />
-          </div>
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-shuttle">셔틀버스</label>
-            <input type="checkbox" id="notifyCategory-shuttle" />
-          </div>
-        </div>
-      </div>
+    <!-- --------------------------------------------------
+         학과 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="accountDepartment">학과</label>
+      <input
+        type="text"
+        id="accountDepartment"
+        placeholder="컴퓨터공학과"
+      />
     </div>
 
-    <!-- 자동 로그아웃 설정 -->
-    <div class="settings-section">
-      <h2>자동 로그아웃</h2>
-      <div class="setting-item">
-        <label for="autoLogoutToggle">자동 로그아웃 활성화</label>
-        <input type="checkbox" id="autoLogoutToggle" />
-      </div>
-      <div class="setting-item">
-        <label for="autoLogoutTime">대기 시간 (분)</label>
-        <input type="number" id="autoLogoutTime" min="1" max="120" value="1" />
-      </div>
+    <!-- --------------------------------------------------
+         이메일 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="accountEmail">이메일</label>
+      <input
+        type="email"
+        id="accountEmail"
+        placeholder="user@example.com"
+      />
     </div>
 
-    <!-- 키보드 단축키 설정 -->
-    <div class="settings-section">
-      <h2>키보드 단축키</h2>
-      <div class="shortcut-list" id="shortcutList">
-        <!-- 단축키 아이템들이 JS로 동적으로 추가됨 -->
-      </div>
-      <button class="add-shortcut-btn" id="addShortcutBtn">새 단축키 추가</button>
+    <!-- --------------------------------------------------
+         현재 비밀번호 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="currentPassword">현재 비밀번호</label>
+      <input
+        type="password"
+        id="currentPassword"
+        placeholder="현재 비밀번호를 입력하세요"
+      />
     </div>
 
-    <!-- 저장/취소 버튼 -->
+    <!-- --------------------------------------------------
+         새 비밀번호 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="newPassword">새 비밀번호</label>
+      <input
+        type="password"
+        id="newPassword"
+        placeholder="새 비밀번호를 입력하세요"
+      />
+    </div>
+
+    <!-- --------------------------------------------------
+         새 비밀번호 확인 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="confirmPassword">비밀번호 확인</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="새 비밀번호를 다시 입력하세요"
+      />
+    </div>
+
+    <!-- --------------------------------------------------
+         저장 / 취소 버튼
+       -------------------------------------------------- -->
     <div class="action-buttons">
-      <button class="btn save-btn" id="saveSettingsBtn">저장</button>
-      <button class="btn cancel-btn" id="cancelSettingsBtn">취소</button>
+      <button id="saveAccountBtn" class="btn save-btn">저장</button>
+      <button id="cancelAccountBtn" class="btn cancel-btn">취소</button>
     </div>
   </div>
 
-  <script src="settings.js" defer></script>
+  <!-- =======================================================
+       account-edit.js (내 계정 수정 전용 스크립트)
+     ======================================================= -->
+  <script>
+    // account-edit.js: “내 계정” 페이지 전용 스크립트
+    // 이 스크립트는 index.js가 account-edit.html을 fetch하여
+    // <div id="profileContentPane">에 삽입한 뒤 실행됩니다.
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1) 현재 로그인된 사용자 가져오기
+      const currentUser = localStorage.getItem('currentLoggedInUser');
+      if (!currentUser) {
+        // 로그인 되어 있지 않으면 홈으로 되돌아가기
+        showMessage('로그인이 필요합니다.', 'error');
+        showContent('home');
+        return;
+      }
+
+      // 2) 페이지 입력란 요소들 선택
+      const nameInput           = document.getElementById('accountName');
+      const departmentInput     = document.getElementById('accountDepartment');
+      const emailInput          = document.getElementById('accountEmail');
+      const currentPwdInput     = document.getElementById('currentPassword');
+      const newPwdInput         = document.getElementById('newPassword');
+      const confirmPwdInput     = document.getElementById('confirmPassword');
+      const saveBtn             = document.getElementById('saveAccountBtn');
+      const cancelBtn           = document.getElementById('cancelAccountBtn');
+
+      // 3) 기존 사용자 데이터를 API로부터 불러와 입력란에 채워넣기
+      fetch(`/api/users/${encodeURIComponent(currentUser)}`)
+        .then((res) => {
+          if (!res.ok) throw new Error('API 응답 오류');
+          return res.json();
+        })
+        .then((user) => {
+          nameInput.value           = user.name || '';
+          departmentInput.value     = user.departmentName || '';
+          emailInput.value          = user.email || '';
+        })
+        .catch((err) => {
+          console.error('사용자 정보 로드 실패:', err);
+          showMessage('사용자 정보를 불러올 수 없습니다.', 'error');
+        });
+
+      // 4) “저장” 버튼 클릭 시: 변경된 데이터를 API로 전송
+      saveBtn.addEventListener('click', () => {
+        const updatedData = {
+          name:       nameInput.value.trim(),
+          department: departmentInput.value.trim(),
+          email:      emailInput.value.trim()
+        };
+
+        // 입력 유효성 검사 (빈칸 검사)
+        if (!updatedData.name) {
+          showMessage('이름을 입력하세요.', 'error');
+          return;
+        }
+        if (!updatedData.email) {
+          showMessage('이메일을 입력하세요.', 'error');
+          return;
+        }
+
+        // 비밀번호 변경 여부 확인
+        const currentPwdValue = currentPwdInput.value.trim();
+        const newPwdValue     = newPwdInput.value.trim();
+        const confirmPwdValue = confirmPwdInput.value.trim();
+
+        let pwdChangeRequested = false;
+        if (newPwdValue || confirmPwdValue) {
+          // 현재 비밀번호, 새 비밀번호, 비밀번호 확인 모두 입력되어야 함
+          if (!currentPwdValue) {
+            showMessage('현재 비밀번호를 입력하세요.', 'error');
+            return;
+          }
+          if (!newPwdValue) {
+            showMessage('새 비밀번호를 입력하세요.', 'error');
+            return;
+          }
+          if (newPwdValue !== confirmPwdValue) {
+            showMessage('새 비밀번호와 확인이 일치하지 않습니다.', 'error');
+            return;
+          }
+          pwdChangeRequested = true;
+        }
+
+        // 4-1) 먼저 사용자 기본 정보 업데이트 (이름/학과/이메일)
+        fetch(`/api/users/${encodeURIComponent(currentUser)}`, {
+          method:  'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(updatedData)
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error('기본 정보 업데이트 실패');
+            return res.json();
+          })
+          .then(() => {
+            // 4-2) 비밀번호 변경 요청이 있으면 별도 API 호출
+            if (pwdChangeRequested) {
+              const pwdPayload = {
+                currentPassword: currentPwdValue,
+                newPassword:     newPwdValue
+              };
+              return fetch(`/api/users/${encodeURIComponent(currentUser)}/password`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(pwdPayload)
+              })
+                .then((pwdRes) => {
+                  if (!pwdRes.ok) throw new Error('비밀번호 변경 실패');
+                  return pwdRes.json();
+                })
+                .then(() => {
+                  showMessage('비밀번호가 변경되었습니다.', 'success');
+                });
+            }
+          })
+          .then(() => {
+            showMessage('계정 정보가 저장되었습니다.', 'success');
+            // 저장 후, “내 계정” 목록 화면(또는 프로필 화면)으로 돌아가기
+            showContent('profile');
+            // index.js에서 사용자 정보를 즉시 반영
+            checkUserStatus();
+          })
+          .catch((err) => {
+            console.error('계정 업데이트 오류:', err);
+            showMessage(err.message || '계정 정보를 저장하는 데 실패했습니다.', 'error');
+          });
+      });
+
+      // 5) “취소” 버튼 클릭 시: 이전 화면으로 돌아가기
+      cancelBtn.addEventListener('click', () => {
+        showContent('profile');
+      });
+    });
+
+    // index.js에서 정의된 전역 함수들:
+    // - showContent(type): SPA처럼 화면 전환 처리
+    // - showMessage(message, type): 우측 상단 슬라이드 알림 메시지
+    // - checkUserStatus(): 로그인 상태 UI 갱신
+  </script>
 </body>
 </html>
