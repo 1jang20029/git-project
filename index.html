@@ -41,8 +41,14 @@
         <span class="nav-icon" title="커뮤니티">💬</span>
         <span>커뮤니티</span>
       </li>
-      <!-- ★ 강의평가 메뉴 제거 ★ -->
-      <!-- ★ 공지사항 메뉴 제거 ★ -->
+      <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
+        <span class="nav-icon" title="강의평가">⭐</span>
+        <span>강의평가</span>
+      </li>
+      <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
+        <span class="nav-icon" title="공지사항">📢</span>
+        <span>공지사항</span>
+      </li>
 
       <!-- ↓↓↓ 여기서부터 학생서비스 메뉴 추가 ↓↓↓ -->
       <li class="nav-item" id="nav-student-services">
@@ -249,48 +255,66 @@
       <!-- --------------------------------------------------
            커뮤니티 화면 (동적 로드)
            -------------------------------------------------- -->
-      <div id="communityContent" style="display: none;">
-        <!-- 1) 상단 헤더 -->
-        <div id="content-header-community">
-          <h1 id="title-community">실시간 커뮤니티</h1>
-          <div id="breadcrumb-community">
+      <div id="communityContent" style="display: none;"></div>
+
+      <!-- --------------------------------------------------
+           강의평가 화면
+           -------------------------------------------------- -->
+      <div id="lecture-reviewContent" style="display: none;">
+        <div id="content-header-lecture-review">
+          <h1 id="title-lecture-review">강의평가</h1>
+          <div id="breadcrumb-lecture-review">
             <span>홈</span>
             <span>›</span>
-            <span>커뮤니티</span>
+            <span>강의평가</span>
           </div>
         </div>
-
-        <!-- 2) 두 개의 카드 그리드 -->
-        <div id="dashboardGrid-community">
-          <!-- 실시간 게시글 카드 -->
-          <div id="live-posts-card">
-            <div id="card-header-live-posts">
-              <h3 id="card-title-live-posts">실시간 게시글</h3>
-              <span id="card-icon-live-posts">💬</span>
+        <div id="dashboardGrid-lecture-review">
+          <div id="popular-reviews-card">
+            <div id="card-header-popular-reviews">
+              <h3 id="card-title-popular-reviews">인기 강의평가</h3>
+              <span id="card-icon-popular-reviews">⭐</span>
             </div>
-            <div id="livePosts"></div>
+            <div id="popularReviews"></div>
           </div>
-
-          <!-- 인기 게시글 카드 -->
-          <div id="hot-posts-card">
-            <div id="card-header-hot-posts">
-              <h3 id="card-title-hot-posts">인기 게시글</h3>
-              <span id="card-icon-hot-posts">🔥</span>
+          <div id="recent-reviews-card">
+            <div id="card-header-recent-reviews">
+              <h3 id="card-title-recent-reviews">최근 강의평가</h3>
+              <span id="card-icon-recent-reviews">🕒</span>
             </div>
-            <div id="hotPosts"></div>
+            <div id="recentReviews"></div>
+          </div>
+          <div id="write-review-card">
+            <div id="card-header-write-review">
+              <h3 id="card-title-write-review">강의평가 작성</h3>
+              <span id="card-icon-write-review">✍️</span>
+            </div>
+            <div id="write-review-desc" style="padding: 1rem; text-align: center;">
+              <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+                수강 중인 강의에 대한 솔직한 평가를 남겨주세요
+              </p>
+              <button id="write-review-button" onclick="alert('강의평가 작성 페이지로 이동합니다.')">
+                강의평가 작성하기
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- --------------------------------------------------
-           ★ 강의평가 화면 제거 ★
+           공지사항 화면
            -------------------------------------------------- -->
-      <!-- <div id="lecture-reviewContent" style="display: none;"></div> -->
-
-      <!-- --------------------------------------------------
-           ★ 공지사항 화면 제거 ★
-           -------------------------------------------------- -->
-      <!-- <div id="noticesContent" style="display: none;"></div> -->
+      <div id="noticesContent" style="display: none;">
+        <div id="content-header-notices">
+          <h1 id="title-notices">공지사항</h1>
+          <div id="breadcrumb-notices">
+            <span>홈</span>
+            <span>›</span>
+            <span>공지사항</span>
+          </div>
+        </div>
+        <div id="fullNoticeList"></div>
+      </div>
 
       <!-- --------------------------------------------------
            내 시간표 화면
