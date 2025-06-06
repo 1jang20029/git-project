@@ -90,8 +90,9 @@
         />
       </div>
 
-      <!-- 알림 -->
+      <!-- 알림 / 사용자 메뉴 -->
       <div id="user-menu">
+        <!-- 알림 -->
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
           <div id="notification-dot"></div>
@@ -111,7 +112,6 @@
 
         <!-- 사용자 프로필 -->
         <div id="user-profile" onclick="toggleUserMenu()">
-          <!-- 이모지 제거: avatar는 글자나 이미지로 대체 -->
           <div id="user-avatar">👤</div>
           <div id="user-info">
             <div id="user-name">게스트</div>
@@ -122,8 +122,8 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <!-- “프로필” 대신 “내 계정”으로 텍스트만 표현 -->
-            <button id="dropdown-item-profile" onclick="showAccount()">
+            <!-- “프로필” 대신 “내 계정”으로 텍스트만 표현, onclick을 showProfile()로 연결 -->
+            <button id="dropdown-item-profile" onclick="showProfile()">
               내 계정
             </button>
             <button id="dropdown-item-settings" onclick="showContent('settings')">

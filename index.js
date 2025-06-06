@@ -1029,7 +1029,7 @@ function closeStudentServiceDropdown() {
   }
 }
 
-// ─────────── showProfile: 프로필 화면으로 이동 ───────────
+// ─────────── showProfile: 프로필(내 계정) 화면으로 이동 ───────────
 function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -1495,7 +1495,7 @@ function trackUserLocation() {
     },
     (error) => {
       let message = '위치를 찾을 수 없습니다';
-      switch(error.code) {
+      switch (error.code) {
         case error.PERMISSION_DENIED:
           message = '위치 권한이 거부되었습니다';
           break;
@@ -1528,3 +1528,4 @@ function getBuildingDirections(buildingId) {
 function viewNoticeDetail(noticeId) {
   showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
 }
+
