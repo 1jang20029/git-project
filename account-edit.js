@@ -1,4 +1,4 @@
-
+// account-edit.js
 document.addEventListener('DOMContentLoaded', () => {
   // 1) 현재 로그인된 사용자 ID 가져오기
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -130,4 +130,3 @@ document.addEventListener('DOMContentLoaded', () => {
 // - showContent(type): SPA처럼 화면 전환 처리
 // - showMessage(message, type): 우측 상단 슬라이드 알림 메시지 표시
 // - checkUserStatus(): 로그인 상태 UI 갱신
-// =============================================================================

@@ -1,8 +1,11 @@
 /* =============================================================================
    settings.css
    설정 화면 전용 스타일
-============================================================================= */
+   ============================================================================= */
 
+/* =======================================================
+   공통 콘텐츠 헤더 스타일
+   ======================================================= */
 .content-header {
   display: flex;
   align-items: center;
@@ -27,132 +30,66 @@
   color: #64748b;
 }
 
-/* ----------------------------------------------------------------------------- 
-   설정 화면 컨테이너 
------------------------------------------------------------------------------ */
-#settings-container {
-  padding: 2rem;
+/* =======================================================
+   설정 화면 내 섹션 컨테이너 스타일
+   ======================================================= */
+.settings-section {
   background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-/* ----------------------------------------------------------------------------- 
-   섹션 제목 스타일 
------------------------------------------------------------------------------ */
-.setting-section-title {
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
+/* 설정 화면 타이틀 */
+.settings-section h2 {
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: #f1f5f9;
+  margin-bottom: 1rem;
 }
 
-/* ----------------------------------------------------------------------------- 
-   개별 설정 항목 
------------------------------------------------------------------------------ */
+/* 설정 항목 (개별) */
 .setting-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  margin-bottom: 1rem;
 }
 
-.setting-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-/* ----------------------------------------------------------------------------- 
-   라벨 텍스트 스타일 
------------------------------------------------------------------------------ */
 .setting-item label {
   color: #f1f5f9;
   font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.3s ease;
+  font-weight: 500;
 }
 
-/* ----------------------------------------------------------------------------- 
-   토글 체크박스 기본 스타일 
------------------------------------------------------------------------------ */
 .setting-item input[type="checkbox"] {
   width: 24px;
   height: 24px;
   cursor: pointer;
-  accent-color: #3b82f6;
-  transform: scale(1.2);
-  transition: transform 0.2s ease;
 }
 
-.setting-item input[type="checkbox"]:hover {
-  transform: scale(1.3);
-}
-
-.setting-item input[type="checkbox"]:checked {
-  accent-color: #3b82f6;
-}
-
-/* ----------------------------------------------------------------------------- 
-   숫자 입력 (자동 로그아웃 시간) 스타일 
------------------------------------------------------------------------------ */
-.setting-item input[type="number"] {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-  color: #f1f5f9;
-  font-size: 0.9rem;
-  width: 80px;
-  transition: all 0.3s ease;
-}
-
-.setting-item input[type="number"]:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.95);
-}
-
-/* ----------------------------------------------------------------------------- 
-   단축키 항목 컨테이너 
------------------------------------------------------------------------------ */
-#shortcut-list-container {
+/* 키보드 단축키 리스트 */
+.shortcut-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-/* ----------------------------------------------------------------------------- 
-   단축키 개별 항목 
------------------------------------------------------------------------------ */
 .shortcut-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: rgba(30, 41, 59, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  gap: 0.5rem;
 }
 
-.shortcut-item:hover {
-  background: rgba(30, 41, 59, 0.5);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* 라벨(설명)용 텍스트 입력 */
 .shortcut-item input.label-input {
   flex: 2;
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 6px;
-  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  padding: 0.5rem;
   color: #f1f5f9;
   font-size: 0.9rem;
   transition: all 0.3s ease;
@@ -164,162 +101,109 @@
   background: rgba(30, 41, 59, 0.95);
 }
 
-/* 키 입력용 readonly 텍스트 입력 */
 .shortcut-item input.key-input {
-  width: 100px;
+  width: 60px;
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 6px;
-  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  padding: 0.5rem;
   color: #f1f5f9;
   font-size: 0.9rem;
   text-align: center;
   transition: all 0.3s ease;
-  cursor: pointer; /* 클릭 유도 */
 }
 
-.shortcut-item input.key-input:hover {
-  border-color: #3b82f6;
-}
-
-/* 키 입력 영역 포커스 시 강조 */
 .shortcut-item input.key-input:focus {
   outline: none;
   border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.9);
+  background: rgba(30, 41, 59, 0.95);
 }
 
-/* 제거 버튼 */
 .shortcut-item button.remove-shortcut-btn {
   background: none;
   border: none;
   color: #ef4444;
-  font-size: 1.2rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  font-size: 1rem;
+  transition: color 0.3s ease;
 }
 
 .shortcut-item button.remove-shortcut-btn:hover {
-  transform: scale(1.2);
+  color: #dc2626;
 }
 
-/* ----------------------------------------------------------------------------- 
-   단축키 추가 버튼 
-   → 배경색/글자색을 명확히 지정하여 항상 보이도록 조정 
------------------------------------------------------------------------------ */
+/* 단축키 추가 버튼 */
 .add-shortcut-btn {
-  width: fit-content;
+  background: none;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
-  background: #3b82f6;          /* 진한 파란색 배경 */
-  color: white !important;      /* 텍스트 색상을 강제로 흰색으로 */
-  font-size: 0.95rem;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
-  margin-bottom: 1rem;
-  border: none;
 }
 
 .add-shortcut-btn:hover {
-  background: #2563eb;           /* 호버 시 약간 밝은 파란색 */
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
 }
 
-/* ----------------------------------------------------------------------------- 
-   저장/취소 버튼 컨테이너 
------------------------------------------------------------------------------ */
+/* 완료/취소 액션 버튼 */
 .action-buttons {
-  margin-top: 2rem;
   display: flex;
   gap: 1rem;
+  margin-top: 1rem;
 }
 
-/* 저장 버튼 */
-.save-btn {
+.action-buttons button {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
-  background: #10b981;    /* 녹색 배경 */
-  color: white;
   border: none;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.save-btn {
+  background: #3b82f6;
+  color: white;
 }
 
 .save-btn:hover {
-  background: #059669;    /* 호버 시 진한 녹색 */
-}
-
-/* 취소 버튼 */
-.cancel-btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  background: #ef4444;    /* 붉은색 배경 */
-  color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cancel-btn:hover {
-  background: #dc2626;    /* 호버 시 진한 붉은색 */
-}
-
-/* ----------------------------------------------------------------------------- 
-   공통 버튼 스타일 (필요 시 사용) 
------------------------------------------------------------------------------ */
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  background: #3b82f6;
-  color: white;
-  border: none;
-}
-
-.btn:hover {
   background: #2563eb;
 }
 
-/* ----------------------------------------------------------------------------- 
-   라이트 모드 적용 시 색상 반전 
------------------------------------------------------------------------------ */
-body.light-mode #settings-container {
+.cancel-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #dc2626;
+}
+
+/* -----------------------------------------------------------------------
+   라이트 모드 적용 시 색상 반전
+   - index.js에서 body.light-mode 클래스를 제어함
+   ----------------------------------------------------------------------- */
+body.light-mode .settings-section {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-body.light-mode .setting-section-title {
-  color: #6b7280;
-}
-
-body.light-mode .setting-item {
-  border-bottom-color: rgba(148, 163, 184, 0.2);
+body.light-mode .settings-section h2 {
+  color: #1f2937;
 }
 
 body.light-mode .setting-item label {
   color: #1f2937;
 }
 
-body.light-mode .setting-item input[type="number"],
-body.light-mode .setting-item input[type="text"] {
-  background: rgba(240, 240, 240, 0.8);
-  color: #1f2937;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-body.light-mode .setting-item input[type="number"]:focus,
-body.light-mode .setting-item input[type="text"]:focus {
-  background: rgba(240, 240, 240, 1);
-  color: #1f2937;
-}
-
-/* 라이트 모드 시 단축키 항목 bg/보더 */
-body.light-mode .shortcut-item {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+body.light-mode .setting-item input[type="checkbox"] {
+  accent-color: #3b82f6;
 }
 
 body.light-mode .shortcut-item input.label-input,
@@ -329,64 +213,56 @@ body.light-mode .shortcut-item input.key-input {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-body.light-mode .shortcut-item button.remove-shortcut-btn {
-  color: #b91c1c;
+body.light-mode .shortcut-item input.label-input:focus,
+body.light-mode .shortcut-item input.key-input:focus {
+  background: rgba(240, 240, 240, 1);
+  color: #1f2937;
 }
 
-/* ----------------------------------------------------------------------------- 
-   반응형: 화면 너비가 좁을 때 여백 및 폰트 크기 조정 
------------------------------------------------------------------------------ */
+body.light-mode .add-shortcut-btn {
+  color: #1f2937;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .add-shortcut-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+body.light-mode .action-buttons button.save-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+body.light-mode .action-buttons button.save-btn:hover {
+  background: #2563eb;
+}
+
+body.light-mode .action-buttons button.cancel-btn {
+  background: #ef4444;
+  color: white;
+}
+
+body.light-mode .action-buttons button.cancel-btn:hover {
+  background: #dc2626;
+}
+
+/* 반응형: 화면이 좁아질 때 레이아웃 조정 */
 @media (max-width: 768px) {
-  #settings-container {
-    padding: 1rem;
-  }
-  .setting-section-title {
-    font-size: 0.9rem;
-  }
   .setting-item {
-    margin-bottom: 1rem;
-    padding: 1rem 0;
-  }
-  .setting-item label {
-    font-size: 1rem;
-  }
-  .setting-item input[type="checkbox"] {
-    width: 28px;
-    height: 28px;
-    transform: scale(1.4);
-  }
-  .setting-item input[type="number"],
-  .setting-item input[type="text"] {
-    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   .shortcut-item {
     flex-direction: column;
-    align-items: stretch;
     gap: 0.5rem;
-  }
-  .shortcut-item input.label-input,
-  .shortcut-item input.key-input {
-    width: 100%;
-  }
-  .shortcut-item button.remove-shortcut-btn {
-    align-self: flex-end;
-  }
-  .add-shortcut-btn {
-    width: 100%;
-    text-align: center;
   }
   .action-buttons {
     flex-direction: column;
   }
-}
-
-@media (max-width: 480px) {
-  .setting-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .setting-item input[type="checkbox"] {
-    align-self: flex-end;
+  .action-buttons button {
+    width: 100%;
   }
 }

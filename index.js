@@ -1029,15 +1029,51 @@ function closeStudentServiceDropdown() {
   }
 }
 
-// ─────────── showProfile: 프로필 화면으로 이동 ───────────
-function showProfile() {
+// ─────────── showProfile: 프로필(내 계정) 화면으로 이동 ───────────
+async function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (currentUser) {
-    showContent('profile');
-  } else {
+  if (!currentUser) {
     showMessage('로그인이 필요한 서비스입니다.', 'error');
+    return;
   }
-  closeUserDropdown();
+
+  // 1) profileContentPane에 로딩 표시
+  const container = document.getElementById('profileContentPane');
+  if (container) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:2rem;">
+        <div class="loading-spinner"></div>
+        <span style="margin-left:0.5rem;">계정 정보를 불러오는 중...</span>
+      </div>
+    `;
+  }
+  showContent('profile');
+
+  // 2) account-edit.html 불러와서 삽입
+  try {
+    const res = await fetch('account-edit.html');
+    if (!res.ok) throw new Error('Account 편집 화면 로드 실패');
+    const html = await res.text();
+    if (container) container.innerHTML = html;
+  } catch (err) {
+    console.error(err);
+    if (container) {
+      container.innerHTML = `
+        <div class="error-fallback">
+          <h3>⚠️ 오류 발생</h3>
+          <p>계정 편집 화면을 불러올 수 없습니다</p>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  // 3) account-edit.html 내부에 <script src="account-edit.js" defer></script>가 포함되어 있어야 스크립트가 실행됨
+  //    즉, account-edit.html 파일 자체에 이미 <script> 태그를 선언해두세요.
+
+  // 4) 로그인 상태/시간표 갱신 등
+  checkUserStatus();
+  updateTimetable();
 }
 
 // ─────────── handleLogout: 로그아웃 처리 ───────────
@@ -1495,7 +1531,7 @@ function trackUserLocation() {
     },
     (error) => {
       let message = '위치를 찾을 수 없습니다';
-      switch(error.code) {
+      switch (error.code) {
         case error.PERMISSION_DENIED:
           message = '위치 권한이 거부되었습니다';
           break;
