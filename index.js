@@ -33,9 +33,11 @@ let autoLogoutTimer = null;
 
 // ─────────── 최초 로드 시 실행할 로직 ───────────
 document.addEventListener('DOMContentLoaded', () => {
-  // URL hash에 따라 초기 화면 결정
+  // URL hash에 따라 초기 화면 결정 (profile은 showProfile() 호출)
   const hash = window.location.hash.slice(1);
-  if (hash && document.getElementById(hash + 'Content')) {
+  if (hash === 'profile') {
+    showProfile();
+  } else if (hash && document.getElementById(hash + 'Content')) {
     showContent(hash);
   } else {
     showContent('home');
@@ -1047,6 +1049,7 @@ async function showProfile() {
       </div>
     `;
   }
+  // “profile” 탭을 보이도록 설정
   showContent('profile');
 
   // 2) account-edit.html 불러와서 삽입
@@ -1068,8 +1071,9 @@ async function showProfile() {
     return;
   }
 
-  // 3) account-edit.html 내부에 <script src="account-edit.js" defer></script>가 포함되어 있어야 스크립트가 실행됨
-  //    즉, account-edit.html 파일 자체에 이미 <script> 태그를 선언해두세요.
+  // 3) account-edit.html 내부에 <script src="account-edit.js" defer></script>가 반드시 포함되어 있어야
+  //    DOMContentLoaded 이벤트가 trigger되면서 account-edit.js가 실행됩니다.
+  //    (account-edit.html에 <script> 태그를 미리 선언해 두었는지 확인하세요.)
 
   // 4) 로그인 상태/시간표 갱신 등
   checkUserStatus();
@@ -1374,7 +1378,7 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('프로필') || label.includes('내 계정')) {
-      showContent('profile');
+      showProfile();
       return;
     }
     if (label.includes('설정')) {
