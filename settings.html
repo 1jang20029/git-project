@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>설정 – 연성대학교 스마트 캠퍼스</title>
+  <!-- Settings 전용 CSS -->
   <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
@@ -18,76 +19,65 @@
     </div>
   </div>
 
-  <!-- 설정 화면 내용 -->
   <div id="settings-container">
-    <!-- 다크/라이트 모드 -->
-    <div class="settings-section">
-      <h2>테마 설정</h2>
-      <div class="setting-item">
-        <label for="themeToggle">라이트 모드</label>
-        <input type="checkbox" id="themeToggle" />
-      </div>
+    <!-- 1. 다크/라이트 모드 토글 -->
+    <div class="setting-item">
+      <label for="themeToggle">다크/라이트 모드</label>
+      <input type="checkbox" id="themeToggle" />
     </div>
 
-    <!-- 알림 설정 -->
-    <div class="settings-section">
-      <h2>알림 설정</h2>
-      <div class="setting-item">
-        <label for="globalNotificationToggle">알림 받기</label>
-        <input type="checkbox" id="globalNotificationToggle" />
-      </div>
-      <div class="setting-item">
-        <label>카테고리별 알림</label>
-        <div style="display:flex; flex-direction:column; gap:0.5rem; margin-left: 1rem;">
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-notice">공지사항</label>
-            <input type="checkbox" id="notifyCategory-notice" />
-          </div>
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-community">커뮤니티</label>
-            <input type="checkbox" id="notifyCategory-community" />
-          </div>
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-review">강의평가</label>
-            <input type="checkbox" id="notifyCategory-review" />
-          </div>
-          <div class="setting-item" style="justify-content: space-between; margin-bottom: 0;">
-            <label for="notifyCategory-shuttle">셔틀버스</label>
-            <input type="checkbox" id="notifyCategory-shuttle" />
-          </div>
-        </div>
-      </div>
+    <!-- 2. 알림 받기 ON/OFF -->
+    <div class="setting-item">
+      <label for="notificationToggle">알림 받기</label>
+      <input type="checkbox" id="notificationToggle" />
     </div>
 
-    <!-- 자동 로그아웃 설정 -->
-    <div class="settings-section">
-      <h2>자동 로그아웃</h2>
-      <div class="setting-item">
-        <label for="autoLogoutToggle">자동 로그아웃 활성화</label>
-        <input type="checkbox" id="autoLogoutToggle" />
-      </div>
-      <div class="setting-item">
-        <label for="autoLogoutTime">대기 시간 (분)</label>
-        <input type="number" id="autoLogoutTime" min="1" max="120" value="1" />
-      </div>
+    <!-- 3. 카테고리별 알림 설정 -->
+    <div class="setting-section-title">카테고리별 알림 설정</div>
+    <div class="setting-item">
+      <label for="notifCategory-공지사항">공지사항</label>
+      <input type="checkbox" id="notifCategory-공지사항" />
+    </div>
+    <div class="setting-item">
+      <label for="notifCategory-커뮤니티">커뮤니티</label>
+      <input type="checkbox" id="notifCategory-커뮤니티" />
+    </div>
+    <div class="setting-item">
+      <label for="notifCategory-셔틀버스">셔틀버스</label>
+      <input type="checkbox" id="notifCategory-셔틀버스" />
+    </div>
+    <!-- “강의평가” 항목 삭제 -->
+
+    <!-- ★ DND 섹션 모두 삭제 ★ -->
+
+    <!-- 4. 자동 로그아웃 설정 -->
+    <div class="setting-section-title">자동 로그아웃 (활성화 시)</div>
+    <div class="setting-item">
+      <label for="autoLogoutToggle">자동 로그아웃 활성화</label>
+      <input type="checkbox" id="autoLogoutToggle" />
+    </div>
+    <div class="setting-item">
+      <label for="autoLogoutTimeout">대기 시간 (분)</label>
+      <input type="number" id="autoLogoutTimeout" min="1" max="120" />
     </div>
 
-    <!-- 키보드 단축키 설정 -->
-    <div class="settings-section">
-      <h2>키보드 단축키</h2>
-      <div class="shortcut-list" id="shortcutList">
-        <!-- 단축키 아이템들이 JS로 동적으로 추가됨 -->
-      </div>
-      <button class="add-shortcut-btn" id="addShortcutBtn">새 단축키 추가</button>
+    <!-- 5. 키보드 단축키 설정 (최대 5개) -->
+    <div class="setting-section-title">키보드 단축키 설정 (최대 5개)</div>
+    <div id="shortcut-list-container">
+      <!-- 단축키 항목들이 이곳에 동적으로 렌더링됩니다 -->
     </div>
+    <button id="addShortcutBtn" class="add-shortcut-btn">
+      + 단축키 추가
+    </button>
 
-    <!-- 저장/취소 버튼 -->
+    <!-- 저장 / 취소 버튼 -->
     <div class="action-buttons">
-      <button class="btn save-btn" id="saveSettingsBtn">저장</button>
-      <button class="btn cancel-btn" id="cancelSettingsBtn">취소</button>
+      <button id="saveSettingsBtn" class="btn save-btn">저장</button>
+      <button id="cancelSettingsBtn" class="btn cancel-btn">취소</button>
     </div>
   </div>
 
+  <!-- Settings 전용 JS -->
   <script src="settings.js" defer></script>
 </body>
 </html>
