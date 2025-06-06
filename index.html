@@ -16,9 +16,6 @@
 
   <!-- 분리된 설정 화면 전용 스타일 -->
   <link rel="stylesheet" href="settings.css" />
-
-  <!-- "내 계정" 화면 전용 스타일 -->
-  <link rel="stylesheet" href="account-edit.css" />
 </head>
 <body>
   <!-- ==================================================
@@ -77,9 +74,8 @@
     </ul>
 
     <!-- 3) 빠른 접근 (가로형) -->
-    <!-- 아래 세 항목을 “학생서비스”로 이동했기 때문에, 원래 있던 Quick Menu li 들은 제거했습니다. -->
     <ul id="quick-menu">
-      <!-- 빠른 접근 메뉴 내부를 비워두었습니다. 추가적인 변경 없이 다른 코드는 절대 건들지 않았습니다. -->
+      <!-- 빈 채워짐 -->
     </ul>
 
     <!-- 4) 검색창 / 알림 버튼 / 사용자 메뉴 -->
@@ -115,6 +111,7 @@
 
         <!-- 사용자 프로필 -->
         <div id="user-profile" onclick="toggleUserMenu()">
+          <!-- 이모지 제거: avatar는 글자나 이미지로 대체 -->
           <div id="user-avatar">👤</div>
           <div id="user-info">
             <div id="user-name">게스트</div>
@@ -125,17 +122,17 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <!-- “내 계정” 메뉴: 아이콘 없이 텍스트만 보여줍니다 -->
-            <button id="dropdown-item-account" onclick="showContent('account')">
+            <!-- “프로필” 대신 “내 계정”으로 텍스트만 표현 -->
+            <button id="dropdown-item-profile" onclick="showAccount()">
               내 계정
             </button>
             <button id="dropdown-item-settings" onclick="showContent('settings')">
-              <span>⚙️</span>
+              <span class="settings-icon">⚙️</span>
               <span>설정</span>
             </button>
             <div id="dropdown-divider"></div>
             <button id="dropdown-item-logout" onclick="handleLogout()" style="color: #ef4444;">
-              <span>🚪</span>
+              <span class="logout-icon">🚪</span>
               <span>로그아웃</span>
             </button>
           </div>
@@ -381,20 +378,20 @@
       </div>
 
       <!-- --------------------------------------------------
-           내 계정 화면 (account-edit.html이 동적으로 삽입됨)
+           내 계정 화면 (프래그먼트)
            -------------------------------------------------- -->
       <div id="profileContentPane" style="display: none;"></div>
 
       <!-- --------------------------------------------------
-           설정 화면: 처음엔 빈 컨테이너, 동적으로 로드
+           설정 화면: 동적으로 로드
            -------------------------------------------------- -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
-  <!-- --------------------------------------------------
+  <!-- ==================================================
        공통 자바스크립트
-       -------------------------------------------------- -->
+       ================================================== -->
   <script src="index.js" defer></script>
   <!-- 분리된 설정 화면 전용 자바스크립트 -->
   <script src="settings.js" defer></script>
