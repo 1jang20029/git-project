@@ -1,4 +1,3 @@
-// index.js
 
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
@@ -40,12 +39,6 @@ let autoLogoutTimer = null;
 
 // ─────────── 최초 로드 시 실행할 로직 ───────────
 document.addEventListener('DOMContentLoaded', () => {
-  // ▶ 1) JavaScript 초기화가 끝난 뒤에야 <main>을 보이도록 opacity=1 처리
-  const contentArea = document.getElementById('content-area');
-  if (contentArea) {
-    contentArea.style.opacity = '1';
-  }
-
   // URL hash에 따라 초기 화면 결정
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
