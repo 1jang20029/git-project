@@ -28,9 +28,6 @@ const departmentMap = {};
 // 설정 화면 로드 여부
 let settingsLoaded = false;
 
-// 내 계정 화면 로드 여부
-let accountLoaded = false;
-
 // 자동 로그아웃 타이머 ID
 let autoLogoutTimer = null;
 
@@ -112,7 +109,7 @@ function showContent(type) {
     'timetableContentPane',
     'shuttleContentPane',
     'calendarContentPane',
-    'profileContentPane',   // “내 계정” 화면
+    'profileContentPane',
     'settingsContent'
   ];
 
@@ -133,7 +130,7 @@ function showContent(type) {
     case 'timetable':      targetId = 'timetableContentPane'; break;
     case 'shuttle':        targetId = 'shuttleContentPane'; break;
     case 'calendar':       targetId = 'calendarContentPane'; break;
-    case 'account':        targetId = 'profileContentPane'; break;        // “내 계정”
+    case 'profile':        targetId = 'profileContentPane'; break;
     case 'settings':       targetId = 'settingsContent'; break;
     default:               targetId = 'homeContent';
   }
@@ -167,35 +164,6 @@ function showContent(type) {
     }
   }
 
-  // “내 계정” 화면일 때, 아직 account-edit.html 을 삽입하지 않았다면 fetch 후 삽입
-  if (type === 'account' && !accountLoaded) {
-    const container = document.getElementById('profileContentPane');
-    if (container) {
-      fetch('account-edit.html')
-        .then((res) => {
-          if (!res.ok) throw new Error('account-edit.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then((html) => {
-          container.innerHTML = html;
-          accountLoaded = true;
-          // HTML 삽입 후 즉시 initAccountEditPage 호출
-          if (window.initAccountEditPage) {
-            window.initAccountEditPage();
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          container.innerHTML = `
-            <div class="error-fallback">
-              <h3>⚠️ 오류 발생</h3>
-              <p>내 계정 화면을 불러올 수 없습니다</p>
-            </div>
-          `;
-        });
-    }
-  }
-
   // 화면 보이기
   const target = document.getElementById(targetId);
   if (target) {
@@ -209,14 +177,7 @@ function showContent(type) {
   });
 
   // 상단 메뉴 해당 항목 active
-  let navItem;
-  if (type === 'account') {
-    // profile 대신 account
-    navItem = document.getElementById('nav-home'); // “내 계정”은 메인 메뉴에 없으므로,
-    // 메인 메뉴 항목은 강조하지 않음 (필요시 별도 스타일 추가 가능)
-  } else {
-    navItem = document.getElementById('nav-' + type);
-  }
+  const navItem = document.getElementById('nav-' + type);
   if (navItem) navItem.classList.add('active');
 
   currentContent = type;
@@ -567,7 +528,7 @@ function renderShuttleRoutes(routes) {
   });
 }
 
-// ─────────── selectShuttleRoute: �틀 노선 선택 및 상태 렌더링 ───────────
+// ─────────── selectShuttleRoute: 셔틀 루트 선택 및 상태 렌더링 ───────────
 async function selectShuttleRoute(routeId, route) {
   try {
     document.querySelectorAll('.route-tab').forEach((tab) => {
@@ -907,7 +868,7 @@ function renderTimetable(courses) {
         time.day === currentDay ||
         (currentDay === 0 && time.day === 6)
       ) {
-        // start, end는 “몇 교시”인지 나타낸다 (예: 0은 오전 8:30 시작, 1은 오전 9:30 시작 등)
+        // start, end는 “몇 교시”인지 나타낸다
         const startHour = 8 + time.start;
         const startMinute = 30;
         const startTime = startHour * 60 + startMinute;
@@ -1028,9 +989,8 @@ function toggleUserMenu() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
 
   if (!currentUser) {
-    if (confirm('로그인하시겠습니까?')) {
-      window.open('login.html', '_blank');
-    }
+    // 로그인하지 않은 상태에서는 로그인 페이지로 이동
+    window.location.href = 'login.html';
     return;
   }
 
@@ -1069,15 +1029,11 @@ function closeStudentServiceDropdown() {
   }
 }
 
-// ─────────── showProfile / showAccount: 프로필 화면으로 이동 ───────────
+// ─────────── showProfile: 프로필 화면으로 이동 ───────────
 function showProfile() {
-  // 이제 사용되지 않음 (내 계정으로 대체됨)
-}
-
-function showAccount() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
-    showContent('account');
+    showContent('profile');
   } else {
     showMessage('로그인이 필요한 서비스입니다.', 'error');
   }
@@ -1090,15 +1046,13 @@ function handleLogout() {
   if (currentUser) {
     if (confirm('로그아웃 하시겠습니까?')) {
       localStorage.removeItem('currentLoggedInUser');
-      // 내 계정 정보도 지울 수 있음 (선택 사항)
-      showMessage('로그아웃 되었습니다', 'success');
-      showContent('home');
-      checkUserStatus();
+      // 드롭다운을 닫고 즉시 로그인 페이지로 이동
+      closeUserDropdown();
+      window.location.href = 'login.html';
     }
   } else {
     showMessage('로그인 상태가 아닙니다.', 'error');
   }
-  closeUserDropdown();
 }
 
 // ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
@@ -1142,22 +1096,21 @@ function checkUserStatus() {
   const avatarEl   = document.getElementById('user-avatar');
 
   if (currentUser && isOnline) {
-    // (예시) localStorage 또는 서버에서 사용자 정보를 가져온다고 가정
-    const savedAccount = JSON.parse(localStorage.getItem(`userProfile_${currentUser}`)) || {};
-    const name = savedAccount.name || '사용자';
-    const dept = departmentMap[savedAccount.department] || savedAccount.department || '학생';
-    const imgUrl = savedAccount.profileImageUrl || '';
-
-    if (userNameEl) userNameEl.textContent     = name;
-    if (userRoleEl) userRoleEl.textContent     = dept;
-    if (dropdownNameEl) dropdownNameEl.textContent = name;
-    if (dropdownRoleEl) dropdownRoleEl.textContent = dept;
-
-    if (imgUrl) {
-      avatarEl.innerHTML = `<img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
-    } else {
-      avatarEl.textContent = '👤';
-    }
+    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('API 응답 오류');
+        return res.json();
+      })
+      .then((user) => {
+        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
+        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
+        if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
+        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
+        updateProfileImage(user);
+      })
+      .catch(() => {
+        setGuestMode();
+      });
   } else {
     setGuestMode();
   }
@@ -1176,6 +1129,20 @@ function setGuestMode() {
   if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
   if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
   if (avatarEl) avatarEl.textContent         = '👤';
+}
+
+// ─────────── updateProfileImage: 사용자 프로필 이미지 적용 ───────────
+function updateProfileImage(user) {
+  const avatarEl = document.getElementById('user-avatar');
+  if (!avatarEl) return;
+
+  if (user.profileImageType === 'emoji') {
+    avatarEl.textContent = user.profileImage || '👤';
+  } else if (user.profileImage) {
+    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
+  } else {
+    avatarEl.textContent = '👤';
+  }
 }
 
 // ─────────── showMessage: 화면 우측 상단 슬라이드 알림 메시지 ───────────
@@ -1292,6 +1259,12 @@ function applyKeyboardShortcuts() {
     goToSettings: 'F4'
   };
   document.addEventListener('keydown', (e) => {
+    // 입력 요소(focused)에서는 작동하지 않도록 무시
+    const targetTag = e.target.tagName;
+    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) {
+      return;
+    }
+
     resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
     const key = e.key.toUpperCase();
 
@@ -1313,12 +1286,18 @@ function applyKeyboardShortcuts() {
 // ─────────── applyUserShortcuts: 사용자 정의 단축키 로컬스토리지 기반 실행 ───────────
 function applyUserShortcuts() {
   document.addEventListener('keydown', (e) => {
+    // 입력 요소(focused)에서는 작동하지 않도록 무시
+    const targetTag = e.target.tagName;
+    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) {
+      return;
+    }
+
     resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
     const pressedKey = e.key.toUpperCase();
     const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
 
     // 눌린 키가 userShortcuts 중 하나의 key와 일치하는지 탐색
-    const matched = userShortcuts.find(entry => entry.key.toUpperCase() === pressedKey);
+    const matched = userShortcuts.find(entry => entry.key === pressedKey);
     if (!matched) return;
     if (!matched.name) return;
 
@@ -1358,8 +1337,8 @@ function applyUserShortcuts() {
       showContent('calendar');
       return;
     }
-    if (label.includes('내 계정') || label.includes('계정')) {
-      showContent('account');
+    if (label.includes('프로필') || label.includes('내 계정')) {
+      showContent('profile');
       return;
     }
     if (label.includes('설정')) {
