@@ -734,7 +734,7 @@ body {
    → 높이를 기존 400px에서 200px로 줄여 반으로 축소
    ======================================================================== */
 #map-card {
-  grid-column: span 2;
+  grid-column: span 1;
   height: 400px;
   position: relative;
   overflow: hidden;
