@@ -657,3 +657,4 @@ function getBuildingDirections(buildingId) {
 function viewNoticeDetail(noticeId) {
   showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
 }
+  
