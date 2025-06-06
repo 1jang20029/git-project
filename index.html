@@ -205,34 +205,9 @@
       </div>
 
       <!-- --------------------------------------------------
-           건물 & 시설 안내 화면
+           건물 & 시설 안내 화면 (외부 파일로 분리, 빈 컨테이너만 둠)
            -------------------------------------------------- -->
-      <div id="buildingsContent" style="display: none;">
-        <div id="content-header-buildings">
-          <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
-          <div id="breadcrumb-buildings">
-            <span>홈</span>
-            <span>›</span>
-            <span>건물 안내</span>
-          </div>
-        </div>
-        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
-          <div id="card-header-buildings-map">
-            <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
-            <span id="card-icon-buildings-map">🗺️</span>
-          </div>
-          <div id="buildings-map-container">
-            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
-            <div id="buildings-map-overlay">
-              <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
-              <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
-              <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
-              <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
-            </div>
-          </div>
-        </div>
-        <div id="buildingGrid"></div>
-      </div>
+      <div id="buildingsContent" style="display: none;"></div>
 
       <!-- --------------------------------------------------
            커뮤니티 화면
@@ -326,7 +301,7 @@
       <!-- --------------------------------------------------
            내 시간표 화면
            -------------------------------------------------- -->
-      <div id="timetableContentPane" style="display: none;">
+      <div id="timetableContentPane" style="display: false;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
           <div id="breadcrumb-timetable-pane">
