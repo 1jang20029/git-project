@@ -4,7 +4,7 @@
    ============================================================================= */
 
 /* =======================================================
-   공통 콘텐츠 헤더 스타일 (settings.css와 동일)
+   공통 콘텐츠 헤더 스타일
    ======================================================= */
 .content-header {
   display: flex;
@@ -62,11 +62,12 @@
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
-  width: 120px;
+  width: 140px;
 }
 
 .form-item input[type="text"],
-.form-item input[type="email"] {
+.form-item input[type="email"],
+.form-item input[type="password"] {
   flex: 1;
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
@@ -78,7 +79,8 @@
 }
 
 .form-item input[type="text"]:focus,
-.form-item input[type="email"]:focus {
+.form-item input[type="email"]:focus,
+.form-item input[type="password"]:focus {
   outline: none;
   border-color: #3b82f6;
   background: rgba(30, 41, 59, 0.95);
@@ -139,14 +141,16 @@ body.light-mode .form-item label {
 }
 
 body.light-mode .form-item input[type="text"],
-body.light-mode .form-item input[type="email"] {
+body.light-mode .form-item input[type="email"],
+body.light-mode .form-item input[type="password"] {
   background: rgba(240, 240, 240, 0.8);
   color: #1f2937;
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 body.light-mode .form-item input[type="text"]:focus,
-body.light-mode .form-item input[type="email"]:focus {
+body.light-mode .form-item input[type="email"]:focus,
+body.light-mode .form-item input[type="password"]:focus {
   background: rgba(240, 240, 240, 1);
   color: #1f2937;
 }

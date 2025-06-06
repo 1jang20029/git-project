@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 계정 – 연성대학교 스마트 캠퍼스</title>
-  <!-- Settings 화면과 동일한 스타일을 적용합니다 -->
-  <link rel="stylesheet" href="settings.css" />
+  <!-- Settings 화면과 동일한 스타일을 적용 -->
+  <link rel="stylesheet" href="account-edit.css" />
 </head>
 <body>
   <!-- =======================================================
@@ -26,18 +26,6 @@
        카드 스타일 컨테이너: 입력 폼 전체를 감쌈
      ======================================================= -->
   <div id="account-edit-container" class="card">
-    <!-- --------------------------------------------------
-         프로필 이미지 URL 입력 필드
-       -------------------------------------------------- -->
-    <div class="form-item">
-      <label for="accountImageUrl">이미지 URL</label>
-      <input
-        type="text"
-        id="accountImageUrl"
-        placeholder="https://example.com/avatar.jpg"
-      />
-    </div>
-
     <!-- --------------------------------------------------
          이름 입력 필드
        -------------------------------------------------- -->
@@ -75,6 +63,42 @@
     </div>
 
     <!-- --------------------------------------------------
+         현재 비밀번호 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="currentPassword">현재 비밀번호</label>
+      <input
+        type="password"
+        id="currentPassword"
+        placeholder="현재 비밀번호를 입력하세요"
+      />
+    </div>
+
+    <!-- --------------------------------------------------
+         새 비밀번호 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="newPassword">새 비밀번호</label>
+      <input
+        type="password"
+        id="newPassword"
+        placeholder="새 비밀번호를 입력하세요"
+      />
+    </div>
+
+    <!-- --------------------------------------------------
+         새 비밀번호 확인 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="confirmPassword">비밀번호 확인</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="새 비밀번호를 다시 입력하세요"
+      />
+    </div>
+
+    <!-- --------------------------------------------------
          저장 / 취소 버튼
        -------------------------------------------------- -->
     <div class="action-buttons">
@@ -88,7 +112,8 @@
      ======================================================= -->
   <script>
     // account-edit.js: “내 계정” 페이지 전용 스크립트
-    // 이 스크립트는 index.js가 account-edit.html을 <div id="profileContentPane">에 삽입한 뒤 실행됩니다.
+    // 이 스크립트는 index.js가 account-edit.html을 fetch하여
+    // <div id="profileContentPane">에 삽입한 뒤 실행됩니다.
 
     document.addEventListener('DOMContentLoaded', () => {
       // 1) 현재 로그인된 사용자 가져오기
@@ -101,10 +126,12 @@
       }
 
       // 2) 페이지 입력란 요소들 선택
-      const imageUrlInput       = document.getElementById('accountImageUrl');
       const nameInput           = document.getElementById('accountName');
       const departmentInput     = document.getElementById('accountDepartment');
       const emailInput          = document.getElementById('accountEmail');
+      const currentPwdInput     = document.getElementById('currentPassword');
+      const newPwdInput         = document.getElementById('newPassword');
+      const confirmPwdInput     = document.getElementById('confirmPassword');
       const saveBtn             = document.getElementById('saveAccountBtn');
       const cancelBtn           = document.getElementById('cancelAccountBtn');
 
@@ -115,7 +142,6 @@
           return res.json();
         })
         .then((user) => {
-          imageUrlInput.value       = user.profileImage || '';
           nameInput.value           = user.name || '';
           departmentInput.value     = user.departmentName || '';
           emailInput.value          = user.email || '';
@@ -128,13 +154,12 @@
       // 4) “저장” 버튼 클릭 시: 변경된 데이터를 API로 전송
       saveBtn.addEventListener('click', () => {
         const updatedData = {
-          profileImage:   imageUrlInput.value.trim(),
-          name:           nameInput.value.trim(),
-          department:     departmentInput.value.trim(),
-          email:          emailInput.value.trim()
+          name:       nameInput.value.trim(),
+          department: departmentInput.value.trim(),
+          email:      emailInput.value.trim()
         };
 
-        // 입력 유효성 검사 (간단히 빈칸 검사)
+        // 입력 유효성 검사 (빈칸 검사)
         if (!updatedData.name) {
           showMessage('이름을 입력하세요.', 'error');
           return;
@@ -144,32 +169,75 @@
           return;
         }
 
-        // API로 PUT 요청 보내기
+        // 비밀번호 변경 여부 확인
+        const currentPwdValue = currentPwdInput.value.trim();
+        const newPwdValue     = newPwdInput.value.trim();
+        const confirmPwdValue = confirmPwdInput.value.trim();
+
+        let pwdChangeRequested = false;
+        if (newPwdValue || confirmPwdValue) {
+          // 현재 비밀번호, 새 비밀번호, 비밀번호 확인 모두 입력되어야 함
+          if (!currentPwdValue) {
+            showMessage('현재 비밀번호를 입력하세요.', 'error');
+            return;
+          }
+          if (!newPwdValue) {
+            showMessage('새 비밀번호를 입력하세요.', 'error');
+            return;
+          }
+          if (newPwdValue !== confirmPwdValue) {
+            showMessage('새 비밀번호와 확인이 일치하지 않습니다.', 'error');
+            return;
+          }
+          pwdChangeRequested = true;
+        }
+
+        // 4-1) 먼저 사용자 기본 정보 업데이트 (이름/학과/이메일)
         fetch(`/api/users/${encodeURIComponent(currentUser)}`, {
           method:  'PUT',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify(updatedData)
         })
           .then((res) => {
-            if (!res.ok) throw new Error('업데이트 실패');
+            if (!res.ok) throw new Error('기본 정보 업데이트 실패');
             return res.json();
           })
-          .then((data) => {
+          .then(() => {
+            // 4-2) 비밀번호 변경 요청이 있으면 별도 API 호출
+            if (pwdChangeRequested) {
+              const pwdPayload = {
+                currentPassword: currentPwdValue,
+                newPassword:     newPwdValue
+              };
+              return fetch(`/api/users/${encodeURIComponent(currentUser)}/password`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(pwdPayload)
+              })
+                .then((pwdRes) => {
+                  if (!pwdRes.ok) throw new Error('비밀번호 변경 실패');
+                  return pwdRes.json();
+                })
+                .then(() => {
+                  showMessage('비밀번호가 변경되었습니다.', 'success');
+                });
+            }
+          })
+          .then(() => {
             showMessage('계정 정보가 저장되었습니다.', 'success');
-            // 저장 후, “내 계정” 목록 화면(혹은 프로필 화면)으로 돌아가기
+            // 저장 후, “내 계정” 목록 화면(또는 프로필 화면)으로 돌아가기
             showContent('profile');
-            // 만약 index.js에서 사용자 정보를 즉시 반영하려면 아래 함수 재호출:
+            // index.js에서 사용자 정보를 즉시 반영
             checkUserStatus();
           })
           .catch((err) => {
             console.error('계정 업데이트 오류:', err);
-            showMessage('계정 정보를 저장하는 데 실패했습니다.', 'error');
+            showMessage(err.message || '계정 정보를 저장하는 데 실패했습니다.', 'error');
           });
       });
 
       // 5) “취소” 버튼 클릭 시: 이전 화면으로 돌아가기
       cancelBtn.addEventListener('click', () => {
-        // 변경 전 상태 그대로 되돌아가도록, 단순히 프로필 화면으로 복귀
         showContent('profile');
       });
     });
