@@ -112,7 +112,7 @@ function showContent(type) {
     'timetableContentPane',
     'shuttleContentPane',
     'calendarContentPane',
-    'profileContentPane',    // 이곳을 “내 계정” 화면에 사용
+    'profileContentPane',
     'settingsContent'
   ];
 
@@ -133,72 +133,67 @@ function showContent(type) {
     case 'timetable':      targetId = 'timetableContentPane'; break;
     case 'shuttle':        targetId = 'shuttleContentPane'; break;
     case 'calendar':       targetId = 'calendarContentPane'; break;
-
-    case 'account':
-      targetId = 'profileContentPane';
-      // “내 계정” 화면: 아직 account-edit.html을 삽입하지 않았다면 fetch 후 삽입
-      if (!accountLoaded) {
-        const container = document.getElementById('profileContentPane');
-        if (container) {
-          fetch('account-edit.html')
-            .then((res) => {
-              if (!res.ok) throw new Error('account-edit.html 을 불러오는 중 오류 발생');
-              return res.text();
-            })
-            .then((html) => {
-              container.innerHTML = html;
-              accountLoaded = true;
-              // HTML 삽입 후 initAccountEditPage 호출 (account-edit.js에서 정의)
-              if (window.initAccountEditPage) {
-                window.initAccountEditPage();
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              container.innerHTML = `
-                <div class="error-fallback">
-                  <h3>⚠️ 오류 발생</h3>
-                  <p>내 계정 화면을 불러올 수 없습니다</p>
-                </div>
-              `;
-            });
-        }
-      }
-      break;
-
-    case 'settings':
-      targetId = 'settingsContent';
-      // “설정” 화면: 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
-      if (!settingsLoaded) {
-        const container = document.getElementById('settingsContent');
-        if (container) {
-          fetch('settings.html')
-            .then((res) => {
-              if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
-              return res.text();
-            })
-            .then((html) => {
-              container.innerHTML = html;
-              settingsLoaded = true;
-              // HTML 삽입 후 즉시 initSettingsPage 호출
-              if (window.initSettingsPage) {
-                window.initSettingsPage();
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              container.innerHTML = `
-                <div class="error-fallback">
-                  <h3>⚠️ 오류 발생</h3>
-                  <p>설정 화면을 불러올 수 없습니다</p>
-                </div>
-              `;
-            });
-        }
-      }
-      break;
-
+    case 'account':        targetId = 'profileContentPane'; break;
+    case 'settings':       targetId = 'settingsContent'; break;
     default:               targetId = 'homeContent';
+  }
+
+  // “설정” 화면일 때, 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
+  if (type === 'settings' && !settingsLoaded) {
+    const container = document.getElementById('settingsContent');
+    if (container) {
+      fetch('settings.html')
+        .then((res) => {
+          if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
+          return res.text();
+        })
+        .then((html) => {
+          container.innerHTML = html;
+          settingsLoaded = true;
+          // HTML 삽입 후 즉시 initSettingsPage 호출
+          if (window.initSettingsPage) {
+            window.initSettingsPage();
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          container.innerHTML = `
+            <div class="error-fallback">
+              <h3>⚠️ 오류 발생</h3>
+              <p>설정 화면을 불러올 수 없습니다</p>
+            </div>
+          `;
+        });
+    }
+  }
+
+  // “내 계정” 화면일 때, 아직 account-edit.html 을 삽입하지 않았다면 fetch 후 삽입
+  if (type === 'account' && !accountLoaded) {
+    const container = document.getElementById('profileContentPane');
+    if (container) {
+      fetch('account-edit.html')
+        .then((res) => {
+          if (!res.ok) throw new Error('account-edit.html 을 불러오는 중 오류 발생');
+          return res.text();
+        })
+        .then((html) => {
+          container.innerHTML = html;
+          accountLoaded = true;
+          // HTML 삽입 후 즉시 initAccountEditPage 호출 (account-edit.js에서 정의)
+          if (window.initAccountEditPage) {
+            window.initAccountEditPage();
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          container.innerHTML = `
+            <div class="error-fallback">
+              <h3>⚠️ 오류 발생</h3>
+              <p>내 계정 화면을 불러올 수 없습니다</p>
+            </div>
+          `;
+        });
+    }
   }
 
   // 화면 보이기
@@ -1067,17 +1062,6 @@ function closeStudentServiceDropdown() {
   }
 }
 
-// ─────────── showAccount: 내 계정 화면으로 이동 ───────────
-function showAccount() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (currentUser) {
-    showContent('account');
-  } else {
-    showMessage('로그인이 필요한 서비스입니다.', 'error');
-  }
-  closeUserDropdown();
-}
-
 // ─────────── handleLogout: 로그아웃 처리 ───────────
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -1145,7 +1129,7 @@ function checkUserStatus() {
         if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
         if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
-        updateAccountImage(user);
+        updateProfileImage(user);
       })
       .catch(() => {
         setGuestMode();
@@ -1170,13 +1154,15 @@ function setGuestMode() {
   if (avatarEl) avatarEl.textContent         = '👤';
 }
 
-// ─────────── updateAccountImage: 사용자 프로필(내 계정) 이미지 적용 ───────────
-function updateAccountImage(user) {
+// ─────────── updateProfileImage: 사용자 프로필 이미지 적용 ───────────
+function updateProfileImage(user) {
   const avatarEl = document.getElementById('user-avatar');
   if (!avatarEl) return;
 
-  if (user.profileImage) {
-    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="내 계정">`;
+  if (user.profileImageType === 'emoji') {
+    avatarEl.textContent = user.profileImage || '👤';
+  } else if (user.profileImage) {
+    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
   } else {
     avatarEl.textContent = '👤';
   }
@@ -1362,7 +1348,7 @@ function applyUserShortcuts() {
       showContent('calendar');
       return;
     }
-    if (label.includes('내 계정') || label.includes('계정')) {
+    if (label.includes('계정')) {
       showContent('account');
       return;
     }

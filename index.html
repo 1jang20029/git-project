@@ -16,6 +16,9 @@
 
   <!-- 분리된 설정 화면 전용 스타일 -->
   <link rel="stylesheet" href="settings.css" />
+
+  <!-- "내 계정" 화면 전용 스타일 -->
+  <link rel="stylesheet" href="account-edit.css" />
 </head>
 <body>
   <!-- ==================================================
@@ -122,9 +125,9 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <button id="dropdown-item-account" onclick="showAccount()">
-              <span>👤</span>
-              <span>내 계정</span>
+            <!-- “내 계정” 메뉴: 아이콘 없이 텍스트만 보여줍니다 -->
+            <button id="dropdown-item-account" onclick="showContent('account')">
+              내 계정
             </button>
             <button id="dropdown-item-settings" onclick="showContent('settings')">
               <span>⚙️</span>
@@ -378,7 +381,7 @@
       </div>
 
       <!-- --------------------------------------------------
-           내 계정 화면
+           내 계정 화면 (account-edit.html이 동적으로 삽입됨)
            -------------------------------------------------- -->
       <div id="profileContentPane" style="display: none;"></div>
 

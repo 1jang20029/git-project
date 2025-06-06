@@ -475,8 +475,47 @@ body {
   color: #94a3b8;
 }
 
-#dropdown-item-profile,
-#dropdown-item-settings,
+/* “내 계정” 버튼 */
+#dropdown-item-account {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+#dropdown-item-account:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* 설정 버튼 */
+#dropdown-item-settings {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+#dropdown-item-settings:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* 로그아웃 버튼 */
 #dropdown-item-logout {
   display: flex;
   align-items: center;
@@ -491,8 +530,6 @@ body {
   text-align: left;
 }
 
-#dropdown-item-profile:hover,
-#dropdown-item-settings:hover,
 #dropdown-item-logout:hover {
   background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
@@ -1207,7 +1244,7 @@ body.light-mode .notification-content {
   color: #1f2937;
 }
 
-body.light-mode #dropdown-item-profile,
+body.light-mode #dropdown-item-account,
 body.light-mode #dropdown-item-settings,
 body.light-mode #dropdown-item-logout {
   color: #1f2937;

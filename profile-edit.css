@@ -1,228 +1,388 @@
-/* =============================================================================
-   profile-edit.css
-   프로필 수정 화면 전용 스타일
-============================================================================= */
-
-.content-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 2rem;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
-.content-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+body {
+    background-color: #f5f5f5;
+    color: #333;
 }
 
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: #64748b;
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
 }
 
-/* ----------------------------------------------------------------------------- 
-   프로필 수정 화면 컨테이너 
------------------------------------------------------------------------------ */
-#profile-edit-container {
-  padding: 2rem;
-  background: rgba(30, 41, 59, 0.5);
-  border-radius: 12px;
+header {
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* ----------------------------------------------------------------------------- 
-   개별 프로필 항목 
------------------------------------------------------------------------------ */
-.profile-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.profile-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
+.page-title {
+    font-size: 18px;
+    font-weight: bold;
 }
 
-/* ----------------------------------------------------------------------------- 
-   라벨 텍스트 스타일 
------------------------------------------------------------------------------ */
-.profile-item label {
-  color: #f1f5f9;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.3s ease;
+.content-section {
+    padding: 16px;
 }
 
-/* ----------------------------------------------------------------------------- 
-   텍스트 입력 (input) 기본 스타일 
------------------------------------------------------------------------------ */
-.profile-item input[type="text"],
-.profile-item input[type="email"],
-.profile-item select {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-  color: #f1f5f9;
-  font-size: 0.9rem;
-  width: 60%;
-  transition: all 0.3s ease;
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #333;
 }
 
-.profile-item input[type="text"]:focus,
-.profile-item input[type="email"]:focus,
-.profile-item select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.95);
-}
-
-/* ----------------------------------------------------------------------------- 
-   프로필 이미지 관련 서브 컨테이너 
------------------------------------------------------------------------------ */
-#image-url-container,
-#emoji-picker-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-}
-
-#image-url-container:last-child,
-#emoji-picker-container:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-/* ----------------------------------------------------------------------------- 
-   저장/취소 버튼 컨테이너 
------------------------------------------------------------------------------ */
-.action-buttons {
-  margin-top: 2rem;
-  display: flex;
-  gap: 1rem;
-}
-
-/* 저장 버튼 */
-.save-btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  background: #10b981;    /* 녹색 배경 */
-  color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.save-btn:hover {
-  background: #059669;    /* 호버 시 진한 녹색 */
-}
-
-/* 취소 버튼 */
-.cancel-btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  background: #ef4444;    /* 붉은색 배경 */
-  color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cancel-btn:hover {
-  background: #dc2626;    /* 호버 시 진한 붉은색 */
-}
-
-/* ----------------------------------------------------------------------------- 
-   공통 버튼 스타일 (필요 시 사용) 
------------------------------------------------------------------------------ */
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  background: #3b82f6;
-  color: white;
-  border: none;
-}
-
-.btn:hover {
-  background: #2563eb;
-}
-
-/* ----------------------------------------------------------------------------- 
-   라이트 모드 적용 시 색상 반전 
------------------------------------------------------------------------------ */
-body.light-mode #profile-edit-container {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-body.light-mode .profile-item label {
-  color: #1f2937;
-}
-
-body.light-mode .profile-item input[type="text"],
-body.light-mode .profile-item input[type="email"],
-body.light-mode .profile-item select {
-  background: rgba(240, 240, 240, 0.8);
-  color: #1f2937;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-body.light-mode .profile-item input[type="text"]:focus,
-body.light-mode .profile-item input[type="email"]:focus,
-body.light-mode .profile-item select:focus {
-  background: rgba(240, 240, 240, 1);
-  color: #1f2937;
-}
-
-/* ----------------------------------------------------------------------------- 
-   반응형: 화면 너비가 좁을 때 여백 및 폰트 크기 조정 
------------------------------------------------------------------------------ */
-@media (max-width: 768px) {
-  #profile-edit-container {
-    padding: 1rem;
-  }
-  .profile-item {
+.profile-form {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .profile-item input[type="text"],
-  .profile-item input[type="email"],
-  .profile-item select {
+}
+
+/* 수정된 프로필 이미지 섹션 스타일 */
+.profile-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    position: relative;
+}
+
+/* 수정된 프로필 이미지 스타일 */
+.profile-image-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 16px;
+}
+
+.profile-image {
     width: 100%;
-  }
-  .action-buttons {
-    flex-direction: column;
-  }
+    height: 100%;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    overflow: hidden;
 }
 
-@media (max-width: 480px) {
-  .profile-item {
-    padding: 0.75rem 0;
-    margin-bottom: 1rem;
-  }
-  .profile-item input[type="text"],
-  .profile-item input[type="email"],
-  .profile-item select {
-    font-size: 0.85rem;
-  }
+/* 헤더에 있는 프로필 이미지 스타일 */
+.header-profile {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-left: auto; /* 우측으로 정렬 */
+}
+
+/* 수정된 편집 버튼 스타일 - 프로필과 겹치도록 */
+.edit-image-button {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    background-color: #c62917;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 18px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-group {
+    margin-bottom: 14px;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+    background-color: white;
+}
+
+.form-readonly {
+    background-color: #f9f9f9;
+    color: #777;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.autocomplete-category {
+    background-color: #f5f5f5;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 1px solid #eee;
+}
+
+.autocomplete-item {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 15px;
+    padding-left: 16px;
+}
+
+.autocomplete-item:hover {
+    background-color: #f5f5f5;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item.highlighted {
+    background-color: #e8f4fd;
+}
+
+.divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 20px 0;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.save-button {
+    flex: 1;
+    padding: 14px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cancel-button {
+    flex: 1;
+    padding: 14px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.section-divider {
+    padding: 8px 16px;
+    background-color: #f9f9f9;
+    font-weight: bold;
+    color: #555;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.error-message {
+    color: #c62917;
+    font-size: 13px;
+    margin-top: 4px;
+    display: none;
+}
+
+.has-error .form-input {
+    border-color: #c62917;
+}
+
+.has-error .error-message {
+    display: block;
+}
+
+.notice-text {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
+}
+
+/* 모달 스타일 개선 */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.modal-section {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 16px 0;
+    text-align: center;
+}
+
+.upload-button {
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.preview-container {
+    margin-top: 16px;
+    display: none;
+    text-align: center;
+}
+
+.preview-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 16px;
+    display: block;
+}
+
+.apply-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.image-option {
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.image-option:hover {
+    border-color: #c62917;
+    background-color: #fff8f8;
+}
+
+.emoji-image {
+    font-size: 36px;
+}
+
+.modal-footer {
+    padding: 16px;
+    text-align: center;
+    background-color: #f5f5f5;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
 }
