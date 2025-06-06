@@ -50,7 +50,7 @@
         <span>공지사항</span>
       </li>
 
-      <!-- ↓↓↓ 여기서부터 학생서비스 메뉴 추가 ↓↓↓ -->
+      <!-- ↓↓↓ 학생서비스 메뉴 추가 ↓↓↓ -->
       <li class="nav-item" id="nav-student-services">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
@@ -69,12 +69,12 @@
           </li>
         </ul>
       </li>
-      <!-- ↑↑↑ 여기까지 학생서비스 메뉴 추가 ↑↑↑ -->
+      <!-- ↑↑↑ 학생서비스 메뉴 끝 ↑↑↑ -->
     </ul>
 
     <!-- 3) 빠른 접근 (가로형) -->
     <ul id="quick-menu">
-      <!-- 빈 채워짐 -->
+      <!-- 동적으로 채워짐 -->
     </ul>
 
     <!-- 4) 검색창 / 알림 버튼 / 사용자 메뉴 -->
@@ -144,6 +144,7 @@
        ================================================== -->
   <div id="main-container">
     <main id="content-area">
+
       <!-- --------------------------------------------------
            홈 (대시보드) 화면
            -------------------------------------------------- -->
@@ -208,42 +209,53 @@
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
-          <div id="breadcrumb-buildings">
+          <div class="breadcrumb">
             <span>홈</span>
             <span>›</span>
             <span>건물 안내</span>
           </div>
         </div>
-        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
+
+        <!-- ==============================================
+             캠퍼스 지도 카드
+             ============================================== -->
+        <div id="buildingsMapCard">
           <div id="card-header-buildings-map">
             <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
             <span id="card-icon-buildings-map">🗺️</span>
           </div>
           <div id="buildings-map-container">
-            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
+            <div id="buildingsMap"></div>
             <div id="buildings-map-overlay">
-              <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
-              <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
-              <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
-              <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
+              <button id="buildings-zoom-in" title="확대">🔍+</button>
+              <button id="buildings-zoom-out" title="축소">🔍-</button>
+              <button id="buildings-reset" title="초기화">🏠</button>
+              <button id="buildings-track-user" title="내 위치">📍</button>
             </div>
           </div>
         </div>
+
+        <!-- ==============================================
+             건물 리스트 그리드
+             ============================================== -->
         <div id="buildingGrid"></div>
 
+        <!-- ==============================================
+             시설 안내 헤더
+             ============================================== -->
         <div class="content-header" style="margin-top: 2rem;">
-          <div>
-            <h1>시설 안내</h1>
-            <div class="breadcrumb">
-              <span>홈</span>
-              <span>›</span>
-              <span>시설 안내</span>
-            </div>
+          <h1>시설 안내</h1>
+          <div class="breadcrumb">
+            <span>홈</span>
+            <span>›</span>
+            <span>시설 안내</span>
           </div>
         </div>
         <div id="facilitiesGrid"></div>
 
-        <!-- 시설 사진 모달 -->
+        <!-- ==============================================
+             시설 사진 모달
+             ============================================== -->
         <div id="photoModal" class="modal">
           <div class="modal-content">
             <span id="modalClose" class="modal-close">&times;</span>
@@ -263,7 +275,7 @@
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
-          <div id="breadcrumb-lecture-review">
+          <div class="breadcrumb">
             <span>홈</span>
             <span>›</span>
             <span>강의평가</span>
@@ -307,7 +319,7 @@
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
-          <div id="breadcrumb-notices">
+          <div class="breadcrumb">
             <span>홈</span>
             <span>›</span>
             <span>공지사항</span>
@@ -322,7 +334,7 @@
       <div id="timetableContentPane" style="display: none;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
-          <div id="breadcrumb-timetable-pane">
+          <div class="breadcrumb">
             <span>홈</span>
             <span>›</span>
             <span>내 시간표</span>
@@ -340,7 +352,7 @@
       <div id="shuttleContentPane" style="display: none;">
         <div id="content-header-shuttle-pane">
           <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
-          <div id="breadcrumb-shuttle-pane">
+          <div class="breadcrumb">
             <span>홈</span>
             <span>›</span>
             <span>셔틀버스</span>
@@ -358,7 +370,7 @@
       <div id="calendarContentPane" style="display: none;">
         <div id="content-header-calendar-pane">
           <h1 id="title-calendar-pane">학사일정</h1>
-          <div id="breadcrumb-calendar-pane">
+          <div class="breadcrumb">
             <span>홈</span>
             <span>›</span>
             <span>학사일정</span>

@@ -1,4 +1,3 @@
-
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
   const savedMode = localStorage.getItem('lightMode');
@@ -109,7 +108,7 @@ function showContent(type) {
   const panes = [
     'homeContent',
     'buildingsContent',
-    // 'communityContent'  // 이제 정적 HTML 제거했으므로, placeholder만 남김
+    'communityContent',
     'lecture-reviewContent',
     'noticesContent',
     'timetableContentPane',
@@ -124,18 +123,6 @@ function showContent(type) {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
-
-  // 커뮤니티 콘텐츠는 동적 로드 위치용 컨테이너만 남김
-  const communityContainer = document.getElementById('communityContent');
-  if (communityContainer) communityContainer.style.display = 'none';
-
-  // 강의평가 콘텐츠도 동적 로드 위치용 컨테이너만 남김
-  const lectureContainer = document.getElementById('lecture-reviewContent');
-  if (lectureContainer) lectureContainer.style.display = 'none';
-
-  // 공지사항 콘텐츠도 동적 로드 위치용 컨테이너만 남김
-  const noticesContainer = document.getElementById('noticesContent');
-  if (noticesContainer) noticesContainer.style.display = 'none';
 
   // 보여줄 화면 결정
   let targetId = 'homeContent';
@@ -255,27 +242,6 @@ function showContent(type) {
     target.style.display = 'block';
     target.classList.add('fade-in');
   }
-  if (type === 'community') {
-    const comm = document.getElementById('communityContent');
-    if (comm) {
-      comm.style.display = 'block';
-      comm.classList.add('fade-in');
-    }
-  }
-  if (type === 'lecture-review') {
-    const lec = document.getElementById('lecture-reviewContent');
-    if (lec) {
-      lec.style.display = 'block';
-      lec.classList.add('fade-in');
-    }
-  }
-  if (type === 'notices') {
-    const noti = document.getElementById('noticesContent');
-    if (noti) {
-      noti.style.display = 'block';
-      noti.classList.add('fade-in');
-    }
-  }
 
   // 상단 메뉴 활성화 표시
   document.querySelectorAll('#main-menu .nav-item').forEach((item) => {
@@ -287,7 +253,7 @@ function showContent(type) {
   currentContent = type;
   window.location.hash = type;
 
-  // 건물 화면이면 네이버 지도 리프레시
+  // “건물 & 시설” 화면이면 네이버 지도 리프레시
   if (type === 'buildings' && naverMap) {
     setTimeout(() => {
       if (naverMap.refresh) naverMap.refresh();
@@ -649,7 +615,7 @@ async function loadLectureReviews() {
   }
 }
 
-// ─────────── renderLectureReviewsMain: 메인 페이지용 오늘 강의평가 렌더링 ───────────
+// ─────────── renderLectureReviewsMain: 메인 페이지용 강의평가 렌더링 ───────────
 function renderLectureReviewsMain(popular, recent) {
   const popEl = document.getElementById('popularReviews');
   const recEl = document.getElementById('recentReviews');
@@ -697,9 +663,6 @@ function renderLectureReviewsMain(popular, recent) {
   });
 }
 
-// ─────────── renderLectureReviews: (기존에 사용되던 메인 페이지용) ───────────
-//    메인 페이지의 별도 섹션이 아닌, 동적 로드된 lecture-review.html에서 사용되지 않음
-
 // ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
@@ -740,6 +703,7 @@ function addMapMarkers(buildings) {
     infoWindows = [];
 
     buildings.forEach((b) => {
+      if (!b.position || !b.position.lat || !b.position.lng) return;
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(b.position.lat, b.position.lng),
         map: naverMap,
