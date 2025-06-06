@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
 
-  <!-- 네이버 지도 API (빌딩&시설용) -->
+  <!-- 네이버 지도 API -->
   <script
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
     defer
@@ -13,6 +13,8 @@
 
   <!-- 공통 스타일 -->
   <link rel="stylesheet" href="index.css" />
+  <!-- 분리된 설정 화면 전용 스타일 -->
+  <link rel="stylesheet" href="settings.css" />
 </head>
 <body>
   <!-- ==================================================
@@ -35,7 +37,6 @@
         <span class="nav-icon" title="건물 & 시설">🏢</span>
         <span>건물 &amp; 시설</span>
       </li>
-      <!-- 커뮤니티 탭은 유지하되, 콘텐츠는 외부 파일로 불러오기 -->
       <li class="nav-item" id="nav-community" onclick="showContent('community')">
         <span class="nav-icon" title="커뮤니티">💬</span>
         <span>커뮤니티</span>
@@ -120,7 +121,6 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <!-- “프로필” 대신 “내 계정”으로 텍스트만 표현, onclick을 showProfile()로 연결 -->
             <button id="dropdown-item-profile" onclick="showProfile()">
               내 계정
             </button>
@@ -145,74 +145,248 @@
   <div id="main-container">
     <main id="content-area">
       <!-- --------------------------------------------------
-           홈 (대시보드) 화면 (변경 없음)
+           홈 (대시보드) 화면
            -------------------------------------------------- -->
       <div id="homeContent">
-        <!-- ... 기존 homeContent 코드 ... -->
+        <div id="content-header-home">
+          <h1 id="title-home">대시보드</h1>
+          <div id="breadcrumb-home">
+            <span>홈</span>
+            <span>›</span>
+            <span>대시보드</span>
+          </div>
+        </div>
+        <div id="statsGrid"></div>
+        <div id="dashboardGrid">
+          <div id="map-card">
+            <div id="card-header-map">
+              <h3 id="card-title-map">캠퍼스 지도</h3>
+              <span id="card-icon-map">🗺️</span>
+            </div>
+            <div id="map-container">
+              <div id="naverMap" style="width: 100%; height: 100%;"></div>
+              <div id="map-overlay">
+                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
+                <button id="map-reset" onclick="resetMapView()" title="초기화">🏠</button>
+                <button id="map-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
+              </div>
+            </div>
+          </div>
+          <div id="timetable-card">
+            <div id="card-header-timetable">
+              <h3 id="card-title-timetable">오늘의 시간표</h3>
+              <span id="card-icon-timetable">📅</span>
+            </div>
+            <div id="timetableContent"></div>
+          </div>
+          <div id="shuttle-card">
+            <div id="card-header-shuttle">
+              <h3 id="card-title-shuttle">셔틀버스 현황</h3>
+              <span id="card-icon-shuttle">🚌</span>
+            </div>
+            <div id="shuttleRoutes"></div>
+            <div id="shuttle-status">
+              <div id="shuttle-time">--</div>
+              <div id="shuttle-desc">--</div>
+              <div id="shuttleStatus">--</div>
+            </div>
+          </div>
+          <div id="notice-card">
+            <div id="card-header-notice">
+              <h3 id="card-title-notice">최근 공지사항</h3>
+              <span id="card-icon-notice">📢</span>
+            </div>
+            <div id="recentNotices"></div>
+          </div>
+        </div>
       </div>
 
       <!-- --------------------------------------------------
-           건물 & 시설 안내 화면 (변경 없음 – SPA로 buildings.html 로드)
+           건물 & 시설 안내 화면
            -------------------------------------------------- -->
-      <div id="buildingsContent" style="display: none;"></div>
+      <div id="buildingsContent" style="display: none;">
+        <div id="content-header-buildings">
+          <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
+          <div id="breadcrumb-buildings">
+            <span>홈</span>
+            <span>›</span>
+            <span>건물 안내</span>
+          </div>
+        </div>
+        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
+          <div id="card-header-buildings-map">
+            <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
+            <span id="card-icon-buildings-map">🗺️</span>
+          </div>
+          <div id="buildings-map-container">
+            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
+            <div id="buildings-map-overlay">
+              <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+              <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
+              <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
+              <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
+            </div>
+          </div>
+        </div>
+        <div id="buildingGrid"></div>
+
+        <div class="content-header" style="margin-top: 2rem;">
+          <div>
+            <h1>시설 안내</h1>
+            <div class="breadcrumb">
+              <span>홈</span>
+              <span>›</span>
+              <span>시설 안내</span>
+            </div>
+          </div>
+        </div>
+        <div id="facilitiesGrid"></div>
+
+        <!-- 시설 사진 모달 -->
+        <div id="photoModal" class="modal">
+          <div class="modal-content">
+            <span id="modalClose" class="modal-close">&times;</span>
+            <div id="modalImagesContainer"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- --------------------------------------------------
-           커뮤니티 화면: 이제 여기서는 빈 <div>만 두고, 별도 파일로 로드
+           커뮤니티 화면 (동적 로드)
            -------------------------------------------------- -->
       <div id="communityContent" style="display: none;"></div>
 
       <!-- --------------------------------------------------
-           강의평가 화면 (변경 없음)
+           강의평가 화면
            -------------------------------------------------- -->
       <div id="lecture-reviewContent" style="display: none;">
-        <!-- ... 기존 lecture-reviewContent 코드 ... -->
+        <div id="content-header-lecture-review">
+          <h1 id="title-lecture-review">강의평가</h1>
+          <div id="breadcrumb-lecture-review">
+            <span>홈</span>
+            <span>›</span>
+            <span>강의평가</span>
+          </div>
+        </div>
+        <div id="dashboardGrid-lecture-review">
+          <div id="popular-reviews-card">
+            <div id="card-header-popular-reviews">
+              <h3 id="card-title-popular-reviews">인기 강의평가</h3>
+              <span id="card-icon-popular-reviews">⭐</span>
+            </div>
+            <div id="popularReviews"></div>
+          </div>
+          <div id="recent-reviews-card">
+            <div id="card-header-recent-reviews">
+              <h3 id="card-title-recent-reviews">최근 강의평가</h3>
+              <span id="card-icon-recent-reviews">🕒</span>
+            </div>
+            <div id="recentReviews"></div>
+          </div>
+          <div id="write-review-card">
+            <div id="card-header-write-review">
+              <h3 id="card-title-write-review">강의평가 작성</h3>
+              <span id="card-icon-write-review">✍️</span>
+            </div>
+            <div id="write-review-desc" style="padding: 1rem; text-align: center;">
+              <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+                수강 중인 강의에 대한 솔직한 평가를 남겨주세요
+              </p>
+              <button id="write-review-button" onclick="alert('강의평가 작성 페이지로 이동합니다.')">
+                강의평가 작성하기
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- --------------------------------------------------
-           공지사항 화면 (변경 없음)
+           공지사항 화면
            -------------------------------------------------- -->
       <div id="noticesContent" style="display: none;">
-        <!-- ... 기존 noticesContent 코드 ... -->
+        <div id="content-header-notices">
+          <h1 id="title-notices">공지사항</h1>
+          <div id="breadcrumb-notices">
+            <span>홈</span>
+            <span>›</span>
+            <span>공지사항</span>
+          </div>
+        </div>
+        <div id="fullNoticeList"></div>
       </div>
 
       <!-- --------------------------------------------------
-           내 시간표 화면 (변경 없음)
+           내 시간표 화면
            -------------------------------------------------- -->
       <div id="timetableContentPane" style="display: none;">
-        <!-- ... 기존 timetableContentPane 코드 ... -->
+        <div id="content-header-timetable-pane">
+          <h1 id="title-timetable-pane">내 시간표</h1>
+          <div id="breadcrumb-timetable-pane">
+            <span>홈</span>
+            <span>›</span>
+            <span>내 시간표</span>
+          </div>
+        </div>
+        <div id="timetable-sample-text">
+          여기에 사용자의 개인 시간표 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
       </div>
 
       <!-- --------------------------------------------------
-           셔틀버스 화면 (변경 없음)
+           셔틀버스 화면
            -------------------------------------------------- -->
       <div id="shuttleContentPane" style="display: none;">
-        <!-- ... 기존 shuttleContentPane 코드 ... -->
+        <div id="content-header-shuttle-pane">
+          <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
+          <div id="breadcrumb-shuttle-pane">
+            <span>홈</span>
+            <span>›</span>
+            <span>셔틀버스</span>
+          </div>
+        </div>
+        <div id="shuttle-sample-text">
+          여기에 셔틀버스 노선 및 실시간 운행 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
       </div>
 
       <!-- --------------------------------------------------
-           학사일정 화면 (변경 없음)
+           학사일정 화면
            -------------------------------------------------- -->
       <div id="calendarContentPane" style="display: none;">
-        <!-- ... 기존 calendarContentPane 코드 ... -->
+        <div id="content-header-calendar-pane">
+          <h1 id="title-calendar-pane">학사일정</h1>
+          <div id="breadcrumb-calendar-pane">
+            <span>홈</span>
+            <span>›</span>
+            <span>학사일정</span>
+          </div>
+        </div>
+        <div id="calendar-sample-text">
+          여기에 학사일정 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
       </div>
 
       <!-- --------------------------------------------------
-           내 계정 화면 (변경 없음)
+           내 계정 화면 (프래그먼트)
            -------------------------------------------------- -->
       <div id="profileContentPane" style="display: none;"></div>
 
       <!-- --------------------------------------------------
-           설정 화면: 동적으로 로드 (변경 없음)
+           설정 화면: 동적으로 로드
            -------------------------------------------------- -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
   <!-- ==================================================
-       공통 자바스크립트 (index.js) – 수정 필요
+       공통 자바스크립트
        ================================================== -->
   <script src="index.js" defer></script>
-  <!-- 분리된 설정 화면 전용 자바스크립트 (변경 없음) -->
+  <!-- 분리된 설정 화면 전용 자바스크립트 -->
   <script src="settings.js" defer></script>
 </body>
 </html>
