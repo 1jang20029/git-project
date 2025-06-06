@@ -90,9 +90,8 @@
         />
       </div>
 
-      <!-- 알림 / 사용자 메뉴 -->
+      <!-- 알림 -->
       <div id="user-menu">
-        <!-- 알림 버튼 -->
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
           <div id="notification-dot"></div>
@@ -112,6 +111,7 @@
 
         <!-- 사용자 프로필 -->
         <div id="user-profile" onclick="toggleUserMenu()">
+          <!-- 이모지 제거: avatar는 글자나 이미지로 대체 -->
           <div id="user-avatar">👤</div>
           <div id="user-info">
             <div id="user-name">게스트</div>
@@ -122,7 +122,7 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <!-- “프로필” 대신 “내 계정”으로 텍스트만 표현, onclick을 showProfile()로 연결 -->
+            <!-- “프로필” 대신 “내 계정”으로 텍스트만 표현 -->
             <button id="dropdown-item-profile" onclick="showProfile()">
               내 계정
             </button>
@@ -216,13 +216,13 @@
             <span>건물 안내</span>
           </div>
         </div>
-        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
+        <div id="buildingsMapCard">
           <div id="card-header-buildings-map">
             <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
             <span id="card-icon-buildings-map">🗺️</span>
           </div>
           <div id="buildings-map-container">
-            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
+            <div id="buildingsMap" style="width: 100%; height: 800px;"></div>
             <div id="buildings-map-overlay">
               <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
               <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
@@ -378,7 +378,7 @@
       </div>
 
       <!-- --------------------------------------------------
-           내 계정 화면 (프래그먼트)
+           내 계정 화면 (프래그먼트) – AJAX로 로드됨
            -------------------------------------------------- -->
       <div id="profileContentPane" style="display: none;"></div>
 

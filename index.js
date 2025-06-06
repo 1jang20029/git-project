@@ -1,6 +1,4 @@
-// =============================================================================
 // index.js (메인 페이지 스크립트)
-// =============================================================================
 
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
@@ -1068,8 +1066,7 @@ async function showProfile() {
     return;
   }
 
-  // 3) account-edit.html 내부에 <script src="account-edit.js" defer></script>가 포함되어 있어야 스크립트가 실행됨
-  //    즉, account-edit.html 파일 자체에 이미 <script> 태그를 선언해두세요.
+  // 3) account-edit.html 내부에는 이미 <script src="account-edit.js" defer></script>가 포함되어 있으므로 스크립트가 실행됩니다.
 
   // 4) 로그인 상태/시간표 갱신 등
   checkUserStatus();
@@ -1204,7 +1201,7 @@ function showMessage(message, type = 'info', category = '') {
 
   notification.style.cssText = `
     position: fixed;
-    top: 100px; 
+    top: 100px;
     right: 20px;
     background: ${bgColor};
     color: white;
@@ -1374,7 +1371,7 @@ function applyUserShortcuts() {
       return;
     }
     if (label.includes('프로필') || label.includes('내 계정')) {
-      showContent('profile');
+      showProfile();
       return;
     }
     if (label.includes('설정')) {
