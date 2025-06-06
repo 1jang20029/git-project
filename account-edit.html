@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 계정 – 연성대학교 스마트 캠퍼스</title>
+  <!-- Account Edit 전용 CSS -->
+  <link rel="stylesheet" href="account-edit.css" />
+</head>
+<body>
+  <div class="content-header">
+    <div>
+      <h1>내 계정</h1>
+      <div class="breadcrumb">
+        <span>홈</span>
+        <span>›</span>
+        <span>내 계정</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="account-edit-container">
+    <!-- 1. 프로필 이미지 URL 입력 -->
+    <div class="account-item">
+      <label for="accountImageUrl">이미지 URL</label>
+      <input type="text" id="accountImageUrl" placeholder="https://example.com/avatar.jpg" />
+    </div>
+
+    <!-- 2. 이름 -->
+    <div class="account-item">
+      <label for="accountName">이름</label>
+      <input type="text" id="accountName" placeholder="홍길동" />
+    </div>
+
+    <!-- 3. 학과 (Role) -->
+    <div class="account-item">
+      <label for="accountDepartment">학과</label>
+      <input type="text" id="accountDepartment" placeholder="컴퓨터공학과" />
+    </div>
+
+    <!-- 4. 이메일 (선택) -->
+    <div class="account-item">
+      <label for="accountEmail">이메일</label>
+      <input type="email" id="accountEmail" placeholder="user@example.com" />
+    </div>
+
+    <!-- 저장 / 취소 버튼 -->
+    <div class="action-buttons">
+      <button id="saveAccountBtn" class="btn save-btn">저장</button>
+      <button id="cancelAccountBtn" class="btn cancel-btn">취소</button>
+    </div>
+  </div>
+
+  <!-- Account Edit 전용 JS -->
+  <script src="account-edit.js" defer></script>
+</body>
+</html>

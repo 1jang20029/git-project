@@ -1,0 +1,203 @@
+/* =============================================================================
+   account-edit.css
+   내 계정 화면 전용 스타일
+============================================================================= */
+
+.content-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.content-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* ----------------------------------------------------------------------------- 
+   내 계정 화면 컨테이너 
+----------------------------------------------------------------------------- */
+#account-edit-container {
+  padding: 2rem;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 12px;
+}
+
+/* ----------------------------------------------------------------------------- 
+   개별 계정 항목 
+----------------------------------------------------------------------------- */
+.account-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.account-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* ----------------------------------------------------------------------------- 
+   라벨 텍스트 스타일 
+----------------------------------------------------------------------------- */
+.account-item label {
+  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* ----------------------------------------------------------------------------- 
+   텍스트 입력 (input) 기본 스타일 
+----------------------------------------------------------------------------- */
+.account-item input[type="text"],
+.account-item input[type="email"] {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  color: #f1f5f9;
+  font-size: 0.9rem;
+  width: 60%;
+  transition: all 0.3s ease;
+}
+
+.account-item input[type="text"]:focus,
+.account-item input[type="email"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(30, 41, 59, 0.95);
+}
+
+/* ----------------------------------------------------------------------------- 
+   저장/취소 버튼 컨테이너 
+----------------------------------------------------------------------------- */
+.action-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* 저장 버튼 */
+.save-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  background: #10b981;    /* 녹색 배경 */
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+  background: #059669;    /* 호버 시 진한 녹색 */
+}
+
+/* 취소 버튼 */
+.cancel-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  background: #ef4444;    /* 붉은색 배경 */
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #dc2626;    /* 호버 시 진한 붉은색 */
+}
+
+/* ----------------------------------------------------------------------------- 
+   공통 버튼 스타일 (필요 시 사용) 
+----------------------------------------------------------------------------- */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.btn:hover {
+  background: #2563eb;
+}
+
+/* ----------------------------------------------------------------------------- 
+   라이트 모드 적용 시 색상 반전 
+----------------------------------------------------------------------------- */
+body.light-mode #account-edit-container {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .account-item label {
+  color: #1f2937;
+}
+
+body.light-mode .account-item input[type="text"],
+body.light-mode .account-item input[type="email"] {
+  background: rgba(240, 240, 240, 0.8);
+  color: #1f2937;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .account-item input[type="text"]:focus,
+body.light-mode .account-item input[type="email"]:focus {
+  background: rgba(240, 240, 240, 1);
+  color: #1f2937;
+}
+
+/* ----------------------------------------------------------------------------- 
+   반응형: 화면 너비가 좁을 때 여백 및 폰트 크기 조정 
+----------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  #account-edit-container {
+    padding: 1rem;
+  }
+  .account-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .account-item input[type="text"],
+  .account-item input[type="email"] {
+    width: 100%;
+  }
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .account-item {
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+  }
+  .account-item input[type="text"],
+  .account-item input[type="email"] {
+    font-size: 0.85rem;
+  }
+}
