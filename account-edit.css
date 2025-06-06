@@ -1,6 +1,6 @@
 /* =============================================================================
    account-edit.css
-   "내 계정" 화면 전용 스타일 (입력 박스 크기 조정)
+   "내 계정" 화면 전용 스타일 (비밀번호 입력란 제거 후에도 그대로 사용)
    ============================================================================= */
 
 /* =======================================================
@@ -62,8 +62,7 @@
 
 /* 입력 박스 영역 */
 .form-item input[type="text"],
-.form-item input[type="email"],
-.form-item input[type="password"] {
+.form-item input[type="email"] {
   /* 너비를 부모 대비 70%로 제한하되, 최대 700px을 넘지 않음 */
   flex: 0 0 70%;
   max-width: 700px;
@@ -82,14 +81,12 @@
 }
 
 .form-item input[type="text"]::placeholder,
-.form-item input[type="email"]::placeholder,
-.form-item input[type="password"]::placeholder {
+.form-item input[type="email"]::placeholder {
   color: #999999;
 }
 
 .form-item input[type="text"]:focus,
-.form-item input[type="email"]:focus,
-.form-item input[type="password"]:focus {
+.form-item input[type="email"]:focus {
   outline: none;
   border-color: #3b82f6; /* 파란색 강조 */
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
@@ -149,16 +146,14 @@ body.light-mode .form-item label {
 }
 
 body.light-mode .form-item input[type="text"],
-body.light-mode .form-item input[type="email"],
-body.light-mode .form-item input[type="password"] {
+body.light-mode .form-item input[type="email"] {
   background: #ffffff;
   color: #1f2937;
   border: 1px solid #d1d5db;
 }
 
 body.light-mode .form-item input[type="text"]:focus,
-body.light-mode .form-item input[type="email"]:focus,
-body.light-mode .form-item input[type="password"]:focus {
+body.light-mode .form-item input[type="email"]:focus {
   background: #ffffff;
   color: #1f2937;
 }
@@ -194,8 +189,7 @@ body.light-mode .btn.cancel-btn:hover {
   }
 
   .form-item input[type="text"],
-  .form-item input[type="email"],
-  .form-item input[type="password"] {
+  .form-item input[type="email"] {
     /* 모바일에서는 너비를 100%로 채우도록 변경 */
     flex: 0 0 100%;
     max-width: 100%;

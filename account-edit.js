@@ -1,6 +1,6 @@
 // =============================================================================
 // account-edit.js
-// "내 계정" 페이지 전용 스크립트
+// "내 계정" 페이지 전용 스크립트 (비밀번호 변경 기능 제거 버전)
 // 이 스크립트는 index.js가 account-edit.html을 fetch하여
 // <div id="profileContentPane">에 삽입한 뒤 실행됩니다.
 // =============================================================================
@@ -19,9 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const nameInput       = document.getElementById('accountName');
   const departmentInput = document.getElementById('accountDepartment');
   const emailInput      = document.getElementById('accountEmail');
-  const currentPwdInput = document.getElementById('currentPassword');
-  const newPwdInput     = document.getElementById('newPassword');
-  const confirmPwdInput = document.getElementById('confirmPassword');
   const saveBtn         = document.getElementById('saveAccountBtn');
   const cancelBtn       = document.getElementById('cancelAccountBtn');
 
@@ -41,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showMessage('사용자 정보를 불러올 수 없습니다.', 'error');
     });
 
-  // 4) "저장" 버튼 클릭 시: 변경된 데이터 PUT 요청 및 비밀번호 변경 요청
+  // 4) "저장" 버튼 클릭 시: 변경된 데이터 PUT 요청
   saveBtn.addEventListener('click', () => {
     const updatedData = {
       name:       nameInput.value.trim(),
@@ -54,32 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
       showMessage('이름을 입력하세요.', 'error');
       return;
     }
+    if (!updatedData.department) {
+      showMessage('학과를 입력하세요.', 'error');
+      return;
+    }
     if (!updatedData.email) {
       showMessage('이메일을 입력하세요.', 'error');
       return;
-    }
-
-    // 비밀번호 변경 여부 확인
-    const currentPwdValue = currentPwdInput.value.trim();
-    const newPwdValue     = newPwdInput.value.trim();
-    const confirmPwdValue = confirmPwdInput.value.trim();
-
-    let pwdChangeRequested = false;
-    if (newPwdValue || confirmPwdValue) {
-      // 현재 비밀번호, 새 비밀번호, 비밀번호 확인 모두 입력되어야 함
-      if (!currentPwdValue) {
-        showMessage('현재 비밀번호를 입력하세요.', 'error');
-        return;
-      }
-      if (!newPwdValue) {
-        showMessage('새 비밀번호를 입력하세요.', 'error');
-        return;
-      }
-      if (newPwdValue !== confirmPwdValue) {
-        showMessage('새 비밀번호와 확인이 일치하지 않습니다.', 'error');
-        return;
-      }
-      pwdChangeRequested = true;
     }
 
     // 4-1) 사용자 기본 정보 업데이트 (이름/학과/이메일)
@@ -91,27 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .then((res) => {
         if (!res.ok) throw new Error('기본 정보 업데이트 실패');
         return res.json();
-      })
-      .then(() => {
-        // 4-2) 비밀번호 변경 요청이 있으면 별도 API 호출
-        if (pwdChangeRequested) {
-          const pwdPayload = {
-            currentPassword: currentPwdValue,
-            newPassword:     newPwdValue
-          };
-          return fetch(`/api/users/${encodeURIComponent(currentUser)}/password`, {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(pwdPayload)
-          })
-            .then((pwdRes) => {
-              if (!pwdRes.ok) throw new Error('비밀번호 변경 실패');
-              return pwdRes.json();
-            })
-            .then(() => {
-              showMessage('비밀번호가 변경되었습니다.', 'success');
-            });
-        }
       })
       .then(() => {
         showMessage('계정 정보가 저장되었습니다.', 'success');
