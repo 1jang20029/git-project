@@ -28,6 +28,9 @@ const departmentMap = {};
 // 설정 화면 로드 여부
 let settingsLoaded = false;
 
+// 프로필 화면 로드 여부
+let profileLoaded = false;
+
 // 자동 로그아웃 타이머 ID
 let autoLogoutTimer = null;
 
@@ -130,38 +133,69 @@ function showContent(type) {
     case 'timetable':      targetId = 'timetableContentPane'; break;
     case 'shuttle':        targetId = 'shuttleContentPane'; break;
     case 'calendar':       targetId = 'calendarContentPane'; break;
-    case 'profile':        targetId = 'profileContentPane'; break;
-    case 'settings':       targetId = 'settingsContent'; break;
+    case 'profile':
+      targetId = 'profileContentPane';
+      // “프로필 수정” 화면: 아직 profile-edit.html을 삽입하지 않았다면 fetch 후 삽입
+      if (!profileLoaded) {
+        const container = document.getElementById('profileContentPane');
+        if (container) {
+          fetch('profile-edit.html')
+            .then((res) => {
+              if (!res.ok) throw new Error('profile-edit.html 을 불러오는 중 오류 발생');
+              return res.text();
+            })
+            .then((html) => {
+              container.innerHTML = html;
+              profileLoaded = true;
+              // HTML 삽입 후 initProfileEditPage 호출 (profile-edit.js에서 정의)
+              if (window.initProfileEditPage) {
+                window.initProfileEditPage();
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              container.innerHTML = `
+                <div class="error-fallback">
+                  <h3>⚠️ 오류 발생</h3>
+                  <p>프로필 수정 화면을 불러올 수 없습니다</p>
+                </div>
+              `;
+            });
+        }
+      }
+      break;
+    case 'settings':
+      targetId = 'settingsContent';
+      // “설정” 화면: 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
+      if (!settingsLoaded) {
+        const container = document.getElementById('settingsContent');
+        if (container) {
+          fetch('settings.html')
+            .then((res) => {
+              if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
+              return res.text();
+            })
+            .then((html) => {
+              container.innerHTML = html;
+              settingsLoaded = true;
+              // HTML 삽입 후 즉시 initSettingsPage 호출
+              if (window.initSettingsPage) {
+                window.initSettingsPage();
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              container.innerHTML = `
+                <div class="error-fallback">
+                  <h3>⚠️ 오류 발생</h3>
+                  <p>설정 화면을 불러올 수 없습니다</p>
+                </div>
+              `;
+            });
+        }
+      }
+      break;
     default:               targetId = 'homeContent';
-  }
-
-  // “설정” 화면일 때, 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
-  if (type === 'settings' && !settingsLoaded) {
-    const container = document.getElementById('settingsContent');
-    if (container) {
-      fetch('settings.html')
-        .then((res) => {
-          if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then((html) => {
-          container.innerHTML = html;
-          settingsLoaded = true;
-          // HTML 삽입 후 즉시 initSettingsPage 호출
-          if (window.initSettingsPage) {
-            window.initSettingsPage();
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          container.innerHTML = `
-            <div class="error-fallback">
-              <h3>⚠️ 오류 발생</h3>
-              <p>설정 화면을 불러올 수 없습니다</p>
-            </div>
-          `;
-        });
-    }
   }
 
   // 화면 보이기
