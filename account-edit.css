@@ -1,6 +1,6 @@
 /* =============================================================================
    account-edit.css
-   "내 계정" 화면 전용 스타일
+   "내 계정" 화면 전용 스타일 (인풋 박스 UI 변경)
    ============================================================================= */
 
 /* =======================================================
@@ -32,12 +32,13 @@
 
 /* =======================================================
    카드 컨테이너 스타일
-   - 내부에 모든 form-item과 버튼이 들어감
+   내부에 모든 form-item과 버튼이 들어감
    ======================================================= */
 .card {
   padding: 2rem;
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
 }
 
@@ -49,41 +50,41 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-}
-
-.form-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
+  padding: 0.5rem 0;
 }
 
 .form-item label {
-  color: #f1f5f9;
+  color: #333333;
   font-size: 1rem;
   font-weight: 600;
-  width: 140px;
+  width: 130px;
 }
 
 .form-item input[type="text"],
 .form-item input[type="email"],
 .form-item input[type="password"] {
   flex: 1;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  color: #f1f5f9;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  color: #333333;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-item input[type="text"]::placeholder,
+.form-item input[type="email"]::placeholder,
+.form-item input[type="password"]::placeholder {
+  color: #999999;
 }
 
 .form-item input[type="text"]:focus,
 .form-item input[type="email"]:focus,
 .form-item input[type="password"]:focus {
   outline: none;
-  border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.95);
+  border-color: #3b82f6; /* 파란색 강조 */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 /* =======================================================
@@ -97,14 +98,14 @@
 
 /* 저장 버튼 스타일 */
 .btn.save-btn {
-  padding: 0.6rem 1.2rem;
+  padding: 0.65rem 1.3rem;
   border-radius: 6px;
   background: #10b981;
   color: white;
   border: none;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .btn.save-btn:hover {
@@ -113,14 +114,14 @@
 
 /* 취소 버튼 스타일 */
 .btn.cancel-btn {
-  padding: 0.6rem 1.2rem;
+  padding: 0.65rem 1.3rem;
   border-radius: 6px;
   background: #ef4444;
   color: white;
   border: none;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .btn.cancel-btn:hover {
@@ -128,12 +129,11 @@
 }
 
 /* -----------------------------------------------------------------------
-   라이트 모드 적용 시 색상 반전
-   - index.js에서 body.light-mode 클래스를 제어함
+   라이트/다크 모드 적용 시 (index.js에서 body.light-mode 추가/제어)
    ----------------------------------------------------------------------- */
 body.light-mode .card {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: #fefefe;
+  border: 1px solid #e5e7eb;
 }
 
 body.light-mode .form-item label {
@@ -143,21 +143,20 @@ body.light-mode .form-item label {
 body.light-mode .form-item input[type="text"],
 body.light-mode .form-item input[type="email"],
 body.light-mode .form-item input[type="password"] {
-  background: rgba(240, 240, 240, 0.8);
+  background: #ffffff;
   color: #1f2937;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid #d1d5db;
 }
 
 body.light-mode .form-item input[type="text"]:focus,
 body.light-mode .form-item input[type="email"]:focus,
 body.light-mode .form-item input[type="password"]:focus {
-  background: rgba(240, 240, 240, 1);
+  background: #ffffff;
   color: #1f2937;
 }
 
 body.light-mode .btn.save-btn {
   background: #10b981;
-  color: white;
 }
 
 body.light-mode .btn.save-btn:hover {
@@ -166,7 +165,6 @@ body.light-mode .btn.save-btn:hover {
 
 body.light-mode .btn.cancel-btn {
   background: #ef4444;
-  color: white;
 }
 
 body.light-mode .btn.cancel-btn:hover {

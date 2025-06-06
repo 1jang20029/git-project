@@ -1204,7 +1204,7 @@ function showMessage(message, type = 'info', category = '') {
 
   notification.style.cssText = `
     position: fixed;
-    top: 100px;
+    top: 100px; 
     right: 20px;
     background: ${bgColor};
     color: white;
