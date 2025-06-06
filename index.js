@@ -1,5 +1,3 @@
-// index.js
-
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
   const savedMode = localStorage.getItem('lightMode');
@@ -28,6 +26,12 @@ let settingsLoaded = false;
 
 // 커뮤니티 페이지 로드 여부
 let communityLoaded = false;
+
+// 강의평가 페이지 로드 여부
+let lectureLoaded = false;
+
+// 공지사항 페이지 로드 여부
+let noticesLoaded = false;
 
 // 자동 로그아웃 타이머 ID
 let autoLogoutTimer = null;
@@ -124,6 +128,14 @@ function showContent(type) {
   const communityContainer = document.getElementById('communityContent');
   if (communityContainer) communityContainer.style.display = 'none';
 
+  // 강의평가 콘텐츠도 동적 로드 위치용 컨테이너만 남김
+  const lectureContainer = document.getElementById('lecture-reviewContent');
+  if (lectureContainer) lectureContainer.style.display = 'none';
+
+  // 공지사항 콘텐츠도 동적 로드 위치용 컨테이너만 남김
+  const noticesContainer = document.getElementById('noticesContent');
+  if (noticesContainer) noticesContainer.style.display = 'none';
+
   // 보여줄 화면 결정
   let targetId = 'homeContent';
   switch (type) {
@@ -188,6 +200,54 @@ function showContent(type) {
     }
   }
 
+  // “강의평가” 화면일 때, 아직 lecture-review.html 을 삽입하지 않았다면 fetch 후 삽입
+  if (type === 'lecture-review' && !lectureLoaded) {
+    const container = document.getElementById('lecture-reviewContent');
+    if (container) {
+      fetch('lecture-review.html')
+        .then((res) => {
+          if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
+          return res.text();
+        })
+        .then((html) => {
+          container.innerHTML = html;
+          lectureLoaded = true;
+          if (window.initLectureReviewPage) window.initLectureReviewPage();
+        })
+        .catch((err) => {
+          console.error(err);
+          container.innerHTML = `<div class="error-fallback">
+            <h3>⚠️ 오류 발생</h3>
+            <p>강의평가 화면을 불러올 수 없습니다</p>
+          </div>`;
+        });
+    }
+  }
+
+  // “공지사항” 화면일 때, 아직 notices.html 을 삽입하지 않았다면 fetch 후 삽입
+  if (type === 'notices' && !noticesLoaded) {
+    const container = document.getElementById('noticesContent');
+    if (container) {
+      fetch('notices.html')
+        .then((res) => {
+          if (!res.ok) throw new Error('notices.html 을 불러오는 중 오류 발생');
+          return res.text();
+        })
+        .then((html) => {
+          container.innerHTML = html;
+          noticesLoaded = true;
+          if (window.initNoticesPage) window.initNoticesPage();
+        })
+        .catch((err) => {
+          console.error(err);
+          container.innerHTML = `<div class="error-fallback">
+            <h3>⚠️ 오류 발생</h3>
+            <p>공지사항 화면을 불러올 수 없습니다</p>
+          </div>`;
+        });
+    }
+  }
+
   // 화면 보이기
   const target = document.getElementById(targetId);
   if (target) {
@@ -199,6 +259,20 @@ function showContent(type) {
     if (comm) {
       comm.style.display = 'block';
       comm.classList.add('fade-in');
+    }
+  }
+  if (type === 'lecture-review') {
+    const lec = document.getElementById('lecture-reviewContent');
+    if (lec) {
+      lec.style.display = 'block';
+      lec.classList.add('fade-in');
+    }
+  }
+  if (type === 'notices') {
+    const noti = document.getElementById('noticesContent');
+    if (noti) {
+      noti.style.display = 'block';
+      noti.classList.add('fade-in');
     }
   }
 
@@ -229,9 +303,9 @@ async function initializeApp() {
       loadStats(),
       loadNotifications(),
       loadBuildings(),
-      loadNotices(),
+      loadNotices(),       // 메인 페이지의 "최근 공지사항"만 초기 로드
       loadShuttleInfo(),
-      loadLectureReviews()
+      loadLectureReviews() // 메인 페이지의 "인기/최근 강의평가"만 초기 로드
     ]);
     checkUserStatus();
     updateTimetable();
@@ -451,42 +525,40 @@ function renderBuildings(buildings) {
   });
 }
 
-// ─────────── loadNotices: 공지사항 데이터 로드 ───────────
+// ─────────── loadNotices: 메인 페이지용 공지사항 데이터 로드 ───────────
 async function loadNotices() {
   try {
     if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/notices');
+    const res = await fetch('/api/notifications');
     if (!res.ok) throw new Error('API 응답 오류');
     const notices = await res.json();
-    renderNotices(notices);
+    renderNoticesMain(notices);
   } catch (err) {
     console.error('공지사항 데이터 로드 실패:', err);
-    renderNotices([]);
+    renderNoticesMain([]);
   }
 }
 
-// ─────────── renderNotices: 공지사항 렌더링 ───────────
-function renderNotices(notices) {
+// ─────────── renderNoticesMain: 메인 페이지용 최근 공지사항 렌더링 ───────────
+function renderNoticesMain(notices) {
   const recentEl = document.getElementById('recentNotices');
-  const fullEl   = document.getElementById('fullNoticeList');
-  if (!recentEl || !fullEl) return;
-
+  if (!recentEl) return;
   recentEl.innerHTML = '';
-  fullEl.innerHTML   = '';
   notices.forEach((n, idx) => {
-    const item = document.createElement('div');
-    item.className = 'notice-item';
-    item.onclick = () => viewNoticeDetail(n.id);
-    item.innerHTML = `
-      <div class="notice-header">
-        <span class="notice-category">${n.category}</span>
-        <span class="notice-date">${n.date}</span>
-      </div>
-      <div class="notice-title">${n.title}</div>
-      <div class="notice-summary">${n.summary}</div>
-    `;
-    fullEl.appendChild(item.cloneNode(true));
-    if (idx < 2) recentEl.appendChild(item);
+    if (idx < 2) {
+      const item = document.createElement('div');
+      item.className = 'notice-item';
+      item.onclick = () => viewNoticeDetail(n.id);
+      item.innerHTML = `
+        <div class="notice-header">
+          <span class="notice-category">${n.category_name || '일반'}</span>
+          <span class="notice-date">${n.published_at}</span>
+        </div>
+        <div class="notice-title">${n.title}</div>
+        <div class="notice-summary">${n.content.slice(0, 100)}…</div>
+      `;
+      recentEl.appendChild(item);
+    }
   });
 }
 
@@ -556,7 +628,7 @@ function renderShuttleStatus(route) {
   }
 }
 
-// ─────────── loadLectureReviews: 강의평가 데이터 로드 ───────────
+// ─────────── loadLectureReviews: 메인 페이지용 강의평가 데이터 로드 ───────────
 async function loadLectureReviews() {
   try {
     if (!isOnline) throw new Error('오프라인 모드');
@@ -564,21 +636,26 @@ async function loadLectureReviews() {
       fetch('/api/reviews/popular'),
       fetch('/api/reviews/recent'),
     ]);
+
     if (!popRes.ok || !recRes.ok) throw new Error('API 응답 오류');
+
     const popular = await popRes.json();
     const recent  = await recRes.json();
-    renderLectureReviews(popular, recent);
+    renderLectureReviewsMain(popular, recent);
   } catch (err) {
     console.error('강의평가 데이터 로드 실패:', err);
-    renderLectureReviews([], []);
+    renderLectureReviewsMain([], []);
   }
 }
 
-// ─────────── renderLectureReviews: 강의평가 렌더링 ───────────
-function renderLectureReviews(popular, recent) {
+// ─────────── renderLectureReviewsMain: 메인 페이지용 오늘 강의평가 렌더링 ───────────
+function renderLectureReviewsMain(popular, recent) {
   const popEl = document.getElementById('popularReviews');
   const recEl = document.getElementById('recentReviews');
   if (!popEl || !recEl) return;
+
+  popEl.innerHTML = '';
+  recEl.innerHTML = '';
 
   popular.forEach((r) => {
     if (!isCategoryEnabled('강의평가')) return;
@@ -586,7 +663,7 @@ function renderLectureReviews(popular, recent) {
     item.className = 'notice-item';
     item.innerHTML = `
       <div class="notice-header">
-        <span class="notice-category">${r.category}</span>
+        <span class="notice-category">${r.category || ''}</span>
         <span class="notice-date" style="color:#f59e0b;">
           ${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}
         </span>
@@ -618,6 +695,9 @@ function renderLectureReviews(popular, recent) {
     recEl.appendChild(item);
   });
 }
+
+// ─────────── renderLectureReviews: (기존에 사용되던 메인 페이지용) ───────────
+//    메인 페이지의 별도 섹션이 아닌, 동적 로드된 lecture-review.html에서 사용되지 않음
 
 // ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
