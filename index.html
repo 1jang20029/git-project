@@ -41,8 +41,8 @@
         <span class="nav-icon" title="커뮤니티">💬</span>
         <span>커뮤니티</span>
       </li>
-      <!-- ★ 강의평가 메뉴 제거 -->
-      <!-- ★ 공지사항 메뉴 제거 -->
+      <!-- ★ 강의평가 메뉴 제거 ★ -->
+      <!-- ★ 공지사항 메뉴 제거 ★ -->
 
       <!-- ↓↓↓ 여기서부터 학생서비스 메뉴 추가 ↓↓↓ -->
       <li class="nav-item" id="nav-student-services">
@@ -249,17 +249,48 @@
       <!-- --------------------------------------------------
            커뮤니티 화면 (동적 로드)
            -------------------------------------------------- -->
-      <div id="communityContent" style="display: none;"></div>
+      <div id="communityContent" style="display: none;">
+        <!-- 1) 상단 헤더 -->
+        <div id="content-header-community">
+          <h1 id="title-community">실시간 커뮤니티</h1>
+          <div id="breadcrumb-community">
+            <span>홈</span>
+            <span>›</span>
+            <span>커뮤니티</span>
+          </div>
+        </div>
+
+        <!-- 2) 두 개의 카드 그리드 -->
+        <div id="dashboardGrid-community">
+          <!-- 실시간 게시글 카드 -->
+          <div id="live-posts-card">
+            <div id="card-header-live-posts">
+              <h3 id="card-title-live-posts">실시간 게시글</h3>
+              <span id="card-icon-live-posts">💬</span>
+            </div>
+            <div id="livePosts"></div>
+          </div>
+
+          <!-- 인기 게시글 카드 -->
+          <div id="hot-posts-card">
+            <div id="card-header-hot-posts">
+              <h3 id="card-title-hot-posts">인기 게시글</h3>
+              <span id="card-icon-hot-posts">🔥</span>
+            </div>
+            <div id="hotPosts"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- --------------------------------------------------
            ★ 강의평가 화면 제거 ★
            -------------------------------------------------- -->
-      <!-- <div id="lecture-reviewContent" style="display: none;"> ... </div> -->
+      <!-- <div id="lecture-reviewContent" style="display: none;"></div> -->
 
       <!-- --------------------------------------------------
            ★ 공지사항 화면 제거 ★
            -------------------------------------------------- -->
-      <!-- <div id="noticesContent" style="display: none;"> ... </div> -->
+      <!-- <div id="noticesContent" style="display: none;"></div> -->
 
       <!-- --------------------------------------------------
            내 시간표 화면
