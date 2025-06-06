@@ -166,11 +166,12 @@ function showContent(type) {
     }
   }
 
-  // 화면 보이기
+  // 화면 보이기 (애니메이션 없이 바로 display: block)
   const target = document.getElementById(targetId);
   if (target) {
     target.style.display = 'block';
-    target.classList.add('fade-in');
+    // 기존에 있던 fade-in 클래스 제거 (애니메이션 없이 고정)
+    // target.classList.add('fade-in');
   }
 
   // 상단 메뉴 활성화 표시
@@ -960,7 +961,7 @@ function formatTimeRemaining(minutes, suffix) {
       return `${hours}시간 ${suffix}`;
     } else {
       return `${hours}시간 ${remain}분 ${suffix}`;
-    }
+    ```
   }
 }
 
