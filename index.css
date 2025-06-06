@@ -735,7 +735,7 @@ body {
    ======================================================================== */
 #map-card {
   grid-column: span 2;
-  height: 200px; /* 기존 400px → 200px으로 변경 */
+  height: 400px;
   position: relative;
   overflow: hidden;
 }
