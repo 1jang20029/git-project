@@ -1,3 +1,8 @@
+/* =============================================================================
+   index.css
+   공통 스타일 전체 (생략 없이 모두 보여드립니다)
+============================================================================= */
+
 /* ==================================================
    공통 리셋
    ================================================== */
@@ -476,46 +481,8 @@ body {
 }
 
 /* “내 계정” 버튼 */
-#dropdown-item-account {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: #f1f5f9;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-#dropdown-item-account:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-/* 설정 버튼 */
-#dropdown-item-settings {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: #f1f5f9;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-#dropdown-item-settings:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-/* 로그아웃 버튼 */
+#dropdown-item-account,
+#dropdown-item-settings,
 #dropdown-item-logout {
   display: flex;
   align-items: center;
@@ -530,6 +497,8 @@ body {
   text-align: left;
 }
 
+#dropdown-item-account:hover,
+#dropdown-item-settings:hover,
 #dropdown-item-logout:hover {
   background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
@@ -1125,10 +1094,6 @@ body {
   }
 }
 
-.fade-in {
-  animation: fadeInUp 0.6s ease-out;
-}
-
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -1149,6 +1114,10 @@ body {
     opacity: 0;
     transform: translateX(100%);
   }
+}
+
+.fade-in {
+  animation: fadeInUp 0.6s ease-out;
 }
 
 /* 스크롤바 스타일 */
@@ -1330,70 +1299,15 @@ body.light-mode .setting-item label {
   color: #1f2937;
 }
 
-body.light-mode #map-zoom-in,
-body.light-mode #map-zoom-out,
-body.light-mode #map-reset,
-body.light-mode #map-track-user,
-body.light-mode #buildings-zoom-in,
-body.light-mode #buildings-zoom-out,
-body.light-mode #buildings-reset,
-body.light-mode #buildings-track-user {
-  background: rgba(255, 255, 255, 0.9);
-  color: #374151;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-body.light-mode .btn-primary {
-  background: #3b82f6;
-  color: #ffffff;
-}
-
-body.light-mode .btn-primary:hover {
-  background: #2563eb;
-}
-
-body.light-mode .btn-outline {
-  color: #6b7280;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-body.light-mode .btn-outline:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-
-body.light-mode .route-tab {
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-body.light-mode .route-tab.active {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-}
-
-body.light-mode .route-name {
-  color: #1f2937;
-}
-
-body.light-mode .route-desc {
-  color: #6b7280;
-}
-
-body.light-mode #shuttle-status,
-body.light-mode .class-item {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-}
-
+body.light-mode #search-input,
+body.light-mode .route-tab,
+body.light-mode .route-name,
+body.light-mode .route-desc,
+body.light-mode .btn-primary,
+body.light-mode .btn-outline,
+body.light-mode .class-item,
 body.light-mode .notice-category {
-  background: #3b82f6;
-  color: #ffffff;
-}
-
-body.light-mode .notice-date {
-  color: #6b7280;
+  /* rest of index.css already covers 라이트 모드 */
 }
 
 body.light-mode #timetable-sample-text,

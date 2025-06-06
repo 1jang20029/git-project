@@ -1,8 +1,11 @@
 /* =============================================================================
    account-edit.css
-   내 계정 화면 전용 스타일
-============================================================================= */
+   "내 계정" 화면 전용 스타일
+   ============================================================================= */
 
+/* =======================================================
+   공통 콘텐츠 헤더 스타일 (settings.css와 동일)
+   ======================================================= */
 .content-header {
   display: flex;
   align-items: center;
@@ -27,79 +30,74 @@
   color: #64748b;
 }
 
-/* ----------------------------------------------------------------------------- 
-   내 계정 화면 컨테이너 
------------------------------------------------------------------------------ */
-#account-edit-container {
+/* =======================================================
+   카드 컨테이너 스타일
+   - 내부에 모든 form-item과 버튼이 들어감
+   ======================================================= */
+.card {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
+  margin-bottom: 2rem;
 }
 
-/* ----------------------------------------------------------------------------- 
-   개별 계정 항목 
------------------------------------------------------------------------------ */
-.account-item {
+/* =======================================================
+   각 입력 필드(form-item) 스타일
+   ======================================================= */
+.form-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
-  padding: 1rem 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.account-item:last-child {
+.form-item:last-child {
   border-bottom: none;
   margin-bottom: 0;
 }
 
-/* ----------------------------------------------------------------------------- 
-   라벨 텍스트 스타일 
------------------------------------------------------------------------------ */
-.account-item label {
+.form-item label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: color 0.3s ease;
+  width: 120px;
 }
 
-/* ----------------------------------------------------------------------------- 
-   텍스트 입력 (input) 기본 스타일 
------------------------------------------------------------------------------ */
-.account-item input[type="text"],
-.account-item input[type="email"] {
+.form-item input[type="text"],
+.form-item input[type="email"] {
+  flex: 1;
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   color: #f1f5f9;
   font-size: 0.9rem;
-  width: 60%;
   transition: all 0.3s ease;
 }
 
-.account-item input[type="text"]:focus,
-.account-item input[type="email"]:focus {
+.form-item input[type="text"]:focus,
+.form-item input[type="email"]:focus {
   outline: none;
   border-color: #3b82f6;
   background: rgba(30, 41, 59, 0.95);
 }
 
-/* ----------------------------------------------------------------------------- 
-   저장/취소 버튼 컨테이너 
------------------------------------------------------------------------------ */
+/* =======================================================
+   액션 버튼(저장/취소) 컨테이너
+   ======================================================= */
 .action-buttons {
   margin-top: 2rem;
   display: flex;
   gap: 1rem;
 }
 
-/* 저장 버튼 */
-.save-btn {
+/* 저장 버튼 스타일 */
+.btn.save-btn {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
-  background: #10b981;    /* 녹색 배경 */
+  background: #10b981;
   color: white;
   border: none;
   font-weight: 600;
@@ -107,15 +105,15 @@
   transition: all 0.3s ease;
 }
 
-.save-btn:hover {
-  background: #059669;    /* 호버 시 진한 녹색 */
+.btn.save-btn:hover {
+  background: #059669;
 }
 
-/* 취소 버튼 */
-.cancel-btn {
+/* 취소 버튼 스타일 */
+.btn.cancel-btn {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
-  background: #ef4444;    /* 붉은색 배경 */
+  background: #ef4444;
   color: white;
   border: none;
   font-weight: 600;
@@ -123,81 +121,93 @@
   transition: all 0.3s ease;
 }
 
-.cancel-btn:hover {
-  background: #dc2626;    /* 호버 시 진한 붉은색 */
+.btn.cancel-btn:hover {
+  background: #dc2626;
 }
 
-/* ----------------------------------------------------------------------------- 
-   공통 버튼 스타일 (필요 시 사용) 
------------------------------------------------------------------------------ */
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  background: #3b82f6;
-  color: white;
-  border: none;
-}
-
-.btn:hover {
-  background: #2563eb;
-}
-
-/* ----------------------------------------------------------------------------- 
-   라이트 모드 적용 시 색상 반전 
------------------------------------------------------------------------------ */
-body.light-mode #account-edit-container {
+/* -----------------------------------------------------------------------
+   라이트 모드 적용 시 색상 반전
+   - index.js에서 body.light-mode 클래스를 제어함
+   ----------------------------------------------------------------------- */
+body.light-mode .card {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-body.light-mode .account-item label {
+body.light-mode .form-item label {
   color: #1f2937;
 }
 
-body.light-mode .account-item input[type="text"],
-body.light-mode .account-item input[type="email"] {
+body.light-mode .form-item input[type="text"],
+body.light-mode .form-item input[type="email"] {
   background: rgba(240, 240, 240, 0.8);
   color: #1f2937;
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-body.light-mode .account-item input[type="text"]:focus,
-body.light-mode .account-item input[type="email"]:focus {
+body.light-mode .form-item input[type="text"]:focus,
+body.light-mode .form-item input[type="email"]:focus {
   background: rgba(240, 240, 240, 1);
   color: #1f2937;
 }
 
-/* ----------------------------------------------------------------------------- 
-   반응형: 화면 너비가 좁을 때 여백 및 폰트 크기 조정 
------------------------------------------------------------------------------ */
+body.light-mode .btn.save-btn {
+  background: #10b981;
+  color: white;
+}
+
+body.light-mode .btn.save-btn:hover {
+  background: #059669;
+}
+
+body.light-mode .btn.cancel-btn {
+  background: #ef4444;
+  color: white;
+}
+
+body.light-mode .btn.cancel-btn:hover {
+  background: #dc2626;
+}
+
+/* -----------------------------------------------------------------------
+   반응형: 화면이 좁아질 때 레이아웃 조정
+   ----------------------------------------------------------------------- */
 @media (max-width: 768px) {
-  #account-edit-container {
-    padding: 1rem;
-  }
-  .account-item {
+  .form-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.5rem;
   }
-  .account-item input[type="text"],
-  .account-item input[type="email"] {
+
+  .form-item label {
     width: 100%;
   }
+
   .action-buttons {
     flex-direction: column;
+  }
+
+  .btn.save-btn,
+  .btn.cancel-btn {
+    width: 100%;
+    text-align: center;
   }
 }
 
 @media (max-width: 480px) {
-  .account-item {
-    padding: 0.75rem 0;
+  .content-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.8rem;
+  }
+
+  .form-item {
     margin-bottom: 1rem;
   }
-  .account-item input[type="text"],
-  .account-item input[type="email"] {
-    font-size: 0.85rem;
+
+  .action-buttons {
+    margin-top: 1rem;
   }
 }

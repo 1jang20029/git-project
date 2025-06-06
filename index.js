@@ -112,7 +112,7 @@ function showContent(type) {
     'timetableContentPane',
     'shuttleContentPane',
     'calendarContentPane',
-    'profileContentPane',
+    'profileContentPane',   // “내 계정” 화면
     'settingsContent'
   ];
 
@@ -133,7 +133,7 @@ function showContent(type) {
     case 'timetable':      targetId = 'timetableContentPane'; break;
     case 'shuttle':        targetId = 'shuttleContentPane'; break;
     case 'calendar':       targetId = 'calendarContentPane'; break;
-    case 'account':        targetId = 'profileContentPane'; break;
+    case 'account':        targetId = 'profileContentPane'; break;        // “내 계정”
     case 'settings':       targetId = 'settingsContent'; break;
     default:               targetId = 'homeContent';
   }
@@ -179,7 +179,7 @@ function showContent(type) {
         .then((html) => {
           container.innerHTML = html;
           accountLoaded = true;
-          // HTML 삽입 후 즉시 initAccountEditPage 호출 (account-edit.js에서 정의)
+          // HTML 삽입 후 즉시 initAccountEditPage 호출
           if (window.initAccountEditPage) {
             window.initAccountEditPage();
           }
@@ -209,7 +209,14 @@ function showContent(type) {
   });
 
   // 상단 메뉴 해당 항목 active
-  const navItem = document.getElementById('nav-' + type);
+  let navItem;
+  if (type === 'account') {
+    // profile 대신 account
+    navItem = document.getElementById('nav-home'); // “내 계정”은 메인 메뉴에 없으므로,
+    // 메인 메뉴 항목은 강조하지 않음 (필요시 별도 스타일 추가 가능)
+  } else {
+    navItem = document.getElementById('nav-' + type);
+  }
   if (navItem) navItem.classList.add('active');
 
   currentContent = type;
@@ -560,7 +567,7 @@ function renderShuttleRoutes(routes) {
   });
 }
 
-// ─────────── selectShuttleRoute: 셔틀 루트 선택 및 상태 렌더링 ───────────
+// ─────────── selectShuttleRoute: �틀 노선 선택 및 상태 렌더링 ───────────
 async function selectShuttleRoute(routeId, route) {
   try {
     document.querySelectorAll('.route-tab').forEach((tab) => {
@@ -1062,15 +1069,31 @@ function closeStudentServiceDropdown() {
   }
 }
 
+// ─────────── showProfile / showAccount: 프로필 화면으로 이동 ───────────
+function showProfile() {
+  // 이제 사용되지 않음 (내 계정으로 대체됨)
+}
+
+function showAccount() {
+  const currentUser = localStorage.getItem('currentLoggedInUser');
+  if (currentUser) {
+    showContent('account');
+  } else {
+    showMessage('로그인이 필요한 서비스입니다.', 'error');
+  }
+  closeUserDropdown();
+}
+
 // ─────────── handleLogout: 로그아웃 처리 ───────────
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
     if (confirm('로그아웃 하시겠습니까?')) {
       localStorage.removeItem('currentLoggedInUser');
-      checkUserStatus();
+      // 내 계정 정보도 지울 수 있음 (선택 사항)
       showMessage('로그아웃 되었습니다', 'success');
       showContent('home');
+      checkUserStatus();
     }
   } else {
     showMessage('로그인 상태가 아닙니다.', 'error');
@@ -1119,21 +1142,22 @@ function checkUserStatus() {
   const avatarEl   = document.getElementById('user-avatar');
 
   if (currentUser && isOnline) {
-    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('API 응답 오류');
-        return res.json();
-      })
-      .then((user) => {
-        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
-        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
-        if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
-        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
-        updateProfileImage(user);
-      })
-      .catch(() => {
-        setGuestMode();
-      });
+    // (예시) localStorage 또는 서버에서 사용자 정보를 가져온다고 가정
+    const savedAccount = JSON.parse(localStorage.getItem(`userProfile_${currentUser}`)) || {};
+    const name = savedAccount.name || '사용자';
+    const dept = departmentMap[savedAccount.department] || savedAccount.department || '학생';
+    const imgUrl = savedAccount.profileImageUrl || '';
+
+    if (userNameEl) userNameEl.textContent     = name;
+    if (userRoleEl) userRoleEl.textContent     = dept;
+    if (dropdownNameEl) dropdownNameEl.textContent = name;
+    if (dropdownRoleEl) dropdownRoleEl.textContent = dept;
+
+    if (imgUrl) {
+      avatarEl.innerHTML = `<img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
+    } else {
+      avatarEl.textContent = '👤';
+    }
   } else {
     setGuestMode();
   }
@@ -1152,20 +1176,6 @@ function setGuestMode() {
   if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
   if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
   if (avatarEl) avatarEl.textContent         = '👤';
-}
-
-// ─────────── updateProfileImage: 사용자 프로필 이미지 적용 ───────────
-function updateProfileImage(user) {
-  const avatarEl = document.getElementById('user-avatar');
-  if (!avatarEl) return;
-
-  if (user.profileImageType === 'emoji') {
-    avatarEl.textContent = user.profileImage || '👤';
-  } else if (user.profileImage) {
-    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
-  } else {
-    avatarEl.textContent = '👤';
-  }
 }
 
 // ─────────── showMessage: 화면 우측 상단 슬라이드 알림 메시지 ───────────
@@ -1348,7 +1358,7 @@ function applyUserShortcuts() {
       showContent('calendar');
       return;
     }
-    if (label.includes('계정')) {
+    if (label.includes('내 계정') || label.includes('계정')) {
       showContent('account');
       return;
     }
