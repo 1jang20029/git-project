@@ -561,8 +561,6 @@ body {
 /* ==================================================
    각 화면(홈, 건물, 커뮤니티, 등) 공통 레이아웃
    ================================================== */
-/* **기본적으로 모든 콘텐츠 섹션을 숨겨두고(visibility:hidden), 
-   JavaScript가 준비된 뒤 showContent()가 불릴 때만 보이도록 설정** */
 #homeContent,
 #buildingsContent,
 #communityContent,
@@ -574,21 +572,61 @@ body {
 #profileContentPane,
 #settingsContent {
   display: none;
-  visibility: hidden;
 }
 
-/* JavaScript가 실행 완료된 뒤 <body>에 .js-ready 클래스를 붙이면, 해당 섹션의 visibility만 풀어준다. */
-body.js-ready #homeContent,
-body.js-ready #buildingsContent,
-body.js-ready #communityContent,
-body.js-ready #lecture-reviewContent,
-body.js-ready #noticesContent,
-body.js-ready #timetableContentPane,
-body.js-ready #shuttleContentPane,
-body.js-ready #calendarContentPane,
-body.js-ready #profileContentPane,
-body.js-ready #settingsContent {
-  visibility: visible;
+#homeContent {
+  display: block;
+}
+
+#content-header-home,
+#content-header-buildings,
+#content-header-community,
+#content-header-lecture-review,
+#content-header-notices,
+#content-header-timetable-pane,
+#content-header-shuttle-pane,
+#content-header-calendar-pane,
+#content-header-profile-pane,
+#content-header-settings {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+#content-header-home h1,
+#content-header-buildings h1,
+#content-header-community h1,
+#content-header-lecture-review h1,
+#content-header-notices h1,
+#content-header-timetable-pane h1,
+#content-header-shuttle-pane h1,
+#content-header-calendar-pane h1,
+#content-header-profile-pane h1,
+#content-header-settings h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#breadcrumb-home,
+#breadcrumb-buildings,
+#breadcrumb-community,
+#breadcrumb-lecture-review,
+#breadcrumb-notices,
+#breadcrumb-timetable-pane,
+#breadcrumb-shuttle-pane,
+#breadcrumb-calendar-pane,
+#breadcrumb-profile-pane,
+#breadcrumb-settings {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #64748b;
 }
 
 /* 통계, 대시보드 등 그리드 레이아웃 */
