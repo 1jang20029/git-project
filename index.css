@@ -764,8 +764,8 @@ body {
    ========================= */
 /* 원래 상태로, 가로 폭을 줄이지 않고 두 열을 차지하도록 설정 */
 #map-card {
-  grid-column: span 2;  /* 두 열을 차지 */
-  height: 400px;        /* 세로 높이를 원래대로 유지 */
+  grid-column: span 1;
+  height: 400px;
   position: relative;
   overflow: hidden;
 }
