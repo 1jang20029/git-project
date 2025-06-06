@@ -1,3 +1,10 @@
+/* =============================================================================
+   index.css (메인 페이지 스타일)
+   ============================================================================= */
+
+/* ==================================================
+   공통 리셋
+   ================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -12,9 +19,9 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* =========================
+/* ==================================================
    상단 네비게이션 바 (#top-nav)
-   ========================= */
+   ================================================== */
 #top-nav {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
@@ -68,7 +75,7 @@ body {
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  position: relative; /* 드롭다운 위치 기준 */
+  position: relative; /* dropdown 위치를 위한 기준 */
 }
 
 #main-menu .nav-item:hover {
@@ -97,6 +104,7 @@ body {
   display: inline-block;
   width: 24px;
   text-align: center;
+  /* Gradient 효과를 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
@@ -145,6 +153,7 @@ body {
   font-size: 1.1rem;
   width: 20px;
   text-align: center;
+  /* Gradient 효과 제거 */
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
@@ -344,7 +353,7 @@ body {
 }
 
 .notification-category {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #3b82f6, #8b82f6);
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 8px;
@@ -393,9 +402,7 @@ body {
   background: rgba(59, 130, 246, 0.1);
 }
 
-/* =========================
-   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운)
-   ========================= */
+/* 사용자 프로필 */
 #user-profile {
   display: flex;
   align-items: center;
@@ -433,7 +440,7 @@ body {
   color: #94a3b8;
 }
 
-/* “내 계정”, “설정”, “로그아웃” 드롭다운 영역 */
+/* 사용자 드롭다운 메뉴 */
 #user-dropdown {
   position: absolute;
   top: 100%;
@@ -455,7 +462,6 @@ body {
   animation: fadeInDown 0.3s ease-out;
 }
 
-/* 드롭다운 상단 유저 정보 */
 #dropdown-user-info {
   padding: 1rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
@@ -473,46 +479,8 @@ body {
   color: #94a3b8;
 }
 
-/* “내 계정” 버튼 */
-#dropdown-item-profile {
-  display: block;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  color: #f1f5f9;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-#dropdown-item-profile:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-/* “설정” 버튼 */
-#dropdown-item-settings {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: #f1f5f9;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-#dropdown-item-settings:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-/* “로그아웃” 버튼 */
+#dropdown-item-profile,
+#dropdown-item-settings,
 #dropdown-item-logout {
   display: flex;
   align-items: center;
@@ -527,12 +495,13 @@ body {
   text-align: left;
 }
 
+#dropdown-item-profile:hover,
+#dropdown-item-settings:hover,
 #dropdown-item-logout:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
 }
 
-/* 드롭다운 구분선 */
 #dropdown-divider {
   height: 1px;
   background: rgba(148, 163, 184, 0.1);
@@ -624,6 +593,7 @@ body {
   color: #64748b;
 }
 
+/* 통계, 대시보드 등 그리드 레이아웃 */
 #statsGrid,
 #dashboardGrid,
 #dashboardGrid-community,
@@ -752,30 +722,22 @@ body {
 #card-icon-write-review,
 #card-icon-buildings-map {
   font-size: 1.5rem;
+  /* Gradient 효과 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
 }
 
-/* =========================
-   캠퍼스 지도 카드 (#map-card)
-   ========================= */
-/* 가로 폭을 절반으로 줄여, 세로 높이는 기존대로 유지 */
+/* ========================================================================
+   지도 카드 (#map-card)
+   → 높이를 기존 400px에서 200px로 줄여 반으로 축소
+   ======================================================================== */
 #map-card {
-  grid-column: span 1;      /* 한 열만 차지 */
-  width: 50%;               /* 부모 그리드에서 가로 너비를 50%로 설정 */
-  height: 400px;            /* 세로 높이를 원래대로 유지 */
+  grid-column: span 1;
+  height: 400px;
   position: relative;
   overflow: hidden;
-}
-
-@media (max-width: 1024px) {
-  /* 화면이 좁아지면 지도가 한 열을 차지하도록 */
-  #map-card {
-    width: 100%;
-    height: 300px;
-  }
 }
 
 #map-container,
@@ -786,10 +748,16 @@ body {
   overflow: hidden;
 }
 
-/* 지도의 오른쪽 상단 컨트롤 버튼 그룹을 둥근 모서리 끝보다 많이 아래로 내림 */
-#map-overlay {
+#buildingsMapCard {
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+#map-overlay,
+#buildings-map-overlay {
   position: absolute;
-  top: 2.5rem;    /* 아이콘 위치를 더 아래로 내리기 위해 2.5rem으로 설정 */
+  top: 1rem;
   right: 1rem;
   display: flex;
   flex-direction: column;
@@ -800,7 +768,11 @@ body {
 #map-zoom-in,
 #map-zoom-out,
 #map-reset,
-#map-track-user {
+#map-track-user,
+#buildings-zoom-in,
+#buildings-zoom-out,
+#buildings-reset,
+#buildings-track-user {
   background: rgba(15, 23, 42, 0.9);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
@@ -814,23 +786,113 @@ body {
 #map-zoom-in:hover,
 #map-zoom-out:hover,
 #map-reset:hover,
-#map-track-user:hover {
+#map-track-user:hover,
+#buildings-zoom-in:hover,
+#buildings-zoom-out:hover,
+#buildings-reset:hover,
+#buildings-track-user:hover {
   background: rgba(59, 130, 246, 0.2);
   color: #3b82f6;
   border-color: #3b82f6;
 }
 
-/* =========================
-   오늘의 시간표 카드 (#timetable-card)
-   ========================= */
+/* 시간표 카드 스크롤 */
 #timetable-card {
   max-height: 500px;
   overflow-y: auto;
 }
 
-/* =========================
-   셔틀버스 카드 (#shuttle-card)
-   ========================= */
+/* 수업 아이템 */
+.class-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.class-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.class-time {
+  font-weight: 700;
+  color: #3b82f6;
+  min-width: 100px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.class-time-main {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.class-time-remaining {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.class-info {
+  margin-left: 1rem;
+  flex: 1;
+}
+
+.class-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+
+.class-location {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.class-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-current {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.status-upcoming {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.status-finished {
+  background: rgba(107, 114, 128, 0.2);
+  color: #6b7280;
+}
+
+/* ========================================================================
+   셔틀 카드 (#shuttle-card)
+   → 회색 박스를 제거: 배경색과 테두리 없앰
+   ======================================================================== */
+#shuttle-card {
+  /*background: none;*/           /* 기존 배경 제거 */
+  /*border: none;*/               /* 기존 테두리 제거 */
+  padding: 1.5rem;               /* 내부 여백만 남김 */
+  transition: all 0.3s ease;
+}
+
+/* 기존 shuttle-card 내부 요소들은 유지합니다 */
+/* #shuttle-card .route-tab, #shuttle-card .route-name, 등은 아래에 동일하게 둡니다 */
+
 #shuttleRoutes {
   display: flex;
   gap: 0.5rem;
@@ -865,15 +927,16 @@ body {
   color: #94a3b8;
 }
 
-/* 셔틀버스 현황 박스(회색 박스를 없애려면 background/보더를 투명으로 설정) */
+/* Shuttle status 박스 배경을 제거 */
 #shuttle-status {
-  background: transparent;      /* 배경을 투명하게 설정해서 회색 박스가 보이지 않도록 함 */
-  border: none;                 /* 테두리 없앰 */
-  padding: 0;                   /* 여백 제거 */
+  /*background: none;*/         /* 회색 박스 제거 */
+  /*border: none;*/             /* 테두리 제거 */
+  padding: 1.5rem 0;            /* 위/아래 여백만 남깁니다 */
   text-align: center;
   margin-bottom: 1rem;
 }
 
+/* shuttle-time, shuttle-desc, shuttleStatus 유지 */
 #shuttle-time {
   font-size: 2rem;
   font-weight: 700;
@@ -910,9 +973,7 @@ body {
   color: #ef4444;
 }
 
-/* =========================
-   공지사항 리스트 (#recentNotices, #fullNoticeList)
-   ========================= */
+/* 공지사항 리스트 */
 #recentNotices,
 #fullNoticeList {
   display: flex;
@@ -932,7 +993,7 @@ body {
 }
 
 .notice-category {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #3b82f6, #8b3cf6);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -958,9 +1019,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* =========================
-   건물 카드 (.building-card)
-   ========================= */
+/* 건물 카드 */
 .building-card {
   cursor: pointer;
 }
@@ -1000,7 +1059,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #3b82f6, #8b3cf6);
   color: white;
 }
 
@@ -1021,6 +1080,7 @@ body {
   background: rgba(59, 130, 246, 0.1);
 }
 
+/* 활성화된 메뉴 아이콘/텍스트 색상 */
 .nav-item.active .nav-icon,
 .nav-item.active span {
   color: #3b82f6;
@@ -1075,6 +1135,10 @@ body {
   }
 }
 
+.fade-in {
+  animation: fadeInUp 0.6s ease-out;
+}
+
 /* 스크롤바 스타일 */
 ::-webkit-scrollbar {
   width: 6px;
@@ -1093,9 +1157,7 @@ body {
   background: rgba(59, 130, 246, 0.7);
 }
 
-/* =========================
-   라이트 모드
-   ========================= */
+/* 라이트 모드 */
 body.light-mode {
   background: #ffffff;
   color: #000000;
@@ -1243,7 +1305,39 @@ body.light-mode #card-title-buildings-map {
   color: #1f2937;
 }
 
-@media (max-width: 768px) {
+body.light-mode #settings-container {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .setting-item {
+  border-bottom-color: rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .setting-item label {
+  color: #1f2937;
+}
+
+body.light-mode .building-name,
+body.light-mode .notice-title,
+body.light-mode .class-name,
+body.light-mode #card-title-map,
+body.light-mode #card-title-timetable,
+body.light-mode #card-title-shuttle,
+body.light-mode #card-title-notice,
+body.light-mode #card-title-live-posts,
+body.light-mode #card-title-hot-posts,
+body.light-mode #card-title-popular-reviews,
+body.light-mode #card-title-recent-reviews,
+body.light-mode #card-title-write-review,
+body.light-mode #card-title-buildings-map {
+  color: #1f2937;
+}
+
+/* ==================================================
+   반응형(portrait)
+   ================================================== */
+@media (max-width: 1024px) {
   #search-input {
     width: 200px;
   }
@@ -1256,18 +1350,17 @@ body.light-mode #card-title-buildings-map {
     grid-template-columns: 1fr;
   }
   #map-card {
-    width: 100%;
-    height: 300px;
+    grid-column: span 1;
   }
   #main-menu {
-    display: none;
+    display: none; /* 화면이 좁을 때는 메인 메뉴를 접어둘 수도 있습니다 */
   }
   #quick-menu {
-    display: none;
+    display: none; /* 화면이 좁을 때 접어두거나, 햄버거/버튼으로 대체 가능합니다. */
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   #top-nav {
     padding: 1rem;
   }
@@ -1285,39 +1378,46 @@ body.light-mode #card-title-buildings-map {
   #dashboardGrid-lecture-review {
     grid-template-columns: 1fr;
   }
-  #buildingsMapCard {
-    height: 200px;
+  #settings-container {
+    padding: 1rem;
   }
   .setting-item {
     margin-bottom: 1rem;
-    padding: 0.75rem 0;
+    padding: 1.5rem 0;
   }
   .setting-item label {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
   .setting-item input[type="checkbox"] {
     width: 28px;
     height: 28px;
     transform: scale(1.4);
   }
-  .shortcut-item {
+  .building-actions {
     flex-direction: column;
-    align-items: stretch;
     gap: 0.5rem;
   }
-  .shortcut-item input.label-input,
-  .shortcut-item input.key-input {
-    width: 100%;
-  }
-  .shortcut-item button.remove-shortcut-btn {
-    align-self: flex-end;
-  }
-  .add-shortcut-btn {
+  .btn {
     width: 100%;
     text-align: center;
   }
-  .action-buttons {
+}
+
+@media (max-width: 480px) {
+  #nav-brand span:last-child {
+    display: none;
+  }
+  #search-input {
+    width: 120px;
+    font-size: 0.8rem;
+  }
+  .setting-item {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .setting-item input[type="checkbox"] {
+    align-self: flex-end;
   }
 }
 
