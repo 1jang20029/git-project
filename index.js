@@ -961,7 +961,7 @@ function formatTimeRemaining(minutes, suffix) {
       return `${hours}시간 ${suffix}`;
     } else {
       return `${hours}시간 ${remain}분 ${suffix}`;
-    ```
+    ``
   }
 }
 
