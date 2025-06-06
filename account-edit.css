@@ -1,6 +1,6 @@
 /* =============================================================================
    account-edit.css
-   "내 계정" 화면 전용 스타일 (인풋 박스 UI 변경)
+   "내 계정" 화면 전용 스타일 (입력 박스 크기 조정)
    ============================================================================= */
 
 /* =======================================================
@@ -48,7 +48,7 @@
 .form-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-bottom: 1.5rem;
   padding: 0.5rem 0;
 }
@@ -60,17 +60,25 @@
   width: 130px;
 }
 
+/* 입력 박스 영역 */
 .form-item input[type="text"],
 .form-item input[type="email"],
 .form-item input[type="password"] {
-  flex: 1;
+  /* 너비를 부모 대비 70%로 제한하되, 최대 700px을 넘지 않음 */
+  flex: 0 0 70%;
+  max-width: 700px;
+
+  /* 세로 높이를 확보하기 위해 padding을 늘림 */
   background: #ffffff;
   border: 1px solid #cccccc;
   border-radius: 6px;
-  padding: 0.6rem 0.8rem;
+  padding: 0.8rem 0.8rem;
   color: #333333;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  /* 기본 폰트 라인 높이를 조금 늘려서 세로로 여유를 줌 */
+  line-height: 1.4;
 }
 
 .form-item input[type="text"]::placeholder,
@@ -183,6 +191,14 @@ body.light-mode .btn.cancel-btn:hover {
 
   .form-item label {
     width: 100%;
+  }
+
+  .form-item input[type="text"],
+  .form-item input[type="email"],
+  .form-item input[type="password"] {
+    /* 모바일에서는 너비를 100%로 채우도록 변경 */
+    flex: 0 0 100%;
+    max-width: 100%;
   }
 
   .action-buttons {
