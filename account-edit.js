@@ -10,90 +10,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
     // 로그인 상태가 아니면 홈으로 이동
-    if (typeof showMessage === 'function') {
-      showMessage('로그인이 필요합니다.', 'error');
-    }
-    if (typeof showContent === 'function') {
-      showContent('home');
-    }
+    showMessage('로그인이 필요합니다.', 'error');
+    showContent('home');
     return;
   }
 
-  // 2) DOM 요소 선택 (요소가 존재하는지 확인)
+  // 2) DOM 요소 선택
   const nameInput       = document.getElementById('accountName');
   const departmentInput = document.getElementById('accountDepartment');
   const emailInput      = document.getElementById('accountEmail');
   const saveBtn         = document.getElementById('saveAccountBtn');
   const cancelBtn       = document.getElementById('cancelAccountBtn');
 
-  // 필수 요소들이 존재하는지 확인
-  if (!nameInput || !departmentInput || !emailInput || !saveBtn || !cancelBtn) {
-    console.error('필수 DOM 요소를 찾을 수 없습니다.');
-    return;
-  }
-
   // 3) API에서 사용자 정보 불러와서 입력란 채우기
-  loadUserData();
-
-  // 4) 이벤트 리스너 등록
-  setupEventListeners();
-
-  // ===================================================================
-  // 사용자 데이터 로드 함수
-  // ===================================================================
-  function loadUserData() {
-    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('API 응답 오류');
-        return res.json();
-      })
-      .then((user) => {
-        // 입력란에 데이터 채우기
-        nameInput.value       = user.name || '';
-        departmentInput.value = user.departmentName || '';
-        emailInput.value      = user.email || '';
-      })
-      .catch((err) => {
-        console.error('사용자 정보 로드 실패:', err);
-        if (typeof showMessage === 'function') {
-          showMessage('사용자 정보를 불러올 수 없습니다.', 'error');
-        }
-      });
-  }
-
-  // ===================================================================
-  // 이벤트 리스너 설정
-  // ===================================================================
-  function setupEventListeners() {
-    // "저장" 버튼 클릭 이벤트
-    saveBtn.addEventListener('click', handleSave);
-    
-    // "취소" 버튼 클릭 이벤트
-    cancelBtn.addEventListener('click', handleCancel);
-    
-    // Enter 키 처리 (저장)
-    [nameInput, departmentInput, emailInput].forEach(input => {
-      input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          handleSave();
-        }
-      });
+  fetch(`/api/users/${encodeURIComponent(currentUser)}`)
+    .then((res) => {
+      if (!res.ok) throw new Error('API 응답 오류');
+      return res.json();
+    })
+    .then((user) => {
+      nameInput.value       = user.name || '';
+      departmentInput.value = user.departmentName || '';
+      emailInput.value      = user.email || '';
+    })
+    .catch((err) => {
+      console.error('사용자 정보 로드 실패:', err);
+      showMessage('사용자 정보를 불러올 수 없습니다.', 'error');
     });
-    
-    // ESC 키 처리 (취소)
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        handleCancel();
-      }
-    });
-  }
 
-  // ===================================================================
-  // 저장 처리 함수
-  // ===================================================================
-  function handleSave() {
+  // 4) "저장" 버튼 클릭 시: 변경된 데이터 PUT 요청
+  saveBtn.addEventListener('click', () => {
     const updatedData = {
       name:       nameInput.value.trim(),
       department: departmentInput.value.trim(),
@@ -102,42 +48,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 입력 유효성 검사
     if (!updatedData.name) {
-      if (typeof showMessage === 'function') {
-        showMessage('이름을 입력하세요.', 'error');
-      }
-      nameInput.focus();
+      showMessage('이름을 입력하세요.', 'error');
       return;
     }
     if (!updatedData.department) {
-      if (typeof showMessage === 'function') {
-        showMessage('학과를 입력하세요.', 'error');
-      }
-      departmentInput.focus();
+      showMessage('학과를 입력하세요.', 'error');
       return;
     }
     if (!updatedData.email) {
-      if (typeof showMessage === 'function') {
-        showMessage('이메일을 입력하세요.', 'error');
-      }
-      emailInput.focus();
+      showMessage('이메일을 입력하세요.', 'error');
       return;
     }
 
-    // 이메일 형식 검사
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(updatedData.email)) {
-      if (typeof showMessage === 'function') {
-        showMessage('올바른 이메일 형식을 입력하세요.', 'error');
-      }
-      emailInput.focus();
-      return;
-    }
-
-    // 저장 중 상태로 변경
-    saveBtn.disabled = true;
-    saveBtn.textContent = '저장 중...';
-
-    // 사용자 기본 정보 업데이트 (이름/학과/이메일)
+    // 4-1) 사용자 기본 정보 업데이트 (이름/학과/이메일)
     fetch(`/api/users/${encodeURIComponent(currentUser)}`, {
       method:  'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -148,45 +71,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return res.json();
       })
       .then(() => {
-        if (typeof showMessage === 'function') {
-          showMessage('계정 정보가 저장되었습니다.', 'success');
-        }
-        
-        // 저장 완료 후 프로필 화면으로 이동
-        if (typeof showContent === 'function') {
-          showContent('profile');
-        }
+        showMessage('계정 정보가 저장되었습니다.', 'success');
+        // 저장 후 "프로필" 화면으로 돌아가기
+        showContent('profile');
         // index.js의 사용자 정보 업데이트 함수 호출
-        if (typeof checkUserStatus === 'function') {
-          checkUserStatus();
-        }
+        checkUserStatus();
       })
       .catch((err) => {
         console.error('계정 업데이트 오류:', err);
-        if (typeof showMessage === 'function') {
-          showMessage(err.message || '계정 정보를 저장하는 데 실패했습니다.', 'error');
-        }
-      })
-      .finally(() => {
-        // 저장 상태 해제
-        saveBtn.disabled = false;
-        saveBtn.textContent = '저장';
+        showMessage(err.message || '계정 정보를 저장하는 데 실패했습니다.', 'error');
       });
-  }
+  });
 
-  // ===================================================================
-  // 취소 처리 함수
-  // ===================================================================
-  function handleCancel() {
-    if (typeof showContent === 'function') {
-      showContent('profile');
-    }
-  }
+  // 5) "취소" 버튼 클릭 시: 이전 화면(프로필)으로 복귀
+  cancelBtn.addEventListener('click', () => {
+    showContent('profile');
+  });
 });
 
-// ===================================================================
 // 전역 함수 (index.js에서 정의됨):
 // - showContent(type): SPA처럼 화면 전환 처리
 // - showMessage(message, type): 우측 상단 슬라이드 알림 메시지 표시
 // - checkUserStatus(): 로그인 상태 UI 갱신
-// ===================================================================

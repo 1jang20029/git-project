@@ -6,7 +6,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>내 계정 – 연성대학교 스마트 캠퍼스</title>
   
-  <!-- 외부 CSS 파일 -->
+  <!-- FOUC(Flash of Unstyled Content) 방지를 위한 인라인 스타일 -->
+  <style>
+    /* 페이지 로딩 중 초기 스타일 */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0e27;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      opacity: 0; /* CSS 로드 전까지 투명 */
+      transition: opacity 0.3s ease;
+    }
+    
+    /* CSS 로드 완료 후 표시 */
+    body.loaded {
+      opacity: 1;
+    }
+    
+    /* 로딩 중에도 기본적인 레이아웃 유지 */
+    .content-header {
+      margin-bottom: 2rem;
+    }
+    
+    .content-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    
+    .card {
+      padding: 2rem;
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+    
+    .form-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem 0;
+    }
+    
+    .form-item label {
+      color: #f1f5f9;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 140px;
+    }
+    
+    .form-item input {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #f1f5f9;
+      font-size: 1rem;
+    }
+    
+    .action-buttons {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    
+    .save-btn {
+      background: #10b981;
+      color: white;
+    }
+    
+    .cancel-btn {
+      background: #ef4444;
+      color: white;
+    }
+  </style>
+  
+  <!-- 외부 CSS 파일 (비동기 로드) -->
   <link rel="stylesheet" href="account-edit.css" />
 </head>
 <body>
@@ -75,5 +162,21 @@
 
   <!-- 외부 JS 파일 -->
   <script src="account-edit.js"></script>
+  
+  <!-- CSS 로드 완료 후 body에 loaded 클래스 추가 -->
+  <script>
+    // CSS 로드 완료 감지 및 FOUC 방지
+    window.addEventListener('load', function() {
+      document.body.classList.add('loaded');
+    });
+    
+    // 즉시 실행으로도 추가 (더 빠른 표시)
+    document.addEventListener('DOMContentLoaded', function() {
+      // 약간의 지연 후 표시 (CSS 적용 시간 확보)
+      setTimeout(function() {
+        document.body.classList.add('loaded');
+      }, 50);
+    });
+  </script>
 </body>
 </html>
