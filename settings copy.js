@@ -1,6 +1,6 @@
 // =============================================================================
 // settings.js
-// 분리된 설정 화면 전용 자바스크립트 (전체 코드)
+// 분리된 설정 화면 전용 자바스크립트
 // =============================================================================
 
 // 로컬스토리지 키 정의
@@ -96,12 +96,6 @@ function initSettingsPage() {
 
   // 6) 저장 / 취소 버튼 이벤트 바인딩
   initSaveCancelButtons();
-
-  // 7) 기존 키보드 단축키 반영 (화면 로딩 시)
-  applyKeyboardShortcuts();
-
-  // 8) 사용자 정의 단축키 적용 (설정된 단축키를 눌렀을 때 동작)
-  applyUserShortcuts();
 }
 
 // =============================================================================
@@ -353,307 +347,55 @@ function initSaveCancelButtons() {
 }
 
 // =============================================================================
-// 7) applyKeyboardShortcuts: 기존 키보드 단축키 로드
+// showMessage: 화면 우측 상단 슬라이드 알림 메시지
 // =============================================================================
-function applyKeyboardShortcuts() {
-  const shortcuts = JSON.parse(localStorage.getItem(LS_KEY_SHORTCUTS)) || {
-    toggleSidebar: 'F2',
-    openNotifications: 'F3',
-    goToSettings: 'F4'
-  };
-  document.addEventListener('keydown', (e) => {
-    // 입력 요소(focused)에서는 작동하지 않도록 무시
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) {
-      return;
-    }
+function showMessage(message, type = 'info') {
+  const notification = document.createElement('div');
+  const bgColor =
+    type === 'success'
+      ? 'rgba(16, 185, 129, 0.9)'
+      : type === 'error'
+      ? 'rgba(239, 68, 68, 0.9)'
+      : 'rgba(59, 130, 246, 0.9)';
+  const icon =
+    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
 
-    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
-    const key = e.key.toUpperCase();
+  notification.style.cssText = `
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: ${bgColor};
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    font-weight: 600;
+    backdrop-filter: blur(20px);
+    border: 1px solid ${bgColor.replace('0.9', '0.3')};
+    animation: slideInRight 0.3s ease-out;
+    max-width: 400px;
+  `;
 
-    // 알림 열기
-    if (key === (shortcuts.openNotifications || '').toUpperCase()) {
-      e.preventDefault();
-      toggleNotifications();
-      return;
-    }
-    // 설정으로 이동
-    if (key === (shortcuts.goToSettings || '').toUpperCase()) {
-      e.preventDefault();
-      showContent('settings');
-      return;
-    }
-  });
-}
+  notification.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <span>${icon}</span>
+      <span>${message}</span>
+    </div>
+  `;
+  document.body.appendChild(notification);
 
-// =============================================================================
-// 8) applyUserShortcuts: 사용자 정의 단축키 로컬스토리지 기반 실행
-// =============================================================================
-function applyUserShortcuts() {
-  document.addEventListener('keydown', (e) => {
-    // 입력 요소(focused)에서는 작동하지 않도록 무시
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) {
-      return;
-    }
-
-    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 타이머 초기화
-    const pressedKey = e.key.toUpperCase();
-    const userShortcuts = JSON.parse(localStorage.getItem(LS_KEY_SHORTCUTS)) || [];
-
-    // 눌린 키가 userShortcuts 중 하나의 key와 일치하는지 탐색
-    const matched = userShortcuts.find(entry => entry.key === pressedKey);
-    if (!matched) return;
-    if (!matched.name) return;
-
-    e.preventDefault();
-    const label = matched.name.toLowerCase();
-
-    // 레이블 내부 키워드 매핑
-    if (label.includes('대시보드')) {
-      showContent('home');
-      return;
-    }
-    if (label.includes('건물')) {
-      showContent('buildings');
-      return;
-    }
-    if (label.includes('커뮤니티')) {
-      showContent('community');
-      return;
-    }
-    if (label.includes('강의평가')) {
-      showContent('lecture-review');
-      return;
-    }
-    if (label.includes('공지사항')) {
-      showContent('notices');
-      return;
-    }
-    if (label.includes('내 시간표') || label.includes('시간표')) {
-      showContent('timetable');
-      return;
-    }
-    if (label.includes('셔틀버스') || label.includes('셔틀')) {
-      showContent('shuttle');
-      return;
-    }
-    if (label.includes('학사일정') || label.includes('학사')) {
-      showContent('calendar');
-      return;
-    }
-    if (label.includes('프로필') || label.includes('내 계정')) {
-      showContent('profile');
-      return;
-    }
-    if (label.includes('설정')) {
-      showContent('settings');
-      return;
-    }
-    if (label.includes('알림')) {
-      toggleNotifications();
-      return;
-    }
-    if (label.includes('로그아웃')) {
-      handleLogout();
-      return;
-    }
-    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
-      const themeToggle = document.getElementById('themeToggle');
-      if (themeToggle) {
-        themeToggle.checked = !themeToggle.checked;
-        themeToggle.dispatchEvent(new Event('change'));
-      }
-      return;
-    }
-    if (label.includes('내 위치') || label.includes('위치')) {
-      trackUserLocation();
-      return;
-    }
-    if (label.includes('확대')) {
-      zoomIn();
-      return;
-    }
-    if (label.includes('축소')) {
-      zoomOut();
-      return;
-    }
-    if (label.includes('초기화') || label.includes('리셋')) {
-      resetMapView();
-      return;
-    }
-    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
-  });
-}
-
-// =============================================================================
-// window 이벤트: 로컬스토리지 변경 시 사용자 상태 갱신
-// =============================================================================
-window.addEventListener('storage', (event) => {
-  if (
-    event.key === 'currentLoggedInUser' ||
-    (event.key && event.key.includes('_profileImage'))
-  ) {
-    checkUserStatus();
-    updateTimetable();
-  }
-
-  // 테마가 변경되었을 때 즉시 반영
-  if (event.key === 'lightMode') {
-    const savedMode = localStorage.getItem('lightMode');
-    if (savedMode === 'true') {
-      document.body.classList.add('light-mode');
-    } else {
-      document.body.classList.remove('light-mode');
-    }
-  }
-
-  // 단축키가 변경되었을 때 리스너는 이미 동작 중이므로, 실제 배열만 업데이트하면 됨
-});
-
-// =============================================================================
-// window 이벤트: 페이지 복원(persisted) 시 상태 갱신
-// =============================================================================
-window.addEventListener('pageshow', (event) => {
-  if (event.persisted) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  // 테마와 단축키도 다시 적용
-  const savedMode = localStorage.getItem('lightMode');
-  if (savedMode === 'true') {
-    document.body.classList.add('light-mode');
-  } else {
-    document.body.classList.remove('light-mode');
-  }
-});
-
-// =============================================================================
-// navigateToTimetable: 내 시간표 페이지로 이동
-// =============================================================================
-function navigateToTimetable() {
-  showContent('timetable');
-}
-
-// =============================================================================
-// navigateToShuttle: 셔틀버스 페이지로 이동
-// =============================================================================
-function navigateToShuttle() {
-  showContent('shuttle');
-}
-
-// =============================================================================
-// navigateToCalendar: 학사일정 페이지로 이동
-// =============================================================================
-function navigateToCalendar() {
-  showContent('calendar');
-}
-
-// =============================================================================
-// zoomIn: 지도 확대
-// =============================================================================
-function zoomIn() {
-  if (naverMap) {
-    naverMap.setZoom(naverMap.getZoom() + 1);
-  }
-}
-
-// =============================================================================
-// zoomOut: 지도 축소
-// =============================================================================
-function zoomOut() {
-  if (naverMap) {
-    naverMap.setZoom(naverMap.getZoom() - 1);
-  }
-}
-
-// =============================================================================
-// resetMapView: 지도 초기 위치로 리셋
-// =============================================================================
-function resetMapView() {
-  if (naverMap) {
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    naverMap.setCenter(yeonsung);
-    naverMap.setZoom(16);
-  }
-}
-
-// =============================================================================
-// trackUserLocation: 사용자의 현재 위치 추적
-// =============================================================================
-function trackUserLocation() {
-  if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
-        return;
-      }
-
-      const userPos = new naver.maps.LatLng(
-        position.coords.latitude,
-        position.coords.longitude
-      );
-
-      if (userMarker) {
-        userMarker.setMap(null);
-      }
-
-      userMarker = new naver.maps.Marker({
-        position: userPos,
-        map: naverMap,
-        icon: {
-          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
-          anchor: new naver.maps.Point(10, 10)
-        }
-      });
-
-      naverMap.setCenter(userPos);
-      naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
-    },
-    (error) => {
-      let message = '위치를 찾을 수 없습니다';
-      switch(error.code) {
-        case error.PERMISSION_DENIED:
-          message = '위치 권한이 거부되었습니다';
-          break;
-        case error.POSITION_UNAVAILABLE:
-          message = '위치 정보를 사용할 수 없습니다';
-          break;
-        case error.TIMEOUT:
-          message = '위치 요청 시간이 초과되었습니다';
-          break;
-      }
-      showMessage(message, 'error', '');
-    }
-  );
-}
-
-// =============================================================================
-// showBuildingOnMap: 특정 건물 지도에서 보기
-// =============================================================================
-function showBuildingOnMap(buildingId) {
-  showContent('buildings');
   setTimeout(() => {
-    if (naverMap.refresh) naverMap.refresh();
-  }, 100);
+    notification.style.animation = 'slideOutRight 0.3s ease-in';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
 }
 
 // =============================================================================
-// getBuildingDirections: 길찾기 기능 (준비 중)
+// 전역에 initSettingsPage 노출
 // =============================================================================
-function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
-}
-
-// =============================================================================
-// viewNoticeDetail: 공지사항 상세 보기 (준비 중)
-// =============================================================================
-function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
-}
+window.initSettingsPage = initSettingsPage;

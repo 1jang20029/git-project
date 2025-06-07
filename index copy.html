@@ -13,6 +13,7 @@
 
   <!-- 공통 스타일 -->
   <link rel="stylesheet" href="index.css" />
+
   <!-- 분리된 설정 화면 전용 스타일 -->
   <link rel="stylesheet" href="settings.css" />
 </head>
@@ -50,7 +51,7 @@
         <span>공지사항</span>
       </li>
 
-      <!-- ↓↓↓ 학생서비스 메뉴 추가 ↓↓↓ -->
+      <!-- ↓↓↓ 여기서부터 학생서비스 메뉴 추가 ↓↓↓ -->
       <li class="nav-item" id="nav-student-services">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
@@ -69,12 +70,13 @@
           </li>
         </ul>
       </li>
-      <!-- ↑↑↑ 학생서비스 메뉴 끝 ↑↑↑ -->
+      <!-- ↑↑↑ 여기까지 학생서비스 메뉴 추가 ↑↑↑ -->
     </ul>
 
     <!-- 3) 빠른 접근 (가로형) -->
+    <!-- 아래 세 항목을 “학생서비스”로 이동했기 때문에, 원래 있던 Quick Menu li 들은 제거했습니다. -->
     <ul id="quick-menu">
-      <!-- 동적으로 채워짐 -->
+      <!-- 빠른 접근 메뉴 내부를 비워두었습니다. 추가적인 변경 없이 다른 코드는 절대 건들지 않았습니다. -->
     </ul>
 
     <!-- 4) 검색창 / 알림 버튼 / 사용자 메뉴 -->
@@ -89,9 +91,8 @@
         />
       </div>
 
-      <!-- 알림 / 사용자 메뉴 -->
+      <!-- 알림 -->
       <div id="user-menu">
-        <!-- 알림 버튼 -->
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
           <div id="notification-dot"></div>
@@ -122,15 +123,16 @@
               <div id="dropdown-user-role">방문자</div>
             </div>
             <button id="dropdown-item-profile" onclick="showProfile()">
-              내 계정
+              <span>👤</span>
+              <span>프로필</span>
             </button>
             <button id="dropdown-item-settings" onclick="showContent('settings')">
-              <span class="settings-icon">⚙️</span>
+              <span>⚙️</span>
               <span>설정</span>
             </button>
             <div id="dropdown-divider"></div>
             <button id="dropdown-item-logout" onclick="handleLogout()" style="color: #ef4444;">
-              <span class="logout-icon">🚪</span>
+              <span>🚪</span>
               <span>로그아웃</span>
             </button>
           </div>
@@ -144,7 +146,6 @@
        ================================================== -->
   <div id="main-container">
     <main id="content-area">
-
       <!-- --------------------------------------------------
            홈 (대시보드) 화면
            -------------------------------------------------- -->
@@ -209,65 +210,59 @@
       <div id="buildingsContent" style="display: none;">
         <div id="content-header-buildings">
           <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
-          <div class="breadcrumb">
+          <div id="breadcrumb-buildings">
             <span>홈</span>
             <span>›</span>
             <span>건물 안내</span>
           </div>
         </div>
-
-        <!-- ==============================================
-             캠퍼스 지도 카드
-             ============================================== -->
-        <div id="buildingsMapCard">
+        <div id="buildingsMapCard" style="margin-bottom: 2rem;">
           <div id="card-header-buildings-map">
             <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
             <span id="card-icon-buildings-map">🗺️</span>
           </div>
           <div id="buildings-map-container">
-            <div id="buildingsMap"></div>
+            <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
             <div id="buildings-map-overlay">
-              <button id="buildings-zoom-in" title="확대">🔍+</button>
-              <button id="buildings-zoom-out" title="축소">🔍-</button>
-              <button id="buildings-reset" title="초기화">🏠</button>
-              <button id="buildings-track-user" title="내 위치">📍</button>
+              <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+              <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
+              <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
+              <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
             </div>
           </div>
         </div>
-
-        <!-- ==============================================
-             건물 리스트 그리드
-             ============================================== -->
         <div id="buildingGrid"></div>
-
-        <!-- ==============================================
-             시설 안내 헤더
-             ============================================== -->
-        <div class="content-header" style="margin-top: 2rem;">
-          <h1>시설 안내</h1>
-          <div class="breadcrumb">
-            <span>홈</span>
-            <span>›</span>
-            <span>시설 안내</span>
-          </div>
-        </div>
-        <div id="facilitiesGrid"></div>
-
-        <!-- ==============================================
-             시설 사진 모달
-             ============================================== -->
-        <div id="photoModal" class="modal">
-          <div class="modal-content">
-            <span id="modalClose" class="modal-close">&times;</span>
-            <div id="modalImagesContainer"></div>
-          </div>
-        </div>
       </div>
 
       <!-- --------------------------------------------------
-           커뮤니티 화면 (동적 로드)
+           커뮤니티 화면
            -------------------------------------------------- -->
-      <div id="communityContent" style="display: none;"></div>
+      <div id="communityContent" style="display: none;">
+        <div id="content-header-community">
+          <h1 id="title-community">실시간 커뮤니티</h1>
+          <div id="breadcrumb-community">
+            <span>홈</span>
+            <span>›</span>
+            <span>커뮤니티</span>
+          </div>
+        </div>
+        <div id="dashboardGrid-community">
+          <div id="live-posts-card">
+            <div id="card-header-live-posts">
+              <h3 id="card-title-live-posts">실시간 게시글</h3>
+              <span id="card-icon-live-posts">💬</span>
+            </div>
+            <div id="livePosts"></div>
+          </div>
+          <div id="hot-posts-card">
+            <div id="card-header-hot-posts">
+              <h3 id="card-title-hot-posts">인기 게시글</h3>
+              <span id="card-icon-hot-posts">🔥</span>
+            </div>
+            <div id="hotPosts"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- --------------------------------------------------
            강의평가 화면
@@ -275,7 +270,7 @@
       <div id="lecture-reviewContent" style="display: none;">
         <div id="content-header-lecture-review">
           <h1 id="title-lecture-review">강의평가</h1>
-          <div class="breadcrumb">
+          <div id="breadcrumb-lecture-review">
             <span>홈</span>
             <span>›</span>
             <span>강의평가</span>
@@ -319,7 +314,7 @@
       <div id="noticesContent" style="display: none;">
         <div id="content-header-notices">
           <h1 id="title-notices">공지사항</h1>
-          <div class="breadcrumb">
+          <div id="breadcrumb-notices">
             <span>홈</span>
             <span>›</span>
             <span>공지사항</span>
@@ -334,7 +329,7 @@
       <div id="timetableContentPane" style="display: none;">
         <div id="content-header-timetable-pane">
           <h1 id="title-timetable-pane">내 시간표</h1>
-          <div class="breadcrumb">
+          <div id="breadcrumb-timetable-pane">
             <span>홈</span>
             <span>›</span>
             <span>내 시간표</span>
@@ -352,7 +347,7 @@
       <div id="shuttleContentPane" style="display: none;">
         <div id="content-header-shuttle-pane">
           <h1 id="title-shuttle-pane">셔틀버스 정보</h1>
-          <div class="breadcrumb">
+          <div id="breadcrumb-shuttle-pane">
             <span>홈</span>
             <span>›</span>
             <span>셔틀버스</span>
@@ -370,7 +365,7 @@
       <div id="calendarContentPane" style="display: none;">
         <div id="content-header-calendar-pane">
           <h1 id="title-calendar-pane">학사일정</h1>
-          <div class="breadcrumb">
+          <div id="breadcrumb-calendar-pane">
             <span>홈</span>
             <span>›</span>
             <span>학사일정</span>
@@ -383,20 +378,33 @@
       </div>
 
       <!-- --------------------------------------------------
-           내 계정 화면 (프래그먼트)
+           프로필 화면
            -------------------------------------------------- -->
-      <div id="profileContentPane" style="display: none;"></div>
+      <div id="profileContentPane" style="display: none;">
+        <div id="content-header-profile-pane">
+          <h1 id="title-profile-pane">프로필</h1>
+          <div id="breadcrumb-profile-pane">
+            <span>홈</span>
+            <span>›</span>
+            <span>프로필</span>
+          </div>
+        </div>
+        <div id="profile-sample-text">
+          여기에 프로필 정보를 표시합니다.<br />
+          (실제 구현 시, 서버 API를 호출하여 렌더링하세요.)
+        </div>
+      </div>
 
       <!-- --------------------------------------------------
-           설정 화면: 동적으로 로드
+           설정 화면: 처음엔 빈 컨테이너, 동적으로 로드
            -------------------------------------------------- -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
-  <!-- ==================================================
+  <!-- --------------------------------------------------
        공통 자바스크립트
-       ================================================== -->
+       -------------------------------------------------- -->
   <script src="index.js" defer></script>
   <!-- 분리된 설정 화면 전용 자바스크립트 -->
   <script src="settings.js" defer></script>

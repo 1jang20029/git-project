@@ -1,8 +1,6 @@
-/* =============================================================================
-   index.css
-   공통 스타일 (다크 모드 기본)
-   ============================================================================= */
-
+/* ==================================================
+   공통 리셋
+   ================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -73,7 +71,7 @@ body {
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  position: relative; /* 드롭다운 위치 기준 */
+  position: relative; /* dropdown 위치를 위한 기준 */
 }
 
 #main-menu .nav-item:hover {
@@ -102,6 +100,7 @@ body {
   display: inline-block;
   width: 24px;
   text-align: center;
+  /* Gradient 효과를 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
@@ -150,6 +149,7 @@ body {
   font-size: 1.1rem;
   width: 20px;
   text-align: center;
+  /* Gradient 효과 제거 */
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
@@ -398,9 +398,7 @@ body {
   background: rgba(59, 130, 246, 0.1);
 }
 
-/* =========================
-   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운)
-   ========================= */
+/* 사용자 프로필 */
 #user-profile {
   display: flex;
   align-items: center;
@@ -438,7 +436,7 @@ body {
   color: #94a3b8;
 }
 
-/* “내 계정”, “설정”, “로그아웃” 드롭다운 영역 */
+/* 사용자 드롭다운 메뉴 */
 #user-dropdown {
   position: absolute;
   top: 100%;
@@ -460,7 +458,6 @@ body {
   animation: fadeInDown 0.3s ease-out;
 }
 
-/* 드롭다운 상단 유저 정보 */
 #dropdown-user-info {
   padding: 1rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
@@ -478,46 +475,8 @@ body {
   color: #94a3b8;
 }
 
-/* “내 계정” 버튼 */
-#dropdown-item-profile {
-  display: block;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  color: #f1f5f9;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-#dropdown-item-profile:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-/* “설정” 버튼 */
-#dropdown-item-settings {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: #f1f5f9;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-#dropdown-item-settings:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-/* “로그아웃” 버튼 */
+#dropdown-item-profile,
+#dropdown-item-settings,
 #dropdown-item-logout {
   display: flex;
   align-items: center;
@@ -532,12 +491,13 @@ body {
   text-align: left;
 }
 
+#dropdown-item-profile:hover,
+#dropdown-item-settings:hover,
 #dropdown-item-logout:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
 }
 
-/* 드롭다운 구분선 */
 #dropdown-divider {
   height: 1px;
   background: rgba(148, 163, 184, 0.1);
@@ -758,30 +718,21 @@ body {
 #card-icon-write-review,
 #card-icon-buildings-map {
   font-size: 1.5rem;
+  /* Gradient 효과 제거하여 아이콘이 기본 이모지 컬러로 표시됩니다 */
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
 }
 
-/* =========================
-   캠퍼스 지도 카드 (#map-card)
-   ========================= */
+/* 지도 카드 */
 #map-card {
-  grid-column: span 1;
+  grid-column: span 2;
   height: 400px;
   position: relative;
   overflow: hidden;
 }
 
-@media (max-width: 1024px) {
-  #map-card {
-    grid-column: span 1;
-    height: 300px;
-  }
-}
-
-/* 지도 컨테이너 */
 #map-container,
 #buildings-map-container {
   width: 100%;
@@ -790,11 +741,17 @@ body {
   overflow: hidden;
 }
 
-/* 지도의 오른쪽 상단 컨트롤 버튼 그룹을 아래로 내림 및 왼쪽으로 이동 */
-#map-overlay {
+#buildingsMapCard {
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+#map-overlay,
+#buildings-map-overlay {
   position: absolute;
-  top: 5rem;    /* 아이콘 위치를 훨씬 아래로 내리기 위해 5rem으로 설정 */
-  right: 2rem;  /* 오른쪽에서 2rem 만큼 떨어뜨려 아이콘을 더 왼쪽으로 배치 */
+  top: 1rem;
+  right: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -804,7 +761,11 @@ body {
 #map-zoom-in,
 #map-zoom-out,
 #map-reset,
-#map-track-user {
+#map-track-user,
+#buildings-zoom-in,
+#buildings-zoom-out,
+#buildings-reset,
+#buildings-track-user {
   background: rgba(15, 23, 42, 0.9);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
@@ -818,23 +779,100 @@ body {
 #map-zoom-in:hover,
 #map-zoom-out:hover,
 #map-reset:hover,
-#map-track-user:hover {
+#map-track-user:hover,
+#buildings-zoom-in:hover,
+#buildings-zoom-out:hover,
+#buildings-reset:hover,
+#buildings-track-user:hover {
   background: rgba(59, 130, 246, 0.2);
   color: #3b82f6;
   border-color: #3b82f6;
 }
 
-/* =========================
-   오늘의 시간표 카드 (#timetable-card)
-   ========================= */
+/* 시간표 카드 스크롤 */
 #timetable-card {
   max-height: 500px;
   overflow-y: auto;
 }
 
-/* =========================
-   셔틀버스 카드 (#shuttle-card)
-   ========================= */
+/* 수업 아이템 */
+.class-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.class-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.class-time {
+  font-weight: 700;
+  color: #3b82f6;
+  min-width: 100px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.class-time-main {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.class-time-remaining {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.class-info {
+  margin-left: 1rem;
+  flex: 1;
+}
+
+.class-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+
+.class-location {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.class-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-current {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.status-upcoming {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.status-finished {
+  background: rgba(107, 114, 128, 0.2);
+  color: #6b7280;
+}
+
+/* 셔틀 카드 */
 #shuttleRoutes {
   display: flex;
   gap: 0.5rem;
@@ -869,11 +907,11 @@ body {
   color: #94a3b8;
 }
 
-/* 셔틀버스 현황 박스(회색 박스를 없애려면 배경/보더 투명) */
 #shuttle-status {
-  background: transparent;      /* 배경을 투명하게 설정해서 회색 박스가 보이지 않도록 함 */
-  border: none;                 /* 테두리 없앰 */
-  padding: 0;                   /* 여백 제거 */
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
   text-align: center;
   margin-bottom: 1rem;
 }
@@ -914,9 +952,7 @@ body {
   color: #ef4444;
 }
 
-/* =========================
-   공지사항 리스트 (#recentNotices, #fullNoticeList)
-   ========================= */
+/* 공지사항 리스트 */
 #recentNotices,
 #fullNoticeList {
   display: flex;
@@ -962,9 +998,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* =========================
-   건물 카드 (.building-card)
-   ========================= */
+/* 건물 카드 */
 .building-card {
   cursor: pointer;
 }
@@ -1025,6 +1059,7 @@ body {
   background: rgba(59, 130, 246, 0.1);
 }
 
+/* 활성화된 메뉴 아이콘/텍스트 색상 */
 .nav-item.active .nav-icon,
 .nav-item.active span {
   color: #3b82f6;
@@ -1097,9 +1132,7 @@ body {
   background: rgba(59, 130, 246, 0.7);
 }
 
-/* ==================================================
-   라이트 모드
-   ================================================== */
+/* 라이트 모드 */
 body.light-mode {
   background: #ffffff;
   color: #000000;
@@ -1247,7 +1280,96 @@ body.light-mode #card-title-buildings-map {
   color: #1f2937;
 }
 
-@media (max-width: 768px) {
+body.light-mode #settings-container {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .setting-item {
+  border-bottom-color: rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .setting-item label {
+  color: #1f2937;
+}
+
+body.light-mode #map-zoom-in,
+body.light-mode #map-zoom-out,
+body.light-mode #map-reset,
+body.light-mode #map-track-user,
+body.light-mode #buildings-zoom-in,
+body.light-mode #buildings-zoom-out,
+body.light-mode #buildings-reset,
+body.light-mode #buildings-track-user {
+  background: rgba(255, 255, 255, 0.9);
+  color: #374151;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .btn-primary {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+body.light-mode .btn-primary:hover {
+  background: #2563eb;
+}
+
+body.light-mode .btn-outline {
+  color: #6b7280;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+body.light-mode .btn-outline:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+body.light-mode .route-tab {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .route-tab.active {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+body.light-mode .route-name {
+  color: #1f2937;
+}
+
+body.light-mode .route-desc {
+  color: #6b7280;
+}
+
+body.light-mode #shuttle-status,
+body.light-mode .class-item {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+body.light-mode .notice-category {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+body.light-mode .notice-date {
+  color: #6b7280;
+}
+
+body.light-mode #timetable-sample-text,
+body.light-mode #shuttle-sample-text,
+body.light-mode #calendar-sample-text,
+body.light-mode #profile-sample-text {
+  background: rgba(255, 255, 255, 0.8);
+  color: #1f2937;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* 반응형(portrait) */
+@media (max-width: 1024px) {
   #search-input {
     width: 200px;
   }
@@ -1261,17 +1383,16 @@ body.light-mode #card-title-buildings-map {
   }
   #map-card {
     grid-column: span 1;
-    height: 300px;
   }
   #main-menu {
-    display: none;
+    display: none; /* 화면이 좁을 때는 메인 메뉴를 접어둘 수도 있습니다 */
   }
   #quick-menu {
-    display: none;
+    display: none; /* 화면이 좁을 때 접어두거나, 햄버거/버튼으로 대체 가능합니다. */
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   #top-nav {
     padding: 1rem;
   }
@@ -1289,39 +1410,46 @@ body.light-mode #card-title-buildings-map {
   #dashboardGrid-lecture-review {
     grid-template-columns: 1fr;
   }
-  #buildingsMapCard {
-    height: 200px;
+  #settings-container {
+    padding: 1rem;
   }
   .setting-item {
     margin-bottom: 1rem;
-    padding: 0.75rem 0;
+    padding: 1.5rem 0;
   }
   .setting-item label {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
   .setting-item input[type="checkbox"] {
     width: 28px;
     height: 28px;
     transform: scale(1.4);
   }
-  .shortcut-item {
+  .building-actions {
     flex-direction: column;
-    align-items: stretch;
     gap: 0.5rem;
   }
-  .shortcut-item input.label-input,
-  .shortcut-item input.key-input {
-    width: 100%;
-  }
-  .shortcut-item button.remove-shortcut-btn {
-    align-self: flex-end;
-  }
-  .add-shortcut-btn {
+  .btn {
     width: 100%;
     text-align: center;
   }
-  .action-buttons {
+}
+
+@media (max-width: 480px) {
+  #nav-brand span:last-child {
+    display: none;
+  }
+  #search-input {
+    width: 120px;
+    font-size: 0.8rem;
+  }
+  .setting-item {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .setting-item input[type="checkbox"] {
+    align-self: flex-end;
   }
 }
 
@@ -1330,103 +1458,5 @@ body.light-mode #card-title-buildings-map {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-
-/* =============================================================================
-   추가된 “건물 & 시설 안내” 전용 오버라이드 CSS
-   (두 번째 스크린샷과 동일하게 만들고,
-   지도 높이를 두 배(600px)로 늘리는 부분)
-   ============================================================================= */
-
-/* 1) #buildingsMapCard: 흰색 카드 배경 + 블러 + 라운드 + 테두리 */
-#buildingsMapCard {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
-  margin: 0 2rem 2rem 2rem;
-  padding: 1.5rem;
-  position: relative;
-}
-#buildingsMapCard:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px);
-}
-
-/* 2) #card-header-buildings-map: 카드 헤더 스타일 (두 번째 사진과 완전히 동일) */
-#card-header-buildings-map {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-#card-title-buildings-map {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;  /* 짙은 그레이 색상 */
-}
-#card-icon-buildings-map {
-  font-size: 1.5rem;
-}
-
-/* 3) #buildings-map-container: 지도 영역 높이를 두 배로 늘림 */
-#buildings-map-container {
-  width: 100%;
-  height: 600px;         /* ← 두 번째 화면의 약 절반 높이가 300px 정도였다면, 여기서 2배인 600px을 지정 */
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-}
-#buildingsMap {
-  width: 100%;
-  height: 100%;
-  background: #f8fafc;   /* 로딩 중 흰 배경 스타일까지 유지 */
-}
-
-/* 4) 지도 위의 버튼들 (확대/축소/초기화/내 위치) 스타일 */
-#buildings-map-overlay {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 100;
-}
-#buildings-zoom-in,
-#buildings-zoom-out,
-#buildings-reset,
-#buildings-track-user {
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: #94a3b9;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-}
-#buildings-zoom-in:hover,
-#buildings-zoom-out:hover,
-#buildings-reset:hover,
-#buildings-track-user:hover {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-  border-color: #3b82f6;
-}
-
-/* 5) 반응형: 화면 폭이 좁아질 때 지도 높이를 줄여서 보기 편하게 조정 */
-@media (max-width: 1024px) {
-  #buildings-map-container {
-    height: 400px;  /* 1024px 이하에서는 400px */
-  }
-}
-@media (max-width: 768px) {
-  #buildings-map-container {
-    height: 300px;  /* 768px 이하에서는 300px */
   }
 }
