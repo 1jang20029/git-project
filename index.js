@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAutoLogout();             // 자동 로그아웃 로직 초기화
   applyKeyboardShortcuts();      // 기존 키보드 단축키 로드
 
-  // “새로 추가된 단축키”도 동작하도록 전역 리스너 추가
+  // "새로 추가된 단축키"도 동작하도록 전역 리스너 추가
   applyUserShortcuts();
 
   // ESC 키 누르면 드롭다운 닫기
@@ -122,7 +122,7 @@ function showContent(type) {
     if (el) el.style.display = 'none';
   });
 
-  // “건물 & 시설” 화면일 때, 아직 buildings.html 을 삽입하지 않았다면 fetch 후 삽입
+  // "건물 & 시설" 화면일 때, 아직 buildings.html 을 삽입하지 않았다면 fetch 후 삽입
   if (type === 'buildings' && !buildingsLoaded) {
     const container = document.getElementById('buildingsContent');
     if (container) {
@@ -138,7 +138,7 @@ function showContent(type) {
           if (typeof loadBuildings === 'function') {
             loadBuildings();
           }
-          // “건물 & 시설” 전용 지도가 있다면, initNaverMapForBuildings() 를 호출
+          // "건물 & 시설" 전용 지도가 있다면, initNaverMapForBuildings() 를 호출
           if (typeof initNaverMapForBuildings === 'function') {
             initNaverMapForBuildings();
           }
@@ -155,7 +155,7 @@ function showContent(type) {
     }
   }
 
-  // “설정” 화면일 때, 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
+  // "설정" 화면일 때, 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
   if (type === 'settings' && !settingsLoaded) {
     const container = document.getElementById('settingsContent');
     if (container) {
@@ -769,75 +769,155 @@ function renderCommunityPosts(livePosts, hotPosts) {
   });
 }
 
-// ─────────── loadLectureReviews: 강의평가 데이터 로드 ───────────
+// =============================================================================
+// 강의평가 관련 함수들 (기존 함수 대체)
+// =============================================================================
+
+// ─────────── loadLectureReviews: 강의평가 데이터 로드 (기존 함수 대체) ───────────
 async function loadLectureReviews() {
   try {
     if (!isOnline) {
       throw new Error('오프라인 모드');
     }
-    const [popRes, recRes] = await Promise.all([
+    
+    const [popularResponse, recentResponse] = await Promise.all([
       fetch('/api/reviews/popular'),
-      fetch('/api/reviews/recent'),
+      fetch('/api/reviews/recent')
     ]);
 
-    if (!popRes.ok || !recRes.ok) throw new Error('API 응답 오류');
+    if (!popularResponse.ok || !recentResponse.ok) {
+      throw new Error('API 응답 오류');
+    }
 
-    const popular = await popRes.json();
-    const recent  = await recRes.json();
-    renderLectureReviews(popular, recent);
+    const popularReviews = await popularResponse.json();
+    const recentReviews = await recentResponse.json();
+    
+    renderLectureReviews(popularReviews, recentReviews);
   } catch (err) {
     console.error('강의평가 데이터 로드 실패:', err);
+    showLectureReviewError('데이터를 불러오는 중 오류가 발생했습니다.');
     renderLectureReviews([], []);
   }
 }
 
-// ─────────── renderLectureReviews: 강의평가 렌더링 ───────────
-function renderLectureReviews(popular, recent) {
-  const popEl = document.getElementById('popularReviews');
-  const recEl = document.getElementById('recentReviews');
+// ─────────── renderLectureReviews: 강의평가 렌더링 (기존 함수 대체) ───────────
+function renderLectureReviews(popularReviews, recentReviews) {
+  const popularContainer = document.getElementById('popularReviews');
+  const recentContainer = document.getElementById('recentReviews');
+  
+  if (!popularContainer || !recentContainer) return;
 
-  if (!popEl || !recEl) return;
+  // 인기 강의평가 렌더링
+  renderReviewList(popularContainer, popularReviews, '인기 강의평가');
+  
+  // 최근 강의평가 렌더링
+  renderReviewList(recentContainer, recentReviews, '최근 강의평가');
+  
+  // 강의평가 작성 버튼 이벤트 리스너 (한 번만 등록)
+  initWriteReviewButton();
+}
 
-  popular.forEach((r) => {
-    if (!isCategoryEnabled('강의평가')) return;
+// ─────────── renderReviewList: 개별 리뷰 리스트 렌더링 ───────────
+function renderReviewList(container, reviews, type) {
+  // 로딩 상태 제거
+  container.innerHTML = '';
+  
+  if (!reviews || reviews.length === 0) {
+    container.innerHTML = `<div class="empty-state">${type}가 없습니다.</div>`;
+    return;
+  }
 
-    const item = document.createElement('div');
-    item.className = 'notice-item';
-    item.innerHTML = `
-      <div class="notice-header">
-        <span class="notice-category">${r.category}</span>
-        <span class="notice-date" style="color:#f59e0b;">
-          ${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}
-        </span>
-      </div>
-      <div class="notice-title">${r.title}</div>
-      <div class="notice-summary">"${r.comment}"</div>
-      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
-      </div>
-    `;
-    popEl.appendChild(item);
-  });
-
-  recent.forEach((r) => {
-    if (!isCategoryEnabled('강의평가')) return;
-
-    const item = document.createElement('div');
-    item.className = 'notice-item';
-    item.innerHTML = `
-      <div class="notice-header">
-        <span class="notice-category">${r.category}</span>
-        <span class="notice-date">${r.timeAgo}</span>
-      </div>
-      <div class="notice-title">${r.title}</div>
-      <div class="notice-summary">"${r.comment}"</div>
-      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
-      </div>
-    `;
-    recEl.appendChild(item);
+  reviews.forEach(review => {
+    const reviewElement = createReviewElement(review);
+    container.appendChild(reviewElement);
   });
 }
+
+// ─────────── createReviewElement: 개별 리뷰 엘리먼트 생성 ───────────
+function createReviewElement(review) {
+  const item = document.createElement('div');
+  item.className = 'evaluation-item';
+  item.onclick = () => viewEvaluationDetail(review.id);
+  
+  const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+  const formattedDate = formatDateForReview(review.created_at);
+  const reviewText = review.review || '댓글이 없습니다.';
+  const userName = review.user_name || '익명';
+  const courseName = review.course_name || review.course_id || '강의명 없음';
+  
+  item.innerHTML = `
+    <div class="evaluation-header">
+      <span class="evaluation-course">${escapeHtmlForReview(courseName)}</span>
+      <span class="evaluation-rating">${stars}</span>
+    </div>
+    <div class="evaluation-review">${escapeHtmlForReview(reviewText)}</div>
+    <div class="evaluation-meta">
+      <span>${formattedDate}</span>
+      <span>${escapeHtmlForReview(userName)}</span>
+    </div>
+  `;
+  
+  return item;
+}
+
+// ─────────── initWriteReviewButton: 강의평가 작성 버튼 초기화 ───────────
+function initWriteReviewButton() {
+  const writeBtn = document.getElementById('write-review-button');
+  if (writeBtn && !writeBtn.hasAttribute('data-initialized')) {
+    writeBtn.setAttribute('data-initialized', 'true');
+    writeBtn.onclick = handleWriteReview;
+  }
+}
+
+// ─────────── viewEvaluationDetail: 평가 상세 보기 ───────────
+function viewEvaluationDetail(evaluationId) {
+  console.log(`평가 ID ${evaluationId} 상세보기`);
+  showMessage(`평가 ${evaluationId} 상세보기 기능은 준비 중입니다.`, 'info');
+}
+
+// ─────────── handleWriteReview: 강의평가 작성 버튼 클릭 핸들러 ───────────
+function handleWriteReview() {
+  console.log('강의평가 작성 페이지로 이동');
+  showMessage('강의평가 작성 페이지로 이동합니다.', 'info');
+}
+
+// ─────────── showLectureReviewError: 강의평가용 에러 메시지 표시 ───────────
+function showLectureReviewError(message) {
+  // 기존 showMessage 함수 활용
+  showMessage(message, 'error');
+}
+
+// ─────────── formatDateForReview: 강의평가용 날짜 포맷팅 ───────────
+function formatDateForReview(isoString) {
+  if (!isoString) return '';
+  
+  try {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  } catch (error) {
+    console.error('날짜 포맷 에러:', error);
+    return '';
+  }
+}
+
+// ─────────── escapeHtmlForReview: 강의평가용 HTML 이스케이프 ───────────
+function escapeHtmlForReview(text) {
+  if (!text) return '';
+  
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// =============================================================================
+// 기존 함수들 계속
+// =============================================================================
 
 // ─────────── initNaverMap: 네이버 지도 초기화 (홈용) ───────────
 function initNaverMap() {
@@ -1037,7 +1117,7 @@ function renderTimetable(courses) {
         time.day === currentDay ||
         (currentDay === 0 && time.day === 6)
       ) {
-        // start, end는 “몇 교시”인지 나타낸다
+        // start, end는 "몇 교시"인지 나타낸다
         const startHour = 8 + time.start;
         const startMinute = 30;
         const startTime = startHour * 60 + startMinute;
@@ -1404,6 +1484,7 @@ function showMessage(message, type = 'info', category = '') {
   }, 3000);
 }
 
+// ─────────── shouldShowNotification: DND 모드 검사 ───────────
 // ─────────── shouldShowNotification: DND 모드 검사 ───────────
 function shouldShowNotification() {
   const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
