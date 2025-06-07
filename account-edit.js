@@ -2,9 +2,12 @@
 // "내 계정" 페이지 전용 스크립트 — DOMContentLoaded 내에서 초기화
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('account-edit.js loaded');
+
   // 1) 현재 로그인된 사용자 ID 가져오기
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
+    console.warn('currentLoggedInUser not found in localStorage');
     showMessage('로그인이 필요합니다.', 'error');
     showContent('home');
     return;
@@ -38,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 5) "저장" 버튼 클릭 시
   saveBtn.addEventListener('click', () => {
+    console.log('saveBtn clicked');
     const updatedName       = nameInput.value.trim();
     const updatedDepartment = departmentInput.value.trim();
     const updatedEmail      = emailInput.value.trim();
@@ -87,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 6) "취소" 버튼 클릭 시
   cancelBtn.addEventListener('click', () => {
+    console.log('cancelBtn clicked');
     showContent('profile');
   });
 });
