@@ -1,5 +1,3 @@
-/* account-edit.css */
-
 /* =======================================================
    공통 콘텐츠 헤더 스타일
    ======================================================= */
@@ -29,7 +27,6 @@
 
 /* =======================================================
    카드 컨테이너 스타일
-   - 내부에 모든 form-item과 버튼이 들어감
    ======================================================= */
 .card {
   padding: 2rem;
@@ -39,12 +36,13 @@
 }
 
 /* =======================================================
-   각 입력 필드(form-item) 스타일
+   form-item: label + input 레이아웃을 grid로 변경
    ======================================================= */
 .form-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 140px 1fr;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 0.75rem 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
@@ -59,14 +57,13 @@
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
-  width: 140px;
 }
 
-/* 입력 박스 최대 너비 제한 추가 */
+/* 입력 박스 너비 조절 */
 .form-item input[type="text"],
 .form-item input[type="email"] {
-  flex: 1;
-  max-width: 300px;
+  width: 100%;
+  max-width: 400px;
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
@@ -76,15 +73,14 @@
   transition: all 0.3s ease;
 }
 
-.form-item input[type="text"]:focus,
-.form-item input[type="email"]:focus {
+.form-item input:focus {
   outline: none;
   border-color: #3b82f6;
   background: rgba(30, 41, 59, 0.95);
 }
 
 /* =======================================================
-   액션 버튼(저장/취소) 컨테이너
+   액션 버튼 컨테이너
    ======================================================= */
 .action-buttons {
   margin-top: 2rem;
@@ -103,6 +99,7 @@
   transition: all 0.3s ease;
   font-size: 1rem;
 }
+
 .btn.save-btn:hover {
   background: #059669;
 }
@@ -118,50 +115,64 @@
   transition: all 0.3s ease;
   font-size: 1rem;
 }
+
 .btn.cancel-btn:hover {
   background: #dc2626;
 }
 
-/* 라이트 모드 적용 시 색상 반전 */
+/* 라이트 모드 색상 반전 */
 body.light-mode .card {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
+
 body.light-mode .form-item label {
   color: #1f2937;
 }
-body.light-mode .form-item input[type="text"],
-body.light-mode .form-item input[type="email"] {
+
+body.light-mode .form-item input {
   background: rgba(240, 240, 240, 0.8);
   color: #1f2937;
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
-body.light-mode .form-item input[type="text"]:focus,
-body.light-mode .form-item input[type="email"]:focus {
+
+body.light-mode .form-item input:focus {
   background: rgba(240, 240, 240, 1);
   color: #1f2937;
 }
-body.light-mode .btn.save-btn { background: #10b981; }
-body.light-mode .btn.save-btn:hover { background: #059669; }
-body.light-mode .btn.cancel-btn { background: #ef4444; }
-body.light-mode .btn.cancel-btn:hover { background: #dc2626; }
+
+body.light-mode .btn.save-btn:hover {
+  background: #059669;
+}
+body.light-mode .btn.cancel-btn:hover {
+  background: #dc2626;
+}
 
 /* 반응형 */
 @media (max-width: 768px) {
   .form-item {
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr; /* 세로 정렬 */
     gap: 0.5rem;
   }
-  .form-item label { width: 100%; }
-  .action-buttons { flex-direction: column; }
-  .btn.save-btn, .btn.cancel-btn {
-    width: 100%; text-align: center;
+  .action-buttons {
+    flex-direction: column;
+  }
+  .btn {
+    width: 100%;
+    text-align: center;
   }
 }
 @media (max-width: 480px) {
-  .content-header h1 { font-size: 1.5rem; }
-  .breadcrumb { font-size: 0.8rem; }
-  .form-item { margin-bottom: 1rem; }
-  .action-buttons { margin-top: 1rem; }
+  .content-header h1 {
+    font-size: 1.5rem;
+  }
+  .breadcrumb {
+    font-size: 0.8rem;
+  }
+  .form-item {
+    margin-bottom: 1rem;
+  }
+  .action-buttons {
+    margin-top: 1rem;
+  }
 }
