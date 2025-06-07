@@ -1,4 +1,9 @@
 /* =======================================================
+   account-edit.css
+   내 계정 편집 페이지 전용 스타일
+   ======================================================= */
+
+/* =======================================================
    공통 콘텐츠 헤더 스타일
    ======================================================= */
 .content-header {
@@ -31,8 +36,16 @@
 .card {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
   margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 /* =======================================================
@@ -46,6 +59,7 @@
   margin-bottom: 1.5rem;
   padding: 0.75rem 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  transition: all 0.3s ease;
 }
 
 .form-item:last-child {
@@ -53,10 +67,16 @@
   margin-bottom: 0;
 }
 
+.form-item:hover {
+  border-bottom-color: rgba(59, 130, 246, 0.3);
+}
+
 .form-item label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
 }
 
 /* 입력 박스 너비 조절 */
@@ -71,12 +91,34 @@
   color: #f1f5f9;
   font-size: 1rem;
   transition: all 0.3s ease;
+  outline: none;
 }
 
-.form-item input:focus {
-  outline: none;
+.form-item input[type="text"]:focus,
+.form-item input[type="email"]:focus {
   border-color: #3b82f6;
   background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-item input[type="text"]:hover,
+.form-item input[type="email"]:hover {
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+/* 비활성화된 입력 필드 */
+.form-item input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(148, 163, 184, 0.1) !important;
+  color: #94a3b8 !important;
+}
+
+/* 이메일 검증 에러 스타일 */
+.form-item input.email-error {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
 /* =======================================================
@@ -86,93 +128,365 @@
   margin-top: 2rem;
   display: flex;
   gap: 1rem;
+  justify-content: flex-start;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  min-width: 120px;
+  outline: none;
 }
 
 .btn.save-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  background: #10b981;
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .btn.save-btn:hover {
-  background: #059669;
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
 }
 
 .btn.cancel-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .btn.cancel-btn:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
 }
 
-/* 라이트 모드 색상 반전 */
+/* 비활성화된 버튼 */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #6b7280 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* =======================================================
+   로딩 스피너
+   ======================================================= */
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =======================================================
+   에러 폴백 스타일
+   ======================================================= */
+.error-fallback {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.error-fallback h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.error-fallback p {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  color: #94a3b8;
+}
+
+/* 성공 메시지 스타일 */
+.success-message {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  color: #10b981;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* =======================================================
+   라이트 모드 스타일
+   ======================================================= */
+body.light-mode .content-header h1 {
+  background: linear-gradient(135deg, #1f2937, #6b7280);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.light-mode .breadcrumb {
+  color: #6b7280;
+}
+
 body.light-mode .card {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.2);
+  backdrop-filter: blur(20px);
+}
+
+body.light-mode .card:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.light-mode .form-item {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .form-item:hover {
+  border-bottom-color: rgba(59, 130, 246, 0.4);
 }
 
 body.light-mode .form-item label {
   color: #1f2937;
 }
 
-body.light-mode .form-item input {
+body.light-mode .form-item input[type="text"],
+body.light-mode .form-item input[type="email"] {
   background: rgba(240, 240, 240, 0.8);
   color: #1f2937;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-body.light-mode .form-item input:focus {
+body.light-mode .form-item input[type="text"]:focus,
+body.light-mode .form-item input[type="email"]:focus {
   background: rgba(240, 240, 240, 1);
   color: #1f2937;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+body.light-mode .form-item input[type="text"]:hover,
+body.light-mode .form-item input[type="email"]:hover {
+  border-color: rgba(148, 163, 184, 0.5);
+}
+
+body.light-mode .form-item input:disabled {
+  background: rgba(148, 163, 184, 0.2) !important;
+  color: #6b7280 !important;
+}
+
+body.light-mode .form-item input.email-error {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+body.light-mode .btn.save-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
 }
 
 body.light-mode .btn.save-btn:hover {
-  background: #059669;
-}
-body.light-mode .btn.cancel-btn:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #059669, #047857);
 }
 
-/* 반응형 */
+body.light-mode .btn.cancel-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+body.light-mode .btn.cancel-btn:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+body.light-mode .loading-spinner {
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  border-top: 2px solid #3b82f6;
+}
+
+body.light-mode .error-fallback {
+  color: #6b7280;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+body.light-mode .error-fallback h3 {
+  color: #ef4444;
+}
+
+body.light-mode .error-fallback p {
+  color: #6b7280;
+}
+
+body.light-mode .success-message {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #059669;
+}
+
+/* =======================================================
+   반응형 디자인
+   ======================================================= */
 @media (max-width: 768px) {
+  .content-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .breadcrumb {
+    font-size: 0.85rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
   .form-item {
     grid-template-columns: 1fr; /* 세로 정렬 */
     gap: 0.5rem;
+    margin-bottom: 1.25rem;
   }
+  
+  .form-item label {
+    margin-bottom: 0.25rem;
+  }
+  
+  .form-item input[type="text"],
+  .form-item input[type="email"] {
+    max-width: 100%;
+  }
+  
   .action-buttons {
     flex-direction: column;
+    gap: 0.75rem;
   }
+  
   .btn {
     width: 100%;
     text-align: center;
+    min-width: auto;
   }
 }
+
 @media (max-width: 480px) {
   .content-header h1 {
     font-size: 1.5rem;
   }
+  
   .breadcrumb {
     font-size: 0.8rem;
   }
+  
+  .card {
+    padding: 1rem;
+  }
+  
   .form-item {
     margin-bottom: 1rem;
+    padding: 0.5rem 0;
   }
+  
+  .form-item label {
+    font-size: 0.9rem;
+  }
+  
+  .form-item input[type="text"],
+  .form-item input[type="email"] {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+  
   .action-buttons {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .error-fallback {
+    padding: 2rem 1rem;
+  }
+  
+  .error-fallback h3 {
+    font-size: 1.25rem;
+  }
+  
+  .error-fallback p {
+    font-size: 0.9rem;
+  }
+}
+
+/* =======================================================
+   접근성 및 사용자 경험 개선
+   ======================================================= */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .loading-spinner {
+    animation: none;
+  }
+}
+
+/* 포커스 표시 개선 */
+.btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.form-item input:focus-visible {
+  outline: none; /* box-shadow로 처리됨 */
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  .form-item input[type="text"],
+  .form-item input[type="email"] {
+    border-width: 2px;
+  }
+  
+  .btn {
+    border: 2px solid transparent;
+  }
+  
+  .btn.save-btn {
+    border-color: #10b981;
+  }
+  
+  .btn.cancel-btn {
+    border-color: #ef4444;
   }
 }

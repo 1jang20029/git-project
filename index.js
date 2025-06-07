@@ -1012,37 +1012,61 @@ async function showProfile() {
     return;
   }
 
-  const container = document.getElementById('profileContentPane');
-  if (container) {
-    container.innerHTML = `
-      <div style="text-align:center; padding:2rem;">
-        <div class="loading-spinner"></div>
-        <span style="margin-left:0.5rem;">계정 정보를 불러오는 중...</span>
-      </div>
-    `;
-  }
+  // 먼저 컨텐츠를 보여줌
   showContent('profile');
+  
+  const container = document.getElementById('profileContentPane');
+  if (!container) {
+    console.error('profileContentPane 요소를 찾을 수 없습니다.');
+    return;
+  }
+
+  // 로딩 상태 표시
+  container.innerHTML = `
+    <div style="text-align:center; padding:2rem;">
+      <div class="loading-spinner"></div>
+      <span style="margin-left:0.5rem;">계정 정보를 불러오는 중...</span>
+    </div>
+  `;
 
   try {
     const res = await fetch('account-edit.html');
     if (!res.ok) throw new Error('Account 편집 화면 로드 실패');
     const html = await res.text();
-    if (container) container.innerHTML = html;
+    
+    container.innerHTML = html;
+    
+    // account-edit.js 스크립트를 동적으로 로드
+    const script = document.createElement('script');
+    script.src = 'account-edit.js';
+    script.defer = true;
+    
+    // 스크립트 로드 완료 후 실행
+    script.onload = function() {
+      console.log('account-edit.js 로드 완료');
+      checkUserStatus();
+      updateTimetable();
+    };
+    
+    script.onerror = function() {
+      console.error('account-edit.js 로드 실패');
+      showMessage('계정 편집 스크립트를 불러올 수 없습니다.', 'error');
+    };
+    
+    document.head.appendChild(script);
+    
   } catch (err) {
     console.error(err);
-    if (container) {
-      container.innerHTML = `
-        <div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>계정 편집 화면을 불러올 수 없습니다</p>
-        </div>
-      `;
-    }
-    return;
+    container.innerHTML = `
+      <div class="error-fallback">
+        <h3>⚠️ 오류 발생</h3>
+        <p>계정 편집 화면을 불러올 수 없습니다</p>
+        <button onclick="showContent('home')" class="btn btn-primary" style="margin-top: 1rem;">
+          홈으로 돌아가기
+        </button>
+      </div>
+    `;
   }
-
-  checkUserStatus();
-  updateTimetable();
 }
 
 // ─────────── handleLogout: 로그아웃 처리 ───────────
