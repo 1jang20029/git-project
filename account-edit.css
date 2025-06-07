@@ -1,4 +1,21 @@
-/* account-edit.css */
+/* account-edit.css (FOUC 방지 버전) */
+
+/* =======================================================
+   FOUC 방지를 위한 기본 설정
+   ======================================================= */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0a0e27;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* CSS 로드 완료 후 부드럽게 표시 */
+body.loaded {
+  opacity: 1;
+}
 
 /* =======================================================
    공통 콘텐츠 헤더 스타일
@@ -34,8 +51,18 @@
 .card {
   padding: 2rem;
   background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
   margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 /* =======================================================
@@ -48,6 +75,7 @@
   margin-bottom: 1.5rem;
   padding: 0.75rem 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  transition: all 0.3s ease;
 }
 
 .form-item:last-child {
@@ -55,11 +83,27 @@
   margin-bottom: 0;
 }
 
+.form-item:hover {
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0 -1rem 1.5rem -1rem;
+}
+
+.form-item:last-child:hover {
+  margin-bottom: -1rem;
+}
+
 .form-item label {
   color: #f1f5f9;
   font-size: 1rem;
   font-weight: 600;
   width: 140px;
+  transition: color 0.3s ease;
+}
+
+.form-item:hover label {
+  color: #3b82f6;
 }
 
 .form-item input[type="text"],
@@ -72,6 +116,7 @@
   color: #f1f5f9;
   font-size: 1rem;
   transition: all 0.3s ease;
+  margin-left: 1rem;
 }
 
 .form-item input[type="text"]:focus,
@@ -79,6 +124,14 @@
   outline: none;
   border-color: #3b82f6;
   background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: scale(1.02);
+}
+
+.form-item input[type="text"]:hover,
+.form-item input[type="email"]:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(30, 41, 59, 0.9);
 }
 
 /* =======================================================
@@ -88,53 +141,108 @@
   margin-top: 2rem;
   display: flex;
   gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+/* 공통 버튼 스타일 */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
 }
 
 /* 저장 버튼 스타일 */
 .btn.save-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  background: #10b981;
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
 .btn.save-btn:hover {
-  background: #059669;
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.btn.save-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
 /* 취소 버튼 스타일 */
 .btn.cancel-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
 
 .btn.cancel-btn:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.btn.cancel-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
 
 /* -----------------------------------------------------------------------
    라이트 모드 적용 시 색상 반전
    - index.js에서 body.light-mode 클래스를 제어함
    ----------------------------------------------------------------------- */
+body.light-mode {
+  background: #ffffff;
+  color: #000000;
+}
+
 body.light-mode .card {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .card:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .content-header h1 {
+  background: linear-gradient(135deg, #1f2937, #6b7280);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.light-mode .breadcrumb {
+  color: #6b7280;
+}
+
+body.light-mode .form-item {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .form-item:hover {
+  background: rgba(59, 130, 246, 0.05);
 }
 
 body.light-mode .form-item label {
   color: #1f2937;
+}
+
+body.light-mode .form-item:hover label {
+  color: #3b82f6;
 }
 
 body.light-mode .form-item input[type="text"],
@@ -148,24 +256,18 @@ body.light-mode .form-item input[type="text"]:focus,
 body.light-mode .form-item input[type="email"]:focus {
   background: rgba(240, 240, 240, 1);
   color: #1f2937;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-body.light-mode .btn.save-btn {
-  background: #10b981;
-  color: white;
+body.light-mode .form-item input[type="text"]:hover,
+body.light-mode .form-item input[type="email"]:hover {
+  background: rgba(240, 240, 240, 1);
+  border-color: rgba(59, 130, 246, 0.5);
 }
 
-body.light-mode .btn.save-btn:hover {
-  background: #059669;
-}
-
-body.light-mode .btn.cancel-btn {
-  background: #ef4444;
-  color: white;
-}
-
-body.light-mode .btn.cancel-btn:hover {
-  background: #dc2626;
+body.light-mode .action-buttons {
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 /* -----------------------------------------------------------------------
@@ -178,7 +280,17 @@ body.light-mode .btn.cancel-btn:hover {
     gap: 0.5rem;
   }
 
+  .form-item:hover {
+    margin: 0 -1rem 1.5rem -1rem;
+  }
+
   .form-item label {
+    width: 100%;
+  }
+
+  .form-item input[type="text"],
+  .form-item input[type="email"] {
+    margin-left: 0;
     width: 100%;
   }
 
@@ -194,6 +306,10 @@ body.light-mode .btn.cancel-btn:hover {
 }
 
 @media (max-width: 480px) {
+  .card {
+    padding: 1.5rem;
+  }
+
   .content-header h1 {
     font-size: 1.5rem;
   }
@@ -208,5 +324,36 @@ body.light-mode .btn.cancel-btn:hover {
 
   .action-buttons {
     margin-top: 1rem;
+  }
+}
+
+/* -----------------------------------------------------------------------
+   애니메이션 및 트랜지션 최적화
+   ----------------------------------------------------------------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* 접근성을 위한 모션 감소 설정 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  body {
+    transition: none;
   }
 }
