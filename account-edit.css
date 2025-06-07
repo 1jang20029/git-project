@@ -62,9 +62,11 @@
   width: 140px;
 }
 
+/* 입력 박스 최대 너비 제한 추가 */
 .form-item input[type="text"],
 .form-item input[type="email"] {
   flex: 1;
+  max-width: 300px;
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
@@ -126,7 +128,6 @@
 
 /* -----------------------------------------------------------------------
    라이트 모드 적용 시 색상 반전
-   - index.js에서 body.light-mode 클래스를 제어함
    ----------------------------------------------------------------------- */
 body.light-mode .card {
   background: rgba(255, 255, 255, 0.9);
