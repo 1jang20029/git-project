@@ -1,3 +1,10 @@
+// ─────────── 정적으로 남아 있는 '내 계정' old UI 클리어 ───────────
+const _profilePane = document.getElementById('profileContentPane');
+if (_profilePane) {
+  _profilePane.innerHTML = '';
+  _profilePane.style.display = 'none';
+}
+
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
   const savedMode = localStorage.getItem('lightMode');
