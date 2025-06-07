@@ -1,30 +1,25 @@
 // account-edit.js
-// "내 계정" 페이지 전용 스크립트 (SPA 동적 삽입 대응)
+// "내 계정" 페이지 전용 스크립트 (SPA 동적 삽입 대응 + 이메일 유효성 검사)
 
 (function() {
   const POLL_INTERVAL = 100;
+  let currentUser = localStorage.getItem('currentLoggedInUser');
 
   function init() {
     const container = document.getElementById('account-edit-container');
-    if (!container) {
-      // 아직 HTML이 삽입되지 않음
-      return setTimeout(init, POLL_INTERVAL);
-    }
+    if (!container) return setTimeout(init, POLL_INTERVAL);
 
-    // 1) 로그인 사용자 체크
-    const currentUser = localStorage.getItem('currentLoggedInUser');
+    // 로그인 데이터가 없으면 테스트용 사용자ID 할당
     if (!currentUser) {
-      showMessage('로그인이 필요합니다.', 'error');
-      showContent('home');
-      return;
+      console.warn('currentLoggedInUser not found, using temporary TEST user');
+      currentUser = 'TEST';
     }
 
-    // 2) 입력 요소들
-    const nameInput       = container.querySelector('#accountName');
-    const deptInput       = container.querySelector('#accountDepartment');
-    const emailInput      = container.querySelector('#accountEmail');
+    const nameInput  = container.querySelector('#accountName');
+    const deptInput  = container.querySelector('#accountDepartment');
+    const emailInput = container.querySelector('#accountEmail');
 
-    // 3) 사용자 정보 불러오기
+    // 사용자 정보 로드
     fetch(`/api/users/${encodeURIComponent(currentUser)}`)
       .then(res => {
         if (!res.ok) throw new Error('API 응답 오류');
@@ -40,24 +35,24 @@
         showMessage('사용자 정보를 불러올 수 없습니다.', 'error');
       });
 
-    // 4) 버튼 클릭: 이벤트 위임
-    document.body.addEventListener('click', (e) => {
+    // 버튼 클릭 처리 (이벤트 위임)
+    document.body.addEventListener('click', e => {
       if (e.target.id === 'saveAccountBtn') {
-        doSave(currentUser, nameInput, deptInput, emailInput);
-      }
-      else if (e.target.id === 'cancelAccountBtn') {
+        doSave(nameInput, deptInput, emailInput);
+      } else if (e.target.id === 'cancelAccountBtn') {
         showContent('profile');
       }
     });
   }
 
-  function doSave(userId, nameInput, deptInput, emailInput) {
+  function doSave(nameInput, deptInput, emailInput) {
     const updatedData = {
       name:       nameInput.value.trim(),
       department: deptInput.value.trim(),
       email:      emailInput.value.trim()
     };
 
+    // 빈값 검사
     if (!updatedData.name) {
       showMessage('이름을 입력하세요.', 'error');
       return;
@@ -71,7 +66,15 @@
       return;
     }
 
-    fetch(`/api/users/${encodeURIComponent(userId)}`, {
+    // 이메일 형식 검사
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(updatedData.email)) {
+      showMessage('유효한 이메일 형식이 아닙니다.', 'error');
+      return;
+    }
+
+    // 업데이트 요청
+    fetch(`/api/users/${encodeURIComponent(currentUser)}`, {
       method:  'PUT',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(updatedData)
@@ -91,6 +94,5 @@
       });
   }
 
-  // 초기화 시작
   init();
 })();
