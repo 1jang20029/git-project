@@ -206,7 +206,7 @@
             name: '홍길동',
             department: '',
             departmentName: '',
-            email: `${currentUser}@yeonsung.ac.kr`
+            email: ''
           };
           
           console.log('🎭 목업 데이터 사용:', mockUser);
