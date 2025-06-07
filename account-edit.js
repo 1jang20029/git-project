@@ -1,38 +1,9 @@
 // =============================================================================
-// account-edit.js (FOUC 방지 버전)
+// account-edit.js
 // "내 계정" 페이지 전용 스크립트 (비밀번호 변경 기능 제거 버전)
 // 이 스크립트는 index.js가 account-edit.html을 fetch하여
 // <div id="profileContentPane">에 삽입한 뒤 실행됩니다.
 // =============================================================================
-
-// FOUC 방지를 위한 즉시 실행 함수
-(function() {
-  // CSS 로드 확인 및 페이지 표시
-  function showPageWhenReady() {
-    // CSS 파일이 로드되었는지 확인
-    const cssLoaded = Array.from(document.styleSheets).some(sheet => {
-      try {
-        return sheet.href && sheet.href.includes('account-edit.css');
-      } catch (e) {
-        return false;
-      }
-    });
-    
-    if (cssLoaded || document.styleSheets.length > 0) {
-      document.body.classList.add('loaded');
-    } else {
-      // CSS가 아직 로드되지 않았다면 잠시 후 다시 확인
-      setTimeout(showPageWhenReady, 10);
-    }
-  }
-  
-  // DOM이 준비되자마자 실행
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', showPageWhenReady);
-  } else {
-    showPageWhenReady();
-  }
-})();
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1) 현재 로그인된 사용자 ID 가져오기
@@ -71,9 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // 사용자 데이터 로드 함수
   // ===================================================================
   function loadUserData() {
-    // 로딩 상태 표시
-    setLoadingState(true);
-
     fetch(`/api/users/${encodeURIComponent(currentUser)}`)
       .then((res) => {
         if (!res.ok) throw new Error('API 응답 오류');
@@ -84,13 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         nameInput.value       = user.name || '';
         departmentInput.value = user.departmentName || '';
         emailInput.value      = user.email || '';
-        
-        // 로딩 상태 해제
-        setLoadingState(false);
       })
       .catch((err) => {
         console.error('사용자 정보 로드 실패:', err);
-        setLoadingState(false);
         if (typeof showMessage === 'function') {
           showMessage('사용자 정보를 불러올 수 없습니다.', 'error');
         }
@@ -124,11 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
         handleCancel();
       }
     });
-
-    // 입력 필드 실시간 유효성 검사
-    nameInput.addEventListener('input', validateName);
-    departmentInput.addEventListener('input', validateDepartment);
-    emailInput.addEventListener('input', validateEmail);
   }
 
   // ===================================================================
@@ -142,12 +101,41 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 입력 유효성 검사
-    if (!validateAllInputs(updatedData)) {
+    if (!updatedData.name) {
+      if (typeof showMessage === 'function') {
+        showMessage('이름을 입력하세요.', 'error');
+      }
+      nameInput.focus();
+      return;
+    }
+    if (!updatedData.department) {
+      if (typeof showMessage === 'function') {
+        showMessage('학과를 입력하세요.', 'error');
+      }
+      departmentInput.focus();
+      return;
+    }
+    if (!updatedData.email) {
+      if (typeof showMessage === 'function') {
+        showMessage('이메일을 입력하세요.', 'error');
+      }
+      emailInput.focus();
+      return;
+    }
+
+    // 이메일 형식 검사
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(updatedData.email)) {
+      if (typeof showMessage === 'function') {
+        showMessage('올바른 이메일 형식을 입력하세요.', 'error');
+      }
+      emailInput.focus();
       return;
     }
 
     // 저장 중 상태로 변경
-    setSavingState(true);
+    saveBtn.disabled = true;
+    saveBtn.textContent = '저장 중...';
 
     // 사용자 기본 정보 업데이트 (이름/학과/이메일)
     fetch(`/api/users/${encodeURIComponent(currentUser)}`, {
@@ -160,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return res.json();
       })
       .then(() => {
-        setSavingState(false);
         if (typeof showMessage === 'function') {
           showMessage('계정 정보가 저장되었습니다.', 'success');
         }
@@ -176,10 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch((err) => {
         console.error('계정 업데이트 오류:', err);
-        setSavingState(false);
         if (typeof showMessage === 'function') {
           showMessage(err.message || '계정 정보를 저장하는 데 실패했습니다.', 'error');
         }
+      })
+      .finally(() => {
+        // 저장 상태 해제
+        saveBtn.disabled = false;
+        saveBtn.textContent = '저장';
       });
   }
 
@@ -189,162 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleCancel() {
     if (typeof showContent === 'function') {
       showContent('profile');
-    }
-  }
-
-  // ===================================================================
-  // 유효성 검사 함수들
-  // ===================================================================
-  function validateName() {
-    const name = nameInput.value.trim();
-    if (name.length === 0) {
-      setFieldError(nameInput, '이름을 입력하세요.');
-      return false;
-    } else if (name.length < 2) {
-      setFieldError(nameInput, '이름은 2자 이상 입력하세요.');
-      return false;
-    } else {
-      clearFieldError(nameInput);
-      return true;
-    }
-  }
-
-  function validateDepartment() {
-    const department = departmentInput.value.trim();
-    if (department.length === 0) {
-      setFieldError(departmentInput, '학과를 입력하세요.');
-      return false;
-    } else {
-      clearFieldError(departmentInput);
-      return true;
-    }
-  }
-
-  function validateEmail() {
-    const email = emailInput.value.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (email.length === 0) {
-      setFieldError(emailInput, '이메일을 입력하세요.');
-      return false;
-    } else if (!emailRegex.test(email)) {
-      setFieldError(emailInput, '올바른 이메일 형식을 입력하세요.');
-      return false;
-    } else {
-      clearFieldError(emailInput);
-      return true;
-    }
-  }
-
-  function validateAllInputs(data) {
-    const nameValid = validateName();
-    const departmentValid = validateDepartment();
-    const emailValid = validateEmail();
-    
-    if (!nameValid) {
-      nameInput.focus();
-      if (typeof showMessage === 'function') {
-        showMessage('이름을 올바르게 입력하세요.', 'error');
-      }
-      return false;
-    }
-    if (!departmentValid) {
-      departmentInput.focus();
-      if (typeof showMessage === 'function') {
-        showMessage('학과를 입력하세요.', 'error');
-      }
-      return false;
-    }
-    if (!emailValid) {
-      emailInput.focus();
-      if (typeof showMessage === 'function') {
-        showMessage('올바른 이메일을 입력하세요.', 'error');
-      }
-      return false;
-    }
-    
-    return true;
-  }
-
-  // ===================================================================
-  // UI 상태 관리 함수들
-  // ===================================================================
-  function setLoadingState(loading) {
-    const inputs = [nameInput, departmentInput, emailInput];
-    const buttons = [saveBtn, cancelBtn];
-    
-    if (loading) {
-      inputs.forEach(input => {
-        input.disabled = true;
-        input.style.opacity = '0.7';
-      });
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = '0.7';
-      });
-    } else {
-      inputs.forEach(input => {
-        input.disabled = false;
-        input.style.opacity = '1';
-      });
-      buttons.forEach(btn => {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-      });
-    }
-  }
-
-  function setSavingState(saving) {
-    if (saving) {
-      saveBtn.disabled = true;
-      saveBtn.textContent = '저장 중...';
-      saveBtn.style.opacity = '0.7';
-      cancelBtn.disabled = true;
-    } else {
-      saveBtn.disabled = false;
-      saveBtn.textContent = '저장';
-      saveBtn.style.opacity = '1';
-      cancelBtn.disabled = false;
-    }
-  }
-
-  function setFieldError(field, message) {
-    // 기존 에러 메시지 제거
-    clearFieldError(field);
-    
-    // 필드에 에러 스타일 적용
-    field.style.borderColor = '#ef4444';
-    field.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-    
-    // 에러 메시지 요소 생성 및 추가
-    const errorElement = document.createElement('div');
-    errorElement.className = 'field-error-message';
-    errorElement.textContent = message;
-    errorElement.style.cssText = `
-      color: #ef4444;
-      font-size: 0.8rem;
-      margin-top: 0.25rem;
-      margin-left: 1rem;
-    `;
-    
-    const formItem = field.closest('.form-item');
-    if (formItem) {
-      formItem.appendChild(errorElement);
-    }
-  }
-
-  function clearFieldError(field) {
-    // 필드 스타일 초기화
-    field.style.borderColor = '';
-    field.style.backgroundColor = '';
-    
-    // 에러 메시지 제거
-    const formItem = field.closest('.form-item');
-    if (formItem) {
-      const errorMessage = formItem.querySelector('.field-error-message');
-      if (errorMessage) {
-        errorMessage.remove();
-      }
     }
   }
 });
