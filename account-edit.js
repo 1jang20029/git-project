@@ -76,4 +76,5 @@ saveBtn.addEventListener('click', () => {
 // 5) "취소" 버튼 클릭 시
 cancelBtn.addEventListener('click', () => {
   showContent('profile');
+  console.log("최소가 완료되었습니다.")
 });
