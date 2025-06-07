@@ -1,75 +1,78 @@
+<!-- account-edit.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>계정 수정 데모</title>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f0f2f5; }
-    .card { background: #fff; padding: 2rem; border-radius: 8px; max-width: 500px; margin: auto; }
-    .form-item { display: flex; align-items: center; margin-bottom: 1.5rem; }
-    .form-item label { width: 80px; font-weight: 600; }
-    .form-item input { flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
-    .error-message { color: #e00; font-size: 0.9rem; margin-top: 0.25rem; margin-left: 80px; }
-    .action-buttons { text-align: right; }
-    .action-buttons button { padding: 0.5rem 1rem; margin-left: 0.5rem; }
-    .save { background: #10b981; color: #fff; border: none; border-radius: 4px; }
-    .cancel { background: #ef4444; color: #fff; border: none; border-radius: 4px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 계정 – 연성대학교 스마트 캠퍼스</title>
+  <!-- account-edit.css 적용 -->
+  <link rel="stylesheet" href="account-edit.css" />
 </head>
 <body>
-  <div class="card">
-    <h2>내 계정 수정</h2>
-
-    <div class="form-item">
-      <label for="name">이름</label>
-      <input id="name" type="text" value="홍길동"/>
-    </div>
-
-    <div class="form-item">
-      <label for="dept">학과</label>
-      <input id="dept" type="text" value="컴퓨터공학과"/>
-    </div>
-
-    <div class="form-item">
-      <label for="email">이메일</label>
-      <input id="email" type="text" placeholder="user@example.com"/>
-    </div>
-    <div class="error-message" id="emailError"></div>
-
-    <div class="action-buttons">
-      <button id="cancelBtn" class="cancel">취소</button>
-      <button id="saveBtn" class="save">저장</button>
+  <!-- =======================================================
+       헤더: 페이지 타이틀 + Breadcrumb
+     ======================================================= -->
+  <div class="content-header">
+    <div>
+      <h1>내 계정</h1>
+      <div class="breadcrumb">
+        <span>홈</span>
+        <span>›</span>
+        <span>내 계정</span>
+      </div>
     </div>
   </div>
 
-  <script>
-    const emailInput = document.getElementById('email');
-    const emailError = document.getElementById('emailError');
-    const saveBtn    = document.getElementById('saveBtn');
-    const cancelBtn  = document.getElementById('cancelBtn');
+  <!-- =======================================================
+       카드 스타일 컨테이너: 입력 폼 전체를 감쌈
+     ======================================================= -->
+  <div id="account-edit-container" class="card">
+    <!-- --------------------------------------------------
+         이름 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="accountName">이름</label>
+      <input
+        type="text"
+        id="accountName"
+        placeholder="홍길동"
+      />
+    </div>
 
-    // 이메일 입력 시 에러 클리어
-    emailInput.addEventListener('input', () => {
-      emailError.textContent = '';
-    });
+    <!-- --------------------------------------------------
+         학과 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="accountDepartment">학과</label>
+      <input
+        type="text"
+        id="accountDepartment"
+        placeholder="컴퓨터공학과"
+      />
+    </div>
 
-    // 저장 버튼 동작
-    saveBtn.addEventListener('click', () => {
-      const email = emailInput.value.trim();
-      if (!email.includes('@')) {
-        emailError.textContent = '유효한 이메일 형식이 아닙니다.';
-        emailInput.focus();
-      } else {
-        emailError.textContent = '';
-        alert('저장 성공!');  // 실제 적용 시 API 호출로 대체
-      }
-    });
+    <!-- --------------------------------------------------
+         이메일 입력 필드
+       -------------------------------------------------- -->
+    <div class="form-item">
+      <label for="accountEmail">이메일</label>
+      <input
+        type="email"
+        id="accountEmail"
+        placeholder="user@example.com"
+      />
+    </div>
 
-    // 취소 버튼 동작
-    cancelBtn.addEventListener('click', () => {
-      alert('취소 클릭!');  // 실제 적용 시 화면 전환 로직으로 대체
-    });
-  </script>
+    <!-- --------------------------------------------------
+         저장 / 취소 버튼
+       -------------------------------------------------- -->
+    <div class="action-buttons">
+      <button id="saveAccountBtn" type="button" class="btn save-btn">저장</button>
+      <button id="cancelAccountBtn" type="button" class="btn cancel-btn">취소</button>
+    </div>
+  </div>
+
+  <!-- account-edit.js 로드 -->
+  <script src="account-edit.js" defer></script>
 </body>
 </html>
