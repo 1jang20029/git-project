@@ -1,4 +1,3 @@
-
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
   const savedMode = localStorage.getItem('lightMode');
@@ -39,9 +38,11 @@ let autoLogoutTimer = null;
 
 // ─────────── 최초 로드 시 실행할 로직 ───────────
 document.addEventListener('DOMContentLoaded', () => {
-  // URL hash에 따라 초기 화면 결정
+  // URL hash에 따라 초기 화면 결정 (profile은 showProfile 호출)
   const hash = window.location.hash.slice(1);
-  if (hash && document.getElementById(hash + 'Content')) {
+  if (hash === 'profile') {
+    showProfile();
+  } else if (hash && document.getElementById(hash + 'Content')) {
     showContent(hash);
   } else {
     showContent('home');
@@ -88,6 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetAutoLogoutTimer();
   });
+});
+
+// ─────────── 해시가 바뀔 때에도 profile hash면 showProfile() 호출 ───────────
+window.addEventListener('hashchange', () => {
+  const newHash = window.location.hash.slice(1);
+  if (newHash === 'profile') {
+    showProfile();
+  }
 });
 
 // ─────────── 네트워크 상태 변화 감지 ───────────
@@ -655,9 +664,6 @@ function renderLectureReviewsMain(popular, recent) {
   const recEl = document.getElementById('recentReviews');
   if (!popEl || !recEl) return;
 
-  popEl.innerHTML = '';
-  recEl.innerHTML = '';
-
   popular.forEach((r) => {
     if (!isCategoryEnabled('강의평가')) return;
     const item = document.createElement('div');
@@ -696,9 +702,6 @@ function renderLectureReviewsMain(popular, recent) {
     recEl.appendChild(item);
   });
 }
-
-// ─────────── renderLectureReviews: (기존에 사용되던 메인 페이지용) ───────────
-//    메인 페이지의 별도 섹션이 아닌, 동적 로드된 lecture-review.html에서 사용되지 않음
 
 // ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
