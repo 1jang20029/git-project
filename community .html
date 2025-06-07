@@ -1,104 +1,180 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>커뮤니티</title>
-    <link rel="stylesheet" href="styles.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>커뮤니티</title>
+ <link rel="stylesheet" href="community.css">
 </head>
 <body>
-    <div id="app">
-        <header class="header">
-            <h1>커뮤니티</h1>
-            <nav class="nav">
-                <button id="realtime-btn" class="nav-btn active">실시간 게시글</button>
-                <button id="popular-btn" class="nav-btn">인기 게시글</button>
-            </nav>
-        </header>
+ <!-- 커뮤니티 메인 헤더 -->
+ <div id="content-header-community">
+   <h1 id="title-community">커뮤니티</h1>
+   <div class="breadcrumb">
+     <span>홈</span>
+     <span>›</span>
+     <span>커뮤니티</span>
+   </div>
+ </div>
 
-        <main class="main">
-            <!-- 실시간 게시글 섹션 -->
-            <section id="realtime-section" class="content-section active">
-                <div class="section-header">
-                    <h2>실시간 게시글</h2>
-                    <button id="refresh-realtime" class="refresh-btn">새로고침</button>
-                </div>
-                <div class="loading" id="realtime-loading">
-                    <div class="spinner"></div>
-                    <span>로딩 중...</span>
-                </div>
-                <div class="posts-container" id="realtime-posts">
-                    <!-- 실시간 게시글이 여기에 동적으로 추가됩니다 -->
-                </div>
-                <div class="no-posts" id="realtime-no-posts" style="display: none;">
-                    <p>게시글이 없습니다.</p>
-                </div>
-            </section>
+ <!-- 커뮤니티 대시보드 그리드 -->
+ <div id="dashboardGrid-community">
+   <!-- 실시간 게시글 카드 -->
+   <div id="live-posts-card">
+     <div id="card-header-live-posts">
+       <h3 id="card-title-live-posts">실시간 게시글</h3>
+       <div class="card-actions">
+         <button id="refresh-live-posts" class="refresh-btn" onclick="loadRealtimePosts()">🔄</button>
+         <span id="card-icon-live-posts">💬</span>
+       </div>
+     </div>
+     <div id="live-posts-loading" class="loading-state">
+       <div class="loading-spinner"></div>
+       <span>실시간 게시글을 불러오는 중...</span>
+     </div>
+     <div id="live-posts-content"></div>
+     <div id="live-posts-empty" class="empty-state" style="display: none;">
+       <h3>📝 게시글 없음</h3>
+       <p>아직 작성된 게시글이 없습니다</p>
+     </div>
+   </div>
 
-            <!-- 인기 게시글 섹션 -->
-            <section id="popular-section" class="content-section">
-                <div class="section-header">
-                    <h2>인기 게시글</h2>
-                    <select id="popular-period" class="period-select">
-                        <option value="today">오늘</option>
-                        <option value="week">이번 주</option>
-                        <option value="month">이번 달</option>
-                    </select>
-                </div>
-                <div class="loading" id="popular-loading">
-                    <div class="spinner"></div>
-                    <span>로딩 중...</span>
-                </div>
-                <div class="posts-container" id="popular-posts">
-                    <!-- 인기 게시글이 여기에 동적으로 추가됩니다 -->
-                </div>
-                <div class="no-posts" id="popular-no-posts" style="display: none;">
-                    <p>게시글이 없습니다.</p>
-                </div>
-            </section>
-        </main>
+   <!-- 인기 게시글 카드 -->
+   <div id="hot-posts-card">
+     <div id="card-header-hot-posts">
+       <h3 id="card-title-hot-posts">인기 게시글</h3>
+       <div class="card-actions">
+         <select id="popular-period-select" onchange="loadPopularPosts(this.value)">
+           <option value="today">오늘</option>
+           <option value="week">이번 주</option>
+           <option value="month">이번 달</option>
+         </select>
+         <span id="card-icon-hot-posts">🔥</span>
+       </div>
+     </div>
+     <div id="hot-posts-loading" class="loading-state">
+       <div class="loading-spinner"></div>
+       <span>인기 게시글을 불러오는 중...</span>
+     </div>
+     <div id="hot-posts-content"></div>
+     <div id="hot-posts-empty" class="empty-state" style="display: none;">
+       <h3>📈 인기 게시글 없음</h3>
+       <p>이 기간에는 인기 게시글이 없습니다</p>
+     </div>
+   </div>
+ </div>
 
-        <!-- 게시글 작성 플로팅 버튼 -->
-        <button id="write-post-btn" class="floating-btn">
-            <span>✏️</span>
-        </button>
+ <!-- 게시글 작성 플로팅 버튼 -->
+ <div id="floating-write-btn" onclick="openWritePostModal()">
+   ✏️
+ </div>
 
-        <!-- 게시글 작성 모달 -->
-        <div id="write-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>게시글 작성</h3>
-                    <button id="close-modal" class="close-btn">&times;</button>
-                </div>
-                <form id="post-form" class="post-form">
-                    <input type="text" id="post-title" placeholder="제목을 입력하세요" required>
-                    <textarea id="post-content" placeholder="내용을 입력하세요" required></textarea>
-                    <div class="form-actions">
-                        <button type="button" id="cancel-btn" class="cancel-btn">취소</button>
-                        <button type="submit" id="submit-btn" class="submit-btn">작성</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+ <!-- 게시글 작성 모달 -->
+ <div id="write-post-modal" class="modal-overlay">
+   <div class="modal-content">
+     <div class="modal-header">
+       <h3>게시글 작성</h3>
+       <button class="close-btn" onclick="closeWritePostModal()">&times;</button>
+     </div>
+     <form id="write-post-form" onsubmit="submitPost(event)">
+       <div class="form-group">
+         <label for="post-title">제목</label>
+         <input type="text" id="post-title" name="title" placeholder="제목을 입력하세요" required>
+       </div>
+       <div class="form-group">
+         <label for="post-content">내용</label>
+         <textarea id="post-content" name="content" placeholder="내용을 입력하세요" rows="6" required></textarea>
+       </div>
+       <div class="form-group">
+         <label for="post-category">카테고리</label>
+         <select id="post-category" name="category">
+           <option value="general">일반</option>
+           <option value="question">질문</option>
+           <option value="info">정보</option>
+           <option value="event">이벤트</option>
+         </select>
+       </div>
+       <div class="form-actions">
+         <button type="button" class="btn btn-secondary" onclick="closeWritePostModal()">취소</button>
+         <button type="submit" class="btn btn-primary">작성하기</button>
+       </div>
+     </form>
+   </div>
+ </div>
 
-        <!-- 게시글 상세 모달 -->
-        <div id="detail-modal" class="modal">
-            <div class="modal-content detail-modal-content">
-                <div class="modal-header">
-                    <button id="close-detail-modal" class="close-btn">&times;</button>
-                </div>
-                <div id="post-detail-content">
-                    <!-- 게시글 상세 내용이 여기에 동적으로 추가됩니다 -->
-                </div>
-            </div>
-        </div>
+ <!-- 게시글 상세보기 모달 -->
+ <div id="post-detail-modal" class="modal-overlay">
+   <div class="modal-content modal-large">
+     <div class="modal-header">
+       <h3 id="detail-post-title">게시글 제목</h3>
+       <button class="close-btn" onclick="closePostDetailModal()">&times;</button>
+     </div>
+     <div class="post-detail-info">
+       <div class="post-author">
+         <span class="author-avatar">👤</span>
+         <div class="author-details">
+           <span id="detail-post-author" class="author-name">작성자</span>
+           <span id="detail-post-date" class="post-date">2023-01-01</span>
+         </div>
+       </div>
+       <div class="post-stats">
+         <span class="stat-item">
+           <span class="stat-icon">👁️</span>
+           <span id="detail-post-views">0</span>
+         </span>
+         <span class="stat-item">
+           <span class="stat-icon">❤️</span>
+           <span id="detail-post-likes">0</span>
+         </span>
+         <span class="stat-item">
+           <span class="stat-icon">💬</span>
+           <span id="detail-post-comments">0</span>
+         </span>
+       </div>
+     </div>
+     <div class="post-detail-content">
+       <p id="detail-post-content">게시글 내용이 여기에 표시됩니다.</p>
+     </div>
+     <div class="post-actions">
+       <button class="action-btn like-btn" onclick="toggleLike()">
+         <span class="action-icon">❤️</span>
+         <span>좋아요</span>
+       </button>
+       <button class="action-btn share-btn" onclick="sharePost()">
+         <span class="action-icon">📤</span>
+         <span>공유</span>
+       </button>
+       <button class="action-btn report-btn" onclick="reportPost()">
+         <span class="action-icon">🚨</span>
+         <span>신고</span>
+       </button>
+     </div>
+     
+     <!-- 댓글 섹션 -->
+     <div class="comments-section">
+       <h4 class="comments-title">댓글 <span id="comments-count">0</span>개</h4>
+       
+       <!-- 댓글 작성 폼 -->
+       <form id="comment-form" class="comment-write-form" onsubmit="submitComment(event)">
+         <div class="comment-input-group">
+           <textarea id="comment-input" placeholder="댓글을 입력하세요..." rows="3" required></textarea>
+           <button type="submit" class="btn btn-primary btn-sm">댓글 작성</button>
+         </div>
+       </form>
+       
+       <!-- 댓글 목록 -->
+       <div id="comments-list" class="comments-list">
+         <!-- 댓글들이 동적으로 여기에 추가됩니다 -->
+       </div>
+     </div>
+   </div>
+ </div>
 
-        <!-- 알림 토스트 -->
-        <div id="toast" class="toast">
-            <span id="toast-message"></span>
-        </div>
-    </div>
+ <!-- 토스트 알림 -->
+ <div id="toast-notification" class="toast-notification">
+   <span id="toast-message"></span>
+ </div>
 
-    <script src="app.js"></script>
+ <script src="community.js"></script>
 </body>
 </html>
