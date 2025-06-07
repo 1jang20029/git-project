@@ -1,4 +1,3 @@
-/* 기본 리셋 & 폰트 */
 * {
   margin: 0;
   padding: 0;
@@ -6,23 +5,21 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* html, body를 flex 컨테이너로 해 중앙 배치 */
 html, body {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;        /* 세로 중앙 */
-  justify-content: center;    /* 가로 중앙 */
-  background-color: #0f152b;  /* 기존 #0a0e27보다 살짝 밝게 */
+  align-items: center;
+  justify-content: center;
+  background-color: #0f152b;
   color: #f1f5f9;
   overflow: hidden;
 }
 
-/* 로그인 박스 컨테이너 (가로 > 세로) */
 .container {
-  width: 80%;                 /* 화면 너비의 80% */
-  max-width: 600px;           /* 최대 600px */
-  height: 280px;              /* 고정 높이(너비 > 높이) */
+  width: 600px;
+  max-width: 90%;
+  min-height: 360px;
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
@@ -33,43 +30,39 @@ html, body {
   padding: 0 2rem;
 }
 
-/* 숨김 처리: 외부 header/logo */
 header,
 .university-logo,
 .slogan {
   display: none;
 }
 
-/* 입력 그룹 */
 .form-group {
   margin-bottom: 1rem;
 }
 
-/* 레이블 */
 .form-label {
+  display: block;
   font-size: 1rem;
   color: #94a3b8;
   margin-bottom: 0.5rem;
-  display: block;
 }
 
-/* 입력 필드 */
 .form-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: rgba(30, 41, 59, 0.85) !important;
-  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  color: #f1f5f9 !important;
+  color: #f1f5f9;
   font-size: 1rem;
   transition: border-color 0.3s;
 }
+
 .form-input:focus {
   outline: none;
   border-color: #3b82f6;
 }
 
-/* 로그인 버튼 */
 .login-button {
   width: 100%;
   padding: 0.75rem;
@@ -83,11 +76,11 @@ header,
   cursor: pointer;
   transition: transform 0.2s;
 }
+
 .login-button:hover {
   transform: translateY(-2px);
 }
 
-/* 옵션 링크 (아이디 저장, 찾기 등) */
 .login-options {
   display: flex;
   justify-content: space-between;
@@ -96,36 +89,38 @@ header,
   color: #94a3b8;
   margin-top: 0.5rem;
 }
+
 .login-options a {
   color: #3b82f6;
   text-decoration: none;
   font-weight: 500;
 }
 
-/* 구분선 (“또는”) */
 .separator {
   display: flex;
   align-items: center;
   margin: 1.5rem 0;
   color: #64748b;
 }
+
 .separator-line {
   flex: 1;
   height: 1px;
   background-color: rgba(148, 163, 184, 0.3);
 }
+
 .separator-text {
   padding: 0 1rem;
   font-size: 0.9rem;
 }
 
-/* 소셜 로그인 버튼 */
 .social-login {
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin-top: 0.5rem;
 }
+
 .social-button {
   width: 48px;
   height: 48px;
@@ -138,40 +133,53 @@ header,
   cursor: pointer;
   transition: all 0.2s;
 }
+
 .social-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-.naver-button { background: #03c75a; color: #ffffff; }
-.kakao-button { background: #fee500; color: #3a1d1d; }
-.google-button { background: #ffffff; color: #4285f4; border: 1px solid rgba(148, 163, 184, 0.3); }
 
-/* 회원가입 링크 */
+.naver-button {
+  background: #03c75a;
+  color: #ffffff;
+}
+
+.kakao-button {
+  background: #fee500;
+  color: #3a1d1d;
+}
+
+.google-button {
+  background: #ffffff;
+  color: #4285f4;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
 .register-link {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
   color: #94a3b8;
 }
+
 .register-link a {
   color: #3b82f6;
   font-weight: 600;
   text-decoration: none;
 }
 
-/* 모달 footer 숨김 처리 */
 .modal-footer {
   display: none !important;
 }
 
-/* 모바일 반응형 */
 @media (max-width: 480px) {
   .container {
     width: 90%;
-    height: auto;           /* 높이 자동으로 */
+    min-height: auto;
     padding: 1rem;
   }
-  .login-button, .form-input {
+  .login-button,
+  .form-input {
     font-size: 0.9rem;
   }
 }
