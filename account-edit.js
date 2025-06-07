@@ -1,97 +1,81 @@
 // account-edit.js
-// "내 계정" 페이지 전용 스크립트 — DOMContentLoaded 내에서 초기화
-
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('account-edit.js loaded');
-
-  // 1) 현재 로그인된 사용자 ID 가져오기
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
-    console.warn('currentLoggedInUser not found in localStorage');
     showMessage('로그인이 필요합니다.', 'error');
     showContent('home');
     return;
   }
 
-  // 2) DOM 요소 선택
   const nameInput       = document.getElementById('accountName');
-  const departmentInput = document.getElementById('accountDepartment');
+  const deptInput       = document.getElementById('accountDepartment');
   const emailInput      = document.getElementById('accountEmail');
   const saveBtn         = document.getElementById('saveAccountBtn');
   const cancelBtn       = document.getElementById('cancelAccountBtn');
 
-  // 3) 이메일 유효성 검사 정규식
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  // 4) API에서 사용자 정보 불러와서 입력란에 채우기
+  // 사용자 정보 로드
   fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-    .then(res => {
-      if (!res.ok) throw new Error('API 응답 오류');
-      return res.json();
+    .then(r => r.ok ? r.json() : Promise.reject('로드 실패'))
+    .then(u => {
+      nameInput.value  = u.name || '';
+      deptInput.value  = u.departmentName || '';
+      emailInput.value = u.email || '';
     })
-    .then(user => {
-      nameInput.value       = user.name || '';
-      departmentInput.value = user.departmentName || '';
-      emailInput.value      = user.email || '';
-    })
-    .catch(err => {
-      console.error('사용자 정보 로드 실패:', err);
-      showMessage('사용자 정보를 불러올 수 없습니다.', 'error');
-    });
+    .catch(() => showMessage('정보를 불러올 수 없습니다.', 'error'));
 
-  // 5) "저장" 버튼 클릭 시
-  saveBtn.addEventListener('click', () => {
-    console.log('saveBtn clicked');
-    const updatedName       = nameInput.value.trim();
-    const updatedDepartment = departmentInput.value.trim();
-    const updatedEmail      = emailInput.value.trim();
-
-    if (!updatedName) {
+  // 수동 유효성 검사 함수
+  function validate() {
+    if (!nameInput.value.trim()) {
       showMessage('이름을 입력하세요.', 'error');
-      return;
+      nameInput.focus();
+      return false;
     }
-    if (!updatedDepartment) {
+    if (!deptInput.value.trim()) {
       showMessage('학과를 입력하세요.', 'error');
-      return;
+      deptInput.focus();
+      return false;
     }
-    if (!updatedEmail) {
+    const email = emailInput.value.trim();
+    if (!email) {
       showMessage('이메일을 입력하세요.', 'error');
-      return;
+      emailInput.focus();
+      return false;
     }
-    if (!emailRegex.test(updatedEmail)) {
+    // 간단 이메일 정규식
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) {
       showMessage('유효한 이메일 형식이 아닙니다.', 'error');
-      return;
+      emailInput.focus();
+      return false;
     }
+    return true;
+  }
+
+  // 저장 클릭
+  saveBtn.addEventListener('click', e => {
+    e.preventDefault();
+    if (!validate()) return;
 
     fetch(`/api/users/${encodeURIComponent(currentUser)}`, {
       method:  'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        name:       updatedName,
-        department: updatedDepartment,
-        email:      updatedEmail
+      body: JSON.stringify({
+        name:       nameInput.value.trim(),
+        department: deptInput.value.trim(),
+        email:      emailInput.value.trim()
       })
     })
-      .then(res => {
-        if (!res.ok) throw new Error('계정 정보 업데이트 실패');
-        return res.json();
-      })
-      .then(() => {
-        showMessage('계정 정보가 저장되었습니다.', 'success');
+      .then(r => {
+        if (!r.ok) throw new Error();
+        showMessage('저장되었습니다.', 'success');
         showContent('profile');
-        if (typeof checkUserStatus === 'function') {
-          checkUserStatus();
-        }
+        if (typeof checkUserStatus === 'function') checkUserStatus();
       })
-      .catch(err => {
-        console.error('계정 업데이트 오류:', err);
-        showMessage(err.message || '계정 정보를 저장하는 데 실패했습니다.', 'error');
-      });
+      .catch(() => showMessage('저장에 실패했습니다.', 'error'));
   });
 
-  // 6) "취소" 버튼 클릭 시
+  // 취소 클릭
   cancelBtn.addEventListener('click', () => {
-    console.log('cancelBtn clicked');
     showContent('profile');
   });
 });
