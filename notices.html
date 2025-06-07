@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 - 연성대학교</title>
+    <link rel="stylesheet" href="notices.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <button class="back-btn" onclick="goBack()">
+                <span>←</span>
+            </button>
+            <h1 class="header-title">공지사항</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- 검색 영역 -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="제목, 내용으로 검색..." class="search-input">
+                <button class="search-btn" onclick="performSearch()">
+                    <span>🔍</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 카테고리 필터 -->
+        <div class="category-section">
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="all" onclick="filterByCategory('all')">전체</button>
+                <button class="category-tab" data-category="academic" onclick="filterByCategory('academic')">학사</button>
+                <button class="category-tab" data-category="scholarship" onclick="filterByCategory('scholarship')">장학</button>
+                <button class="category-tab" data-category="job" onclick="filterByCategory('job')">취업</button>
+                <button class="category-tab" data-category="event" onclick="filterByCategory('event')">행사</button>
+                <button class="category-tab" data-category="department" onclick="filterByCategory('department')">학과</button>
+            </div>
+        </div>
+
+        <!-- 공지사항 목록 -->
+        <div class="notices-section">
+            <div class="notices-header">
+                <span class="notices-count" id="noticesCount">전체 0건</span>
+                <select class="sort-select" id="sortSelect" onchange="sortNotices()">
+                    <option value="latest">최신순</option>
+                    <option value="oldest">오래된순</option>
+                    <option value="views">조회수순</option>
+                </select>
+            </div>
+            
+            <div class="notices-list" id="noticesList">
+                <div class="loading-message">
+                    <div class="loading-spinner"></div>
+                    <p>공지사항을 불러오는 중...</p>
+                </div>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div class="pagination" id="pagination">
+                <!-- 동적으로 생성 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="notices.js"></script>
+</body>
+</html>

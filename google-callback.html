@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>구글 로그인 처리 중 - 연성대학교</title>
+</head>
+<body>
+    <script>
+        // 디버깅 로그 추가
+        function log(message) {
+            console.log("[구글 로그인]", message);
+        }
+        
+        log("스크립트 로딩 시작");
+        
+        // 임시 구글 사용자 ID
+        const MOCK_GOOGLE_ID = "google_12345";
+        
+        // localStorage 사용 가능 여부 확인 함수
+        function isLocalStorageAvailable() {
+            try {
+                const test = 'test';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                log('localStorage 사용 불가: ' + e.message);
+                return false;
+            }
+        }
+        
+        // 안전한 스토리지 객체
+        const safeStorage = {
+            memoryStorage: {},
+            
+            setItem: function(key, value) {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    console.warn('localStorage를 사용할 수 없어 메모리에 저장합니다:', e);
+                    this.memoryStorage[key] = value;
+                }
+            },
+            
+            getItem: function(key) {
+                try {
+                    const value = localStorage.getItem(key);
+                    return value;
+                } catch (e) {
+                    console.warn('localStorage에 접근할 수 없어 메모리에서 조회합니다:', e);
+                    return this.memoryStorage[key] || null;
+                }
+            },
+            
+            removeItem: function(key) {
+                try {
+                    localStorage.removeItem(key);
+                } catch (e) {
+                    console.warn('localStorage에서 삭제할 수 없어 메모리에서 삭제합니다:', e);
+                    delete this.memoryStorage[key];
+                }
+            }
+        };
+        
+        // 구글 회원가입 페이지로 리디렉션
+        function redirectToRegister(googleId, userInfo) {
+            log("회원가입 페이지로 이동");
+            
+            // 세션 스토리지에 임시 데이터 저장
+            sessionStorage.setItem('temp_social_id', googleId);
+            sessionStorage.setItem('temp_social_type', 'google');
+            sessionStorage.setItem('temp_social_name', userInfo.name || '구글 사용자');
+            
+            if (userInfo.email) {
+                sessionStorage.setItem('temp_social_email', userInfo.email);
+            }
+            
+            if (userInfo.profileImage) {
+                sessionStorage.setItem('temp_social_profile_image', userInfo.profileImage);
+            }
+            
+            // 바로 회원가입 페이지로 이동
+            window.location.replace("register.html?social=google");
+        }
+        
+        // 이미 가입된 사용자 로그인 처리
+        function loginExistingUser(userId) {
+            log("기존 구글 사용자 로그인: " + userId);
+            
+            // 현재 로그인된 사용자로 설정
+            safeStorage.setItem('currentLoggedInUser', userId);
+            
+            // 위젯 설정 완료 여부 확인
+            const setupCompleted = safeStorage.getItem(`user_${userId}_setup_completed`) === 'true';
+            
+            // 위젯 설정을 완료한 사용자는 바로 메인 페이지로 이동
+            if (setupCompleted) {
+                window.location.replace("index.html");
+            } else {
+                // 위젯 설정을 완료하지 않은 사용자는 위젯 설정 페이지로 이동
+                safeStorage.setItem(`user_${userId}_first_login`, 'false');
+                window.location.replace("widget-settings.html");
+            }
+        }
+        
+        // 구글 사용자 확인
+        function checkGoogleUser(googleId) {
+            log("구글 사용자 확인 중: " + googleId);
+            
+            let isRegistered = false;
+            
+            if (isLocalStorageAvailable()) {
+                // 로컬 스토리지에서 구글 사용자 확인
+                const userKey = `user_${googleId}_registered`;
+                const userRegistered = safeStorage.getItem(userKey);
+                
+                log("사용자 등록 확인: " + userKey + " = " + userRegistered);
+                
+                if (userRegistered === 'true') {
+                    isRegistered = true;
+                    log("가입된 구글 사용자 발견");
+                }
+            }
+            
+            return isRegistered;
+        }
+        
+        // 임시 사용자 처리 (실제 구글 API 콜백이 없을 때)
+        function handleMockGoogleUser() {
+            log("구글 모의 사용자 처리");
+            
+            const isRegistered = checkGoogleUser(MOCK_GOOGLE_ID);
+            
+            if (isRegistered) {
+                loginExistingUser(MOCK_GOOGLE_ID);
+            } else {
+                const mockUserInfo = {
+                    name: '구글 사용자',
+                    email: 'google_user@example.com',
+                    profileImage: null
+                };
+                redirectToRegister(MOCK_GOOGLE_ID, mockUserInfo);
+            }
+        }
+        
+        // 회원가입 완료 처리
+        function handleRegistrationComplete() {
+            log("회원가입 완료 후 돌아옴");
+            
+            // 가입된 사용자로 로그인 처리
+            loginExistingUser(MOCK_GOOGLE_ID);
+        }
+        
+        // 페이지 로드 즉시 실행
+        (function() {
+            log("페이지 로드됨");
+            
+            try {
+                // URL 파라미터 확인
+                const urlParams = new URLSearchParams(window.location.search);
+                const authCode = urlParams.get('code');
+                const error = urlParams.get('error');
+                const fromRegister = urlParams.get('from');
+                const status = urlParams.get('status');
+                
+                // 회원가입 완료로 돌아온 경우
+                if (fromRegister === 'register' && status === 'complete') {
+                    handleRegistrationComplete();
+                    return;
+                }
+                
+                // 오류 또는 취소 확인 - 바로 로그인 페이지로 이동
+                if (error || (!authCode && !fromRegister)) {
+                    log("구글 로그인 취소 또는 오류: " + error);
+                    window.location.replace("login.html");
+                    return;
+                }
+                
+                // 정상적인 인증 코드가 있는 경우
+                if (authCode) {
+                    log("구글 인증 코드 확인됨: " + authCode.substring(0, 10) + "...");
+                    
+                    // 실제 환경에서는 구글 API를 통해 사용자 정보를 가져와야 합니다
+                    // 여기서는 간단한 처리를 위해 모의 처리 사용
+                    handleMockGoogleUser();
+                } else {
+                    // 인증 코드가 없으면 모의 처리
+                    handleMockGoogleUser();
+                }
+                
+            } catch (error) {
+                log("예외 발생: " + error.message);
+                // 오류 시 바로 로그인 페이지로 이동
+                window.location.replace("login.html");
+            }
+        })();
+        
+        // 전역으로 함수 노출 (필요시 사용)
+        window.parentRegisterComplete = function(userData) {
+            log("회원가입 완료 콜백 받음");
+            
+            // 사용자 정보 저장
+            const googleId = userData.socialId || MOCK_GOOGLE_ID;
+            
+            safeStorage.setItem(`user_${googleId}_registered`, 'true');
+            safeStorage.setItem(`user_${googleId}_name`, userData.name || '구글 사용자');
+            safeStorage.setItem(`user_${googleId}_department`, userData.department || 'computerScience');
+            safeStorage.setItem(`user_${googleId}_grade`, userData.grade || '1');
+            safeStorage.setItem(`user_${googleId}_email`, userData.email || 'google_user@example.com');
+            safeStorage.setItem(`user_${googleId}_phone`, userData.phone || '010-0000-0000');
+            safeStorage.setItem(`user_${googleId}_socialType`, 'google');
+            
+            // 로그인 처리
+            loginExistingUser(googleId);
+        };
+    </script>
+</body>
+</html>
