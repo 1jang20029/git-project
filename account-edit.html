@@ -21,34 +21,22 @@
   <div class="card" id="account-edit-container">
     <div class="form-item">
       <label for="accountName">이름</label>
-      <input
-        type="text"
-        id="accountName"
-        placeholder="홍길동"
-      />
+      <input type="text" id="accountName" placeholder="홍길동" />
     </div>
 
     <div class="form-item">
       <label for="accountDepartment">학과</label>
-      <input
-        type="text"
-        id="accountDepartment"
-        placeholder="컴퓨터공학과"
-      />
+      <input type="text" id="accountDepartment" placeholder="컴퓨터공학과" />
     </div>
 
     <div class="form-item">
       <label for="accountEmail">이메일</label>
-      <input
-        type="text"
-        id="accountEmail"
-        placeholder="user@example.com"
-      />
+      <input type="text" id="accountEmail" placeholder="user@example.com" />
+      <div class="error-message" id="emailError"></div>
     </div>
 
     <div class="action-buttons">
-      <!-- type="button" 대신 type="submit" -->
-      <button id="saveAccountBtn" type="submit" class="btn save-btn">저장</button>
+      <button id="saveAccountBtn" type="button" class="btn save-btn">저장</button>
       <button id="cancelAccountBtn" type="button" class="btn cancel-btn">취소</button>
     </div>
   </div>

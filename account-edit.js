@@ -1,5 +1,7 @@
 // account-edit.js
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('account-edit.js loaded');
+
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
     showMessage('로그인이 필요합니다.', 'error');
@@ -7,23 +9,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const nameInput       = document.getElementById('accountName');
-  const deptInput       = document.getElementById('accountDepartment');
-  const emailInput      = document.getElementById('accountEmail');
-  const saveBtn         = document.getElementById('saveAccountBtn');
-  const cancelBtn       = document.getElementById('cancelAccountBtn');
+  const nameInput  = document.getElementById('accountName');
+  const deptInput  = document.getElementById('accountDepartment');
+  const emailInput = document.getElementById('accountEmail');
+  const emailError = document.getElementById('emailError');
+  const saveBtn    = document.getElementById('saveAccountBtn');
+  const cancelBtn  = document.getElementById('cancelAccountBtn');
 
   // 사용자 정보 로드
   fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-    .then(r => r.ok ? r.json() : Promise.reject('로드 실패'))
-    .then(u => {
-      nameInput.value  = u.name || '';
-      deptInput.value  = u.departmentName || '';
-      emailInput.value = u.email || '';
+    .then(res => res.ok ? res.json() : Promise.reject('로드 실패'))
+    .then(user => {
+      nameInput.value  = user.name || '';
+      deptInput.value  = user.departmentName || '';
+      emailInput.value = user.email || '';
     })
     .catch(() => showMessage('정보를 불러올 수 없습니다.', 'error'));
 
-  // 수동 유효성 검사 함수
+  // 이메일 입력 시 에러 메시지 제거
+  emailInput.addEventListener('input', () => {
+    emailError.textContent = '';
+  });
+
+  // 유효성 검사 함수
   function validate() {
     if (!nameInput.value.trim()) {
       showMessage('이름을 입력하세요.', 'error');
@@ -41,10 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
       emailInput.focus();
       return false;
     }
-    // 간단 이메일 정규식
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(email)) {
-      showMessage('유효한 이메일 형식이 아닙니다.', 'error');
+    if (!email.includes('@')) {
+      emailError.textContent = '유효한 이메일 형식이 아닙니다.';
       emailInput.focus();
       return false;
     }
@@ -65,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
         email:      emailInput.value.trim()
       })
     })
-      .then(r => {
-        if (!r.ok) throw new Error();
+      .then(res => {
+        if (!res.ok) throw new Error();
         showMessage('저장되었습니다.', 'success');
         showContent('profile');
         if (typeof checkUserStatus === 'function') checkUserStatus();
