@@ -155,6 +155,35 @@ function showContent(type) {
     }
   }
 
+  // "강의평가" 화면일 때, 아직 lecture-review.html 을 삽입하지 않았다면 fetch 후 삽입
+  if (type === 'lecture-review' && !lectureReviewLoaded) {
+    const container = document.getElementById('lecture-reviewContent');
+    if (container) {
+      fetch('lecture-review.html')
+        .then((res) => {
+          if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
+          return res.text();
+        })
+        .then((html) => {
+          container.innerHTML = html;
+          lectureReviewLoaded = true;
+          // HTML 삽입 후 즉시 강의평가 초기화 함수 호출
+          if (window.initLectureReviewPage) {
+            window.initLectureReviewPage();
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          container.innerHTML = `
+            <div class="error-fallback">
+              <h3>⚠️ 오류 발생</h3>
+              <p>강의평가 화면을 불러올 수 없습니다</p>
+            </div>
+          `;
+        });
+    }
+  }
+
   // "설정" 화면일 때, 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
   if (type === 'settings' && !settingsLoaded) {
     const container = document.getElementById('settingsContent');

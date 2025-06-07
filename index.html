@@ -122,7 +122,7 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <!-- “프로필” 대신 “내 계정”으로 텍스트만 표현, onclick을 showProfile()로 연결 -->
+            <!-- "프로필" 대신 "내 계정"으로 텍스트만 표현, onclick을 showProfile()로 연결 -->
             <button id="dropdown-item-profile" onclick="showProfile()">
               내 계정
             </button>
@@ -240,47 +240,10 @@
       </div>
 
       <!-- --------------------------------------------------
-           강의평가 화면
+           강의평가 화면 (기존 UI 제거하고 빈 컨테이너로 변경)
            -------------------------------------------------- -->
       <div id="lecture-reviewContent" style="display: none;">
-        <div id="content-header-lecture-review">
-          <h1 id="title-lecture-review">강의평가</h1>
-          <div id="breadcrumb-lecture-review">
-            <span>홈</span>
-            <span>›</span>
-            <span>강의평가</span>
-          </div>
-        </div>
-        <div id="dashboardGrid-lecture-review">
-          <div id="popular-reviews-card">
-            <div id="card-header-popular-reviews">
-              <h3 id="card-title-popular-reviews">인기 강의평가</h3>
-              <span id="card-icon-popular-reviews">⭐</span>
-            </div>
-            <div id="popularReviews"></div>
-          </div>
-          <div id="recent-reviews-card">
-            <div id="card-header-recent-reviews">
-              <h3 id="card-title-recent-reviews">최근 강의평가</h3>
-              <span id="card-icon-recent-reviews">🕒</span>
-            </div>
-            <div id="recentReviews"></div>
-          </div>
-          <div id="write-review-card">
-            <div id="card-header-write-review">
-              <h3 id="card-title-write-review">강의평가 작성</h3>
-              <span id="card-icon-write-review">✍️</span>
-            </div>
-            <div id="write-review-desc" style="padding: 1rem; text-align: center;">
-              <p style="color: #94a3b8; margin-bottom: 1.5rem;">
-                수강 중인 강의에 대한 솔직한 평가를 남겨주세요
-              </p>
-              <button id="write-review-button" onclick="alert('강의평가 작성 페이지로 이동합니다.')">
-                강의평가 작성하기
-              </button>
-            </div>
-          </div>
-        </div>
+        <!-- 강의평가 전용 HTML이 동적으로 로드될 컨테이너 -->
       </div>
 
       <!-- --------------------------------------------------
