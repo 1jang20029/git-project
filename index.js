@@ -1,12 +1,46 @@
 
 // ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
+// ─────────── 맨 위: FOUC 방지 + 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
 (function() {
+  // ★★★ 새로 추가: 페이지를 먼저 숨김 ★★★
+  const style = document.createElement('style');
+  style.innerHTML = `
+    html { 
+      visibility: hidden !important; 
+      opacity: 0 !important; 
+    }
+    html.loaded { 
+      visibility: visible !important; 
+      opacity: 1 !important; 
+      transition: opacity 0.2s ease !important; 
+    }
+  `;
+  document.head.appendChild(style);
+
+  // 기존 테마 적용 코드
   const savedMode = localStorage.getItem('lightMode');
   if (savedMode === 'true') {
     document.body.classList.add('light-mode');
   } else {
     document.body.classList.remove('light-mode');
   }
+
+  // ★★★ 새로 추가: CSS 로드 완료 후 페이지 표시 ★★★
+  function showPage() {
+    document.documentElement.classList.add('loaded');
+  }
+
+  // DOM 준비 완료 시
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(showPage, 100); // CSS 로드 대기
+    });
+  } else {
+    showPage();
+  }
+
+  // 완전한 로드 완료 시
+  window.addEventListener('load', showPage);
 })();
 
 // ─────────── 전역 변수 선언 (기존 코드 유지) ───────────
