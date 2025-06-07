@@ -1,8 +1,8 @@
-<!-- lecture-review.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>강의평가</title>
   <link rel="stylesheet" href="lecture-review.css" />
 </head>
@@ -19,20 +19,29 @@
   </div>
 
   <div id="dashboardGrid-lecture-review">
+    <!-- 인기 강의평가 카드 -->
     <div id="popular-reviews-card">
       <div id="card-header-popular-reviews">
         <h3 id="card-title-popular-reviews">인기 강의평가</h3>
         <span id="card-icon-popular-reviews">⭐</span>
       </div>
-      <div id="popularReviews"></div>
+      <div id="popularReviews">
+        <div class="loading">데이터를 불러오는 중...</div>
+      </div>
     </div>
+
+    <!-- 최근 강의평가 카드 -->
     <div id="recent-reviews-card">
       <div id="card-header-recent-reviews">
         <h3 id="card-title-recent-reviews">최근 강의평가</h3>
         <span id="card-icon-recent-reviews">🕒</span>
       </div>
-      <div id="recentReviews"></div>
+      <div id="recentReviews">
+        <div class="loading">데이터를 불러오는 중...</div>
+      </div>
     </div>
+
+    <!-- 강의평가 작성 카드 -->
     <div id="write-review-card">
       <div id="card-header-write-review">
         <h3 id="card-title-write-review">강의평가 작성</h3>
@@ -45,6 +54,9 @@
     </div>
   </div>
 
-  <script src="lecture-review.js" defer></script>
+  <!-- 에러 메시지 표시 영역 -->
+  <div id="error-message" style="display: none;"></div>
+
+  <script src="lecture-review.js"></script>
 </body>
 </html>
