@@ -4,34 +4,6 @@
 (function() {
   console.log('🔍 account-edit.js 시작 (엄격한 이메일 검증 포함)');
   
-  // 목업 사용자 데이터
-  const mockUsers = {
-    'admin': {
-      name: '관리자',
-      department: 'COMP',
-      departmentName: '컴퓨터공학과',
-      email: ''
-    },
-    'student1': {
-      name: '김학생',
-      department: 'COMP',
-      departmentName: '컴퓨터공학과', 
-      email: ''
-    },
-    'professor1': {
-      name: '이교수',
-      department: 'COMP',
-      departmentName: '컴퓨터공학과',
-      email: ''
-    },
-    '정동선': {
-      name: '정동선',
-      department: 'COMP',
-      departmentName: '컴퓨터공학과',
-      email: ''
-    }
-  };
-  
   // 1) 현재 로그인된 사용자 ID 가져오기
   const currentUser = localStorage.getItem('currentLoggedInUser');
   console.log('👤 현재 사용자:', currentUser);
@@ -170,7 +142,7 @@
       }, 500);
     });
 
-    // 5) 사용자 데이터 로드 (API 또는 목업)
+    // 5) 사용자 데이터 로드 (API 또는 기본값)
     function loadUserData() {
       console.log('📡 사용자 데이터 로드 시작...');
       
@@ -199,18 +171,18 @@
           fillUserData(user);
         })
         .catch(err => {
-          console.log('⚠️ API 실패, 목업 데이터 사용:', err.message);
+          console.log('⚠️ API 실패, 기본 빈 데이터 사용:', err.message);
           
-          // 목업 데이터 사용
-          const mockUser = mockUsers[currentUser] || {
-            name: '홍길동',
+          // 기본 빈 데이터 사용
+          const defaultUser = {
+            name: '',
             department: '',
             departmentName: '',
             email: ''
           };
           
-          console.log('🎭 목업 데이터 사용:', mockUser);
-          fillUserData(mockUser);
+          console.log('🎭 기본 빈 데이터 사용:', defaultUser);
+          fillUserData(defaultUser);
         });
     }
 
