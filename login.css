@@ -1,251 +1,419 @@
-/* =============================================================================
-   로그인 페이지 CSS
-   - 전체 화면을 차지하는 중앙 정렬 로그인 폼
-   - 다크 테마 기반의 모던한 디자인
-   ============================================================================= */
 
-/* 기본 리셋 및 폰트 설정 */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
-/* 전체 페이지 레이아웃 - 화면 전체를 차지하며 중앙 정렬 */
-html, body {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;        /* 세로 중앙 정렬 */
-  justify-content: center;    /* 가로 중앙 정렬 */
-  background-color: #0f152b;  /* 다크 네이비 배경 */
-  color: #f1f5f9;            /* 밝은 회색 텍스트 */
-  overflow: hidden;           /* 스크롤바 숨김 */
+body {
+    background-color: #f5f5f5;
+    color: #333;
 }
 
-/* 메인 로그인 컨테이너 - 박스 크기를 더 크고 널널하게 확장 */
 .container {
-  width: 750px;              /* 기존 600px → 750px로 확장 */
-  max-width: 90%;            /* 작은 화면에서는 90% 너비 */
-  min-height: 500px;         /* 기존 360px → 500px로 높이 확장 */
-  background: rgba(15, 23, 42, 0.95);  /* 반투명 다크 배경 */
-  backdrop-filter: blur(20px);          /* 배경 블러 효과 */
-  border: 1px solid rgba(148, 163, 184, 0.1);  /* 미세한 테두리 */
-  border-radius: 16px;       /* 기존 12px → 16px로 더 둥글게 */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 3rem 3rem;        /* 기존 2rem → 3rem으로 여백 확대 */
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);  /* 더 깊은 그림자 효과 */
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 숨겨진 요소들 - 헤더, 로고, 슬로건 등은 표시하지 않음 */
-header,
-.university-logo,
+header {
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+}
+
+.back-button {
+    font-size: 20px;
+    margin-right: 16px;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.login-container {
+    padding: 32px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.university-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #c62917;
+    margin-bottom: 8px;
+}
+
 .slogan {
-  display: none;
+    font-size: 16px;
+    color: #666;
 }
 
-/* 폼 그룹 컨테이너 - 각 입력 필드를 감싸는 영역 */
 .form-group {
-  margin-bottom: 1.5rem;     /* 기존 1rem → 1.5rem으로 간격 확대 */
+    margin-bottom: 20px;
 }
 
-/* 폼 라벨 - 입력 필드 위의 설명 텍스트 */
 .form-label {
-  display: block;
-  font-size: 1.1rem;         /* 기존 1rem → 1.1rem으로 텍스트 크기 증가 */
-  color: #94a3b8;            /* 중간 밝기의 회색 */
-  margin-bottom: 0.75rem;    /* 기존 0.5rem → 0.75rem으로 간격 확대 */
-  font-weight: 500;          /* 폰트 두께 추가 */
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
 }
 
-/* 입력 필드 - 아이디, 비밀번호 입력창 */
 .form-input {
-  width: 100%;
-  padding: 1rem 1.25rem;     /* 기존 0.75rem 1rem → 1rem 1.25rem으로 패딩 확대 */
-  background: rgba(30, 41, 59, 0.85);  /* 반투명 다크 배경 */
-  border: 1px solid rgba(148, 163, 184, 0.2);  /* 미세한 테두리 */
-  border-radius: 10px;       /* 기존 8px → 10px로 더 둥글게 */
-  color: #f1f5f9;            /* 밝은 텍스트 색상 */
-  font-size: 1.1rem;         /* 기존 1rem → 1.1rem으로 텍스트 크기 증가 */
-  transition: all 0.3s ease; /* 부드러운 전환 효과 */
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
 }
 
-/* 입력 필드 포커스 상태 - 클릭/선택했을 때 */
 .form-input:focus {
-  outline: none;             /* 기본 outline 제거 */
-  border-color: #3b82f6;     /* 파란색 테두리 */
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);  /* 파란색 글로우 효과 */
-  background: rgba(30, 41, 59, 0.95);  /* 배경을 약간 더 진하게 */
+    border-color: #c62917;
+    outline: none;
 }
 
-/* 로그인 버튼 - 메인 액션 버튼 */
 .login-button {
-  width: 100%;
-  padding: 1rem;             /* 기존 0.75rem → 1rem으로 패딩 확대 */
-  margin-top: 1rem;          /* 기존 0.5rem → 1rem으로 간격 확대 */
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);  /* 파란색-보라색 그라데이션 */
-  color: #ffffff;            /* 흰색 텍스트 */
-  border: none;              /* 테두리 없음 */
-  border-radius: 10px;       /* 기존 8px → 10px로 더 둥글게 */
-  font-size: 1.1rem;         /* 기존 1rem → 1.1rem으로 텍스트 크기 증가 */
-  font-weight: 600;          /* 볼드 폰트 */
-  cursor: pointer;           /* 마우스 포인터 변경 */
-  transition: all 0.3s ease; /* 부드러운 전환 효과 */
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);  /* 파란색 그림자 효과 */
+    width: 100%;
+    padding: 14px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
 }
 
-/* 로그인 버튼 호버 상태 - 마우스를 올렸을 때 */
-.login-button:hover {
-  transform: translateY(-3px);  /* 기존 -2px → -3px로 더 많이 위로 이동 */
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);  /* 더 깊은 그림자 */
-}
-
-/* 로그인 옵션 - "아이디 저장"과 "아이디/비밀번호 찾기" 영역 */
 .login-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1rem;           /* 기존 0.9rem → 1rem으로 텍스트 크기 증가 */
-  color: #94a3b8;            /* 중간 밝기의 회색 */
-  margin-top: 1rem;          /* 기존 0.5rem → 1rem으로 간격 확대 */
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    margin-top: 16px;
 }
 
-/* 로그인 옵션 내 링크 스타일 */
 .login-options a {
-  color: #3b82f6;            /* 파란색 링크 */
-  text-decoration: none;     /* 밑줄 제거 */
-  font-weight: 500;          /* 중간 두께 폰트 */
-  transition: color 0.3s ease; /* 색상 전환 효과 */
+    color: #666;
+    text-decoration: none;
 }
 
-.login-options a:hover {
-  color: #60a5fa;            /* 호버 시 밝은 파란색 */
-}
-
-/* 구분선 영역 - "또는" 텍스트와 양쪽 선 */
 .separator {
-  display: flex;
-  align-items: center;
-  margin: 2rem 0;            /* 기존 1.5rem → 2rem으로 간격 확대 */
-  color: #64748b;            /* 어두운 회색 */
+    display: flex;
+    align-items: center;
+    margin: 32px 0;
+    color: #888;
 }
 
-/* 구분선의 선 부분 */
 .separator-line {
-  flex: 1;                   /* 남은 공간을 모두 차지 */
-  height: 1px;
-  background-color: rgba(148, 163, 184, 0.3);  /* 반투명 회색 선 */
+    flex: 1;
+    height: 1px;
+    background-color: #ddd;
 }
 
-/* 구분선의 텍스트 부분 ("또는") */
 .separator-text {
-  padding: 0 1.5rem;         /* 기존 1rem → 1.5rem으로 여백 확대 */
-  font-size: 1rem;           /* 기존 0.9rem → 1rem으로 텍스트 크기 증가 */
-  font-weight: 500;          /* 폰트 두께 추가 */
+    padding: 0 16px;
+    font-size: 14px;
 }
 
-/* 소셜 로그인 버튼 컨테이너 - N, K, G 버튼들 */
 .social-login {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;               /* 기존 1rem → 1.5rem으로 간격 확대 */
-  margin-top: 1rem;          /* 기존 0.5rem → 1rem으로 간격 확대 */
+    display: flex;
+    justify-content: center;
+    gap: 16px;
 }
 
-/* 개별 소셜 로그인 버튼 - 네이버, 카카오, 구글 */
 .social-button {
-  width: 56px;               /* 기존 48px → 56px로 크기 확대 */
-  height: 56px;              /* 기존 48px → 56px로 크기 확대 */
-  border-radius: 14px;       /* 기존 12px → 14px로 더 둥글게 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;         /* 기존 1.25rem → 1.4rem으로 아이콘 크기 증가 */
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease; /* 부드러운 전환 효과 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);  /* 그림자 효과 추가 */
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-decoration: none;
 }
 
-/* 소셜 버튼 호버 상태 */
 .social-button:hover {
-  transform: translateY(-3px);  /* 기존 -2px → -3px로 더 많이 위로 이동 */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);  /* 더 깊은 그림자 */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-/* 네이버 버튼 - 초록색 */
 .naver-button {
-  background: #03c75a;       /* 네이버 브랜드 초록색 */
-  color: #ffffff;            /* 흰색 텍스트 */
+    background-color: #03C75A;
+    color: white;
 }
 
-/* 카카오 버튼 - 노란색 */
 .kakao-button {
-  background: #fee500;       /* 카카오 브랜드 노란색 */
-  color: #3a1d1d;            /* 어두운 갈색 텍스트 */
+    background-color: #FEE500;
+    color: #3A1D1D;
 }
 
-/* 구글 버튼 - 흰색 */
 .google-button {
-  background: #ffffff;       /* 흰색 배경 */
-  color: #4285f4;            /* 구글 브랜드 파란색 텍스트 */
-  border: 1px solid rgba(148, 163, 184, 0.3);  /* 미세한 테두리 */
+    background-color: white;
+    color: #4285F4;
+    border: 1px solid #ddd;
 }
 
-/* 회원가입 링크 영역 - 하단의 "아직 계정이 없으신가요?" */
 .register-link {
-  text-align: center;
-  margin-top: 2rem;          /* 기존 1rem → 2rem으로 간격 확대 */
-  font-size: 1rem;           /* 기존 0.9rem → 1rem으로 텍스트 크기 증가 */
-  color: #94a3b8;            /* 중간 밝기의 회색 */
+    text-align: center;
+    margin-top: 32px;
+    font-size: 14px;
+    color: #666;
 }
 
-/* 회원가입 링크 */
 .register-link a {
-  color: #3b82f6;            /* 파란색 링크 */
-  font-weight: 600;          /* 볼드 폰트 */
-  text-decoration: none;     /* 밑줄 제거 */
-  transition: color 0.3s ease; /* 색상 전환 효과 */
+    color: #c62917;
+    font-weight: bold;
+    text-decoration: none;
 }
 
-.register-link a:hover {
-  color: #60a5fa;            /* 호버 시 밝은 파란색 */
+/* 네이버 로그인 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: fadeIn 0.3s;
 }
 
-/* 모달 푸터 숨김 - 필요 없는 요소 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 0;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideDown 0.3s;
+    overflow: hidden;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    background-color: #03C75A;
+    color: white;
+    padding: 16px 20px;
+    position: relative;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.modal-title:before {
+    content: "N";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    height: 28px;
+    background-color: white;
+    color: #03C75A;
+    border-radius: 50%;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.close-modal {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.close-modal:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-form-group {
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.modal-form-group .form-label {
+    color: #333;
+    font-weight: 500;
+}
+
+.modal-form-group .form-input {
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    transition: all 0.3s;
+}
+
+.modal-form-group .form-input:focus {
+    border-color: #03C75A;
+    background-color: white;
+    box-shadow: 0 0 0 2px rgba(3, 199, 90, 0.2);
+}
+
+.input-icon {
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    color: #aaa;
+}
+
 .modal-footer {
-  display: none !important;
+    padding: 16px 20px;
+    background-color: #f5f5f5;
+    text-align: right;
+    border-top: 1px solid #eee;
 }
 
-/* =============================================================================
-   반응형 디자인 - 모바일 화면 대응
-   ============================================================================= */
+.modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
 
-/* 480px 이하의 작은 화면 (모바일) */
-@media (max-width: 480px) {
-  .container {
-    width: 95%;              /* 화면의 95% 너비 사용 */
-    min-height: auto;        /* 높이를 내용에 맞게 자동 조절 */
-    padding: 2rem 1.5rem;    /* 모바일에서는 패딩 줄임 */
-    margin: 1rem;            /* 화면 가장자리와 여백 */
-  }
-  
-  .login-button,
-  .form-input {
-    font-size: 1rem;         /* 모바일에서는 폰트 크기 줄임 */
-    padding: 0.875rem 1rem;  /* 패딩도 약간 줄임 */
-  }
-  
-  .social-button {
-    width: 50px;             /* 모바일에서는 소셜 버튼 크기 줄임 */
-    height: 50px;
-    font-size: 1.2rem;
-  }
-  
-  .social-login {
-    gap: 1rem;               /* 모바일에서는 버튼 간격 줄임 */
-  }
+.modal-button.cancel {
+    background-color: #eee;
+    color: #666;
+    margin-right: 10px;
+}
+
+.modal-button.cancel:hover {
+    background-color: #ddd;
+}
+
+.modal-button.login {
+    background-color: #03C75A;
+    color: white;
+}
+
+.modal-button.login:hover {
+    background-color: #02b050;
+}
+
+.naver-benefits {
+    margin-top: 16px;
+    background-color: #f5f9f7;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.benefits-title {
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #03C75A;
+}
+
+/* 자동 입력 체크박스 */
+.auto-login {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.auto-login input {
+    margin-right: 8px;
+}
+
+.auto-login label {
+    font-size: 13px;
+    color: #666;
+}
+
+/* 저장소 접근 관련 알림 */
+.storage-notice {
+    background-color: #fffde7;
+    border: 1px solid #fff9c4;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #5d4037;
+    margin-bottom: 15px;
+    display: none;
+}
+
+
+/* 비밀번호 입력 컨테이너 스타일 */
+.password-input-container {
+    position: relative;
+    width: 100%;
+}
+
+/* 비밀번호 토글 스팬 스타일 */
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+
+/* 눈 아이콘 스타일 */
+.eye-icon {
+    width: 24px;
+    height: 24px;
+    stroke: #666;
+    stroke-width: 2;
+}
+
+.password-toggle:hover .eye-icon {
+    stroke: #000;
+}
+
+/* 눈 아이콘이 있는 경우 패딩 조정 */
+.password-input-container .form-input {
+    padding-right: 40px;
 }

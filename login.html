@@ -8,40 +8,121 @@
 </head>
 <body>
     <div class="container">
+        <header>
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="header-title">로그인</div>
+        </header>
+        
         <div class="login-container">
+            <div id="storage-notice" class="storage-notice">
+                미리보기 환경에서는 데이터 저장 기능이 제한됩니다. 실제 환경에서 테스트해주세요.
+            </div>
+            
+            <div class="logo-container">
+                <div class="university-logo">연성대학교</div>
+                <div class="slogan">Campus Guide</div>
+            </div>
+            
             <form id="loginForm">
                 <div class="form-group">
                     <label class="form-label">아이디 (학번)</label>
                     <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">비밀번호</label>
-                    <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
-                </div>
-                <div class="login-options">
-                    <div>
-                        <input type="checkbox" id="saveId">
-                        <label for="saveId" style="color:#94a3b8;">아이디 저장</label>
+                    <div class="password-input-container">
+                        <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
+                        <span class="password-toggle" id="passwordToggle">
+                            <svg class="eye-icon eye-visible" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg class="eye-icon eye-hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <line x1="3" y1="3" x2="21" y2="21"></line>
+                            </svg>
+                        </span>
                     </div>
-                    <a href="find-id-pw.html">아이디/비밀번호 찾기</a>
                 </div>
+                
+                <!-- 체크박스와 찾기 링크를 같은 줄에 배치 -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <!-- 왼쪽: 아이디 저장 체크박스 -->
+                    <div class="auto-login">
+                        <input type="checkbox" id="saveId">
+                        <label for="saveId">아이디 저장</label>
+                    </div>
+                    
+                    <!-- 오른쪽: 아이디/비밀번호 찾기 링크 (하나로 통합) -->
+                    <div>
+                        <a href="find-id-pw.html">아이디/비밀번호 찾기</a>
+                    </div>
+                </div>
+                
+                <!-- 로그인 버튼 -->
                 <button type="button" class="login-button" onclick="login()">로그인</button>
             </form>
+            
             <div class="separator">
                 <div class="separator-line"></div>
                 <div class="separator-text">또는</div>
                 <div class="separator-line"></div>
             </div>
+            
             <div class="social-login">
                 <div class="social-button naver-button" onclick="naverLogin()">N</div>
                 <a href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code&prompt=login" class="social-button kakao-button">K</a>
                 <div class="social-button google-button" onclick="googleLogin()">G</div>
             </div>
+            
             <div class="register-link">
                 아직 계정이 없으신가요? <a href="register.html">회원가입</a>
             </div>
         </div>
     </div>
+    
+    <!-- 네이버 로그인 모달 -->
+    <div id="naverLoginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">네이버 로그인</div>
+                <span class="close-modal" onclick="closeModal('naverLoginModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-form-group">
+                    <label class="form-label">네이버 아이디</label>
+                    <input type="text" class="form-input" id="naverId" placeholder="아이디를 입력하세요">
+                    <span class="input-icon">👤</span>
+                </div>
+                <div class="modal-form-group">
+                    <label class="form-label">네이버 비밀번호</label>
+                    <input type="password" class="form-input" id="naverPw" placeholder="비밀번호를 입력하세요">
+                    <span class="input-icon">🔒</span>
+                </div>
+                
+                <div class="auto-login">
+                    <input type="checkbox" id="autoLogin">
+                    <label for="autoLogin">로그인 상태 유지</label>
+                </div>
+                
+                <div class="naver-benefits">
+                    <div class="benefits-title">네이버 계정으로 로그인 시 혜택</div>
+                    <ul>
+                        <li>네이버 캘린더와 학사일정 연동</li>
+                        <li>네이버 지도로 캠퍼스 건물 찾기</li>
+                        <li>네이버 메일을 통한 알림 수신</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button cancel" onclick="closeModal('naverLoginModal')">취소</button>
+                <button class="modal-button login" onclick="processNaverLogin()">로그인</button>
+            </div>
+        </div>
+    </div>
+    
     <script src="login.js"></script>
-</body>
+    </body>
 </html>
