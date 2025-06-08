@@ -1,15 +1,6 @@
+// index.js
 
-// ─────────── 맨 위: 로컬스토리지 테마(라이트/다크) 즉시 적용 ───────────
-(function() {
-  const savedMode = localStorage.getItem('lightMode');
-  if (savedMode === 'true') {
-    document.body.classList.add('light-mode');
-  } else {
-    document.body.classList.remove('light-mode');
-  }
-})();
-
-// ─────────── 전역 변수 선언 (기존 코드 유지) ───────────
+// ─────────── 전역 변수 선언 ───────────
 let naverMap;
 let mapMarkers = [];
 let infoWindows = [];
@@ -19,27 +10,21 @@ let currentContent = 'home';
 let unreadNotifications = 0;
 let isOnline = navigator.onLine;
 
+// 페이지 로드 상태 변수
+let settingsLoaded = false;
+let communityLoaded = false;
+let lectureLoaded = false;
+let noticesLoaded = false;
+let buildingsLoaded = false;
+
+// 자동 로그아웃 타이머
+let autoLogoutTimer = null;
+
 // 학과 코드 ↔ 이름 매핑 객체
 const departmentMap = {};
 
-// 설정 화면 로드 여부
-let settingsLoaded = false;
-
-// 커뮤니티 페이지 로드 여부
-let communityLoaded = false;
-
-// 강의평가 페이지 로드 여부
-let lectureLoaded = false;
-
-// 공지사항 페이지 로드 여부
-let noticesLoaded = false;
-
-// 자동 로그아웃 타이머 ID
-let autoLogoutTimer = null;
-
-// ─────────── 최초 로드 시 실행할 로직 ───────────
+// ─────────── DOMContentLoaded ───────────
 document.addEventListener('DOMContentLoaded', () => {
-  // URL hash에 따라 초기 화면 결정
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
     showContent(hash);
@@ -49,21 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeApp();
   setupNetworkListeners();
-  setupAutoLogout();             // 자동 로그아웃 로직 초기화
-  applyKeyboardShortcuts();      // 기존 키보드 단축키 로드
-
-  // “새로 추가된 단축키”도 동작하도록 전역 리스너 추가
+  setupAutoLogout();
+  applyKeyboardShortcuts();
   applyUserShortcuts();
 
-  // ESC 키 누르면 드롭다운 닫기
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeAllDropdowns();
     }
-    resetAutoLogoutTimer(); // 키 입력이 있을 때마다 자동 로그아웃 타이머 초기화
+    resetAutoLogoutTimer();
   });
 
-  // 검색창 Enter 키 처리
   const searchInput = document.getElementById('search-input');
   if (searchInput) {
     searchInput.addEventListener('keypress', (e) => {
@@ -74,23 +55,20 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('keydown', resetAutoLogoutTimer);
   }
 
-  // 화면 바깥 클릭 시 드롭다운 닫기
   document.addEventListener('click', (event) => {
     const ntBtn = event.target.closest('#notification-btn');
     const upBtn = event.target.closest('#user-profile');
     const ssBtn = event.target.closest('#nav-student-services');
-    // 알림 드롭다운 영역 밖 클릭 시 닫기
+
     if (!ntBtn) closeNotificationDropdown();
-    // 사용자 드롭다운 영역 밖 클릭 시 닫기
     if (!upBtn) closeUserDropdown();
-    // 학생 서비스 드롭다운 영역 밖 클릭 시 닫기
     if (!ssBtn) closeStudentServiceDropdown();
 
     resetAutoLogoutTimer();
   });
 });
 
-// ─────────── 네트워크 상태 변화 감지 ───────────
+// ─────────── 네트워크 상태 감지 ───────────
 function setupNetworkListeners() {
   window.addEventListener('online', () => {
     isOnline = true;
@@ -104,12 +82,12 @@ function setupNetworkListeners() {
   });
 }
 
-// ─────────── showContent: SPA처럼 화면 전환 처리 ───────────
+// ─────────── showContent: SPA 전환 ───────────
 function showContent(type) {
   const panes = [
     'homeContent',
     'buildingsContent',
-    // 'communityContent'  // 이제 정적 HTML 제거했으므로, placeholder만 남김
+    'communityContent',
     'lecture-reviewContent',
     'noticesContent',
     'timetableContentPane',
@@ -119,166 +97,137 @@ function showContent(type) {
     'settingsContent'
   ];
 
-  // 모든 화면 숨김
   panes.forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
 
-  // 커뮤니티 콘텐츠는 동적 로드 위치용 컨테이너만 남김
-  const communityContainer = document.getElementById('communityContent');
-  if (communityContainer) communityContainer.style.display = 'none';
-
-  // 강의평가 콘텐츠도 동적 로드 위치용 컨테이너만 남김
-  const lectureContainer = document.getElementById('lecture-reviewContent');
-  if (lectureContainer) lectureContainer.style.display = 'none';
-
-  // 공지사항 콘텐츠도 동적 로드 위치용 컨테이너만 남김
-  const noticesContainer = document.getElementById('noticesContent');
-  if (noticesContainer) noticesContainer.style.display = 'none';
-
-  // 보여줄 화면 결정
-  let targetId = 'homeContent';
-  switch (type) {
-    case 'home':           targetId = 'homeContent'; break;
-    case 'buildings':      targetId = 'buildingsContent'; break;
-    case 'community':      targetId = 'communityContent'; break;
-    case 'lecture-review': targetId = 'lecture-reviewContent'; break;
-    case 'notices':        targetId = 'noticesContent'; break;
-    case 'timetable':      targetId = 'timetableContentPane'; break;
-    case 'shuttle':        targetId = 'shuttleContentPane'; break;
-    case 'calendar':       targetId = 'calendarContentPane'; break;
-    case 'profile':        targetId = 'profileContentPane'; break;
-    case 'settings':       targetId = 'settingsContent'; break;
-    default:               targetId = 'homeContent';
-  }
-
-  // “설정” 화면일 때, 아직 settings.html 을 삽입하지 않았다면 fetch 후 삽입
   if (type === 'settings' && !settingsLoaded) {
     const container = document.getElementById('settingsContent');
-    if (container) {
-      fetch('settings.html')
-        .then((res) => {
-          if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then((html) => {
-          container.innerHTML = html;
-          settingsLoaded = true;
-          if (window.initSettingsPage) window.initSettingsPage();
-        })
-        .catch((err) => {
-          console.error(err);
-          container.innerHTML = `<div class="error-fallback">
-            <h3>⚠️ 오류 발생</h3>
-            <p>설정 화면을 불러올 수 없습니다</p>
-          </div>`;
-        });
-    }
+    fetch('settings.html')
+      .then(res => {
+        if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
+        return res.text();
+      })
+      .then(html => {
+        container.innerHTML = html;
+        settingsLoaded = true;
+        if (window.initSettingsPage) window.initSettingsPage();
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = `<div class="error-fallback">
+          <h3>⚠️ 오류 발생</h3>
+          <p>설정 화면을 불러올 수 없습니다</p>
+        </div>`;
+      });
   }
 
-  // “커뮤니티” 화면일 때, 아직 community.html 을 삽입하지 않았다면 fetch 후 삽입
   if (type === 'community' && !communityLoaded) {
     const container = document.getElementById('communityContent');
-    if (container) {
-      fetch('community.html')
-        .then((res) => {
-          if (!res.ok) throw new Error('community.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then((html) => {
-          container.innerHTML = html;
-          communityLoaded = true;
-          if (window.initCommunityPage) window.initCommunityPage();
-        })
-        .catch((err) => {
-          console.error(err);
-          container.innerHTML = `<div class="error-fallback">
-            <h3>⚠️ 오류 발생</h3>
-            <p>커뮤니티 화면을 불러올 수 없습니다</p>
-          </div>`;
-        });
-    }
+    fetch('community.html')
+      .then(res => {
+        if (!res.ok) throw new Error('community.html 을 불러오는 중 오류 발생');
+        return res.text();
+      })
+      .then(html => {
+        container.innerHTML = html;
+        communityLoaded = true;
+        if (window.initCommunityPage) window.initCommunityPage();
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = `<div class="error-fallback">
+          <h3>⚠️ 오류 발생</h3>
+          <p>커뮤니티 화면을 불러올 수 없습니다</p>
+        </div>`;
+      });
   }
 
-  // “강의평가” 화면일 때, 아직 lecture-review.html 을 삽입하지 않았다면 fetch 후 삽입
   if (type === 'lecture-review' && !lectureLoaded) {
     const container = document.getElementById('lecture-reviewContent');
-    if (container) {
-      fetch('lecture-review.html')
-        .then((res) => {
-          if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then((html) => {
-          container.innerHTML = html;
-          lectureLoaded = true;
-          if (window.initLectureReviewPage) window.initLectureReviewPage();
-        })
-        .catch((err) => {
-          console.error(err);
-          container.innerHTML = `<div class="error-fallback">
-            <h3>⚠️ 오류 발생</h3>
-            <p>강의평가 화면을 불러올 수 없습니다</p>
-          </div>`;
-        });
-    }
+    fetch('lecture-review.html')
+      .then(res => {
+        if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
+        return res.text();
+      })
+      .then(html => {
+        container.innerHTML = html;
+        lectureLoaded = true;
+        if (window.initLectureReviewPage) window.initLectureReviewPage();
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = `<div class="error-fallback">
+          <h3>⚠️ 오류 발생</h3>
+          <p>강의평가 화면을 불러올 수 없습니다</p>
+        </div>`;
+      });
   }
 
-  // “공지사항” 화면일 때, 아직 notices.html 을 삽입하지 않았다면 fetch 후 삽입
   if (type === 'notices' && !noticesLoaded) {
     const container = document.getElementById('noticesContent');
-    if (container) {
-      fetch('notices.html')
-        .then((res) => {
-          if (!res.ok) throw new Error('notices.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then((html) => {
-          container.innerHTML = html;
-          noticesLoaded = true;
-          if (window.initNoticesPage) window.initNoticesPage();
-        })
-        .catch((err) => {
-          console.error(err);
-          container.innerHTML = `<div class="error-fallback">
-            <h3>⚠️ 오류 발생</h3>
-            <p>공지사항 화면을 불러올 수 없습니다</p>
-          </div>`;
-        });
-    }
+    fetch('notices.html')
+      .then(res => {
+        if (!res.ok) throw new Error('notices.html 을 불러오는 중 오류 발생');
+        return res.text();
+      })
+      .then(html => {
+        container.innerHTML = html;
+        noticesLoaded = true;
+        if (window.initNoticesPage) window.initNoticesPage();
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = `<div class="error-fallback">
+          <h3>⚠️ 오류 발생</h3>
+          <p>공지사항 화면을 불러올 수 없습니다</p>
+        </div>`;
+      });
   }
 
-  // 화면 보이기
-  const target = document.getElementById(targetId);
-  if (target) {
-    target.style.display = 'block';
-    target.classList.add('fade-in');
-  }
-  if (type === 'community') {
-    const comm = document.getElementById('communityContent');
-    if (comm) {
-      comm.style.display = 'block';
-      comm.classList.add('fade-in');
-    }
-  }
-  if (type === 'lecture-review') {
-    const lec = document.getElementById('lecture-reviewContent');
-    if (lec) {
-      lec.style.display = 'block';
-      lec.classList.add('fade-in');
-    }
-  }
-  if (type === 'notices') {
-    const noti = document.getElementById('noticesContent');
-    if (noti) {
-      noti.style.display = 'block';
-      noti.classList.add('fade-in');
-    }
+  if (type === 'buildings' && !buildingsLoaded) {
+    const container = document.getElementById('buildingsContent');
+    fetch('buildings.html')
+      .then(res => {
+        if (!res.ok) throw new Error('buildings.html 을 불러오는 중 오류 발생');
+        return res.text();
+      })
+      .then(html => {
+        container.innerHTML = html;
+        buildingsLoaded = true;
+        if (window.initBuildingsPage) window.initBuildingsPage();
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = `<div class="error-fallback">
+          <h3>⚠️ 오류 발생</h3>
+          <p>건물 페이지를 불러올 수 없습니다</p>
+        </div>`;
+      });
   }
 
-  // 상단 메뉴 활성화 표시
-  document.querySelectorAll('#main-menu .nav-item').forEach((item) => {
+  const targetMap = {
+    home: 'homeContent',
+    buildings: 'buildingsContent',
+    community: 'communityContent',
+    'lecture-review': 'lecture-reviewContent',
+    notices: 'noticesContent',
+    timetable: 'timetableContentPane',
+    shuttle: 'shuttleContentPane',
+    calendar: 'calendarContentPane',
+    profile: 'profileContentPane',
+    settings: 'settingsContent'
+  };
+
+  const targetId = targetMap[type] || 'homeContent';
+  const targetEl = document.getElementById(targetId);
+  if (targetEl) {
+    targetEl.style.display = 'block';
+    targetEl.classList.add('fade-in');
+  }
+
+  document.querySelectorAll('#main-menu .nav-item').forEach(item => {
     item.classList.remove('active');
   });
   const navItem = document.getElementById('nav-' + type);
@@ -287,7 +236,6 @@ function showContent(type) {
   currentContent = type;
   window.location.hash = type;
 
-  // 건물 화면이면 네이버 지도 리프레시
   if (type === 'buildings' && naverMap) {
     setTimeout(() => {
       if (naverMap.refresh) naverMap.refresh();
@@ -303,15 +251,14 @@ async function initializeApp() {
     await Promise.all([
       loadStats(),
       loadNotifications(),
-      loadBuildings(),
-      loadNotices(),       // 메인 페이지의 "최근 공지사항"만 초기 로드
+      loadBuildingsMain(),
+      loadNotices(),
       loadShuttleInfo(),
-      loadLectureReviews() // 메인 페이지의 "인기/최근 강의평가"만 초기 로드
+      loadLectureReviews()
     ]);
     checkUserStatus();
     updateTimetable();
 
-    // 1분마다 셔틀/시간표 갱신
     setInterval(() => {
       if (isOnline) {
         loadShuttleInfo();
@@ -332,7 +279,7 @@ async function loadDepartments() {
     const res = await fetch('/api/departments');
     if (!res.ok) throw new Error('API 응답 오류');
     const list = await res.json();
-    list.forEach((item) => {
+    list.forEach(item => {
       departmentMap[item.code] = item.name;
     });
   } catch (err) {
@@ -363,7 +310,7 @@ function renderNotifications(notifications) {
   listEl.innerHTML = '';
   unreadNotifications = 0;
 
-  notifications.forEach((n) => {
+  notifications.forEach(n => {
     if (!isCategoryEnabled(n.category)) return;
     if (!shouldShowNotification()) return;
 
@@ -404,7 +351,7 @@ function markAsRead(el, id, category) {
 
 // ─────────── markAllAsRead: 모든 알림 읽음 처리 ───────────
 function markAllAsRead() {
-  document.querySelectorAll('.notification-item.unread').forEach((item) => {
+  document.querySelectorAll('.notification-item.unread').forEach(item => {
     item.classList.remove('unread');
   });
 
@@ -489,29 +436,29 @@ function renderStats(stats) {
   `;
 }
 
-// ─────────── loadBuildings: 건물 데이터 로드 ───────────
-async function loadBuildings() {
+// ─────────── loadBuildingsMain: 메인 페이지용 건물 데이터 로드 (대시보드 부분) ───────────
+async function loadBuildingsMain() {
   try {
     if (!isOnline) throw new Error('오프라인 모드');
     const res = await fetch('/api/buildings');
     if (!res.ok) throw new Error('API 응답 오류');
     const buildings = await res.json();
-    renderBuildings(buildings);
+    renderBuildingsMain(buildings);
     addMapMarkers(buildings);
   } catch (err) {
     console.error('건물 데이터 로드 실패:', err);
-    renderBuildings([]);
+    renderBuildingsMain([]);
     addMapMarkers([]);
   }
 }
 
-// ─────────── renderBuildings: 건물 카드 렌더링 ───────────
-function renderBuildings(buildings) {
+// ─────────── renderBuildingsMain: 메인 페이지용 건물 카드 렌더링 ───────────
+function renderBuildingsMain(buildings) {
   const grid = document.getElementById('buildingGrid');
   if (!grid) return;
 
   grid.innerHTML = '';
-  buildings.forEach((b) => {
+  buildings.forEach(b => {
     const card = document.createElement('div');
     card.className = 'building-card';
     card.innerHTML = `
@@ -597,12 +544,12 @@ function renderShuttleRoutes(routes) {
   });
 }
 
-// ─────────── selectShuttleRoute: 셔틀 루트 선택 및 상태 렌더링 ───────────
+// ─────────── selectShuttleRoute: 셔틀 노선 선택 및 상태 렌더링 ───────────
 async function selectShuttleRoute(routeId, route) {
   try {
-    document.querySelectorAll('.route-tab').forEach((tab) => tab.classList.remove('active'));
+    document.querySelectorAll('.route-tab').forEach(tab => tab.classList.remove('active'));
     const tabs = Array.from(document.querySelectorAll('.route-tab'));
-    const selectedTab = tabs.find((t) => route && t.textContent.includes(route.name));
+    const selectedTab = tabs.find(t => route && t.textContent.includes(route.name));
     if (selectedTab) selectedTab.classList.add('active');
     if (!route) throw new Error('유효한 노선 없음');
     renderShuttleStatus(route);
@@ -649,7 +596,7 @@ async function loadLectureReviews() {
   }
 }
 
-// ─────────── renderLectureReviewsMain: 메인 페이지용 오늘 강의평가 렌더링 ───────────
+// ─────────── renderLectureReviewsMain: 메인 페이지용 강의평가 렌더링 ───────────
 function renderLectureReviewsMain(popular, recent) {
   const popEl = document.getElementById('popularReviews');
   const recEl = document.getElementById('recentReviews');
@@ -658,7 +605,7 @@ function renderLectureReviewsMain(popular, recent) {
   popEl.innerHTML = '';
   recEl.innerHTML = '';
 
-  popular.forEach((r) => {
+  popular.forEach(r => {
     if (!isCategoryEnabled('강의평가')) return;
     const item = document.createElement('div');
     item.className = 'notice-item';
@@ -678,7 +625,7 @@ function renderLectureReviewsMain(popular, recent) {
     popEl.appendChild(item);
   });
 
-  recent.forEach((r) => {
+  recent.forEach(r => {
     if (!isCategoryEnabled('강의평가')) return;
     const item = document.createElement('div');
     item.className = 'notice-item';
@@ -696,9 +643,6 @@ function renderLectureReviewsMain(popular, recent) {
     recEl.appendChild(item);
   });
 }
-
-// ─────────── renderLectureReviews: (기존에 사용되던 메인 페이지용) ───────────
-//    메인 페이지의 별도 섹션이 아닌, 동적 로드된 lecture-review.html에서 사용되지 않음
 
 // ─────────── initNaverMap: 네이버 지도 초기화 ───────────
 function initNaverMap() {
@@ -734,12 +678,12 @@ function initNaverMap() {
 function addMapMarkers(buildings) {
   if (!naverMap) return;
   try {
-    mapMarkers.forEach((m) => m.setMap(null));
-    infoWindows.forEach((iw) => iw.close());
+    mapMarkers.forEach(m => m.setMap(null));
+    infoWindows.forEach(iw => iw.close());
     mapMarkers = [];
     infoWindows = [];
 
-    buildings.forEach((b) => {
+    buildings.forEach(b => {
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(b.position.lat, b.position.lng),
         map: naverMap,
@@ -759,7 +703,7 @@ function addMapMarkers(buildings) {
       });
 
       naver.maps.Event.addListener(marker, 'click', () => {
-        infoWindows.forEach((iw) => iw.close());
+        infoWindows.forEach(iw => iw.close());
         infoWindow.open(naverMap, marker);
       });
 
@@ -818,14 +762,14 @@ function updateTimetable() {
   `;
 
   fetch(`/api/timetable?user=${encodeURIComponent(currentUser)}`)
-    .then((res) => {
+    .then(res => {
       if (!res.ok) throw new Error('API 응답 오류');
       return res.json();
     })
-    .then((courses) => {
+    .then(courses => {
       renderTimetable(courses);
     })
-    .catch((err) => {
+    .catch(err => {
       console.error('시간표 로드 오류:', err);
       contentEl.innerHTML = `
         <div class="empty-state">
@@ -846,8 +790,8 @@ function renderTimetable(courses) {
   const currentTime = now.getHours() * 60 + now.getMinutes();
   const todayCourses = [];
 
-  courses.forEach((course) => {
-    course.times.forEach((time) => {
+  courses.forEach(course => {
+    course.times.forEach(time => {
       if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
         const startHour = 8 + time.start;
         const startMinute = 30;
@@ -903,7 +847,7 @@ function renderTimetable(courses) {
   }
 
   contentEl.innerHTML = '';
-  todayCourses.forEach((ci) => {
+  todayCourses.forEach(ci => {
     const statusText = {
       current: '진행중',
       upcoming: '예정',
@@ -998,13 +942,12 @@ function closeAllDropdowns() {
   closeStudentServiceDropdown();
 }
 
-// ─────────── closeStudentServiceDropdown: 학생 서비스 드롭다운 닫기 ───────────
 function closeStudentServiceDropdown() {
   const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
   if (dropdown) dropdown.removeAttribute('style');
 }
 
-// ─────────── showProfile: 프로필(내 계정) 화면으로 이동 ───────────
+// ─────────── showProfile: 프로필 화면 로드 ───────────
 async function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
@@ -1101,11 +1044,11 @@ function checkUserStatus() {
 
   if (currentUser && isOnline) {
     fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-      .then((res) => {
+      .then(res => {
         if (!res.ok) throw new Error('API 응답 오류');
         return res.json();
       })
-      .then((user) => {
+      .then(user => {
         if (userNameEl) userNameEl.textContent     = user.name || '사용자';
         if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
@@ -1135,7 +1078,7 @@ function setGuestMode() {
   if (avatarEl) avatarEl.textContent         = '👤';
 }
 
-// ─────────── updateProfileImage: 사용자 프로필 이미지 적용 ───────────
+// ─────────── updateProfileImage: 프로필 이미지 적용 ───────────
 function updateProfileImage(user) {
   const avatarEl = document.getElementById('user-avatar');
   if (!avatarEl) return;
@@ -1149,7 +1092,7 @@ function updateProfileImage(user) {
   }
 }
 
-// ─────────── showMessage: 화면 우측 상단 슬라이드 알림 메시지 ───────────
+// ─────────── showMessage: 우측 상단 알림 ───────────
 function showMessage(message, type = 'info', category = '') {
   if (category && !isCategoryEnabled(category)) return;
   if (!shouldShowNotification()) return;
@@ -1214,13 +1157,13 @@ function shouldShowNotification() {
   }
 }
 
-// ─────────── isCategoryEnabled: 설정에서 카테고리별 알림 여부 확인 ───────────
+// ─────────── isCategoryEnabled: 카테고리별 알림 설정 확인 ───────────
 function isCategoryEnabled(category) {
   const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
   return catSettings[category] === true;
 }
 
-// ─────────── setupAutoLogout: 비활성 시 자동 로그아웃 로직 초기화 ───────────
+// ─────────── setupAutoLogout: 자동 로그아웃 로직 초기화 ───────────
 function setupAutoLogout() {
   document.addEventListener('mousemove', resetAutoLogoutTimer);
   document.addEventListener('keypress', resetAutoLogoutTimer);
@@ -1242,14 +1185,14 @@ function resetAutoLogoutTimer() {
   }, timeoutMs);
 }
 
-// ─────────── applyKeyboardShortcuts: 기존 키보드 단축키 로드 ───────────
+// ─────────── applyKeyboardShortcuts: 기존 단축키 적용 ───────────
 function applyKeyboardShortcuts() {
   const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
     toggleSidebar: 'F2',
     openNotifications: 'F3',
     goToSettings: 'F4'
   };
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', e => {
     const targetTag = e.target.tagName;
     if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
 
@@ -1269,9 +1212,9 @@ function applyKeyboardShortcuts() {
   });
 }
 
-// ─────────── applyUserShortcuts: 사용자 정의 단축키 로컬스토리지 기반 실행 ───────────
+// ─────────── applyUserShortcuts: 사용자 정의 단축키 적용 ───────────
 function applyUserShortcuts() {
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', e => {
     const targetTag = e.target.tagName;
     if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
 
@@ -1314,8 +1257,8 @@ function applyUserShortcuts() {
   });
 }
 
-// ─────────── window 이벤트: 로컬스토리지 변경 시 사용자 상태 갱신 ───────────
-window.addEventListener('storage', (event) => {
+// ─────────── storage 이벤트: 로그인/프로필/테마 갱신 ───────────
+window.addEventListener('storage', event => {
   if (
     event.key === 'currentLoggedInUser' ||
     (event.key && event.key.includes('_profileImage'))
@@ -1330,8 +1273,8 @@ window.addEventListener('storage', (event) => {
   }
 });
 
-// ─────────── window 이벤트: 페이지 복원(persisted) 시 상태 갱신 ───────────
-window.addEventListener('pageshow', (event) => {
+// ─────────── pageshow 이벤트: 페이지 복원 시 갱신 ───────────
+window.addEventListener('pageshow', event => {
   if (event.persisted) {
     checkUserStatus();
     updateTimetable();
@@ -1341,32 +1284,14 @@ window.addEventListener('pageshow', (event) => {
   else document.body.classList.remove('light-mode');
 });
 
-// ─────────── navigateToTimetable: 내 시간표 페이지로 이동 ───────────
-function navigateToTimetable() {
-  showContent('timetable');
-}
+// ─────────── navigateToTimetable, navigateToShuttle, navigateToCalendar ───────────
+function navigateToTimetable() { showContent('timetable'); }
+function navigateToShuttle()   { showContent('shuttle'); }
+function navigateToCalendar()  { showContent('calendar'); }
 
-// ─────────── navigateToShuttle: 셔틀버스 페이지로 이동 ───────────
-function navigateToShuttle() {
-  showContent('shuttle');
-}
-
-// ─────────── navigateToCalendar: 학사일정 페이지로 이동 ───────────
-function navigateToCalendar() {
-  showContent('calendar');
-}
-
-// ─────────── zoomIn: 지도 확대 ───────────
-function zoomIn() {
-  if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1);
-}
-
-// ─────────── zoomOut: 지도 축소 ───────────
-function zoomOut() {
-  if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1);
-}
-
-// ─────────── resetMapView: 지도 초기 위치로 리셋 ───────────
+// ─────────── zoomIn, zoomOut, resetMapView ───────────
+function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
+function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
 function resetMapView() {
   if (naverMap) {
     const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
@@ -1375,7 +1300,7 @@ function resetMapView() {
   }
 }
 
-// ─────────── trackUserLocation: 사용자의 현재 위치 추적 ───────────
+// ─────────── trackUserLocation: 사용자 위치 표시 ───────────
 function trackUserLocation() {
   if (!navigator.geolocation) {
     showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
@@ -1383,7 +1308,7 @@ function trackUserLocation() {
   }
 
   navigator.geolocation.getCurrentPosition(
-    (position) => {
+    position => {
       if (!naverMap) {
         showMessage('지도가 초기화되지 않았습니다', 'error', '');
         return;
@@ -1404,19 +1329,19 @@ function trackUserLocation() {
       naverMap.setZoom(17);
       showMessage('현재 위치를 찾았습니다', 'success', '');
     },
-    (error) => {
+    error => {
       let message = '위치를 찾을 수 없습니다';
       switch (error.code) {
-        case error.PERMISSION_DENIED: message = '위치 권한이 거부되었습니다'; break;
+        case error.PERMISSION_DENIED:    message = '위치 권한이 거부되었습니다'; break;
         case error.POSITION_UNAVAILABLE: message = '위치 정보를 사용할 수 없습니다'; break;
-        case error.TIMEOUT: message = '위치 요청 시간이 초과되었습니다'; break;
+        case error.TIMEOUT:              message = '위치 요청 시간이 초과되었습니다'; break;
       }
       showMessage(message, 'error', '');
     }
   );
 }
 
-// ─────────── showBuildingOnMap: 특정 건물 지도에서 보기 ───────────
+// ─────────── showBuildingOnMap: 메인 페이지 건물 보기 ───────────
 function showBuildingOnMap(buildingId) {
   showContent('buildings');
   setTimeout(() => {
@@ -1424,12 +1349,12 @@ function showBuildingOnMap(buildingId) {
   }, 100);
 }
 
-// ─────────── getBuildingDirections: 길찾기 기능 (준비 중) ───────────
+// ─────────── getBuildingDirections: 길찾기 준비 중 ───────────
 function getBuildingDirections(buildingId) {
   showMessage('길찾기 기능은 준비 중입니다', 'info', '');
 }
 
-// ─────────── viewNoticeDetail: 공지사항 상세 보기 (준비 중) ───────────
+// ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
 function viewNoticeDetail(noticeId) {
   showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
 }

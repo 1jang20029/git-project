@@ -1,33 +1,64 @@
-<!-- public/buildings.html -->
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>건물 &amp; 시설 안내 – 연성대학교 스마트 캠퍼스</title>
-  <link rel="stylesheet" href="buildings.css"/>
-</head>
-<body>
-  <header>
-    <h1>건물 &amp; 시설 안내</h1>
-    <nav>
-      <button onclick="showHome()">홈으로</button>
-    </nav>
-  </header>
-  <main>
-    <section id="map-section">
-      <div id="mapContainer"></div>
-      <div id="mapControls">
-        <button onclick="zoomIn()">🔍+</button>
-        <button onclick="zoomOut()">🔍−</button>
-        <button onclick="resetView()">🏠</button>
-      </div>
-    </section>
-    <section id="list-section">
-      <div id="buildingList"></div>
-    </section>
-  </main>
-  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j" defer></script>
-  <script src="buildings.js" defer></script>
-</body>
-</html>
+<div id="content-header-buildings">
+  <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
+  <div class="breadcrumb">
+    <span>홈</span><span>›</span><span>건물 &amp; 시설</span>
+  </div>
+</div>
+
+<div id="building-list" class="grid-container">
+  <div class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>건물 정보를 불러오는 중...</span>
+  </div>
+</div>
+
+<script>
+  // 건물 페이지 초기화 함수
+  function initBuildingsPage() {
+    const listEl = document.getElementById('building-list');
+    fetch('/api/buildings')
+      .then(res => {
+        if (!res.ok) throw new Error('API 응답 오류');
+        return res.json();
+      })
+      .then(buildings => {
+        if (!buildings.length) {
+          listEl.innerHTML = `
+            <div class="empty-state">
+              <h3>등록된 건물이 없습니다</h3>
+            </div>
+          `;
+          return;
+        }
+        listEl.innerHTML = '';
+        buildings.forEach(b => {
+          const card = document.createElement('div');
+          card.className = 'building-card';
+          card.onclick = () => showBuildingDetail(b.id);
+          card.innerHTML = `
+            <h3 class="building-name">${b.name}</h3>
+            <p class="building-desc">${b.description}</p>
+          `;
+          listEl.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        listEl.innerHTML = `
+          <div class="error-fallback">
+            <h3>⚠️ 오류 발생</h3>
+            <p>건물 정보를 불러올 수 없습니다</p>
+          </div>
+        `;
+      });
+  }
+
+  // 건물 클릭 시 상세 이동
+  function showBuildingDetail(buildingId) {
+    // 예시: 상세 뷰로 전환하거나 모달 표시
+    alert(`건물 상세 (ID: ${buildingId}) 로 이동`);
+  }
+
+  // 페이지 로드 직후 초기화
+  window.initBuildingsPage = initBuildingsPage;
+</script>
