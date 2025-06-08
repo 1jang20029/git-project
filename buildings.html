@@ -1,4 +1,3 @@
-<!-- buildings.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,32 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>건물 & 시설 안내</title>
 
+  <!-- 네이버 지도 API 로드 -->
+  <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x"></script>
+  
   <!-- 건물 관련 전용 CSS -->
   <link rel="stylesheet" href="buildings.css" />
 </head>
 <body>
-  <!-- --------------------------------------------------
-       건물 & 시설 안내 화면 본문
-       -------------------------------------------------- -->
-  <div id="content-header-buildings">
-    <h1 id="title-buildings">건물 &amp; 시설 안내</h1>
-    <div id="breadcrumb-buildings">
+  <!-- 건물 & 시설 안내 화면 본문 -->
+  <div class="content-header">
+    <h1>건물 &amp; 시설 안내</h1>
+    <div class="breadcrumb">
       <span>홈</span>
       <span>›</span>
       <span>건물 안내</span>
     </div>
   </div>
 
-  <!-- --------------------------------------------------
-       건물 지도 카드
-       -------------------------------------------------- -->
-  <div id="buildingsMapCard" style="margin-bottom: 2rem;">
+  <!-- 건물 지도 카드 -->
+  <div id="buildingsMapCard">
     <div id="card-header-buildings-map">
       <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
       <span id="card-icon-buildings-map">🗺️</span>
     </div>
     <div id="buildings-map-container">
-      <div id="buildingsMap" style="width: 100%; height: 100%;"></div>
+      <div id="buildingsMap"></div>
       <div id="buildings-map-overlay">
         <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
         <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
@@ -41,12 +39,13 @@
     </div>
   </div>
 
-  <!-- --------------------------------------------------
-       건물 카드 그리드
-       -------------------------------------------------- -->
+  <!-- 건물 카드 그리드 -->
   <div id="buildingGrid"></div>
 
+  <!-- 시설 카드 그리드 -->
+  <div id="facilitiesGrid"></div>
+
   <!-- 건물 전용 JS -->
-  <script src="buildings.js" defer></script>
+  <script src="buildings.js"></script>
 </body>
 </html>
