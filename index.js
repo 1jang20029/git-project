@@ -11,17 +11,24 @@ let unreadNotifications = 0;
 let isOnline = navigator.onLine;
 
 // 페이지 로드 상태 변수
-let settingsLoaded = false;
-let communityLoaded = false;
-let lectureLoaded = false;
-let noticesLoaded = false;
-let buildingsLoaded = false;
+let settingsLoaded   = false;
+let communityLoaded  = false;
+let lectureLoaded    = false;
+let noticesLoaded    = false;
+let buildingsLoaded  = false;
 
 // 자동 로그아웃 타이머
 let autoLogoutTimer = null;
 
 // 학과 코드 ↔ 이름 매핑 객체
 const departmentMap = {};
+
+// 건물 데이터 전역 저장소
+let buildingsList = [];
+
+// ─────────── REST API 인증 정보 ───────────
+const CLIENT_ID     = 'ud4n9otj1x';    // X-NCP-APIGW-API-KEY-ID
+const CLIENT_SECRET = 'wwJtgkpaB5K58ghahCTq6gsFADgfanL2DDinxgJ8'; // X-NCP-APIGW-API-KEY
 
 // ─────────── DOMContentLoaded ───────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -208,16 +215,16 @@ function showContent(type) {
   }
 
   const targetMap = {
-    home: 'homeContent',
-    buildings: 'buildingsContent',
-    community: 'communityContent',
-    'lecture-review': 'lecture-reviewContent',
-    notices: 'noticesContent',
-    timetable: 'timetableContentPane',
-    shuttle: 'shuttleContentPane',
-    calendar: 'calendarContentPane',
-    profile: 'profileContentPane',
-    settings: 'settingsContent'
+    home:           'homeContent',
+    buildings:      'buildingsContent',
+    community:      'communityContent',
+    'lecture-review':'lecture-reviewContent',
+    notices:        'noticesContent',
+    timetable:      'timetableContentPane',
+    shuttle:        'shuttleContentPane',
+    calendar:       'calendarContentPane',
+    profile:        'profileContentPane',
+    settings:       'settingsContent'
   };
 
   const targetId = targetMap[type] || 'homeContent';
@@ -303,12 +310,12 @@ async function loadNotifications() {
 
 // ─────────── renderNotifications: 알림 목록 렌더링 ───────────
 function renderNotifications(notifications) {
-  const listEl = document.getElementById('notification-list');
+  const listEl  = document.getElementById('notification-list');
   const countEl = document.getElementById('notification-badge');
   if (!listEl || !countEl) return;
 
-  listEl.innerHTML = '';
-  unreadNotifications = 0;
+  listEl.innerHTML       = '';
+  unreadNotifications    = 0;
 
   notifications.forEach(n => {
     if (!isCategoryEnabled(n.category)) return;
@@ -316,7 +323,7 @@ function renderNotifications(notifications) {
 
     const item = document.createElement('div');
     item.className = 'notification-item' + (n.unread ? ' unread' : '');
-    item.onclick = () => markAsRead(item, n.id, n.category);
+    item.onclick   = () => markAsRead(item, n.id, n.category);
     item.innerHTML = `
       <div class="notification-meta">
         <span class="notification-category">${n.category}</span>
@@ -367,10 +374,10 @@ function markAllAsRead() {
 
 // ─────────── updateNotificationCount: 알림 뱃지 갱신 ───────────
 function updateNotificationCount() {
-  const countEl = document.getElementById('notification-badge');
-  const dotEl = document.getElementById('notification-dot');
+  const countEl  = document.getElementById('notification-badge');
+  const dotEl    = document.getElementById('notification-dot');
   if (countEl) countEl.textContent = unreadNotifications;
-  if (dotEl) dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
+  if (dotEl)   dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
 }
 
 // ─────────── loadStats: 통계 데이터 로드 ───────────
@@ -436,17 +443,19 @@ function renderStats(stats) {
   `;
 }
 
-// ─────────── loadBuildingsMain: 메인 페이지용 건물 데이터 로드 (대시보드 부분) ───────────
+// ─────────── loadBuildingsMain: 메인 페이지용 건물 데이터 로드 ───────────
 async function loadBuildingsMain() {
   try {
     if (!isOnline) throw new Error('오프라인 모드');
     const res = await fetch('/api/buildings');
     if (!res.ok) throw new Error('API 응답 오류');
-    const buildings = await res.json();
-    renderBuildingsMain(buildings);
-    addMapMarkers(buildings);
+    const list = await res.json();
+    buildingsList = list;
+    renderBuildingsMain(list);
+    addMapMarkers(list);
   } catch (err) {
     console.error('건물 데이터 로드 실패:', err);
+    buildingsList = [];
     renderBuildingsMain([]);
     addMapMarkers([]);
   }
@@ -732,7 +741,7 @@ function showErrorFallback(containerId, message) {
 // ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
-  const contentEl = document.getElementById('timetableContent');
+  const contentEl   = document.getElementById('timetableContent');
   if (!contentEl) return;  
   if (!currentUser) {
     contentEl.innerHTML = `
@@ -781,21 +790,23 @@ function updateTimetable() {
 function renderTimetable(courses) {
   const contentEl = document.getElementById('timetableContent');
   if (!contentEl) return;
-  const now = new Date();
-  const currentDay = now.getDay();
+  const now         = new Date();
+  const currentDay  = now.getDay();
   const currentTime = now.getHours() * 60 + now.getMinutes();
   const todayCourses = [];
+
   courses.forEach(course => {
     course.times.forEach(time => {
       if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
-        const startHour = 8 + time.start;
+        const startHour   = 8 + time.start;
         const startMinute = 30;
-        const startTime = startHour * 60 + startMinute;
-        const endHour = 8 + time.end + 1;
-        const endMinute = 20;
-        const endTime = endHour * 60 + endMinute;
+        const startTime   = startHour * 60 + startMinute;
+        const endHour     = 8 + time.end + 1;
+        const endMinute   = 20;
+        const endTime     = endHour * 60 + endMinute;
         let status = 'upcoming';
         let timeInfo = '';
+
         if (currentTime >= startTime && currentTime < endTime) {
           status = 'current';
           const remaining = endTime - currentTime;
@@ -813,10 +824,11 @@ function renderTimetable(courses) {
             timeInfo = '곧 시작';
           }
         }
+
         todayCourses.push({
-          name: course.name,
-          room: course.room,
-          professor: course.professor,
+          name:        course.name,
+          room:        course.room,
+          professor:   course.professor,
           status,
           timeInfo,
           displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
@@ -825,7 +837,9 @@ function renderTimetable(courses) {
       }
     });
   });
+
   todayCourses.sort((a, b) => a.startTime - b.startTime);
+
   if (todayCourses.length === 0) {
     contentEl.innerHTML = `
       <div class="empty-state">
@@ -835,10 +849,11 @@ function renderTimetable(courses) {
     `;
     return;
   }
+
   contentEl.innerHTML = '';
   todayCourses.forEach(ci => {
     const statusText = {
-      current: '진행중',
+      current:  '진행중',
       upcoming: '예정',
       finished: '종료',
     }[ci.status];
@@ -864,7 +879,7 @@ function formatTimeRemaining(minutes, suffix) {
   if (minutes < 60) {
     return `${minutes}분 ${suffix}`;
   } else {
-    const hours = Math.floor(minutes / 60);
+    const hours  = Math.floor(minutes / 60);
     const remain = minutes % 60;
     if (remain === 0) {
       return `${hours}시간 ${suffix}`;
@@ -897,7 +912,7 @@ function closeNotificationDropdown() {
 
 // ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
 function toggleUserMenu() {
-  const dropdown = document.getElementById('user-dropdown');
+  const dropdown    = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
     window.location.href = 'login.html';
@@ -1014,12 +1029,13 @@ async function handleGlobalSearch() {
 
 // ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
 function checkUserStatus() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  const userNameEl  = document.getElementById('user-name');
-  const userRoleEl  = document.getElementById('user-role');
+  const currentUser    = localStorage.getItem('currentLoggedInUser');
+  const userNameEl     = document.getElementById('user-name');
+  const userRoleEl     = document.getElementById('user-role');
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl   = document.getElementById('user-avatar');
+  const avatarEl       = document.getElementById('user-avatar');
+
   if (currentUser && isOnline) {
     fetch(`/api/users/${encodeURIComponent(currentUser)}`)
       .then(res => {
@@ -1027,15 +1043,13 @@ function checkUserStatus() {
         return res.json();
       })
       .then(user => {
-        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
-        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
+        if (userNameEl)     userNameEl.textContent     = user.name || '사용자';
+        if (userRoleEl)     userRoleEl.textContent     = departmentMap[user.department] || '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
         if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
         updateProfileImage(user);
       })
-      .catch(() => {
-        setGuestMode();
-      });
+      .catch(() => setGuestMode());
   } else {
     setGuestMode();
   }
@@ -1043,16 +1057,17 @@ function checkUserStatus() {
 
 // ─────────── setGuestMode: 게스트 모드로 UI 초기화 ───────────
 function setGuestMode() {
-  const userNameEl    = document.getElementById('user-name');
-  const userRoleEl    = document.getElementById('user-role');
+  const userNameEl     = document.getElementById('user-name');
+  const userRoleEl     = document.getElementById('user-role');
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl      = document.getElementById('user-avatar');
-  if (userNameEl) userNameEl.textContent     = '게스트';
-  if (userRoleEl) userRoleEl.textContent     = '방문자';
+  const avatarEl       = document.getElementById('user-avatar');
+
+  if (userNameEl)     userNameEl.textContent     = '게스트';
+  if (userRoleEl)     userRoleEl.textContent     = '방문자';
   if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
   if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
-  if (avatarEl) avatarEl.textContent         = '👤';
+  if (avatarEl)       avatarEl.textContent       = '👤';
 }
 
 // ─────────── updateProfileImage: 프로필 이미지 적용 ───────────
@@ -1116,10 +1131,10 @@ function showMessage(message, type = 'info', category = '') {
 function shouldShowNotification() {
   const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
   if (!dnd.enabled) return true;
-  const now = new Date();
+  const now          = new Date();
   const totalMinutes = now.getHours() * 60 + now.getMinutes();
-  const startHM = dnd.startHour * 60 + dnd.startMinute;
-  const endHM   = dnd.endHour * 60 + dnd.endMinute;
+  const startHM      = dnd.startHour * 60 + dnd.startMinute;
+  const endHM        = dnd.endHour * 60 + dnd.endMinute;
   if (startHM < endHM) {
     return !(totalMinutes >= startHM && totalMinutes < endHM);
   } else {
@@ -1185,38 +1200,36 @@ function applyUserShortcuts() {
     const targetTag = e.target.tagName;
     if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
     resetAutoLogoutTimer();
-    const pressedKey = e.key.toUpperCase();
-    const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
-    const matched = userShortcuts.find(entry => entry.key === pressedKey);
-    if (!matched) return;
-    if (!matched.name) return;
+    const pressedKey   = e.key.toUpperCase();
+    const userShortcuts= JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
+    const matched      = userShortcuts.find(entry => entry.key === pressedKey);
+    if (!matched || !matched.name) return;
     e.preventDefault();
     const label = matched.name.toLowerCase();
-    if (label.includes('대시보드')) { showContent('home'); return; }
-    if (label.includes('건물')) { showContent('buildings'); return; }
-    if (label.includes('커뮤니티')) { showContent('community'); return; }
-    if (label.includes('강의평가')) { showContent('lecture-review'); return; }
-    if (label.includes('공지사항')) { showContent('notices'); return; }
-    if (label.includes('내 시간표') || label.includes('시간표')) { showContent('timetable'); return; }
-    if (label.includes('셔틀버스') || label.includes('셔틀')) { showContent('shuttle'); return; }
-    if (label.includes('학사일정') || label.includes('학사')) { showContent('calendar'); return; }
-    if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
-    if (label.includes('설정')) { showContent('settings'); return; }
-    if (label.includes('알림')) { toggleNotifications(); return; }
-    if (label.includes('로그아웃')) { handleLogout(); return; }
-    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
+    if (label.includes('대시보드')) showContent('home');
+    else if (label.includes('건물')) showContent('buildings');
+    else if (label.includes('커뮤니티')) showContent('community');
+    else if (label.includes('강의평가')) showContent('lecture-review');
+    else if (label.includes('공지사항')) showContent('notices');
+    else if (label.includes('내 시간표') || label.includes('시간표')) showContent('timetable');
+    else if (label.includes('셔틀버스') || label.includes('셔틀')) showContent('shuttle');
+    else if (label.includes('학사일정') || label.includes('학사')) showContent('calendar');
+    else if (label.includes('프로필') || label.includes('내 계정')) showContent('profile');
+    else if (label.includes('설정')) showContent('settings');
+    else if (label.includes('알림')) toggleNotifications();
+    else if (label.includes('로그아웃')) handleLogout();
+    else if (label.includes('테마')||label.includes('다크')||label.includes('라이트')) {
       const themeToggle = document.getElementById('themeToggle');
       if (themeToggle) {
         themeToggle.checked = !themeToggle.checked;
         themeToggle.dispatchEvent(new Event('change'));
       }
-      return;
     }
-    if (label.includes('내 위치') || label.includes('위치')) { trackUserLocation(); return; }
-    if (label.includes('확대')) { zoomIn(); return; }
-    if (label.includes('축소')) { zoomOut(); return; }
-    if (label.includes('초기화') || label.includes('리셋')) { resetMapView(); return; }
-    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
+    else if (label.includes('내 위치')||label.includes('위치')) trackUserLocation();
+    else if (label.includes('확대')) zoomIn();
+    else if (label.includes('축소')) zoomOut();
+    else if (label.includes('초기화')||label.includes('리셋')) resetMapView();
+    else console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 호출되었으나 매핑된 기능 없음.`);
   });
 }
 
@@ -1247,12 +1260,12 @@ window.addEventListener('pageshow', event => {
   else document.body.classList.remove('light-mode');
 });
 
-// ─────────── navigateToTimetable, navigateToShuttle, navigateToCalendar ───────────
+// ─────────── navigate helpers ───────────
 function navigateToTimetable() { showContent('timetable'); }
 function navigateToShuttle()   { showContent('shuttle'); }
 function navigateToCalendar()  { showContent('calendar'); }
 
-// ─────────── zoomIn, zoomOut, resetMapView ───────────
+// ─────────── map controls ───────────
 function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
 function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
 function resetMapView() {
@@ -1266,14 +1279,12 @@ function resetMapView() {
 // ─────────── trackUserLocation: 사용자 위치 표시 ───────────
 function trackUserLocation() {
   if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
-    return;
+    return showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
   }
   navigator.geolocation.getCurrentPosition(
     position => {
       if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
-        return;
+        return showMessage('지도가 초기화되지 않았습니다', 'error', '');
       }
       const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
       if (userMarker) userMarker.setMap(null);
@@ -1309,12 +1320,48 @@ function showBuildingOnMap(buildingId) {
   }, 100);
 }
 
-// ─────────── getBuildingDirections: 길찾기 준비 중 ───────────
-function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
+// ─────────── getBuildingDirections: 길찾기 호출 (REST) ───────────
+async function getBuildingDirections(buildingId) {
+  const dest = buildingsList.find(b => b.id === buildingId);
+  if (!dest) {
+    return showMessage('해당 건물을 찾을 수 없습니다', 'error');
+  }
+  const start = '126.906993,37.396327';        // 예시 출발 좌표
+  const goal  = `${dest.position.lng},${dest.position.lat}`;
+
+  const url = new URL('https://naveropenapi.apigw.ntruss.com/map-direction/v2/driving');
+  url.searchParams.set('start', start);
+  url.searchParams.set('goal',  goal);
+
+  try {
+    const res = await fetch(url.toString(), {
+      headers: {
+        'X-NCP-APIGW-API-KEY-ID': CLIENT_ID,
+        'X-NCP-APIGW-API-KEY':    CLIENT_SECRET
+      }
+    });
+    if (!res.ok) {
+      throw new Error(`Directions API 오류: ${res.status}`);
+    }
+    const data = await res.json();
+
+    // 폴리라인으로 경로 그리기
+    const path = data.routes[0].path.map(p => new naver.maps.LatLng(p[1], p[0]));
+    const polyline = new naver.maps.Polyline({
+      map: naverMap,
+      path,
+      strokeColor: '#3b82f6',
+      strokeWeight: 5,
+      strokeOpacity: 0.8
+    });
+    showMessage('길찾기 완료: Directions 사용량이 1 증가했습니다', 'success');
+  } catch (err) {
+    console.error(err);
+    showMessage('길찾기 호출에 실패했습니다', 'error');
+  }
 }
 
 // ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
 function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info');
 }
