@@ -4,77 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>건물 &amp; 시설 안내</title>
-
-  <!-- 1) 네이버 지도 API (반드시 <head>에 포함) -->
+  <!-- 이 페이지 전용 CSS -->
+  <link rel="stylesheet" href="buildings.css" />
+  <!-- 네이버 지도 API -->
   <script
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
     defer
   ></script>
-
-  <!-- 2) 전역 공통 스타일 (인증 실패 메시지 등) -->
-  <link rel="stylesheet" href="index.css" />
-
-  <!-- 3) 이 페이지 전용 스타일 -->
-  <link rel="stylesheet" href="buildings.css" />
 </head>
-<body onload="initBuildingsPage()">
-
-  <!-- ================================
-       헤더
-       ================================ -->
-  <div class="content-header">
-    <div>
-      <h1>건물 &amp; 시설 안내</h1>
-      <div class="breadcrumb">
-        <span>홈</span>
-        <span>›</span>
-        <span>건물 &amp; 시설 안내</span>
-      </div>
+<body>
+  <!-- ==============================
+       페이지 헤더
+       ============================== -->
+  <div id="content-header-buildings">
+    <h1>건물 &amp; 시설 안내</h1>
+    <div id="breadcrumb-buildings">
+      <span>홈</span><span>›</span><span>건물 &amp; 시설 안내</span>
     </div>
   </div>
 
-  <!-- ================================
-       캠퍼스 지도 카드
-       ================================ -->
+  <!-- ==============================
+       건물 그리드
+       ============================== -->
+  <div id="buildingGrid" class="building-grid"></div>
+
+  <!-- ==============================
+       캠퍼스 건물 지도 카드
+       ============================== -->
   <div id="buildingsMapCard">
     <div id="card-header-buildings-map">
-      <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
+      <h3 id="card-title-buildings-map">캠퍼스 건물 지도</h3>
       <span id="card-icon-buildings-map">🗺️</span>
     </div>
     <div id="buildings-map-container">
       <div id="buildingsMap"></div>
       <div id="buildings-map-overlay">
-        <button id="buildings-zoom-in" title="확대">🔍+</button>
-        <button id="buildings-zoom-out" title="축소">🔍-</button>
-        <button id="buildings-reset" title="초기화">🏠</button>
-        <button id="buildings-track-user" title="내 위치">📍</button>
+        <button id="buildings-zoom-in" onclick="buildingsZoomIn()" title="확대">🔍+</button>
+        <button id="buildings-zoom-out" onclick="buildingsZoomOut()" title="축소">🔍-</button>
+        <button id="buildings-reset" onclick="buildingsResetView()" title="초기화">🏠</button>
+        <button id="buildings-track-user" onclick="buildingsTrackUser()" title="내 위치">📍</button>
       </div>
     </div>
   </div>
 
-  <!-- ================================
-       건물 그리드
-       ================================ -->
-  <div id="buildingGrid"></div>
-
-  <!-- ================================
-       시설 안내
-       ================================ -->
-  <div class="content-header" style="margin-top: 2rem;">
-    <div>
-      <h1>시설 안내</h1>
-      <div class="breadcrumb">
-        <span>홈</span>
-        <span>›</span>
-        <span>시설 안내</span>
-      </div>
-    </div>
-  </div>
-  <div id="facilitiesGrid"></div>
-
-  <!-- ================================
-       페이지 전용 스크립트
-       ================================ -->
+  <!-- 이 페이지 전용 JavaScript -->
   <script src="buildings.js" defer></script>
 </body>
 </html>
