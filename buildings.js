@@ -1,6 +1,6 @@
 // buildings.js
 
-// 0) 이 CSS가 아직 로드되지 않았다면 동적으로 삽입
+// 0) 이 페이지 전용 CSS가 아직 로드되지 않았다면 동적으로 삽입
 (function() {
   if (!document.getElementById('buildings-css')) {
     const link = document.createElement('link');
@@ -56,10 +56,23 @@ function renderBuildingGrid(buildings) {
 
 // 4) 네이버 지도 초기화 및 마커 추가
 function initializeBuildingsMap(buildings) {
-  if (typeof naver === 'undefined' || !naver.maps) return;
-  const mapContainer = document.getElementById('buildingsMap');
+  const container = document.getElementById('buildingsMap');
+
+  // ─── 인증 실패 감지 ───
+  if (typeof naver === 'undefined' || !naver.maps) {
+    console.error('네이버 지도 API 인증 실패 또는 로드 실패');
+    container.innerHTML = `
+      <div class="error-fallback">
+        <h3>⚠️ 오류 발생</h3>
+        <p>네이버 지도 Open API 인증이 실패했습니다.</p>
+      </div>
+    `;
+    return;
+  }
+  // ──────────────────────
+
   const center = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-  const map = new naver.maps.Map(mapContainer, {
+  const map = new naver.maps.Map(container, {
     center,
     zoom: 16,
     minZoom: 14,
