@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>연성대학교 스마트 캠퍼스</title>
+  <title>건물 &amp; 시설 안내 – 연성대학교 스마트 캠퍼스</title>
 
   <!-- 네이버 지도 Open API -->
   <script
@@ -11,37 +11,28 @@
     defer
   ></script>
 
-  <!-- 공통 스타일 -->
+  <!-- 전용 스타일 -->
   <link rel="stylesheet" href="buildings.css" />
-  <!-- 설정 화면 전용 스타일 (사용 중이시라면) -->
-  <link rel="stylesheet" href="index.html" />
 </head>
 <body>
-  <!-- ─── 상단 네비게이션 ─── -->
-  <nav id="top-nav">
-    <div id="nav-brand">
-      <span>🎓</span>
-      <span>연성대학교 스마트 캠퍼스</span>
+  <div id="buildingsMapCard">
+    <div id="card-header-buildings-map">
+      <h3 id="card-title-buildings-map">건물 &amp; 시설 안내</h3>
+      <span id="card-icon-buildings-map">🏢</span>
     </div>
-    <div id="nav-menu">
-      <img src="assets/map-icon.svg" alt="캠퍼스 지도" />
+    <div id="buildings-map-container">
+      <div id="buildingsMap"></div>
+      <div id="buildings-map-overlay">
+        <button id="buildings-zoom-in" title="확대">🔍＋</button>
+        <button id="buildings-zoom-out" title="축소">🔍－</button>
+        <button id="buildings-reset" title="초기화">🏠</button>
+        <button id="buildings-track-user" title="내 위치">📍</button>
+      </div>
     </div>
-  </nav>
+  </div>
 
-  <!-- ─── 본문: 캠퍼스 지도 ─── -->
-  <section class="content">
-    <div class="content-header">
-      <h2>캠퍼스 지도</h2>
-    </div>
-    <div id="mapContainer" class="map-container"></div>
-    <div class="map-controls">
-      <button id="btnZoomIn"  class="control-btn zoom-in">+</button>
-      <button id="btnZoomOut" class="control-btn zoom-out">−</button>
-      <button id="btnHome"    class="control-btn home">🏠</button>
-      <button id="btnMarker"  class="control-btn marker">📍</button>
-    </div>
-  </section>
+  <div id="buildingGrid"></div>
 
-  <script src="buildings.js"></script>
+  <script src="buildings.js" defer></script>
 </body>
 </html>
