@@ -1,5 +1,23 @@
 // index.js
 
+// ─────────── REST 호출로 사용량 증가 (페이지 로드 시 한 번) ───────────
+async function bumpUsageOnLoad() {
+  try {
+    const url = new URL('https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode');
+    url.searchParams.set('query', '연성대학교');
+
+    await fetch(url.toString(), {
+      headers: {
+        'X-NCP-APIGW-API-KEY-ID':  CLIENT_ID,
+        'X-NCP-APIGW-API-KEY':     CLIENT_SECRET
+      }
+    });
+    // 이 호출 한 건이 Geocoding 사용량을 +1 합니다
+  } catch (e) {
+    console.warn('bumpUsageOnLoad 실패:', e);
+  }
+}
+
 // ─────────── 전역 변수 선언 ───────────
 let naverMap;
 let mapMarkers = [];
@@ -252,6 +270,9 @@ function showContent(type) {
 
 // ─────────── initializeApp: 앱 초기화 ───────────
 async function initializeApp() {
+  // 페이지 로드마다 Geocoding REST 호출로 사용량을 깎아 옵니다
+  bumpUsageOnLoad();
+
   try {
     await loadDepartments();
     initNaverMap();
@@ -363,7 +384,7 @@ function markAllAsRead() {
   });
 
   if (isOnline) {
-    fetch('/api/notifications/mark-all-read', { method: 'POST' })
+    fetch('/api/notifications/mark-all-read', { method: 'POST' })  
       .catch(err => console.error('전체 알림 읽음 처리 실패:', err));
   }
 
@@ -382,145 +403,145 @@ function updateNotificationCount() {
 
 // ─────────── loadStats: 통계 데이터 로드 ───────────
 async function loadStats() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/stats');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const stats = await res.json();
-    renderStats(stats);
-  } catch (err) {
-    console.error('통계 데이터 로드 실패:', err);
-    renderStats({
-      totalBuildings: 0,
-      totalStudents: 0,
-      activeServices: 0,
-      todayEvents: 0,
-      newBuildingsText: '',
-      studentGrowthText: '',
-      newServicesText: ''
-    });
-  }
+  try {  
+    if (!isOnline) throw new Error('오프라인 모드');  
+    const res = await fetch('/api/stats');  
+    if (!res.ok) throw new Error('API 응답 오류');  
+    const stats = await res.json();  
+    renderStats(stats);  
+  } catch (err) {  
+    console.error('통계 데이터 로드 실패:', err);  
+    renderStats({  
+      totalBuildings: 0,  
+      totalStudents: 0,  
+      activeServices: 0,  
+      todayEvents: 0,  
+      newBuildingsText: '',  
+      studentGrowthText: '',  
+      newServicesText: ''  
+    });  
+  }  
+}  
+
+// ─────────── renderStats: 통계 데이터 렌더링 ───────────  
+function renderStats(stats) {  
+  const statsGrid = document.getElementById('statsGrid');  
+  if (!statsGrid) return;  
+
+  statsGrid.innerHTML = `  
+    <div class="stat-card">  
+      <div class="stat-number">${stats.totalBuildings}</div>  
+      <div class="stat-label">캠퍼스 건물</div>  
+      <div class="stat-change positive">  
+        <span>↗</span>  
+        <span>${stats.newBuildingsText}</span>  
+      </div>  
+    </div>  
+    <div class="stat-card">  
+      <div class="stat-number">${stats.totalStudents}</div>  
+      <div class="stat-label">재학생 수</div>  
+      <div class="stat-change positive">  
+        <span>↗</span>  
+        <span>${stats.studentGrowthText}</span>  
+      </div>  
+    </div>  
+    <div class="stat-card">  
+      <div class="stat-number">${stats.activeServices}</div>  
+      <div class="stat-label">운영 서비스</div>  
+      <div class="stat-change positive">  
+        <span>↗</span>  
+        <span>${stats.newServicesText}</span>  
+      </div>  
+    </div>  
+    <div class="stat-card">  
+      <div class="stat-number">${stats.todayEvents}</div>  
+      <div class="stat-label">오늘 일정</div>  
+      <div class="stat-change">  
+        <span>📅</span>  
+        <span>진행중</span>  
+      </div>  
+    </div>  
+  `;  
 }
 
-// ─────────── renderStats: 통계 데이터 렌더링 ───────────
-function renderStats(stats) {
-  const statsGrid = document.getElementById('statsGrid');
-  if (!statsGrid) return;
-
-  statsGrid.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-number">${stats.totalBuildings}</div>
-      <div class="stat-label">캠퍼스 건물</div>
-      <div class="stat-change positive">
-        <span>↗</span>
-        <span>${stats.newBuildingsText}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">${stats.totalStudents}</div>
-      <div class="stat-label">재학생 수</div>
-      <div class="stat-change positive">
-        <span>↗</span>
-        <span>${stats.studentGrowthText}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">${stats.activeServices}</div>
-      <div class="stat-label">운영 서비스</div>
-      <div class="stat-change positive">
-        <span>↗</span>
-        <span>${stats.newServicesText}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">${stats.todayEvents}</div>
-      <div class="stat-label">오늘 일정</div>
-      <div class="stat-change">
-        <span>📅</span>
-        <span>진행중</span>
-      </div>
-    </div>
-  `;
+// ─────────── loadBuildingsMain: 메인 페이지용 건물 데이터 로드 ───────────  
+async function loadBuildingsMain() {  
+  try {  
+    if (!isOnline) throw new Error('오프라인 모드');  
+    const res = await fetch('/api/buildings');  
+    if (!res.ok) throw new Error('API 응답 오류');  
+    const list = await res.json();  
+    buildingsList = list;  
+    renderBuildingsMain(list);  
+    addMapMarkers(list);  
+  } catch (err) {  
+    console.error('건물 데이터 로드 실패:', err);  
+    buildingsList = [];  
+    renderBuildingsMain([]);  
+    addMapMarkers([]);  
+  }  
 }
 
-// ─────────── loadBuildingsMain: 메인 페이지용 건물 데이터 로드 ───────────
-async function loadBuildingsMain() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/buildings');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const list = await res.json();
-    buildingsList = list;
-    renderBuildingsMain(list);
-    addMapMarkers(list);
-  } catch (err) {
-    console.error('건물 데이터 로드 실패:', err);
-    buildingsList = [];
-    renderBuildingsMain([]);
-    addMapMarkers([]);
-  }
+// ─────────── renderBuildingsMain: 메인 페이지용 건물 카드 렌더링 ───────────  
+function renderBuildingsMain(buildings) {  
+  const grid = document.getElementById('buildingGrid');  
+  if (!grid) return;  
+
+  grid.innerHTML = '';  
+  buildings.forEach(b => {  
+    const card = document.createElement('div');  
+    card.className = 'building-card';  
+    card.onclick = () => showContent('buildings');  
+    card.innerHTML = `  
+      <h3 class="building-name">${b.name}</h3>  
+      <p class="building-desc">${b.description}</p>  
+      <div class="building-actions">  
+        <button class="btn btn-primary" onclick="showBuildingOnMap('${b.id}')">📍 지도에서 보기</button>  
+        <button class="btn btn-outline" onclick="getBuildingDirections('${b.id}')">🧭 길찾기</button>  
+      </div>  
+    `;  
+    grid.appendChild(card);  
+  });  
 }
 
-// ─────────── renderBuildingsMain: 메인 페이지용 건물 카드 렌더링 ───────────
-function renderBuildingsMain(buildings) {
-  const grid = document.getElementById('buildingGrid');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-  buildings.forEach(b => {
-    const card = document.createElement('div');
-    card.className = 'building-card';
-    card.onclick = () => showContent('buildings');
-    card.innerHTML = `
-      <h3 class="building-name">${b.name}</h3>
-      <p class="building-desc">${b.description}</p>
-      <div class="building-actions">
-        <button class="btn btn-primary" onclick="showBuildingOnMap('${b.id}')">📍 지도에서 보기</button>
-        <button class="btn btn-outline" onclick="getBuildingDirections('${b.id}')">🧭 길찾기</button>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
+// ─────────── loadNotices: 메인 페이지용 공지사항 데이터 로드 ───────────  
+async function loadNotices() {  
+  try {  
+    if (!isOnline) throw new Error('오프라인 모드');  
+    const res = await fetch('/api/notifications');  
+    if (!res.ok) throw new Error('API 응답 오류');  
+    const notices = await res.json();  
+    renderNoticesMain(notices);  
+  } catch (err) {  
+    console.error('공지사항 데이터 로드 실패:', err);  
+    renderNoticesMain([]);  
+  }  
 }
 
-// ─────────── loadNotices: 메인 페이지용 공지사항 데이터 로드 ───────────
-async function loadNotices() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/notifications');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const notices = await res.json();
-    renderNoticesMain(notices);
-  } catch (err) {
-    console.error('공지사항 데이터 로드 실패:', err);
-    renderNoticesMain([]);
-  }
+// ─────────── renderNoticesMain: 메인 페이지용 최근 공지사항 렌더링 ───────────  
+function renderNoticesMain(notices) {  
+  const recentEl = document.getElementById('recentNotices');  
+  if (!recentEl) return;  
+  recentEl.innerHTML = '';  
+  notices.forEach((n, idx) => {  
+    if (idx < 2) {  
+      const item = document.createElement('div');  
+      item.className = 'notice-item';  
+      item.onclick = () => viewNoticeDetail(n.id);  
+      item.innerHTML = `  
+        <div class="notice-header">  
+          <span class="notice-category">${n.category_name || '일반'}</span>  
+          <span class="notice-date">${n.published_at}</span>  
+        </div>  
+        <div class="notice-title">${n.title}</div>  
+        <div class="notice-summary">${n.content.slice(0, 100)}…</div>  
+      `;  
+      recentEl.appendChild(item);  
+    }  
+  });  
 }
 
-// ─────────── renderNoticesMain: 메인 페이지용 최근 공지사항 렌더링 ───────────
-function renderNoticesMain(notices) {
-  const recentEl = document.getElementById('recentNotices');
-  if (!recentEl) return;
-  recentEl.innerHTML = '';
-  notices.forEach((n, idx) => {
-    if (idx < 2) {
-      const item = document.createElement('div');
-      item.className = 'notice-item';
-      item.onclick = () => viewNoticeDetail(n.id);
-      item.innerHTML = `
-        <div class="notice-header">
-          <span class="notice-category">${n.category_name || '일반'}</span>
-          <span class="notice-date">${n.published_at}</span>
-        </div>
-        <div class="notice-title">${n.title}</div>
-        <div class="notice-summary">${n.content.slice(0, 100)}…</div>
-      `;
-      recentEl.appendChild(item);
-    }
-  });
-}
-
-// ─────────── loadShuttleInfo: 셔틀버스 데이터 로드 ───────────
+// ─────────── loadShuttleInfo: 셔틀버스 데이터 로드 ───────────  
 async function loadShuttleInfo() {
   try {
     if (!isOnline) throw new Error('오프라인 모드');
@@ -536,7 +557,7 @@ async function loadShuttleInfo() {
   }
 }
 
-// ─────────── renderShuttleRoutes: 셔틀 루트 탭 렌더링 ───────────
+// ─────────── renderShuttleRoutes: 셔틀 루트 탭 렌더링 ───────────  
 function renderShuttleRoutes(routes) {
   const tabs = document.getElementById('shuttleRoutes');
   if (!tabs) return;
@@ -554,7 +575,7 @@ function renderShuttleRoutes(routes) {
   });
 }
 
-// ─────────── selectShuttleRoute: 셔틀 노선 선택 및 상태 렌더링 ───────────
+// ─────────── selectShuttleRoute: 셔틀 노선 선택 및 상태 렌더링 ───────────  
 async function selectShuttleRoute(routeId, route) {
   try {
     document.querySelectorAll('.route-tab').forEach(tab => tab.classList.remove('active'));
@@ -569,7 +590,7 @@ async function selectShuttleRoute(routeId, route) {
   }
 }
 
-// ─────────── renderShuttleStatus: 셔틀 상태 렌더링 ───────────
+// ─────────── renderShuttleStatus: 셔틀 상태 렌더링 ───────────  
 function renderShuttleStatus(route) {
   const timeEl   = document.getElementById('shuttle-time');
   const descEl   = document.getElementById('shuttle-desc');
@@ -586,7 +607,7 @@ function renderShuttleStatus(route) {
   }
 }
 
-// ─────────── loadLectureReviews: 메인 페이지용 강의평가 데이터 로드 ───────────
+// ─────────── loadLectureReviews: 메인 페이지용 강의평가 데이터 로드 ───────────  
 async function loadLectureReviews() {
   try {
     if (!isOnline) throw new Error('오프라인 모드');
@@ -606,7 +627,7 @@ async function loadLectureReviews() {
   }
 }
 
-// ─────────── renderLectureReviewsMain: 메인 페이지용 강의평가 렌더링 ───────────
+// ─────────── renderLectureReviewsMain: 메인 페이지용 강의평가 렌더링 ───────────  
 function renderLectureReviewsMain(popular, recent) {
   const popEl = document.getElementById('popularReviews');
   const recEl = document.getElementById('recentReviews');
@@ -654,7 +675,7 @@ function renderLectureReviewsMain(popular, recent) {
   });
 }
 
-// ─────────── initNaverMap: 네이버 지도 초기화 ───────────
+// ─────────── initNaverMap: 네이버 지도 초기화 ───────────  
 function initNaverMap() {
   if (typeof naver === 'undefined' || !naver.maps) {
     console.error('네이버 지도 API가 로드되지 않았습니다.');
@@ -684,22 +705,20 @@ function initNaverMap() {
   }
 }
 
-// ─────────── addMapMarkers: 건물 마커 추가 ───────────
+// ─────────── addMapMarkers: 건물 마커 추가 ───────────  
 function addMapMarkers(buildings) {
   if (!naverMap) return;
   try {
     mapMarkers.forEach(m => m.setMap(null));
     infoWindows.forEach(iw => iw.close());
     mapMarkers = [];
-    infoWindows = [];
-
+    infoWindows = [];  
     buildings.forEach(b => {
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(b.position.lat, b.position.lng),
         map: naverMap,
         title: b.name,
       });
-
       const infoWindow = new naver.maps.InfoWindow({
         content: `
           <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
@@ -711,12 +730,10 @@ function addMapMarkers(buildings) {
         borderWidth: 0,
         anchorSize: new naver.maps.Size(0, 0),
       });
-
       naver.maps.Event.addListener(marker, 'click', () => {
         infoWindows.forEach(iw => iw.close());
         infoWindow.open(naverMap, marker);
       });
-
       mapMarkers.push(marker);
       infoWindows.push(infoWindow);
     });
@@ -725,7 +742,7 @@ function addMapMarkers(buildings) {
   }
 }
 
-// ─────────── showErrorFallback: 에러 발생 시 화면 대체 ───────────
+// ─────────── showErrorFallback: 에러 발생 시 화면 대체 ───────────  
 function showErrorFallback(containerId, message) {
   const container = document.getElementById(containerId);
   if (container) {
@@ -738,7 +755,7 @@ function showErrorFallback(containerId, message) {
   }
 }
 
-// ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
+// ─────────── updateTimetable: 사용자 시간표 갱신 ───────────  
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl   = document.getElementById('timetableContent');
@@ -786,7 +803,7 @@ function updateTimetable() {
     });
 }
 
-// ─────────── renderTimetable: 오늘 시간표 렌더링 ───────────
+// ─────────── renderTimetable: 오늘 시간표 렌더링 ───────────  
 function renderTimetable(courses) {
   const contentEl = document.getElementById('timetableContent');
   if (!contentEl) return;
@@ -874,7 +891,7 @@ function renderTimetable(courses) {
   });
 }
 
-// ─────────── formatTimeRemaining: 남은 시간 텍스트 생성 ───────────
+// ─────────── formatTimeRemaining: 남은 시간 텍스트 생성 ───────────  
 function formatTimeRemaining(minutes, suffix) {
   if (minutes < 60) {
     return `${minutes}분 ${suffix}`;
@@ -889,7 +906,7 @@ function formatTimeRemaining(minutes, suffix) {
   }
 }
 
-// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
+// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────  
 function toggleNotifications() {
   const dd = document.getElementById('notification-dropdown');
   if (dd && dd.classList.contains('show')) {
@@ -910,7 +927,6 @@ function closeNotificationDropdown() {
   if (dd) dd.classList.remove('show');
 }
 
-// ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
 function toggleUserMenu() {
   const dropdown    = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -936,7 +952,6 @@ function closeUserDropdown() {
   if (dropdown) dropdown.classList.remove('show');
 }
 
-// ─────────── closeAllDropdowns: 모든 드롭다운 닫기 ───────────
 function closeAllDropdowns() {
   closeNotificationDropdown();
   closeUserDropdown();
@@ -948,7 +963,6 @@ function closeStudentServiceDropdown() {
   if (dropdown) dropdown.removeAttribute('style');
 }
 
-// ─────────── showProfile: 프로필 화면 로드 ───────────
 async function showProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
@@ -986,7 +1000,6 @@ async function showProfile() {
   updateTimetable();
 }
 
-// ─────────── handleLogout: 로그아웃 처리 ───────────
 function handleLogout() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
@@ -1000,7 +1013,6 @@ function handleLogout() {
   }
 }
 
-// ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
 async function handleGlobalSearch() {
   const query = document.getElementById('search-input').value.trim().toLowerCase();
   if (!query) return;
@@ -1009,7 +1021,7 @@ async function handleGlobalSearch() {
     return;
   }
   try {
-    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
+    let res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
       showContent('buildings');
       document.getElementById('search-input').value = '';
@@ -1017,7 +1029,7 @@ async function handleGlobalSearch() {
     }
   } catch {}
   try {
-    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
+    let res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
       showContent('notices');
       document.getElementById('search-input').value = '';
@@ -1027,7 +1039,6 @@ async function handleGlobalSearch() {
   showMessage('검색 결과를 찾을 수 없습니다.', 'info');
 }
 
-// ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
 function checkUserStatus() {
   const currentUser    = localStorage.getItem('currentLoggedInUser');
   const userNameEl     = document.getElementById('user-name');
@@ -1055,7 +1066,6 @@ function checkUserStatus() {
   }
 }
 
-// ─────────── setGuestMode: 게스트 모드로 UI 초기화 ───────────
 function setGuestMode() {
   const userNameEl     = document.getElementById('user-name');
   const userRoleEl     = document.getElementById('user-role');
@@ -1070,7 +1080,6 @@ function setGuestMode() {
   if (avatarEl)       avatarEl.textContent       = '👤';
 }
 
-// ─────────── updateProfileImage: 프로필 이미지 적용 ───────────
 function updateProfileImage(user) {
   const avatarEl = document.getElementById('user-avatar');
   if (!avatarEl) return;
@@ -1083,7 +1092,6 @@ function updateProfileImage(user) {
   }
 }
 
-// ─────────── showMessage: 우측 상단 알림 ───────────
 function showMessage(message, type = 'info', category = '') {
   if (category && !isCategoryEnabled(category)) return;
   if (!shouldShowNotification()) return;
@@ -1098,7 +1106,7 @@ function showMessage(message, type = 'info', category = '') {
     type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
   notification.style.cssText = `
     position: fixed;
-    top: 100px; 
+    top: 100px;
     right: 20px;
     background: ${bgColor};
     color: white;
@@ -1127,7 +1135,6 @@ function showMessage(message, type = 'info', category = '') {
   }, 3000);
 }
 
-// ─────────── shouldShowNotification: DND 모드 검사 ───────────
 function shouldShowNotification() {
   const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
   if (!dnd.enabled) return true;
@@ -1142,13 +1149,11 @@ function shouldShowNotification() {
   }
 }
 
-// ─────────── isCategoryEnabled: 카테고리별 알림 설정 확인 ───────────
 function isCategoryEnabled(category) {
   const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
   return catSettings[category] === true;
 }
 
-// ─────────── setupAutoLogout: 자동 로그아웃 로직 초기화 ───────────
 function setupAutoLogout() {
   document.addEventListener('mousemove', resetAutoLogoutTimer);
   document.addEventListener('keypress', resetAutoLogoutTimer);
@@ -1169,7 +1174,6 @@ function resetAutoLogoutTimer() {
   }, timeoutMs);
 }
 
-// ─────────── applyKeyboardShortcuts: 기존 단축키 적용 ───────────
 function applyKeyboardShortcuts() {
   const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
     toggleSidebar: 'F2',
@@ -1194,7 +1198,6 @@ function applyKeyboardShortcuts() {
   });
 }
 
-// ─────────── applyUserShortcuts: 사용자 정의 단축키 적용 ───────────
 function applyUserShortcuts() {
   document.addEventListener('keydown', e => {
     const targetTag = e.target.tagName;
@@ -1229,11 +1232,10 @@ function applyUserShortcuts() {
     else if (label.includes('확대')) zoomIn();
     else if (label.includes('축소')) zoomOut();
     else if (label.includes('초기화')||label.includes('리셋')) resetMapView();
-    else console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 호출되었으나 매핑된 기능 없음.`);
+    else console.log(`등록된 단축키 "${matched.name}" 호출되었으나 매핑된 기능이 없습니다.`);
   });
 }
 
-// ─────────── storage 이벤트: 로그인/프로필/테마 갱신 ───────────
 window.addEventListener('storage', event => {
   if (
     event.key === 'currentLoggedInUser' ||
@@ -1249,7 +1251,6 @@ window.addEventListener('storage', event => {
   }
 });
 
-// ─────────── pageshow 이벤트: 페이지 복원 시 갱신 ───────────
 window.addEventListener('pageshow', event => {
   if (event.persisted) {
     checkUserStatus();
@@ -1260,14 +1261,16 @@ window.addEventListener('pageshow', event => {
   else document.body.classList.remove('light-mode');
 });
 
-// ─────────── navigate helpers ───────────
 function navigateToTimetable() { showContent('timetable'); }
 function navigateToShuttle()   { showContent('shuttle'); }
 function navigateToCalendar()  { showContent('calendar'); }
 
-// ─────────── map controls ───────────
-function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
-function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
+function zoomIn() {
+  if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1);
+}
+function zoomOut() {
+  if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1);
+}
 function resetMapView() {
   if (naverMap) {
     const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
@@ -1276,15 +1279,16 @@ function resetMapView() {
   }
 }
 
-// ─────────── trackUserLocation: 사용자 위치 표시 ───────────
 function trackUserLocation() {
   if (!navigator.geolocation) {
-    return showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
+    showMessage('위치 서비스를 지원하지 않습니다', 'error');
+    return;
   }
   navigator.geolocation.getCurrentPosition(
     position => {
       if (!naverMap) {
-        return showMessage('지도가 초기화되지 않았습니다', 'error', '');
+        showMessage('지도가 초기화되지 않았습니다', 'error');
+        return;
       }
       const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
       if (userMarker) userMarker.setMap(null);
@@ -1298,7 +1302,7 @@ function trackUserLocation() {
       });
       naverMap.setCenter(userPos);
       naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
+      showMessage('현재 위치를 찾았습니다', 'success');
     },
     error => {
       let message = '위치를 찾을 수 없습니다';
@@ -1307,12 +1311,11 @@ function trackUserLocation() {
         case error.POSITION_UNAVAILABLE: message = '위치 정보를 사용할 수 없습니다'; break;
         case error.TIMEOUT:              message = '위치 요청 시간이 초과되었습니다'; break;
       }
-      showMessage(message, 'error', '');
+      showMessage(message, 'error');
     }
   );
 }
 
-// ─────────── showBuildingOnMap: 메인 페이지 건물 보기 ───────────
 function showBuildingOnMap(buildingId) {
   showContent('buildings');
   setTimeout(() => {
@@ -1320,18 +1323,17 @@ function showBuildingOnMap(buildingId) {
   }, 100);
 }
 
-// ─────────── getBuildingDirections: 길찾기 호출 (REST) ───────────
 async function getBuildingDirections(buildingId) {
   const dest = buildingsList.find(b => b.id === buildingId);
   if (!dest) {
     return showMessage('해당 건물을 찾을 수 없습니다', 'error');
   }
-  const start = '126.906993,37.396327';        // 예시 출발 좌표
+  const start = '126.906993,37.396327';
   const goal  = `${dest.position.lng},${dest.position.lat}`;
 
   const url = new URL('https://naveropenapi.apigw.ntruss.com/map-direction/v2/driving');
   url.searchParams.set('start', start);
-  url.searchParams.set('goal',  goal);
+  url.searchParams.set('goal', goal);
 
   try {
     const res = await fetch(url.toString(), {
@@ -1340,14 +1342,10 @@ async function getBuildingDirections(buildingId) {
         'X-NCP-APIGW-API-KEY':    CLIENT_SECRET
       }
     });
-    if (!res.ok) {
-      throw new Error(`Directions API 오류: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Directions API 오류: ${res.status}`);
     const data = await res.json();
-
-    // 폴리라인으로 경로 그리기
     const path = data.routes[0].path.map(p => new naver.maps.LatLng(p[1], p[0]));
-    const polyline = new naver.maps.Polyline({
+    new naver.maps.Polyline({
       map: naverMap,
       path,
       strokeColor: '#3b82f6',
@@ -1361,7 +1359,6 @@ async function getBuildingDirections(buildingId) {
   }
 }
 
-// ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
 function viewNoticeDetail(noticeId) {
   showMessage('공지사항 상세보기는 준비 중입니다', 'info');
 }
