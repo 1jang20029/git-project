@@ -1,51 +1,294 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>건물 & 시설 안내</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠퍼스 지도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- 네이버 지도 API 로드 -->
-  <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ud4n9otj1x"></script>
-  
-  <!-- 건물 관련 전용 CSS -->
-  <link rel="stylesheet" href="buildings.css" />
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .controls {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .control-group {
+            background: #3a4a5c;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            background: #3a4a5c;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #2c3a4a;
+        }
+
+        .control-btn:last-child {
+            border-bottom: none;
+        }
+
+        .control-btn:hover {
+            background: #4a5a6c;
+        }
+
+        .zoom-plus {
+            color: #5dade2;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .zoom-minus {
+            color: #5dade2;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .location-btn {
+            background: #3a4a5c;
+        }
+
+        .location-icon {
+            width: 20px;
+            height: 20px;
+            background: #f39c12;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .location-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .compass-btn {
+            background: #3a4a5c;
+        }
+
+        .compass-icon {
+            width: 20px;
+            height: 20px;
+            background: #e74c3c;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .compass-icon::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 8px solid white;
+            transform: translateX(-50%);
+        }
+
+        .map-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 100px;
+        }
+
+        .map-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .map-placeholder {
+            width: 300px;
+            height: 250px;
+            background: white;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+            border: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        .naver-icon {
+            width: 60px;
+            height: 60px;
+            background: #e8e8e8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .map-text {
+            color: #666;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.3;
+            max-width: 300px;
+        }
+
+        /* 첫 번째 섹션 - 좀 더 긴 텍스트 */
+        .map-section:first-child .map-text {
+            white-space: pre-line;
+        }
+
+        @media (max-width: 1200px) {
+            .map-content {
+                padding: 0 50px;
+            }
+            
+            .map-placeholder {
+                width: 250px;
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .map-content {
+                flex-direction: column;
+                gap: 40px;
+                padding: 80px 20px 20px;
+            }
+            
+            .map-placeholder {
+                width: 280px;
+                height: 220px;
+            }
+            
+            .controls {
+                right: 10px;
+                top: 15px;
+            }
+            
+            .control-btn {
+                width: 44px;
+                height: 44px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- 건물 & 시설 안내 화면 본문 -->
-  <div class="content-header">
-    <h1>건물 &amp; 시설 안내</h1>
-    <div class="breadcrumb">
-      <span>홈</span>
-      <span>›</span>
-      <span>건물 안내</span>
+    <div class="container">
+        <div class="header">캠퍼스 지도</div>
+
+        <div class="controls">
+            <div class="control-group">
+                <button class="control-btn zoom-plus" onclick="zoomIn()">+</button>
+                <button class="control-btn zoom-minus" onclick="zoomOut()">-</button>
+            </div>
+            
+            <button class="control-btn location-btn" onclick="getCurrentLocation()">
+                <div class="location-icon"></div>
+            </button>
+            
+            <button class="control-btn compass-btn" onclick="resetCompass()">
+                <div class="compass-icon"></div>
+            </button>
+        </div>
+
+        <div class="map-content">
+            <div class="map-section">
+                <div class="map-placeholder">
+                    <div class="naver-icon">N</div>
+                </div>
+                <div class="map-text">중이 실패했습니다.
+네이버 지도 Open API 인증이 실패했습니다.</div>
+            </div>
+
+            <div class="map-section">
+                <div class="map-placeholder">
+                    <div class="naver-icon">N</div>
+                </div>
+                <div class="map-text">네이버 지도 Open API 인증이 실패했습니다.</div>
+            </div>
+
+            <div class="map-section">
+                <div class="map-placeholder">
+                    <div class="naver-icon">N</div>
+                </div>
+                <div class="map-text">네이버 지도 Open API 인증이 실패했습니다.</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- 건물 지도 카드 -->
-  <div id="buildingsMapCard">
-    <div id="card-header-buildings-map">
-      <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
-      <span id="card-icon-buildings-map">🗺️</span>
-    </div>
-    <div id="buildings-map-container">
-      <div id="buildingsMap"></div>
-      <div id="buildings-map-overlay">
-        <button id="buildings-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
-        <button id="buildings-zoom-out" onclick="zoomOut()" title="축소">🔍-</button>
-        <button id="buildings-reset" onclick="resetMapView()" title="초기화">🏠</button>
-        <button id="buildings-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
-      </div>
-    </div>
-  </div>
+    <script>
+        let zoomLevel = 1;
 
-  <!-- 건물 카드 그리드 -->
-  <div id="buildingGrid"></div>
+        function zoomIn() {
+            zoomLevel = Math.min(zoomLevel + 0.1, 2);
+            console.log('Zoom In:', zoomLevel);
+        }
 
-  <!-- 시설 카드 그리드 -->
-  <div id="facilitiesGrid"></div>
+        function zoomOut() {
+            zoomLevel = Math.max(zoomLevel - 0.1, 0.5);
+            console.log('Zoom Out:', zoomLevel);
+        }
 
-  <!-- 건물 전용 JS -->
-  <script src="buildings.js"></script>
+        function getCurrentLocation() {
+            console.log('Getting current location...');
+        }
+
+        function resetCompass() {
+            console.log('Resetting compass...');
+        }
+    </script>
 </body>
 </html>
