@@ -1,55 +1,60 @@
-/* public/buildings.css */
-* {
-  margin: 0; padding: 0; box-sizing: border-box;
+/* buildings.css */
+
+/* 페이지 헤더 */
+#content-header-buildings {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
 }
-body {
-  font-family: 'Inter', sans-serif;
-  background: #f8fafc; color: #1f2937;
-  display: flex; flex-direction: column; min-height: 100vh;
+#content-header-buildings h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-header {
-  background: #3b82f6; color: white;
-  padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+
+/* 건물 리스트 그리드 */
+#building-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
 }
-header h1 { font-size: 1.5rem; }
-header nav button {
-  background: white; color: #3b82f6;
-  border: none; padding: 0.5rem 1rem; border-radius: 6px;
-  cursor: pointer; font-weight: 600;
-}
-main { flex: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; padding: 1rem; }
-#map-section {
-  position: relative; background: #e2e8f0; border-radius: 12px; overflow: hidden;
-}
-#mapContainer { width: 100%; height: 100%; min-height: 500px; }
-#mapControls {
-  position: absolute; top: 1rem; right: 1rem;
-  display: flex; flex-direction: column; gap: 0.5rem;
-}
-#mapControls button {
-  background: rgba(15,23,42,0.8); color: white;
-  border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer;
-}
-#list-section { overflow-y: auto; }
-#buildingList {
-  display: flex; flex-direction: column; gap: 1rem;
-}
+
+/* 카드 기본 스타일 (index.css .building-card 참고) */
 .building-card {
-  background: white; border: 1px solid #cbd5e1; border-radius: 8px;
-  padding: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
-.building-card h3 {
-  font-size: 1.2rem; margin-bottom: 0.5rem; color: #1e293b;
+.building-card:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
 }
-.building-card p {
-  font-size: 0.95rem; color: #475569; margin-bottom: 0.75rem;
+
+/* 로딩 / 빈 상태 / 에러 상태 */
+.loading-state,
+.empty-state,
+.error-fallback {
+  text-align: center;
+  padding: 2rem;
 }
-.building-card .actions {
-  display: flex; gap: 0.5rem;
+.loading-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
 }
-.building-card .actions button {
-  flex: 1;
-  background: #3b82f6; color: white;
-  border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer;
-  font-weight: 600;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
