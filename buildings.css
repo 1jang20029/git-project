@@ -229,3 +229,12 @@
   #buildingsMapCard { padding: 0.75rem; }
   .content-header { margin-bottom: 1rem; }
 }
+
+
+/* ─── 네이버 맵 인증 실패 메시지 보이도록 색상 덮어쓰기 ─── */
+.ErrorSystemMessages,
+.ErrorSystemMessages * {
+  color: #64748b !important;      /* 회색 글씨로 변경 */
+  text-shadow: none !important;   /* 혹시 그림자 처리되어 있으면 제거 */
+  opacity: 1 !important;          /* 투명도도 확실히 */
+}
