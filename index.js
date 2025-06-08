@@ -1,46 +1,5 @@
 // index.js
 
-// ─── 네이버 클라우드 인증 정보 (환경변수로 관리하세요) ───
-const NCP_CLIENT_ID     = 'ud4n9otj1x';
-const NCP_CLIENT_SECRET = 'wwJtgkpaB5K58ghahCTq6gsFADgfanL2DDinxgJ8';
-
-// ─── bumpAllMapApis: 사용량 +1 처리 함수 ───
-function bumpAllMapApis() {
-  const headers = {
-    'X-NCP-APIGW-API-KEY-ID': NCP_CLIENT_ID,
-    'X-NCP-APIGW-API-KEY':    NCP_CLIENT_SECRET
-  };
-
-  // Static Map (1×1)
-  fetch(
-    'https://naveropenapi.apigw.ntruss.com/map-static/v2/raster' +
-    '?center=126.90772437800818,37.39661657434427&level=16&w=1&h=1',
-    { headers }
-  );
-
-  // Geocoding
-  fetch(
-    'https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=',
-    { headers }
-  );
-
-  // Reverse Geocoding
-  fetch(
-    'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc' +
-    '?coords=126.90772437800818,37.39661657434427&orders=addr',
-    { headers }
-  );
-
-  // Directions
-  fetch(
-    'https://naveropenapi.apigw.ntruss.com/map-direction/v2/driving' +
-    '?start=126.90772437800818,37.39661657434427' +
-    '&goal=126.90772437800818,37.39661657434427',
-    { headers }
-  );
-}
-
-
 // ─────────── 전역 변수 선언 ───────────
 let naverMap;
 let mapMarkers = [];
@@ -502,7 +461,6 @@ function renderBuildingsMain(buildings) {
   buildings.forEach(b => {
     const card = document.createElement('div');
     card.className = 'building-card';
-    card.onclick = () => showContent('buildings');
     card.innerHTML = `
       <h3 class="building-name">${b.name}</h3>
       <p class="building-desc">${b.description}</p>
@@ -774,7 +732,8 @@ function showErrorFallback(containerId, message) {
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
-  if (!contentEl) return;  
+  if (!contentEl) return;
+
   if (!currentUser) {
     contentEl.innerHTML = `
       <div class="empty-state">
@@ -784,6 +743,7 @@ function updateTimetable() {
     `;
     return;
   }
+
   if (!isOnline) {
     contentEl.innerHTML = `
       <div class="error-fallback">
@@ -793,12 +753,14 @@ function updateTimetable() {
     `;
     return;
   }
+
   contentEl.innerHTML = `
     <div class="loading-state">
       <div class="loading-spinner"></div>
       <span style="margin-left: 0.5rem;">시간표를 불러오는 중...</span>
     </div>
   `;
+
   fetch(`/api/timetable?user=${encodeURIComponent(currentUser)}`)
     .then(res => {
       if (!res.ok) throw new Error('API 응답 오류');
@@ -822,10 +784,12 @@ function updateTimetable() {
 function renderTimetable(courses) {
   const contentEl = document.getElementById('timetableContent');
   if (!contentEl) return;
+
   const now = new Date();
   const currentDay = now.getDay();
   const currentTime = now.getHours() * 60 + now.getMinutes();
   const todayCourses = [];
+
   courses.forEach(course => {
     course.times.forEach(time => {
       if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
@@ -835,8 +799,10 @@ function renderTimetable(courses) {
         const endHour = 8 + time.end + 1;
         const endMinute = 20;
         const endTime = endHour * 60 + endMinute;
+
         let status = 'upcoming';
         let timeInfo = '';
+
         if (currentTime >= startTime && currentTime < endTime) {
           status = 'current';
           const remaining = endTime - currentTime;
@@ -854,6 +820,7 @@ function renderTimetable(courses) {
             timeInfo = '곧 시작';
           }
         }
+
         todayCourses.push({
           name: course.name,
           room: course.room,
@@ -866,7 +833,9 @@ function renderTimetable(courses) {
       }
     });
   });
+
   todayCourses.sort((a, b) => a.startTime - b.startTime);
+
   if (todayCourses.length === 0) {
     contentEl.innerHTML = `
       <div class="empty-state">
@@ -876,6 +845,7 @@ function renderTimetable(courses) {
     `;
     return;
   }
+
   contentEl.innerHTML = '';
   todayCourses.forEach(ci => {
     const statusText = {
@@ -883,6 +853,7 @@ function renderTimetable(courses) {
       upcoming: '예정',
       finished: '종료',
     }[ci.status];
+
     const div = document.createElement('div');
     div.className = 'class-item';
     div.innerHTML = `
@@ -940,10 +911,12 @@ function closeNotificationDropdown() {
 function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
+
   if (!currentUser) {
     window.location.href = 'login.html';
     return;
   }
+
   if (dropdown && dropdown.classList.contains('show')) {
     closeUserDropdown();
   } else {
@@ -981,6 +954,7 @@ async function showProfile() {
     showMessage('로그인이 필요한 서비스입니다.', 'error');
     return;
   }
+
   const container = document.getElementById('profileContentPane');
   if (container) {
     container.innerHTML = `
@@ -991,6 +965,7 @@ async function showProfile() {
     `;
   }
   showContent('profile');
+
   try {
     const res = await fetch('account-edit.html');
     if (!res.ok) throw new Error('Account 편집 화면 로드 실패');
@@ -1008,6 +983,7 @@ async function showProfile() {
     }
     return;
   }
+
   checkUserStatus();
   updateTimetable();
 }
@@ -1030,10 +1006,12 @@ function handleLogout() {
 async function handleGlobalSearch() {
   const query = document.getElementById('search-input').value.trim().toLowerCase();
   if (!query) return;
+
   if (!isOnline) {
     showMessage('오프라인 상태에서는 검색을 사용할 수 없습니다', 'error');
     return;
   }
+
   try {
     const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
@@ -1042,6 +1020,7 @@ async function handleGlobalSearch() {
       return;
     }
   } catch {}
+
   try {
     const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
     if (res.ok) {
@@ -1050,6 +1029,7 @@ async function handleGlobalSearch() {
       return;
     }
   } catch {}
+
   showMessage('검색 결과를 찾을 수 없습니다.', 'info');
 }
 
@@ -1061,6 +1041,7 @@ function checkUserStatus() {
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
   const avatarEl   = document.getElementById('user-avatar');
+
   if (currentUser && isOnline) {
     fetch(`/api/users/${encodeURIComponent(currentUser)}`)
       .then(res => {
@@ -1089,6 +1070,7 @@ function setGuestMode() {
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
   const avatarEl      = document.getElementById('user-avatar');
+
   if (userNameEl) userNameEl.textContent     = '게스트';
   if (userRoleEl) userRoleEl.textContent     = '방문자';
   if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
@@ -1100,6 +1082,7 @@ function setGuestMode() {
 function updateProfileImage(user) {
   const avatarEl = document.getElementById('user-avatar');
   if (!avatarEl) return;
+
   if (user.profileImageType === 'emoji') {
     avatarEl.textContent = user.profileImage || '👤';
   } else if (user.profileImage) {
@@ -1113,6 +1096,7 @@ function updateProfileImage(user) {
 function showMessage(message, type = 'info', category = '') {
   if (category && !isCategoryEnabled(category)) return;
   if (!shouldShowNotification()) return;
+
   const notification = document.createElement('div');
   const bgColor =
     type === 'success'
@@ -1122,6 +1106,7 @@ function showMessage(message, type = 'info', category = '') {
       : 'rgba(59, 130, 246, 0.9)';
   const icon =
     type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+
   notification.style.cssText = `
     position: fixed;
     top: 100px; 
@@ -1138,6 +1123,7 @@ function showMessage(message, type = 'info', category = '') {
     animation: slideInRight 0.3s ease-out;
     max-width: 400px;
   `;
+
   notification.innerHTML = `
     <div style="display:flex;align-items:center;gap:0.5rem;">
       <span>${icon}</span>
@@ -1145,6 +1131,7 @@ function showMessage(message, type = 'info', category = '') {
     </div>
   `;
   document.body.appendChild(notification);
+
   setTimeout(() => {
     notification.style.animation = 'slideOutRight 0.3s ease-in';
     setTimeout(() => {
@@ -1157,10 +1144,12 @@ function showMessage(message, type = 'info', category = '') {
 function shouldShowNotification() {
   const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
   if (!dnd.enabled) return true;
+
   const now = new Date();
   const totalMinutes = now.getHours() * 60 + now.getMinutes();
   const startHM = dnd.startHour * 60 + dnd.startMinute;
   const endHM   = dnd.endHour * 60 + dnd.endMinute;
+
   if (startHM < endHM) {
     return !(totalMinutes >= startHM && totalMinutes < endHM);
   } else {
@@ -1186,6 +1175,7 @@ function resetAutoLogoutTimer() {
   if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
   const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
   if (!cfg.enabled) return;
+
   const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
   autoLogoutTimer = setTimeout(() => {
     localStorage.removeItem('currentLoggedInUser');
@@ -1205,8 +1195,10 @@ function applyKeyboardShortcuts() {
   document.addEventListener('keydown', e => {
     const targetTag = e.target.tagName;
     if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
+
     resetAutoLogoutTimer();
     const key = e.key.toUpperCase();
+
     if (key === (shortcuts.openNotifications || '').toUpperCase()) {
       e.preventDefault();
       toggleNotifications();
@@ -1225,14 +1217,18 @@ function applyUserShortcuts() {
   document.addEventListener('keydown', e => {
     const targetTag = e.target.tagName;
     if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
+
     resetAutoLogoutTimer();
     const pressedKey = e.key.toUpperCase();
     const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
+
     const matched = userShortcuts.find(entry => entry.key === pressedKey);
     if (!matched) return;
     if (!matched.name) return;
+
     e.preventDefault();
     const label = matched.name.toLowerCase();
+
     if (label.includes('대시보드')) { showContent('home'); return; }
     if (label.includes('건물')) { showContent('buildings'); return; }
     if (label.includes('커뮤니티')) { showContent('community'); return; }
@@ -1276,86 +1272,3 @@ window.addEventListener('storage', event => {
     else document.body.classList.remove('light-mode');
   }
 });
-
-// ─────────── pageshow 이벤트: 페이지 복원 시 갱신 ───────────
-window.addEventListener('pageshow', event => {
-  if (event.persisted) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  const savedMode = localStorage.getItem('lightMode');
-  if (savedMode === 'true') document.body.classList.add('light-mode');
-  else document.body.classList.remove('light-mode');
-});
-
-// ─────────── navigateToTimetable, navigateToShuttle, navigateToCalendar ───────────
-function navigateToTimetable() { showContent('timetable'); }
-function navigateToShuttle()   { showContent('shuttle'); }
-function navigateToCalendar()  { showContent('calendar'); }
-
-// ─────────── zoomIn, zoomOut, resetMapView ───────────
-function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
-function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
-function resetMapView() {
-  if (naverMap) {
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    naverMap.setCenter(yeonsung);
-    naverMap.setZoom(16);
-  }
-}
-
-// ─────────── trackUserLocation: 사용자 위치 표시 ───────────
-function trackUserLocation() {
-  if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
-        return;
-      }
-      const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      if (userMarker) userMarker.setMap(null);
-      userMarker = new naver.maps.Marker({
-        position: userPos,
-        map: naverMap,
-        icon: {
-          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
-          anchor: new naver.maps.Point(10, 10)
-        }
-      });
-      naverMap.setCenter(userPos);
-      naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
-    },
-    error => {
-      let message = '위치를 찾을 수 없습니다';
-      switch (error.code) {
-        case error.PERMISSION_DENIED:    message = '위치 권한이 거부되었습니다'; break;
-        case error.POSITION_UNAVAILABLE: message = '위치 정보를 사용할 수 없습니다'; break;
-        case error.TIMEOUT:              message = '위치 요청 시간이 초과되었습니다'; break;
-      }
-      showMessage(message, 'error', '');
-    }
-  );
-}
-
-// ─────────── showBuildingOnMap: 메인 페이지 건물 보기 ───────────
-function showBuildingOnMap(buildingId) {
-  showContent('buildings');
-  setTimeout(() => {
-    if (naverMap.refresh) naverMap.refresh();
-  }, 100);
-}
-
-// ─────────── getBuildingDirections: 길찾기 준비 중 ───────────
-function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
-}
-
-// ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
-function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
-}
