@@ -94,3 +94,23 @@ function trackUserLocation(naverMap) {
     alert('위치 정보를 가져올 수 없습니다.');
   });
 }
+
+
+
+/*
+
+[
+  {
+    "id": 1,
+    "name": "○○관",
+    "description": "기계공학과 건물",
+    "lat": 37.3963,
+    "lng": 126.9070,
+    "imageUrl": "/images/b1.jpg"
+  },
+  …
+]
+
+
+와 같은 JSON 을 내려주기만 하면 동작하도록 되어 있고, 그 구현을 Node.js + MySQL 작성하면 될 것 같습니다.
+*/
