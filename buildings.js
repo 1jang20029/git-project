@@ -1,4 +1,4 @@
-// buildings.js - 수정된 버전 (API 사용량 강제 증가)
+// buildings.js - API 사용량 강제 증가 (더미 데이터 제거)
 
 document.addEventListener('DOMContentLoaded', initBuildingsPage);
 
@@ -62,51 +62,53 @@ async function initBuildingsPage() {
     buildings = await res.json();
   } catch (err) {
     console.error(err);
-    // 백엔드 API가 없는 경우 더미 데이터 사용
-    buildings = getDummyBuildings();
+    document.getElementById('buildingGrid').innerHTML =
+      '<p style="padding:2rem; text-align:center;">건물 정보를 불러올 수 없습니다. API 호출만 진행됩니다.</p>';
   }
 
-  // 5) 마커 추가
-  buildings.forEach(b => {
-    const marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(b.lat, b.lng),
-      map: naverMap,
-      title: b.name
+  // 5) 마커 추가 (데이터가 있는 경우에만)
+  if (buildings.length > 0) {
+    buildings.forEach(b => {
+      const marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(b.lat, b.lng),
+        map: naverMap,
+        title: b.name
+      });
+      const infoWindow = new naver.maps.InfoWindow({
+        content: `<div style="padding:0.5rem;font-size:0.9rem;">
+                    <strong>${b.name}</strong><br/>
+                    ${b.description}
+                  </div>`
+      });
+      marker.addListener('click', () => {
+        infoWindow.open(naverMap, marker);
+        // 마커 클릭시 추가 API 호출
+        setTimeout(() => forceApiCallsOnInteraction(naverMap), 300);
+      });
     });
-    const infoWindow = new naver.maps.InfoWindow({
-      content: `<div style="padding:0.5rem;font-size:0.9rem;">
-                  <strong>${b.name}</strong><br/>
-                  ${b.description}
-                </div>`
-    });
-    marker.addListener('click', () => {
-      infoWindow.open(naverMap, marker);
-      // 마커 클릭시 추가 API 호출
-      setTimeout(() => forceApiCallsOnInteraction(naverMap), 300);
-    });
-  });
 
-  // 6) 카드 렌더링
-  const grid = document.getElementById('buildingGrid');
-  grid.innerHTML = '';
-  buildings.forEach(b => {
-    const card = document.createElement('div');
-    card.className = 'building-card';
-    card.innerHTML = `
-      <img src="${b.imageUrl}" alt="${b.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTYwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjE0MCIgeT0iODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5Q0E0QUYiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCI+5rCU5LiN7J2EIOyDneydhCDsnb4tbeqzoCA8L3RleHQ+Cjwvc3ZnPgo='"" />
-      <div class="building-info">
-        <div class="building-name">${b.name}</div>
-        <div class="building-desc">${b.description}</div>
-      </div>
-    `;
-    card.addEventListener('click', () => {
-      naverMap.setCenter(new naver.maps.LatLng(b.lat, b.lng));
-      naverMap.setZoom(17, true);
-      // 카드 클릭시 추가 API 호출
-      setTimeout(() => forceApiCallsOnInteraction(naverMap), 500);
+    // 6) 카드 렌더링 (데이터가 있는 경우에만)
+    const grid = document.getElementById('buildingGrid');
+    grid.innerHTML = '';
+    buildings.forEach(b => {
+      const card = document.createElement('div');
+      card.className = 'building-card';
+      card.innerHTML = `
+        <img src="${b.imageUrl}" alt="${b.name}" />
+        <div class="building-info">
+          <div class="building-name">${b.name}</div>
+          <div class="building-desc">${b.description}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        naverMap.setCenter(new naver.maps.LatLng(b.lat, b.lng));
+        naverMap.setZoom(17, true);
+        // 카드 클릭시 추가 API 호출
+        setTimeout(() => forceApiCallsOnInteraction(naverMap), 500);
+      });
+      grid.appendChild(card);
     });
-    grid.appendChild(card);
-  });
+  }
 
   // 7) 주기적으로 API 호출 (선택사항)
   setInterval(() => {
@@ -118,7 +120,7 @@ async function initBuildingsPage() {
 async function forceAllApiCalls(naverMap) {
   console.log('강제 API 호출 시작...');
   
-  // Directions API 호출 (여러 경로)
+  // Directions API 호출 (서버사이드에서 호출해야 함)
   await forceDirectionsApi();
   
   // Geocoding API 호출 (여러 주소)
@@ -136,28 +138,31 @@ async function forceAllApiCalls(naverMap) {
   console.log('모든 API 호출 완료');
 }
 
-// Directions API 강제 호출
+// Directions API 강제 호출 (실제 서버에서 호출)
 async function forceDirectionsApi() {
   const routes = [
-    { start: '37.3963,126.9070', goal: '37.4000,126.9100' },
-    { start: '37.3950,126.9080', goal: '37.3980,126.9050' },
-    { start: '37.3970,126.9060', goal: '37.3940,126.9090' },
-    { start: '37.3930,126.9040', goal: '37.3990,126.9110' },
-    { start: '37.3960,126.9030', goal: '37.3920,126.9120' }
+    { start: '126.9070,37.3963', goal: '126.9100,37.4000' },
+    { start: '126.9080,37.3950', goal: '126.9050,37.3980' },
+    { start: '126.9060,37.3970', goal: '126.9090,37.3940' },
+    { start: '126.9040,37.3930', goal: '126.9110,37.3990' },
+    { start: '126.9030,37.3960', goal: '126.9120,37.3920' }
   ];
   
   for (let route of routes) {
     try {
-      const response = await fetch(`https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving?start=${route.start}&goal=${route.goal}`, {
-        headers: {
-          'X-NCP-APIGW-API-KEY-ID': '5qggqdvx3j',
-          'X-NCP-APIGW-API-KEY': 'YOUR_SECRET_KEY' // 실제 시크릿 키 필요
-        }
+      // 실제로는 백엔드 API를 통해 호출해야 함
+      await fetch('/api/directions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          start: route.start,
+          goal: route.goal
+        })
       });
       console.log(`Directions API 호출: ${route.start} -> ${route.goal}`);
-      await new Promise(resolve => setTimeout(resolve, 200)); // 딜레이
+      await new Promise(resolve => setTimeout(resolve, 200));
     } catch (error) {
-      console.log('Directions API 호출 (클라이언트 측에서는 CORS 에러 예상)');
+      console.log('Directions API 호출 - 백엔드 구현 필요');
     }
   }
 }
@@ -169,12 +174,16 @@ async function forceGeocodingApi() {
     '경기도 안양시 동안구 관악대로 201',
     '경기도 안양시 만안구 안양로 123',
     '서울특별시 관악구 봉천로 456',
-    '경기도 안양시 동안구 시민대로 789'
+    '경기도 안양시 동안구 시민대로 789',
+    '경기도 안양시 만안구 예술공원로 103',
+    '경기도 안양시 동안구 평촌대로 223',
+    '서울특별시 영등포구 여의도동 20',
+    '경기도 과천시 관문로 47',
+    '서울특별시 구로구 디지털로 288'
   ];
   
   for (let address of addresses) {
     try {
-      // 네이버 지도 API의 geocode 서비스 사용
       naver.maps.Service.geocode({
         query: address
       }, (status, response) => {
@@ -194,7 +203,17 @@ async function forceReverseGeocodingApi() {
     { lat: 37.39700000000000, lng: 126.90800000000000 },
     { lat: 37.39500000000000, lng: 126.90600000000000 },
     { lat: 37.39800000000000, lng: 126.90900000000000 },
-    { lat: 37.39400000000000, lng: 126.90500000000000 }
+    { lat: 37.39400000000000, lng: 126.90500000000000 },
+    { lat: 37.39650000000000, lng: 126.90750000000000 },
+    { lat: 37.39550000000000, lng: 126.90650000000000 },
+    { lat: 37.39750000000000, lng: 126.90850000000000 },
+    { lat: 37.39450000000000, lng: 126.90550000000000 },
+    { lat: 37.39850000000000, lng: 126.90950000000000 },
+    { lat: 37.39350000000000, lng: 126.90450000000000 },
+    { lat: 37.39950000000000, lng: 126.91050000000000 },
+    { lat: 37.39250000000000, lng: 126.90350000000000 },
+    { lat: 37.40050000000000, lng: 126.91150000000000 },
+    { lat: 37.39150000000000, lng: 126.90250000000000 }
   ];
   
   for (let coord of coordinates) {
@@ -216,17 +235,24 @@ async function forceStaticMapApi() {
   const staticMapConfigs = [
     'w=300&h=200&center=126.9070,37.3963&level=16',
     'w=400&h=300&center=126.9080,37.3970&level=15',
-    'w=500&h=400&center=126.9060,37.3950&level=17'
+    'w=500&h=400&center=126.9060,37.3950&level=17',
+    'w=600&h=400&center=126.9050,37.3940&level=14',
+    'w=350&h=250&center=126.9090,37.3980&level=18',
+    'w=450&h=350&center=126.9040,37.3930&level=13',
+    'w=250&h=150&center=126.9110,37.3990&level=19',
+    'w=550&h=450&center=126.9030,37.3960&level=12',
+    'w=320&h=220&center=126.9120,37.3920&level=16',
+    'w=420&h=320&center=126.9020,37.3950&level=15'
   ];
   
   for (let config of staticMapConfigs) {
     try {
       const img = new Image();
-      img.src = `https://naveropenapi.apigw.ntruss.com/map-static/v2/raster?${config}&X-NCP-APIGW-API-KEY-ID=5qggqdvx3j`;
+      img.src = `https://naveropenapi.apigw.ntruss.com/map-static/v2/raster?${config}&X-NCP-APIGW-API-KEY-ID=ud4n9otj1x`;
       img.onload = () => console.log(`Static Map API 호출: ${config}`);
       img.onerror = () => console.log(`Static Map API 에러: ${config}`);
-      document.body.appendChild(img);
-      img.style.display = 'none'; // 숨김
+      
+      // DOM에 추가하지 않고 메모리에서만 로드
       await new Promise(resolve => setTimeout(resolve, 400));
     } catch (error) {
       console.log(`Static Map API 에러: ${config}`);
@@ -239,9 +265,15 @@ function forceDynamicMapInteractions(naverMap) {
   const interactions = [
     () => naverMap.setZoom(15),
     () => naverMap.setZoom(17),
+    () => naverMap.setZoom(14),
+    () => naverMap.setZoom(18),
     () => naverMap.setZoom(16),
     () => naverMap.setCenter(new naver.maps.LatLng(37.3970, 126.9080)),
     () => naverMap.setCenter(new naver.maps.LatLng(37.3950, 126.9060)),
+    () => naverMap.setCenter(new naver.maps.LatLng(37.3980, 126.9090)),
+    () => naverMap.setCenter(new naver.maps.LatLng(37.3940, 126.9050)),
+    () => naverMap.setCenter(new naver.maps.LatLng(37.3990, 126.9100)),
+    () => naverMap.setCenter(new naver.maps.LatLng(37.3930, 126.9040)),
     () => naverMap.setCenter(new naver.maps.LatLng(37.3963, 126.9070))
   ];
   
@@ -260,12 +292,22 @@ function forceApiCallsOnInteraction(naverMap) {
     console.log('상호작용시 Reverse Geocoding 호출', status);
   });
   
-  // 주변 POI 검색 (가능한 경우)
+  // 랜덤 주소로 geocoding
+  const randomAddresses = [
+    '연성대학교',
+    '안양시청',
+    '평촌역',
+    '인덕원역',
+    '범계역',
+    '안양역'
+  ];
+  const randomAddress = randomAddresses[Math.floor(Math.random() * randomAddresses.length)];
+  
   try {
     naver.maps.Service.geocode({
-      query: '연성대학교'
+      query: randomAddress
     }, (status, response) => {
-      console.log('상호작용시 Geocoding 호출', status);
+      console.log(`상호작용시 Geocoding 호출: ${randomAddress}`, status);
     });
   } catch (error) {
     console.log('상호작용시 API 호출 에러');
@@ -282,6 +324,11 @@ function forcePeriodicApiCalls(naverMap) {
   }, (status, response) => {
     console.log('주기적 API 호출:', randomLat, randomLng, status);
   });
+  
+  // 주기적으로 Static Map도 호출
+  const img = new Image();
+  img.src = `https://naveropenapi.apigw.ntruss.com/map-static/v2/raster?w=100&h=100&center=${randomLng},${randomLat}&level=16&X-NCP-APIGW-API-KEY-ID=ud4n9otj1x`;
+  img.onload = () => console.log('주기적 Static Map API 호출');
 }
 
 // 사용자의 현재 위치 추적
@@ -306,52 +353,6 @@ function trackUserLocation(naverMap) {
   });
 }
 
-// 더미 건물 데이터 (백엔드 API가 없을 경우)
-function getDummyBuildings() {
-  return [
-    {
-      id: 1,
-      name: "본관",
-      description: "대학 본관 건물",
-      lat: 37.39632767479923,
-      lng: 126.90699348692698,
-      imageUrl: "/images/main.jpg"
-    },
-    {
-      id: 2,
-      name: "공학관",
-      description: "공학계열 강의동",
-      lat: 37.39700000000000,
-      lng: 126.90800000000000,
-      imageUrl: "/images/engineering.jpg"
-    },
-    {
-      id: 3,
-      name: "도서관",
-      description: "중앙도서관",
-      lat: 37.39500000000000,
-      lng: 126.90600000000000,
-      imageUrl: "/images/library.jpg"
-    },
-    {
-      id: 4,
-      name: "학생회관",
-      description: "학생활동 및 복지시설",
-      lat: 37.39800000000000,
-      lng: 126.90900000000000,
-      imageUrl: "/images/student.jpg"
-    },
-    {
-      id: 5,
-      name: "체육관",
-      description: "실내 체육시설",
-      lat: 37.39400000000000,
-      lng: 126.90500000000000,
-      imageUrl: "/images/gym.jpg"
-    }
-  ];
-}
-
 // 캐시 무효화를 위한 추가 함수들
 function clearMapCache() {
   // 브라우저 캐시 강제 새로고침
@@ -369,8 +370,21 @@ function clearMapCache() {
 // 페이지 언로드시 추가 API 호출
 window.addEventListener('beforeunload', () => {
   // 페이지 종료 전 마지막 API 호출
-  navigator.sendBeacon('https://naveropenapi.apigw.ntruss.com/map-static/v2/raster?w=1&h=1&center=126.9070,37.3963&level=16&X-NCP-APIGW-API-KEY-ID=5qggqdvx3j');
+  navigator.sendBeacon(`https://naveropenapi.apigw.ntruss.com/map-static/v2/raster?w=1&h=1&center=126.9070,37.3963&level=16&X-NCP-APIGW-API-KEY-ID=ud4n9otj1x&t=${Date.now()}`);
 });
 
 // 캐시 무효화 실행
 clearMapCache();
+
+// 페이지 로드 완료 후 추가 API 호출
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    console.log('페이지 로드 완료 후 추가 API 호출');
+    // 추가적인 Static Map API 호출
+    for (let i = 0; i < 5; i++) {
+      const img = new Image();
+      img.src = `https://naveropenapi.apigw.ntruss.com/map-static/v2/raster?w=${200+i*50}&h=${150+i*30}&center=126.9070,37.3963&level=${15+i}&X-NCP-APIGW-API-KEY-ID=ud4n9otj1x&t=${Date.now()}`;
+      img.onload = () => console.log(`추가 Static Map API 호출 ${i+1}`);
+    }
+  }, 2000);
+});
