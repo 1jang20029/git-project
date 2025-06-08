@@ -3,11 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>건물 & 시설 안내</title>
+  <title>건물 &amp; 시설 안내</title>
+
+  <!-- 1) 네이버 지도 API (반드시 <head>에 포함) -->
+  <script
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction"
+    defer
+  ></script>
+
+  <!-- 2) 전역 공통 스타일 (인증 실패 메시지 등) -->
+  <link rel="stylesheet" href="index.css" />
+
+  <!-- 3) 이 페이지 전용 스타일 -->
   <link rel="stylesheet" href="buildings.css" />
 </head>
-<body>
-  <!-- -------------------- 헤더 -------------------- -->
+<body onload="initBuildingsPage()">
+
+  <!-- ================================
+       헤더
+       ================================ -->
   <div class="content-header">
     <div>
       <h1>건물 &amp; 시설 안내</h1>
@@ -19,7 +33,9 @@
     </div>
   </div>
 
-  <!-- -------------------- 지도가 들어갈 카드 -------------------- -->
+  <!-- ================================
+       캠퍼스 지도 카드
+       ================================ -->
   <div id="buildingsMapCard">
     <div id="card-header-buildings-map">
       <h3 id="card-title-buildings-map">캠퍼스 지도</h3>
@@ -36,10 +52,14 @@
     </div>
   </div>
 
-  <!-- -------------------- 건물 그리드 -------------------- -->
+  <!-- ================================
+       건물 그리드
+       ================================ -->
   <div id="buildingGrid"></div>
 
-  <!-- -------------------- 시설 섹션 추가 -------------------- -->
+  <!-- ================================
+       시설 안내
+       ================================ -->
   <div class="content-header" style="margin-top: 2rem;">
     <div>
       <h1>시설 안내</h1>
@@ -52,6 +72,9 @@
   </div>
   <div id="facilitiesGrid"></div>
 
+  <!-- ================================
+       페이지 전용 스크립트
+       ================================ -->
   <script src="buildings.js" defer></script>
 </body>
 </html>
