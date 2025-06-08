@@ -15,12 +15,12 @@
   <link rel="stylesheet" href="index.css" />
   <!-- 설정 화면 전용 스타일 -->
   <link rel="stylesheet" href="settings.css" />
-  <!-- 건물 & 시설 전용 오버라이드 스타일 -->
+  <!-- 건물 & 시설 전용 오버라이드 CSS -->
   <link rel="stylesheet" href="buildings.css" />
 </head>
 <body>
   <!-- ==================================================
-       상단 네비게이션 바: 브랜드 + 메인 메뉴 + 빠른 접근 + 검색/알림/유저
+       상단 네비게이션 바
        ================================================== -->
   <nav id="top-nav">
     <!-- 1) 로고 + 텍스트 -->
@@ -29,7 +29,7 @@
       <span>연성대학교 스마트 캠퍼스</span>
     </div>
 
-    <!-- 2) 메인 메뉴 (가로형) -->
+    <!-- 2) 메인 메뉴 -->
     <ul id="main-menu">
       <li class="nav-item active" id="nav-home" onclick="showContent('home')">
         <span class="nav-icon" title="대시보드">🏠</span>
@@ -51,22 +51,19 @@
         <span class="nav-icon" title="공지사항">📢</span>
         <span>공지사항</span>
       </li>
-      <!-- 학생서비스 -->
+      <!-- 학생서비스 드롭다운 -->
       <li class="nav-item" id="nav-student-services">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
         <ul class="dropdown-menu">
           <li class="dropdown-item" onclick="navigateToTimetable()">
-            <span class="nav-icon">📅</span>
-            <span>내 시간표</span>
+            <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
           <li class="dropdown-item" onclick="navigateToCalendar()">
-            <span class="nav-icon">🗓️</span>
-            <span>학사일정</span>
+            <span class="nav-icon">🗓️</span><span>학사일정</span>
           </li>
           <li class="dropdown-item" onclick="navigateToShuttle()">
-            <span class="nav-icon">🚌</span>
-            <span>셔틀버스</span>
+            <span class="nav-icon">🚌</span><span>셔틀버스</span>
           </li>
         </ul>
       </li>
@@ -75,24 +72,56 @@
     <!-- 3) 빠른 접근 -->
     <ul id="quick-menu"></ul>
 
-    <!-- 4) 검색/알림/유저 -->
+    <!-- 4) 검색 / 알림 / 사용자 메뉴 -->
     <div id="nav-controls">
+      <!-- 검색창 -->
       <div id="search-bar">
         <span id="search-icon">🔍</span>
         <input type="text" id="search-input" placeholder="건물, 교수님, 강의실 검색..." />
       </div>
+
+      <!-- 알림 버튼 + 드롭다운 -->
       <div id="user-menu">
         <div id="notification-btn" onclick="toggleNotifications()">
-          🔔<div id="notification-dot"></div>
-          <div id="notification-dropdown">…</div>
+          🔔
+          <div id="notification-dot"></div>
+          <div id="notification-dropdown">
+            <div id="notification-header">
+              <div id="notification-title">알림</div>
+              <div id="notification-badge">0</div>
+            </div>
+            <div id="notification-list"></div>
+            <div id="notification-footer">
+              <button id="mark-all-read" onclick="markAllAsRead()">
+                모두 읽음 처리
+              </button>
+            </div>
+          </div>
         </div>
+
+        <!-- 사용자 프로필 + 드롭다운 -->
         <div id="user-profile" onclick="toggleUserMenu()">
           <div id="user-avatar">👤</div>
           <div id="user-info">
             <div id="user-name">게스트</div>
             <div id="user-role">방문자</div>
           </div>
-          <div id="user-dropdown">…</div>
+          <div id="user-dropdown">
+            <div id="dropdown-user-info">
+              <div id="dropdown-user-name">게스트</div>
+              <div id="dropdown-user-role">방문자</div>
+            </div>
+            <button id="dropdown-item-profile" onclick="showProfile()">
+              내 계정
+            </button>
+            <button id="dropdown-item-settings" onclick="showContent('settings')">
+              <span class="settings-icon">⚙️</span><span>설정</span>
+            </button>
+            <div id="dropdown-divider"></div>
+            <button id="dropdown-item-logout" onclick="handleLogout()" style="color:#ef4444;">
+              <span class="logout-icon">🚪</span><span>로그아웃</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -103,45 +132,105 @@
        ================================================== -->
   <div id="main-container">
     <main id="content-area">
-      <!-- 홈 -->
+
+      <!-- ─── 홈 (대시보드) ─── -->
       <div id="homeContent">
-        <!-- … 기존 대시보드 전체 마크업 … -->
+        <div id="content-header-home">
+          <h1 id="title-home">대시보드</h1>
+          <div id="breadcrumb-home">
+            <span>홈</span><span>›</span><span>대시보드</span>
+          </div>
+        </div>
+
+        <!-- 통계 그리드 -->
+        <div id="statsGrid"></div>
+
+        <!-- 대시보드 카드들 -->
+        <div id="dashboardGrid">
+          <!-- 지도 카드 -->
+          <div id="map-card">
+            <div id="card-header-map">
+              <h3 id="card-title-map">캠퍼스 지도</h3>
+              <span id="card-icon-map">🗺️</span>
+            </div>
+            <div id="map-container">
+              <div id="naverMap" style="width:100%;height:100%;"></div>
+              <div id="map-overlay">
+                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍−</button>
+                <button id="map-reset" onclick="resetMapView()" title="초기화">🏠</button>
+                <button id="map-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 오늘의 시간표 카드 -->
+          <div id="timetable-card">
+            <div id="card-header-timetable">
+              <h3 id="card-title-timetable">오늘의 시간표</h3>
+              <span id="card-icon-timetable">📅</span>
+            </div>
+            <div id="timetableContent"></div>
+          </div>
+
+          <!-- 셔틀버스 카드 -->
+          <div id="shuttle-card">
+            <div id="card-header-shuttle">
+              <h3 id="card-title-shuttle">셔틀버스 현황</h3>
+              <span id="card-icon-shuttle">🚌</span>
+            </div>
+            <div id="shuttleRoutes"></div>
+            <div id="shuttle-status">
+              <div id="shuttle-time">--</div>
+              <div id="shuttle-desc">--</div>
+              <div id="shuttleStatus">--</div>
+            </div>
+          </div>
+
+          <!-- 최근 공지사항 카드 -->
+          <div id="notice-card">
+            <div id="card-header-notice">
+              <h3 id="card-title-notice">최근 공지사항</h3>
+              <span id="card-icon-notice">📢</span>
+            </div>
+            <div id="recentNotices"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- 건물 & 시설 -->
+      <!-- ─── 건물 & 시설 안내 ─── -->
       <div id="buildingsContent" style="display: none;"></div>
 
-      <!-- 커뮤니티 -->
+      <!-- ─── 커뮤니티 ─── -->
       <div id="communityContent" style="display: none;"></div>
 
-      <!-- 강의평가 -->
+      <!-- ─── 강의평가 ─── -->
       <div id="lecture-reviewContent" style="display: none;"></div>
 
-      <!-- 공지사항 -->
+      <!-- ─── 공지사항 ─── -->
       <div id="noticesContent" style="display: none;"></div>
 
-      <!-- 내 시간표 -->
+      <!-- ─── 내 시간표 ─── -->
       <div id="timetableContentPane" style="display: none;"></div>
 
-      <!-- 셔틀버스 -->
+      <!-- ─── 셔틀버스 ─── -->
       <div id="shuttleContentPane" style="display: none;"></div>
 
-      <!-- 학사일정 -->
+      <!-- ─── 학사일정 ─── -->
       <div id="calendarContentPane" style="display: none;"></div>
 
-      <!-- 내 계정 -->
+      <!-- ─── 내 계정 ─── -->
       <div id="profileContentPane" style="display: none;"></div>
 
-      <!-- 설정 -->
+      <!-- ─── 설정 ─── -->
       <div id="settingsContent" style="display: none;"></div>
     </main>
   </div>
 
-  <!-- 스크립트: SPA 전환 + API 호출 -->
+  <!-- 공통 스크립트 -->
   <script src="index.js" defer></script>
-  <!-- 설정 페이지 전용 로직 -->
   <script src="settings.js" defer></script>
-  <!-- 건물 & 시설 페이지 전용 로직 -->
+  <!-- 건물 & 시설 전용 로직 -->
   <script src="buildings.js" defer></script>
 </body>
 </html>
