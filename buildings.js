@@ -266,3 +266,6 @@ function focusOnFacilityMarker(id) {
     facilityInfoWindows[idx].open(buildingsMap, m);
   }
 }
+
+
+document.addEventListener('DOMContentLoaded', initBuildingsPage);
