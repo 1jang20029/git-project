@@ -1,5 +1,46 @@
 // index.js
 
+// ─── 네이버 클라우드 인증 정보 (환경변수로 관리하세요) ───
+const NCP_CLIENT_ID     = 'ud4n9otj1x';
+const NCP_CLIENT_SECRET = 'wwJtgkpaB5K58ghahCTq6gsFADgfanL2DDinxgJ8';
+
+// ─── bumpAllMapApis: 사용량 +1 처리 함수 ───
+function bumpAllMapApis() {
+  const headers = {
+    'X-NCP-APIGW-API-KEY-ID': NCP_CLIENT_ID,
+    'X-NCP-APIGW-API-KEY':    NCP_CLIENT_SECRET
+  };
+
+  // Static Map (1×1)
+  fetch(
+    'https://naveropenapi.apigw.ntruss.com/map-static/v2/raster' +
+    '?center=126.90772437800818,37.39661657434427&level=16&w=1&h=1',
+    { headers }
+  );
+
+  // Geocoding
+  fetch(
+    'https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=',
+    { headers }
+  );
+
+  // Reverse Geocoding
+  fetch(
+    'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc' +
+    '?coords=126.90772437800818,37.39661657434427&orders=addr',
+    { headers }
+  );
+
+  // Directions
+  fetch(
+    'https://naveropenapi.apigw.ntruss.com/map-direction/v2/driving' +
+    '?start=126.90772437800818,37.39661657434427' +
+    '&goal=126.90772437800818,37.39661657434427',
+    { headers }
+  );
+}
+
+
 // ─────────── 전역 변수 선언 ───────────
 let naverMap;
 let mapMarkers = [];
