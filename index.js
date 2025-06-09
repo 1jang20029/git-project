@@ -31,27 +31,21 @@ const EXTERNAL_PAGES = {
   shuttle: 'shuttle.html'           // 셔틀버스 페이지
 };
 
-// ─────────── 외부 페이지 이동 함수들 ───────────
+// ─────────── 외부 페이지 이동 함수들 (현재 창에서 이동) ───────────
 function openTimetablePage() {
   console.log('내 시간표 페이지로 이동');
   closeAllDropdowns();
   
-  // 새 창에서 열기
-  window.open(EXTERNAL_PAGES.timetable, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-  
-  // 또는 현재 창에서 이동하려면 아래 코드 사용:
-  // window.location.href = EXTERNAL_PAGES.timetable;
+  // 현재 창에서 이동
+  window.location.href = EXTERNAL_PAGES.timetable;
 }
 
 function openCalendarPage() {
   console.log('학사일정 페이지로 이동');
   closeAllDropdowns();
   
-  // 새 창에서 열기
-  window.open(EXTERNAL_PAGES.calendar, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-  
-  // 또는 현재 창에서 이동하려면 아래 코드 사용:
-  // window.location.href = EXTERNAL_PAGES.calendar;
+  // 현재 창에서 이동
+  window.location.href = EXTERNAL_PAGES.calendar;
 }
 
 function openShuttlePage() {
@@ -60,9 +54,30 @@ function openShuttlePage() {
   
   // 현재 창에서 이동
   window.location.href = EXTERNAL_PAGES.shuttle;
-  
-  // 또는 새 창에서 열기:
-  // window.open(EXTERNAL_PAGES.shuttle, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+}
+
+// ─────────── 개선된 드롭다운 처리 함수들 ───────────
+
+// 학생서비스 드롭다운 닫기 함수 개선
+function closeStudentServiceDropdown() {
+  const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
+  if (dropdown) {
+    dropdown.style.opacity = '0';
+    dropdown.style.visibility = 'hidden';
+    dropdown.style.transform = 'translateY(-10px)';
+    dropdown.style.pointerEvents = 'none';
+  }
+}
+
+// 드롭다운 표시 함수 추가
+function showStudentServiceDropdown() {
+  const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
+  if (dropdown) {
+    dropdown.style.opacity = '1';
+    dropdown.style.visibility = 'visible';
+    dropdown.style.transform = 'translateY(0)';
+    dropdown.style.pointerEvents = 'auto';
+  }
 }
 
 // ─────────── DOMContentLoaded ───────────
@@ -97,6 +112,40 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('keydown', resetAutoLogoutTimer);
   }
 
+  // 학생서비스 드롭다운 개선된 이벤트 처리
+  const studentServices = document.getElementById('nav-student-services');
+  if (studentServices) {
+    let hoverTimeout;
+    
+    // 마우스 엔터 시 드롭다운 표시
+    studentServices.addEventListener('mouseenter', () => {
+      clearTimeout(hoverTimeout);
+      showStudentServiceDropdown();
+    });
+    
+    // 마우스 리브 시 약간의 지연 후 드롭다운 숨김
+    studentServices.addEventListener('mouseleave', () => {
+      hoverTimeout = setTimeout(() => {
+        closeStudentServiceDropdown();
+      }, 150); // 150ms 지연
+    });
+    
+    // 드롭다운 메뉴 자체에도 이벤트 추가
+    const dropdown = studentServices.querySelector('.dropdown-menu');
+    if (dropdown) {
+      dropdown.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+        showStudentServiceDropdown();
+      });
+      
+      dropdown.addEventListener('mouseleave', () => {
+        hoverTimeout = setTimeout(() => {
+          closeStudentServiceDropdown();
+        }, 150);
+      });
+    }
+  }
+
   // 학생서비스 드롭다운 항목들에 직접 이벤트 리스너 추가
   setTimeout(() => {
     const dropdownItems = document.querySelectorAll('#nav-student-services .dropdown-item');
@@ -115,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, 100);
 
+  // 전역 클릭 이벤트에서 학생서비스 드롭다운 처리 개선
   document.addEventListener('click', (event) => {
     const ntBtn = event.target.closest('#notification-btn');
     const upBtn = event.target.closest('#user-profile');
@@ -122,7 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!ntBtn) closeNotificationDropdown();
     if (!upBtn) closeUserDropdown();
-    if (!ssBtn) closeStudentServiceDropdown();
+    if (!ssBtn) {
+      // 학생서비스 영역 밖을 클릭하면 드롭다운 즉시 숨김
+      closeStudentServiceDropdown();
+    }
 
     resetAutoLogoutTimer();
   });
@@ -815,6 +868,7 @@ function showErrorFallback(containerId, message) {
   }
 }
 
+
 // ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -1012,15 +1066,6 @@ function closeAllDropdowns() {
   closeNotificationDropdown();
   closeUserDropdown();
   closeStudentServiceDropdown();
-}
-
-function closeStudentServiceDropdown() {
-  const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
-  if (dropdown) {
-    dropdown.style.opacity = '0';
-    dropdown.style.visibility = 'hidden';
-    dropdown.style.transform = 'translateY(-10px)';
-  }
 }
 
 // ─────────── showProfile: 프로필 화면 로드 ───────────
