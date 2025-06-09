@@ -2,25 +2,24 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>내 시간표 - 연성대학교 스마트 캠퍼스</title>
-  <link rel="stylesheet" href="index.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 시간표</title>
   <link rel="stylesheet" href="timetable.css" />
 </head>
 <body>
-  <div id="content-header-timetable-pane">
-    <h1>내 시간표</h1>
-    <div id="breadcrumb-timetable-pane">
-      <span>홈</span><span>›</span><span>학생서비스</span><span>›</span><span>내 시간표</span>
+  <div class="tt-header">
+    <div class="tt-title">내 시간표</div>
+    <div class="tt-breadcrumb">
+      홈 &gt; 학생서비스 &gt; 내 시간표
     </div>
   </div>
-  <div id="timetable-pane-main">
-    <div id="timetable-card" class="card timetable-card-main">
-      <div id="timetable-card-header">
-        <span class="card-title">학기별 시간표</span>
-        <button id="add-course-btn" class="btn btn-primary" onclick="openAddCourseModal()">+ 수업 추가</button>
+  <div class="tt-container">
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <span class="tt-card-title">학기별 시간표</span>
+        <button class="add-class-btn">+ 수업 추가</button>
       </div>
-      <div id="timetable-table-container">
+      <div class="tt-table-wrap">
         <table id="timetable-table">
           <thead>
             <tr>
@@ -33,36 +32,10 @@
             </tr>
           </thead>
           <tbody>
-            <!-- JS로 동적으로 시간표 행 생성 -->
+            <!-- JS에서 자동 생성 -->
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
-  <!-- 수업 추가 모달 -->
-  <div id="modal-overlay" style="display:none;">
-    <div id="modal">
-      <h2>수업 추가</h2>
-      <form id="add-course-form" onsubmit="saveCourse(event)">
-        <label>과목명 <input type="text" id="course-name" required></label>
-        <label>요일
-          <select id="course-day" required>
-            <option value="">선택</option>
-            <option value="1">월</option>
-            <option value="2">화</option>
-            <option value="3">수</option>
-            <option value="4">목</option>
-            <option value="5">금</option>
-          </select>
-        </label>
-        <label>시작 시간 <input type="time" id="course-start" required></label>
-        <label>종료 시간 <input type="time" id="course-end" required></label>
-        <label>강의실 <input type="text" id="course-room"></label>
-        <div style="margin-top:1.5rem;display:flex;gap:1rem;">
-          <button type="submit" class="btn btn-primary">저장</button>
-          <button type="button" class="btn btn-outline" onclick="closeAddCourseModal()">취소</button>
-        </div>
-      </form>
     </div>
   </div>
   <script src="timetable.js"></script>
