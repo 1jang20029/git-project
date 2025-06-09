@@ -102,31 +102,11 @@ function setCurrentSemester() {
 // 커스텀 드롭다운 토글
 function toggleTimetableDropdown() {
     const menu = document.getElementById('timetable-menu');
-    const button = document.querySelector('.dropdown-button');
     
     if (menu.style.display === 'none' || menu.style.display === '') {
-        // 드롭다운 열기
-        const buttonRect = button.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const spaceBelow = viewportHeight - buttonRect.bottom;
-        const spaceAbove = buttonRect.top;
-        
         menu.style.display = 'block';
-        menu.style.left = buttonRect.left + 'px';
-        menu.style.width = buttonRect.width + 'px';
-        
-        // 공간이 충분하면 아래로, 부족하면 위로 표시
-        if (spaceBelow > 220 || spaceBelow > spaceAbove) {
-            menu.style.top = (buttonRect.bottom + 8) + 'px';
-            menu.style.bottom = 'auto';
-        } else {
-            menu.style.bottom = (viewportHeight - buttonRect.top + 8) + 'px';
-            menu.style.top = 'auto';
-        }
-        
         updateTimetableMenu();
     } else {
-        // 드롭다운 닫기
         menu.style.display = 'none';
     }
 }

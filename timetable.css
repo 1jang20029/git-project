@@ -212,7 +212,10 @@ header {
 }
 
 .dropdown-menu {
-    position: fixed;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     background: rgba(30, 41, 59, 0.98);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(148, 163, 184, 0.2);
@@ -222,7 +225,7 @@ header {
     z-index: 1000;
     display: none;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-    min-width: 280px;
+    margin-top: 0.25rem;
 }
 
 .dropdown-item {
