@@ -1,260 +1,710 @@
+/* =============================================================================
+   PC 웹 브라우저 최적화 시간표 스타일
+   index.html의 디자인 언어를 유지하면서 PC 환경에 맞게 개선
+   ============================================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-  background: #f6f7fb;
-  font-family: 'Pretendard', 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  min-width: 100vw;
-  min-height: 100vh;
-  overflow-x: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0a0e27;
+    color: #ffffff;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.tt-container {
-  width: 100vw;
-  height: 100vh;
-  max-width: 100vw;
-  max-height: 100vh;
-  margin: 0;
-  padding: 0 0 0 0;
-  background: none;
-  box-shadow: none;
-  border-radius: 0;
-  display: flex;
-  flex-direction: column;
+/* 전체 컨테이너 - PC 화면에 맞게 확장 */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    min-height: 100vh;
+    padding: 0;
 }
 
+/* 상단 헤더 - index.html 스타일 유지 */
 header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100vw;
-  max-width: 100vw;
-  padding: 24px 50px 10px 50px;
-  box-sizing: border-box;
-  background: none;
-  margin-bottom: 0;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+    transition: all 0.3s ease;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.tt-header-title {
-  font-size: 1.38rem;
-  font-weight: 800;
-  color: #222b44;
-  letter-spacing: -0.7px;
-  margin-left: 6px;
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #94a3b8;
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    text-decoration: none;
 }
 
-.tt-add-btn {
-  padding: 9px 25px;
-  font-size: 1.09rem;
-  background: linear-gradient(90deg, #5da5f9 30%, #43e3ff 100%);
-  color: #fff;
-  border: none;
-  border-radius: 2rem;
-  cursor: pointer;
-  font-weight: 700;
-  box-shadow: 0 1px 7px rgba(80, 180, 255, 0.11);
-  transition: filter 0.13s;
-  margin-right: 3px;
-}
-.tt-add-btn:hover {
-  filter: brightness(0.94);
+.back-button:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
 }
 
-.tt-table-wrap {
-  width: 100vw;
-  height: calc(100vh - 80px);
-  padding: 0 40px;
-  background: none;
-  border-radius: 0;
-  box-shadow: none;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  box-sizing: border-box;
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.tt-table {
-  width: 100%;
-  max-width: 1600px;
-  min-width: 1000px;
-  border-collapse: separate;
-  border-spacing: 0;
-  table-layout: fixed;
-  background: #fff;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(110, 140, 180, 0.09);
+.page-actions {
+    display: flex;
+    gap: 0.75rem;
 }
 
-.tt-table th, .tt-table td {
-  border: 1.2px solid #e5eaf3;
-  padding: 13px 5px;
-  text-align: center;
-  min-width: 120px;
-  max-width: 230px;
-  height: 60px;
-  font-size: 1.15rem;
-  vertical-align: middle;
-  background: #fff;
-  position: relative;
-  box-sizing: border-box;
+.action-button {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.tt-table th {
-  background: #f1f6fd;
-  font-weight: 800;
-  color: #3670ce;
-  font-size: 1.19rem;
-  border-bottom: 2px solid #c8d5ee;
-  letter-spacing: -0.5px;
+.action-button:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #3b82f6;
 }
 
-.tt-time-col {
-  background: #f7faff;
-  width: 80px;
-  color: #97a1b4;
-  font-size: 1.13rem;
-  font-weight: 700;
-  border-right: 2px solid #e1e8f5;
+/* 메인 컨텐츠 영역 - 사이드바와 메인 영역으로 분할 */
+.main-content {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    min-height: calc(100vh - 80px);
 }
 
-.tt-table tr:last-child td, .tt-table tr:last-child th {
-  border-bottom: none;
+/* 왼쪽 사이드바 - 제어 패널 */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.tt-class-block {
-  background: linear-gradient(96deg, #eaf4ff 25%, #d0eaff 100%);
-  border-radius: 11px;
-  border: 2px solid #93bdfa;
-  font-weight: 700;
-  color: #26537d;
-  font-size: 1.11rem;
-  position: absolute;
-  left: 7px; right: 7px;
-  top: 7px; bottom: 7px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 1px 8px rgba(120, 190, 250, 0.07);
-  transition: filter 0.15s;
+.control-card {
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
 }
 
-.tt-class-block:hover {
-  filter: brightness(0.97);
+.control-card:hover {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
-.tt-class-block .tt-remove-btn {
-  position: absolute;
-  top: 3px; right: 8px;
-  background: #fff;
-  border: 1.1px solid #bdd6f8;
-  color: #3c71be;
-  border-radius: 11px;
-  font-size: 1.13rem;
-  width: 20px; height: 20px;
-  line-height: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-  transition: background 0.13s;
-}
-.tt-class-block .tt-remove-btn:hover {
-  background: #d4e9fd;
-  color: #1752b0;
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* 팝업 */
-.tt-modal {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(46,58,73,0.15);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
+/* 학기 및 시간표 선택기 */
+.selector-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
-.tt-modal.show {
-  display: flex;
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
-.tt-modal-content {
-  background: #fff;
-  border-radius: 13px;
-  min-width: 340px;
-  max-width: 95vw;
-  box-shadow: 0 8px 36px rgba(0,0,0,0.13);
-  padding: 25px 20px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  border: 1.1px solid #e1eaff;
+
+.form-label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 500;
 }
-.tt-modal-title {
-  font-size: 1.12rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-  letter-spacing: -0.4px;
+
+.form-select, .form-input {
+    padding: 0.75rem 1rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    color: #f1f5f9;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
 }
-.tt-modal-content label {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 1.01rem;
-  font-weight: 500;
-  margin-bottom: 2px;
+
+.form-select:focus, .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: rgba(30, 41, 59, 0.95);
 }
-.tt-modal-content input,
-.tt-modal-content select {
-  padding: 8px 7px;
-  font-size: 1.01rem;
-  border: 1.2px solid #b1c7df;
-  border-radius: 7px;
-  background: #f7fafc;
-  outline: none;
-  transition: border 0.13s;
+
+/* 시간표 드롭다운 */
+.custom-dropdown {
+    position: relative;
 }
-.tt-modal-content input:focus,
-.tt-modal-content select:focus {
-  border-color: #468ef9;
-  background: #eaf4ff;
+
+.dropdown-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    color: #f1f5f9;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
 }
-.tt-modal-actions {
-  display: flex;
-  gap: 9px;
-  margin-top: 16px;
-  justify-content: flex-end;
+
+.dropdown-button:hover {
+    border-color: #3b82f6;
+    background: rgba(30, 41, 59, 0.95);
 }
-.tt-modal-ok {
-  background: linear-gradient(90deg, #468ef9, #50c7f7 80%);
-  color: #fff;
-  border: none;
-  border-radius: 1.1rem;
-  padding: 7px 18px;
-  font-size: 1.01rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: filter 0.14s;
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 200;
+    display: none;
+    margin-top: 0.25rem;
 }
-.tt-modal-ok:hover {
-  filter: brightness(0.95);
+
+.dropdown-item {
+    padding: 0.75rem 1rem;
+    color: #f1f5f9;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.tt-modal-cancel {
-  background: #e3ecf6;
-  color: #34557c;
-  border: none;
-  border-radius: 1.1rem;
-  padding: 7px 18px;
-  font-size: 1.01rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.12s;
+
+.dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.1);
 }
-.tt-modal-cancel:hover {
-  background: #d7e6f6;
+
+.dropdown-item.selected {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+/* 액션 버튼들 */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #94a3b8;
+}
+
+.btn-outline:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+/* 오른쪽 메인 영역 */
+.timetable-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* 시간표 컨테이너 */
+.timetable-container {
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.timetable-container:hover {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.timetable th, .timetable td {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.timetable th {
+    background: rgba(15, 23, 42, 0.8);
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+.timetable .time-col {
+    width: 80px;
+    background: rgba(15, 23, 42, 0.6);
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.timetable .class-cell {
+    height: 60px;
+    vertical-align: top;
+    padding: 0;
+    background: rgba(30, 41, 59, 0.3);
+    transition: background-color 0.2s;
+    position: relative;
+}
+
+.timetable .class-cell:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+/* 과목 블록 스타일 */
+.class-item {
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.class-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.class-name {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.class-info {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+/* 과목 색상 */
+.color-1 { background: linear-gradient(135deg, #e57373, #ef5350); }
+.color-2 { background: linear-gradient(135deg, #81c784, #66bb6a); }
+.color-3 { background: linear-gradient(135deg, #64b5f6, #42a5f5); }
+.color-4 { background: linear-gradient(135deg, #ba68c8, #ab47bc); }
+.color-5 { background: linear-gradient(135deg, #ffb74d, #ffa726); }
+.color-6 { background: linear-gradient(135deg, #4db6ac, #26a69a); }
+.color-7 { background: linear-gradient(135deg, #7986cb, #5c6bc0); }
+.color-8 { background: linear-gradient(135deg, #a1887f, #8d6e63); }
+
+/* 과목 목록 및 성적 요약 */
+.course-info-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.course-list-container, .grade-summary {
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.course-list-container:hover, .grade-summary:hover {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.course-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.course-item {
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.course-item:hover {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+.course-info {
+    flex: 1;
+}
+
+.course-name {
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 0.25rem;
+}
+
+.course-details {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.course-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.course-action-btn {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: #3b82f6;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.course-action-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+}
+
+.course-action-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* 성적 요약 */
+.grade-summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.grade-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+}
+
+.grade-label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.grade-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.grade-value.major {
+    color: #10b981;
+}
+
+.grade-value.total {
+    color: #8b5cf6;
+}
+
+/* 모달 스타일 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    color: white;
+    overflow-y: auto;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #f1f5f9;
+}
+
+/* 색상 선택기 */
+.color-select {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.color-option {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.color-option:hover {
+    transform: scale(1.05);
+}
+
+.color-option.selected {
+    border-color: white;
+    transform: scale(1.1);
+}
+
+/* 시간 슬롯 */
+.time-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.time-slot {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 0.75rem;
+    align-items: end;
+}
+
+.remove-slot-btn {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    padding: 0.75rem;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.remove-slot-btn:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: #ef4444;
+}
+
+/* 모달 액션 */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* 빈 상태 메시지 */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+}
+
+.empty-state h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #64748b;
+}
+
+/* 삭제 버튼 */
+.delete-button {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s, background-color 0.2s;
+}
+
+.dropdown-item:hover .delete-button {
+    opacity: 1;
+}
+
+.delete-button:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 300px 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+    
+    .sidebar {
+        order: 2;
+    }
+    
+    .timetable-section {
+        order: 1;
+    }
+    
+    .course-info-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .timetable th, .timetable td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.8rem;
+    }
+    
+    .time-slot {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.7);
 }
