@@ -1,10 +1,9 @@
 body {
-  background: #f5f7fa;
+  background: #f6f7fb;
   font-family: 'Pretendard', 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
   margin: 0;
   padding: 0;
   width: 100vw;
-  height: 100vh;
   min-width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;
@@ -15,136 +14,145 @@ body {
   height: 100vh;
   max-width: 100vw;
   max-height: 100vh;
-  box-sizing: border-box;
-  padding: 32px 50px 0 50px;
-  background: #f5f7fa;
-  border-radius: 0;
-  box-shadow: none;
   margin: 0;
+  padding: 0 0 0 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
-  /* 헤더+시간표가 위에서부터 자연스럽게 정렬되도록 */
 }
 
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding: 0 10px;
+  width: 100vw;
+  max-width: 100vw;
+  padding: 24px 50px 10px 50px;
+  box-sizing: border-box;
+  background: none;
+  margin-bottom: 0;
 }
 
 .tt-header-title {
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: #181c32;
+  font-size: 1.38rem;
+  font-weight: 800;
+  color: #222b44;
   letter-spacing: -0.7px;
+  margin-left: 6px;
 }
 
 .tt-add-btn {
-  padding: 8px 22px;
-  font-size: 1.08rem;
-  background: linear-gradient(90deg, #468ef9, #50c7f7 80%);
+  padding: 9px 25px;
+  font-size: 1.09rem;
+  background: linear-gradient(90deg, #5da5f9 30%, #43e3ff 100%);
   color: #fff;
   border: none;
-  border-radius: 1.8rem;
+  border-radius: 2rem;
   cursor: pointer;
   font-weight: 700;
-  box-shadow: 0 1px 6px rgba(70, 142, 249, 0.11);
-  transition: filter 0.14s;
+  box-shadow: 0 1px 7px rgba(80, 180, 255, 0.11);
+  transition: filter 0.13s;
+  margin-right: 3px;
 }
 .tt-add-btn:hover {
-  filter: brightness(0.93);
+  filter: brightness(0.94);
 }
 
 .tt-table-wrap {
-  width: 100%;
-  height: calc(100vh - 100px);
-  overflow: auto;
-  margin-bottom: 0;
+  width: 100vw;
+  height: calc(100vh - 80px);
+  padding: 0 40px;
   background: none;
   border-radius: 0;
   box-shadow: none;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  box-sizing: border-box;
 }
 
 .tt-table {
-  width: 90vw;
-  max-width: 1300px;
-  height: auto;
-  min-height: 680px;
+  width: 100%;
+  max-width: 1600px;
+  min-width: 1000px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
   background: #fff;
-  border-radius: 20px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 2px 9px rgba(50,100,170,0.07);
+  box-shadow: 0 2px 12px rgba(110, 140, 180, 0.09);
 }
 
 .tt-table th, .tt-table td {
-  border: 1.2px solid #e2e7ef;
-  padding: 13px 3px;
+  border: 1.2px solid #e5eaf3;
+  padding: 13px 5px;
   text-align: center;
-  min-width: 95px;
-  max-width: 160px;
-  height: 56px;
-  font-size: 1.13rem;
+  min-width: 120px;
+  max-width: 230px;
+  height: 60px;
+  font-size: 1.15rem;
   vertical-align: middle;
   background: #fff;
   position: relative;
+  box-sizing: border-box;
 }
 
 .tt-table th {
-  background: #eaf2fd;
+  background: #f1f6fd;
   font-weight: 800;
-  color: #3771c8;
-  font-size: 1.18rem;
+  color: #3670ce;
+  font-size: 1.19rem;
+  border-bottom: 2px solid #c8d5ee;
   letter-spacing: -0.5px;
-  border-bottom: 2px solid #d0e3fa;
 }
 
 .tt-time-col {
-  background: #f3f6fb;
-  width: 70px;
-  color: #7b8798;
-  font-size: 1.11rem;
-  font-weight: 600;
-  border-right: 2px solid #d0e3fa;
+  background: #f7faff;
+  width: 80px;
+  color: #97a1b4;
+  font-size: 1.13rem;
+  font-weight: 700;
+  border-right: 2px solid #e1e8f5;
+}
+
+.tt-table tr:last-child td, .tt-table tr:last-child th {
+  border-bottom: none;
 }
 
 .tt-class-block {
-  background: linear-gradient(98deg, #e6f2ff 25%, #c5e5ff 100%);
-  border-radius: 12px;
-  border: 2px solid #8bbefa;
+  background: linear-gradient(96deg, #eaf4ff 25%, #d0eaff 100%);
+  border-radius: 11px;
+  border: 2px solid #93bdfa;
   font-weight: 700;
-  color: #1c456d;
-  font-size: 1.09rem;
+  color: #26537d;
+  font-size: 1.11rem;
   position: absolute;
-  left: 5px; right: 5px;
-  top: 5px; bottom: 5px;
+  left: 7px; right: 7px;
+  top: 7px; bottom: 7px;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 1px 7px rgba(110,170,210,0.10);
-  transition: filter 0.16s;
+  box-shadow: 0 1px 8px rgba(120, 190, 250, 0.07);
+  transition: filter 0.15s;
 }
 
 .tt-class-block:hover {
-  filter: brightness(0.96);
+  filter: brightness(0.97);
 }
 
 .tt-class-block .tt-remove-btn {
   position: absolute;
   top: 3px; right: 8px;
   background: #fff;
-  border: 1.1px solid #b6d6fd;
-  color: #3771c8;
+  border: 1.1px solid #bdd6f8;
+  color: #3c71be;
   border-radius: 11px;
   font-size: 1.13rem;
   width: 20px; height: 20px;
@@ -158,15 +166,15 @@ header {
   transition: background 0.13s;
 }
 .tt-class-block .tt-remove-btn:hover {
-  background: #d3eaff;
-  color: #1565c0;
+  background: #d4e9fd;
+  color: #1752b0;
 }
 
-/* 팝업 (수업 추가 등) */
+/* 팝업 */
 .tt-modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(46,58,73,0.18);
+  background: rgba(46,58,73,0.15);
   display: none;
   align-items: center;
   justify-content: center;
@@ -177,27 +185,27 @@ header {
 }
 .tt-modal-content {
   background: #fff;
-  border-radius: 15px;
-  min-width: 320px;
+  border-radius: 13px;
+  min-width: 340px;
   max-width: 95vw;
   box-shadow: 0 8px 36px rgba(0,0,0,0.13);
-  padding: 23px 16px 17px 16px;
+  padding: 25px 20px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 13px;
-  border: 1.2px solid #e1eaff;
+  gap: 12px;
+  border: 1.1px solid #e1eaff;
 }
 .tt-modal-title {
-  font-size: 1.13rem;
+  font-size: 1.12rem;
   font-weight: 700;
-  margin-bottom: 9px;
+  margin-bottom: 10px;
   letter-spacing: -0.4px;
 }
 .tt-modal-content label {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  font-size: 1.02rem;
+  font-size: 1.01rem;
   font-weight: 500;
   margin-bottom: 2px;
 }
