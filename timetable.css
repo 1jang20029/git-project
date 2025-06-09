@@ -128,16 +128,16 @@ header {
 
 /* 시간표 관리 카드에 특별한 z-index 적용 */
 .timetable-management-card {
-    z-index: 1020 !important;
+    z-index: 100 !important;
     position: relative;
 }
 
 .timetable-management-card .custom-dropdown {
-    z-index: 1021;
+    z-index: 101;
 }
 
 .timetable-management-card .dropdown-menu {
-    z-index: 1025;
+    z-index: 9999;
 }
 
 .card-title {
@@ -189,7 +189,7 @@ header {
 /* 시간표 드롭다운 */
 .custom-dropdown {
     position: relative;
-    z-index: 1010;
+    z-index: 2000;
 }
 
 .dropdown-button {
@@ -206,7 +206,7 @@ header {
     align-items: center;
     transition: all 0.3s ease;
     position: relative;
-    z-index: 1011;
+    z-index: 2001;
 }
 
 .dropdown-button:hover {
@@ -215,20 +215,18 @@ header {
 }
 
 .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
+    position: fixed;
     background: rgba(30, 41, 59, 0.98);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 1015;
+    z-index: 9999;
     display: none;
     margin-top: 0.25rem;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    min-width: 250px;
 }
 
 .dropdown-item {

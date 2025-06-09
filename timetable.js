@@ -102,8 +102,22 @@ function setCurrentSemester() {
 // 커스텀 드롭다운 토글
 function toggleTimetableDropdown() {
     const menu = document.getElementById('timetable-menu');
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-    updateTimetableMenu();
+    const button = document.querySelector('.dropdown-button');
+    
+    if (menu.style.display === 'none' || menu.style.display === '') {
+        // 드롭다운 열기
+        const buttonRect = button.getBoundingClientRect();
+        
+        menu.style.display = 'block';
+        menu.style.left = buttonRect.left + 'px';
+        menu.style.top = (buttonRect.bottom + 4) + 'px';
+        menu.style.width = buttonRect.width + 'px';
+        
+        updateTimetableMenu();
+    } else {
+        // 드롭다운 닫기
+        menu.style.display = 'none';
+    }
 }
 
 // 시간표 메뉴 업데이트
@@ -1139,8 +1153,23 @@ function goToBack() {
 // 드롭다운 외부 클릭 시 닫기
 document.addEventListener('click', function(event) {
     const dropdown = document.querySelector('.custom-dropdown');
-    if (!dropdown.contains(event.target)) {
-        document.getElementById('timetable-menu').style.display = 'none';
+    const menu = document.getElementById('timetable-menu');
+    
+    if (!dropdown.contains(event.target) && !menu.contains(event.target)) {
+        menu.style.display = 'none';
+    }
+});
+
+// 창 크기 변경 시 드롭다운 위치 재조정
+window.addEventListener('resize', function() {
+    const menu = document.getElementById('timetable-menu');
+    if (menu.style.display === 'block') {
+        const button = document.querySelector('.dropdown-button');
+        const buttonRect = button.getBoundingClientRect();
+        
+        menu.style.left = buttonRect.left + 'px';
+        menu.style.top = (buttonRect.bottom + 4) + 'px';
+        menu.style.width = buttonRect.width + 'px';
     }
 });
 
