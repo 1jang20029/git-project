@@ -107,11 +107,22 @@ function toggleTimetableDropdown() {
     if (menu.style.display === 'none' || menu.style.display === '') {
         // 드롭다운 열기
         const buttonRect = button.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - buttonRect.bottom;
+        const spaceAbove = buttonRect.top;
         
         menu.style.display = 'block';
         menu.style.left = buttonRect.left + 'px';
-        menu.style.top = (buttonRect.bottom + 4) + 'px';
         menu.style.width = buttonRect.width + 'px';
+        
+        // 공간이 충분하면 아래로, 부족하면 위로 표시
+        if (spaceBelow > 220 || spaceBelow > spaceAbove) {
+            menu.style.top = (buttonRect.bottom + 8) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (viewportHeight - buttonRect.top + 8) + 'px';
+            menu.style.top = 'auto';
+        }
         
         updateTimetableMenu();
     } else {
@@ -145,7 +156,7 @@ function updateTimetableMenu() {
         item.addEventListener('click', function(e) {
             if (!e.target.closest('.delete-button')) {
                 selectTimetable(timetable.id);
-                toggleTimetableDropdown();
+                document.getElementById('timetable-menu').style.display = 'none';
             }
         });
         
@@ -1166,10 +1177,21 @@ window.addEventListener('resize', function() {
     if (menu.style.display === 'block') {
         const button = document.querySelector('.dropdown-button');
         const buttonRect = button.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - buttonRect.bottom;
+        const spaceAbove = buttonRect.top;
         
         menu.style.left = buttonRect.left + 'px';
-        menu.style.top = (buttonRect.bottom + 4) + 'px';
         menu.style.width = buttonRect.width + 'px';
+        
+        // 공간에 따라 위치 재조정
+        if (spaceBelow > 220 || spaceBelow > spaceAbove) {
+            menu.style.top = (buttonRect.bottom + 8) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (viewportHeight - buttonRect.top + 8) + 'px';
+            menu.style.top = 'auto';
+        }
     }
 });
 

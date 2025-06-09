@@ -107,7 +107,7 @@ header {
     flex-direction: column;
     gap: 1.5rem;
     position: relative;
-    z-index: 5;
+    z-index: 1;
 }
 
 .control-card {
@@ -126,18 +126,21 @@ header {
     border-color: rgba(59, 130, 246, 0.3);
 }
 
-/* 시간표 관리 카드에 특별한 z-index 적용 */
+/* 빠른 작업 카드는 낮은 z-index */
+.control-card:nth-child(3) {
+    z-index: 1;
+}
+
+/* 시간표 관리 카드 - 최우선 표시 */
 .timetable-management-card {
-    z-index: 100 !important;
+    z-index: 10000 !important;
     position: relative;
+    isolation: isolate;
 }
 
 .timetable-management-card .custom-dropdown {
-    z-index: 101;
-}
-
-.timetable-management-card .dropdown-menu {
-    z-index: 9999;
+    z-index: 10001;
+    position: relative;
 }
 
 .card-title {
@@ -189,7 +192,7 @@ header {
 /* 시간표 드롭다운 */
 .custom-dropdown {
     position: relative;
-    z-index: 2000;
+    z-index: 10000;
 }
 
 .dropdown-button {
@@ -206,7 +209,7 @@ header {
     align-items: center;
     transition: all 0.3s ease;
     position: relative;
-    z-index: 2001;
+    z-index: 10001;
 }
 
 .dropdown-button:hover {
@@ -222,11 +225,10 @@ header {
     border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 9999;
+    z-index: 99999;
     display: none;
-    margin-top: 0.25rem;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    min-width: 250px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    min-width: 280px;
 }
 
 .dropdown-item {
@@ -740,7 +742,7 @@ body.light-mode .dropdown-button:hover {
 body.light-mode .dropdown-menu {
     background: rgba(255, 255, 255, 0.98);
     border: 1px solid rgba(148, 163, 184, 0.3);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 body.light-mode .dropdown-item {
