@@ -1,82 +1,91 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
-  background: #f8f9fa;
-  color: #222;
+  font-family: 'Pretendard', 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
+  background: #f4f7fa;
+  color: #23272f;
 }
 .tt-container {
-  max-width: 600px;
-  margin: 40px auto;
+  max-width: 540px;
+  margin: 48px auto 0 auto;
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 18px rgba(50, 50, 60, 0.09);
-  padding: 32px 20px 32px 20px;
+  border-radius: 20px;
+  box-shadow: 0 6px 28px rgba(36, 56, 81, 0.13);
+  padding: 36px 20px 32px 20px;
 }
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 .tt-header-title {
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -1.5px;
 }
 .tt-add-btn {
-  padding: 8px 18px;
-  font-size: 1rem;
-  background: #1976d2;
+  padding: 9px 20px;
+  font-size: 1.05rem;
+  background: linear-gradient(90deg, #468ef9, #50c7f7 80%);
   color: #fff;
   border: none;
-  border-radius: 1.5rem;
+  border-radius: 1.7rem;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.16s;
+  font-weight: 700;
+  transition: filter 0.15s;
+  box-shadow: 0 2px 8px rgba(70, 142, 249, 0.08);
 }
 .tt-add-btn:hover {
-  background: #1565c0;
+  filter: brightness(0.93);
 }
 .tt-table-wrap {
   overflow-x: auto;
+  margin-bottom: 0;
 }
 .tt-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
+  background: #f8fbff;
+  border-radius: 14px;
+  overflow: hidden;
 }
 .tt-table th, .tt-table td {
-  border: 1px solid #e0e0e0;
-  padding: 10px 4px;
+  border: 1.5px solid #e3ecf6;
+  padding: 9px 4px;
   text-align: center;
-  position: relative;
   min-width: 65px;
-  max-width: 130px;
-  height: 54px;
+  max-width: 125px;
+  height: 50px;
   background: #fff;
-  font-size: 1.04rem;
+  font-size: 1.03rem;
   word-break: break-word;
   vertical-align: middle;
+  position: relative;
 }
 .tt-table th {
-  background: #f1f5fa;
-  font-weight: 700;
+  background: #e6f0fc;
+  font-weight: 800;
+  color: #34557c;
   font-size: 1.1rem;
+  letter-spacing: -0.5px;
 }
 .tt-time-col {
-  background: #f5f5f5;
-  width: 55px;
-  color: #606060;
-  font-size: 1rem;
+  background: #f4f8fd;
+  width: 54px;
+  color: #6b768a;
+  font-size: 1.01rem;
+  font-weight: 600;
 }
 .tt-class-block {
-  background: #e3f2fd;
-  border-radius: 13px;
-  border: 2px solid #90caf9;
-  font-weight: 600;
-  color: #18558b;
-  font-size: 1.03rem;
+  background: linear-gradient(96deg, #e3f0ff, #c9eaff 82%);
+  border-radius: 14px;
+  border: 2.5px solid #94bfff;
+  font-weight: 700;
+  color: #2d598c;
+  font-size: 1.04rem;
   position: absolute;
   left: 6px; right: 6px;
   top: 6px; bottom: 6px;
@@ -86,29 +95,38 @@ header {
   justify-content: center;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(90,140,200,0.10);
+  box-shadow: 0 2px 8px rgba(100,160,220,0.11);
+  transition: filter 0.17s;
+}
+.tt-class-block:hover {
+  filter: brightness(0.97);
 }
 .tt-class-block .tt-remove-btn {
   position: absolute;
-  top: 3px; right: 7px;
+  top: 2.5px; right: 7px;
   background: #fff;
-  border: 1px solid #bdbdbd;
-  color: #1976d2;
-  border-radius: 12px;
-  font-size: 0.98rem;
+  border: 1.2px solid #b6d6fd;
+  color: #468ef9;
+  border-radius: 13px;
+  font-size: 1.07rem;
   width: 22px; height: 22px;
-  line-height: 18px;
+  line-height: 16px;
   font-weight: bold;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 3;
+  transition: background 0.12s;
+}
+.tt-class-block .tt-remove-btn:hover {
+  background: #d1eaff;
+  color: #1565c0;
 }
 .tt-modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(36,48,66,0.22);
+  background: rgba(46,58,73,0.18);
   display: none;
   align-items: center;
   justify-content: center;
@@ -119,20 +137,21 @@ header {
 }
 .tt-modal-content {
   background: #fff;
-  border-radius: 18px;
-  min-width: 270px;
-  max-width: 94vw;
-  box-shadow: 0 6px 36px rgba(30,30,40,0.12);
-  padding: 28px 22px 18px 22px;
+  border-radius: 17px;
+  min-width: 250px;
+  max-width: 92vw;
+  box-shadow: 0 8px 36px rgba(0,0,0,0.13);
+  padding: 26px 18px 18px 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
+  border: 1.2px solid #e1eaff;
 }
 .tt-modal-title {
-  font-size: 1.15rem;
+  font-size: 1.09rem;
   font-weight: 700;
-  margin-bottom: 12px;
-  letter-spacing: -0.5px;
+  margin-bottom: 9px;
+  letter-spacing: -0.4px;
 }
 .tt-modal-content label {
   display: flex;
@@ -140,25 +159,31 @@ header {
   gap: 4px;
   font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 .tt-modal-content input,
 .tt-modal-content select {
-  padding: 7px 8px;
+  padding: 7px 7px;
   font-size: 1rem;
-  border: 1px solid #bdbdbd;
+  border: 1.3px solid #b1c7df;
   border-radius: 7px;
   background: #f7fafc;
   outline: none;
+  transition: border 0.16s;
+}
+.tt-modal-content input:focus,
+.tt-modal-content select:focus {
+  border-color: #468ef9;
+  background: #eaf4ff;
 }
 .tt-modal-actions {
   display: flex;
   gap: 10px;
-  margin-top: 18px;
+  margin-top: 16px;
   justify-content: flex-end;
 }
 .tt-modal-ok {
-  background: #1976d2;
+  background: linear-gradient(90deg, #468ef9, #50c7f7 80%);
   color: #fff;
   border: none;
   border-radius: 1.2rem;
@@ -166,19 +191,27 @@ header {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  transition: filter 0.15s;
+}
+.tt-modal-ok:hover {
+  filter: brightness(0.94);
 }
 .tt-modal-cancel {
-  background: #e0e0e0;
-  color: #333;
+  background: #e3ecf6;
+  color: #34557c;
   border: none;
   border-radius: 1.2rem;
   padding: 7px 18px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  transition: filter 0.12s;
 }
-@media (max-width: 720px) {
-  .tt-container { padding: 7vw 1vw 18vw 1vw; }
-  .tt-table th, .tt-table td { min-width: 36px; font-size: 0.99rem; }
-  .tt-header-title { font-size: 1.16rem; }
+.tt-modal-cancel:hover {
+  background: #d7e6f6;
+}
+@media (max-width: 700px) {
+  .tt-container { padding: 3vw 1vw 12vw 1vw; }
+  .tt-table th, .tt-table td { min-width: 34px; font-size: 0.98rem; }
+  .tt-header-title { font-size: 1.11rem; }
 }
