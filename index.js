@@ -1318,3 +1318,32 @@ function getBuildingDirections(buildingId) {
 function viewNoticeDetail(noticeId) {
   showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
 }
+
+
+function loadTimetablePage() {
+  showContent('timetable');
+  const container = document.getElementById('timetableContentPane');
+  if (!container) return;
+  container.innerHTML = `
+    <div style="text-align:center; padding:2rem;">
+      <div class="loading-spinner"></div>
+      <span style="margin-left:0.5rem;">시간표 페이지를 불러오는 중...</span>
+    </div>
+  `;
+  fetch('timetable.html')
+    .then(res => {
+      if (!res.ok) throw new Error('timetable.html 로드 실패');
+      return res.text();
+    })
+    .then(html => {
+      container.innerHTML = html;
+    })
+    .catch(() => {
+      container.innerHTML = `
+        <div class="error-fallback">
+          <h3>⚠️ 오류 발생</h3>
+          <p>시간표 페이지를 불러올 수 없습니다</p>
+        </div>
+      `;
+    });
+}
