@@ -16,13 +16,54 @@ let communityLoaded = false;
 let lectureLoaded = false;
 let noticesLoaded = false;
 let buildingsLoaded = false;
-let academicCalendarLoaded = false; // 새로 추가
+let academicCalendarLoaded = false;
 
 // 자동 로그아웃 타이머
 let autoLogoutTimer = null;
 
 // 학과 코드 ↔ 이름 매핑 객체
 const departmentMap = {};
+
+// ─────────── 외부 페이지 URL 설정 ───────────
+const EXTERNAL_PAGES = {
+  timetable: 'timetable.html',      // 내 시간표 페이지
+  calendar: 'academic-calendar.html', // 학사일정 페이지  
+  shuttle: 'shuttle.html'           // 셔틀버스 페이지
+};
+
+// ─────────── 외부 페이지 이동 함수들 ───────────
+function openTimetablePage() {
+  console.log('내 시간표 페이지로 이동');
+  closeAllDropdowns();
+  
+  // 새 창에서 열기
+  window.open(EXTERNAL_PAGES.timetable, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+  
+  // 또는 현재 창에서 이동하려면 아래 코드 사용:
+  // window.location.href = EXTERNAL_PAGES.timetable;
+}
+
+function openCalendarPage() {
+  console.log('학사일정 페이지로 이동');
+  closeAllDropdowns();
+  
+  // 새 창에서 열기
+  window.open(EXTERNAL_PAGES.calendar, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+  
+  // 또는 현재 창에서 이동하려면 아래 코드 사용:
+  // window.location.href = EXTERNAL_PAGES.calendar;
+}
+
+function openShuttlePage() {
+  console.log('셔틀버스 페이지로 이동');
+  closeAllDropdowns();
+  
+  // 현재 창에서 이동
+  window.location.href = EXTERNAL_PAGES.shuttle;
+  
+  // 또는 새 창에서 열기:
+  // window.open(EXTERNAL_PAGES.shuttle, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+}
 
 // ─────────── DOMContentLoaded ───────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -55,6 +96,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     searchInput.addEventListener('keydown', resetAutoLogoutTimer);
   }
+
+  // 학생서비스 드롭다운 항목들에 직접 이벤트 리스너 추가
+  setTimeout(() => {
+    const dropdownItems = document.querySelectorAll('#nav-student-services .dropdown-item');
+    dropdownItems.forEach((item, index) => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        console.log(`드롭다운 항목 ${index} 클릭됨`);
+        
+        switch(index) {
+          case 0: openTimetablePage(); break;
+          case 1: openCalendarPage(); break;
+          case 2: openShuttlePage(); break;
+        }
+      });
+    });
+  }, 100);
 
   document.addEventListener('click', (event) => {
     const ntBtn = event.target.closest('#notification-btn');
@@ -94,7 +153,7 @@ function showContent(type) {
     'timetableContentPane',
     'shuttleContentPane',
     'calendarContentPane',
-    'academic-calendarContentPane', // 새로 추가
+    'academic-calendarContentPane',
     'profileContentPane',
     'settingsContent'
   ];
@@ -209,7 +268,7 @@ function showContent(type) {
       });
   }
 
-  // 새로 추가: academic-calendar 페이지 처리
+  // academic-calendar 페이지 처리 (내부용 - 사용하지 않음)
   if (type === 'academic-calendar' && !academicCalendarLoaded) {
     const container = document.getElementById('academic-calendarContentPane');
     if (container) {
@@ -241,8 +300,8 @@ function showContent(type) {
     notices: 'noticesContent',
     timetable: 'timetableContentPane',
     shuttle: 'shuttleContentPane',
-    'academic-calendar': 'academic-calendarContentPane', // 새로 추가
-    calendar: 'calendarContentPane',  // 기존 유지 (하위 호환성)
+    'academic-calendar': 'academic-calendarContentPane',
+    calendar: 'calendarContentPane',
     profile: 'profileContentPane',
     settings: 'settingsContent'
   };
@@ -957,7 +1016,11 @@ function closeAllDropdowns() {
 
 function closeStudentServiceDropdown() {
   const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
-  if (dropdown) dropdown.removeAttribute('style');
+  if (dropdown) {
+    dropdown.style.opacity = '0';
+    dropdown.style.visibility = 'hidden';
+    dropdown.style.transform = 'translateY(-10px)';
+  }
 }
 
 // ─────────── showProfile: 프로필 화면 로드 ───────────
@@ -1224,9 +1287,9 @@ function applyUserShortcuts() {
     if (label.includes('커뮤니티')) { showContent('community'); return; }
     if (label.includes('강의평가')) { showContent('lecture-review'); return; }
     if (label.includes('공지사항')) { showContent('notices'); return; }
-    if (label.includes('내 시간표') || label.includes('시간표')) { showContent('timetable'); return; }
-    if (label.includes('셔틀버스') || label.includes('셔틀')) { showContent('shuttle'); return; }
-    if (label.includes('학사일정') || label.includes('학사')) { showContent('academic-calendar'); return; } // 수정됨
+    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; } // 외부 페이지로 수정
+    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; } // 외부 페이지로 수정
+    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; } // 외부 페이지로 수정
     if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
     if (label.includes('설정')) { showContent('settings'); return; }
     if (label.includes('알림')) { toggleNotifications(); return; }
@@ -1274,10 +1337,21 @@ window.addEventListener('pageshow', event => {
   else document.body.classList.remove('light-mode');
 });
 
-// ─────────── navigateToTimetable, navigateToShuttle, navigateToCalendar ───────────
-function navigateToTimetable() { showContent('timetable'); }
-function navigateToShuttle()   { showContent('shuttle'); }
-function navigateToCalendar()  { showContent('academic-calendar'); } // 수정됨
+// ─────────── 기존 내부 네비게이션 함수들 (하위 호환성을 위해 유지) ───────────
+function navigateToTimetable() { 
+  console.log('내부 시간표 네비게이션 - 외부 페이지로 리디렉션');
+  openTimetablePage();
+}
+
+function navigateToShuttle() { 
+  console.log('내부 셔틀버스 네비게이션 - 외부 페이지로 리디렉션');
+  openShuttlePage();
+}
+
+function navigateToCalendar() { 
+  console.log('내부 학사일정 네비게이션 - 외부 페이지로 리디렉션');
+  openCalendarPage();
+}
 
 // ─────────── zoomIn, zoomOut, resetMapView ───────────
 function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
