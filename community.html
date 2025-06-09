@@ -1,25 +1,33 @@
 <!-- community.html -->
-<div class="content-header" id="content-header-community">
-  <div>
-    <h1>커뮤니티</h1>
-    <div class="breadcrumb">
-      <span>홈</span>
-      <span>›</span>
-      <span>커뮤니티</span>
-    </div>
+<div id="content-header-community">
+  <h1>커뮤니티</h1>
+  <div class="breadcrumb">
+    <span>홈</span><span>›</span><span>커뮤니티</span>
   </div>
-  <button class="btn btn-primary" id="write-post-btn">글쓰기</button>
 </div>
-<div id="community-posts"></div>
-<div id="community-modal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <span class="close-modal" id="close-modal">&times;</span>
-    <h2>새 글 작성</h2>
-    <input type="text" id="post-title" placeholder="제목" class="modal-input" />
-    <textarea id="post-content" placeholder="내용" class="modal-textarea"></textarea>
-    <div class="modal-actions">
-      <button class="btn btn-primary" id="submit-post-btn">등록</button>
-      <button class="btn btn-outline" id="cancel-post-btn">취소</button>
+<div id="write-post-card" class="stat-card" style="margin-bottom:2rem;">
+  <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;">새 게시글 작성</h3>
+  <form id="writePostForm" autocomplete="off">
+    <input type="text" id="postTitle" placeholder="제목을 입력하세요" required style="width:100%;padding:0.7rem;margin-bottom:0.7rem;border-radius:8px;border:1px solid #94a3b8;background:rgba(30,41,59,0.7);color:#f1f5f9;">
+    <textarea id="postContent" placeholder="내용을 입력하세요" rows="5" required style="width:100%;padding:0.7rem;border-radius:8px;border:1px solid #94a3b8;background:rgba(30,41,59,0.7);color:#f1f5f9;margin-bottom:0.7rem;"></textarea>
+    <div style="text-align:right;">
+      <button type="submit" class="btn btn-primary">등록</button>
     </div>
+  </form>
+</div>
+<div id="dashboardGrid-community">
+  <div id="hot-posts-card" class="stat-card">
+    <div id="card-header-hot-posts" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <span id="card-title-hot-posts">인기 게시글</span>
+      <span id="card-icon-hot-posts">🔥</span>
+    </div>
+    <div id="hotPosts"></div>
+  </div>
+  <div id="live-posts-card" class="stat-card">
+    <div id="card-header-live-posts" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <span id="card-title-live-posts">새 게시글</span>
+      <span id="card-icon-live-posts">🆕</span>
+    </div>
+    <div id="livePosts"></div>
   </div>
 </div>

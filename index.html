@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
+
+  <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
   <link rel="stylesheet" href="index.css" />
   <link rel="stylesheet" href="settings.css" />
   <link rel="stylesheet" href="buildings.css" />
-  <link rel="stylesheet" href="community.css" />
 </head>
 <body>
   <nav id="top-nav">
@@ -87,9 +88,7 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <button id="dropdown-item-profile" onclick="showProfile()">
-              내 계정
-            </button>
+            <button id="dropdown-item-profile" onclick="showProfile()">내 계정</button>
             <button id="dropdown-item-settings" onclick="showContent('settings')">
               <span class="settings-icon">⚙️</span><span>설정</span>
             </button>
@@ -102,23 +101,76 @@
       </div>
     </div>
   </nav>
+
   <div id="main-container">
     <main id="content-area">
-      <div id="homeContent"></div>
-      <div id="buildingsContent" style="display: none;"></div>
-      <div id="communityContent" style="display: none;"></div>
-      <div id="lecture-reviewContent" style="display: none;"></div>
-      <div id="noticesContent" style="display: none;"></div>
-      <div id="timetableContentPane" style="display: none;"></div>
-      <div id="shuttleContentPane" style="display: none;"></div>
-      <div id="calendarContentPane" style="display: none;"></div>
-      <div id="profileContentPane" style="display: none;"></div>
-      <div id="settingsContent" style="display: none;"></div>
+      <!-- 대시보드 (홈) -->
+      <div id="homeContent">
+        <div id="content-header-home">
+          <h1 id="title-home">대시보드</h1>
+          <div id="breadcrumb-home">
+            <span>홈</span><span>›</span><span>대시보드</span>
+          </div>
+        </div>
+        <div id="statsGrid"></div>
+        <div id="dashboardGrid">
+          <div id="map-card">
+            <div id="card-header-map">
+              <h3 id="card-title-map">캠퍼스 지도</h3>
+              <span id="card-icon-map">🗺️</span>
+            </div>
+            <div id="map-container">
+              <div id="naverMap" style="width:100%;height:100%;"></div>
+              <div id="map-overlay">
+                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍−</button>
+                <button id="map-reset" onclick="resetMapView()" title="초기화">🏠</button>
+                <button id="map-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
+              </div>
+            </div>
+          </div>
+          <div id="timetable-card">
+            <div id="card-header-timetable">
+              <h3 id="card-title-timetable">오늘의 시간표</h3>
+              <span id="card-icon-timetable">📅</span>
+            </div>
+            <div id="timetableContent"></div>
+          </div>
+          <div id="shuttle-card">
+            <div id="card-header-shuttle">
+              <h3 id="card-title-shuttle">셔틀버스 현황</h3>
+              <span id="card-icon-shuttle">🚌</span>
+            </div>
+            <div id="shuttleRoutes"></div>
+            <div id="shuttle-status">
+              <div id="shuttle-time">--</div>
+              <div id="shuttle-desc">--</div>
+              <div id="shuttleStatus">--</div>
+            </div>
+          </div>
+          <div id="notice-card">
+            <div id="card-header-notice">
+              <h3 id="card-title-notice">최근 공지사항</h3>
+              <span id="card-icon-notice">📢</span>
+            </div>
+            <div id="recentNotices"></div>
+          </div>
+        </div>
+      </div>
+      <!-- SPA 분리 영역들 -->
+      <div id="buildingsContent" style="display:none;"></div>
+      <div id="communityContent" style="display:none;"></div>
+      <div id="lecture-reviewContent" style="display:none;"></div>
+      <div id="noticesContent" style="display:none;"></div>
+      <div id="timetableContentPane" style="display:none;"></div>
+      <div id="shuttleContentPane" style="display:none;"></div>
+      <div id="calendarContentPane" style="display:none;"></div>
+      <div id="profileContentPane" style="display:none;"></div>
+      <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
   <script src="index.js" defer></script>
   <script src="settings.js" defer></script>
   <script src="buildings.js" defer></script>
-  <script src="community.js" defer></script>
 </body>
 </html>
