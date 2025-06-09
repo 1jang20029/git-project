@@ -3,15 +3,27 @@ body {
   font-family: 'Pretendard', 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
   margin: 0;
   padding: 0;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .tt-container {
-  max-width: 550px;
-  margin: 60px auto 0 auto;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(36, 56, 81, 0.13);
-  padding: 32px 30px 32px 30px;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  box-sizing: border-box;
+  padding: 32px 50px 0 50px;
+  background: #f5f7fa;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  /* 헤더+시간표가 위에서부터 자연스럽게 정렬되도록 */
 }
 
 header {
@@ -19,6 +31,7 @@ header {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  padding: 0 10px;
 }
 
 .tt-header-title {
@@ -45,29 +58,40 @@ header {
 }
 
 .tt-table-wrap {
-  overflow-x: auto;
+  width: 100%;
+  height: calc(100vh - 100px);
+  overflow: auto;
   margin-bottom: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .tt-table {
-  width: 100%;
+  width: 90vw;
+  max-width: 1300px;
+  height: auto;
+  min-height: 680px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
-  background: #f8fbff;
-  border-radius: 13px;
+  background: #fff;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 2px 9px rgba(50,100,170,0.07);
 }
 
 .tt-table th, .tt-table td {
   border: 1.2px solid #e2e7ef;
-  padding: 11px 2px;
+  padding: 13px 3px;
   text-align: center;
-  min-width: 72px;
-  max-width: 124px;
-  height: 51px;
-  font-size: 1.05rem;
+  min-width: 95px;
+  max-width: 160px;
+  height: 56px;
+  font-size: 1.13rem;
   vertical-align: middle;
   background: #fff;
   position: relative;
@@ -77,16 +101,16 @@ header {
   background: #eaf2fd;
   font-weight: 800;
   color: #3771c8;
-  font-size: 1.13rem;
-  letter-spacing: -0.6px;
+  font-size: 1.18rem;
+  letter-spacing: -0.5px;
   border-bottom: 2px solid #d0e3fa;
 }
 
 .tt-time-col {
   background: #f3f6fb;
-  width: 65px;
+  width: 70px;
   color: #7b8798;
-  font-size: 1.07rem;
+  font-size: 1.11rem;
   font-weight: 600;
   border-right: 2px solid #d0e3fa;
 }
