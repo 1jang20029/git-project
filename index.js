@@ -243,6 +243,11 @@ function showContent(type) {
   }
 }
 
+// ─────────── navigateToTimetable, navigateToShuttle, navigateToCalendar ───────────
+function navigateToTimetable() { showContent('timetable'); }
+function navigateToCalendar()  { showContent('calendar'); }
+function navigateToShuttle()   { showContent('shuttle'); }
+
 // ─────────── initializeApp: 앱 초기화 ───────────
 async function initializeApp() {
   try {
@@ -511,6 +516,7 @@ function renderNoticesMain(notices) {
   });
 }
 
+// ─────────── loadShuttleInfo: 셔틀버스 데이터 로드 ───────────
 // ─────────── loadShuttleInfo: 셔틀버스 데이터 로드 ───────────
 async function loadShuttleInfo() {
   try {
@@ -986,335 +992,176 @@ function handleLogout() {
 }
 
 // ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
+// ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
 async function handleGlobalSearch() {
-  const query = document.getElementById('search-input').value.trim().toLowerCase();
-  if (!query) return;
-  if (!isOnline) {
-    showMessage('오프라인 상태에서는 검색을 사용할 수 없습니다', 'error');
+  const input = document.getElementById('search-input');
+  if (!input) return;
+  const keyword = input.value.trim();
+  if (!keyword) {
+    showMessage('검색어를 입력하세요', 'warning');
     return;
   }
-  try {
-    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('buildings');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  try {
-    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('notices');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  showMessage('검색 결과를 찾을 수 없습니다.', 'info');
-}
+  if (!isOnline) {
+    showMessage('오프라인 상태에서는 검색할 수 없습니다', 'error');
+    return;
+  }
 
-// ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
-function checkUserStatus() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  const userNameEl  = document.getElementById('user-name');
-  const userRoleEl  = document.getElementById('user-role');
-  const dropdownNameEl = document.getElementById('dropdown-user-name');
-  const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl   = document.getElementById('user-avatar');
-  if (currentUser && isOnline) {
-    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-      .then(res => {
-        if (!res.ok) throw new Error('API 응답 오류');
-        return res.json();
-      })
-      .then(user => {
-        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
-        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
-        if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
-        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
-        updateProfileImage(user);
-      })
-      .catch(() => {
-        setGuestMode();
-      });
-  } else {
-    setGuestMode();
+  try {
+    input.disabled = true;
+    const res = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`);
+    input.disabled = false;
+    if (!res.ok) throw new Error('API 응답 오류');
+    const results = await res.json();
+    renderSearchResults(results, keyword);
+  } catch (err) {
+    input.disabled = false;
+    showMessage('검색 중 오류가 발생했습니다', 'error');
+    renderSearchResults([], keyword);
   }
 }
 
-// ─────────── setGuestMode: 게스트 모드로 UI 초기화 ───────────
-function setGuestMode() {
-  const userNameEl    = document.getElementById('user-name');
-  const userRoleEl    = document.getElementById('user-role');
-  const dropdownNameEl = document.getElementById('dropdown-user-name');
-  const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl      = document.getElementById('user-avatar');
-  if (userNameEl) userNameEl.textContent     = '게스트';
-  if (userRoleEl) userRoleEl.textContent     = '방문자';
-  if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
-  if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
-  if (avatarEl) avatarEl.textContent         = '👤';
-}
-
-// ─────────── updateProfileImage: 프로필 이미지 적용 ───────────
-function updateProfileImage(user) {
-  const avatarEl = document.getElementById('user-avatar');
-  if (!avatarEl) return;
-  if (user.profileImageType === 'emoji') {
-    avatarEl.textContent = user.profileImage || '👤';
-  } else if (user.profileImage) {
-    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
-  } else {
-    avatarEl.textContent = '👤';
-  }
-}
-
-// ─────────── showMessage: 우측 상단 알림 ───────────
-function showMessage(message, type = 'info', category = '') {
-  if (category && !isCategoryEnabled(category)) return;
-  if (!shouldShowNotification()) return;
-  const notification = document.createElement('div');
-  const bgColor =
-    type === 'success'
-      ? 'rgba(16, 185, 129, 0.9)'
-      : type === 'error'
-      ? 'rgba(239, 68, 68, 0.9)'
-      : 'rgba(59, 130, 246, 0.9)';
-  const icon =
-    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-  notification.style.cssText = `
-    position: fixed;
-    top: 100px; 
-    right: 20px;
-    background: ${bgColor};
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    z-index: 10000;
-    font-weight: 600;
-    backdrop-filter: blur(20px);
-    border: 1px solid ${bgColor.replace('0.9', '0.3')};
-    animation: slideInRight 0.3s ease-out;
-    max-width: 400px;
-  `;
-  notification.innerHTML = `
-    <div style="display:flex;align-items:center;gap:0.5rem;">
-      <span>${icon}</span>
-      <span>${message}</span>
+// ─────────── renderSearchResults: 검색 결과 렌더링 ───────────
+function renderSearchResults(results, keyword) {
+  const resultPane = document.getElementById('searchResultPane');
+  if (!resultPane) return;
+  resultPane.innerHTML = `
+    <div class="search-header">
+      <strong>"${keyword}"</strong> 검색 결과 (${results.length}건)
+      <button class="close-btn" onclick="closeSearchResult()">✕</button>
     </div>
   `;
-  document.body.appendChild(notification);
-  setTimeout(() => {
-    notification.style.animation = 'slideOutRight 0.3s ease-in';
-    setTimeout(() => {
-      if (notification.parentNode) notification.parentNode.removeChild(notification);
-    }, 300);
-  }, 3000);
-}
-
-// ─────────── shouldShowNotification: DND 모드 검사 ───────────
-function shouldShowNotification() {
-  const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
-  if (!dnd.enabled) return true;
-  const now = new Date();
-  const totalMinutes = now.getHours() * 60 + now.getMinutes();
-  const startHM = dnd.startHour * 60 + dnd.startMinute;
-  const endHM   = dnd.endHour * 60 + dnd.endMinute;
-  if (startHM < endHM) {
-    return !(totalMinutes >= startHM && totalMinutes < endHM);
-  } else {
-    return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
-  }
-}
-
-// ─────────── isCategoryEnabled: 카테고리별 알림 설정 확인 ───────────
-function isCategoryEnabled(category) {
-  const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
-  return catSettings[category] === true;
-}
-
-// ─────────── setupAutoLogout: 자동 로그아웃 로직 초기화 ───────────
-function setupAutoLogout() {
-  document.addEventListener('mousemove', resetAutoLogoutTimer);
-  document.addEventListener('keypress', resetAutoLogoutTimer);
-  document.addEventListener('click', resetAutoLogoutTimer);
-  resetAutoLogoutTimer();
-}
-
-function resetAutoLogoutTimer() {
-  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
-  const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
-  if (!cfg.enabled) return;
-  const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
-  autoLogoutTimer = setTimeout(() => {
-    localStorage.removeItem('currentLoggedInUser');
-    showMessage('자동 로그아웃되었습니다', 'info');
-    checkUserStatus();
-    showContent('home');
-  }, timeoutMs);
-}
-
-// ─────────── applyKeyboardShortcuts: 기존 단축키 적용 ───────────
-function applyKeyboardShortcuts() {
-  const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
-    toggleSidebar: 'F2',
-    openNotifications: 'F3',
-    goToSettings: 'F4'
-  };
-  document.addEventListener('keydown', e => {
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
-    resetAutoLogoutTimer();
-    const key = e.key.toUpperCase();
-    if (key === (shortcuts.openNotifications || '').toUpperCase()) {
-      e.preventDefault();
-      toggleNotifications();
-      return;
-    }
-    if (key === (shortcuts.goToSettings || '').toUpperCase()) {
-      e.preventDefault();
-      showContent('settings');
-      return;
-    }
-  });
-}
-
-// ─────────── applyUserShortcuts: 사용자 정의 단축키 적용 ───────────
-function applyUserShortcuts() {
-  document.addEventListener('keydown', e => {
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
-    resetAutoLogoutTimer();
-    const pressedKey = e.key.toUpperCase();
-    const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
-    const matched = userShortcuts.find(entry => entry.key === pressedKey);
-    if (!matched) return;
-    if (!matched.name) return;
-    e.preventDefault();
-    const label = matched.name.toLowerCase();
-    if (label.includes('대시보드')) { showContent('home'); return; }
-    if (label.includes('건물')) { showContent('buildings'); return; }
-    if (label.includes('커뮤니티')) { showContent('community'); return; }
-    if (label.includes('강의평가')) { showContent('lecture-review'); return; }
-    if (label.includes('공지사항')) { showContent('notices'); return; }
-    if (label.includes('내 시간표') || label.includes('시간표')) { showContent('timetable'); return; }
-    if (label.includes('셔틀버스') || label.includes('셔틀')) { showContent('shuttle'); return; }
-    if (label.includes('학사일정') || label.includes('학사')) { showContent('calendar'); return; }
-    if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
-    if (label.includes('설정')) { showContent('settings'); return; }
-    if (label.includes('알림')) { toggleNotifications(); return; }
-    if (label.includes('로그아웃')) { handleLogout(); return; }
-    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
-      const themeToggle = document.getElementById('themeToggle');
-      if (themeToggle) {
-        themeToggle.checked = !themeToggle.checked;
-        themeToggle.dispatchEvent(new Event('change'));
-      }
-      return;
-    }
-    if (label.includes('내 위치') || label.includes('위치')) { trackUserLocation(); return; }
-    if (label.includes('확대')) { zoomIn(); return; }
-    if (label.includes('축소')) { zoomOut(); return; }
-    if (label.includes('초기화') || label.includes('리셋')) { resetMapView(); return; }
-    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
-  });
-}
-
-// ─────────── storage 이벤트: 로그인/프로필/테마 갱신 ───────────
-window.addEventListener('storage', event => {
-  if (
-    event.key === 'currentLoggedInUser' ||
-    (event.key && event.key.includes('_profileImage'))
-  ) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  if (event.key === 'lightMode') {
-    const savedMode = localStorage.getItem('lightMode');
-    if (savedMode === 'true') document.body.classList.add('light-mode');
-    else document.body.classList.remove('light-mode');
-  }
-});
-
-// ─────────── pageshow 이벤트: 페이지 복원 시 갱신 ───────────
-window.addEventListener('pageshow', event => {
-  if (event.persisted) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  const savedMode = localStorage.getItem('lightMode');
-  if (savedMode === 'true') document.body.classList.add('light-mode');
-  else document.body.classList.remove('light-mode');
-});
-
-// ─────────── navigateToTimetable, navigateToShuttle, navigateToCalendar ───────────
-function navigateToTimetable() { showContent('timetable'); }
-function navigateToShuttle()   { showContent('shuttle'); }
-function navigateToCalendar()  { showContent('calendar'); }
-
-// ─────────── zoomIn, zoomOut, resetMapView ───────────
-function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
-function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
-function resetMapView() {
-  if (naverMap) {
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    naverMap.setCenter(yeonsung);
-    naverMap.setZoom(16);
-  }
-}
-
-// ─────────── trackUserLocation: 사용자 위치 표시 ───────────
-function trackUserLocation() {
-  if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
+  if (results.length === 0) {
+    resultPane.innerHTML += `<div class="empty-state">검색 결과가 없습니다.</div>`;
+    resultPane.style.display = 'block';
     return;
   }
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
-        return;
-      }
-      const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      if (userMarker) userMarker.setMap(null);
-      userMarker = new naver.maps.Marker({
-        position: userPos,
-        map: naverMap,
-        icon: {
-          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
-          anchor: new naver.maps.Point(10, 10)
-        }
-      });
-      naverMap.setCenter(userPos);
-      naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
-    },
-    error => {
-      let message = '위치를 찾을 수 없습니다';
-      switch (error.code) {
-        case error.PERMISSION_DENIED:    message = '위치 권한이 거부되었습니다'; break;
-        case error.POSITION_UNAVAILABLE: message = '위치 정보를 사용할 수 없습니다'; break;
-        case error.TIMEOUT:              message = '위치 요청 시간이 초과되었습니다'; break;
-      }
-      showMessage(message, 'error', '');
-    }
-  );
+  results.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.innerHTML = `
+      <div class="search-title">${item.title}</div>
+      <div class="search-summary">${item.summary || ''}</div>
+      <div class="search-meta">${item.category || ''}</div>
+    `;
+    div.onclick = () => {
+      closeSearchResult();
+      if (item.type === 'building') showContent('buildings');
+      if (item.type === 'lecture') showContent('lecture-review');
+      if (item.type === 'community') showContent('community');
+      if (item.type === 'notice') showContent('notices');
+    };
+    resultPane.appendChild(div);
+  });
+  resultPane.style.display = 'block';
 }
 
-// ─────────── showBuildingOnMap: 메인 페이지 건물 보기 ───────────
+// ─────────── closeSearchResult: 검색 결과 닫기 ───────────
+function closeSearchResult() {
+  const resultPane = document.getElementById('searchResultPane');
+  if (resultPane) resultPane.style.display = 'none';
+}
+
+// ─────────── showMessage: 메시지 토스트 알림 ───────────
+function showMessage(msg, type = 'info', duration = 1800) {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerText = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => document.body.removeChild(toast), 300);
+  }, duration);
+}
+
+// ─────────── checkUserStatus: 사용자 로그인 상태 표시 ───────────
+function checkUserStatus() {
+  const userLabel = document.getElementById('nav-username');
+  const currentUser = localStorage.getItem('currentLoggedInUser');
+  if (!userLabel) return;
+  if (currentUser) {
+    userLabel.textContent = currentUser;
+    userLabel.classList.remove('guest');
+  } else {
+    userLabel.textContent = '로그인';
+    userLabel.classList.add('guest');
+  }
+}
+
+// ─────────── applyKeyboardShortcuts: 단축키 바인딩 ───────────
+function applyKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    if (e.altKey && !e.shiftKey && !e.ctrlKey) {
+      switch (e.key) {
+        case '1':
+          showContent('home'); break;
+        case '2':
+          showContent('buildings'); break;
+        case '3':
+          showContent('community'); break;
+        case '4':
+          showContent('lecture-review'); break;
+        case '5':
+          showContent('notices'); break;
+        default: break;
+      }
+    }
+  });
+}
+
+// ─────────── applyUserShortcuts: 사용자 상호작용 단축키 ───────────
+function applyUserShortcuts() {
+  document.getElementById('nav-username')?.addEventListener('click', showProfile);
+}
+
+// ─────────── resetAutoLogoutTimer: 자동 로그아웃 타이머 초기화 ───────────
+function resetAutoLogoutTimer() {
+  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+  autoLogoutTimer = setTimeout(() => {
+    localStorage.removeItem('currentLoggedInUser');
+    showMessage('장시간 활동이 없어 자동 로그아웃되었습니다', 'warning', 2600);
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 800);
+  }, 1000 * 60 * 60); // 1시간
+}
+
+// ─────────── setupAutoLogout: 자동 로그아웃 감시 ───────────
+function setupAutoLogout() {
+  resetAutoLogoutTimer();
+  document.addEventListener('mousemove', resetAutoLogoutTimer);
+  document.addEventListener('keydown', resetAutoLogoutTimer);
+  document.addEventListener('scroll', resetAutoLogoutTimer);
+  document.addEventListener('click', resetAutoLogoutTimer);
+}
+
+// ─────────── isCategoryEnabled: 카테고리 표시 여부 확인 (설정 연동 가능) ───────────
+function isCategoryEnabled(category) {
+  // 추후 사용자 설정 연동 (ex: category 표시/숨김 설정)
+  return true;
+}
+
+// ─────────── shouldShowNotification: 알림 표시 조건 (추후 연동) ───────────
+function shouldShowNotification() {
+  // 필터 기능 연동용, 지금은 무조건 표시
+  return true;
+}
+
+// ─────────── getBuildingDirections: 길찾기 버튼 동작 ───────────
+function getBuildingDirections(buildingId) {
+  showMessage('네이버 지도 길찾기 기능은 준비중입니다.', 'info');
+}
+
+// ─────────── showBuildingOnMap: 지도에서 건물 위치로 이동 ───────────
 function showBuildingOnMap(buildingId) {
   showContent('buildings');
-  setTimeout(() => {
-    if (naverMap.refresh) naverMap.refresh();
-  }, 100);
+  // 건물 상세 위치로 이동하는 기능은 buildings.js에서 처리하도록 위임 가능
 }
 
-// ─────────── getBuildingDirections: 길찾기 준비 중 ───────────
-function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
-}
-
-// ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
+// ─────────── viewNoticeDetail: 공지사항 상세 보기(준비중) ───────────
 function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info');
 }
+
