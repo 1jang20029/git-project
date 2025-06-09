@@ -16,6 +16,7 @@ let communityLoaded = false;
 let lectureLoaded = false;
 let noticesLoaded = false;
 let buildingsLoaded = false;
+let academicCalendarLoaded = false; // 새로 추가
 
 // 자동 로그아웃 타이머
 let autoLogoutTimer = null;
@@ -93,6 +94,7 @@ function showContent(type) {
     'timetableContentPane',
     'shuttleContentPane',
     'calendarContentPane',
+    'academic-calendarContentPane', // 새로 추가
     'profileContentPane',
     'settingsContent'
   ];
@@ -207,6 +209,30 @@ function showContent(type) {
       });
   }
 
+  // 새로 추가: academic-calendar 페이지 처리
+  if (type === 'academic-calendar' && !academicCalendarLoaded) {
+    const container = document.getElementById('academic-calendarContentPane');
+    if (container) {
+      fetch('academic-calendar.html')
+        .then(res => {
+          if (!res.ok) throw new Error('academic-calendar.html 을 불러오는 중 오류 발생');
+          return res.text();
+        })
+        .then(html => {
+          container.innerHTML = html;
+          academicCalendarLoaded = true;
+          if (window.initAcademicCalendarPage) window.initAcademicCalendarPage();
+        })
+        .catch(err => {
+          console.error(err);
+          container.innerHTML = `<div class="error-fallback">
+            <h3>⚠️ 오류 발생</h3>
+            <p>학사일정 화면을 불러올 수 없습니다</p>
+          </div>`;
+        });
+    }
+  }
+
   const targetMap = {
     home: 'homeContent',
     buildings: 'buildingsContent',
@@ -215,7 +241,8 @@ function showContent(type) {
     notices: 'noticesContent',
     timetable: 'timetableContentPane',
     shuttle: 'shuttleContentPane',
-    calendar: 'calendarContentPane',
+    'academic-calendar': 'academic-calendarContentPane', // 새로 추가
+    calendar: 'calendarContentPane',  // 기존 유지 (하위 호환성)
     profile: 'profileContentPane',
     settings: 'settingsContent'
   };
@@ -236,7 +263,7 @@ function showContent(type) {
   currentContent = type;
   window.location.hash = type;
 
-  if (type === 'buildings' && naverMap) {
+  if ((type === 'buildings' || type === 'academic-calendar') && naverMap) {
     setTimeout(() => {
       if (naverMap.refresh) naverMap.refresh();
     }, 100);
@@ -1199,7 +1226,7 @@ function applyUserShortcuts() {
     if (label.includes('공지사항')) { showContent('notices'); return; }
     if (label.includes('내 시간표') || label.includes('시간표')) { showContent('timetable'); return; }
     if (label.includes('셔틀버스') || label.includes('셔틀')) { showContent('shuttle'); return; }
-    if (label.includes('학사일정') || label.includes('학사')) { showContent('calendar'); return; }
+    if (label.includes('학사일정') || label.includes('학사')) { showContent('academic-calendar'); return; } // 수정됨
     if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
     if (label.includes('설정')) { showContent('settings'); return; }
     if (label.includes('알림')) { toggleNotifications(); return; }
@@ -1250,7 +1277,7 @@ window.addEventListener('pageshow', event => {
 // ─────────── navigateToTimetable, navigateToShuttle, navigateToCalendar ───────────
 function navigateToTimetable() { showContent('timetable'); }
 function navigateToShuttle()   { showContent('shuttle'); }
-function navigateToCalendar()  { showContent('calendar'); }
+function navigateToCalendar()  { showContent('academic-calendar'); } // 수정됨
 
 // ─────────── zoomIn, zoomOut, resetMapView ───────────
 function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
