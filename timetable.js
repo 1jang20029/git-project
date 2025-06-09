@@ -10,8 +10,7 @@ let settings = {
     showProfessor: true,
     showRoom: true,
     timeFormat24: true,
-    appearance: 'dark',      // 다크/라이트 모드
-    colorTheme: 'default'    // 색상 테마
+    appearance: 'dark'      // 다크/라이트 모드만 유지
 };
 let currentSemester = {
     year: 2023,
@@ -855,7 +854,6 @@ function applySettingsToUI() {
     document.getElementById('show-professor').checked = settings.showProfessor;
     document.getElementById('show-room').checked = settings.showRoom;
     document.getElementById('theme-select').value = settings.appearance || 'dark';
-    document.getElementById('color-theme-select').value = settings.colorTheme || 'default';
     document.getElementById('time-format-select').value = settings.timeFormat24 ? '24' : '12';
     document.getElementById('weekend-select').value = settings.showWeekend.toString();
 }
@@ -895,7 +893,6 @@ function saveSettings() {
         settings.showProfessor = document.getElementById('show-professor').checked;
         settings.showRoom = document.getElementById('show-room').checked;
         settings.appearance = document.getElementById('theme-select').value;
-        settings.colorTheme = document.getElementById('color-theme-select').value;
         settings.timeFormat24 = document.getElementById('time-format-select').value === '24';
         settings.showWeekend = document.getElementById('weekend-select').value === 'true';
         
@@ -909,7 +906,6 @@ function saveSettings() {
 // 설정 적용
 function applySettings() {
     applyAppearance(settings.appearance || 'dark');
-    applyColorTheme(settings.colorTheme || 'default');
     createTimetable();
     renderCoursesOnTimetable();
 }
@@ -936,25 +932,8 @@ function applyAppearance(appearance) {
     }
 }
 
-// 색상 테마 변경
-function changeColorTheme() {
-    const colorTheme = document.getElementById('color-theme-select').value;
-    settings.colorTheme = colorTheme;
-    applyColorTheme(colorTheme);
-}
-
-// 색상 테마 적용
-function applyColorTheme(colorTheme) {
-    const container = document.querySelector('.container');
-    
-    // 기존 색상 테마 클래스 제거
-    container.classList.remove('color-theme-default', 'color-theme-blue', 'color-theme-green', 'color-theme-purple');
-    
-    // 새로운 색상 테마 적용
-    if (colorTheme !== 'default') {
-        container.classList.add(`color-theme-${colorTheme}`);
-    }
-}
+// 색상 테마 관련 함수들 제거
+// changeColorTheme, applyColorTheme 함수 삭제
 
 // 기존 changeTheme 함수는 제거하고 위의 함수들로 대체
 // function changeTheme() { ... } // 이 함수 삭제
@@ -985,14 +964,12 @@ function deleteTimetable() {
             showProfessor: true,
             showRoom: true,
             timeFormat24: true,
-            appearance: 'dark',
-            colorTheme: 'default'
+            appearance: 'dark'
         };
         
         document.getElementById('show-professor').checked = true;
         document.getElementById('show-room').checked = true;
         document.getElementById('theme-select').value = 'dark';
-        document.getElementById('color-theme-select').value = 'default';
         document.getElementById('time-format-select').value = '24';
         document.getElementById('weekend-select').value = 'true';
         
@@ -1002,7 +979,6 @@ function deleteTimetable() {
         }
         
         applyAppearance('dark');
-        applyColorTheme('default');
         saveCoursesToStorage();
         createTimetable();
         renderCourseList();
