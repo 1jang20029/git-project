@@ -637,6 +637,227 @@ header {
     background: rgba(239, 68, 68, 0.2);
 }
 
+/* ==================================================
+   라이트 모드 스타일
+   ================================================== */
+body.light-mode {
+    background: #ffffff;
+    color: #1f2937;
+}
+
+body.light-mode .container {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+body.light-mode header {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+body.light-mode .back-button {
+    color: #64748b;
+}
+
+body.light-mode .back-button:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+body.light-mode .action-button {
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #64748b;
+}
+
+body.light-mode .action-button:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+body.light-mode .control-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .control-card:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.light-mode .card-title {
+    color: #1f2937;
+}
+
+body.light-mode .form-label {
+    color: #64748b;
+}
+
+body.light-mode .form-select, 
+body.light-mode .form-input {
+    background: rgba(248, 250, 252, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #1f2937;
+}
+
+body.light-mode .form-select:focus, 
+body.light-mode .form-input:focus {
+    background: rgba(255, 255, 255, 1);
+    border-color: #3b82f6;
+}
+
+body.light-mode .dropdown-button {
+    background: rgba(248, 250, 252, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #1f2937;
+}
+
+body.light-mode .dropdown-button:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #3b82f6;
+}
+
+body.light-mode .dropdown-menu {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+body.light-mode .dropdown-item {
+    color: #1f2937;
+}
+
+body.light-mode .dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+body.light-mode .dropdown-item.selected {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+body.light-mode .timetable-container {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .timetable-container:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.light-mode .timetable th {
+    background: rgba(248, 250, 252, 0.9);
+    color: #1f2937;
+}
+
+body.light-mode .timetable .time-col {
+    background: rgba(241, 245, 249, 0.8);
+    color: #64748b;
+}
+
+body.light-mode .timetable .class-cell {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .timetable .class-cell:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+body.light-mode .timetable th, 
+body.light-mode .timetable td {
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+body.light-mode .course-list-container, 
+body.light-mode .grade-summary {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .course-list-container:hover, 
+body.light-mode .grade-summary:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.light-mode .course-item {
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .course-item:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.light-mode .course-name {
+    color: #1f2937;
+}
+
+body.light-mode .course-details {
+    color: #64748b;
+}
+
+body.light-mode .grade-item {
+    background: rgba(248, 250, 252, 0.8);
+}
+
+body.light-mode .grade-label {
+    color: #64748b;
+}
+
+body.light-mode .empty-state {
+    color: #64748b;
+}
+
+body.light-mode .empty-state h3 {
+    color: #374151;
+}
+
+body.light-mode .modal {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+body.light-mode .modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #1f2937;
+}
+
+body.light-mode .modal-title {
+    color: #1f2937;
+}
+
+body.light-mode .remove-slot-btn {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+body.light-mode .remove-slot-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+body.light-mode .delete-button {
+    color: #ef4444;
+}
+
+body.light-mode .delete-button:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* 라이트 모드 스크롤바 */
+body.light-mode ::-webkit-scrollbar-track {
+    background: rgba(248, 250, 252, 0.5);
+}
+
+body.light-mode ::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+}
+
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 1200px) {
     .main-content {
