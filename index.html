@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
+
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
   <link rel="stylesheet" href="index.css" />
@@ -41,7 +42,7 @@
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
         <ul class="dropdown-menu">
-          <li class="dropdown-item" onclick="loadTimetablePage()">
+          <li class="dropdown-item" onclick="navigateToTimetable()">
             <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
           <li class="dropdown-item" onclick="navigateToCalendar()">
@@ -100,8 +101,10 @@
       </div>
     </div>
   </nav>
+
   <div id="main-container">
     <main id="content-area">
+      <!-- 대시보드 (홈) -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -154,6 +157,7 @@
           </div>
         </div>
       </div>
+      <!-- SPA 분리 영역들 -->
       <div id="buildingsContent" style="display:none;"></div>
       <div id="communityContent" style="display:none;"></div>
       <div id="lecture-reviewContent" style="display:none;"></div>
