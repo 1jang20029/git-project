@@ -106,8 +106,6 @@ header {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    position: relative;
-    z-index: 1;
 }
 
 .control-card {
@@ -117,24 +115,11 @@ header {
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.3s ease;
-    position: relative;
-    z-index: 10;
 }
 
 .control-card:hover {
     background: rgba(30, 41, 59, 0.7);
     border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* 시간표 관리 카드 - 드롭다운이 있는 카드만 높은 z-index */
-.timetable-management-card {
-    z-index: 200 !important;
-    position: relative;
-}
-
-.timetable-management-card .custom-dropdown {
-    z-index: 201;
-    position: relative;
 }
 
 .card-title {
@@ -186,7 +171,6 @@ header {
 /* 시간표 드롭다운 */
 .custom-dropdown {
     position: relative;
-    z-index: 100;
 }
 
 .dropdown-button {
@@ -202,8 +186,6 @@ header {
     justify-content: space-between;
     align-items: center;
     transition: all 0.3s ease;
-    position: relative;
-    z-index: 101;
 }
 
 .dropdown-button:hover {
@@ -216,15 +198,14 @@ header {
     top: 100%;
     left: 0;
     right: 0;
-    background: rgba(30, 41, 59, 0.98);
+    background: rgba(30, 41, 59, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 200;
     display: none;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     margin-top: 0.25rem;
 }
 
@@ -737,9 +718,8 @@ body.light-mode .dropdown-button:hover {
 }
 
 body.light-mode .dropdown-menu {
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(148, 163, 184, 0.3);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 body.light-mode .dropdown-item {
@@ -877,40 +857,6 @@ body.light-mode ::-webkit-scrollbar-thumb {
 body.light-mode ::-webkit-scrollbar-thumb:hover {
     background: rgba(59, 130, 246, 0.5);
 }
-
-/* ==================================================
-   색상 테마 (다크/라이트 모드와 별개)
-   ================================================== */
-
-/* 블루 테마 */
-.color-theme-blue .color-1 { background: linear-gradient(135deg, #1976d2, #0d47a1); }
-.color-theme-blue .color-2 { background: linear-gradient(135deg, #42a5f5, #1976d2); }
-.color-theme-blue .color-3 { background: linear-gradient(135deg, #64b5f6, #42a5f5); }
-.color-theme-blue .color-4 { background: linear-gradient(135deg, #90caf9, #64b5f6); }
-.color-theme-blue .color-5 { background: linear-gradient(135deg, #0277bd, #01579b); }
-.color-theme-blue .color-6 { background: linear-gradient(135deg, #0288d1, #0277bd); }
-.color-theme-blue .color-7 { background: linear-gradient(135deg, #039be5, #0288d1); }
-.color-theme-blue .color-8 { background: linear-gradient(135deg, #03a9f4, #039be5); }
-
-/* 그린 테마 */
-.color-theme-green .color-1 { background: linear-gradient(135deg, #388e3c, #2e7d32); }
-.color-theme-green .color-2 { background: linear-gradient(135deg, #66bb6a, #4caf50); }
-.color-theme-green .color-3 { background: linear-gradient(135deg, #81c784, #66bb6a); }
-.color-theme-green .color-4 { background: linear-gradient(135deg, #a5d6a7, #81c784); }
-.color-theme-green .color-5 { background: linear-gradient(135deg, #009688, #00897b); }
-.color-theme-green .color-6 { background: linear-gradient(135deg, #26a69a, #009688); }
-.color-theme-green .color-7 { background: linear-gradient(135deg, #4db6ac, #26a69a); }
-.color-theme-green .color-8 { background: linear-gradient(135deg, #80cbc4, #4db6ac); }
-
-/* 퍼플 테마 */
-.color-theme-purple .color-1 { background: linear-gradient(135deg, #7b1fa2, #4a148c); }
-.color-theme-purple .color-2 { background: linear-gradient(135deg, #ab47bc, #8e24aa); }
-.color-theme-purple .color-3 { background: linear-gradient(135deg, #ba68c8, #ab47bc); }
-.color-theme-purple .color-4 { background: linear-gradient(135deg, #ce93d8, #ba68c8); }
-.color-theme-purple .color-5 { background: linear-gradient(135deg, #6a1b9a, #4a148c); }
-.color-theme-purple .color-6 { background: linear-gradient(135deg, #8e24aa, #7b1fa2); }
-.color-theme-purple .color-7 { background: linear-gradient(135deg, #9c27b0, #8e24aa); }
-.color-theme-purple .color-8 { background: linear-gradient(135deg, #ad42c4, #9c27b0); }
 
 /* 반응형 디자인 */
 @media (max-width: 1200px) {
