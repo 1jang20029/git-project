@@ -106,8 +106,7 @@ header {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    position: relative;
-    z-index: 10;
+    position: relative; /* 사이드바에 relative 추가 */
 }
 
 .control-card {
@@ -117,11 +116,18 @@ header {
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.3s ease;
+    position: relative; /* 각 카드에 relative 추가 */
+    z-index: 1; /* 기본 z-index 설정 */
 }
 
 .control-card:hover {
     background: rgba(30, 41, 59, 0.7);
     border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* 시간표 관리 카드만 특별한 z-index */
+.control-card:nth-child(2) {
+    z-index: 350; /* 시간표 관리 카드의 z-index를 높임 */
 }
 
 .card-title {
@@ -173,7 +179,7 @@ header {
 /* 시간표 드롭다운 */
 .custom-dropdown {
     position: relative;
-    z-index: 1001;
+    z-index: 300; /* 드롭다운 컨테이너의 z-index 높임 */
 }
 
 .dropdown-button {
@@ -189,6 +195,8 @@ header {
     justify-content: space-between;
     align-items: center;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 301; /* 드롭다운 버튼의 z-index */
 }
 
 .dropdown-button:hover {
@@ -207,10 +215,10 @@ header {
     border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 400; /* 드롭다운 메뉴의 z-index를 가장 높게 설정 */
     display: none;
     margin-top: 0.25rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* 그림자 추가로 더 명확하게 */
 }
 
 .dropdown-item {
@@ -710,10 +718,16 @@ body.light-mode .form-input:focus {
     border-color: #3b82f6;
 }
 
+/* 라이트 모드에서도 동일한 z-index 적용 */
+body.light-mode .custom-dropdown {
+    z-index: 300;
+}
+
 body.light-mode .dropdown-button {
     background: rgba(248, 250, 252, 0.9);
     border: 1px solid rgba(148, 163, 184, 0.3);
     color: #1f2937;
+    z-index: 301;
 }
 
 body.light-mode .dropdown-button:hover {
@@ -724,7 +738,12 @@ body.light-mode .dropdown-button:hover {
 body.light-mode .dropdown-menu {
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(148, 163, 184, 0.3);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 400;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .control-card:nth-child(2) {
+    z-index: 350;
 }
 
 body.light-mode .dropdown-item {
