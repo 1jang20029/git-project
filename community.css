@@ -185,3 +185,15 @@ body {
     max-width: unset;
   }
 }
+
+.new-icon {
+  height: 22px;         /* 필요시 조절 */
+  vertical-align: middle;
+  margin-right: 0.5em;
+  margin-bottom: 2px;   /* 필요시 조절 */
+  display: inline-block;
+}
+.card-header .card-title {
+  vertical-align: middle;
+}
+
