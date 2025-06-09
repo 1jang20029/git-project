@@ -1,342 +1,67 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 시간표 - 연성대학교 캠퍼스 가이드</title>
-    <link rel="stylesheet" href="timetable.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 시간표</title>
+  <link rel="stylesheet" href="timetable.css" />
 </head>
 <body>
-   <div class="container">
-       <header>
-           <div class="back-button" onclick="goToBack()">
-               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-               <span>뒤로</span>
-           </div>
-           <div class="page-title">시간표 1</div>
-           <div class="page-actions">
-               <button class="action-button" onclick="openSettings()">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-               </button>
-           </div>
-       </header>
-       
-       <div class="semester-selector">
-           <select id="semester-select" class="semester-dropdown" onchange="changeSemester()">
-               <option value="2023-1" selected>2023년 1학기</option>
-               <option value="2023-2">2023년 2학기</option>
-               <option value="2023-3">2023년 여름학기</option>
-               <option value="2023-4">2023년 겨울학기</option>
-               <option value="2024-1">2024년 1학기</option>
-               <option value="2024-2">2024년 2학기</option>
-               <option value="2024-3">2024년 여름학기</option>
-               <option value="2024-4">2024년 겨울학기</option>
-               <option value="2025-1">2025년 1학기</option>
-               <option value="2025-2">2025년 2학기</option>
-               <option value="2025-3">2025년 여름학기</option>
-               <option value="2025-4">2025년 겨울학기</option>
-               <option value="2026-1">2026년 1학기</option>
-               <option value="2026-2">2026년 2학기</option>
-               <option value="2026-3">2026년 여름학기</option>
-               <option value="2026-4">2026년 겨울학기</option>
-           </select>
-       </div>
-       
-       <div class="timetable-selector">
-           <div class="custom-dropdown">
-               <button class="dropdown-button" onclick="toggleTimetableDropdown()">
-                   <span id="selected-timetable">시간표 1</span>
-               </button>
-               <div class="dropdown-menu" id="timetable-menu">
-                   <!-- 시간표 목록은 JavaScript로 동적 생성됩니다 -->
-               </div>
-           </div>
-           
-           <div class="timetable-actions">
-               <button class="timetable-action-button" onclick="renameTimetable()">
-                   <span style="display: inline-flex; align-items: center; gap: 4px;">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>
-                       이름 변경
-                   </span>
-               </button>
-               <button class="timetable-action-button" onclick="addNewTimetable()">
-                   <span style="display: inline-flex; align-items: center; gap: 4px;">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                       새 시간표
-                   </span>
-               </button>
-               <button class="add-course-button" onclick="openAddCourseModal()">
-                   <span style="display: inline-flex; align-items: center; gap: 4px;">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                       과목 추가
-                   </span>
-               </button>
-           </div>
-       </div>
-       
-       <div class="content-section">
-           <div class="timetable-container">
-               <table class="timetable">
-                   <thead>
-                       <tr>
-                           <th class="time-col">시간</th>
-                           <th>월</th>
-                           <th>화</th>
-                           <th>수</th>
-                           <th>목</th>
-                           <th>금</th>
-                           <th>토</th>
-                       </tr>
-                   </thead>
-                   <tbody id="timetable-body">
-                       <!-- 시간표 내용은 JavaScript로 동적 생성됩니다 -->
-                   </tbody>
-               </table>
-           </div>
-           
-           <div class="section-title">
-               <span>수강 과목 목록</span>
-           </div>
-           
-           <ul class="class-list" id="course-list">
-               <!-- 과목 목록은 JavaScript로 동적 생성됩니다 -->
-           </ul>
-           
-           <!-- 성적 요약 섹션 추가 -->
-           <div class="grade-summary" id="grade-summary">
-               <div class="grade-summary-title">성적 요약</div>
-               <div class="grade-summary-content">
-                   <div class="grade-summary-item">
-                       <div class="grade-summary-label">총 학점</div>
-                       <div class="grade-summary-value" id="total-credits">0</div>
-                   </div>
-                   <div class="grade-summary-item">
-                       <div class="grade-summary-label">전공 평점</div>
-                       <div class="grade-summary-value major" id="major-gpa">0.0</div>
-                   </div>
-                   <div class="grade-summary-item">
-                       <div class="grade-summary-label">전체 평점</div>
-                       <div class="grade-summary-value average" id="total-gpa">0.0</div>
-                   </div>
-               </div>
-           </div>
-       </div>
-       
-       <!-- 과목 추가/수정 모달 -->
-       <div class="modal" id="course-modal">
-           <div class="modal-content">
-               <div class="modal-title" id="modal-title">과목 추가</div>
-               
-               <form id="course-form" onsubmit="saveCourse(event)">
-                   <input type="hidden" id="course-id">
-                   
-                   <div class="form-group">
-                       <label class="form-label" for="course-name">과목명 *</label>
-                       <input type="text" id="course-name" class="form-input" required>
-                   </div>
-                   
-                   <div class="form-group">
-                       <label class="form-label" for="course-professor">담당 교수</label>
-                       <input type="text" id="course-professor" class="form-input">
-                   </div>
-                   
-                   <div class="form-row">
-                       <div class="form-group">
-                           <label class="form-label" for="course-credits">학점</label>
-                           <input type="number" id="course-credits" class="form-input" min="1" max="6" value="3">
-                       </div>
-                       
-                       <div class="form-group">
-                           <label class="form-label" for="course-type">이수 구분</label>
-                           <select id="course-type" class="form-select">
-                               <option value="전공필수">전공필수</option>
-                               <option value="전공선택">전공선택</option>
-                               <option value="교양필수">교양필수</option>
-                               <option value="교양선택">교양선택</option>
-                           </select>
-                       </div>
-                   </div>
-                   
-                   <div class="form-group">
-                       <label class="form-label">과목 색상</label>
-                       <div class="color-select" id="color-select">
-                           <div class="color-option color-1" data-color="color-1" onclick="selectColor(this)"></div>
-                           <div class="color-option color-2" data-color="color-2" onclick="selectColor(this)"></div>
-                           <div class="color-option color-3" data-color="color-3" onclick="selectColor(this)"></div>
-                           <div class="color-option color-4" data-color="color-4" onclick="selectColor(this)"></div>
-                           <div class="color-option color-5" data-color="color-5" onclick="selectColor(this)"></div>
-                           <div class="color-option color-6" data-color="color-6" onclick="selectColor(this)"></div>
-                           <div class="color-option color-7" data-color="color-7" onclick="selectColor(this)"></div>
-                           <div class="color-option color-8" data-color="color-8" onclick="selectColor(this)"></div>
-                       </div>
-                       <input type="hidden" id="course-color" value="color-1">
-                   </div>
-                   
-                   <div class="form-group">
-                       <label class="form-label">수업 시간 *</label>
-                       
-                       <div id="time-slots">
-                           <div class="form-row time-slot">
-                               <div class="form-group">
-                                   <label class="form-label">요일</label>
-                                   <select class="form-select day-select">
-                                       <option value="1">월요일</option>
-                                       <option value="2">화요일</option>
-                                       <option value="3">수요일</option>
-                                       <option value="4">목요일</option>
-                                       <option value="5">금요일</option>
-                                       <option value="6">토요일</option>
-                                   </select>
-                               </div>
-                               
-                               <div class="form-group">
-                                   <label class="form-label">시작 교시</label>
-                                   <select class="form-select start-select">
-                                       <option value="1">1교시 (9:30)</option>
-                                       <option value="2">2교시 (10:30)</option>
-                                       <option value="3">3교시 (11:30)</option>
-                                       <option value="4">4교시 (12:30)</option>
-                                       <option value="5">5교시 (13:30)</option>
-                                       <option value="6">6교시 (14:30)</option>
-                                       <option value="7">7교시 (15:30)</option>
-                                       <option value="8">8교시 (16:30)</option>
-                                       <option value="9">9교시 (17:30)</option>
-                                   </select>
-                               </div>
-                               
-                               <div class="form-group">
-                                   <label class="form-label">종료 교시</label>
-                                   <select class="form-select end-select">
-                                       <option value="1">1교시 (10:20)</option>
-                                       <option value="2">2교시 (11:20)</option>
-                                       <option value="3">3교시 (12:20)</option>
-                                       <option value="4">4교시 (13:20)</option>
-                                       <option value="5">5교시 (14:20)</option>
-                                       <option value="6">6교시 (15:20)</option>
-                                       <option value="7">7교시 (16:20)</option>
-                                       <option value="8">8교시 (17:20)</option>
-                                       <option value="9">9교시 (18:20)</option>
-                                   </select>
-                               </div>
-                           </div>
-                       </div>
-                       
-                       <button type="button" class="add-course-button" onclick="addTimeSlot()" style="margin-top: 12px;">
-                           <span style="display: inline-flex; align-items: center; gap: 4px;">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                               수업 시간 추가
-                           </span>
-                       </button>
-                   </div>
-                   
-                   <div class="form-group">
-                       <label class="form-label" for="course-room">강의실</label>
-                       <input type="text" id="course-room" class="form-input" placeholder="예: 공2-204">
-                   </div>
-                   
-                   <!-- 학점 평가 선택 (추가) -->
-                   <div class="form-group">
-                       <label class="form-label" for="course-grade">학점 평가</label>
-                       <select id="course-grade" class="form-select">
-                           <option value="">미정</option>
-                           <option value="A+">A+</option>
-                           <option value="A0">A0</option>
-                           <option value="A-">A-</option>
-                           <option value="B+">B+</option>
-                           <option value="B0">B0</option>
-                           <option value="B-">B-</option>
-                           <option value="C+">C+</option>
-                           <option value="C0">C0</option>
-                           <option value="C-">C-</option>
-                           <option value="D+">D+</option>
-                           <option value="D0">D0</option>
-                           <option value="D-">D-</option>
-                           <option value="F">F</option>
-                           <option value="P">P (Pass)</option>
-                           <option value="NP">NP (No Pass)</option>
-                       </select>
-                   </div>
-                   
-                   <div class="modal-actions">
-                       <button type="button" class="modal-button cancel-button" onclick="closeModal()">취소</button>
-                       <button type="submit" class="modal-button save-button">저장</button>
-                   </div>
-               </form>
-           </div>
-       </div>
-
-       <!-- 설정 모달 추가 -->
-       <div class="settings-modal" id="settings-modal">
-           <div class="settings-content">
-               <div class="settings-title">시간표 설정</div>
-               
-               <div class="settings-section">
-                   <div class="settings-section-title">시간표 표시 옵션</div>
-                   <div class="settings-option">
-                       <label class="checkbox-label">
-                           <input type="checkbox" id="show-room" class="checkbox-input" checked>
-                           <span class="checkbox-text">강의실 정보 표시</span>
-                       </label>
-                   </div>
-                   <div class="settings-option">
-                       <label class="checkbox-label">
-                           <input type="checkbox" id="show-professor" class="checkbox-input" checked>
-                           <span class="checkbox-text">교수명 표시</span>
-                       </label>
-                   </div>
-               </div>
-               
-               <div class="settings-section">
-                   <div class="settings-section-title">시간표 색상 테마</div>
-                   <select id="theme-select" class="settings-dropdown" onchange="changeTheme()">
-                       <option value="dark">기본 테마</option>
-                       <option value="light">라이트 테마</option>
-                       <option value="blue">블루 테마</option>
-                       <option value="green">그린 테마</option>
-                   </select>
-               </div>
-               
-               <div class="settings-section">
-                   <div class="settings-section-title">시간 형식</div>
-                   <select id="time-format-select" class="settings-dropdown" onchange="changeTimeFormat()">
-                       <option value="24">24시간 형식 (예: 14:30)</option>
-                       <option value="12">12시간 형식 (예: 오후 2:30)</option>
-                   </select>
-               </div>
-               
-               <div class="settings-section">
-                   <div class="settings-section-title">주말 표시</div>
-                   <select id="weekend-select" class="settings-dropdown" onchange="changeWeekendDisplay()">
-                       <option value="true">주말 표시</option>
-                       <option value="false">주말 숨기기</option>
-                   </select>
-               </div>
-               
-               <div class="settings-section">
-                   <div class="settings-section-title">시간표 내보내기</div>
-                   <div class="action-buttons">
-                       <button class="action-button-icon" onclick="exportToImage()">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                           이미지로 내보내기
-                       </button>
-                   </div>
-               </div>
-               
-               <div class="settings-section">
-                   <div class="settings-section-title">데이터 관리</div>
-                   <button class="delete-timetable-button" onclick="deleteTimetable()">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                       현재 시간표 초기화
-                   </button>
-               </div>
-               
-               <div class="settings-actions">
-                   <button class="settings-action-button settings-cancel-button" onclick="closeSettings()">취소</button>
-                   <button class="settings-action-button settings-save-button" onclick="saveSettings()">저장</button>
-               </div>
-           </div>
-       </div>
-   </div>
-   <script src="timetable.js"></script>
+  <div class="tt-container">
+    <header>
+      <div class="tt-header-title">내 시간표</div>
+      <button id="addClassBtn" class="tt-add-btn">+ 수업 추가</button>
+    </header>
+    <div class="tt-table-wrap">
+      <table class="tt-table">
+        <thead>
+          <tr>
+            <th class="tt-time-col"></th>
+            <th>월</th>
+            <th>화</th>
+            <th>수</th>
+            <th>목</th>
+            <th>금</th>
+          </tr>
+        </thead>
+        <tbody id="timetable-body">
+          <!-- 9시~18시(1시간 단위) 행 생성됨 -->
+        </tbody>
+      </table>
+    </div>
+    <!-- 팝업: 과목 추가 -->
+    <div class="tt-modal" id="classModal">
+      <div class="tt-modal-content">
+        <div class="tt-modal-title">수업 추가</div>
+        <label>
+          과목명
+          <input type="text" id="subjectInput" maxlength="15" required>
+        </label>
+        <label>
+          요일
+          <select id="dayInput">
+            <option value="1">월</option>
+            <option value="2">화</option>
+            <option value="3">수</option>
+            <option value="4">목</option>
+            <option value="5">금</option>
+          </select>
+        </label>
+        <label>
+          시작 시간
+          <select id="startTimeInput"></select>
+        </label>
+        <label>
+          종료 시간
+          <select id="endTimeInput"></select>
+        </label>
+        <div class="tt-modal-actions">
+          <button id="addClassSubmit" class="tt-modal-ok">추가</button>
+          <button id="addClassCancel" class="tt-modal-cancel">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="timetable.js"></script>
 </body>
 </html>
