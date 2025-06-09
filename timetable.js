@@ -1,6 +1,6 @@
 // ==================================================================================
 // PC 웹 브라우저 최적화 시간표 JavaScript
-// index.js의 구조를 유지하면서 PC 환경에 최적화
+// 설정 저장/취소 로직 및 ESC 키 기능 개선
 // ==================================================================================
 
 // 글로벌 변수 선언
@@ -10,7 +10,7 @@ let settings = {
     showProfessor: true,
     showRoom: true,
     timeFormat24: true,
-    appearance: 'dark'      // 다크/라이트 모드만 유지
+    appearance: 'dark'
 };
 let currentSemester = {
     year: 2023,
@@ -52,8 +52,8 @@ const gradePoints = {
     "F": 0.0, "P": null, "NP": null
 };
 
-// 이전 설정 저장용
-let previousSettings = null;
+// 설정 백업용 변수
+let settingsBackup = null;
 
 // ==================================================================================
 // 초기화 및 이벤트 핸들러
@@ -72,7 +72,40 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateGrades();
     updatePageTitle();
     applySettingsToUI();
+    
+    // 이벤트 리스너 등록
+    setupEventListeners();
 });
+
+// 이벤트 리스너 설정
+function setupEventListeners() {
+    // ESC 키 이벤트
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // 모달 외부 클릭 이벤트
+    document.getElementById('course-modal').addEventListener('click', handleModalOutsideClick);
+    document.getElementById('settings-modal').addEventListener('click', handleModalOutsideClick);
+    
+    // 드롭다운 외부 클릭 이벤트
+    document.addEventListener('click', handleDropdownOutsideClick);
+    
+    // 브라우저 창 크기 변경 이벤트
+    window.addEventListener('resize', handleWindowResize);
+    
+    // 설정 변경 이벤트 (실시간 미리보기)
+    const settingsInputs = [
+        'show-professor', 'show-room', 'theme-select', 
+        'time-format-select', 'weekend-select'
+    ];
+    
+    settingsInputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            const eventType = element.type === 'checkbox' ? 'change' : 'change';
+            element.addEventListener(eventType, handleSettingsPreview);
+        }
+    });
+}
 
 // 현재 날짜를 기준으로 학기 설정
 function setCurrentSemester() {
@@ -92,6 +125,73 @@ function setCurrentSemester() {
     } else {
         currentSemester.year = currentYear;
         currentSemester.term = 1;
+    }
+}
+
+// ==================================================================================
+// 이벤트 핸들러 함수들
+// ==================================================================================
+
+// ESC 키 처리
+function handleEscapeKey(event) {
+    if (event.key === 'Escape') {
+        // 열린 모달 확인 및 닫기
+        if (document.getElementById('course-modal').style.display === 'flex') {
+            closeModal();
+        } else if (document.getElementById('settings-modal').style.display === 'flex') {
+            closeSettings(); // 취소 버튼과 동일한 동작
+        }
+        
+        // 드롭다운 닫기
+        const dropdownMenu = document.getElementById('timetable-menu');
+        if (dropdownMenu && dropdownMenu.style.display === 'block') {
+            dropdownMenu.style.display = 'none';
+        }
+    }
+}
+
+// 모달 외부 클릭 처리
+function handleModalOutsideClick(event) {
+    if (event.target === event.currentTarget) {
+        if (event.currentTarget.id === 'course-modal') {
+            closeModal();
+        } else if (event.currentTarget.id === 'settings-modal') {
+            closeSettings(); // 취소 버튼과 동일한 동작
+        }
+    }
+}
+
+// 드롭다운 외부 클릭 처리
+function handleDropdownOutsideClick(event) {
+    const dropdown = document.querySelector('.custom-dropdown');
+    if (dropdown && !dropdown.contains(event.target)) {
+        document.getElementById('timetable-menu').style.display = 'none';
+    }
+}
+
+// 창 크기 변경 처리
+let resizeTimer;
+function handleWindowResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        renderCoursesOnTimetable();
+    }, 250);
+}
+
+// 설정 실시간 미리보기
+function handleSettingsPreview() {
+    if (document.getElementById('settings-modal').style.display === 'flex') {
+        // 현재 UI 값들로 임시 설정 객체 생성
+        const tempSettings = {
+            showProfessor: document.getElementById('show-professor').checked,
+            showRoom: document.getElementById('show-room').checked,
+            appearance: document.getElementById('theme-select').value,
+            timeFormat24: document.getElementById('time-format-select').value === '24',
+            showWeekend: document.getElementById('weekend-select').value === 'true'
+        };
+        
+        // 임시로 설정 적용 (원본 설정은 보존)
+        applyTempSettings(tempSettings);
     }
 }
 
@@ -846,17 +946,22 @@ function removeTimeError() {
 }
 
 // ==================================================================================
-// 설정 관련 함수들
+// 설정 관련 함수들 - 수정된 부분
 // ==================================================================================
 
 // 설정값을 UI에 적용
 function applySettingsToUI() {
-    document.getElementById('show-professor').checked = settings.showProfessor;
-    document.getElementById('show-room').checked = settings.showRoom;
-    document.getElementById('theme-select').value = settings.appearance || 'dark';
-    document.getElementById('color-theme-select').value = settings.colorTheme || 'default';
-    document.getElementById('time-format-select').value = settings.timeFormat24 ? '24' : '12';
-    document.getElementById('weekend-select').value = settings.showWeekend.toString();
+    const showProfessorEl = document.getElementById('show-professor');
+    const showRoomEl = document.getElementById('show-room');
+    const themeSelectEl = document.getElementById('theme-select');
+    const timeFormatSelectEl = document.getElementById('time-format-select');
+    const weekendSelectEl = document.getElementById('weekend-select');
+    
+    if (showProfessorEl) showProfessorEl.checked = settings.showProfessor;
+    if (showRoomEl) showRoomEl.checked = settings.showRoom;
+    if (themeSelectEl) themeSelectEl.value = settings.appearance || 'dark';
+    if (timeFormatSelectEl) timeFormatSelectEl.value = settings.timeFormat24 ? '24' : '12';
+    if (weekendSelectEl) weekendSelectEl.value = settings.showWeekend.toString();
 }
 
 // 설정 로드
@@ -871,53 +976,108 @@ function loadSettings() {
     }
 }
 
-// 설정 열기
+// 설정 모달 열기 - 수정된 함수
 function openSettings() {
-    previousSettings = JSON.parse(JSON.stringify(settings));
+    // 현재 설정을 백업
+    settingsBackup = JSON.parse(JSON.stringify(settings));
+    
+    // UI에 현재 설정값 적용
+    applySettingsToUI();
+    
+    // 모달 표시
     document.getElementById('settings-modal').style.display = 'flex';
 }
 
-// 설정 닫기 (취소)
+// 설정 모달 닫기 (취소) - 수정된 함수
 function closeSettings() {
-    if (previousSettings) {
-        settings = JSON.parse(JSON.stringify(previousSettings));
-        applySettingsToUI();
+    // 백업된 설정으로 복원
+    if (settingsBackup) {
+        settings = JSON.parse(JSON.stringify(settingsBackup));
         applySettings();
+        settingsBackup = null;
     }
+    
+    // 모달 닫기
     document.getElementById('settings-modal').style.display = 'none';
 }
 
-// 설정 저장
+// 설정 저장 - 수정된 함수
 function saveSettings() {
     const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (currentUser) {
-        settings.showProfessor = document.getElementById('show-professor').checked;
-        settings.showRoom = document.getElementById('show-room').checked;
-        settings.appearance = document.getElementById('theme-select').value;
-        settings.colorTheme = document.getElementById('color-theme-select').value;
-        settings.timeFormat24 = document.getElementById('time-format-select').value === '24';
-        settings.showWeekend = document.getElementById('weekend-select').value === 'true';
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        return;
+    }
+    
+    try {
+        // UI에서 설정값 읽기
+        const showProfessorEl = document.getElementById('show-professor');
+        const showRoomEl = document.getElementById('show-room');
+        const themeSelectEl = document.getElementById('theme-select');
+        const timeFormatSelectEl = document.getElementById('time-format-select');
+        const weekendSelectEl = document.getElementById('weekend-select');
         
+        // 설정 업데이트
+        if (showProfessorEl) settings.showProfessor = showProfessorEl.checked;
+        if (showRoomEl) settings.showRoom = showRoomEl.checked;
+        if (themeSelectEl) settings.appearance = themeSelectEl.value;
+        if (timeFormatSelectEl) settings.timeFormat24 = timeFormatSelectEl.value === '24';
+        if (weekendSelectEl) settings.showWeekend = weekendSelectEl.value === 'true';
+        
+        // 로컬 스토리지에 저장
         localStorage.setItem(`settings_user_${currentUser}`, JSON.stringify(settings));
+        
+        // 설정 적용
         applySettings();
         
+        // 백업 클리어
+        settingsBackup = null;
+        
+        // 모달 닫기
         document.getElementById('settings-modal').style.display = 'none';
+        
+        // 성공 메시지 (선택사항)
+        console.log('설정이 저장되었습니다.');
+        
+    } catch (error) {
+        console.error('설정 저장 중 오류 발생:', error);
+        alert('설정 저장 중 오류가 발생했습니다.');
     }
 }
 
 // 설정 적용
 function applySettings() {
     applyAppearance(settings.appearance || 'dark');
-    applyColorTheme(settings.colorTheme || 'default');
     createTimetable();
     renderCoursesOnTimetable();
 }
 
+// 임시 설정 적용 (미리보기용)
+function applyTempSettings(tempSettings) {
+    // 임시로 외관 적용
+    applyAppearance(tempSettings.appearance || 'dark');
+    
+    // 임시 설정으로 시간표 생성
+    const originalSettings = { ...settings };
+    
+    // 임시로 설정 변경
+    Object.assign(settings, tempSettings);
+    
+    // 시간표 업데이트
+    createTimetable();
+    renderCoursesOnTimetable();
+    
+    // 원본 설정 복원
+    settings = originalSettings;
+}
+
 // 외관 모드 변경 (다크/라이트)
 function changeAppearance() {
-    const appearance = document.getElementById('theme-select').value;
-    settings.appearance = appearance;
-    applyAppearance(appearance);
+    const themeSelectEl = document.getElementById('theme-select');
+    if (themeSelectEl) {
+        const appearance = themeSelectEl.value;
+        applyAppearance(appearance);
+    }
 }
 
 // 외관 모드 적용
@@ -935,79 +1095,86 @@ function applyAppearance(appearance) {
     }
 }
 
-// 색상 테마 변경
-function changeColorTheme() {
-    const colorTheme = document.getElementById('color-theme-select').value;
-    settings.colorTheme = colorTheme;
-    applyColorTheme(colorTheme);
-}
-
-// 색상 테마 적용
-function applyColorTheme(colorTheme) {
-    const container = document.querySelector('.container');
-    
-    // 기존 색상 테마 클래스 제거
-    container.classList.remove('color-theme-default', 'color-theme-blue', 'color-theme-green', 'color-theme-purple');
-    
-    // 새로운 색상 테마 적용
-    if (colorTheme !== 'default') {
-        container.classList.add(`color-theme-${colorTheme}`);
-    }
-}
-
-// 기존 changeTheme 함수는 제거하고 위의 함수들로 대체
-// function changeTheme() { ... } // 이 함수 삭제
-
-// 기존 applyTheme 함수는 제거하고 위의 함수들로 대체
-// function applyTheme(theme) { ... } // 이 함수 삭제
-
 // 시간 형식 변경
 function changeTimeFormat() {
-    settings.timeFormat24 = document.getElementById('time-format-select').value === '24';
-    createTimetable();
+    const timeFormatSelectEl = document.getElementById('time-format-select');
+    if (timeFormatSelectEl) {
+        const timeFormat24 = timeFormatSelectEl.value === '24';
+        // 미리보기를 위한 임시 적용
+        const originalTimeFormat = settings.timeFormat24;
+        settings.timeFormat24 = timeFormat24;
+        createTimetable();
+        settings.timeFormat24 = originalTimeFormat;
+    }
 }
 
 // 주말 표시 변경
 function changeWeekendDisplay() {
-    settings.showWeekend = document.getElementById('weekend-select').value === 'true';
-    createTimetable();
-    renderCoursesOnTimetable();
+    const weekendSelectEl = document.getElementById('weekend-select');
+    if (weekendSelectEl) {
+        const showWeekend = weekendSelectEl.value === 'true';
+        // 미리보기를 위한 임시 적용
+        const originalShowWeekend = settings.showWeekend;
+        settings.showWeekend = showWeekend;
+        createTimetable();
+        renderCoursesOnTimetable();
+        settings.showWeekend = originalShowWeekend;
+    }
 }
 
 // 현재 시간표 초기화
 function deleteTimetable() {
-    if (confirm('현재 시간표의 모든 데이터가 삭제되고 기본 설정으로 초기화됩니다. 계속하시겠습니까?')) {
+    if (!confirm('현재 시간표의 모든 데이터가 삭제되고 기본 설정으로 초기화됩니다. 계속하시겠습니까?')) {
+        return;
+    }
+    
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    if (!currentUser) {
+        alert('로그인이 필요한 서비스입니다.');
+        return;
+    }
+    
+    try {
+        // 과목 데이터 초기화
         courses = [];
         
+        // 설정 초기화
         settings = {
             showWeekend: true,
             showProfessor: true,
             showRoom: true,
             timeFormat24: true,
-            appearance: 'dark',
-            colorTheme: 'default'
+            appearance: 'dark'
         };
         
-        document.getElementById('show-professor').checked = true;
-        document.getElementById('show-room').checked = true;
-        document.getElementById('theme-select').value = 'dark';
-        document.getElementById('color-theme-select').value = 'default';
-        document.getElementById('time-format-select').value = '24';
-        document.getElementById('weekend-select').value = 'true';
+        // UI 요소 초기화
+        const showProfessorEl = document.getElementById('show-professor');
+        const showRoomEl = document.getElementById('show-room');
+        const themeSelectEl = document.getElementById('theme-select');
+        const timeFormatSelectEl = document.getElementById('time-format-select');
+        const weekendSelectEl = document.getElementById('weekend-select');
         
-        const currentUser = localStorage.getItem('currentLoggedInUser');
-        if (currentUser) {
-            localStorage.setItem(`settings_user_${currentUser}`, JSON.stringify(settings));
-        }
+        if (showProfessorEl) showProfessorEl.checked = true;
+        if (showRoomEl) showRoomEl.checked = true;
+        if (themeSelectEl) themeSelectEl.value = 'dark';
+        if (timeFormatSelectEl) timeFormatSelectEl.value = '24';
+        if (weekendSelectEl) weekendSelectEl.value = 'true';
         
+        // 로컬 스토리지에 저장
+        localStorage.setItem(`settings_user_${currentUser}`, JSON.stringify(settings));
+        
+        // 설정 적용
         applyAppearance('dark');
-        applyColorTheme('default');
         saveCoursesToStorage();
         createTimetable();
         renderCourseList();
         calculateGrades();
         
         alert('시간표가 기본값으로 초기화되었습니다.');
+        
+    } catch (error) {
+        console.error('시간표 초기화 중 오류 발생:', error);
+        alert('시간표 초기화 중 오류가 발생했습니다.');
     }
 }
 
@@ -1202,7 +1369,6 @@ function exportToImage() {
 function exportToImageFallback(container) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const rect = container.getBoundingClientRect();
     const scale = 2;
     
     canvas.width = 1200 * scale;
@@ -1338,45 +1504,3 @@ function exportToImageFallback(container) {
 function goToBack() {
     window.history.back();
 }
-
-// 드롭다운 외부 클릭 시 닫기
-document.addEventListener('click', function(event) {
-    const dropdown = document.querySelector('.custom-dropdown');
-    if (!dropdown.contains(event.target)) {
-        document.getElementById('timetable-menu').style.display = 'none';
-    }
-});
-
-// ESC 키로 모달 닫기
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        if (document.getElementById('course-modal').style.display === 'flex') {
-            closeModal();
-        }
-        if (document.getElementById('settings-modal').style.display === 'flex') {
-            closeSettings();
-        }
-    }
-});
-
-// 모달 외부 클릭 시 닫기
-document.getElementById('course-modal').addEventListener('click', function(event) {
-    if (event.target === this) {
-        closeModal();
-    }
-});
-
-document.getElementById('settings-modal').addEventListener('click', function(event) {
-    if (event.target === this) {
-        closeSettings();
-    }
-});
-
-// 브라우저 창 크기 변경 시 적응형 레이아웃 조정
-let resizeTimer;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        renderCoursesOnTimetable();
-    }, 250);
-});
