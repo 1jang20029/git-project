@@ -854,6 +854,7 @@ function applySettingsToUI() {
     document.getElementById('show-professor').checked = settings.showProfessor;
     document.getElementById('show-room').checked = settings.showRoom;
     document.getElementById('theme-select').value = settings.appearance || 'dark';
+    document.getElementById('color-theme-select').value = settings.colorTheme || 'default';
     document.getElementById('time-format-select').value = settings.timeFormat24 ? '24' : '12';
     document.getElementById('weekend-select').value = settings.showWeekend.toString();
 }
@@ -893,6 +894,7 @@ function saveSettings() {
         settings.showProfessor = document.getElementById('show-professor').checked;
         settings.showRoom = document.getElementById('show-room').checked;
         settings.appearance = document.getElementById('theme-select').value;
+        settings.colorTheme = document.getElementById('color-theme-select').value;
         settings.timeFormat24 = document.getElementById('time-format-select').value === '24';
         settings.showWeekend = document.getElementById('weekend-select').value === 'true';
         
@@ -906,6 +908,7 @@ function saveSettings() {
 // 설정 적용
 function applySettings() {
     applyAppearance(settings.appearance || 'dark');
+    applyColorTheme(settings.colorTheme || 'default');
     createTimetable();
     renderCoursesOnTimetable();
 }
@@ -932,8 +935,25 @@ function applyAppearance(appearance) {
     }
 }
 
-// 색상 테마 관련 함수들 제거
-// changeColorTheme, applyColorTheme 함수 삭제
+// 색상 테마 변경
+function changeColorTheme() {
+    const colorTheme = document.getElementById('color-theme-select').value;
+    settings.colorTheme = colorTheme;
+    applyColorTheme(colorTheme);
+}
+
+// 색상 테마 적용
+function applyColorTheme(colorTheme) {
+    const container = document.querySelector('.container');
+    
+    // 기존 색상 테마 클래스 제거
+    container.classList.remove('color-theme-default', 'color-theme-blue', 'color-theme-green', 'color-theme-purple');
+    
+    // 새로운 색상 테마 적용
+    if (colorTheme !== 'default') {
+        container.classList.add(`color-theme-${colorTheme}`);
+    }
+}
 
 // 기존 changeTheme 함수는 제거하고 위의 함수들로 대체
 // function changeTheme() { ... } // 이 함수 삭제
@@ -964,12 +984,14 @@ function deleteTimetable() {
             showProfessor: true,
             showRoom: true,
             timeFormat24: true,
-            appearance: 'dark'
+            appearance: 'dark',
+            colorTheme: 'default'
         };
         
         document.getElementById('show-professor').checked = true;
         document.getElementById('show-room').checked = true;
         document.getElementById('theme-select').value = 'dark';
+        document.getElementById('color-theme-select').value = 'default';
         document.getElementById('time-format-select').value = '24';
         document.getElementById('weekend-select').value = 'true';
         
@@ -979,6 +1001,7 @@ function deleteTimetable() {
         }
         
         applyAppearance('dark');
+        applyColorTheme('default');
         saveCoursesToStorage();
         createTimetable();
         renderCourseList();
@@ -995,136 +1018,316 @@ function deleteTimetable() {
 // 이미지로 내보내기
 function exportToImage() {
     const timetable = document.querySelector('.timetable');
-    const scale = 2;
-    const rect = timetable.getBoundingClientRect();
-    const margin = 40;
+    if (!timetable) {
+        alert('시간표를 찾을 수 없습니다.');
+        return;
+    }
 
+    // 임시 캔버스 생성을 위한 컨테이너
+    const exportContainer = document.createElement('div');
+    exportContainer.style.position = 'absolute';
+    exportContainer.style.left = '-9999px';
+    exportContainer.style.top = '-9999px';
+    exportContainer.style.width = '1200px';
+    exportContainer.style.background = document.body.classList.contains('light-mode') ? '#ffffff' : '#1e293b';
+    exportContainer.style.padding = '40px';
+    exportContainer.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    
+    // 시간표 제목 생성
+    const title = document.createElement('h1');
+    title.textContent = `${currentTimetable.name} - ${currentSemester.year}년 ${currentSemester.term}학기`;
+    title.style.textAlign = 'center';
+    title.style.marginBottom = '30px';
+    title.style.fontSize = '28px';
+    title.style.fontWeight = '700';
+    title.style.color = document.body.classList.contains('light-mode') ? '#1f2937' : '#f1f5f9';
+    title.style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
+    title.style.webkitBackgroundClip = 'text';
+    title.style.webkitTextFillColor = 'transparent';
+    title.style.backgroundClip = 'text';
+    
+    // 시간표 테이블 복제
+    const tableClone = timetable.cloneNode(true);
+    tableClone.style.width = '100%';
+    tableClone.style.borderCollapse = 'collapse';
+    tableClone.style.fontSize = '14px';
+    tableClone.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+    tableClone.style.borderRadius = '12px';
+    tableClone.style.overflow = 'hidden';
+    
+    // 테이블 스타일 적용
+    const cells = tableClone.querySelectorAll('th, td');
+    cells.forEach(cell => {
+        cell.style.border = document.body.classList.contains('light-mode') 
+            ? '1px solid rgba(148, 163, 184, 0.3)' 
+            : '1px solid rgba(148, 163, 184, 0.2)';
+        cell.style.padding = '12px 8px';
+        cell.style.textAlign = 'center';
+        cell.style.verticalAlign = 'middle';
+        
+        if (cell.tagName === 'TH') {
+            cell.style.background = document.body.classList.contains('light-mode') 
+                ? 'rgba(248, 250, 252, 0.9)' 
+                : 'rgba(15, 23, 42, 0.8)';
+            cell.style.color = document.body.classList.contains('light-mode') ? '#1f2937' : '#f1f5f9';
+            cell.style.fontWeight = '600';
+            cell.style.fontSize = '16px';
+        }
+        
+        if (cell.classList.contains('time-col')) {
+            cell.style.background = document.body.classList.contains('light-mode') 
+                ? 'rgba(241, 245, 249, 0.8)' 
+                : 'rgba(15, 23, 42, 0.6)';
+            cell.style.color = document.body.classList.contains('light-mode') ? '#64748b' : '#94a3b8';
+            cell.style.fontWeight = '600';
+            cell.style.fontSize = '12px';
+            cell.style.width = '100px';
+        }
+        
+        if (cell.classList.contains('class-cell')) {
+            cell.style.height = '60px';
+            cell.style.background = document.body.classList.contains('light-mode') 
+                ? 'rgba(255, 255, 255, 0.5)' 
+                : 'rgba(30, 41, 59, 0.3)';
+            cell.style.position = 'relative';
+        }
+    });
+    
+    // 과목 블록들을 테이블 셀 안에 직접 삽입
+    courses.forEach(course => {
+        course.times.forEach(timeSlot => {
+            // 주말 숨김 처리
+            const maxDays = settings.showWeekend ? 6 : 5;
+            if (timeSlot.day > maxDays) return;
+            
+            // 해당 시간의 셀 찾기
+            for (let period = timeSlot.start; period <= timeSlot.end; period++) {
+                const targetCell = tableClone.querySelector(
+                    `td.class-cell[data-day="${timeSlot.day}"][data-period="${period}"]`
+                );
+                
+                if (targetCell && period === timeSlot.start) {
+                    // 과목 블록 생성
+                    const courseBlock = document.createElement('div');
+                    courseBlock.style.position = 'absolute';
+                    courseBlock.style.top = '0';
+                    courseBlock.style.left = '0';
+                    courseBlock.style.right = '0';
+                    courseBlock.style.height = `${(timeSlot.end - timeSlot.start + 1) * 60}px`;
+                    courseBlock.style.padding = '8px';
+                    courseBlock.style.borderRadius = '6px';
+                    courseBlock.style.color = 'white';
+                    courseBlock.style.fontSize = '12px';
+                    courseBlock.style.fontWeight = '700';
+                    courseBlock.style.display = 'flex';
+                    courseBlock.style.flexDirection = 'column';
+                    courseBlock.style.justifyContent = 'center';
+                    courseBlock.style.alignItems = 'center';
+                    courseBlock.style.textAlign = 'center';
+                    courseBlock.style.overflow = 'hidden';
+                    courseBlock.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+                    courseBlock.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                    
+                    // 색상 적용
+                    const colorMap = {
+                        'color-1': 'linear-gradient(135deg, #e57373, #ef5350)',
+                        'color-2': 'linear-gradient(135deg, #81c784, #66bb6a)',
+                        'color-3': 'linear-gradient(135deg, #64b5f6, #42a5f5)',
+                        'color-4': 'linear-gradient(135deg, #ba68c8, #ab47bc)',
+                        'color-5': 'linear-gradient(135deg, #ffb74d, #ffa726)',
+                        'color-6': 'linear-gradient(135deg, #4db6ac, #26a69a)',
+                        'color-7': 'linear-gradient(135deg, #7986cb, #5c6bc0)',
+                        'color-8': 'linear-gradient(135deg, #a1887f, #8d6e63)'
+                    };
+                    
+                    courseBlock.style.background = colorMap[course.color] || colorMap['color-1'];
+                    
+                    // 과목명
+                    const courseName = document.createElement('div');
+                    courseName.textContent = course.name;
+                    courseName.style.fontWeight = '700';
+                    courseName.style.marginBottom = '4px';
+                    courseName.style.fontSize = '13px';
+                    courseBlock.appendChild(courseName);
+                    
+                    // 교수명/강의실 정보
+                    const infoParts = [];
+                    if (settings.showProfessor && course.professor) {
+                        infoParts.push(course.professor);
+                    }
+                    if (settings.showRoom && course.room) {
+                        infoParts.push(course.room);
+                    }
+                    
+                    if (infoParts.length > 0) {
+                        const courseInfo = document.createElement('div');
+                        courseInfo.textContent = infoParts.join(' | ');
+                        courseInfo.style.fontSize = '10px';
+                        courseInfo.style.opacity = '0.9';
+                        courseBlock.appendChild(courseInfo);
+                    }
+                    
+                    targetCell.style.position = 'relative';
+                    targetCell.appendChild(courseBlock);
+                }
+            }
+        });
+    });
+    
+    exportContainer.appendChild(title);
+    exportContainer.appendChild(tableClone);
+    document.body.appendChild(exportContainer);
+    
+    // html2canvas 사용 (만약 라이브러리가 없다면 간단한 방법 사용)
+    if (typeof html2canvas !== 'undefined') {
+        html2canvas(exportContainer, {
+            backgroundColor: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e293b',
+            scale: 2,
+            useCORS: true,
+            allowTaint: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            document.body.removeChild(exportContainer);
+        });
+    } else {
+        // html2canvas가 없을 때의 대체 방법
+        exportToImageFallback(exportContainer);
+    }
+}
+
+// html2canvas가 없을 때의 대체 방법
+function exportToImageFallback(container) {
     const canvas = document.createElement('canvas');
-    canvas.width = (rect.width + margin * 2) * scale;
-    canvas.height = (rect.height + margin * 2) * scale;
     const ctx = canvas.getContext('2d');
+    const rect = container.getBoundingClientRect();
+    const scale = 2;
+    
+    canvas.width = 1200 * scale;
+    canvas.height = 800 * scale;
     ctx.scale(scale, scale);
-
-    // 배경
-    ctx.fillStyle = '#1e1e1e';
-    ctx.fillRect(0, 0, rect.width + margin * 2, rect.height + margin * 2);
-
-    const showWeekend = settings.showWeekend;
-    const dayCount = showWeekend ? 6 : 5;
-    const totalCols = dayCount + 1;
-    const totalRows = timeData.length + 1;
-    const cellWidth = rect.width / totalCols;
-    const cellHeight = rect.height / totalRows;
-
-    // 헤더 그리기
-    ctx.fillStyle = '#222';
-    ctx.fillRect(margin, margin, rect.width, cellHeight);
-
-    ctx.fillStyle = '#f0f0f0';
-    ctx.font = 'bold 14px Arial';
+    
+    // 배경 그리기
+    ctx.fillStyle = document.body.classList.contains('light-mode') ? '#ffffff' : '#1e293b';
+    ctx.fillRect(0, 0, 1200, 800);
+    
+    // 제목 그리기
+    ctx.fillStyle = document.body.classList.contains('light-mode') ? '#1f2937' : '#f1f5f9';
+    ctx.font = 'bold 28px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.fillText(
+        `${currentTimetable.name} - ${currentSemester.year}년 ${currentSemester.term}학기`,
+        600, 60
+    );
+    
+    // 시간표 그리기
+    const startX = 100;
+    const startY = 100;
+    const cellWidth = 140;
+    const cellHeight = 60;
+    const maxDays = settings.showWeekend ? 6 : 5;
+    const totalCols = maxDays + 1;
+    const totalRows = timeData.length + 1;
+    
+    // 헤더 그리기
+    ctx.fillStyle = document.body.classList.contains('light-mode') ? 'rgba(248, 250, 252, 0.9)' : 'rgba(15, 23, 42, 0.8)';
+    ctx.fillRect(startX, startY, cellWidth * totalCols, cellHeight);
+    
+    ctx.fillStyle = document.body.classList.contains('light-mode') ? '#1f2937' : '#f1f5f9';
+    ctx.font = 'bold 16px Inter, sans-serif';
+    ctx.textAlign = 'center';
     const headers = ['시간', '월', '화', '수', '목', '금'];
-    if (showWeekend) headers.push('토');
-    headers.forEach((h, i) => {
-        ctx.fillText(h,
-            margin + (i + 0.5) * cellWidth,
-            margin + cellHeight / 2
-        );
+    if (settings.showWeekend) headers.push('토');
+    
+    headers.forEach((header, i) => {
+        ctx.fillText(header, startX + (i + 0.5) * cellWidth, startY + cellHeight / 2 + 5);
     });
-
-    // 시간 레이블 그리기
-    ctx.fillStyle = '#f0f0f0';
-    timeData.forEach((td, i) => {
-        const y = margin + (i + 1) * cellHeight;
-        ctx.font = 'bold 10px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${td.period}교시`,
-            margin + cellWidth / 2,
-            y + cellHeight * 0.3
-        );
-        ctx.font = '9px Arial';
-        ctx.fillText(td.startTime,
-            margin + cellWidth / 2,
-            y + cellHeight * 0.7
-        );
-    });
-
-    // 그리드 선
-    ctx.strokeStyle = '#333';
+    
+    // 시간 레이블과 그리드 그리기
+    ctx.strokeStyle = document.body.classList.contains('light-mode') ? 'rgba(148, 163, 184, 0.3)' : 'rgba(148, 163, 184, 0.2)';
     ctx.lineWidth = 1;
+    
+    timeData.forEach((time, i) => {
+        const y = startY + (i + 1) * cellHeight;
+        
+        // 시간 셀 배경
+        ctx.fillStyle = document.body.classList.contains('light-mode') ? 'rgba(241, 245, 249, 0.8)' : 'rgba(15, 23, 42, 0.6)';
+        ctx.fillRect(startX, y, cellWidth, cellHeight);
+        
+        // 시간 텍스트
+        ctx.fillStyle = document.body.classList.contains('light-mode') ? '#64748b' : '#94a3b8';
+        ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText(`${time.period}교시`, startX + cellWidth / 2, y + cellHeight / 3);
+        ctx.font = '10px Inter, sans-serif';
+        ctx.fillText(time.startTime, startX + cellWidth / 2, y + (cellHeight * 2) / 3);
+    });
+    
+    // 그리드 선 그리기
     for (let r = 0; r <= totalRows; r++) {
-        const y = margin + r * cellHeight;
+        const y = startY + r * cellHeight;
         ctx.beginPath();
-        ctx.moveTo(margin, y);
-        ctx.lineTo(margin + rect.width, y);
+        ctx.moveTo(startX, y);
+        ctx.lineTo(startX + cellWidth * totalCols, y);
         ctx.stroke();
     }
+    
     for (let c = 0; c <= totalCols; c++) {
-        const x = margin + c * cellWidth;
+        const x = startX + c * cellWidth;
         ctx.beginPath();
-        ctx.moveTo(x, margin);
-        ctx.lineTo(x, margin + rect.height);
+        ctx.moveTo(x, startY);
+        ctx.lineTo(x, startY + cellHeight * totalRows);
         ctx.stroke();
     }
-
+    
     // 과목 블록 그리기
     const colorMap = {
         'color-1': '#e57373', 'color-2': '#81c784', 'color-3': '#64b5f6',
         'color-4': '#ba68c8', 'color-5': '#ffb74d', 'color-6': '#4db6ac',
         'color-7': '#7986cb', 'color-8': '#a1887f'
     };
-
+    
     courses.forEach(course => {
-        course.times.forEach(t => {
-            if (t.day > dayCount) return;
-
-            const x = margin + t.day * cellWidth;
-            const y = margin + t.start * cellHeight;
-            const span = t.end - t.start + 1;
-            const w = cellWidth;
-            const h = cellHeight * span;
-
-            ctx.fillStyle = colorMap[course.color] || '#666';
-            ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
-
-            const textX = x + w / 2;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
+        course.times.forEach(timeSlot => {
+            if (timeSlot.day > maxDays) return;
+            
+            const x = startX + timeSlot.day * cellWidth;
+            const y = startY + timeSlot.start * cellHeight;
+            const width = cellWidth;
+            const height = cellHeight * (timeSlot.end - timeSlot.start + 1);
+            
+            // 과목 블록 배경
+            ctx.fillStyle = colorMap[course.color] || colorMap['color-1'];
+            ctx.fillRect(x + 2, y + 2, width - 4, height - 4);
+            
+            // 과목명
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 11px Arial';
-            ctx.fillText(course.name, textX, y + h * 0.35);
-
+            ctx.font = 'bold 13px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(course.name, x + width / 2, y + height / 2 - 5);
+            
+            // 교수명/강의실
             const infoParts = [];
             if (settings.showProfessor && course.professor) infoParts.push(course.professor);
             if (settings.showRoom && course.room) infoParts.push(course.room);
-            if (infoParts.length) {
-                ctx.font = '8px Arial';
-                ctx.fillText(infoParts.join(' | '), textX, y + h * 0.65);
+            
+            if (infoParts.length > 0) {
+                ctx.font = '10px Inter, sans-serif';
+                ctx.fillText(infoParts.join(' | '), x + width / 2, y + height / 2 + 10);
             }
         });
     });
-
-    // 제목
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(
-        `${currentTimetable.name} - ${currentSemester.year}년 ${currentSemester.term}학기`,
-        margin + rect.width / 2,
-        margin - 10
-    );
-
-    // 다운로드
+    
+    // 이미지 다운로드
     canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }, 'image/png', 1.0);
+        const link = document.createElement('a');
+        link.download = `${currentTimetable.name}_${currentSemester.year}_${currentSemester.term}.png`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        document.body.removeChild(container);
+    });
 }
 
 // ==================================================================================
