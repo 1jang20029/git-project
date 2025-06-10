@@ -63,7 +63,7 @@ function validatePassword() {
             
     // 비밀번호 확인 필드도 함께 검사 (입력된 경우)
     const confirmInput = document.getElementById('new-pw-confirm-input');
-    if(confirmInput.value) {
+    if(confirmInput && confirmInput.value) {
         validatePasswordConfirm();
     }
 }
@@ -75,12 +75,17 @@ function validatePasswordConfirm() {
             
     // 비밀번호 확인이 비어있는지 확인
     if(confirmPassword.length === 0) {
-    // 일치 검증 상태를 초기화 (중립적 색상으로) 
-    document.getElementById('match-validation').classList.remove('valid');
-        document.getElementById('match-validation').classList.remove('invalid');
-        const icon = document.getElementById('match-validation').querySelector('.validation-icon');
-        icon.classList.remove('valid');
-        icon.classList.remove('invalid');
+        // 일치 검증 상태를 초기화 (중립적 색상으로) 
+        const matchValidation = document.getElementById('match-validation');
+        if(matchValidation) {
+            matchValidation.classList.remove('valid');
+            matchValidation.classList.remove('invalid');
+            const icon = matchValidation.querySelector('.validation-icon');
+            if(icon) {
+                icon.classList.remove('valid');
+                icon.classList.remove('invalid');
+            }
+        }
         return;
     }
             
@@ -92,18 +97,24 @@ function validatePasswordConfirm() {
 // 검증 상태 업데이트 함수
 function updateValidationStatus(id, isValid) {
     const element = document.getElementById(id);
+    if(!element) return;
+    
     const icon = element.querySelector('.validation-icon');
             
     if(isValid) {
         element.classList.add('valid');
         element.classList.remove('invalid');
-        icon.classList.add('valid');
-        icon.classList.remove('invalid');
+        if(icon) {
+            icon.classList.add('valid');
+            icon.classList.remove('invalid');
+        }
     } else {
         element.classList.remove('valid');
         element.classList.add('invalid');
-        icon.classList.remove('valid');
-        icon.classList.add('invalid');
+        if(icon) {
+            icon.classList.remove('valid');
+            icon.classList.add('invalid');
+        }
     }
 }
         
@@ -113,6 +124,8 @@ function setupVerificationButtonControl(nameInputId, phoneInputId, buttonId, ext
     const phoneInput = document.getElementById(phoneInputId);
     const verifyButton = document.getElementById(buttonId);
     const extraInput = extraInputId ? document.getElementById(extraInputId) : null;
+    
+    if(!nameInput || !phoneInput || !verifyButton) return;
             
     // 입력 필드 변경 감지 함수
     function checkInputs() {
@@ -199,53 +212,73 @@ function goBack() {
         
 // 탭 전환 함수
 function switchTab(tabId) {
-    // 모든 탭과 탭 내용 비활성화
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    // 모든 탭 버튼과 탭 내용 비활성화
+    document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
     // 선택한 탭 활성화
     if (tabId === 'id-tab') {
-        document.querySelectorAll('.tabs > .tab')[0].classList.add('active');
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
         document.getElementById('id-tab').classList.add('active');
     } else {
-        document.querySelectorAll('.tabs > .tab')[1].classList.add('active');
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('pw-tab').classList.add('active');
     }
             
     // 결과 컨테이너 숨기기
-    document.getElementById('id-result').style.display = 'none';
+    const idResult = document.getElementById('id-result');
+    if(idResult) {
+        idResult.style.display = 'none';
+    }
             
     // 비밀번호 변경 폼 초기화
     if (tabId === 'pw-tab') {
-        document.getElementById('new-pw-container').style.display = 'none';
-        document.getElementById('verify-first-container').style.display = 'block';
+        const newPwContainer = document.getElementById('new-pw-container');
+        const verifyContainer = document.getElementById('verify-first-container');
+        if(newPwContainer) newPwContainer.style.display = 'none';
+        if(verifyContainer) verifyContainer.style.display = 'block';
     }
 }
         
 // 아이디 찾기 방법 전환
 function switchIdMethod(methodId) {
-    // 이름/이메일 또는 휴대폰 방식 탭 전환
-    const tabs = document.querySelectorAll('#id-tab .tabs .tab');
+    // 방법 선택 탭 전환
+    const tabs = document.querySelectorAll('.method-tab');
     tabs.forEach(tab => tab.classList.remove('active'));
             
     if (methodId === 'name-email') {
-        tabs[0].classList.add('active');
-        document.getElementById('name-email-method').classList.add('active');
-        document.getElementById('phone-method').classList.remove('active');
+        if(tabs[0]) tabs[0].classList.add('active');
+        const nameEmailMethod = document.getElementById('name-email-method');
+        const phoneMethod = document.getElementById('phone-method');
+        if(nameEmailMethod) nameEmailMethod.classList.add('active');
+        if(phoneMethod) phoneMethod.classList.remove('active');
     } else {
-        tabs[1].classList.add('active');
-        document.getElementById('name-email-method').classList.remove('active');
-        document.getElementById('phone-method').classList.add('active');
+        if(tabs[1]) tabs[1].classList.add('active');
+        const nameEmailMethod = document.getElementById('name-email-method');
+        const phoneMethod = document.getElementById('phone-method');
+        if(nameEmailMethod) nameEmailMethod.classList.remove('active');
+        if(phoneMethod) phoneMethod.classList.add('active');
     }
             
     // 결과 컨테이너 숨기기
-    document.getElementById('id-result').style.display = 'none';
+    const idResult = document.getElementById('id-result');
+    if(idResult) {
+        idResult.style.display = 'none';
+    }
 }
         
 // 이름과 이메일로 아이디 찾기
 function findIdByNameAndEmail() {
-    const name = document.getElementById('name-input').value.trim();
-    const email = document.getElementById('email-input').value.trim();
+    const nameInput = document.getElementById('name-input');
+    const emailInput = document.getElementById('email-input');
+    
+    if(!nameInput || !emailInput) {
+        alert('입력 필드를 찾을 수 없습니다.');
+        return;
+    }
+    
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
             
     // 입력 필드 확인
     if (!name && !email) {
@@ -253,11 +286,11 @@ function findIdByNameAndEmail() {
         return;
     } else if (!name) {
         alert('이름을 입력해주세요.');
-        document.getElementById('name-input').focus();
+        nameInput.focus();
         return;
     } else if (!email) {
         alert('이메일을 입력해주세요.');
-        document.getElementById('email-input').focus();
+        emailInput.focus();
         return;
     }
             
@@ -266,8 +299,10 @@ function findIdByNameAndEmail() {
         .then(userId => {
             if (userId) {
                 // 아이디 찾기 성공
-                document.getElementById('found-id').textContent = userId;
-                document.getElementById('id-result').style.display = 'block';
+                const foundIdElement = document.getElementById('found-id');
+                const idResultElement = document.getElementById('id-result');
+                if(foundIdElement) foundIdElement.textContent = userId;
+                if(idResultElement) idResultElement.style.display = 'block';
             } else {
                 // 아이디 찾기 실패
                 alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
@@ -310,16 +345,25 @@ function fetchUserIdByNameAndEmail(name, email) {
                     
             resolve(foundUserId);
         } catch (error) {
-                    reject(error);
+            reject(error);
         }
     });
 }
         
 // 휴대폰으로 아이디 찾기
 function findIdByPhone() {
-    const name = document.getElementById('name-phone-input').value.trim();
-    const phoneWithHyphens = document.getElementById('phone-input').value.trim();
-    const verificationCode = document.getElementById('verification-input').value.trim();
+    const namePhoneInput = document.getElementById('name-phone-input');
+    const phoneInput = document.getElementById('phone-input');
+    const verificationInput = document.getElementById('verification-input');
+    
+    if(!namePhoneInput || !phoneInput || !verificationInput) {
+        alert('입력 필드를 찾을 수 없습니다.');
+        return;
+    }
+    
+    const name = namePhoneInput.value.trim();
+    const phoneWithHyphens = phoneInput.value.trim();
+    const verificationCode = verificationInput.value.trim();
             
     // 하이픈 제거
     const phone = phoneWithHyphens.replace(/-/g, '');
@@ -327,15 +371,15 @@ function findIdByPhone() {
     // 입력 필드 확인
     if (!name) {
         alert('이름을 입력해주세요.');
-        document.getElementById('name-phone-input').focus();
+        namePhoneInput.focus();
         return;
     } else if (!phoneWithHyphens) {
         alert('휴대폰 번호를 입력해주세요.');
-        document.getElementById('phone-input').focus();
+        phoneInput.focus();
         return;
     } else if (!verificationCode) {
         alert('인증번호를 입력해주세요.');
-        document.getElementById('verification-input').focus();
+        verificationInput.focus();
         return;
     }
             
@@ -343,7 +387,7 @@ function findIdByPhone() {
     const storedCode = sessionStorage.getItem('verificationCode');
     if (verificationCode !== storedCode) {
         alert('인증번호가 일치하지 않습니다.');
-        document.getElementById('verification-input').focus();
+        verificationInput.focus();
         return;
     }
             
@@ -352,8 +396,10 @@ function findIdByPhone() {
         .then(userId => {
             if (userId) {
                 // 아이디 찾기 성공
-                document.getElementById('found-id').textContent = userId;
-                document.getElementById('id-result').style.display = 'block';
+                const foundIdElement = document.getElementById('found-id');
+                const idResultElement = document.getElementById('id-result');
+                if(foundIdElement) foundIdElement.textContent = userId;
+                if(idResultElement) idResultElement.style.display = 'block';
                         
                 // 인증번호 세션 초기화
                 sessionStorage.removeItem('verificationCode');
@@ -379,7 +425,7 @@ function fetchUserIdByPhoneAndName(phone, name) {
                 const key = localStorage.key(i);
                 if (key && key.includes('_phone')) {
                     const storedPhone = localStorage.getItem(key);
-                    const storedPhoneNoHyphen = storedPhone.replace(/-/g, '');
+                    const storedPhoneNoHyphen = storedPhone ? storedPhone.replace(/-/g, '') : '';
                     const studentId = key.split('_')[1]; // 학번 추출
                             
                     if (storedPhoneNoHyphen === phone) {
@@ -403,8 +449,16 @@ function fetchUserIdByPhoneAndName(phone, name) {
 
 // 인증번호 전송 (아이디 찾기)
 function sendVerificationCode() {
-    const name = document.getElementById('name-phone-input').value.trim();
-    const phoneWithHyphens = document.getElementById('phone-input').value.trim();
+    const namePhoneInput = document.getElementById('name-phone-input');
+    const phoneInput = document.getElementById('phone-input');
+    
+    if(!namePhoneInput || !phoneInput) {
+        alert('입력 필드를 찾을 수 없습니다.');
+        return;
+    }
+    
+    const name = namePhoneInput.value.trim();
+    const phoneWithHyphens = phoneInput.value.trim();
             
     // 하이픈 제거
     const phone = phoneWithHyphens.replace(/-/g, '');
@@ -427,9 +481,18 @@ function sendVerificationCode() {
 
 // 비밀번호 찾기 인증번호 전송
 function sendPwVerificationCode() {
-    const userId = document.getElementById('id-input').value.trim();
-    const name = document.getElementById('pw-name-input').value.trim();
-    const phoneWithHyphens = document.getElementById('pw-phone-input').value.trim();
+    const idInput = document.getElementById('id-input');
+    const pwNameInput = document.getElementById('pw-name-input');
+    const pwPhoneInput = document.getElementById('pw-phone-input');
+    
+    if(!idInput || !pwNameInput || !pwPhoneInput) {
+        alert('입력 필드를 찾을 수 없습니다.');
+        return;
+    }
+    
+    const userId = idInput.value.trim();
+    const name = pwNameInput.value.trim();
+    const phoneWithHyphens = pwPhoneInput.value.trim();
             
     // 하이픈 제거
     const phone = phoneWithHyphens.replace(/-/g, '');
@@ -481,6 +544,8 @@ function verifyUserInfoForPwReset(userId, name, phone) {
 // 타이머 함수
 function startTimer(elementId, seconds) {
     const timerElement = document.getElementById(elementId);
+    if(!timerElement) return;
+    
     let remainingTime = seconds;
             
     // 이전 타이머가 있으면 중지
@@ -509,10 +574,20 @@ function startTimer(elementId, seconds) {
 
 // 비밀번호 재설정을 위한 사용자 본인 인증
 function verifyUserForPasswordReset() {
-    const userId = document.getElementById('id-input').value.trim();
-    const name = document.getElementById('pw-name-input').value.trim();
-    const phoneWithHyphens = document.getElementById('pw-phone-input').value.trim();
-    const verificationCode = document.getElementById('pw-verification-input').value.trim();
+    const idInput = document.getElementById('id-input');
+    const pwNameInput = document.getElementById('pw-name-input');
+    const pwPhoneInput = document.getElementById('pw-phone-input');
+    const pwVerificationInput = document.getElementById('pw-verification-input');
+    
+    if(!idInput || !pwNameInput || !pwPhoneInput || !pwVerificationInput) {
+        alert('입력 필드를 찾을 수 없습니다.');
+        return;
+    }
+    
+    const userId = idInput.value.trim();
+    const name = pwNameInput.value.trim();
+    const phoneWithHyphens = pwPhoneInput.value.trim();
+    const verificationCode = pwVerificationInput.value.trim();
             
     // 하이픈 제거
     const phone = phoneWithHyphens.replace(/-/g, '');
@@ -520,19 +595,19 @@ function verifyUserForPasswordReset() {
     // 입력 필드 확인
     if (!userId) {
         alert('아이디를 입력해주세요.');
-        document.getElementById('id-input').focus();
+        idInput.focus();
         return;
     } else if (!name) {
         alert('이름을 입력해주세요.');
-        document.getElementById('pw-name-input').focus();
+        pwNameInput.focus();
         return;
     } else if (!phoneWithHyphens) {
         alert('휴대폰 번호를 입력해주세요.');
-        document.getElementById('pw-phone-input').focus();
+        pwPhoneInput.focus();
         return;
     } else if (!verificationCode) {
         alert('인증번호를 입력해주세요.');
-        document.getElementById('pw-verification-input').focus();
+        pwVerificationInput.focus();
         return;
     }
             
@@ -540,7 +615,7 @@ function verifyUserForPasswordReset() {
     const storedCode = sessionStorage.getItem('pwVerificationCode');
     if (verificationCode !== storedCode) {
         alert('인증번호가 일치하지 않습니다.');
-        document.getElementById('pw-verification-input').focus();
+        pwVerificationInput.focus();
         return;
     }
             
@@ -553,12 +628,16 @@ function verifyUserForPasswordReset() {
             }
                     
             // 본인 인증 성공, 비밀번호 재설정 폼 표시
-            document.getElementById('verify-first-container').style.display = 'none';
-            document.getElementById('new-pw-container').style.display = 'block';
+            const verifyContainer = document.getElementById('verify-first-container');
+            const newPwContainer = document.getElementById('new-pw-container');
+            if(verifyContainer) verifyContainer.style.display = 'none';
+            if(newPwContainer) newPwContainer.style.display = 'block';
                     
-            // 새 비밀번호 입력 필드 초기화 (추가된 부분)
-            document.getElementById('new-pw-input').value = '';
-            document.getElementById('new-pw-confirm-input').value = '';
+            // 새 비밀번호 입력 필드 초기화
+            const newPwInput = document.getElementById('new-pw-input');
+            const confirmPwInput = document.getElementById('new-pw-confirm-input');
+            if(newPwInput) newPwInput.value = '';
+            if(confirmPwInput) confirmPwInput.value = '';
                     
             // 유효성 검사 표시 초기화
             resetValidationStatus();
@@ -588,24 +667,32 @@ function resetValidationStatus() {
 
 // 새 비밀번호 설정
 function resetPassword() {
-    const newPw = document.getElementById('new-pw-input').value.trim();
-    const confirmNewPw = document.getElementById('new-pw-confirm-input').value.trim();
+    const newPwInput = document.getElementById('new-pw-input');
+    const confirmPwInput = document.getElementById('new-pw-confirm-input');
+    
+    if(!newPwInput || !confirmPwInput) {
+        alert('입력 필드를 찾을 수 없습니다.');
+        return;
+    }
+    
+    const newPw = newPwInput.value.trim();
+    const confirmNewPw = confirmPwInput.value.trim();
             
     // 입력 필드 확인
     if (!newPw) {
         alert('새 비밀번호를 입력해주세요.');
-        document.getElementById('new-pw-input').focus();
+        newPwInput.focus();
         return;
     } else if (!confirmNewPw) {
         alert('비밀번호 확인을 입력해주세요.');
-        document.getElementById('new-pw-confirm-input').focus();
+        confirmPwInput.focus();
         return;
     }
             
     // 새 비밀번호 확인
     if (newPw !== confirmNewPw) {
         alert('새 비밀번호와 확인이 일치하지 않습니다.');
-        document.getElementById('new-pw-confirm-input').focus();
+        confirmPwInput.focus();
         return;
     }
             
@@ -613,7 +700,7 @@ function resetPassword() {
     const pwPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
     if (!pwPattern.test(newPw)) {
         alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8-20자로 입력해주세요.');
-        document.getElementById('new-pw-input').focus();
+        newPwInput.focus();
         return;
     }
             
