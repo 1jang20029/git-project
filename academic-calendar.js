@@ -1,5 +1,3 @@
-// academic-calendar.js
-
 // 전역 상태
 let currentDate = new Date();
 let currentSemester = '1';
@@ -82,7 +80,7 @@ const monthNames = ['1월','2월','3월','4월','5월','6월','7월','8월','9�
 async function fetchSchedule(semester) {
   const res = await fetch(`/api/academic-schedule?semester=${encodeURIComponent(semester)}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json(); 
+  return await res.json();
 }
 
 // 초기화
@@ -90,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 특정 날짜로 이동(로컬스토리지)
   const navDate = localStorage.getItem('navigateToCalendarDate');
   if (navDate) {
-    const d = new Date(navDate);
+    const d = parseDateString(navDate);
     if (!isNaN(d)) currentDate = d;
     localStorage.removeItem('navigateToCalendarDate');
   }
@@ -106,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 모달 접근성 설정
   const modal = document.getElementById('eventDetailModal');
+  const closeBtn = document.getElementById('closeModalBtn');
   if (modal) {
     modal.setAttribute('role','dialog');
     modal.setAttribute('aria-modal','true');
@@ -114,6 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', e => {
       if (e.target === modal) closeDetailModal();
     });
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeDetailModal);
   }
 
   updateDisplay();
