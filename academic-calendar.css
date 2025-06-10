@@ -1,18 +1,22 @@
 /* 공통 레이아웃 */
 body {
     font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
 }
 .container {
+    /* 기존 반투명 화이트 → 살짝 블러 들어간 밝은 화이트로 더 입체감 있게 변경 */
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
-    background: rgba(255, 255, 255, 0.97);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.92);
+    /* 살짝 파스텔톤 그림자 추가 */
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.09);
+    backdrop-filter: blur(8px);
+    border-radius: 30px;
 }
 
 /* 헤더 */
