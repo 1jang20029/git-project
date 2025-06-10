@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입 - 연성대학교</title>
+    <title>회원가입 - 연성대학교 스마트 캠퍼스</title>
     <link rel="stylesheet" href="register.css">
-    
-    <!-- EmailJS 라이브러리 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
-        // EmailJS 초기화 (페이지 로드 시)
-        (function(){
-            emailjs.init("wSUCVBd2HeWkMgWc");
-        })();
-    </script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="back-button" onclick="goBack()">←</div>
-            <div class="header-title">회원가입</div>
-        </header>
-        
-        <div class="register-container">
-            <div class="register-title">연성대학교 캠퍼스 가이드 회원가입</div>
+    <!-- 상단 네비게이션 -->
+    <nav id="top-nav">
+        <div id="nav-brand">
+            <span>🎓</span>
+            <span>연성대학교 스마트 캠퍼스</span>
+        </div>
+        <div class="back-button" onclick="goBack()">
+            ← 로그인으로 돌아가기
+        </div>
+    </nav>
+
+    <!-- 메인 컨테이너 -->
+    <div class="main-container">
+        <div class="register-card">
+            <h1 class="register-title">연성대학교 캠퍼스 가이드 회원가입</h1>
             
-            <!-- 소셜 로그인 정보 표시 영역 (소셜 로그인으로 온 경우에만 표시) -->
+            <!-- 소셜 로그인 정보 표시 -->
             <div id="socialInfoBox" class="social-info" style="display: none;">
                 <div class="social-title">
                     <span id="socialIcon" class="social-icon"></span>
@@ -37,8 +35,8 @@
             </div>
             
             <form id="registerForm">
-                <!-- 역할 선택 영역 -->
-                <div class="form-group">
+                <!-- 역할 선택 -->
+                <div class="form-group full-width">
                     <label class="form-label">역할 선택</label>
                     <div class="role-selection">
                         <label class="role-option">
@@ -85,97 +83,54 @@
                     </div>
                     
                     <div class="verification-description">
-                        <p>교수/교직원 권한 승인을 위해 신원 확인 서류를 제출해주세요.</p>
+                        <p>교수/교직원 권한 승인을 위해 다음 중 하나의 방법으로 신원을 인증해주세요.</p>
                     </div>
                     
                     <div class="verification-methods">
                         <div class="method-option">
-                            <input type="radio" id="employeeCard" name="verificationType" value="employeeCard">
-                            <label for="employeeCard" class="method-label">
-                                <div class="method-icon">📇</div>
-                                <div class="method-info">
-                                    <div class="method-title">교직원증</div>
-                                    <div class="method-desc">현재 유효한 교직원증 또는 신분증</div>
-                                </div>
-                            </label>
-                        </div>
-                        
-                        <div class="method-option">
-                            <input type="radio" id="appointmentDoc" name="verificationType" value="appointmentDoc">
-                            <label for="appointmentDoc" class="method-label">
+                            <input type="radio" id="documentUpload" name="verificationType" value="documentUpload">
+                            <label for="documentUpload" class="method-label">
                                 <div class="method-icon">📄</div>
                                 <div class="method-info">
-                                    <div class="method-title">임용서류</div>
-                                    <div class="method-desc">임용장, 발령장 등 공식 서류</div>
+                                    <div class="method-title">서류 업로드</div>
+                                    <div class="method-desc">교직원증, 임용서류, 급여명세서</div>
                                 </div>
                             </label>
                         </div>
                         
                         <div class="method-option">
-                            <input type="radio" id="payslip" name="verificationType" value="payslip">
-                            <label for="payslip" class="method-label">
-                                <div class="method-icon">💰</div>
+                            <input type="radio" id="manualApproval" name="verificationType" value="manualApproval">
+                            <label for="manualApproval" class="method-label">
+                                <div class="method-icon">👨‍💼</div>
                                 <div class="method-info">
-                                    <div class="method-title">급여명세서</div>
-                                    <div class="method-desc">최근 3개월 이내 급여명세서</div>
+                                    <div class="method-title">관리자 승인 요청</div>
+                                    <div class="method-desc">관리자가 직접 확인 후 승인</div>
                                 </div>
                             </label>
                         </div>
                     </div>
                     
-                    <div class="file-upload-section">
-                        <label class="form-label">인증 서류 업로드 <span class="required">*</span></label>
-                        <div class="file-upload-area" id="fileUploadArea">
-                            <input type="file" id="verificationFile" accept="image/*,.pdf" style="display: none;">
-                            <div class="upload-placeholder">
-                                <div class="upload-icon">📎</div>
-                                <div class="upload-text">
-                                    <p>파일을 선택하거나 여기에 드래그하세요</p>
-                                    <span class="upload-hint">JPG, PNG, PDF 파일만 업로드 가능 (최대 10MB)</span>
-                                </div>
-                            </div>
-                            <div class="uploaded-file" id="uploadedFile" style="display: none;">
-                                <div class="file-info">
-                                    <div class="file-icon">📄</div>
-                                    <div class="file-details">
-                                        <div class="file-name" id="fileName"></div>
-                                        <div class="file-size" id="fileSize"></div>
-                                    </div>
-                                    <div class="file-remove" onclick="removeFile()">✕</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="error-message" id="file-error">인증 서류를 업로드해주세요</div>
+                    <!-- 선택된 방법에 따른 상세 입력 폼 -->
+                    <div id="verificationDetails"></div>
+                </div>
+                
+                <!-- 메인 입력 필드들 -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" id="idLabel">학번</label>
+                        <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
+                        <div class="form-hint" id="idHint">예: 2024123456</div>
+                        <div class="error-message" id="studentId-error">올바른 학번을 입력해주세요</div>
                     </div>
                     
-                    <div class="verification-notice">
-                        <div class="notice-header">
-                            <span class="notice-icon">ℹ️</span>
-                            <span class="notice-title">인증 안내사항</span>
-                        </div>
-                        <ul class="notice-list">
-                            <li>제출하신 서류는 신원 확인 목적으로만 사용됩니다</li>
-                            <li>승인까지 1-2일 정도 소요될 수 있습니다</li>
-                            <li>승인 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다</li>
-                            <li>개인정보가 포함된 부분은 가려서 업로드해도 됩니다</li>
-                        </ul>
+                    <div class="form-group">
+                        <label class="form-label">이름</label>
+                        <input type="text" class="form-input" id="name" placeholder="이름을 입력하세요">
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label" id="idLabel">학번</label>
-                    <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
-                    <div class="form-hint" id="idHint">예: 2024123456</div>
-                    <div class="error-message" id="studentId-error">올바른 학번을 입력해주세요</div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">이름</label>
-                    <input type="text" class="form-input" id="name" placeholder="이름을 입력하세요">
-                </div>
-                
+
                 <!-- 일반 회원가입인 경우에만 비밀번호 필드 표시 -->
-                <div id="passwordFields">
+                <div id="passwordFields" class="form-grid">
                     <div class="form-group">
                         <label class="form-label">비밀번호</label>
                         <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
@@ -189,116 +144,121 @@
                         <div class="error-message" id="confirmPassword-error">비밀번호가 일치하지 않습니다</div>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">학과/부서</label>
-                    <div class="department-container">
-                        <input type="text" class="form-input" id="departmentInput" placeholder="학과명을 입력하거나 선택하세요" autocomplete="off">
-                        <div class="department-dropdown" id="departmentDropdown">
-                            <!-- 스마트 ICT계열 -->
-                            <div class="department-category">스마트 ICT계열</div>
-                            <div class="department-option" data-value="전자공학과">전자공학과</div>
-                            <div class="department-option" data-value="정보통신과">정보통신과</div>
-                            <div class="department-option" data-value="전기과">전기과</div>
-                            <div class="department-option" data-value="컴퓨터소프트웨어과">컴퓨터소프트웨어과</div>
-                            
-                            <!-- 라이프디자인계열 -->
-                            <div class="department-category">라이프디자인계열</div>
-                            <div class="department-option" data-value="건축과">건축과</div>
-                            <div class="department-option" data-value="실내건축과">실내건축과</div>
-                            <div class="department-option" data-value="패션디자인비즈니스과">패션디자인비즈니스과</div>
-                            <div class="department-option" data-value="뷰티스타일리스트과_헤어디자인전공">뷰티스타일리스트과 헤어디자인전공</div>
-                            <div class="department-option" data-value="뷰티스타일리스트과_메이크업전공">뷰티스타일리스트과 메이크업전공</div>
-                            <div class="department-option" data-value="뷰티스타일리스트과_스킨케어전공">뷰티스타일리스트과 스킨케어전공</div>
-                            
-                            <!-- 문화콘텐츠계열 -->
-                            <div class="department-category">문화콘텐츠계열</div>
-                            <div class="department-option" data-value="게임콘텐츠과">게임콘텐츠과</div>
-                            <div class="department-option" data-value="웹툰만화콘텐츠과">웹툰만화콘텐츠과</div>
-                            <div class="department-option" data-value="영상콘텐츠과_영상콘텐츠제작전공">영상콘텐츠과 영상콘텐츠제작전공</div>
-                            <div class="department-option" data-value="영상콘텐츠과_뉴미디어콘텐츠전공">영상콘텐츠과 뉴미디어콘텐츠전공</div>
-                            <div class="department-option" data-value="시각디자인과">시각디자인과</div>
-                            <div class="department-option" data-value="K-POP과">K-POP과</div>
-                            
-                            <!-- 사회·교육계열 -->
-                            <div class="department-category">사회·교육계열</div>
-                            <div class="department-option" data-value="유통물류과">유통물류과</div>
-                            <div class="department-option" data-value="경영학과">경영학과</div>
-                            <div class="department-option" data-value="세무회계과">세무회계과</div>
-                            <div class="department-option" data-value="국방군사학과">국방군사학과</div>
-                            <div class="department-option" data-value="경찰경호보안과">경찰경호보안과</div>
-                            <div class="department-option" data-value="사회복지과">사회복지과</div>
-                            <div class="department-option" data-value="사회복지경영과">사회복지경영과</div>
-                            <div class="department-option" data-value="유아교육과">유아교육과</div>
-                            <div class="department-option" data-value="유아특수재활과">유아특수재활과</div>
-                            <div class="department-option" data-value="사회복지과_아동심리보육전공">사회복지과 아동심리보육전공</div>
-                            
-                            <!-- 보건생명계열 -->
-                            <div class="department-category">보건생명계열</div>
-                            <div class="department-option" data-value="치위생과">치위생과</div>
-                            <div class="department-option" data-value="치기공과">치기공과</div>
-                            <div class="department-option" data-value="작업치료과">작업치료(심리)과</div>
-                            <div class="department-option" data-value="응급구조과">응급구조과</div>
-                            <div class="department-option" data-value="보건의료행정과">보건의료행정과</div>
-                            <div class="department-option" data-value="스포츠재활과">스포츠재활과</div>
-                            <div class="department-option" data-value="식품영양학과">식품영양학과</div>
-                            <div class="department-option" data-value="반려동물보건과">반려동물보건과</div>
-                            <div class="department-option" data-value="반려동물산업과">반려동물산업과</div>
-                            
-                            <!-- 관광조리계열 -->
-                            <div class="department-category">관광조리계열</div>
-                            <div class="department-option" data-value="항공서비스과">항공서비스과</div>
-                            <div class="department-option" data-value="관광영어과">관광영어과</div>
-                            <div class="department-option" data-value="호텔관광과">호텔관광과</div>
-                            <div class="department-option" data-value="호텔외식조리과">호텔외식조리과</div>
-                            <div class="department-option" data-value="카페·베이커리과">카페·베이커리과</div>
-                            <div class="department-option" data-value="호텔외식경영전공">호텔외식경영전공</div>
-                            
-                            <!-- 공통계열 -->
-                            <div class="department-category">공통계열</div>
-                            <div class="department-option" data-value="자유전공학과">자유전공학과(신설)</div>
 
-                            <!-- 교직원 부서 -->
-                            <div class="department-category staff-departments" id="staffCategory">교직원 부서</div>
-                            <div class="department-option staff-option" data-value="교무처">교무처</div>
-                            <div class="department-option staff-option" data-value="학생처">학생처</div>
-                            <div class="department-option staff-option" data-value="총무처">총무처</div>
-                            <div class="department-option staff-option" data-value="기획처">기획처</div>
-                            <div class="department-option staff-option" data-value="입학처">입학처</div>
-                            <div class="department-option staff-option" data-value="도서관">도서관</div>
-                            <div class="department-option staff-option" data-value="전산실">전산실</div>
-                            <div class="department-option staff-option" data-value="보건실">보건실</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">학과/부서</label>
+                        <div class="department-container">
+                            <input type="text" class="form-input" id="departmentInput" placeholder="학과명을 입력하거나 선택하세요" autocomplete="off">
+                            <div class="department-dropdown" id="departmentDropdown">
+                                <!-- 스마트 ICT계열 -->
+                                <div class="department-category">스마트 ICT계열</div>
+                                <div class="department-option" data-value="전자공학과">전자공학과</div>
+                                <div class="department-option" data-value="정보통신과">정보통신과</div>
+                                <div class="department-option" data-value="전기과">전기과</div>
+                                <div class="department-option" data-value="컴퓨터소프트웨어과">컴퓨터소프트웨어과</div>
+                                
+                                <!-- 라이프디자인계열 -->
+                                <div class="department-category">라이프디자인계열</div>
+                                <div class="department-option" data-value="건축과">건축과</div>
+                                <div class="department-option" data-value="실내건축과">실내건축과</div>
+                                <div class="department-option" data-value="패션디자인비즈니스과">패션디자인비즈니스과</div>
+                                <div class="department-option" data-value="뷰티스타일리스트과_헤어디자인전공">뷰티스타일리스트과 헤어디자인전공</div>
+                                <div class="department-option" data-value="뷰티스타일리스트과_메이크업전공">뷰티스타일리스트과 메이크업전공</div>
+                                <div class="department-option" data-value="뷰티스타일리스트과_스킨케어전공">뷰티스타일리스트과 스킨케어전공</div>
+                                
+                                <!-- 문화콘텐츠계열 -->
+                                <div class="department-category">문화콘텐츠계열</div>
+                                <div class="department-option" data-value="게임콘텐츠과">게임콘텐츠과</div>
+                                <div class="department-option" data-value="웹툰만화콘텐츠과">웹툰만화콘텐츠과</div>
+                                <div class="department-option" data-value="영상콘텐츠과_영상콘텐츠제작전공">영상콘텐츠과 영상콘텐츠제작전공</div>
+                                <div class="department-option" data-value="영상콘텐츠과_뉴미디어콘텐츠전공">영상콘텐츠과 뉴미디어콘텐츠전공</div>
+                                <div class="department-option" data-value="시각디자인과">시각디자인과</div>
+                                <div class="department-option" data-value="K-POP과">K-POP과</div>
+                                
+                                <!-- 사회·교육계열 -->
+                                <div class="department-category">사회·교육계열</div>
+                                <div class="department-option" data-value="유통물류과">유통물류과</div>
+                                <div class="department-option" data-value="경영학과">경영학과</div>
+                                <div class="department-option" data-value="세무회계과">세무회계과</div>
+                                <div class="department-option" data-value="국방군사학과">국방군사학과</div>
+                                <div class="department-option" data-value="경찰경호보안과">경찰경호보안과</div>
+                                <div class="department-option" data-value="사회복지과">사회복지과</div>
+                                <div class="department-option" data-value="사회복지경영과">사회복지경영과</div>
+                                <div class="department-option" data-value="유아교육과">유아교육과</div>
+                                <div class="department-option" data-value="유아특수재활과">유아특수재활과</div>
+                                <div class="department-option" data-value="사회복지과_아동심리보육전공">사회복지과 아동심리보육전공</div>
+                                
+                                <!-- 보건생명계열 -->
+                                <div class="department-category">보건생명계열</div>
+                                <div class="department-option" data-value="치위생과">치위생과</div>
+                                <div class="department-option" data-value="치기공과">치기공과</div>
+                                <div class="department-option" data-value="작업치료과">작업치료(심리)과</div>
+                                <div class="department-option" data-value="응급구조과">응급구조과</div>
+                                <div class="department-option" data-value="보건의료행정과">보건의료행정과</div>
+                                <div class="department-option" data-value="스포츠재활과">스포츠재활과</div>
+                                <div class="department-option" data-value="식품영양학과">식품영양학과</div>
+                                <div class="department-option" data-value="반려동물보건과">반려동물보건과</div>
+                                <div class="department-option" data-value="반려동물산업과">반려동물산업과</div>
+                                
+                                <!-- 관광조리계열 -->
+                                <div class="department-category">관광조리계열</div>
+                                <div class="department-option" data-value="항공서비스과">항공서비스과</div>
+                                <div class="department-option" data-value="관광영어과">관광영어과</div>
+                                <div class="department-option" data-value="호텔관광과">호텔관광과</div>
+                                <div class="department-option" data-value="호텔외식조리과">호텔외식조리과</div>
+                                <div class="department-option" data-value="카페·베이커리과">카페·베이커리과</div>
+                                <div class="department-option" data-value="호텔외식경영전공">호텔외식경영전공</div>
+                                
+                                <!-- 공통계열 -->
+                                <div class="department-category">공통계열</div>
+                                <div class="department-option" data-value="자유전공학과">자유전공학과(신설)</div>
+
+                                <!-- 교직원 부서 -->
+                                <div class="department-category staff-departments" id="staffCategory">교직원 부서</div>
+                                <div class="department-option staff-option" data-value="교무처">교무처</div>
+                                <div class="department-option staff-option" data-value="학생처">학생처</div>
+                                <div class="department-option staff-option" data-value="총무처">총무처</div>
+                                <div class="department-option staff-option" data-value="기획처">기획처</div>
+                                <div class="department-option staff-option" data-value="입학처">입학처</div>
+                                <div class="department-option staff-option" data-value="도서관">도서관</div>
+                                <div class="department-option staff-option" data-value="전산실">전산실</div>
+                                <div class="department-option staff-option" data-value="보건실">보건실</div>
+                            </div>
+                            <input type="hidden" id="selectedDepartment" name="department" value="">
                         </div>
-                        <input type="hidden" id="selectedDepartment" name="department" value="">
+                    </div>
+                    
+                    <div class="form-group" id="gradeGroup">
+                        <label class="form-label">학년</label>
+                        <div class="grade-dropdown">
+                            <button type="button" class="grade-button" id="gradeDropdownBtn">학년을 선택하세요</button>
+                            <div class="grade-content" id="gradeDropdown">
+                                <div class="grade-option" data-value="1">1학년</div>
+                                <div class="grade-option" data-value="2">2학년</div>
+                                <div class="grade-option" data-value="3">3학년</div>
+                                <div class="grade-option" data-value="4">4학년</div>
+                            </div>
+                            <input type="hidden" id="selectedGrade" name="grade" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">휴대폰 번호</label>
+                        <input type="tel" class="form-input" id="phone" placeholder="휴대폰 번호를 입력하세요" maxlength="13" oninput="formatPhoneNumber(this)">
+                        <div class="error-message" id="phone-error">010으로 시작하는 11자리 번호를 입력해주세요</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">이메일</label>
+                        <input type="email" class="form-input" id="email" placeholder="이메일을 입력하세요">
+                        <div class="error-message" id="email-error">올바른 이메일 형식을 입력해주세요</div>
                     </div>
                 </div>
                 
-                <div class="form-group" id="gradeGroup">
-                    <label class="form-label">학년</label>
-                    <div class="grade-dropdown">
-                        <button type="button" class="grade-button" id="gradeDropdownBtn">학년을 선택하세요</button>
-                        <div class="grade-content" id="gradeDropdown">
-                            <div class="grade-option" data-value="1">1학년</div>
-                            <div class="grade-option" data-value="2">2학년</div>
-                            <div class="grade-option" data-value="3">3학년</div>
-                            <div class="grade-option" data-value="4">4학년</div>
-                        </div>
-                        <input type="hidden" id="selectedGrade" name="grade" value="">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">휴대폰 번호</label>
-                    <input type="tel" class="form-input" id="phone" placeholder="휴대폰 번호를 입력하세요" maxlength="13" oninput="formatPhoneNumber(this)">
-                    <div class="error-message" id="phone-error">010으로 시작하는 11자리 번호를 입력해주세요</div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">이메일</label>
-                    <input type="email" class="form-input" id="email" placeholder="이메일을 입력하세요">
-                    <div class="error-message" id="email-error">올바른 이메일 형식을 입력해주세요</div>
-                </div>
-                
+                <!-- 이용약관 동의 -->
                 <div class="agreement">
                     <div class="agreement-title">이용약관 동의</div>
                     <div class="agreement-text">
@@ -337,12 +297,14 @@
                     </label>
                 </div>
                 
-                <button type="button" class="register-button" onclick="register()">회원가입</button>
+                <button type="button" class="register-button" onclick="register()">
+                    🎓 회원가입 완료
+                </button>
             </form>
         </div>
     </div>
     
-    <!-- 보안 강화된 JavaScript 파일 로드 -->
+    <!-- JavaScript 파일 로드 -->
     <script src="register.js"></script>
 </body>
 </html>
