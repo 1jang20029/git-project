@@ -1,78 +1,76 @@
 if (selectedDocType) {
-                    localStorage.setItem(`user_${userId}_verification_doc_type`, selectedDocType.value);
-                }
-            }
-        }
-    }
+    localStorage.setItem(`user_${userId}_verification_doc_type`, selectedDocType.value);
+}
+
+
     
-    // 권한 승인 요청이 있는 경우 관리자 승인 목록에 추가
-    if (selectedRole === 'professor' || selectedRole === 'staff') {
-        let pendingApprovals = JSON.parse(localStorage.getItem('pending_role_approvals') || '[]');
-        const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
+// 권한 승인 요청이 있는 경우 관리자 승인 목록에 추가
+if (selectedRole === 'professor' || selectedRole === 'staff') {
+    let pendingApprovals = JSON.parse(localStorage.getItem('pending_role_approvals') || '[]');
+    const selectedMethod = document.querySelector('input[name="verificationType"]:checked');
+    
+    let approvalData = {
+        userId: userId,
+        studentId: studentId,
+        name: name,
+        requestedRole: selectedRole,
+        department: department,
+        requestDate: new Date().toISOString(),
+        status: 'verified',
+        verificationMethod: selectedMethod.value,
+        verificationTimestamp: new Date().toISOString()
+    };
+    
+    // 인증 방법별 추가 정보
+    if (selectedMethod.value === 'emailVerification' && emailVerificationData.verified) {
+        approvalData.verifiedEmail = emailVerificationData.email;
+        approvalData.verificationConfidence = 'high';
+    } else if (selectedMethod.value === 'documentUpload') {
+        const fileInput = document.getElementById('verificationFile');
+        const selectedDocType = document.querySelector('input[name="documentType"]:checked');
         
-        let approvalData = {
-            userId: userId,
-            studentId: studentId,
-            name: name,
-            requestedRole: selectedRole,
-            department: department,
-            requestDate: new Date().toISOString(),
-            status: 'verified',
-            verificationMethod: selectedMethod.value,
-            verificationTimestamp: new Date().toISOString()
-        };
-        
-        // 인증 방법별 추가 정보
-        if (selectedMethod.value === 'emailVerification' && emailVerificationData.verified) {
-            approvalData.verifiedEmail = emailVerificationData.email;
-            approvalData.verificationConfidence = 'high';
-        } else if (selectedMethod.value === 'documentUpload') {
-            const fileInput = document.getElementById('verificationFile');
-            const selectedDocType = document.querySelector('input[name="documentType"]:checked');
+        if (fileInput.files && fileInput.files.length > 0) {
+            approvalData.verificationFileName = fileInput.files[0].name;
+            approvalData.verificationFileType = fileInput.files[0].type;
+            approvalData.verificationFileSize = fileInput.files[0].size;
             
-            if (fileInput.files && fileInput.files.length > 0) {
-                approvalData.verificationFileName = fileInput.files[0].name;
-                approvalData.verificationFileType = fileInput.files[0].type;
-                approvalData.verificationFileSize = fileInput.files[0].size;
-                
-                if (selectedDocType) {
-                    approvalData.documentType = selectedDocType.value;
-                }
+            if (selectedDocType) {
+                approvalData.documentType = selectedDocType.value;
             }
         }
-        
-        pendingApprovals.push(approvalData);
-        localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
-        
-        // 성공 메시지
-        let successMessage = '🎉 회원가입이 완료되었습니다!\n\n✅ 인증이 성공적으로 완료되었습니다.\n📋 교수/교직원 권한은 관리자 검토 후 활성화됩니다.\n⏰ 검토 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.';
-        
-        if (selectedMethod.value === 'emailVerification') {
-            successMessage += `\n\n🔐 인증 정보:\n- 이메일: ${emailVerificationData.email}`;
-        }
-        
-        alert(successMessage);
-    } else {
-        alert('🎉 회원가입이 완료되었습니다!');
     }
     
-    // 소셜 로그인 세션 데이터 정리
-    if (isSocialLogin) {
-        sessionStorage.removeItem('temp_social_id');
-        sessionStorage.removeItem('temp_social_type');
-        sessionStorage.removeItem('temp_social_name');
-        sessionStorage.removeItem('temp_social_email');
-        sessionStorage.removeItem('temp_social_profile_image');
-        
-        // 현재 로그인 사용자로 설정
-        localStorage.setItem('currentLoggedInUser', userId);
-        
-        // 첫 로그인이므로 위젯 설정 페이지로 이동
-        window.location.href = "widget-settings.html";
-    } else {
-        // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
-        window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+    pendingApprovals.push(approvalData);
+    localStorage.setItem('pending_role_approvals', JSON.stringify(pendingApprovals));
+    
+    // 성공 메시지
+    let successMessage = '🎉 회원가입이 완료되었습니다!\n\n✅ 인증이 성공적으로 완료되었습니다.\n📋 교수/교직원 권한은 관리자 검토 후 활성화됩니다.\n⏰ 검토 전까지는 학생 권한으로 서비스를 이용하실 수 있습니다.';
+    
+    if (selectedMethod.value === 'emailVerification') {
+        successMessage += `\n\n🔐 인증 정보:\n- 이메일: ${emailVerificationData.email}`;
     }
+    
+    alert(successMessage);
+} else {
+    alert('🎉 회원가입이 완료되었습니다!');
+}
+    
+// 소셜 로그인 세션 데이터 정리
+if (isSocialLogin) {
+    sessionStorage.removeItem('temp_social_id');
+    sessionStorage.removeItem('temp_social_type');
+    sessionStorage.removeItem('temp_social_name');
+    sessionStorage.removeItem('temp_social_email');
+    sessionStorage.removeItem('temp_social_profile_image');
+    
+    // 현재 로그인 사용자로 설정
+    localStorage.setItem('currentLoggedInUser', userId);
+    
+    // 첫 로그인이므로 위젯 설정 페이지로 이동
+    window.location.href = "widget-settings.html";
+} else {
+    // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
+    window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
 }
 
 // 인증 폼 초기화
