@@ -11,7 +11,8 @@ let emailVerificationData = {
     verified: false,
     timerInterval: null,
     attempts: 0,
-    maxAttempts: 5
+    maxAttempts: 5,
+    isProcessing: false // 처리 중 플래그 추가
 };
 
 // AWS SES 시뮬레이션 함수
@@ -48,6 +49,11 @@ async function sendVerificationEmail() {
     const sendBtn = document.getElementById('sendVerificationBtn');
     const errorDiv = document.getElementById('verification-email-error');
     
+    // 이미 처리 중인 경우 무시
+    if (emailVerificationData.isProcessing) {
+        return;
+    }
+    
     // 대학 이메일 형식 검증
     if (!email.endsWith('@yeonsung.ac.kr')) {
         errorDiv.style.display = 'block';
@@ -62,6 +68,9 @@ async function sendVerificationEmail() {
         alert('❌ 최대 발송 횟수를 초과했습니다.\n\n새로고침 후 다시 시도해주세요.');
         return;
     }
+    
+    // 처리 시작
+    emailVerificationData.isProcessing = true;
     
     // 버튼 비활성화
     sendBtn.disabled = true;
@@ -101,14 +110,20 @@ async function sendVerificationEmail() {
                 verified: false,
                 timerInterval: null,
                 attempts: emailVerificationData.attempts + 1,
-                maxAttempts: 5
+                maxAttempts: 5,
+                isProcessing: false
             };
             
             // UI 업데이트
             showVerificationCodeInput();
             startVerificationTimer();
             
-            alert(`📧 인증코드가 발송되었습니다!\n\n이메일: ${email}\n\n메일함을 확인해주세요. (스팸함도 확인해주세요)`);
+            // 성공 메시지 - 알림창 없이 UI로만 표시
+            const successDiv = document.getElementById('verification-success');
+            if (successDiv) {
+                successDiv.style.display = 'block';
+                successDiv.textContent = `✅ 인증코드가 ${email}로 발송되었습니다.`;
+            }
             
             // 개발자 도구용 로그
             console.log('🔑 인증 코드:', verificationCode);
@@ -120,8 +135,15 @@ async function sendVerificationEmail() {
         
     } catch (error) {
         console.error('이메일 발송 오류:', error);
-        alert('❌ 이메일 발송에 실패했습니다.\n\n잠시 후 다시 시도해주세요.');
+        const errorDiv = document.getElementById('verification-email-error');
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = '이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.';
+        }
     } finally {
+        // 처리 완료
+        emailVerificationData.isProcessing = false;
+        
         // 버튼 복원
         sendBtn.disabled = false;
         sendBtn.textContent = '재발송';
@@ -134,20 +156,22 @@ function showVerificationCodeInput() {
     const codeInput = document.getElementById('verificationCode');
     const verifyBtn = document.getElementById('verifyCodeBtn');
     
-    codeGroup.style.display = 'block';
-    codeInput.disabled = false;
-    verifyBtn.disabled = false;
-    
-    // 실시간 입력 검증
-    codeInput.addEventListener('input', function() {
-        validateVerificationCode();
-    });
+    if (codeGroup) codeGroup.style.display = 'block';
+    if (codeInput) {
+        codeInput.disabled = false;
+        codeInput.addEventListener('input', function() {
+            validateVerificationCode();
+        });
+    }
+    if (verifyBtn) verifyBtn.disabled = false;
 }
 
 // 인증 타이머 시작
 function startVerificationTimer() {
     const timerDiv = document.getElementById('verificationTimer');
     const timerDisplay = document.getElementById('timerDisplay');
+    
+    if (!timerDiv || !timerDisplay) return;
     
     timerDiv.style.display = 'block';
     
@@ -170,11 +194,15 @@ function startVerificationTimer() {
             timerDisplay.textContent = '00:00';
             timerDiv.style.display = 'none';
             
-            // 만료 처리
+            // 만료 처리 - 알림창 없이 UI로만 표시
             emailVerificationData.code = null;
             emailVerificationData.expiry = null;
             
-            alert('⏰ 인증 시간이 만료되었습니다.\n\n새로운 인증코드를 발송해주세요.');
+            const errorDiv = document.getElementById('verification-code-error');
+            if (errorDiv) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = '⏰ 인증 시간이 만료되었습니다. 새로운 인증코드를 발송해주세요.';
+            }
         }
     }, 1000);
 }
@@ -185,17 +213,19 @@ function validateVerificationCode() {
     const verifyBtn = document.getElementById('verifyCodeBtn');
     const errorDiv = document.getElementById('verification-code-error');
     
+    if (!codeInput || !verifyBtn) return;
+    
     const code = codeInput.value.trim();
     
     if (code.length === 6 && /^\d{6}$/.test(code)) {
         verifyBtn.disabled = false;
-        errorDiv.style.display = 'none';
+        if (errorDiv) errorDiv.style.display = 'none';
     } else {
         verifyBtn.disabled = true;
-        if (code.length > 0) {
+        if (code.length > 0 && errorDiv) {
             errorDiv.style.display = 'block';
             errorDiv.textContent = '6자리 숫자를 입력해주세요';
-        } else {
+        } else if (errorDiv) {
             errorDiv.style.display = 'none';
         }
     }
@@ -208,19 +238,48 @@ function verifyEmailCode() {
     const errorDiv = document.getElementById('verification-code-error');
     const successDiv = document.getElementById('verification-success');
     
+    if (!codeInput || !verifyBtn || !errorDiv || !successDiv) {
+        console.error('필수 요소를 찾을 수 없습니다');
+        return;
+    }
+    
+    // 이미 처리 중인 경우 무시
+    if (emailVerificationData.isProcessing) {
+        return;
+    }
+    
     const inputCode = codeInput.value.trim();
     
+    // 입력값 검증
+    if (!inputCode) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = '인증코드를 입력해주세요.';
+        return;
+    }
+    
+    if (!/^\d{6}$/.test(inputCode)) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = '6자리 숫자를 입력해주세요.';
+        return;
+    }
+    
     // 만료 확인
-    if (!emailVerificationData.code || new Date() > emailVerificationData.expiry) {
+    if (!emailVerificationData.code || !emailVerificationData.expiry || new Date() > emailVerificationData.expiry) {
         errorDiv.style.display = 'block';
         errorDiv.textContent = '인증 시간이 만료되었습니다. 새로운 인증코드를 발송해주세요.';
         return;
     }
     
+    // 처리 시작
+    emailVerificationData.isProcessing = true;
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = '확인 중...';
+    
     // 코드 확인
     if (inputCode === emailVerificationData.code) {
         // 인증 성공
         emailVerificationData.verified = true;
+        emailVerificationData.isProcessing = false;
         
         // 타이머 정지
         if (emailVerificationData.timerInterval) {
@@ -230,21 +289,28 @@ function verifyEmailCode() {
         // UI 업데이트
         errorDiv.style.display = 'none';
         successDiv.style.display = 'block';
+        successDiv.textContent = '✅ 이메일 인증이 완료되었습니다';
         codeInput.disabled = true;
         verifyBtn.disabled = true;
         verifyBtn.textContent = '인증완료';
         
         // 타이머 숨기기
         const timerDiv = document.getElementById('verificationTimer');
-        timerDiv.style.display = 'none';
+        if (timerDiv) {
+            timerDiv.style.display = 'none';
+        }
         
+        // 성공 알림 - 인증 확인 버튼 클릭 시에만 표시
         alert('✅ 이메일 인증이 완료되었습니다!\n\n교수/교직원 권한으로 회원가입을 진행하실 수 있습니다.');
         
     } else {
         // 인증 실패
+        emailVerificationData.isProcessing = false;
         errorDiv.style.display = 'block';
         errorDiv.textContent = '인증코드가 일치하지 않습니다. 다시 확인해주세요.';
         codeInput.focus();
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = '인증확인';
     }
 }
 
@@ -268,11 +334,15 @@ function validatePhoneNumber(phoneNumber) {
     const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
     
     if (phoneNumber && (!cleanNumber.startsWith('010') || cleanNumber.length !== 11)) {
-        errorDiv.style.display = 'block';
-        return false;
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            return false;
+        }
     } else {
-        errorDiv.style.display = 'none';
-        return true;
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+            return true;
+        }
     }
 }
 
@@ -282,11 +352,15 @@ function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
     if (email && !emailRegex.test(email)) {
-        errorDiv.style.display = 'block';
-        return false;
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            return false;
+        }
     } else {
-        errorDiv.style.display = 'none';
-        return true;
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+            return true;
+        }
     }
 }
 
@@ -296,11 +370,15 @@ function validatePassword(password) {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
     
     if (password && !passwordRegex.test(password)) {
-        errorDiv.style.display = 'block';
-        return false;
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            return false;
+        }
     } else {
-        errorDiv.style.display = 'none';
-        return true;
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+            return true;
+        }
     }
 }
 
@@ -309,11 +387,15 @@ function validatePasswordConfirm(password, confirmPassword) {
     const errorDiv = document.getElementById('confirmPassword-error');
     
     if (confirmPassword && password !== confirmPassword) {
-        errorDiv.style.display = 'block';
-        return false;
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            return false;
+        }
     } else {
-        errorDiv.style.display = 'none';
-        return true;
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+            return true;
+        }
     }
 }
 
@@ -333,6 +415,8 @@ function validateIdPattern(role, id) {
 
 // 역할 변경 시 UI 업데이트
 function updateUIByRole(role) {
+    console.log('updateUIByRole 호출됨:', role);
+    
     const idLabel = document.getElementById('idLabel');
     const idInput = document.getElementById('studentId');
     const idHint = document.getElementById('idHint');
@@ -341,11 +425,23 @@ function updateUIByRole(role) {
     const staffOptions = document.querySelectorAll('.staff-option');
     const staffCategory = document.getElementById('staffCategory');
     
+    // 요소 존재 확인
+    if (!idLabel || !idInput || !idHint || !gradeGroup || !emailVerificationSection) {
+        console.error('필수 요소를 찾을 수 없습니다');
+        return;
+    }
+    
     // 기존 에러 메시지 숨기기
-    document.getElementById('studentId-error').style.display = 'none';
+    const studentIdError = document.getElementById('studentId-error');
+    if (studentIdError) {
+        studentIdError.style.display = 'none';
+    }
+    
+    console.log('역할별 UI 업데이트 시작:', role);
     
     switch(role) {
         case 'student':
+            console.log('학생 모드로 변경');
             idLabel.textContent = '학번';
             idInput.placeholder = '학번을 입력하세요';
             idHint.textContent = '예: 2024123456 (10자리)';
@@ -353,10 +449,11 @@ function updateUIByRole(role) {
             emailVerificationSection.style.display = 'none';
             
             staffOptions.forEach(option => option.style.display = 'none');
-            staffCategory.style.display = 'none';
+            if (staffCategory) staffCategory.style.display = 'none';
             break;
             
         case 'professor':
+            console.log('교수 모드로 변경');
             idLabel.textContent = '교번';
             idInput.placeholder = '교번을 입력하세요';
             idHint.textContent = '예: 2024001 (7자리)';
@@ -364,10 +461,11 @@ function updateUIByRole(role) {
             emailVerificationSection.style.display = 'block';
             
             staffOptions.forEach(option => option.style.display = 'none');
-            staffCategory.style.display = 'none';
+            if (staffCategory) staffCategory.style.display = 'none';
             break;
             
         case 'staff':
+            console.log('교직원 모드로 변경');
             idLabel.textContent = '직번';
             idInput.placeholder = '직번을 입력하세요';
             idHint.textContent = '예: 2024001 (7자리)';
@@ -375,21 +473,33 @@ function updateUIByRole(role) {
             emailVerificationSection.style.display = 'block';
             
             staffOptions.forEach(option => option.style.display = 'block');
-            staffCategory.style.display = 'block';
+            if (staffCategory) staffCategory.style.display = 'block';
             break;
+            
+        default:
+            console.warn('알 수 없는 역할:', role);
     }
     
     // 입력값 초기화
     idInput.value = '';
-    document.getElementById('departmentInput').value = '';
-    document.getElementById('selectedDepartment').value = '';
+    const departmentInput = document.getElementById('departmentInput');
+    const selectedDepartment = document.getElementById('selectedDepartment');
+    if (departmentInput) departmentInput.value = '';
+    if (selectedDepartment) selectedDepartment.value = '';
     
     // 이메일 인증 초기화
     resetEmailVerification();
+    
+    console.log('UI 업데이트 완료');
 }
 
 // 이메일 인증 초기화
 function resetEmailVerification() {
+    // 타이머 정지
+    if (emailVerificationData.timerInterval) {
+        clearInterval(emailVerificationData.timerInterval);
+    }
+    
     // 인증 데이터 초기화
     emailVerificationData = {
         code: null,
@@ -398,13 +508,9 @@ function resetEmailVerification() {
         verified: false,
         timerInterval: null,
         attempts: 0,
-        maxAttempts: 5
+        maxAttempts: 5,
+        isProcessing: false
     };
-    
-    // 타이머 정지
-    if (emailVerificationData.timerInterval) {
-        clearInterval(emailVerificationData.timerInterval);
-    }
     
     // UI 초기화
     const verificationEmail = document.getElementById('verificationEmail');
@@ -416,8 +522,14 @@ function resetEmailVerification() {
     const errorDivs = document.querySelectorAll('#emailVerificationSection .error-message');
     const successDiv = document.getElementById('verification-success');
     
-    if (verificationEmail) verificationEmail.value = '';
-    if (verificationCode) verificationCode.value = '';
+    if (verificationEmail) {
+        verificationEmail.value = '';
+        verificationEmail.disabled = false;
+    }
+    if (verificationCode) {
+        verificationCode.value = '';
+        verificationCode.disabled = false;
+    }
     if (codeGroup) codeGroup.style.display = 'none';
     if (sendBtn) {
         sendBtn.disabled = false;
@@ -430,7 +542,9 @@ function resetEmailVerification() {
     if (timerDiv) timerDiv.style.display = 'none';
     if (successDiv) successDiv.style.display = 'none';
     
-    errorDivs.forEach(div => div.style.display = 'none');
+    errorDivs.forEach(div => {
+        if (div) div.style.display = 'none';
+    });
 }
 
 // 학과 검색 기능
@@ -439,6 +553,8 @@ function setupDepartmentSearch() {
     const departmentDropdown = document.getElementById('departmentDropdown');
     const selectedDepartment = document.getElementById('selectedDepartment');
     const departmentOptions = document.querySelectorAll('.department-option');
+    
+    if (!departmentInput || !departmentDropdown || !selectedDepartment) return;
     
     // 입력 시 검색 기능
     departmentInput.addEventListener('input', function() {
@@ -493,7 +609,7 @@ function setupDepartmentSearch() {
             
             categories.forEach(category => {
                 if (category.id === 'staffCategory') {
-                    const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
+                    const selectedRole = document.querySelector('input[name="userRole"]:checked')?.value || 'student';
                     category.style.display = selectedRole === 'staff' ? 'block' : 'none';
                 } else {
                     category.style.display = 'block';
@@ -502,7 +618,7 @@ function setupDepartmentSearch() {
             
             options.forEach(option => {
                 if (option.classList.contains('staff-option')) {
-                    const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
+                    const selectedRole = document.querySelector('input[name="userRole"]:checked')?.value || 'student';
                     option.style.display = selectedRole === 'staff' ? 'block' : 'none';
                 } else {
                     option.style.display = 'block';
@@ -538,6 +654,8 @@ function setupGradeDropdown() {
     const options = document.querySelectorAll('.grade-option');
     const selectedGradeInput = document.getElementById('selectedGrade');
     
+    if (!dropdownBtn || !dropdown || !selectedGradeInput) return;
+    
     // 드롭다운 표시/숨김 토글
     dropdownBtn.addEventListener('click', function() {
         dropdown.classList.toggle('show');
@@ -570,13 +688,29 @@ function validateEmailVerification(selectedRole) {
     }
     
     if (!emailVerificationData.verified) {
-        alert('🔒 이메일 인증을 완료해주세요.\n\n교수/교직원 계정은 대학 공식 이메일 인증이 필요합니다.');
+        // UI로 에러 표시, 알림창 없음
+        const emailSection = document.getElementById('emailVerificationSection');
+        if (emailSection) {
+            emailSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // 에러 메시지 표시
+            const errorDiv = document.getElementById('verification-email-error');
+            if (errorDiv) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = '🔒 교수/교직원 계정은 이메일 인증이 필요합니다.';
+            }
+        }
         return false;
     }
     
     // 세션 유효성 추가 확인
-    if (new Date() > emailVerificationData.expiry) {
-        alert('🔒 인증 세션이 만료되었습니다.\n\n새로운 인증을 진행해주세요.');
+    if (emailVerificationData.expiry && new Date() > emailVerificationData.expiry) {
+        // UI로 에러 표시, 알림창 없음
+        const errorDiv = document.getElementById('verification-code-error');
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = '🔒 인증 세션이 만료되었습니다. 새로운 인증을 진행해주세요.';
+        }
         return false;
     }
     
@@ -615,7 +749,12 @@ function goBack() {
 // 회원가입 함수
 function register() {
     // 선택된 역할 가져오기
-    const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
+    const selectedRoleElement = document.querySelector('input[name="userRole"]:checked');
+    if (!selectedRoleElement) {
+        alert('역할을 선택해주세요.');
+        return;
+    }
+    const selectedRole = selectedRoleElement.value;
     
     // 입력값 가져오기
     const studentId = document.getElementById('studentId').value;
@@ -651,8 +790,11 @@ function register() {
     
     // ID 패턴 검증
     if (!validateIdPattern(selectedRole, studentId)) {
-        document.getElementById('studentId-error').style.display = 'block';
-        document.getElementById('studentId-error').textContent = getIdErrorMessage(selectedRole);
+        const errorDiv = document.getElementById('studentId-error');
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = getIdErrorMessage(selectedRole);
+        }
         return;
     }
     
@@ -866,7 +1008,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const idInput = document.getElementById('studentId');
     if (idInput) {
         idInput.addEventListener('input', function() {
-            const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
+            const selectedRoleElement = document.querySelector('input[name="userRole"]:checked');
+            const selectedRole = selectedRoleElement ? selectedRoleElement.value : 'student';
             const errorDiv = document.getElementById('studentId-error');
             
             if (this.value && !validateIdPattern(selectedRole, this.value)) {
