@@ -1,6 +1,3 @@
-// API 기본 설정
-const API_BASE_URL = 'http://localhost:3000/api'; // 백엔드 서버 주소
-
 // 현재 로그인된 사용자 정보 저장 변수
 let currentUser = null;
 
@@ -36,35 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmPwInput.addEventListener('input', validatePasswordConfirm);
     }
 });
-
-// API 호출 헬퍼 함수
-async function apiCall(endpoint, method = 'GET', data = null) {
-    try {
-        const options = {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include' // 쿠키 포함
-        };
-
-        if (data && (method === 'POST' || method === 'PUT')) {
-            options.body = JSON.stringify(data);
-        }
-
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('API 호출 오류:', error);
-        throw error;
-    }
-}
         
 // 비밀번호 유효성 검사 함수
 function validatePassword() {
@@ -205,17 +173,35 @@ function formatPhoneNumber(input) {
 }
         
 // 사용자 로그인 상태 확인
-async function checkLoginStatus() {
-    try {
-        const response = await apiCall('/auth/check-login');
-        if (response.success && response.user) {
-            currentUser = response.user;
-            console.log('현재 로그인된 사용자:', currentUser);
-        } else {
-            console.log('로그인된 사용자가 없습니다.');
-        }
-    } catch (error) {
-        console.error('로그인 상태 확인 오류:', error);
+function checkLoginStatus() {
+    // 세션 스토리지에서 로그인 정보 확인
+    const loggedInUserId = sessionStorage.getItem('loggedInUserId');
+    console.log("로그인된 사용자 ID:", loggedInUserId);
+            
+    if (loggedInUserId) {
+        // 로컬 스토리지에서 사용자 정보 가져오기
+        findUserInfoByStudentId(loggedInUserId);
+    } else {
+        console.log('로그인된 사용자가 없습니다.');
+    }
+}
+        
+// 학번으로 사용자 정보 찾기
+function findUserInfoByStudentId(studentId) {
+    // 이름, 휴대폰 번호, 이메일 등 사용자 정보 조회
+    const name = localStorage.getItem(`user_${studentId}_name`);
+    const phone = localStorage.getItem(`user_${studentId}_phone`);
+    const email = localStorage.getItem(`user_${studentId}_email`);
+            
+    if (name) {
+        currentUser = {
+            studentId: studentId,
+            name: name,
+            phone: phone,
+            email: email
+        };
+                
+        console.log('현재 로그인된 사용자:', currentUser);
     }
 }
         
@@ -282,7 +268,7 @@ function switchIdMethod(methodId) {
 }
         
 // 이름과 이메일로 아이디 찾기
-async function findIdByNameAndEmail() {
+function findIdByNameAndEmail() {
     const nameInput = document.getElementById('name-input');
     const emailInput = document.getElementById('email-input');
     
@@ -307,30 +293,65 @@ async function findIdByNameAndEmail() {
         emailInput.focus();
         return;
     }
-
-    try {
-        const response = await apiCall('/auth/find-id-by-email', 'POST', {
-            name: name,
-            email: email
+            
+    // API 호출 시뮬레이션 (실제로는 서버에 요청)
+    fetchUserIdByNameAndEmail(name, email)
+        .then(userId => {
+            if (userId) {
+                // 아이디 찾기 성공
+                const foundIdElement = document.getElementById('found-id');
+                const idResultElement = document.getElementById('id-result');
+                if(foundIdElement) foundIdElement.textContent = userId;
+                if(idResultElement) idResultElement.style.display = 'block';
+            } else {
+                // 아이디 찾기 실패
+                alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('아이디 찾기 오류:', error);
+            alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
         });
-
-        if (response.success && response.userId) {
-            // 아이디 찾기 성공
-            const foundIdElement = document.getElementById('found-id');
-            const idResultElement = document.getElementById('id-result');
-            if(foundIdElement) foundIdElement.textContent = response.userId;
-            if(idResultElement) idResultElement.style.display = 'block';
-        } else {
-            alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
+}
+        
+// 서버에서 이름과 이메일로 아이디 조회 (시뮬레이션)
+function fetchUserIdByNameAndEmail(name, email) {
+    // 실제로는 서버에 API 요청을 보냅니다.
+    // 여기서는 간단한 시뮬레이션으로 로컬 스토리지 사용
+    return new Promise((resolve, reject) => {
+        try {
+            // 모든 로컬 스토리지 항목을 검색하여 이메일이 일치하는 사용자 찾기
+            let foundUserId = null;
+                    
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.includes('_email')) {
+                    const storedEmail = localStorage.getItem(key);
+                    const studentId = key.split('_')[1]; // 학번 추출
+                            
+                    // 이메일이 일치하는지 확인
+                    if (storedEmail && storedEmail.toLowerCase() === email.toLowerCase()) {
+                        // 이름도 일치하는지 확인
+                        const storedName = localStorage.getItem(`user_${studentId}_name`);
+                                
+                        if (storedName && storedName === name) {
+                            // 아이디 가져오기 (학번을 아이디로 사용)
+                            foundUserId = studentId;
+                            break;
+                        }
+                    }
+                }
+            }
+                    
+            resolve(foundUserId);
+        } catch (error) {
+            reject(error);
         }
-    } catch (error) {
-        console.error('아이디 찾기 오류:', error);
-        alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
+    });
 }
         
 // 휴대폰으로 아이디 찾기
-async function findIdByPhone() {
+function findIdByPhone() {
     const namePhoneInput = document.getElementById('name-phone-input');
     const phoneInput = document.getElementById('phone-input');
     const verificationInput = document.getElementById('verification-input');
@@ -361,34 +382,73 @@ async function findIdByPhone() {
         verificationInput.focus();
         return;
     }
-
-    try {
-        const response = await apiCall('/auth/find-id-by-phone', 'POST', {
-            name: name,
-            phone: phone,
-            verificationCode: verificationCode
-        });
-
-        if (response.success && response.userId) {
-            // 아이디 찾기 성공
-            const foundIdElement = document.getElementById('found-id');
-            const idResultElement = document.getElementById('id-result');
-            if(foundIdElement) foundIdElement.textContent = response.userId;
-            if(idResultElement) idResultElement.style.display = 'block';
-        } else {
-            alert(response.message || '입력하신 정보와 일치하는 회원 정보가 없습니다.');
-            if (response.message === '인증번호가 일치하지 않습니다.') {
-                verificationInput.focus();
-            }
-        }
-    } catch (error) {
-        console.error('아이디 찾기 오류:', error);
-        alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
+            
+    // 인증번호 확인
+    const storedCode = sessionStorage.getItem('verificationCode');
+    if (verificationCode !== storedCode) {
+        alert('인증번호가 일치하지 않습니다.');
+        verificationInput.focus();
+        return;
     }
+            
+    // 휴대폰 번호로 아이디 조회
+    fetchUserIdByPhoneAndName(phone, name)
+        .then(userId => {
+            if (userId) {
+                // 아이디 찾기 성공
+                const foundIdElement = document.getElementById('found-id');
+                const idResultElement = document.getElementById('id-result');
+                if(foundIdElement) foundIdElement.textContent = userId;
+                if(idResultElement) idResultElement.style.display = 'block';
+                        
+                // 인증번호 세션 초기화
+                sessionStorage.removeItem('verificationCode');
+            } else {
+                alert('입력하신 정보와 일치하는 회원 정보가 없습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('아이디 찾기 오류:', error);
+            alert('아이디 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
+        });
+}
+        
+// 서버에서 휴대폰과 이름으로 아이디 조회 (시뮬레이션)
+function fetchUserIdByPhoneAndName(phone, name) {
+    // 실제로는 서버에 API 요청을 보냅니다.
+    return new Promise((resolve, reject) => {
+        try {
+            // 모든 사용자 중에서 휴대폰 번호와 이름이 일치하는 사용자 찾기
+            let foundUserId = null;
+                    
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.includes('_phone')) {
+                    const storedPhone = localStorage.getItem(key);
+                    const storedPhoneNoHyphen = storedPhone ? storedPhone.replace(/-/g, '') : '';
+                    const studentId = key.split('_')[1]; // 학번 추출
+                            
+                    if (storedPhoneNoHyphen === phone) {
+                        // 이름 확인
+                        const storedName = localStorage.getItem(`user_${studentId}_name`);
+                        if (storedName === name) {
+                            // 아이디 가져오기 (학번을 아이디로 사용)
+                            foundUserId = studentId;
+                            break;
+                        }
+                    }
+                }
+            }
+                    
+            resolve(foundUserId);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 // 인증번호 전송 (아이디 찾기)
-async function sendVerificationCode() {
+function sendVerificationCode() {
     const namePhoneInput = document.getElementById('name-phone-input');
     const phoneInput = document.getElementById('phone-input');
     
@@ -402,29 +462,25 @@ async function sendVerificationCode() {
             
     // 하이픈 제거
     const phone = phoneWithHyphens.replace(/-/g, '');
-
-    try {
-        const response = await apiCall('/auth/send-verification-code', 'POST', {
-            name: name,
-            phone: phone,
-            type: 'find-id'
-        });
-
-        if (response.success) {
-            alert('인증번호가 전송되었습니다. 휴대폰을 확인해주세요.');
-            // 인증번호 타이머 시작 (3분)
-            startTimer('id-timer', 180);
-        } else {
-            alert(response.message || '인증번호 전송에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('인증번호 전송 오류:', error);
-        alert('인증번호 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
+            
+    // 입력 필드 확인은 버튼 활성화 조건에서 이미 처리됨
+            
+    // 인증번호 생성 (6자리 난수)
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+            
+    // 개발 테스트용 알림
+    console.log('테스트 모드 - 인증번호:', code);
+    alert(`개발 테스트 모드: 인증번호는 [${code}] 입니다.`);
+            
+    // 인증번호 저장
+    sessionStorage.setItem('verificationCode', code);
+            
+    // 인증번호 타이머 시작 (3분)
+    startTimer('id-timer', 180);
 }
 
 // 비밀번호 찾기 인증번호 전송
-async function sendPwVerificationCode() {
+function sendPwVerificationCode() {
     const idInput = document.getElementById('id-input');
     const pwNameInput = document.getElementById('pw-name-input');
     const pwPhoneInput = document.getElementById('pw-phone-input');
@@ -440,26 +496,49 @@ async function sendPwVerificationCode() {
             
     // 하이픈 제거
     const phone = phoneWithHyphens.replace(/-/g, '');
-
-    try {
-        const response = await apiCall('/auth/send-verification-code', 'POST', {
-            userId: userId,
-            name: name,
-            phone: phone,
-            type: 'reset-password'
-        });
-
-        if (response.success) {
-            alert('인증번호가 전송되었습니다. 휴대폰을 확인해주세요.');
+            
+    // 입력 필드 확인은 버튼 활성화 조건에서 이미 처리됨
+            
+    // 사용자 정보 확인
+    verifyUserInfoForPwReset(userId, name, phone)
+        .then(isVerified => {
+            if (!isVerified) {
+                alert('입력하신 정보와 일치하는 사용자가 없습니다.');
+                return null;
+            }
+                    
+            // 인증번호 생성 (6자리 난수)
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+                    
+            // 개발 테스트용 알림
+            console.log('테스트 모드 - 비밀번호 재설정 인증번호:', code);
+            alert(`개발 테스트 모드: 인증번호는 [${code}] 입니다.`);
+                    
+            // 인증번호 저장
+            sessionStorage.setItem('pwVerificationCode', code);
+                    
             // 인증번호 타이머 시작 (3분)
             startTimer('pw-timer', 180);
-        } else {
-            alert(response.message || '입력하신 정보와 일치하는 사용자가 없습니다.');
-        }
-    } catch (error) {
-        console.error('인증번호 전송 오류:', error);
-        alert('인증번호 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
+                    
+            return { success: true };
+        })
+        .catch(error => {
+            console.error('인증번호 전송 오류:', error);
+            alert('인증번호 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+        });
+}
+
+// 비밀번호 재설정을 위한 사용자 정보 확인
+function verifyUserInfoForPwReset(userId, name, phone) {
+    return new Promise((resolve) => {
+        // 로컬 스토리지에서 사용자 정보 확인
+        const storedName = localStorage.getItem(`user_${userId}_name`);
+        const storedPhone = localStorage.getItem(`user_${userId}_phone`);
+        const storedPhoneNoHyphen = storedPhone ? storedPhone.replace(/-/g, '') : '';
+                
+        const isVerified = storedName === name && storedPhoneNoHyphen === phone;
+        resolve(isVerified);
+    });
 }
 
 // 타이머 함수
@@ -483,12 +562,18 @@ function startTimer(elementId, seconds) {
         if (--remainingTime < 0) {
             clearInterval(window[`${elementId}Interval`]);
             timerElement.textContent = "인증시간 만료";
+                    
+            if (elementId === 'id-timer') {
+                sessionStorage.removeItem('verificationCode');
+            } else {
+                sessionStorage.removeItem('pwVerificationCode');
+            }
         }
     }, 1000);
 }
 
 // 비밀번호 재설정을 위한 사용자 본인 인증
-async function verifyUserForPasswordReset() {
+function verifyUserForPasswordReset() {
     const idInput = document.getElementById('id-input');
     const pwNameInput = document.getElementById('pw-name-input');
     const pwPhoneInput = document.getElementById('pw-phone-input');
@@ -525,16 +610,23 @@ async function verifyUserForPasswordReset() {
         pwVerificationInput.focus();
         return;
     }
-
-    try {
-        const response = await apiCall('/auth/verify-user-for-reset', 'POST', {
-            userId: userId,
-            name: name,
-            phone: phone,
-            verificationCode: verificationCode
-        });
-
-        if (response.success) {
+            
+    // 인증번호 확인
+    const storedCode = sessionStorage.getItem('pwVerificationCode');
+    if (verificationCode !== storedCode) {
+        alert('인증번호가 일치하지 않습니다.');
+        pwVerificationInput.focus();
+        return;
+    }
+            
+    // 사용자 정보 확인
+    verifyUserInfoForPwReset(userId, name, phone)
+        .then(isVerified => {
+            if (!isVerified) {
+                alert('입력하신 정보와 일치하는 사용자가 없습니다.');
+                return;
+            }
+                    
             // 본인 인증 성공, 비밀번호 재설정 폼 표시
             const verifyContainer = document.getElementById('verify-first-container');
             const newPwContainer = document.getElementById('new-pw-container');
@@ -549,16 +641,14 @@ async function verifyUserForPasswordReset() {
                     
             // 유효성 검사 표시 초기화
             resetValidationStatus();
-        } else {
-            alert(response.message || '사용자 인증에 실패했습니다.');
-            if (response.message === '인증번호가 일치하지 않습니다.') {
-                pwVerificationInput.focus();
-            }
-        }
-    } catch (error) {
-        console.error('사용자 인증 오류:', error);
-        alert('사용자 인증 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
+                    
+            // 인증된 사용자 ID 세션에 저장
+            sessionStorage.setItem('verifiedUserId', userId);
+        })
+        .catch(error => {
+            console.error('사용자 인증 오류:', error);
+            alert('사용자 인증 중 오류가 발생했습니다. 다시 시도해주세요.');
+        });
 }
 
 // 유효성 검사 표시 초기화
@@ -576,7 +666,7 @@ function resetValidationStatus() {
 }
 
 // 새 비밀번호 설정
-async function resetPassword() {
+function resetPassword() {
     const newPwInput = document.getElementById('new-pw-input');
     const confirmPwInput = document.getElementById('new-pw-confirm-input');
     
@@ -613,21 +703,39 @@ async function resetPassword() {
         newPwInput.focus();
         return;
     }
-
+            
+    // 인증된 사용자 ID 가져오기
+    const verifiedUserId = sessionStorage.getItem('verifiedUserId');
+    if (!verifiedUserId) {
+        alert('사용자 인증 정보가 유효하지 않습니다. 다시 시도해주세요.');
+        return;
+    }
+            
+    // 비밀번호 변경 (시뮬레이션)
     try {
-        const response = await apiCall('/auth/reset-password', 'POST', {
-            newPassword: newPw
-        });
-
-        if (response.success) {
-            alert('비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인해주세요.');
-            // 로그인 페이지로 이동
-            window.location.href = 'login.html';
-        } else {
-            alert(response.message || '비밀번호 변경에 실패했습니다.');
-        }
+        // 로컬 스토리지에서 비밀번호 업데이트
+        localStorage.setItem(`user_${verifiedUserId}_password`, newPw);
+                
+        // 인증 정보 및 코드 세션에서 삭제
+        sessionStorage.removeItem('verifiedUserId');
+        sessionStorage.removeItem('pwVerificationCode');
+                
+        alert('비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인해주세요.');
+                
+        // 로그인 페이지로 이동
+        window.location.href = 'login.html';
     } catch (error) {
         console.error('비밀번호 변경 오류:', error);
         alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
+}
+
+// 테스트용 SMS 전송 함수 (실제 구현 시 수정 필요)
+function sendSMS(phoneNumber, message) {
+    return new Promise((resolve) => {
+        // 테스트 환경에서는 실제 API 호출 대신 시뮬레이션
+        console.log('테스트 모드 - 인증번호:', message);
+        alert(`개발 테스트 모드: 인증번호는 [${message}] 입니다.`);
+        resolve({ success: true, message: '테스트 모드 SMS 발송' });
+    });
 }
