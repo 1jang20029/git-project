@@ -7,17 +7,17 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #0a0e27;
-    color: #ffffff;
+    background: #f8fafc;
+    color: #1f2937;
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* 상단 네비게이션 */
 .top-nav {
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
     padding: 1rem 2rem;
     position: fixed;
     top: 0;
@@ -29,6 +29,7 @@ body {
     justify-content: space-between;
     height: 80px;
     transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .nav-brand {
@@ -51,11 +52,11 @@ body {
 }
 
 .semester-selector {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
     border-radius: 12px;
     padding: 0.75rem 1rem;
-    color: #f1f5f9;
+    color: #1f2937;
     font-size: 0.9rem;
     transition: all 0.3s ease;
     cursor: pointer;
@@ -65,11 +66,12 @@ body {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: rgba(255, 255, 255, 1);
 }
 
 .semester-selector option {
-    background: #1e293b;
-    color: #f1f5f9;
+    background: #ffffff;
+    color: #1f2937;
 }
 
 .back-btn {
@@ -98,7 +100,7 @@ body {
 
 .content-area {
     padding: 2rem;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: #f8fafc;
     min-height: calc(100vh - 80px);
     transition: all 0.3s ease;
 }
@@ -115,7 +117,7 @@ body {
 .section-title {
     font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+    background: linear-gradient(135deg, #1f2937, #6b7280);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -132,15 +134,16 @@ body {
 }
 
 .important-card {
-    background: rgba(30, 41, 59, 0.5);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .important-card::before {
@@ -155,7 +158,7 @@ body {
 }
 
 .important-card:hover {
-    background: rgba(30, 41, 59, 0.7);
+    background: rgba(255, 255, 255, 1);
     border-color: rgba(59, 130, 246, 0.3);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
@@ -170,7 +173,7 @@ body {
 }
 
 .card-date {
-    color: #94a3b8;
+    color: #6b7280;
     font-size: 0.9rem;
     font-weight: 500;
     margin-bottom: 0.5rem;
@@ -179,13 +182,13 @@ body {
 .card-title-text {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #f1f5f9;
+    color: #1f2937;
     margin-bottom: 0.5rem;
     line-height: 1.4;
 }
 
 .card-description {
-    color: #94a3b8;
+    color: #6b7280;
     font-size: 0.9rem;
     line-height: 1.5;
 }
@@ -200,17 +203,18 @@ body {
 /* 카드 공통 스타일 */
 .calendar-card,
 .events-list-card {
-    background: rgba(30, 41, 59, 0.5);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
     padding: 1.5rem;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -221,7 +225,7 @@ body {
 .card-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #f1f5f9;
+    color: #1f2937;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -235,9 +239,9 @@ body {
 }
 
 .nav-control-btn {
-    background: rgba(59, 130, 246, 0.2);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #1f2937;
     padding: 0.5rem 0.75rem;
     border-radius: 8px;
     cursor: pointer;
@@ -246,8 +250,9 @@ body {
 }
 
 .nav-control-btn:hover {
-    background: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.1);
     border-color: #3b82f6;
+    color: #3b82f6;
 }
 
 .today-btn {
@@ -292,13 +297,13 @@ body {
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(6, 1fr);
     gap: 1px;
-    background: #0f172a;
+    background: #e5e7eb;
     flex: 1;
     height: 550px;
 }
 
 .calendar-day {
-    background: rgba(15, 23, 42, 0.5);
+    background: #ffffff;
     border: none;
     padding: 0.5rem;
     display: flex;
@@ -315,8 +320,8 @@ body {
 }
 
 .calendar-day.other-month {
-    background: rgba(15, 23, 42, 0.3);
-    color: #64748b;
+    background: #f9fafb;
+    color: #9ca3af;
 }
 
 .calendar-day.today {
@@ -340,7 +345,7 @@ body {
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
-    color: #f1f5f9;
+    color: #1f2937;
     text-align: center;
     flex-shrink: 0;
 }
@@ -381,8 +386,8 @@ body {
 .filter-btn {
     padding: 0.5rem 1rem;
     border: 1px solid rgba(148, 163, 184, 0.3);
-    background: transparent;
-    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.8);
+    color: #6b7280;
     border-radius: 20px;
     cursor: pointer;
     font-size: 0.85rem;
@@ -416,13 +421,14 @@ body {
 }
 
 .event-item {
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 8px;
     padding: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .event-item::before {
@@ -437,9 +443,10 @@ body {
 }
 
 .event-item:hover {
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(255, 255, 255, 1);
     border-color: rgba(59, 130, 246, 0.3);
     transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .event-header {
@@ -451,20 +458,20 @@ body {
 
 .event-title {
     font-weight: 600;
-    color: #f1f5f9;
+    color: #1f2937;
     font-size: 1rem;
     line-height: 1.4;
 }
 
 .event-date {
-    color: #94a3b8;
+    color: #6b7280;
     font-size: 0.85rem;
     font-weight: 500;
     white-space: nowrap;
 }
 
 .event-description {
-    color: #94a3b8;
+    color: #6b7280;
     font-size: 0.9rem;
     line-height: 1.4;
     margin-bottom: 0.75rem;
@@ -497,7 +504,7 @@ body {
 }
 
 .modal-content {
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(148, 163, 184, 0.2);
     margin: 5% auto;
@@ -578,14 +585,14 @@ body {
 
 .detail-content strong {
     display: block;
-    color: #f1f5f9;
+    color: #1f2937;
     font-weight: 600;
     margin-bottom: 0.25rem;
 }
 
 .detail-content span,
 .detail-content p {
-    color: #94a3b8;
+    color: #6b7280;
     line-height: 1.5;
 }
 
@@ -595,7 +602,7 @@ body {
 }
 
 .events-list-container::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.3);
+    background: rgba(229, 231, 235, 0.5);
 }
 
 .events-list-container::-webkit-scrollbar-thumb {
