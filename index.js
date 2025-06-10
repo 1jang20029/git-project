@@ -868,12 +868,12 @@ function showErrorFallback(containerId, message) {
   }
 }
 
-
 // ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
   if (!contentEl) return;  
+  
   if (!currentUser) {
     contentEl.innerHTML = `
       <div class="empty-state">
@@ -883,118 +883,186 @@ function updateTimetable() {
     `;
     return;
   }
-  if (!isOnline) {
+
+  // 로컬 스토리지에서 시간표 데이터 로드
+  const courses = loadCoursesFromLocalStorage(currentUser);
+  if (!courses || courses.length === 0) {
     contentEl.innerHTML = `
-      <div class="error-fallback">
-        <h3>📶 오프라인 상태</h3>
-        <p>시간표 정보를 불러올 수 없습니다</p>
+      <div class="empty-state">
+        <h3>📅 시간표 없음</h3>
+        <p>등록된 시간표가 없습니다. 시간표 페이지에서 과목을 추가해보세요</p>
+        <button class="btn btn-primary" onclick="openTimetablePage()" style="margin-top: 1rem;">
+          📅 시간표 관리
+        </button>
       </div>
     `;
     return;
   }
-  contentEl.innerHTML = `
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <span style="margin-left: 0.5rem;">시간표를 불러오는 중...</span>
-    </div>
-  `;
-  fetch(`/api/timetable?user=${encodeURIComponent(currentUser)}`)
-    .then(res => {
-      if (!res.ok) throw new Error('API 응답 오류');
-      return res.json();
-    })
-    .then(courses => {
-      renderTimetable(courses);
-    })
-    .catch(err => {
-      console.error('시간표 로드 오류:', err);
-      contentEl.innerHTML = `
-        <div class="empty-state">
-          <h3>📅 시간표 없음</h3>
-          <p>등록된 시간표가 없거나 불러올 수 없습니다</p>
-        </div>
-      `;
-    });
+
+  renderTimetable(courses);
+}
+
+// ─────────── loadCoursesFromLocalStorage: 로컬 스토리지에서 과목 데이터 로드 ───────────
+function loadCoursesFromLocalStorage(currentUser) {
+  try {
+    // 현재 학기 계산
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    
+    let semester = { year: currentYear, term: 1 };
+    if (currentMonth >= 3 && currentMonth <= 6) {
+      semester = { year: currentYear, term: 1 };
+    } else if (currentMonth >= 9 && currentMonth <= 12) {
+      semester = { year: currentYear, term: 2 };
+    } else if (currentMonth >= 1 && currentMonth <= 2) {
+      semester = { year: currentYear - 1, term: 2 };
+    }
+
+    // 현재 시간표 ID 가져오기
+    const currentTimetableData = localStorage.getItem(`currentTimetable_user_${currentUser}`);
+    let currentTimetableId = 1; // 기본값
+    if (currentTimetableData) {
+      try {
+        const timetable = JSON.parse(currentTimetableData);
+        currentTimetableId = timetable.id || 1;
+      } catch (e) {
+        console.error('시간표 ID 파싱 오류:', e);
+      }
+    }
+
+    // 과목 데이터 로드
+    const semesterKey = `courses_${semester.year}_${semester.term}_${currentTimetableId}_user_${currentUser}`;
+    const savedCourses = localStorage.getItem(semesterKey);
+    
+    if (savedCourses) {
+      return JSON.parse(savedCourses);
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('로컬 스토리지에서 과목 로드 오류:', error);
+    return [];
+  }
 }
 
 // ─────────── renderTimetable: 오늘 시간표 렌더링 ───────────
 function renderTimetable(courses) {
   const contentEl = document.getElementById('timetableContent');
   if (!contentEl) return;
+  
   const now = new Date();
-  const currentDay = now.getDay();
+  const currentDay = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
   const currentTime = now.getHours() * 60 + now.getMinutes();
   const todayCourses = [];
+
+  // 오늘 요일의 과목들을 찾아서 처리
   courses.forEach(course => {
-    course.times.forEach(time => {
-      if (time.day === currentDay || (currentDay === 0 && time.day === 6)) {
-        const startHour = 8 + time.start;
+    if (!course.times || !Array.isArray(course.times)) return;
+    
+    course.times.forEach(timeSlot => {
+      // timeSlot.day는 1(월)~6(토), currentDay는 0(일)~6(토)
+      // 월요일(1) = currentDay(1), 화요일(2) = currentDay(2), ..., 토요일(6) = currentDay(6)
+      // 일요일은 제외 (대학교 수업 없음)
+      
+      if (timeSlot.day === currentDay && currentDay !== 0) {
+        // 수업 시간 계산 (1교시 = 9:30~10:20, 2교시 = 10:30~11:20, ...)
+        const startHour = 8 + timeSlot.start;
         const startMinute = 30;
-        const startTime = startHour * 60 + startMinute;
-        const endHour = 8 + time.end + 1;
+        const endHour = 8 + timeSlot.end + 1;
         const endMinute = 20;
+        
+        const startTime = startHour * 60 + startMinute;
         const endTime = endHour * 60 + endMinute;
+        
         let status = 'upcoming';
         let timeInfo = '';
+        let statusText = '';
+        
         if (currentTime >= startTime && currentTime < endTime) {
           status = 'current';
           const remaining = endTime - currentTime;
           timeInfo = formatTimeRemaining(remaining, '종료까지');
+          statusText = '수강 중';
         } else if (currentTime >= endTime) {
           status = 'finished';
           timeInfo = '수업 종료';
+          statusText = '수강 종료';
         } else {
           const toStart = startTime - currentTime;
           if (toStart > 0) {
             status = 'upcoming';
             timeInfo = formatTimeRemaining(toStart, '시작까지');
+            statusText = '수강 예정';
           } else {
             status = 'upcoming';
             timeInfo = '곧 시작';
+            statusText = '수강 예정';
           }
         }
+        
         todayCourses.push({
           name: course.name,
-          room: course.room,
-          professor: course.professor,
+          room: course.room || '강의실 미정',
+          professor: course.professor || '교수명 미정',
           status,
+          statusText,
           timeInfo,
-          displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+          displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')} ~ ${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
           startTime,
+          endTime,
+          color: course.color || 'color-1'
         });
       }
     });
   });
+
+  // 시간순으로 정렬
   todayCourses.sort((a, b) => a.startTime - b.startTime);
+
   if (todayCourses.length === 0) {
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    const todayName = dayNames[currentDay];
+    
     contentEl.innerHTML = `
       <div class="empty-state">
         <h3>📅 오늘은 휴일</h3>
-        <p>오늘은 수업이 없습니다</p>
+        <p>${todayName}요일에는 수업이 없습니다</p>
+        <button class="btn btn-primary" onclick="openTimetablePage()" style="margin-top: 1rem;">
+          📅 시간표 관리
+        </button>
       </div>
     `;
     return;
   }
+
   contentEl.innerHTML = '';
-  todayCourses.forEach(ci => {
-    const statusText = {
-      current: '진행중',
-      upcoming: '예정',
-      finished: '종료',
-    }[ci.status];
+  todayCourses.forEach(courseInfo => {
     const div = document.createElement('div');
-    div.className = 'class-item';
+    div.className = `class-item class-status-${courseInfo.status}`;
+    
+    // 상태별 아이콘
+    const statusIcon = {
+      current: '🟢',
+      upcoming: '🟡', 
+      finished: '🔴'
+    }[courseInfo.status];
+    
     div.innerHTML = `
       <div class="class-time">
-        <div class="class-time-main">${ci.displayTime}</div>
-        <div class="class-time-remaining">${ci.timeInfo}</div>
+        <div class="class-time-main">${courseInfo.displayTime}</div>
+        <div class="class-time-remaining ${courseInfo.status}">${courseInfo.timeInfo}</div>
       </div>
       <div class="class-info">
-        <div class="class-name">${ci.name}</div>
-        <div class="class-location">${ci.room || '강의실 미정'} | ${ci.professor || '교수명 미정'}</div>
+        <div class="class-name">${courseInfo.name}</div>
+        <div class="class-location">${courseInfo.professor} | ${courseInfo.room}</div>
       </div>
-      <div class="class-status status-${ci.status}">${statusText}</div>
+      <div class="class-status status-${courseInfo.status}">
+        <span>${statusIcon}</span>
+        <span>${courseInfo.statusText}</span>
+      </div>
     `;
+    
     contentEl.appendChild(div);
   });
 }

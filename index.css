@@ -438,7 +438,7 @@ body {
   color: #94a3b8;
 }
 
-/* “내 계정”, “설정”, “로그아웃” 드롭다운 영역 */
+/* "내 계정", "설정", "로그아웃" 드롭다운 영역 */
 #user-dropdown {
   position: absolute;
   top: 100%;
@@ -478,7 +478,7 @@ body {
   color: #94a3b8;
 }
 
-/* “내 계정” 버튼 */
+/* "내 계정" 버튼 */
 #dropdown-item-profile {
   display: block;
   width: 100%;
@@ -497,7 +497,7 @@ body {
   color: #3b82f6;
 }
 
-/* “설정” 버튼 */
+/* "설정" 버튼 */
 #dropdown-item-settings {
   display: flex;
   align-items: center;
@@ -517,7 +517,7 @@ body {
   color: #3b82f6;
 }
 
-/* “로그아웃” 버튼 */
+/* "로그아웃" 버튼 */
 #dropdown-item-logout {
   display: flex;
   align-items: center;
@@ -638,7 +638,7 @@ body {
   display: grid;
   gap: 1.5rem;
   margin-bottom: 2rem;
-}
+  }
 
 #statsGrid {
   grid-template-columns: repeat(4, 1fr);
@@ -827,9 +827,133 @@ body {
 /* =========================
    오늘의 시간표 카드 (#timetable-card)
    ========================= */
+/* 오늘의 시간표 카드 스타일 개선 */
 #timetable-card {
   max-height: 500px;
   overflow-y: auto;
+}
+
+.class-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.class-item:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.class-item:last-child {
+  margin-bottom: 0;
+}
+
+.class-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 120px;
+}
+
+.class-time-main {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+
+.class-time-remaining {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.class-time-remaining.current {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.class-time-remaining.upcoming {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.class-time-remaining.finished {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.class-info {
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.class-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+
+.class-location {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.class-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 80px;
+  text-align: center;
+}
+
+.class-status span:first-child {
+  font-size: 1.2rem;
+}
+
+.class-status span:last-child {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+}
+
+.status-current span:last-child {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.status-upcoming span:last-child {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.status-finished span:last-child {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+/* 상태별 왼쪽 보더 표시 */
+.class-status-current {
+  border-left: 3px solid #10b981;
+}
+
+.class-status-upcoming {
+  border-left: 3px solid #f59e0b;
+}
+
+.class-status-finished {
+  border-left: 3px solid #94a3b8;
 }
 
 /* =========================
@@ -1028,6 +1152,19 @@ body {
 .nav-item.active .nav-icon,
 .nav-item.active span {
   color: #3b82f6;
+}
+
+/* 빈 상태 메시지 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #94a3b8;
+}
+
+.empty-state h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #64748b;
 }
 
 /* 애니메이션 키프레임 */
@@ -1233,7 +1370,6 @@ body.light-mode .activity-label {
 
 body.light-mode .building-name,
 body.light-mode .notice-title,
-body.light-mode .class-name,
 body.light-mode #card-title-map,
 body.light-mode #card-title-timetable,
 body.light-mode #card-title-shuttle,
@@ -1247,6 +1383,60 @@ body.light-mode #card-title-buildings-map {
   color: #1f2937;
 }
 
+/* 라이트 모드 시간표 스타일 */
+body.light-mode .class-item {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .class-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.light-mode .class-time-main {
+  color: #1f2937;
+}
+
+body.light-mode .class-name {
+  color: #1f2937;
+}
+
+body.light-mode .class-location {
+  color: #64748b;
+}
+
+body.light-mode .class-time-remaining.current {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+body.light-mode .class-time-remaining.upcoming {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+body.light-mode .class-time-remaining.finished {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+}
+
+body.light-mode .status-current span:last-child {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+body.light-mode .status-upcoming span:last-child {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+body.light-mode .status-finished span:last-child {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+}
+
+/* 반응형 디자인 */
 @media (max-width: 768px) {
   #search-input {
     width: 200px;
@@ -1292,37 +1482,6 @@ body.light-mode #card-title-buildings-map {
   #buildingsMapCard {
     height: 200px;
   }
-  .setting-item {
-    margin-bottom: 1rem;
-    padding: 0.75rem 0;
-  }
-  .setting-item label {
-    font-size: 0.9rem;
-  }
-  .setting-item input[type="checkbox"] {
-    width: 28px;
-    height: 28px;
-    transform: scale(1.4);
-  }
-  .shortcut-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-  .shortcut-item input.label-input,
-  .shortcut-item input.key-input {
-    width: 100%;
-  }
-  .shortcut-item button.remove-shortcut-btn {
-    align-self: flex-end;
-  }
-  .add-shortcut-btn {
-    width: 100%;
-    text-align: center;
-  }
-  .action-buttons {
-    flex-direction: column;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1333,9 +1492,8 @@ body.light-mode #card-title-buildings-map {
   }
 }
 
-
 /* =============================================================================
-   추가된 “건물 & 시설 안내” 전용 오버라이드 CSS
+   추가된 "건물 & 시설 안내" 전용 오버라이드 CSS
    (두 번째 스크린샷과 동일하게 만들고,
    지도 높이를 두 배(600px)로 늘리는 부분)
    ============================================================================= */
@@ -1414,7 +1572,7 @@ body.light-mode #card-title-buildings-map {
 #buildings-zoom-out:hover,
 #buildings-reset:hover,
 #buildings-track-user:hover {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(59, 130,246, 0.2);
   color: #3b82f6;
   border-color: #3b82f6;
 }
