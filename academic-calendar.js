@@ -1,3 +1,5 @@
+// academic-calendar.js
+
 // 전역 상태
 let currentDate = new Date();
 let currentSemester = '1';
@@ -80,7 +82,7 @@ const monthNames = ['1월','2월','3월','4월','5월','6월','7월','8월','9�
 async function fetchSchedule(semester) {
   const res = await fetch(`/api/academic-schedule?semester=${encodeURIComponent(semester)}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
+  return await res.json(); // [{id,title,date,endDate?,type,description,important,location?},...]
 }
 
 // 초기화
@@ -152,6 +154,11 @@ async function updateDisplay() {
   renderCalendar();
   renderEventsList();
   setActiveFilter();
+  // 월별 제목 업데이트
+  const titleList = document.getElementById('monthlyEventsTitle');
+  if (titleList) {
+    titleList.textContent = `${currentDate.getFullYear()}년 ${monthNames[currentDate.getMonth()]} 학사일정`;
+  }
 }
 
 // 중요 일정 카드 렌더링
