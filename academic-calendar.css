@@ -1,383 +1,263 @@
-/* academic-calendar.css (UI 전체 개선/통일본) */
-body {
-    min-height: 100vh;
-    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', sans-serif;
-    background: linear-gradient(135deg, #e9f0fb 0%, #f7faff 100%);
-    color: #24292f;
-    margin: 0;
-}
-.container {
-    max-width: 1250px;
-    margin: 40px auto 0 auto;
-    padding: 32px 22px 36px 22px;
-    border-radius: 28px;
-    background: rgba(255,255,255,0.95);
-    box-shadow: 0 8px 40px rgba(106, 185, 229, 0.10), 0 2px 12px rgba(0,0,0,0.04);
-    min-height: 85vh;
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+  background: #f7fbff;
 }
 
-/* 상단 헤더 */
+.main-bg {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7fbff 0%, #e3eef7 100%);
+}
+
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px 32px 24px;
+}
+
 .header {
-    background: linear-gradient(90deg, #b8e985 0%, #7fd1e7 100%);
-    color: #222;
-    border-radius: 22px;
-    margin-bottom: 36px;
-    padding: 32px 24px 32px 24px;
-    box-shadow: 0 2px 18px rgba(120,180,220,0.14);
-}
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 40px;
-}
-.university-info .title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    letter-spacing: -2px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.university-info .subtitle {
-    margin-top: 7px;
-    font-size: 1.1rem;
-    opacity: 0.82;
-    font-weight: 400;
-}
-.back-button {
-    background: #fff;
-    color: #3bb89f;
-    border: 1.5px solid #b8e985;
-    border-radius: 9px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    padding: 12px 20px;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(70,160,190,0.06);
-    margin-right: 18px;
-    transition: 0.2s;
-}
-.back-button:hover {
-    background: #f2fff8;
-    color: #20b4aa;
-    border-color: #20b4aa;
+  padding-bottom: 8px;
+  background: transparent;
+  border: none;
 }
 
-/* 학기 선택 드롭다운 */
-.semester-selector select {
-    background: #f5fbf9;
-    color: #177575;
-    border: 1.5px solid #b8e985;
-    padding: 10px 17px;
-    border-radius: 9px;
-    font-size: 1.06rem;
-    font-weight: 600;
-    box-shadow: 0 2px 10px rgba(40, 160, 180, 0.06);
+.back-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
 }
 
-/* 주요 일정 요약 카드 */
-.schedule-summary {
-    margin-bottom: 32px;
-}
-.summary-title {
-    font-size: 1.35rem;
-    color: #168b7d;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-weight: 700;
-}
-.summary-cards {
-    overflow-x: auto;
-    display: flex;
-    gap: 18px;
-    padding-bottom: 5px;
-}
-.summary-card {
-    background: linear-gradient(135deg,#f8fbff 60%,#eafcf7 100%);
-    border-radius: 14px;
-    min-width: 245px;
-    max-width: 245px;
-    box-shadow: 0 3px 15px rgba(170,210,220,0.07);
-    border-left: 6px solid #b8e985;
-    padding: 22px 17px;
-    font-size: 1rem;
-    transition: 0.2s;
-    cursor: pointer;
-}
-.summary-card:hover {
-    box-shadow: 0 8px 22px rgba(120,210,170,0.08), 0 3px 8px rgba(0,0,0,0.03);
-    transform: translateY(-3px) scale(1.025);
-}
-.summary-card.past-event {
-    opacity: 0.68;
-    background: #f3f4f7;
-    border-left: 6px solid #c9ccd3;
-}
-.summary-card h4 {
-    font-size: 1.04rem;
-    font-weight: 800;
-    color: #3b4552;
-}
-.summary-card .date {
-    color: #488ca1;
-    margin-bottom: 7px;
-    font-size: 0.99rem;
-}
-.summary-card .description {
-    color: #67839c;
-    font-size: 0.96rem;
-    margin-bottom: 4px;
+.school-select-row {
+  margin: 8px 0 24px 0;
+  display: flex;
+  gap: 10px;
 }
 
-/* 캘린더 네비게이션 바 */
-.calendar-nav {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    background: #f8fbfe;
-    padding: 18px 16px 14px 16px;
-    border-radius: 13px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 7px rgba(110,180,200,0.06);
-}
-.nav-btn, .today-btn {
-    background: #b8e985;
-    color: #fff;
-    border: none;
-    padding: 12px 17px;
-    border-radius: 8px;
-    font-size: 1.09rem;
-    font-weight: 700;
-    transition: 0.17s;
-    cursor: pointer;
-}
-.nav-btn:hover, .today-btn:hover {
-    background: #20b4aa;
-}
-.current-month {
-    font-size: 1.28rem;
-    font-weight: 800;
-    color: #225488;
-    min-width: 170px;
-    text-align: center;
+.main-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 18px 0 16px 0;
 }
 
-/* 캘린더 전체 */
-.calendar {
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 2px 18px rgba(160,190,230,0.08);
-    margin-bottom: 26px;
-    padding: 0 6px 12px 6px;
+.card-list {
+  display: flex;
+  gap: 24px;
 }
-.calendar-header {
-    display: grid;
-    grid-template-columns: repeat(7,1fr);
-    background: linear-gradient(90deg, #7fd1e7 0%, #b8e985 100%);
-    color: #fff;
-    font-weight: 800;
-    font-size: 1.08rem;
-    border-radius: 20px 20px 0 0;
-    height: 45px;
-}
-.day-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-.day-header.sunday { color: #e53935;}
-.day-header.saturday { color: #247bbe;}
 
-.calendar-body {
-    display: grid;
-    grid-template-columns: repeat(7,1fr);
-    grid-template-rows: repeat(6, 1fr);
-    gap: 6px;
+.card {
+  flex: 1 1 0px;
+  background: linear-gradient(135deg, #eafee4 0%, #f4fafa 100%);
+  border-radius: 22px;
+  box-shadow: 0 4px 24px rgba(140,180,130,0.06);
+  padding: 22px 30px;
+  min-width: 220px;
+  max-width: 370px;
 }
-.calendar-day {
-    min-height: 94px;
-    background: #f8fbff;
-    border-radius: 10px;
-    box-shadow: 0 1px 8px rgba(80,140,190,0.03);
-    padding: 8px 7px 3px 8px;
-    font-size: 1.04rem;
-    transition: 0.14s;
-    display: flex;
-    flex-direction: column;
-}
-.calendar-day:hover {
-    background: #eafcf7;
-    box-shadow: 0 3px 14px rgba(60,180,180,0.08);
-}
-.calendar-day.today {
-    background: linear-gradient(135deg,#c3f1f7 70%,#e5ffda 100%);
-    color: #1388d8;
-    border: 1.5px solid #b8e985;
-}
-.calendar-day.sunday .day-number { color: #e53935; }
-.calendar-day.saturday .day-number { color: #247bbe; }
-.day-number { font-weight: 800; font-size: 1.05rem; margin-bottom: 6px;}
-.day-number.holiday-date { color: #d62836; font-weight: 900; }
 
-/* 일정 칩(칩 스타일, 색상) */
-.day-events { flex: 1; display: flex; flex-direction: column; gap: 2px;}
-.event-item {
-    padding: 2.5px 7px;
-    border-radius: 5px;
-    font-size: 0.88rem;
-    font-weight: 700;
-    margin-bottom: 2.5px;
-    max-width: 95%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #fff;
+.card-title {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
-.event-item.academic { background: linear-gradient(90deg,#1abc9c,#1e90ff);}
-.event-item.exam { background: linear-gradient(90deg,#e74c3c,#c0392b);}
-.event-item.holiday { background: linear-gradient(90deg,#27ae60,#229954);}
-.event-item.event { background: linear-gradient(90deg,#9b59b6,#8e44ad);}
-.event-item.registration { background: linear-gradient(90deg,#f39c12,#d68910);}
 
-/* 일정 리스트 */
-.events-section {
-    background: #f7fafc;
-    border-radius: 18px;
-    padding: 28px 18px 30px 18px;
-    box-shadow: 0 3px 20px rgba(190,220,230,0.10);
-    margin-bottom: 22px;
+.card-content {
+  font-size: 15px;
+  color: #123;
 }
-.events-title {
-    font-size: 1.28rem;
-    font-weight: 800;
-    color: #3b4552;
-    border-bottom: 2.5px solid #b8e985;
-    padding-bottom: 9px;
-    margin-bottom: 22px;
+
+.card-desc {
+  color: #789975;
+  font-size: 14px;
 }
-.events-filter {
-    display: flex;
-    gap: 11px;
-    margin-bottom: 22px;
+
+.calendar-section {
+  margin: 40px 0 0 0;
 }
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.btn, .calendar-btn, .today-btn {
+  background: linear-gradient(90deg, #bbe0ab 60%, #cbe6c7 100%);
+  color: #45672d;
+  border: none;
+  border-radius: 14px;
+  padding: 8px 18px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(140,180,130,0.06);
+  transition: background 0.2s;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 12px 16px;
+  background: rgba(255,255,255,0.97);
+  border-radius: 22px;
+  box-shadow: 0 2px 10px rgba(120,130,160,0.06);
+  overflow: hidden;
+  font-size: 17px;
+}
+
+.calendar-table th, .calendar-table td {
+  text-align: center;
+  padding: 14px 0;
+  background: transparent;
+  border-radius: 16px;
+}
+
+.calendar-table th {
+  background: linear-gradient(90deg, #b8e7c2 40%, #cae7e5 100%);
+  color: #45672d;
+  font-size: 17px;
+  font-weight: bold;
+  border: none;
+}
+
+.calendar-table td {
+  min-width: 60px;
+  height: 64px;
+  vertical-align: top;
+  position: relative;
+  border: none;
+  font-size: 16px;
+  color: #25314a;
+  background: rgba(255,255,255,0.9);
+}
+
+.calendar-table td.sun { color: #f06060; }
+.calendar-table td.sat { color: #4471c4; }
+
+.calendar-table td.selected {
+  background: linear-gradient(135deg, #eafee4 0%, #f4fafa 100%);
+  box-shadow: 0 0 0 3px #bbdfc0 inset;
+  font-weight: bold;
+}
+
+.event {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.event.exam {
+  background: #b74c37;
+  color: #fff;
+}
+.event.vacation {
+  background: #77ad53;
+  color: #fff;
+}
+
+.schedule-list-section {
+  margin: 40px 0 0 0;
+  padding: 20px 0 0 0;
+}
+
+.schedule-title {
+  font-size: 21px;
+  font-weight: bold;
+  margin-bottom: 18px;
+}
+
+.schedule-filter {
+  margin-bottom: 18px;
+  display: flex;
+  gap: 14px;
+}
+
 .filter-btn {
-    padding: 10px 17px;
-    border-radius: 24px;
-    background: #f0f2ff;
-    border: 1.5px solid #b8e985;
-    font-weight: 700;
-    color: #188a7d;
-    font-size: 1.03rem;
-    transition: 0.15s;
-    cursor: pointer;
-}
-.filter-btn.active, .filter-btn:hover {
-    background: #b8e985;
-    color: #fff;
-    border-color: #20b4aa;
+  background: linear-gradient(90deg, #f4fefa, #e0eedc);
+  border: 2px solid #b7dbac;
+  border-radius: 18px;
+  padding: 7px 22px;
+  color: #43614a;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
 }
 
-/* 일정 카드 (리스트뷰) */
-.event-card {
-    background: #fff;
-    border-left: 5px solid #b8e985;
-    border-radius: 12px;
-    padding: 19px 17px 12px 17px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 10px rgba(160,210,180,0.07);
-    transition: 0.14s;
-    cursor: pointer;
-}
-.event-card:hover {
-    background: #eafcf7;
-    box-shadow: 0 5px 17px rgba(90,185,200,0.08);
-}
-.event-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 7px;
-}
-.event-card-title { font-weight: 800; font-size: 1.07rem;}
-.event-card-date { color: #227799; font-size: 0.99rem; font-weight: 600;}
-.event-card-description { color: #41637b; font-size: 1.01rem; margin-bottom: 9px;}
-.event-type { 
-    display: inline-block; 
-    border-radius: 11px; 
-    padding: 3px 13px;
-    font-size: 0.92rem;
-    font-weight: 700;
-    background: #e7faef; 
-    color: #208050;
-    border: 1.5px solid #b8e985;
+.filter-btn.active,
+.filter-btn:hover {
+  background: linear-gradient(90deg, #b8e7c2 50%, #cae7e5 100%);
+  border: 2px solid #77ad53;
+  color: #264224;
 }
 
-/* 모달 팝업 */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0; width: 100vw; height: 100vh;
-    background-color: rgba(60, 80, 120, 0.26);
-    backdrop-filter: blur(3px);
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
-.modal-content {
-    background: #fff;
-    margin: 6% auto;
-    border-radius: 20px;
-    width: 92%;
-    max-width: 560px;
-    box-shadow: 0 13px 48px rgba(110,180,220,0.16);
-    animation: modalSlideIn 0.34s ease;
-}
-@keyframes modalSlideIn {
-    from { opacity: 0; transform: translateY(-25px) scale(0.97);}
-    to   { opacity: 1; transform: translateY(0) scale(1);}
-}
-.modal-header {
-    background: linear-gradient(90deg,#b8e985 0%,#7fd1e7 100%);
-    color: #2c3e50;
-    padding: 25px 26px;
-    border-radius: 20px 20px 0 0;
-    display: flex; justify-content: space-between; align-items: center;
-}
-.modal-header h3 { font-size: 1.24rem; font-weight: 900;}
-.modal-close {
-    background: none; border: none; color: #3399cc; font-size: 1.7rem; cursor: pointer;
-    padding: 7px;
-}
-.event-detail { padding: 25px 27px;}
-.detail-item { margin-bottom: 15px; display: flex; align-items: flex-start; gap: 10px;}
-.detail-item i { color: #b8e985; font-size: 1.17rem; min-width: 22px;}
-.detail-item strong { color: #177575; font-weight: 800;}
-.detail-item span, .detail-item p { color: #466277; flex: 1;}
 
-/* 푸터 */
+.schedule-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(160,200,120,0.05);
+  padding: 22px 30px 15px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 15px;
+}
+
+.schedule-tt {
+  font-size: 17px;
+  font-weight: bold;
+  color: #45672d;
+  margin-right: 16px;
+}
+.schedule-dd {
+  color: #8ab78f;
+  font-size: 15px;
+}
+.schedule-desc {
+  font-size: 14px;
+  color: #778a7b;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
 .footer {
-    background: #f7fafc;
-    color: #888;
-    text-align: center;
-    padding: 26px 0 18px 0;
-    margin-top: 45px;
-    border-radius: 0 0 20px 20px;
-    font-size: 1.04rem;
-    box-shadow: 0 -1px 8px rgba(120,200,180,0.05);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 32px 0 0 0;
+  color: #888;
+  font-size: 14px;
+  margin-top: 44px;
+  text-align: center;
 }
 
-/* 반응형 최소 */
-@media (max-width: 1000px) {
-    .container { max-width: 99vw; padding: 7px; }
-    .header-content { flex-direction: column; gap: 11px;}
-    .summary-cards { flex-direction: column; gap: 14px;}
-    .calendar-body { min-height: 370px;}
-}
-@media (max-width: 600px) {
-    .container { padding: 2px;}
-    .calendar-header, .calendar-body { font-size: 0.87rem;}
-    .summary-card, .event-card { min-width: 95vw; max-width: 95vw;}
+.legend {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 12px;
 }
 
+.copyright {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+/* 반응형 */
+@media (max-width: 1050px) {
+  .main-container { max-width: 97vw; }
+  .card-list { flex-direction: column; gap: 16px; }
+}
+@media (max-width: 700px) {
+  .main-container { padding: 20px 2vw 18px 2vw; }
+  .calendar-table th, .calendar-table td { padding: 6px 0; font-size: 14px; }
+  .card, .schedule-card { padding: 16px 12px; }
+}
