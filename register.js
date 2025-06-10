@@ -55,23 +55,23 @@ if (selectedRole === 'professor' || selectedRole === 'staff') {
     alert('🎉 회원가입이 완료되었습니다!');
 }
     
-// 소셜 로그인 세션 데이터 정리
-if (isSocialLogin) {
-    sessionStorage.removeItem('temp_social_id');
-    sessionStorage.removeItem('temp_social_type');
-    sessionStorage.removeItem('temp_social_name');
-    sessionStorage.removeItem('temp_social_email');
-    sessionStorage.removeItem('temp_social_profile_image');
-    
-    // 현재 로그인 사용자로 설정
-    localStorage.setItem('currentLoggedInUser', userId);
-    
-    // 첫 로그인이므로 위젯 설정 페이지로 이동
-    window.location.href = "widget-settings.html";
-} else {
-    // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
-    window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
-}
+    // 소셜 로그인 세션 데이터 정리
+    if (isSocialLogin) {
+        sessionStorage.removeItem('temp_social_id');
+        sessionStorage.removeItem('temp_social_type');
+        sessionStorage.removeItem('temp_social_name');
+        sessionStorage.removeItem('temp_social_email');
+        sessionStorage.removeItem('temp_social_profile_image');
+        
+        // 현재 로그인 사용자로 설정
+        localStorage.setItem('currentLoggedInUser', userId);
+        
+        // 첫 로그인이므로 위젯 설정 페이지로 이동
+        window.location.href = "widget-settings.html";
+    } else {
+        // 로그인 페이지로 이동 (새로 가입했다는 정보와 학번 전달)
+        window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+    }
 
 // 인증 폼 초기화
 function resetVerificationForm() {
