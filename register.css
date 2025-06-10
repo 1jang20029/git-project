@@ -1,3 +1,5 @@
+/* signup.css */
+
 /* 전체 레이아웃 */
 * {
     margin: 0;
@@ -373,14 +375,7 @@ select {
     }
 }
 
-/* 포커스 상태 개선 */
-.form-group input:focus,
-.form-group select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* 에러 상태 */
+/* 폼 상태 스타일 */
 .form-group.error input,
 .form-group.error select {
     border-color: #dc3545;
@@ -391,7 +386,6 @@ select {
     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
 
-/* 성공 상태 */
 .form-group.success input,
 .form-group.success select {
     border-color: #28a745;
@@ -416,6 +410,25 @@ select {
     transform: translate(-50%, -50%);
     width: 16px;
     height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.signup-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.signup-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
     border: 2px solid transparent;
     border-top: 2px solid white;
     border-radius: 50%;
