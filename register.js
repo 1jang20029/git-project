@@ -182,11 +182,11 @@ async function verifyEmailCode() {
             throw new Error(result.message || '인증 실패');
         }
     } catch (error) {
-        console.error('인증 확인 오류:', error);
-        errorDiv.style.display = 'block';
-        errorDiv.textContent = result?.message || '인증코드가 일치하지 않습니다. 다시 확인해주세요.';
-        verifyBtn.disabled = false;
-        verifyBtn.textContent = '인증확인';
+    console.error('인증 확인 오류:', error);
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = error.message || '인증코드가 일치하지 않습니다. 다시 확인해주세요.';
+    verifyBtn.disabled = false;
+    verifyBtn.textContent = '인증확인';
     } finally {
         emailVerificationData.isProcessing = false;
     }
@@ -404,7 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('sendVerificationBtn').addEventListener('click', sendVerificationEmail);
     document.getElementById('verifyCodeBtn').addEventListener('click', verifyEmailCode);
-    document.getElementById('formatPhone').addEventListener('input', e => formatPhoneNumber(e.target));
+    document.getElementById('phone')
+        .addEventListener('input', e => formatPhoneNumber(e.target));
     document.getElementById('registerBtn').addEventListener('click', register);
 
     document.querySelectorAll('input[name="userRole"]').forEach(radio => {
