@@ -31,12 +31,104 @@ document.addEventListener('DOMContentLoaded', function() {
     const codeErrorDiv  = document.getElementById('verification-code-error');
     const successDiv    = document.getElementById('verification-success');
 
+    // 로그인 돌아가기 버튼
+    const backToLoginBtn = document.getElementById('backToLoginBtn');
+    const loginRedirectBtn = document.getElementById('loginRedirectBtn');
+
     codeGroup.style.display     = 'none';
     timerDiv.style.display      = 'none';
     emailErrorDiv.style.display = 'none';
     codeErrorDiv.style.display  = 'none';
     successDiv.style.display    = 'none';
     verifyBtn.disabled          = true;
+
+    // =============================================================================
+    // 로그인 페이지로 돌아가기 함수들
+    // =============================================================================
+    function goBackToLogin() {
+        // URL 파라미터에서 소셜 로그인 정보 확인
+        const urlParams = new URLSearchParams(window.location.search);
+        const socialType = urlParams.get('social');
+        
+        if (socialType) {
+            // 소셜 로그인 진행 중이었다면 확인 후 이동
+            const confirmed = confirm(
+                `${getSocialTypeName(socialType)} 로그인 진행 중입니다.\n` +
+                '로그인 페이지로 돌아가시겠습니까?\n' +
+                '(진행 중인 정보는 삭제됩니다)'
+            );
+            
+            if (confirmed) {
+                // 소셜 로그인 임시 데이터 정리
+                clearSocialTempData();
+                window.location.href = 'login.html';
+            }
+        } else {
+            // 일반 회원가입이라면 바로 이동
+            const confirmed = confirm('회원가입을 취소하고 로그인 페이지로 돌아가시겠습니까?');
+            if (confirmed) {
+                window.location.href = 'login.html';
+            }
+        }
+    }
+
+    function clearSocialTempData() {
+        // 소셜 로그인 관련 임시 데이터 모두 삭제
+        const socialTempKeys = [
+            'temp_social_id',
+            'temp_social_type', 
+            'temp_social_name',
+            'temp_social_email',
+            'temp_social_profile_image'
+        ];
+        
+        socialTempKeys.forEach(key => {
+            sessionStorage.removeItem(key);
+        });
+        
+        console.log('🧹 소셜 로그인 임시 데이터 정리 완료');
+    }
+
+    function handleLoginRedirect() {
+        // 회원가입 완료 후 로그인 페이지로 이동하는 함수
+        window.location.href = 'login.html?from=register';
+    }
+
+    // =============================================================================
+    // 키보드 이벤트 처리 (ESC 키로 뒤로가기)
+    // =============================================================================
+    function handleKeyboardEvents(event) {
+        // ESC 키를 누르면 로그인 페이지로 돌아가기
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            goBackToLogin();
+        }
+        
+        // Enter 키 처리
+        if (event.key === 'Enter') {
+            const activeElement = document.activeElement;
+            
+            // 이메일 입력창에서 Enter 시 인증코드 발송
+            if (activeElement === emailInput) {
+                event.preventDefault();
+                sendVerificationEmail();
+            }
+            
+            // 인증코드 입력창에서 Enter 시 인증 확인
+            else if (activeElement === codeInput) {
+                event.preventDefault();
+                if (!verifyBtn.disabled) {
+                    verifyEmailCode();
+                }
+            }
+            
+            // 회원가입 버튼이 포커스되어 있으면 회원가입 실행
+            else if (activeElement && activeElement.id === 'registerBtn') {
+                event.preventDefault();
+                register();
+            }
+        }
+    }
 
     // =============================================================================
     // 인증 이메일 발송 (백엔드 API 호출)
@@ -102,6 +194,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 startVerificationTimer();
                 successDiv.textContent = `✅ 인증코드가 ${email}로 발송되었습니다.`;
                 successDiv.style.display = 'block';
+                
+                // 인증코드 입력창으로 포커스 이동
+                setTimeout(() => {
+                    codeInput.focus();
+                }, 100);
             }
         }
     }
@@ -198,6 +295,16 @@ document.addEventListener('DOMContentLoaded', function() {
             successDiv.textContent = '✅ 이메일 인증이 완료되었습니다';
             successDiv.style.display = 'block';
             timerDiv.style.display = 'none';
+            
+            // 성공 후 다음 단계로 포커스 이동
+            const registerBtn = document.getElementById('registerBtn');
+            if (registerBtn) {
+                setTimeout(() => {
+                    registerBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    registerBtn.focus();
+                }, 500);
+            }
+            
             alert('✅ 이메일 인증이 완료되었습니다!');
         } catch (err) {
             console.error(err);
@@ -481,8 +588,48 @@ document.addEventListener('DOMContentLoaded', function() {
     window.quickVerify = quickVerify;
 
     // =============================================================================
-    // 초기화
+    // 페이지 나가기 전 경고 (작성 중인 데이터가 있을 때)
     // =============================================================================
+    function hasUnsavedData() {
+        const inputs = [
+            'studentId', 'name', 'departmentInput', 'phone', 'email', 'password'
+        ];
+        
+        return inputs.some(id => {
+            const element = document.getElementById(id);
+            return element && element.value.trim().length > 0;
+        });
+    }
+
+    window.addEventListener('beforeunload', function(event) {
+        // 소셜 로그인이거나 회원가입이 완료된 상태면 경고하지 않음
+        const urlParams = new URLSearchParams(window.location.search);
+        const socialType = urlParams.get('social');
+        
+        if (!socialType && hasUnsavedData()) {
+            const message = '작성 중인 회원가입 정보가 있습니다. 정말 나가시겠습니까?';
+            event.returnValue = message;
+            return message;
+        }
+    });
+
+    // =============================================================================
+    // 이벤트 리스너 등록 및 초기화
+    // =============================================================================
+    
+    // 로그인 돌아가기 버튼들에 이벤트 리스너 추가
+    if (backToLoginBtn) {
+        backToLoginBtn.addEventListener('click', goBackToLogin);
+    }
+    
+    if (loginRedirectBtn) {
+        loginRedirectBtn.addEventListener('click', handleLoginRedirect);
+    }
+
+    // 키보드 이벤트 리스너 추가
+    document.addEventListener('keydown', handleKeyboardEvents);
+
+    // 기존 초기화 코드들
     setupGradeDropdown();
     setupDepartmentSearch();
     document.querySelectorAll('input[name="userRole"]').forEach(radio => {
@@ -494,18 +641,293 @@ document.addEventListener('DOMContentLoaded', function() {
     verifyBtn.addEventListener('click', verifyEmailCode);
     document.getElementById('registerBtn')?.addEventListener('click', register);
 
+    // 폰 번호 포맷팅 이벤트 리스너
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            formatPhoneNumber(this);
+        });
+    }
+
+    // 실시간 유효성 검사 이벤트 리스너들
+    const emailField = document.getElementById('email');
+    if (emailField) {
+        emailField.addEventListener('blur', function() {
+            validateEmail(this.value);
+        });
+    }
+
+    const passwordField = document.getElementById('password');
+    if (passwordField) {
+        passwordField.addEventListener('input', function() {
+            validatePassword(this.value);
+            // 비밀번호 확인 필드도 함께 검증
+            const confirmField = document.getElementById('confirmPassword');
+            if (confirmField && confirmField.value) {
+                validatePasswordConfirm(this.value, confirmField.value);
+            }
+        });
+    }
+
+    const confirmPasswordField = document.getElementById('confirmPassword');
+
+    
+    if (confirmPasswordField) {
+        confirmPasswordField.addEventListener('input', function() {
+            const passwordValue = document.getElementById('password').value;
+            validatePasswordConfirm(passwordValue, this.value);
+        });
+    }
+
+    // 학번/교번/직번 입력 시 실시간 검증
+    const studentIdField = document.getElementById('studentId');
+    if (studentIdField) {
+        studentIdField.addEventListener('input', function() {
+            const roleEl = document.querySelector('input[name="userRole"]:checked');
+            if (roleEl) {
+                const role = roleEl.value;
+                const isValid = validateIdPattern(role, this.value);
+                const errorDiv = document.getElementById('studentId-error');
+                
+                if (this.value && !isValid) {
+                    errorDiv.textContent = getIdErrorMessage(role);
+                    errorDiv.style.display = 'block';
+                } else {
+                    errorDiv.style.display = 'none';
+                }
+            }
+        });
+    }
+
     // 소셜 로그인 처리
     const socialType = new URLSearchParams(window.location.search).get('social');
     if (socialType && sessionStorage.getItem('temp_social_id')) {
-        document.getElementById('passwordFields')?.classList.add('hidden');
-        const box = document.getElementById('socialInfoBox');
-        if (box) {
-            box.style.display = 'block';
-            document.getElementById('socialType').textContent = getSocialTypeName(socialType);
-            const ic = document.getElementById('socialIcon');
-            ic && (ic.textContent = socialType.charAt(0).toUpperCase());
+        console.log(`🔗 ${getSocialTypeName(socialType)} 소셜 로그인으로 회원가입 진행 중`);
+        
+        // 패스워드 필드 숨기기
+        const passwordFields = document.getElementById('passwordFields');
+        if (passwordFields) {
+            passwordFields.classList.add('hidden');
+        }
+        
+        // 소셜 로그인 정보 박스 표시
+        const socialInfoBox = document.getElementById('socialInfoBox');
+        if (socialInfoBox) {
+            socialInfoBox.style.display = 'block';
+            
+            const socialTypeSpan = document.getElementById('socialType');
+            if (socialTypeSpan) {
+                socialTypeSpan.textContent = getSocialTypeName(socialType);
+            }
+            
+            const socialIcon = document.getElementById('socialIcon');
+            if (socialIcon) {
+                socialIcon.textContent = socialType.charAt(0).toUpperCase();
+            }
+        }
+
+        // 소셜 로그인에서 가져온 정보로 필드 미리 채우기
+        const tempName = sessionStorage.getItem('temp_social_name');
+        const tempEmail = sessionStorage.getItem('temp_social_email');
+        
+        if (tempName) {
+            const nameField = document.getElementById('name');
+            if (nameField) {
+                nameField.value = tempName;
+            }
+        }
+        
+        if (tempEmail) {
+            const emailField = document.getElementById('email');
+            if (emailField) {
+                emailField.value = tempEmail;
+            }
         }
     }
 
+    // =============================================================================
+    // 추가 유틸리티 함수들
+    // =============================================================================
+    
+    // 폼 데이터 초기화 함수
+    function clearFormData() {
+        const formFields = [
+            'studentId', 'name', 'departmentInput', 'phone', 'email', 
+            'password', 'confirmPassword', 'verificationEmail', 'verificationCode'
+        ];
+        
+        formFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.value = '';
+            }
+        });
+
+        // 선택된 학과, 학년 초기화
+        const selectedDepartment = document.getElementById('selectedDepartment');
+        const selectedGrade = document.getElementById('selectedGrade');
+        if (selectedDepartment) selectedDepartment.value = '';
+        if (selectedGrade) selectedGrade.value = '';
+
+        // 체크박스 초기화
+        const checkboxes = ['agreeTerms', 'agreePrivacy'];
+        checkboxes.forEach(checkboxId => {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+        });
+
+        // 라디오 버튼 초기화 (학생으로 기본 설정)
+        const studentRadio = document.querySelector('input[name="userRole"][value="student"]');
+        if (studentRadio) {
+            studentRadio.checked = true;
+            updateUIByRole('student');
+        }
+
+        // 에러 메시지 모두 숨기기
+        document.querySelectorAll('.error-message').forEach(errorDiv => {
+            errorDiv.style.display = 'none';
+        });
+
+        resetEmailVerification();
+    }
+
+    // 폼 유효성 전체 검사 함수
+    function validateForm() {
+        const roleEl = document.querySelector('input[name="userRole"]:checked');
+        if (!roleEl) return false;
+        
+        const role = roleEl.value;
+        const studentId = document.getElementById('studentId').value.trim();
+        const name = document.getElementById('name').value.trim();
+        const department = document.getElementById('selectedDepartment').value ||
+                          document.getElementById('departmentInput').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const agreeTerms = document.getElementById('agreeTerms').checked;
+        const agreePriv = document.getElementById('agreePrivacy').checked;
+
+        // 기본 필수 필드 검사
+        if (!studentId || !name || !department || !phone || !email) {
+            return false;
+        }
+
+        // 패턴 검사
+        if (!validateIdPattern(role, studentId)) return false;
+        if (!validatePhoneNumber(phone)) return false;
+        if (!validateEmail(email)) return false;
+
+        // 학생인 경우 학년 확인
+        if (role === 'student') {
+            const grade = document.getElementById('selectedGrade').value;
+            if (!grade) return false;
+        }
+
+        // 소셜 로그인이 아닌 경우 비밀번호 검사
+        const socialType = new URLSearchParams(window.location.search).get('social');
+        if (!socialType) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (!validatePassword(password)) return false;
+            if (!validatePasswordConfirm(password, confirmPassword)) return false;
+        }
+
+        // 이메일 인증 검사 (교수/직원)
+        if (!validateEmailVerification(role)) return false;
+
+        // 약관 동의 검사
+        if (!agreeTerms || !agreePriv) return false;
+
+        return true;
+    }
+
+    // 전역 함수로 등록 (디버깅 및 외부 접근용)
+    window.registerPageUtils = {
+        goBackToLogin,
+        clearFormData,
+        validateForm,
+        clearSocialTempData,
+        emailVerificationData: () => emailVerificationData
+    };
+
+    // =============================================================================
+    // 접근성 개선
+    // =============================================================================
+    
+    // 폼 필드들에 적절한 라벨 연결 확인
+    function improveAccessibility() {
+        const fieldLabelPairs = [
+            ['studentId', 'idLabel'],
+            ['name', 'nameLabel'],
+            ['phone', 'phoneLabel'],
+            ['email', 'emailLabel'],
+            ['password', 'passwordLabel'],
+            ['confirmPassword', 'confirmPasswordLabel']
+        ];
+
+        fieldLabelPairs.forEach(([fieldId, labelId]) => {
+            const field = document.getElementById(fieldId);
+            const label = document.getElementById(labelId);
+            
+            if (field && label) {
+                // 라벨이 이미 for 속성을 가지고 있지 않으면 추가
+                if (!label.getAttribute('for')) {
+                    label.setAttribute('for', fieldId);
+                }
+                
+                // 필드에 aria-describedby 추가 (에러 메시지와 연결)
+                const errorId = `${fieldId}-error`;
+                const errorDiv = document.getElementById(errorId);
+                if (errorDiv) {
+                    field.setAttribute('aria-describedby', errorId);
+                }
+            }
+        });
+
+        // 필수 필드 표시
+        const requiredFields = [
+            'studentId', 'name', 'departmentInput', 'phone', 'email'
+        ];
+        
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.setAttribute('aria-required', 'true');
+            }
+        });
+    }
+
+    // 접근성 개선 실행
+    improveAccessibility();
+
+    // =============================================================================
+    // 페이지 로드 완료 로그
+    // =============================================================================
     console.log('✅ 회원가입 페이지 초기화 완료');
+    console.log('🔧 사용 가능한 유틸리티:', Object.keys(window.registerPageUtils));
+    
+    // URL 파라미터 로그
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('social')) {
+        console.log(`🔗 소셜 로그인 모드: ${urlParams.get('social')}`);
+    }
+
+    // 임시 데이터 확인 로그
+    const tempSocialData = [
+        'temp_social_id', 'temp_social_type', 'temp_social_name', 
+        'temp_social_email', 'temp_social_profile_image'
+    ].filter(key => sessionStorage.getItem(key));
+    
+    if (tempSocialData.length > 0) {
+        console.log('📱 소셜 로그인 임시 데이터:', tempSocialData);
+    }
+
+    // 개발 모드에서만 추가 디버그 정보
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('🛠️ 개발 모드 활성화');
+        console.log('💡 팁: ESC 키를 눌러 로그인 페이지로 돌아갈 수 있습니다.');
+        console.log('💡 팁: showVerificationCode() 함수로 인증코드를 확인할 수 있습니다.');
+        console.log('💡 팁: quickVerify() 함수로 자동 인증을 실행할 수 있습니다.');
+    }
 });
