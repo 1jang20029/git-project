@@ -3,7 +3,7 @@
 
 document.addEventListener('DOMContentLoaded', async function() {
     // =============================================================================
-    // 글로벌 상태
+    // Globals
     // =============================================================================
     let courses = [];
     let settings = {
@@ -39,21 +39,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     };
 
     // =============================================================================
-    // 초기화: 백엔드에서 설정·시간표·과목 불러오기
+    // Initialization
     // =============================================================================
     await loadSettings();
     await loadTimetables();
-
-    // 최소 하나의 시간표 확보
-    if (timetables.length === 0) {
-        let initial = null;
-        while (!initial) {
-            initial = await addNewTimetable();
-        }
-        timetables = [initial];
+    if (timetables.length) {
+        currentTimetable = timetables[0];
+    } else {
+        const init = await addNewTimetable();
+        if (init) timetables = [init], currentTimetable = init;
     }
-    currentTimetable = timetables[0];
-
     updateTimetableSelector();
     await loadCourses();
 
@@ -69,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupEventListeners();
 
     // =============================================================================
-    // 백엔드 연동 함수들
+    // Backend API Integration
     // =============================================================================
 
     async function loadSettings() {
@@ -83,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    async function saveSettingsToBackend() {
+    async function saveSettings() {
         try {
             const res = await fetch('/api/settings', {
                 method: 'PUT',
@@ -92,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 credentials: 'include'
             });
             if (!res.ok) throw new Error('설정 저장 실패');
+            console.log('설정 저장 완료');
         } catch (e) {
             console.error(e);
             alert('설정 저장 중 오류 발생');
@@ -140,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (currentTimetable.id === id) currentTimetable = timetables[0];
             updateTimetableSelector();
             await loadCourses();
-            createTimetable();
+            renderCoursesOnTimetable();
             renderCourseList();
             calculateGrades();
         } catch (e) {
@@ -148,14 +144,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             alert('삭제 중 오류 발생');
         }
     }
-    window.deleteTimetableFromDropdown = deleteTimetableFromDropdown;
-    window.deleteCurrentTimetable = () => deleteTimetableFromDropdown(currentTimetable.id);
 
-    window.renameTimetable = async function() {
+    async function renameTimetable() {
         const newName = prompt('시간표 이름을 입력하세요:', currentTimetable.name);
         if (!newName) return;
         try {
-            const res = await fetch(`/api/timetables/${currentTimetable.id}`, {
+            const res = await fetch(
+                `/api/timetables/${currentTimetable.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: newName }),
@@ -169,7 +164,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.error(e);
             alert('이름 변경 중 오류 발생');
         }
-    };
+    }
 
     async function loadCourses() {
         try {
@@ -184,24 +179,29 @@ document.addEventListener('DOMContentLoaded', async function() {
             courses = [];
         }
     }
-    window.loadCourses = loadCourses;
 
     async function saveCourseToBackend(course) {
         const method = course.id ? 'PUT' : 'POST';
         const url = course.id
             ? `/api/timetables/${currentTimetable.id}/courses/${course.id}`
             : `/api/timetables/${currentTimetable.id}/courses`;
-        const res = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(course),
-            credentials: 'include'
-        });
-        if (!res.ok) throw new Error('과목 저장 실패');
-        return await res.json();
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(course),
+                credentials: 'include'
+            });
+            if (!res.ok) throw new Error('과목 저장 실패');
+            return await res.json();
+        } catch (e) {
+            console.error(e);
+            alert('과목 저장 중 오류 발생');
+            throw e;
+        }
     }
 
-    window.deleteCourse = async function(courseId) {
+    async function deleteCourse(courseId) {
         if (!confirm('정말 삭제하시겠습니까?')) return;
         try {
             const res = await fetch(
@@ -217,58 +217,73 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.error(e);
             alert('과목 삭제 중 오류 발생');
         }
-    };
+    }
 
     // =============================================================================
-    // 설정 적용 함수
+    // Settings UI
     // =============================================================================
     function applySettings() {
         applyAppearance(settings.appearance);
         createTimetable();
         renderCoursesOnTimetable();
     }
-
     function applySettingsToUI() {
-        document.getElementById('show-professor').checked   = settings.showProfessor;
-        document.getElementById('show-room').checked        = settings.showRoom;
-        document.getElementById('theme-select').value       = settings.appearance;
-        document.getElementById('time-format-select').value = settings.timeFormat24 ? '24' : '12';
-        document.getElementById('weekend-select').value     = settings.showWeekend.toString();
-    }
-
-    window.openSettings = function() {
-        settingsBackup = JSON.parse(JSON.stringify(settings));
-        applySettingsToUI();
-        document.getElementById('settings-modal').style.display = 'flex';
-    };
-
-    window.closeSettings = function() {
-        if (settingsBackup) {
-            settings = JSON.parse(JSON.stringify(settingsBackup));
-            applySettings();
-            settingsBackup = null;
-        }
-        document.getElementById('settings-modal').style.display = 'none';
-    };
-
-    window.saveSettings = function() {
-        settings.showProfessor   = document.getElementById('show-professor').checked;
-        settings.showRoom        = document.getElementById('show-room').checked;
-        settings.appearance      = document.getElementById('theme-select').value;
-        settings.timeFormat24    = document.getElementById('time-format-select').value === '24';
-        settings.showWeekend     = document.getElementById('weekend-select').value === 'true';
-        saveSettingsToBackend();
-        applySettings();
-        closeSettings();
-    };
-
-    function applyAppearance(mode) {
-        document.body.classList.toggle('light-mode', mode === 'light');
-        document.body.classList.toggle('dark-mode',  mode !== 'light');
+        document.getElementById('show-professor').checked = settings.showProfessor;
+        document.getElementById('show-room').checked      = settings.showRoom;
+        document.getElementById('theme-select').value     = settings.appearance;
+        document.getElementById('time-format-select').value =
+            settings.timeFormat24 ? '24' : '12';
+        document.getElementById('weekend-select').value   = settings.showWeekend.toString();
     }
 
     // =============================================================================
-    // 공통 유틸리티
+    // Event Listeners
+    // =============================================================================
+    function setupEventListeners() {
+        document.addEventListener('keydown', handleEscapeKey);
+        document.getElementById('course-modal')
+            .addEventListener('click', handleModalOutsideClick);
+        document.getElementById('settings-modal')
+            .addEventListener('click', handleModalOutsideClick);
+        document.addEventListener('click', handleDropdownOutsideClick);
+        window.addEventListener('resize', debounce(handleWindowResize, 250));
+        document.getElementById('semester-select')
+            .addEventListener('change', changeSemester);
+        document.getElementById('add-timetable-btn')
+            .addEventListener('click', async () => {
+                const t = await addNewTimetable();
+                if (t) {
+                    timetables.push(t);
+                    selectTimetable(t.id);
+                }
+            });
+        document.getElementById('rename-timetable-btn')
+            .addEventListener('click', renameTimetable);
+        document.getElementById('delete-timetable-btn')
+            .addEventListener('click', () => deleteTimetableFromDropdown(currentTimetable.id));
+        document.getElementById('open-settings-btn')
+            .addEventListener('click', openSettings);
+        document.getElementById('save-settings-btn')
+            .addEventListener('click', async () => { await saveSettings(); closeSettings(); });
+        document.getElementById('cancel-settings-btn')
+            .addEventListener('click', closeSettings);
+        document.getElementById('save-course-btn')
+            .addEventListener('click', async e => {
+                e.preventDefault();
+                const course = collectCourseForm();
+                const saved = await saveCourseToBackend(course);
+                courses = courses.filter(c => c.id !== saved.id).concat(saved);
+                renderCourseList();
+                renderCoursesOnTimetable();
+                calculateGrades();
+                closeModal();
+            });
+        setupDepartmentSearch();
+        setupGradeDropdown();
+    }
+
+    // =============================================================================
+    // Utility
     // =============================================================================
     function debounce(fn, ms) {
         let timer;
@@ -279,20 +294,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // =============================================================================
-    // 시간표 생성 및 렌더링
+    // Timetable Rendering
     // =============================================================================
     function setCurrentSemester() {
-        const now = new Date(), m = now.getMonth() + 1;
-        if (m >= 3 && m <= 6)       currentSemester = { year: now.getFullYear(), term: 1 };
-        else if (m >= 9 && m <= 12) currentSemester = { year: now.getFullYear(), term: 2 };
-        else if (m >= 1 && m <= 2)  currentSemester = { year: now.getFullYear() - 1, term: 2 };
-        else                        currentSemester = { year: now.getFullYear(), term: 1 };
+        const now = new Date(), m = now.getMonth()+1;
+        if (3 <= m && m <= 6)    currentSemester = { year: now.getFullYear(), term:1 };
+        else if (9 <= m && m <=12)currentSemester = { year: now.getFullYear(), term:2 };
+        else if (1 <= m && m <=2) currentSemester = { year: now.getFullYear()-1, term:2 };
+        else                      currentSemester = { year: now.getFullYear(), term:1 };
     }
 
     function createTimetable() {
         const tbody = document.getElementById('timetable-body');
         tbody.innerHTML = '';
-        for (const { period, startTime } of timeData) {
+        for (let i=0; i<timeData.length; i++) {
+            const { period, startTime } = timeData[i];
             const row = document.createElement('tr');
             const timeCell = document.createElement('td');
             timeCell.className = 'time-col';
@@ -300,14 +316,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 timeCell.innerHTML = `${period}교시<br>${startTime}`;
             } else {
                 const [h, m] = startTime.split(':').map(Number);
-                const ampm = h >= 12 ? '오후' : '오전';
-                const dh = h > 12 ? h - 12 : h;
+                const ampm = h>=12?'오후':'오전';
+                const dh = h>12?h-12:h;
                 timeCell.innerHTML = `${period}교시<br>${ampm} ${dh}:${String(m).padStart(2,'0')}`;
             }
             row.appendChild(timeCell);
 
-            const maxDays = settings.showWeekend ? 6 : 5;
-            for (let d = 1; d <= maxDays; d++) {
+            const maxDays = settings.showWeekend?6:5;
+            for (let d=1; d<=maxDays; d++) {
                 const cell = document.createElement('td');
                 cell.className = 'class-cell';
                 cell.dataset.day = d;
@@ -316,70 +332,80 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
             tbody.appendChild(row);
         }
+        document.querySelectorAll('.timetable th, .timetable td').forEach(el=>{
+            el.style.display='';
+        });
+        if (!settings.showWeekend) {
+            document.querySelectorAll('th,td').forEach(el=>{
+                if (el.dataset && el.dataset.day==='6') el.style.display='none';
+            });
+        }
         renderCoursesOnTimetable();
     }
 
     function renderCoursesOnTimetable() {
         const container = document.querySelector('.timetable-container');
-        const first = container.querySelector('.class-cell[data-day="1"][data-period="1"]');
-        if (!first) return;
-        const w = first.getBoundingClientRect().width;
-        const h = first.getBoundingClientRect().height;
-        container.querySelectorAll('.class-item').forEach(e => e.remove());
+        const firstCell = container.querySelector('.class-cell[data-day="1"][data-period="1"]');
+        if (!firstCell) return;
+        const base = container.getBoundingClientRect();
+        const cellRect = firstCell.getBoundingClientRect();
+        const w = cellRect.width, h = cellRect.height;
+        container.querySelectorAll('.class-item').forEach(e=>e.remove());
 
         const colorMap = {
             'color-1':'#e57373','color-2':'#81c784','color-3':'#64b5f6','color-4':'#ba68c8',
             'color-5':'#ffb74d','color-6':'#4db6ac','color-7':'#7986cb','color-8':'#a1887f'
         };
 
-        for (const c of courses) {
-            for (const t of c.times) {
-                if (t.day > (settings.showWeekend ? 6 : 5)) continue;
-                const x = (t.day - 1) * w;
-                const y = (t.start - 1) * h + h * 0.5;
-                const height = (t.end - t.start + 1) * h;
+        courses.forEach(course=>{
+            course.times.forEach(t=>{
+                if (t.day> (settings.showWeekend?6:5)) return;
+                const x = (t.day-1)*w;
+                const y = (t.start-1)*h + h*0.5;
+                const height = (t.end - t.start +1)*h;
                 const block = document.createElement('div');
-                block.className = 'class-item';
-                Object.assign(block.style, {
-                    position: 'absolute',
-                    left: `${x}px`, top: `${y}px`,
-                    width: `${w}px`, height: `${height}px`,
-                    background: colorMap[c.color] || colorMap['color-1'],
-                    color: '#fff', fontSize: '12px',
-                    display: 'flex', flexDirection: 'column',
-                    justifyContent: 'center', alignItems: 'center',
-                    textAlign: 'center', borderRadius: '4px'
-                });
+                block.className='class-item';
+                block.style.cssText=`
+                    position:absolute;
+                    left:${x}px; top:${y}px;
+                    width:${w}px;height:${height}px;
+                    background:${colorMap[course.color]||colorMap['color-1']};
+                    color:#fff;font-size:12px;
+                    display:flex;flex-direction:column;
+                    justify-content:center;align-items:center;
+                    text-align:center;border-radius:4px;
+                `;
                 const nameDiv = document.createElement('div');
-                nameDiv.textContent = c.name;
-                const infoDiv = document.createElement('div');
-                const parts = [];
-                if (settings.showProfessor && c.professor) parts.push(c.professor);
-                if (settings.showRoom && c.room) parts.push(c.room);
-                infoDiv.textContent = parts.join(' | ');
-                infoDiv.style.fontSize = '10px';
-                block.append(nameDiv, infoDiv);
+                nameDiv.textContent=course.name;
+                const infoParts=[];
+                if(settings.showProfessor&&course.professor) infoParts.push(course.professor);
+                if(settings.showRoom&&course.room) infoParts.push(course.room);
+                const infoDiv=document.createElement('div');
+                infoDiv.textContent=infoParts.join(' | ');
+                infoDiv.style.fontSize='10px';
+                block.append(nameDiv,infoDiv);
                 container.append(block);
-            }
-        }
+            });
+        });
     }
 
     function renderCourseList() {
         const list = document.getElementById('course-list');
-        list.innerHTML = '';
-        if (courses.length === 0) {
-            const msg = document.createElement('div');
-            msg.className = 'empty-state';
-            msg.innerHTML = '<h3>📚 등록된 과목이 없습니다</h3>' +
-                            '<p>과목 추가 버튼을 눌러 과목을 추가해보세요.</p>';
+        list.innerHTML='';
+        if(!courses.length){
+            const msg=document.createElement('div');
+            msg.className='empty-state';
+            msg.innerHTML='<h3>📚 등록된 과목이 없습니다</h3><p>과목 추가 버튼을 눌러 과목을 추가하세요.</p>';
             list.append(msg);
             return;
         }
-        for (const c of courses) {
-            const li = document.createElement('li');
-            li.className = 'course-item';
-            const times = c.times.map(t => `${dayData[t.day]} ${t.start}교시~${t.end}교시`).join(', ');
-            li.innerHTML = `
+        courses.forEach(c=>{
+            const li=document.createElement('li');li.className='course-item';
+            const times=c.times.map(t=>{
+                const day=dayData[t.day];
+                return `${day} ${t.start}교시~${t.end}교시`;
+            }).join(', ');
+            li.innerHTML=`
                 <div class="course-info">
                     <div class="course-name">${c.name}</div>
                     <div class="course-details">${c.professor||''} | ${c.credits}학점</div>
@@ -391,177 +417,236 @@ document.addEventListener('DOMContentLoaded', async function() {
                 </div>
             `;
             list.append(li);
-        }
+        });
     }
 
     function calculateGrades() {
         let totCr=0, totPt=0, majCr=0, majPt=0;
-        for (const c of courses) {
-            if (c.grade && gradePoints[c.grade] != null) {
-                const cr = c.credits, pt = gradePoints[c.grade];
-                totCr += cr; totPt += cr * pt;
-                if (/전공/.test(c.type)) { majCr += cr; majPt += cr * pt; }
+        courses.forEach(c=>{
+            if(c.grade&&gradePoints[c.grade]!=null){
+                const cr=c.credits, pt=gradePoints[c.grade];
+                totCr+=cr; totPt+=cr*pt;
+                if(c.type.includes('전공')){
+                    majCr+=cr; majPt+=cr*pt;
+                }
             }
-        }
-        document.getElementById('total-credits').textContent = totCr;
-        document.getElementById('total-gpa').textContent     = totCr ? (totPt/totCr).toFixed(2) : "0.00";
-        document.getElementById('major-gpa').textContent     = majCr ? (majPt/majCr).toFixed(2) : "0.00";
+        });
+        document.getElementById('total-credits').textContent=totCr;
+        document.getElementById('total-gpa').textContent=(totCr?totPt/totCr:0).toFixed(2);
+        document.getElementById('major-gpa').textContent=(majCr?majPt/majCr:0).toFixed(2);
     }
 
-    // ==================================================================================
-    // 과목 모달 관련 함수들
-    // ==================================================================================
-    window.openAddCourseModal = function() {
-        document.getElementById('modal-title').textContent = '과목 추가';
+    // =============================================================================
+    // Course Modal
+    // =============================================================================
+    function openAddCourseModal(){
+        document.getElementById('modal-title').textContent='과목 추가';
         document.getElementById('course-form').reset();
-        document.getElementById('course-id').value = '';
-        document.getElementById('time-slots').innerHTML = '';
+        document.getElementById('course-id').value='';
+        document.getElementById('time-slots').innerHTML='';
         addTimeSlot();
-        document.getElementById('course-modal').style.display = 'flex';
-    };
+        document.getElementById('course-modal').style.display='flex';
+    }
+    window.openAddCourseModal = openAddCourseModal;
 
-    window.openEditModal = function(courseId) {
-        const course = courses.find(x => x.id === courseId);
-        if (!course) return;
-        document.getElementById('modal-title').textContent = '과목 수정';
-        document.getElementById('course-id').value = course.id;
-        document.getElementById('course-name').value = course.name;
-        document.getElementById('course-professor').value = course.professor || '';
-        document.getElementById('course-credits').value = course.credits;
-        document.getElementById('course-type').value = course.type;
-        document.getElementById('course-room').value = course.room || '';
-        document.getElementById('course-color').value = course.color;
-        document.getElementById('course-grade').value = course.grade || '';
-        document.getElementById('time-slots').innerHTML = '';
-        for (const t of course.times) addTimeSlot(t.day, t.start, t.end);
-        document.getElementById('course-modal').style.display = 'flex';
-    };
+    function openEditModal(id){
+        const c=courses.find(x=>x.id===id); if(!c)return;
+        document.getElementById('modal-title').textContent='과목 수정';
+        document.getElementById('course-id').value=c.id;
+        document.getElementById('course-name').value=c.name;
+        document.getElementById('course-professor').value=c.professor;
+        document.getElementById('course-credits').value=c.credits;
+        document.getElementById('course-type').value=c.type;
+        document.getElementById('course-room').value=c.room;
+        document.getElementById('course-color').value=c.color;
+        document.getElementById('course-grade').value=c.grade||'';
+        const ts=document.getElementById('time-slots'); ts.innerHTML='';
+        c.times.forEach(t=>addTimeSlot(t.day,t.start,t.end));
+        document.getElementById('course-modal').style.display='flex';
+    }
+    window.openEditModal = openEditModal;
 
-    window.closeModal = function() {
-        document.getElementById('course-modal').style.display = 'none';
-    };
+    function closeModal(){
+        document.getElementById('course-modal').style.display='none';
+    }
+    window.closeModal = closeModal;
 
-    window.selectColor = function(el) {
-        document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+    function selectColor(el){
+        document.querySelectorAll('.color-option').forEach(o=>o.classList.remove('selected'));
         el.classList.add('selected');
-        document.getElementById('course-color').value = el.dataset.color;
-    };
+        document.getElementById('course-color').value=el.dataset.color;
+    }
+    window.selectColor = selectColor;
 
-    window.addTimeSlot = function(day=1,start=1,end=1) {
-        const div = document.createElement('div');
-        div.className = 'time-slot';
-        div.innerHTML = `
+    function addTimeSlot(day=1,start=1,end=1){
+        const div=document.createElement('div');div.className='time-slot';
+        div.innerHTML=`
             <select class="day-select"></select>
             <select class="start-select"></select>
             <select class="end-select"></select>
-            <button type="button" onclick="removeTimeSlot(this)">❌</button>
+            <button onclick="removeTimeSlot(this)">❌</button>
         `;
-        const ds = div.querySelector('.day-select'),
-              ss = div.querySelector('.start-select'),
-              es = div.querySelector('.end-select');
-        for (let i=1; i<=6; i++) {
-            ds.innerHTML += `<option value="${i}">${dayData[i]}요일</option>`;
-        }
-        for (let i=1; i<=9; i++) {
-            ss.innerHTML += `<option value="${i}">${i}교시</option>`;
-            es.innerHTML += `<option value="${i}">${i}교시</option>`;
-        }
-        ds.value = day; ss.value = start; es.value = end;
+        const ds=div.querySelector('.day-select'),
+              ss=div.querySelector('.start-select'),
+              es=div.querySelector('.end-select');
+        dayData.slice(1).forEach((d,i)=>{
+            ds.innerHTML+=`<option value="${i+1}">${d}</option>`;
+            ss.innerHTML+=`<option value="${i+1}">${i+1}교시</option>`;
+            es.innerHTML+=`<option value="${i+1}">${i+1}교시</option>`;
+        });
+        ds.value=day; ss.value=start; es.value=end;
         ss.addEventListener('change',()=>{ if(+es.value<+ss.value) es.value=ss.value; });
         document.getElementById('time-slots').append(div);
-    };
+    }
+    window.addTimeSlot = addTimeSlot;
 
-    window.removeTimeSlot = function(btn) {
-        const slots = document.querySelectorAll('.time-slot');
-        if (slots.length > 1) btn.closest('.time-slot').remove();
-    };
+    function removeTimeSlot(btn){
+        const parent=btn.closest('.time-slot');
+        if(document.querySelectorAll('.time-slot').length>1) parent.remove();
+    }
+    window.removeTimeSlot = removeTimeSlot;
 
-    function showTimeError(text) {
+    function showTimeError(msg){
         removeTimeError();
-        const f = document.getElementById('course-form');
-        const e = document.createElement('div');
-        e.id = 'time-error'; e.textContent = text;
-        e.style.color = '#ef4444'; e.style.marginBottom = '8px';
-        f.prepend(e);
+        const f=document.getElementById('course-form');
+        const e=document.createElement('div');
+        e.id='time-error'; e.textContent=msg;
+        e.style.color='#ef4444'; f.prepend(e);
     }
-    function removeTimeError() {
-        const old = document.getElementById('time-error');
-        if (old) old.remove();
-    }
+    function removeTimeError(){ const old=document.getElementById('time-error'); if(old) old.remove(); }
 
-    function collectCourseForm() {
-        const idVal = document.getElementById('course-id').value;
-        const id = idVal ? parseInt(idVal,10) : null;
-        const name = document.getElementById('course-name').value.trim();
-        const professor = document.getElementById('course-professor').value.trim();
-        const credits = parseInt(document.getElementById('course-credits').value,10);
-        const type = document.getElementById('course-type').value;
-        const room = document.getElementById('course-room').value.trim();
-        const color = document.getElementById('course-color').value;
-        const grade = document.getElementById('course-grade').value || null;
-
-        const slots = Array.from(document.querySelectorAll('.time-slot')).map(s=>({
-            day: parseInt(s.querySelector('.day-select').value,10),
-            start: parseInt(s.querySelector('.start-select').value,10),
-            end: parseInt(s.querySelector('.end-select').value,10)
+    function collectCourseForm(){
+        const id=document.getElementById('course-id').value;
+        const name=document.getElementById('course-name').value.trim();
+        const professor=document.getElementById('course-professor').value.trim();
+        const credits=+document.getElementById('course-credits').value;
+        const type=document.getElementById('course-type').value;
+        const room=document.getElementById('course-room').value.trim();
+        const color=document.getElementById('course-color').value;
+        const grade=document.getElementById('course-grade').value||null;
+        const slots=document.querySelectorAll('.time-slot');
+        const times=Array.from(slots).map(s=>({
+            day:+s.querySelector('.day-select').value,
+            start:+s.querySelector('.start-select').value,
+            end:+s.querySelector('.end-select').value
         }));
-        // 같은 과목 내 겹침 검사
-        for (let i=0; i<slots.length; i++){
-            for (let j=i+1; j<slots.length; j++){
-                const a=slots[i],b=slots[j];
-                if(a.day===b.day && a.start<=b.end && b.start<=a.end){
-                    showTimeError('⚠️ 같은 과목 내에 시간이 겹칩니다.'); return null;
-                }
-            }
+        return { id:id?+id:null, name, professor, credits, type, room, color, grade, times };
+    }
+
+    // =============================================================================
+    // Settings Modal
+    // =============================================================================
+    let settingsBackup=null;
+    function openSettings(){
+        settingsBackup=JSON.parse(JSON.stringify(settings));
+        applySettingsToUI();
+        document.getElementById('settings-modal').style.display='flex';
+    }
+    window.openSettings=openSettings;
+
+    function closeSettings(){
+        if(settingsBackup){ settings=settingsBackup; applySettings(); settingsBackup=null; }
+        document.getElementById('settings-modal').style.display='none';
+    }
+    window.closeSettings=closeSettings;
+
+    // =============================================================================
+    // Escape, clicks, resize, semester change
+    // =============================================================================
+    function handleEscapeKey(e){
+        if(e.key==='Escape'){
+            if(document.getElementById('course-modal').style.display==='flex') closeModal();
+            else if(document.getElementById('settings-modal').style.display==='flex') closeSettings();
+            const dd=document.getElementById('timetable-menu');
+            if(dd&&dd.style.display==='block') dd.style.display='none';
         }
-        // 다른 과목과 겹침 검사
-        for (const s of slots){
-            for (const c of courses){
-                if(id && c.id===id) continue;
-                for (const t of c.times){
-                    if(s.day===t.day && s.start<=t.end && t.start<=s.end){
-                        showTimeError('⚠️ 해당 시간대에 이미 다른 과목이 있습니다.'); return null;
+    }
+    function handleModalOutsideClick(e){
+        if(e.target===e.currentTarget){
+            if(e.currentTarget.id==='course-modal') closeModal();
+            else if(e.currentTarget.id==='settings-modal') closeSettings();
+        }
+    }
+    function handleDropdownOutsideClick(e){
+        const drop=document.querySelector('.custom-dropdown');
+        if(drop&&!drop.contains(e.target)) document.getElementById('timetable-menu').style.display='none';
+    }
+    function handleWindowResize(){ createTimetable(); renderCoursesOnTimetable(); }
+    function changeSemester(){
+        const [y,t] = document.getElementById('semester-select').value.split('-').map(Number);
+        currentSemester={year:y,term:t};
+        loadCourses().then(()=>{
+            createTimetable(); renderCourseList(); calculateGrades();
+        });
+    }
+
+    // =============================================================================
+    // Timetable selector and title
+    // =============================================================================
+    function updateTimetableSelector(){
+        document.getElementById('selected-timetable').textContent=currentTimetable.name;
+    }
+    function selectTimetable(id){
+        const t=timetables.find(x=>x.id===id); if(!t)return;
+        currentTimetable=t;
+        updateTimetableSelector();
+        loadCourses().then(()=>{
+            createTimetable(); renderCourseList(); calculateGrades();
+        });
+    }
+    window.selectTimetable=selectTimetable;
+
+    function updatePageTitle(){
+        document.querySelector('.page-title').textContent=currentTimetable.name;
+    }
+
+    // =============================================================================
+    // Appearance
+    // =============================================================================
+    function applyAppearance(mode){
+        document.body.classList.toggle('light-mode',mode==='light');
+        document.body.classList.toggle('dark-mode',mode!=='light');
+    }
+
+    // =============================================================================
+    // Department & Grade dropdowns
+    // =============================================================================
+    function setupDepartmentSearch(){
+        const depIn=document.getElementById('departmentInput'),
+              dd=document.getElementById('departmentDropdown'),
+              opts=dd.querySelectorAll('.department-option');
+        depIn.addEventListener('input',()=>{
+            const term=depIn.value.toLowerCase();
+            dd.style.display=term?'block':'none';
+            dd.querySelectorAll('.department-category').forEach(c=>c.style.display='none');
+            opts.forEach(o=>{
+                const ok=o.textContent.toLowerCase().includes(term);
+                o.style.display=ok?'block':'none';
+                if(ok){
+                    let p=o.previousElementSibling;
+                    while(p){
+                        if(p.classList.contains('department-category')){ p.style.display='block'; break; }
+                        p=p.previousElementSibling;
                     }
                 }
-            }
-        }
-        removeTimeError();
-        return { id, name, professor, credits, type, room, color, grade, times: slots };
-    }
-
-    async function saveCourse(event) {
-        event.preventDefault();
-        const btn = document.getElementById('save-course-btn');
-        if (btn.disabled) return;
-        btn.disabled = true;
-        const course = collectCourseForm();
-        if (!course) { btn.disabled = false; return; }
-        try {
-            const saved = await saveCourseToBackend(course);
-            courses = courses.filter(c=>c.id!==saved.id).concat(saved);
-            renderCourseList();
-            renderCoursesOnTimetable();
-            calculateGrades();
-            closeModal();
-        } catch (_) {
-            // error already shown
-        } finally {
-            btn.disabled = false;
-        }
-    }
-    document.getElementById('save-course-btn').addEventListener('click', saveCourse);
-
-    // ==================================================================================
-    // ESC, 클릭, resize, semester change, goBack
-    // ==================================================================================
-    window.changeSemester = function() {
-        const [y,t] = document.getElementById('semester-select').value.split('-').map(Number);
-        currentSemester = { year: y, term: t };
-        loadCourses().then(()=>{
-            createTimetable();
-            renderCourseList();
-            calculateGrades();
+            });
         });
-    };
-    window.goToBack = () => window.history.back();
+        depIn.addEventListener('focus',()=>{ if(!depIn.value) dd.style.display='block'; });
+        opts.forEach(o=>o.addEventListener('click',()=>{
+            depIn.value=o.textContent;
+            document.getElementById('selectedDepartment').value=o.dataset.value;
+            dd.style.display='none';
+        }));
+        document.addEventListener('click',e=>{ if(!e.target.closest('.department-container')) dd.style.display='none'; });
+    }
+    function setupGradeDropdown(){
+        const btn=document.getElementById('gradeDropdownBtn'),
+              menu=document.getElementById('gradeDropdown'),
+              sel=document.getElementById('selectedGrade');
+        btn.addEventListener('click',()=>menu.classList.toggle('show'));
+        menu.querySelectorAll('.grade-option').forEach(o=>o.addEventListener('click',()=>{
+            btn.textContent=o.textContent; sel.value=o.dataset.value; menu.classList.remove('show');
+        }));
+        window.addEventListener('click',e=>{ if(!e.target.matches('.grade-button')&&!e.target.matches('.grade-option')) menu.classList.remove('show'); });
+    }
 });
