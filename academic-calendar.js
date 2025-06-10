@@ -466,3 +466,15 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') nextMonth();
   }
 });
+
+
+// 뒤로 가기 / 메인으로 이동
+function goBackToMain() {
+  if (document.referrer && document.referrer !== '') {
+    window.history.back();
+  } else {
+    // index.html 대신 실제 메인 페이지 경로가 다르다면 그 경로로 수정하세요
+    window.location.href = 'index.html';
+  }
+}
+
