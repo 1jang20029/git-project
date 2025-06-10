@@ -12,7 +12,7 @@
         <!-- 헤더 -->
         <header class="header">
             <div class="header-content">
-                <!-- 뒤로 가기 버튼 추가 -->
+                <!-- 뒤로 가기 버튼 -->
                 <button class="back-button" onclick="goBackToMain()">
                     <span>메인으로</span>
                 </button>
@@ -89,36 +89,10 @@
                 <button class="filter-btn" data-type="exam" onclick="filterEvents('exam')">시험</button>
                 <button class="filter-btn" data-type="holiday" onclick="filterEvents('holiday')">휴일</button>
                 <button class="filter-btn" data-type="event" onclick="filterEvents('event')">행사</button>
+                <button class="filter-btn" data-type="registration" onclick="filterEvents('registration')">수강신청</button>
             </div>
             <div class="events-list" id="eventsList">
                 <!-- 일정 목록이 JavaScript로 동적 생성됩니다 -->
-            </div>
-        </div>
-
-        <!-- 학사일정 범례 -->
-        <div class="legend">
-            <h4 class="legend-title">범례</h4>
-            <div class="legend-items">
-                <div class="legend-item">
-                    <span class="legend-color academic"></span>
-                    <span class="legend-text">학사일정</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color exam"></span>
-                    <span class="legend-text">시험</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color holiday"></span>
-                    <span class="legend-text">공휴일/방학</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color event"></span>
-                    <span class="legend-text">행사</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color registration"></span>
-                    <span class="legend-text">수강신청</span>
-                </div>
             </div>
         </div>
     </div>
