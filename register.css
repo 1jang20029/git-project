@@ -1,6 +1,6 @@
 /* =============================================================================
    register.css
-   PC 전용 회원가입 페이지 스타일
+   PC 전용 회원가입 페이지 스타일 (밝은 테마)
    ============================================================================= */
 
 * {
@@ -11,17 +11,17 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    color: #1e293b;
     min-height: 100vh;
     overflow-x: hidden;
 }
 
-/* 상단 네비게이션 (메인과 동일) */
+/* 상단 네비게이션 */
 #top-nav {
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
     padding: 1rem 2rem;
     position: fixed;
     top: 0;
@@ -32,6 +32,7 @@ body {
     align-items: center;
     justify-content: space-between;
     height: 80px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 #nav-brand {
@@ -47,11 +48,11 @@ body {
 }
 
 .back-button {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
     border-radius: 8px;
     padding: 0.75rem 1.5rem;
-    color: #94a3b8;
+    color: #64748b;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -78,14 +79,14 @@ body {
 
 /* 회원가입 카드 */
 .register-card {
-    background: rgba(30, 41, 59, 0.5);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 16px;
     padding: 3rem;
     width: 100%;
     max-width: 800px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.6s ease-out;
 }
 
@@ -94,7 +95,7 @@ body {
     font-weight: 700;
     text-align: center;
     margin-bottom: 2rem;
-    background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+    background: linear-gradient(135deg, #1e293b, #475569);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -137,7 +138,7 @@ body {
 .naver-icon { background-color: #03C75A; }
 
 .social-text {
-    color: #94a3b8;
+    color: #64748b;
     line-height: 1.6;
 }
 
@@ -165,7 +166,7 @@ body {
     display: block;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #f1f5f9;
+    color: #374151;
     margin-bottom: 0.5rem;
 }
 
@@ -177,10 +178,10 @@ body {
 .form-input {
     width: 100%;
     padding: 0.875rem 1rem;
-    background: rgba(15, 23, 42, 0.3);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
     border-radius: 8px;
-    color: #f1f5f9;
+    color: #1e293b;
     font-size: 0.9rem;
     transition: all 0.3s ease;
 }
@@ -189,21 +190,28 @@ body {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    background: rgba(15, 23, 42, 0.5);
+    background: rgba(255, 255, 255, 1);
 }
 
 .form-input::placeholder {
-    color: #64748b;
+    color: #94a3b8;
 }
 
 .form-hint {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: #64748b;
     margin-top: 0.25rem;
 }
 
 .error-message {
     color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.success-message {
+    color: #10b981;
     font-size: 0.8rem;
     margin-top: 0.25rem;
     display: none;
@@ -226,18 +234,19 @@ body {
 }
 
 .role-card {
-    border: 2px solid rgba(148, 163, 184, 0.2);
+    border: 2px solid rgba(148, 163, 184, 0.3);
     border-radius: 12px;
     padding: 1.5rem;
     text-align: center;
     transition: all 0.3s ease;
-    background: rgba(15, 23, 42, 0.3);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .role-card:hover {
     border-color: #3b82f6;
     background: rgba(59, 130, 246, 0.1);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .role-option input[type="radio"]:checked + .role-card {
@@ -253,36 +262,77 @@ body {
 .role-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #f1f5f9;
+    color: #1e293b;
     margin-bottom: 0.5rem;
 }
 
 .role-desc {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: #64748b;
 }
 
-/* 승인 안내 */
-.approval-notice {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.2);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
+/* 이메일 인증 섹션 */
+.verification-section {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.verification-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.verification-icon {
+    font-size: 2rem;
+}
+
+.verification-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.verification-description {
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.email-verification-form {
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.email-input-group {
+    display: flex;
     gap: 0.75rem;
 }
 
-.notice-icon {
-    font-size: 1.25rem;
-    margin-top: 0.125rem;
+.email-input-group .form-input {
+    flex: 1;
 }
 
-.notice-text {
-    color: #fbbf24;
-    line-height: 1.5;
+.code-input-group {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.code-input-group .form-input {
+    flex: 1;
+}
+
+.verification-timer {
     font-size: 0.9rem;
+    color: #ef4444;
+    margin-top: 0.5rem;
+    font-weight: 500;
 }
 
 /* 학과 드롭다운 */
@@ -296,14 +346,14 @@ body {
     top: 100%;
     left: 0;
     right: 0;
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    border: 1px solid rgba(148, 163, 184, 0.3);
     border-radius: 8px;
     max-height: 300px;
     overflow-y: auto;
     z-index: 100;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .department-category {
@@ -318,9 +368,9 @@ body {
 .department-option {
     padding: 0.875rem 1rem;
     cursor: pointer;
-    color: #f1f5f9;
+    color: #1e293b;
     font-size: 0.9rem;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
     transition: background 0.2s ease;
 }
 
@@ -344,10 +394,10 @@ body {
 .grade-button {
     width: 100%;
     padding: 0.875rem 1rem;
-    background: rgba(15, 23, 42, 0.3);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
     border-radius: 8px;
-    color: #f1f5f9;
+    color: #1e293b;
     text-align: left;
     cursor: pointer;
     display: flex;
@@ -365,7 +415,7 @@ body {
 .grade-button:after {
     content: "▼";
     font-size: 0.7rem;
-    color: #94a3b8;
+    color: #64748b;
 }
 
 .grade-content {
@@ -374,12 +424,12 @@ body {
     top: 100%;
     left: 0;
     right: 0;
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    border: 1px solid rgba(148, 163, 184, 0.3);
     border-radius: 8px;
     z-index: 100;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .grade-content.show {
@@ -389,7 +439,7 @@ body {
 .grade-option {
     padding: 0.875rem 1rem;
     cursor: pointer;
-    color: #f1f5f9;
+    color: #1e293b;
     font-size: 0.9rem;
     transition: background 0.2s ease;
 }
@@ -398,207 +448,10 @@ body {
     background: rgba(59, 130, 246, 0.1);
 }
 
-/* 인증 섹션 */
-.verification-section {
-    background: rgba(15, 23, 42, 0.3);
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.verification-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.verification-icon {
-    font-size: 2rem;
-}
-
-.verification-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #f1f5f9;
-}
-
-.verification-description {
-    color: #94a3b8;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-}
-
-.verification-methods {
-    display: grid;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.method-option input[type="radio"] {
-    display: none;
-}
-
-.method-label {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.25rem;
-    border: 2px solid rgba(148, 163, 184, 0.2);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: rgba(15, 23, 42, 0.3);
-}
-
-.method-label:hover {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-}
-
-.method-option input[type="radio"]:checked + .method-label {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.15);
-}
-
-.method-icon {
-    font-size: 1.5rem;
-    width: 40px;
-    text-align: center;
-}
-
-.method-info {
-    flex: 1;
-}
-
-.method-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #f1f5f9;
-    margin-bottom: 0.25rem;
-}
-
-.method-desc {
-    font-size: 0.9rem;
-    color: #94a3b8;
-}
-
-/* 인증 폼 */
-.verification-form {
-    background: rgba(15, 23, 42, 0.3);
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-top: 1rem;
-}
-
-.verification-form h4 {
-    color: #f1f5f9;
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-/* 파일 업로드 */
-.file-upload-section {
-    margin-bottom: 1.5rem;
-}
-
-.file-upload-area {
-    border: 2px dashed rgba(148, 163, 184, 0.3);
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: rgba(15, 23, 42, 0.3);
-}
-
-.file-upload-area:hover,
-.file-upload-area.dragover {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-}
-
-.upload-icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #94a3b8;
-}
-
-.upload-text p {
-    font-size: 1rem;
-    color: #f1f5f9;
-    margin-bottom: 0.5rem;
-}
-
-.upload-hint {
-    font-size: 0.8rem;
-    color: #94a3b8;
-}
-
-.uploaded-file {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    background: rgba(30, 41, 59, 0.5);
-    border-radius: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.1);
-}
-
-.file-info {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 1rem;
-}
-
-.file-icon {
-    font-size: 1.5rem;
-    color: #94a3b8;
-}
-
-.file-details {
-    flex: 1;
-}
-
-.file-name {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #f1f5f9;
-    margin-bottom: 0.25rem;
-}
-
-.file-size {
-    font-size: 0.8rem;
-    color: #94a3b8;
-}
-
-.file-remove {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #ef4444;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.file-remove:hover {
-    background: #dc2626;
-}
-
 /* 약관 동의 */
 .agreement {
-    background: rgba(15, 23, 42, 0.3);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -607,20 +460,20 @@ body {
 .agreement-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #f1f5f9;
+    color: #1e293b;
     margin-bottom: 1rem;
 }
 
 .agreement-text {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: #64748b;
     line-height: 1.5;
     max-height: 120px;
     overflow-y: auto;
     padding: 1rem;
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 6px;
-    background: rgba(30, 41, 59, 0.3);
+    background: rgba(255, 255, 255, 0.8);
     margin-bottom: 1rem;
 }
 
@@ -628,7 +481,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: #f1f5f9;
+    color: #1e293b;
     font-size: 0.9rem;
 }
 
@@ -664,22 +517,29 @@ body {
 }
 
 .btn-primary:disabled {
-    background: #6b7280;
+    background: #94a3b8;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .btn-secondary {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    color: #94a3b8;
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #64748b;
 }
 
 .btn-secondary:hover {
     border-color: #3b82f6;
     color: #3b82f6;
     background: rgba(59, 130, 246, 0.1);
+}
+
+.btn-secondary:disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+    cursor: not-allowed;
 }
 
 .register-button {
@@ -707,7 +567,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.3);
+    background: rgba(248, 250, 252, 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -755,6 +615,14 @@ body {
     .main-container {
         padding: 1rem;
     }
+
+    .email-input-group {
+        flex-direction: column;
+    }
+
+    .code-input-group {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 768px) {
@@ -773,10 +641,6 @@ body {
 
     .verification-section {
         padding: 1.5rem;
-    }
-
-    .method-label {
-        padding: 1rem;
     }
 
     .form-grid {
