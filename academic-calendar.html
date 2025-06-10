@@ -15,35 +15,20 @@
           <select>
             <option>연성대학교 2025학년도 학사일정</option>
           </select>
-          <select>
-            <option>1학기</option>
-            <option>2학기</option>
+          <select id="semesterSelect">
+            <option value="1">1학기</option>
+            <option value="2">2학기</option>
           </select>
         </div>
         <h2 class="main-title">⭐ 주요 일정</h2>
-        <div class="card-list">
-          <div class="card">
-            <div class="card-title">기말고사</div>
-            <div class="card-content">
-              2025-06-17 ~ 2025-06-21<br>
-              <span class="card-desc">1학기 기말시험 기간</span>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-title">하계방학</div>
-            <div class="card-content">
-              2025-06-23<br>
-              <span class="card-desc">하계방학 시작</span>
-            </div>
-          </div>
-        </div>
+        <div class="card-list" id="mainScheduleCards"></div>
       </header>
       <section class="calendar-section">
         <div class="calendar-controls">
-          <button class="btn prev-btn">&lt;</button>
-          <span class="calendar-month">2025년 6월</span>
-          <button class="btn next-btn">&gt;</button>
-          <button class="btn today-btn">오늘</button>
+          <button class="btn prev-btn" id="prevMonthBtn">&lt;</button>
+          <span class="calendar-month" id="calendarMonthLabel"></span>
+          <button class="btn next-btn" id="nextMonthBtn">&gt;</button>
+          <button class="btn today-btn" id="todayBtn">오늘</button>
         </div>
         <table class="calendar-table">
           <thead>
@@ -57,80 +42,15 @@
               <th class="sat">토</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td class="sun">1</td>
-              <td>2</td>
-              <td>3</td>
-              <td>4</td>
-              <td>5</td>
-              <td>6</td>
-              <td class="sat">7</td>
-            </tr>
-            <tr>
-              <td class="sun">8</td>
-              <td>9</td>
-              <td class="selected">10</td>
-              <td>11</td>
-              <td>12</td>
-              <td>13</td>
-              <td class="sat">14</td>
-            </tr>
-            <tr>
-              <td class="sun">15</td>
-              <td>16</td>
-              <td>17</td>
-              <td>18 <span class="event exam">기말고사</span></td>
-              <td>19 <span class="event exam">기말고사</span></td>
-              <td>20 <span class="event exam">기말고사</span></td>
-              <td class="sat">21 <span class="event exam">기말고사</span></td>
-            </tr>
-            <tr>
-              <td class="sun">22</td>
-              <td>23 <span class="event vacation">하계방학</span></td>
-              <td>24</td>
-              <td>25</td>
-              <td>26</td>
-              <td>27</td>
-              <td class="sat">28</td>
-            </tr>
-            <tr>
-              <td class="sun">29</td>
-              <td>30</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="sat"></td>
-            </tr>
+          <tbody id="calendarBody">
+            <!-- 달력 내용 동적 생성 -->
           </tbody>
         </table>
       </section>
       <section class="schedule-list-section">
-        <h3 class="schedule-title">📋 2025년 6월 학사일정</h3>
-        <div class="schedule-filter">
-          <button class="filter-btn active">전체</button>
-          <button class="filter-btn">학사</button>
-          <button class="filter-btn">시험</button>
-          <button class="filter-btn">휴일</button>
-          <button class="filter-btn">행사</button>
-        </div>
-        <div class="schedule-list">
-          <div class="schedule-card">
-            <div>
-              <span class="schedule-tt">기말고사</span>
-              <span class="schedule-dd">2025-06-17 ~ 2025-06-21</span>
-            </div>
-            <div class="schedule-desc">1학기 기말시험 기간</div>
-          </div>
-          <div class="schedule-card">
-            <div>
-              <span class="schedule-tt">하계방학</span>
-              <span class="schedule-dd">2025-06-23</span>
-            </div>
-            <div class="schedule-desc">하계방학 시작</div>
-          </div>
-        </div>
+        <h3 class="schedule-title">📋 <span id="scheduleTitleLabel"></span></h3>
+        <div class="schedule-filter" id="scheduleFilters"></div>
+        <div class="schedule-list" id="scheduleList"></div>
       </section>
       <footer class="footer">
         <div class="legend">
@@ -144,5 +64,6 @@
       </footer>
     </div>
   </div>
+  <script src="academic-calendar.js"></script>
 </body>
 </html>
