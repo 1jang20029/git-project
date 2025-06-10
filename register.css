@@ -439,3 +439,63 @@ select {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
+/* 브라우저 호환성을 위한 추가 스타일 */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="password"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* 포커스 시 outline 제거 */
+input:focus,
+select:focus,
+button:focus {
+    outline: none;
+}
+
+/* 브라우저별 placeholder 스타일 */
+input::-webkit-input-placeholder {
+    color: #adb5bd;
+}
+
+input::-moz-placeholder {
+    color: #adb5bd;
+    opacity: 1;
+}
+
+input:-ms-input-placeholder {
+    color: #adb5bd;
+}
+
+input::-ms-input-placeholder {
+    color: #adb5bd;
+}
+
+/* 자동완성 배경색 제거 */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset;
+    -webkit-text-fill-color: #2c3e50;
+}
+
+/* 스크롤바 스타일 (Webkit 브라우저) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5a6fd8;
+}
