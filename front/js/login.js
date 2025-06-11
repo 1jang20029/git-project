@@ -95,7 +95,7 @@ function registerUser(studentId, password, name, department, grade, email, phone
     safeStorage.setItem(`user_${studentId}_first_login`, 'true');
     
     // 회원가입 완료 후 로그인 페이지로 리디렉션
-    window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
+    window.location.href = `pages/user/login.html?newRegistration=true&studentId=${studentId}`;
 }
 
 // 뒤로가기 함수
