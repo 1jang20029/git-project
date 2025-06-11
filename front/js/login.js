@@ -3,6 +3,16 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const pool = require('../../db'); // DB 연결 모듈
 
+function goBack() {
+  // 뒤로가기 히스토리가 있을 경우
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    // 히스토리가 없을 경우 로그인 전 기본 페이지로 이동 (index.html로 설정 가능)
+    window.location.href = '../../index.html';
+  }
+}
+
 // 로그인 API
 router.post('/login', async (req, res, next) => {
   try {
