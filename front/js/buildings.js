@@ -11,7 +11,7 @@ async function initBuildingsPage() {
     zoom: 16,
     mapTypeControl: false,
     zoomControl: false,
-    logoControl: false,
+    logoControl: false, 
     scaleControl: false
   });
 
