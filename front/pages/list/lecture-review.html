@@ -3,37 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>강의평가 - 연성대학교 스마트 캠퍼스</title>
+  <title>강의평가</title>
   <link rel="stylesheet" href="lecture-review.css" />
-  <script type="module" src="lecture-review.js" defer></script>
 </head>
 <body>
-  <!-- 상단 영역 -->
-  <header>
-    <h1>📚 강의평가</h1>
-  </header>
-
-  <!-- 에러 메시지 -->
-  <div id="error-message" style="display:none; color:red; margin:1rem;"></div>
-
-  <!-- 작성 버튼 -->
-  <div class="write-review-section" style="margin: 1rem;">
-    <button id="write-review-button">강의평가 작성</button>
+  <div class="content-header">
+    <div>
+      <h1>강의평가</h1>
+      <div class="breadcrumb">
+        <span>홈</span>
+        <span>›</span>
+        <span>강의평가</span>
+      </div>
+    </div>
   </div>
 
-  <!-- 강의평가 작성 폼이 삽입될 위치 -->
-  <div id="reviewFormContainer" style="margin: 1rem 2rem;"></div>
+  <div id="dashboardGrid-lecture-review">
+    <!-- 인기 강의평가 카드 -->
+    <div id="popular-reviews-card">
+      <div id="card-header-popular-reviews">
+        <h3 id="card-title-popular-reviews">인기 강의평가</h3>
+        <span id="card-icon-popular-reviews">⭐</span>
+      </div>
+      <div id="popularReviews">
+        <div class="loading">데이터를 불러오는 중...</div>
+      </div>
+    </div>
 
-  <!-- 인기 강의평가 영역 -->
-  <section>
-    <h2 style="margin-left:1rem;">🔥 인기 강의평가</h2>
-    <div id="popularReviews" class="review-list" style="margin: 1rem;"></div>
-  </section>
+    <!-- 최근 강의평가 카드 -->
+    <div id="recent-reviews-card">
+      <div id="card-header-recent-reviews">
+        <h3 id="card-title-recent-reviews">최근 강의평가</h3>
+        <span id="card-icon-recent-reviews">🕒</span>
+      </div>
+      <div id="recentReviews">
+        <div class="loading">데이터를 불러오는 중...</div>
+      </div>
+    </div>
 
-  <!-- 최근 강의평가 영역 -->
-  <section>
-    <h2 style="margin-left:1rem;">🕒 최근 강의평가</h2>
-    <div id="recentReviews" class="review-list" style="margin: 1rem;"></div>
-  </section>
+    <!-- 강의평가 작성 카드 -->
+    <div id="write-review-card">
+      <div id="card-header-write-review">
+        <h3 id="card-title-write-review">강의평가 작성</h3>
+        <span id="card-icon-write-review">✍️</span>
+      </div>
+      <div id="write-review-desc">
+        <p>수강 중인 강의에 대한 솔직한 평가를 남겨주세요.</p>
+        <button id="write-review-button">강의평가 작성하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 에러 메시지 표시 영역 -->
+  <div id="error-message" style="display: none;"></div>
+
+  <script src="lecture-review.js"></script>
 </body>
 </html>
