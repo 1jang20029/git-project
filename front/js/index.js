@@ -1,4 +1,4 @@
-// index.js
+// index.js - 백엔드 제거 버전
 
 // ─────────── 전역 변수 선언 ───────────
 let naverMap;
@@ -239,7 +239,7 @@ function showContent(type) {
 
   if (type === 'community' && !communityLoaded) {
     const container = document.getElementById('communityContent');
-    fetch('community.html')
+    fetch('pages/list/community.html')
       .then(res => {
         if (!res.ok) throw new Error('community.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -260,7 +260,7 @@ function showContent(type) {
 
   if (type === 'lecture-review' && !lectureLoaded) {
     const container = document.getElementById('lecture-reviewContent');
-    fetch('lecture-review.html')
+    fetch('pages/list/lecture-review.html')
       .then(res => {
         if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -302,7 +302,7 @@ function showContent(type) {
 
   if (type === 'buildings' && !buildingsLoaded) {
     const container = document.getElementById('buildingsContent');
-    fetch('buildings.html')
+    fetch('pages/list/buildings.html')
       .then(res => {
         if (!res.ok) throw new Error('buildings.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -385,58 +385,18 @@ function showContent(type) {
 // ─────────── initializeApp: 앱 초기화 ───────────
 async function initializeApp() {
   try {
-    await loadDepartments();
     initNaverMap();
-    await Promise.all([
-      loadStats(),
-      loadNotifications(),
-      loadBuildingsMain(),
-      loadNotices(),
-      loadShuttleInfo(),
-      loadLectureReviews()
-    ]);
     checkUserStatus();
     updateTimetable();
 
+    // 1분마다 시간표 업데이트
     setInterval(() => {
-      if (isOnline) {
-        loadShuttleInfo();
-        updateTimetable();
-      }
+      updateTimetable();
     }, 60000);
 
   } catch (error) {
     console.error('앱 초기화 오류:', error);
     showMessage('일부 기능을 불러오는 중 오류가 발생했습니다', 'error');
-  }
-}
-
-// ─────────── loadDepartments: 학과 데이터 로드 ───────────
-async function loadDepartments() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/departments');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const list = await res.json();
-    list.forEach(item => {
-      departmentMap[item.code] = item.name;
-    });
-  } catch (err) {
-    console.error('학과 데이터 로드 실패:', err);
-  }
-}
-
-// ─────────── loadNotifications: 알림 데이터 로드 ───────────
-async function loadNotifications() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/notifications');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const notifications = await res.json();
-    renderNotifications(notifications);
-  } catch (err) {
-    console.error('알림 데이터 로드 실패:', err);
-    renderNotifications([]);
   }
 }
 
@@ -480,10 +440,6 @@ function markAsRead(el, id, category) {
   if (el.classList.contains('unread')) {
     el.classList.remove('unread');
     unreadNotifications--;
-    if (isOnline) {
-      fetch(`/api/notifications/${id}/read`, { method: 'POST' })
-        .catch(err => console.error('알림 읽음 처리 실패:', err));
-    }
     updateNotificationCount();
   }
 }
@@ -493,11 +449,6 @@ function markAllAsRead() {
   document.querySelectorAll('.notification-item.unread').forEach(item => {
     item.classList.remove('unread');
   });
-
-  if (isOnline) {
-    fetch('/api/notifications/mark-all-read', { method: 'POST' })
-      .catch(err => console.error('전체 알림 읽음 처리 실패:', err));
-  }
 
   unreadNotifications = 0;
   updateNotificationCount();
@@ -510,28 +461,6 @@ function updateNotificationCount() {
   const dotEl = document.getElementById('notification-dot');
   if (countEl) countEl.textContent = unreadNotifications;
   if (dotEl) dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
-}
-
-// ─────────── loadStats: 통계 데이터 로드 ───────────
-async function loadStats() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/stats');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const stats = await res.json();
-    renderStats(stats);
-  } catch (err) {
-    console.error('통계 데이터 로드 실패:', err);
-    renderStats({
-      totalBuildings: 0,
-      totalStudents: 0,
-      activeServices: 0,
-      todayEvents: 0,
-      newBuildingsText: '',
-      studentGrowthText: '',
-      newServicesText: ''
-    });
-  }
 }
 
 // ─────────── renderStats: 통계 데이터 렌더링 ───────────
@@ -575,22 +504,6 @@ function renderStats(stats) {
   `;
 }
 
-// ─────────── loadBuildingsMain: 메인 페이지용 건물 데이터 로드 (대시보드 부분) ───────────
-async function loadBuildingsMain() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/buildings');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const buildings = await res.json();
-    renderBuildingsMain(buildings);
-    addMapMarkers(buildings);
-  } catch (err) {
-    console.error('건물 데이터 로드 실패:', err);
-    renderBuildingsMain([]);
-    addMapMarkers([]);
-  }
-}
-
 // ─────────── renderBuildingsMain: 메인 페이지용 건물 카드 렌더링 ───────────
 function renderBuildingsMain(buildings) {
   const grid = document.getElementById('buildingGrid');
@@ -611,20 +524,6 @@ function renderBuildingsMain(buildings) {
     `;
     grid.appendChild(card);
   });
-}
-
-// ─────────── loadNotices: 메인 페이지용 공지사항 데이터 로드 ───────────
-async function loadNotices() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/notifications');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const notices = await res.json();
-    renderNoticesMain(notices);
-  } catch (err) {
-    console.error('공지사항 데이터 로드 실패:', err);
-    renderNoticesMain([]);
-  }
 }
 
 // ─────────── renderNoticesMain: 메인 페이지용 최근 공지사항 렌더링 ───────────
@@ -648,22 +547,6 @@ function renderNoticesMain(notices) {
       recentEl.appendChild(item);
     }
   });
-}
-
-// ─────────── loadShuttleInfo: 셔틀버스 데이터 로드 ───────────
-async function loadShuttleInfo() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/shuttle/routes');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const routes = await res.json();
-    renderShuttleRoutes(routes);
-    if (routes.length > 0) selectShuttleRoute(routes[0].id, routes[0]);
-  } catch (err) {
-    console.error('셔틀버스 데이터 로드 실패:', err);
-    renderShuttleRoutes([]);
-    selectShuttleRoute(null, null);
-  }
 }
 
 // ─────────── renderShuttleRoutes: 셔틀 루트 탭 렌더링 ───────────
@@ -713,26 +596,6 @@ function renderShuttleStatus(route) {
       status === 'running'
         ? '<span>🟢</span><span>운행중</span>'
         : '<span>🔴</span><span>운행종료</span>';
-  }
-}
-
-// ─────────── loadLectureReviews: 메인 페이지용 강의평가 데이터 로드 ───────────
-async function loadLectureReviews() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const [popRes, recRes] = await Promise.all([
-      fetch('/api/reviews/popular'),
-      fetch('/api/reviews/recent'),
-    ]);
-
-    if (!popRes.ok || !recRes.ok) throw new Error('API 응답 오류');
-
-    const popular = await popRes.json();
-    const recent  = await recRes.json();
-    renderLectureReviewsMain(popular, recent);
-  } catch (err) {
-    console.error('강의평가 데이터 로드 실패:', err);
-    renderLectureReviewsMain([], []);
   }
 }
 
@@ -1108,7 +971,7 @@ function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
-    window.location.href = 'login.html';
+    window.location.href = './pages/user/login.html';
     return;
   }
   if (dropdown && dropdown.classList.contains('show')) {
@@ -1192,27 +1055,9 @@ function handleLogout() {
 async function handleGlobalSearch() {
   const query = document.getElementById('search-input').value.trim().toLowerCase();
   if (!query) return;
-  if (!isOnline) {
-    showMessage('오프라인 상태에서는 검색을 사용할 수 없습니다', 'error');
-    return;
-  }
-  try {
-    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('buildings');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  try {
-    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('notices');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  showMessage('검색 결과를 찾을 수 없습니다.', 'info');
+  
+  showMessage('검색 기능은 준비 중입니다.', 'info');
+  document.getElementById('search-input').value = '';
 }
 
 // ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
@@ -1222,23 +1067,25 @@ function checkUserStatus() {
   const userRoleEl  = document.getElementById('user-role');
   const dropdownNameEl = document.getElementById('dropdown-user-name');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl   = document.getElementById('user-avatar');
-  if (currentUser && isOnline) {
-    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-      .then(res => {
-        if (!res.ok) throw new Error('API 응답 오류');
-        return res.json();
-      })
-      .then(user => {
-        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
-        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
+  
+  if (currentUser) {
+    // 로컬 스토리지에서 사용자 정보 가져오기
+    const userData = localStorage.getItem(`user_${currentUser}`);
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (userNameEl) userNameEl.textContent = user.name || '사용자';
+        if (userRoleEl) userRoleEl.textContent = departmentMap[user.department] || user.department || '학생';
         if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
-        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
+        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || user.department || '학생';
         updateProfileImage(user);
-      })
-      .catch(() => {
+      } catch (e) {
+        console.error('사용자 데이터 파싱 오류:', e);
         setGuestMode();
-      });
+      }
+    } else {
+      setGuestMode();
+    }
   } else {
     setGuestMode();
   }
@@ -1400,9 +1247,9 @@ function applyUserShortcuts() {
     if (label.includes('커뮤니티')) { showContent('community'); return; }
     if (label.includes('강의평가')) { showContent('lecture-review'); return; }
     if (label.includes('공지사항')) { showContent('notices'); return; }
-    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; } // 외부 페이지로 수정
-    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; } // 외부 페이지로 수정
-    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; } // 외부 페이지로 수정
+    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; }
+    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; }
+    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; }
     if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
     if (label.includes('설정')) { showContent('settings'); return; }
     if (label.includes('알림')) { toggleNotifications(); return; }
