@@ -218,7 +218,7 @@ function showContent(type) {
 
   if (type === 'settings' && !settingsLoaded) {
     const container = document.getElementById('settingsContent');
-    fetch('settings.html')
+    fetch('pages/user/settings.html')
       .then(res => {
         if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -281,7 +281,7 @@ function showContent(type) {
 
   if (type === 'notices' && !noticesLoaded) {
     const container = document.getElementById('noticesContent');
-    fetch('notices.html')
+    fetch('pages/list/notices.html')
       .then(res => {
         if (!res.ok) throw new Error('notices.html 을 불러오는 중 오류 발생');
         return res.text();
