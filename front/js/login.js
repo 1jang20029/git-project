@@ -39,10 +39,16 @@ function initializeElements() {
    이벤트 리스너 설정
    ========================= */
 function setupEventListeners() {
-  // 폼 제출 이벤트
+  // 폼 제출 이벤트 (수정된 부분)
   const form = document.getElementById('loginForm');
   if (form) {
     form.addEventListener('submit', handleLogin);
+  }
+  
+  // 로그인 버튼 클릭 이벤트도 추가
+  const loginButton = document.querySelector('.login-button');
+  if (loginButton) {
+    loginButton.addEventListener('click', handleLogin);
   }
   
   // 비밀번호 토글 이벤트
@@ -76,6 +82,7 @@ async function handleLogin(e) {
   e.preventDefault();
   console.log('[DEBUG] 로그인 요청 시작');
   
+  // 수정: form.studentId.value가 아닌 직접 getElementById 사용
   const studentId = document.getElementById('studentId').value.trim();
   const password = document.getElementById('password').value.trim();
   const loginButton = document.querySelector('.login-button');
