@@ -239,7 +239,7 @@ function showContent(type) {
 
   if (type === 'community' && !communityLoaded) {
     const container = document.getElementById('communityContent');
-    fetch('pages/list/community.html')
+    fetch('pages/user/community.html')
       .then(res => {
         if (!res.ok) throw new Error('community.html 을 불러오는 중 오류 발생');
         return res.text();
