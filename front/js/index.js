@@ -246,6 +246,7 @@ function showContent(type) {
       })
       .then(html => {
         container.innerHTML = html;
+        loadCSSOnce('css/community.css'); // 이 줄 추가
         communityLoaded = true;
         if (window.initCommunityPage) window.initCommunityPage();
       })
@@ -257,6 +258,7 @@ function showContent(type) {
         </div>`;
       });
   }
+
 
   if (type === 'lecture-review' && !lectureLoaded) {
     const container = document.getElementById('lecture-reviewContent');
