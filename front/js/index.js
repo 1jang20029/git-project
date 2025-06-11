@@ -1108,7 +1108,7 @@ function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
-    window.location.href = 'login.html';
+    window.location.href = 'pages/user/login.html';
     return;
   }
   if (dropdown && dropdown.classList.contains('show')) {
