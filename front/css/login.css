@@ -173,14 +173,14 @@ header {
     border: 1px solid #ddd;
 }
 
-.register-link {
+.sign-link {
     text-align: center;
     margin-top: 32px;
     font-size: 14px;
     color: #666;
 }
 
-.register-link a {
+.sign-link a {
     color: #c62917;
     font-weight: bold;
     text-decoration: none;
