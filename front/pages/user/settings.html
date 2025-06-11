@@ -1,243 +1,79 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입 - 연성대학교 스마트 캠퍼스</title>
-    <link rel="stylesheet" href="../../css/signup.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>설정 – 연성대학교 스마트 캠퍼스</title>
+  <!-- Settings 전용 CSS -->
+  <link rel="stylesheet" href="../../css/settings.css" />
 </head>
 <body>
-    <!-- 상단 네비게이션 -->
-    <nav id="top-nav">
-        <div id="nav-brand">
-            <span>
-                <img src="../../images/campus_icon.png" alt="캠퍼스 아이콘" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
-            </span>
-            <span>연성대학교 스마트 캠퍼스</span>
-        </div>
-        <div class="back-button" onclick="goBack()">← 로그인으로 돌아가기</div>
-    </nav>
-
-    <!-- 메인 컨테이너 -->
-    <div class="main-container">
-        <div class="register-card">
-            <h1 class="register-title">연성대학교 캠퍼스 가이드 회원가입</h1>
-            
-            <!-- 소셜 로그인 정보 표시 -->
-            <div id="socialInfoBox" class="social-info" style="display: none;">
-                <div class="social-title">
-                    <span id="socialIcon" class="social-icon"></span>
-                    <span id="socialType">소셜 계정</span>으로 회원가입
-                </div>
-                <div class="social-text">
-                    <p>소셜 계정으로 간편하게 가입하세요. 학생 정보를 추가로 입력하여 캠퍼스 가이드 서비스를 이용하실 수 있습니다.</p>
-                </div>
-            </div>
-            
-            <form id="registerForm">
-                <!-- 역할 선택 -->
-                <div class="form-group full-width">
-                    <label class="form-label">역할 선택</label>
-                    <div class="role-selection">
-                        <label class="role-option">
-                            <input type="radio" name="userRole" value="student" checked>
-                            <div class="role-card">
-                                <div class="role-icon">🎓</div>
-                                <div class="role-title">학생</div>
-                                <div class="role-desc">10자리 학번으로 가입</div>
-                            </div>
-                        </label>
-                        <label class="role-option">
-                            <input type="radio" name="userRole" value="professor">
-                            <div class="role-card">
-                                <div class="role-icon">👨‍🏫</div>
-                                <div class="role-title">교수</div>
-                                <div class="role-desc">7자리 교번으로 가입</div>
-                            </div>
-                        </label>
-                        <label class="role-option">
-                            <input type="radio" name="userRole" value="staff">
-                            <div class="role-card">
-                                <div class="role-icon">👥</div>
-                                <div class="role-title">교직원</div>
-                                <div class="role-desc">7자리 직번으로 가입</div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- 이메일 인증 섹션 (학생/교수/교직원 모두 표시) -->
-                <div id="emailVerificationSection" class="verification-section">
-                    <div class="verification-header">
-                        <div class="verification-icon">📧</div>
-                        <div class="verification-title">이메일 인증</div>
-                    </div>
-                    
-                    <div class="verification-description">
-                        <p>대학 공식 이메일(@yeonsung.ac.kr)로 인증이 필요합니다.</p>
-                    </div>
-                    
-                    <div class="email-verification-form">
-                        <div class="form-group">
-                            <label class="form-label">대학 이메일 주소 <span class="required">*</span></label>
-                            <div class="email-input-group">
-                                <input type="email" class="form-input" id="verificationEmail" placeholder="이메일을 입력하세요" />
-                                <button type="button" class="btn btn-primary" id="sendVerificationBtn" onclick="sendVerificationEmail()">인증코드 발송</button>
-                            </div>
-                            <div class="form-hint">연성대학교 공식 이메일(@yeonsung.ac.kr)을 입력해주세요</div>
-                            <div class="error-message" id="verification-email-error">올바른 대학 이메일을 입력해주세요</div>
-                        </div>
-                        
-                        <div class="form-group" id="verificationCodeGroup" style="display: none;">
-                            <label class="form-label">인증 코드 <span class="required">*</span></label>
-                            <div class="code-input-group">
-                                <input type="text" class="form-input" id="verificationCode" placeholder="6자리 인증코드를 입력하세요" maxlength="6" />
-                                <button type="button" class="btn btn-secondary" id="verifyCodeBtn" onclick="verifyEmailCode()" disabled>인증확인</button>
-                            </div>
-                            <div class="verification-timer" id="verificationTimer" style="display: none;">
-                                남은 시간: <span id="timerDisplay">05:00</span>
-                            </div>
-                            <div class="error-message" id="verification-code-error">인증코드가 일치하지 않습니다</div>
-                            <div class="success-message" id="verification-success" style="display: none;">✅ 이메일 인증이 완료되었습니다</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 메인 입력 필드들 -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" id="idLabel">학번</label>
-                        <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
-                        <div class="form-hint" id="idHint">예: 2024123456</div>
-                        <div class="error-message" id="studentId-error">올바른 학번을 입력해주세요</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">이름</label>
-                        <input type="text" class="form-input" id="name" placeholder="이름을 입력하세요">
-                        <div class="error-message" id="name-error">이름을 입력해주세요</div>
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">학과/부서</label>
-                        <div class="department-container">
-                            <input type="text" class="form-input" id="departmentInput" placeholder="학과명을 입력하거나 선택하세요" autocomplete="off">
-                            <div class="department-dropdown" id="departmentDropdown">
-                                <!-- 스마트 ICT계열 -->
-                                <div class="department-category">스마트 ICT계열</div>
-                                <div class="department-option" data-value="전자공학과">전자공학과</div>
-                                <div class="department-option" data-value="정보통신과">정보통신과</div>
-                                <div class="department-option" data-value="전기과">전기과</div>
-                                <div class="department-option" data-value="컴퓨터소프트웨어과">컴퓨터소프트웨어과</div>
-                                <!-- 라이프디자인계열 -->
-                                <div class="department-category">라이프디자인계열</div>
-                                <div class="department-option" data-value="건축과">건축과</div>
-                                <div class="department-option" data-value="실내건축과">실내건축과</div>
-                                <div class="department-option" data-value="패션디자인비즈니스과">패션디자인비즈니스과</div>
-                                <div class="department-option" data-value="뷰티스타일리스트과_헤어디자인전공">뷰티스타일리스트과 헤어디자인전공</div>
-                                <div class="department-option" data-value="뷰티스타일리스트과_메이크업전공">뷰티스타일리스트과 메이크업전공</div>
-                                <div class="department-option" data-value="뷰티스타일리스트과_스킨케어전공">뷰티스타일리스트과 스킨케어전공</div>
-                                <!-- 문화콘텐츠계열 -->
-                                <div class="department-category">문화콘텐츠계열</div>
-                                <div class="department-option" data-value="게임콘텐츠과">게임콘텐츠과</div>
-                                <div class="department-option" data-value="웹툰만화콘텐츠과">웹툰만화콘텐츠과</div>
-                                <div class="department-option" data-value="영상콘텐츠과_영상콘텐츠제작전공">영상콘텐츠과 영상콘텐츠제작전공</div>
-                                <div class="department-option" data-value="영상콘텐츠과_뉴미디어콘텐츠전공">영상콘텐츠과 뉴미디어콘텐츠전공</div>
-                                <div class="department-option" data-value="시각디자인과">시각디자인과</div>
-                                <div class="department-option" data-value="K-POP과">K-POP과</div>
-                                <!-- 사회·교육계열 -->
-                                <div class="department-category">사회·교육계열</div>
-                                <div class="department-option" data-value="유통물류과">유통물류과</div>
-                                <div class="department-option" data-value="경영학과">경영학과</div>
-                                <div class="department-option" data-value="세무회계과">세무회계과</div>
-                                <div class="department-option" data-value="국방군사학과">국방군사학과</div>
-                                <div class="department-option" data-value="경찰경호보안과">경찰경호보안과</div>
-                                <div class="department-option" data-value="사회복지과">사회복지과</div>
-                                <div class="department-option" data-value="사회복지경영과">사회복지경영과</div>
-                                <div class="department-option" data-value="유아교육과">유아교육과</div>
-                                <div class="department-option" data-value="유아특수재활과">유아특수재활과</div>
-                                <div class="department-option" data-value="사회복지과_아동심리보육전공">사회복지과 아동심리보육전공</div>
-                                <!-- 보건생명계열 -->
-                                <div class="department-category">보건생명계열</div>
-                                <div class="department-option" data-value="치위생과">치위생과</div>
-                                <div class="department-option" data-value="치기공과">치기공과</div>
-                                <div class="department-option" data-value="작업치료과">작업치료(심리)과</div>
-                                <div class="department-option" data-value="응급구조과">응급구조과</div>
-                                <div class="department-option" data-value="보건의료행정과">보건의료행정과</div>
-                                <div class="department-option" data-value="스포츠재활과">스포츠재활과</div>
-                                <div class="department-option" data-value="식품영양학과">식품영양학과</div>
-                                <div class="department-option" data-value="반려동물보건과">반려동물보건과</div>
-                                <div class="department-option" data-value="반려동물산업과">반려동물산업과</div>
-                                <!-- 관광조리계열 -->
-                                <div class="department-category">관광조리계열</div>
-                                <div class="department-option" data-value="항공서비스과">항공서비스과</div>
-                                <div class="department-option" data-value="관광영어과">관광영어과</div>
-                                <div class="department-option" data-value="호텔관광과">호텔관광과</div>
-                                <div class="department-option" data-value="호텔외식조리과">호텔외식조리과</div>
-                                <div class="department-option" data-value="카페·베이커리과">카페·베이커리과</div>
-                                <div class="department-option" data-value="호텔외식경영전공">호텔외식경영전공</div>
-                                <!-- 공통계열 -->
-                                <div class="department-category">공통계열</div>
-                                <div class="department-option" data-value="자유전공학과">자유전공학과(신설)</div>
-                                <!-- 교직원 부서 -->
-                                <div class="department-category staff-departments">교직원 부서</div>
-                                <div class="department-option staff-option" data-value="교무처">교무처</div>
-                                <div class="department-option staff-option" data-value="학생처">학생처</div>
-                                <div class="department-option staff-option" data-value="총무처">총무처</div>
-                                <div class="department-option staff-option" data-value="기획처">기획처</div>
-                                <div class="department-option staff-option" data-value="입학처">입학처</div>
-                                <div class="department-option staff-option" data-value="도서관">도서관</div>
-                                <div class="department-option staff-option" data-value="전산실">전산실</div>
-                                <div class="department-option staff-option" data-value="보건실">보건실</div>
-                            </div>
-                            <input type="hidden" id="selectedDepartment" name="department" value="">
-                            <div class="error-message" id="department-error">학과/부서를 선택해주세요</div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">휴대폰 번호</label>
-                        <input type="tel" class="form-input" id="phone" placeholder="휴대폰 번호를 입력하세요" maxlength="13" oninput="formatPhoneNumber(this)">
-                        <div class="error-message" id="phone-error">010으로 시작하는 11자리 번호를 입력해주세요</div>
-                    </div>
-                </div>
-                
-                <!-- 이용약관 동의 -->
-                <div class="agreement">
-                    <div class="agreement-title">이용약관 동의</div>
-                    <div class="agreement-text">
-                        [이용약관]
-                        제1조 (목적)
-                        본 약관은 연성대학교 캠퍼스 가이드 서비스의 이용조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.
-                        <!-- 이하 조항 생략 없이 동일 -->
-                    </div>
-                    <label class="check-item">
-                        <input type="checkbox" id="agreeTerms"> 이용약관에 동의합니다 (필수)
-                    </label>
-                </div>
-                
-                <div class="agreement">
-                    <div class="agreement-title">개인정보 수집 및 이용 동의</div>
-                    <div class="agreement-text">
-                        [개인정보 수집 및 이용 동의]
-                        연성대학교 캠퍼스 가이드 서비스는 다음과 같이 개인정보를 수집 및 이용합니다.
-                        <!-- 이하 조항 생략 없이 동일 -->
-                    </div>
-                    <label class="check-item">
-                        <input type="checkbox" id="agreePrivacy"> 개인정보 수집 및 이용에 동의합니다 (필수)
-                    </label>
-                </div>
-                
-                <button type="button" class="register-button" onclick="register()">
-                    🎓 회원가입 완료
-                </button>
-            </form>
-        </div>
+  <div class="content-header">
+    <div>
+      <h1>설정</h1>
+      <div class="breadcrumb">
+        <span>홈</span>
+        <span>›</span>
+        <span>설정</span>
+      </div>
     </div>
-    
-    <!-- JavaScript 파일 로드 -->
-    <script src="../../js/signup.js"></script>
+  </div>
+
+  <div id="settings-container">
+    <!-- 1. 다크/라이트 모드 토글 -->
+    <div class="setting-item">
+      <label for="themeToggle">다크/라이트 모드</label>
+      <input type="checkbox" id="themeToggle" />
+    </div>
+
+    <!-- 2. 알림 받기 ON/OFF -->
+    <div class="setting-item">
+      <label for="notificationToggle">알림 받기</label>
+      <input type="checkbox" id="notificationToggle" />
+    </div>
+
+    <!-- 3. 카테고리별 알림 설정 -->
+    <div class="setting-section-title">카테고리별 알림 설정</div>
+    <div class="setting-item">
+      <label for="notifCategory-공지사항">공지사항</label>
+      <input type="checkbox" id="notifCategory-공지사항" />
+    </div>
+    <div class="setting-item">
+      <label for="notifCategory-커뮤니티">커뮤니티</label>
+      <input type="checkbox" id="notifCategory-커뮤니티" />
+    </div>
+    <div class="setting-item">
+      <label for="notifCategory-셔틀버스">셔틀버스</label>
+      <input type="checkbox" id="notifCategory-셔틀버스" />
+    </div>
+    <!-- 4. 자동 로그아웃 설정 -->
+    <div class="setting-section-title">자동 로그아웃 (활성화 시)</div>
+    <div class="setting-item">
+      <label for="autoLogoutToggle">자동 로그아웃 활성화</label>
+      <input type="checkbox" id="autoLogoutToggle" />
+    </div>
+    <div class="setting-item">
+      <label for="autoLogoutTimeout">대기 시간 (분)</label>
+      <input type="number" id="autoLogoutTimeout" min="1" max="120" />
+    </div>
+
+    <!-- 5. 키보드 단축키 설정 (최대 5개) -->
+    <div class="setting-section-title">키보드 단축키 설정 (최대 5개)</div>
+    <div id="shortcut-list-container">
+      <!-- 단축키 항목들이 이곳에 동적으로 렌더링됩니다 -->
+    </div>
+    <button id="addShortcutBtn" class="add-shortcut-btn">
+      + 단축키 추가
+    </button>
+
+    <!-- 저장 / 취소 버튼 -->
+    <div class="action-buttons">
+      <button id="saveSettingsBtn" class="btn save-btn">저장</button>
+      <button id="cancelSettingsBtn" class="btn cancel-btn">취소</button>
+    </div>
+  </div>
+
+  <!-- Settings 전용 JS -->
+  <script src="../../js/settings.js" defer></script>
 </body>
 </html>
