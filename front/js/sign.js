@@ -61,10 +61,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (hasData) {
                 const confirmMsg = '입력하신 정보가 있습니다. 정말 로그인 페이지로 돌아가시겠습니까?\n입력하신 정보는 저장되지 않습니다.';
                 if (confirm(confirmMsg)) {
-                    window.location.href = 'login.html';
+                    window.location.href = 'pages/user/login.html';
                 }
             } else {
-                window.location.href = 'login.html';
+                window.location.href = 'pages/user/login.html';
             }
         }
     }
