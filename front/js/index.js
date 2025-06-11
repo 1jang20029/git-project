@@ -26,9 +26,9 @@ const departmentMap = {};
 
 // ─────────── 외부 페이지 URL 설정 ───────────
 const EXTERNAL_PAGES = {
-  timetable: 'timetable.html',      // 내 시간표 페이지
-  calendar: 'academic-calendar.html', // 학사일정 페이지  
-  shuttle: 'shuttle.html'           // 셔틀버스 페이지
+  timetable: 'pages/list/timetable.html',      // 내 시간표 페이지
+  calendar: 'pages/list/academic-calendar.html', // 학사일정 페이지  
+  shuttle: 'pages/list/shuttle.html'           // 셔틀버스 페이지
 };
 
 // ─────────── 외부 페이지 이동 함수들 (현재 창에서 이동) ───────────
