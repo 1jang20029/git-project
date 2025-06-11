@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="timetable.css">
 </head>
 <body>
+    <!-- 로딩 스피너 -->
+    <div id="loading-spinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>데이터를 불러오는 중...</p>
+    </div>
+
     <div class="container">
         <header>
             <div class="back-button" onclick="goToBack()">
@@ -37,7 +43,7 @@
                     </div>
                     <div class="form-group">
                         <select id="semester-select" class="form-select" onchange="changeSemester()">
-                            <option value="2023-1" selected>2023년 1학기</option>
+                            <option value="2023-1">2023년 1학기</option>
                             <option value="2023-2">2023년 2학기</option>
                             <option value="2023-3">2023년 여름학기</option>
                             <option value="2023-4">2023년 겨울학기</option>
@@ -45,7 +51,7 @@
                             <option value="2024-2">2024년 2학기</option>
                             <option value="2024-3">2024년 여름학기</option>
                             <option value="2024-4">2024년 겨울학기</option>
-                            <option value="2025-1">2025년 1학기</option>
+                            <option value="2025-1" selected>2025년 1학기</option>
                             <option value="2025-2">2025년 2학기</option>
                             <option value="2025-3">2025년 여름학기</option>
                             <option value="2025-4">2025년 겨울학기</option>
@@ -344,8 +350,40 @@
                 </div>
             </div>
         </div>
+
+        <!-- 에러 메시지 토스트 -->
+        <div id="error-toast" class="toast error-toast">
+            <div class="toast-content">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                <span id="error-message">오류가 발생했습니다.</span>
+            </div>
+        </div>
+
+        <!-- 성공 메시지 토스트 -->
+        <div id="success-toast" class="toast success-toast">
+            <div class="toast-content">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span id="success-message">저장되었습니다.</span>
+            </div>
+        </div>
     </div>
 
+    <!-- API 설정 -->
+    <script>
+        // API 기본 설정
+        const API_BASE_URL = 'http://localhost:3000/api'; // 백엔드 서버 주소로 변경 필요
+        
+        // 사용자 인증 토큰 (실제로는 로그인 시스템에서 받아옴)
+        let userToken = localStorage.getItem('userToken') || null;
+        let currentUserId = localStorage.getItem('currentUserId') || null;
+    </script>
     <script src="timetable.js"></script>
 </body>
 </html>
