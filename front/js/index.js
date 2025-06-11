@@ -260,7 +260,7 @@ function showContent(type) {
 
   if (type === 'lecture-review' && !lectureLoaded) {
     const container = document.getElementById('lecture-reviewContent');
-    fetch('lecture-review.html')
+    fetch('pages/list/lecture-review.html')
       .then(res => {
         if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
         return res.text();
