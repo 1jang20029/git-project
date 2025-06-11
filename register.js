@@ -39,6 +39,37 @@ document.addEventListener('DOMContentLoaded', function() {
     verifyBtn.disabled          = true;
 
     // =============================================================================
+    // 로그인 페이지로 돌아가기 함수
+    // =============================================================================
+    function goBackToLogin() {
+        // 소셜 로그인 중이었다면 세션 데이터 정리
+        const socialType = new URLSearchParams(window.location.search).get('social');
+        if (socialType) {
+            const confirmMsg = '회원가입을 취소하고 로그인 페이지로 돌아가시겠습니까?\n입력하신 정보는 저장되지 않습니다.';
+            if (confirm(confirmMsg)) {
+                // 소셜 로그인 임시 데이터 정리
+                ['temp_social_id', 'temp_social_type', 'temp_social_name', 'temp_social_email', 'temp_social_profile_image']
+                    .forEach(key => sessionStorage.removeItem(key));
+                window.location.href = 'login.html';
+            }
+        } else {
+            // 일반 회원가입인 경우
+            const hasData = document.getElementById('studentId').value.trim() || 
+                           document.getElementById('name').value.trim() || 
+                           document.getElementById('email').value.trim();
+            
+            if (hasData) {
+                const confirmMsg = '입력하신 정보가 있습니다. 정말 로그인 페이지로 돌아가시겠습니까?\n입력하신 정보는 저장되지 않습니다.';
+                if (confirm(confirmMsg)) {
+                    window.location.href = 'login.html';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    }
+
+    // =============================================================================
     // 인증 이메일 발송 (백엔드 API 호출)
     // =============================================================================
     async function sendVerificationEmail() {
@@ -481,18 +512,46 @@ document.addEventListener('DOMContentLoaded', function() {
     window.quickVerify = quickVerify;
 
     // =============================================================================
-    // 초기화
+    // 초기화 및 이벤트 리스너 등록
     // =============================================================================
     setupGradeDropdown();
     setupDepartmentSearch();
+    
+    // 역할 변경 시 UI 업데이트
     document.querySelectorAll('input[name="userRole"]').forEach(radio => {
         radio.addEventListener('change', () => updateUIByRole(radio.value));
     });
     updateUIByRole('student');
+    
+    // 이메일 인증 관련 이벤트
     sendBtn.addEventListener('click', sendVerificationEmail);
     codeInput.addEventListener('input', validateVerificationCode);
     verifyBtn.addEventListener('click', verifyEmailCode);
+    
+    // 회원가입 버튼
     document.getElementById('registerBtn')?.addEventListener('click', register);
+    
+    // 로그인으로 돌아가기 버튼 - 다양한 ID로 시도
+    const backToLoginBtns = [
+        document.getElementById('backToLoginBtn'),
+        document.getElementById('goBackBtn'),
+        document.getElementById('loginBackBtn'),
+        document.querySelector('.back-to-login'),
+        document.querySelector('[data-action="back-to-login"]'),
+        document.querySelector('button[onclick*="login"]')
+    ].filter(btn => btn !== null);
+    
+    backToLoginBtns.forEach(btn => {
+        btn.addEventListener('click', goBackToLogin);
+    });
+    
+    // 만약 위의 방법으로도 찾지 못한다면, 텍스트 내용으로 찾기
+    document.querySelectorAll('button, a').forEach(element => {
+        const text = element.textContent.trim().toLowerCase();
+        if (text.includes('로그인') && (text.includes('돌아가') || text.includes('back') || text.includes('취소'))) {
+            element.addEventListener('click', goBackToLogin);
+        }
+    });
 
     // 소셜 로그인 처리
     const socialType = new URLSearchParams(window.location.search).get('social');
