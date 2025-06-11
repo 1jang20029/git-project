@@ -218,7 +218,7 @@ function showContent(type) {
 
   if (type === 'settings' && !settingsLoaded) {
     const container = document.getElementById('settingsContent');
-    fetch('settings.html')
+    fetch('pages/user/settings.htmll')
       .then(res => {
         if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -239,7 +239,7 @@ function showContent(type) {
 
   if (type === 'community' && !communityLoaded) {
     const container = document.getElementById('communityContent');
-    fetch('community.html')
+    fetch('pages/list/community.html')
       .then(res => {
         if (!res.ok) throw new Error('community.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -260,7 +260,7 @@ function showContent(type) {
 
   if (type === 'lecture-review' && !lectureLoaded) {
     const container = document.getElementById('lecture-reviewContent');
-    fetch('lecture-review.html')
+    fetch('pages/list/lecture-review.html')
       .then(res => {
         if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -281,7 +281,7 @@ function showContent(type) {
 
   if (type === 'notices' && !noticesLoaded) {
     const container = document.getElementById('noticesContent');
-    fetch('notices.html')
+    fetch('pages/list/notices.html')
       .then(res => {
         if (!res.ok) throw new Error('notices.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -325,7 +325,7 @@ function showContent(type) {
   if (type === 'academic-calendar' && !academicCalendarLoaded) {
     const container = document.getElementById('academic-calendarContentPane');
     if (container) {
-      fetch('academic-calendar.html')
+      fetch('pages/list/academic-calendar.html')
         .then(res => {
           if (!res.ok) throw new Error('academic-calendar.html 을 불러오는 중 오류 발생');
           return res.text();
