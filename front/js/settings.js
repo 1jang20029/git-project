@@ -16,20 +16,31 @@ const DEFAULT_SHORTCUTS = [
 let workingSettings = {};
 let savedSettings   = {};
 
+//───────────────────────────────────────────────────────────────────────────────
+// localStorage 저장 헬퍼
+function persistMode()       { localStorage.setItem(LS_KEY_MODE, workingSettings.mode); }
+function persistNotify()     { localStorage.setItem(LS_KEY_NOTIFY, workingSettings.notify); }
+function persistCategories(){ localStorage.setItem(LS_KEY_CATNOTIFY, JSON.stringify(workingSettings.categories)); }
+function persistAutoLogout() { localStorage.setItem(LS_KEY_AUTOLOGOUT, JSON.stringify(workingSettings.autoLogout)); }
+function persistShortcuts()  { localStorage.setItem(LS_KEY_SHORTCUTS, JSON.stringify(workingSettings.shortcuts)); }
+//───────────────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
   loadSavedSettings();
   initSettingsPage();
 });
 
 function loadSavedSettings() {
-  const isLightMode      = localStorage.getItem(LS_KEY_MODE) === 'true';
-  const isNotifyEnabled  = localStorage.getItem(LS_KEY_NOTIFY) === 'true';
-  const savedCatSettings = JSON.parse(localStorage.getItem(LS_KEY_CATNOTIFY)) || {
-    '공지사항': true, '커뮤니티': true, '셔틀버스': true
-  };
-  const savedAutoLogout = JSON.parse(localStorage.getItem(LS_KEY_AUTOLOGOUT)) || {
-    enabled: false, timeoutMinutes: 15
-  };
+  const isLightMode     = localStorage.getItem(LS_KEY_MODE) === 'true';
+  const isNotifyEnabled = localStorage.getItem(LS_KEY_NOTIFY) === 'true';
+  const catRaw = JSON.parse(localStorage.getItem(LS_KEY_CATNOTIFY));
+  const savedCatSettings = (catRaw && typeof catRaw === 'object')
+    ? catRaw
+    : { '공지사항': true, '커뮤니티': true, '셔틀버스': true };
+  const alRaw = JSON.parse(localStorage.getItem(LS_KEY_AUTOLOGOUT));
+  const savedAutoLogout = (alRaw && typeof alRaw === 'object')
+    ? alRaw
+    : { enabled: false, timeoutMinutes: 15 };
   let savedShortcuts = JSON.parse(localStorage.getItem(LS_KEY_SHORTCUTS));
   if (!Array.isArray(savedShortcuts) || savedShortcuts.length === 0) {
     savedShortcuts = JSON.parse(JSON.stringify(DEFAULT_SHORTCUTS));
@@ -55,6 +66,7 @@ function initSettingsPage() {
   initSaveCancelButtons();
 }
 
+// 1) 다크/라이트 모드
 function initThemeToggle() {
   const themeToggle = document.getElementById('themeToggle');
   if (!themeToggle) return;
@@ -63,29 +75,38 @@ function initThemeToggle() {
   themeToggle.addEventListener('change', () => {
     workingSettings.mode = themeToggle.checked;
     document.body.classList.toggle('light-mode', workingSettings.mode);
+    persistMode();
+    showMessage(`테마가 ${workingSettings.mode ? '라이트' : '다크'} 모드로 변경되었습니다`, 'success');
   });
 }
 
+// 2) 알림 받기 ON/OFF
 function initNotificationToggle() {
   const cb = document.getElementById('notificationToggle');
   if (!cb) return;
   cb.checked = workingSettings.notify;
   cb.addEventListener('change', () => {
     workingSettings.notify = cb.checked;
+    persistNotify();
+    showMessage(`알림 받기가 ${cb.checked ? '활성화' : '비활성화'}되었습니다`, 'success');
   });
 }
 
+// 3) 카테고리별 알림 설정
 function initCategoryNotifications() {
-  ['공지사항','커뮤니티','셔틀버스'].forEach(cat => {
-    const cb = document.getElementById(`notifCategory-${cat}`);
+  ['공지사항','커뮤니티','셔틀버스'].forEach(catName => {
+    const cb = document.getElementById(`notifCategory-${catName}`);
     if (!cb) return;
-    cb.checked = workingSettings.categories[cat];
+    cb.checked = !!workingSettings.categories[catName];
     cb.addEventListener('change', () => {
-      workingSettings.categories[cat] = cb.checked;
+      workingSettings.categories[catName] = cb.checked;
+      persistCategories();
+      showMessage(`${catName} 알림이 ${cb.checked ? '활성화' : '비활성화'}되었습니다`, 'success');
     });
   });
 }
 
+// 4) 자동 로그아웃 설정
 function initAutoLogoutSettings() {
   const toggle = document.getElementById('autoLogoutToggle');
   const input  = document.getElementById('autoLogoutTimeout');
@@ -93,6 +114,8 @@ function initAutoLogoutSettings() {
     toggle.checked = workingSettings.autoLogout.enabled;
     toggle.addEventListener('change', () => {
       workingSettings.autoLogout.enabled = toggle.checked;
+      persistAutoLogout();
+      showMessage(`자동 로그아웃이 ${toggle.checked ? '활성화' : '비활성화'}되었습니다`, 'success');
     });
   }
   if (input) {
@@ -103,10 +126,13 @@ function initAutoLogoutSettings() {
       if (v > 120) v = 120;
       input.value = v;
       workingSettings.autoLogout.timeoutMinutes = v;
+      persistAutoLogout();
+      showMessage(`자동 로그아웃 대기시간이 ${v}분으로 설정되었습니다`, 'success');
     });
   }
 }
 
+// 5) 단축키 설정
 function initShortcutSettings() {
   const container = document.getElementById('shortcut-list-container');
   const addBtn    = document.getElementById('addShortcutBtn');
@@ -117,21 +143,24 @@ function initShortcutSettings() {
   if (addBtn) {
     addBtn.addEventListener('click', () => {
       if (workingSettings.shortcuts.length >= 5) {
-        showMessage('단축키는 최대 5개까지만 추가할 수 있습니다','error');
+        showMessage('단축키는 최대 5개까지만 추가할 수 있습니다', 'error');
         return;
       }
-      const newEntry = { id:`shortcut-${Date.now()}`, name:'', key:'' };
+      const newEntry = { id: `shortcut-${Date.now()}`, name: '', key: '' };
       workingSettings.shortcuts.push(newEntry);
       renderShortcutItem(container, newEntry, workingSettings.shortcuts);
+      persistShortcuts();
+      showMessage('새 단축키 항목이 추가되었습니다', 'success');
     });
   }
 }
 
-function renderShortcutItem(container, entry, shortcuts) {
-  const div = document.createElement('div');
-  div.className = 'shortcut-item';
-  div.id = entry.id;
+function renderShortcutItem(container, entry, shortcutsArray) {
+  const itemDiv = document.createElement('div');
+  itemDiv.className = 'shortcut-item';
+  itemDiv.id = entry.id;
 
+  // 설명 입력
   const labelInput = document.createElement('input');
   labelInput.type = 'text';
   labelInput.className = 'label-input';
@@ -139,9 +168,12 @@ function renderShortcutItem(container, entry, shortcuts) {
   labelInput.value = entry.name;
   labelInput.addEventListener('change', () => {
     entry.name = labelInput.value.trim();
+    persistShortcuts();
+    showMessage(`"${entry.name || '단축키'}" 설명이 업데이트되었습니다`, 'info');
   });
-  div.appendChild(labelInput);
+  itemDiv.appendChild(labelInput);
 
+  // 키 입력
   const keyInput = document.createElement('input');
   keyInput.type = 'text';
   keyInput.className = 'key-input';
@@ -156,94 +188,102 @@ function renderShortcutItem(container, entry, shortcuts) {
     e.preventDefault();
     const k = e.key.toUpperCase();
     if ((k.length === 1 && /^[A-Z0-9]$/.test(k)) || k.startsWith('F')) {
-      const otherIdx = shortcuts.findIndex(sc => sc.key === k && sc.id !== entry.id);
+      const otherIdx = shortcutsArray.findIndex(sc => sc.key === k && sc.id !== entry.id);
       if (otherIdx !== -1) {
-        const other = shortcuts[otherIdx];
+        const other = shortcutsArray[otherIdx];
         const oldKey = entry.key;
         entry.key    = k;
         other.key    = oldKey || '';
-        showMessage(`"${entry.name||'단축키'}"의 키를 ${k}으로 스왑했습니다`,'success');
+        showMessage(`"${entry.name || '단축키'}"가 ${k}로, "${other.name || '단축키'}"와 키를 스왑했습니다`, 'success');
         updateShortcutField(keyInput, entry);
-        const of = document.querySelector(`#${other.id} .key-input`);
-        if (of) updateShortcutField(of, other);
+        const otherField = document.querySelector(`#${other.id} .key-input`);
+        if (otherField) updateShortcutField(otherField, other);
       } else {
         entry.key = k;
-        showMessage(`"${entry.name||'단축키'}"의 키를 ${k}으로 설정했습니다`,'success');
+        showMessage(`"${entry.name || '단축키'}"가 ${k}로 설정되었습니다`, 'success');
         updateShortcutField(keyInput, entry);
       }
+      persistShortcuts();
       keyInput.blur();
     }
   });
   keyInput.addEventListener('blur', () => updateShortcutField(keyInput, entry));
-  div.appendChild(keyInput);
+  itemDiv.appendChild(keyInput);
 
-  const rm = document.createElement('button');
-  rm.className = 'remove-shortcut-btn';
-  rm.innerHTML = '✖';
-  rm.title = '단축키 삭제';
-  rm.addEventListener('click', () => {
-    const idx = shortcuts.findIndex(sc => sc.id === entry.id);
+  // 삭제 버튼
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'remove-shortcut-btn';
+  removeBtn.innerHTML = '✖';
+  removeBtn.title = '단축키 삭제';
+  removeBtn.addEventListener('click', () => {
+    const idx = shortcutsArray.findIndex(sc => sc.id === entry.id);
     if (idx !== -1) {
-      shortcuts.splice(idx, 1);
-      container.removeChild(div);
-      showMessage(`"${entry.name||'단축키'}" 항목을 삭제했습니다`,'info');
+      shortcutsArray.splice(idx, 1);
+      container.removeChild(itemDiv);
+      persistShortcuts();
+      showMessage(`"${entry.name || '단축키'}" 항목이 삭제되었습니다`, 'info');
     }
   });
-  div.appendChild(rm);
+  itemDiv.appendChild(removeBtn);
 
-  container.appendChild(div);
+  container.appendChild(itemDiv);
 }
 
 function updateShortcutField(field, entry) {
-  field.value = entry.key;
+  field.value       = entry.key;
   field.placeholder = entry.key || '키를 눌러주세요';
 }
 
+// 6) 저장/취소 버튼
 function initSaveCancelButtons() {
   document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
-    localStorage.setItem(LS_KEY_MODE,        workingSettings.mode);
-    localStorage.setItem(LS_KEY_NOTIFY,      workingSettings.notify);
-    localStorage.setItem(LS_KEY_CATNOTIFY,   JSON.stringify(workingSettings.categories));
-    localStorage.setItem(LS_KEY_AUTOLOGOUT,  JSON.stringify(workingSettings.autoLogout));
-    localStorage.setItem(LS_KEY_SHORTCUTS,   JSON.stringify(workingSettings.shortcuts));
-    savedSettings = JSON.parse(JSON.stringify(workingSettings));
-    showMessage('설정이 저장되었습니다','success');
+    persistMode();
+    persistNotify();
+    persistCategories();
+    persistAutoLogout();
+    persistShortcuts();
+    showMessage('모든 설정이 저장되었습니다', 'success');
   });
-
   document.getElementById('cancelSettingsBtn')?.addEventListener('click', () => {
     workingSettings = JSON.parse(JSON.stringify(savedSettings));
     initSettingsPage();
-    showMessage('저장 전 상태로 되돌아갔습니다','info');
+    showMessage('변경 전 상태로 되돌아갔습니다', 'info');
   });
 }
 
-function showMessage(msg, type='info') {
+// 알림 메시지
+function showMessage(message, type = 'info') {
   const n = document.createElement('div');
-  const bg = type === 'success' ? 'rgba(16,185,129,0.9)'
-           : type === 'error'   ? 'rgba(239,68,68,0.9)'
-           :                       'rgba(59,130,246,0.9)';
-  const icon = type === 'success' ? '✅'
-             : type === 'error'   ? '❌'
-             :                       'ℹ️';
+  const bgColor =
+    type === 'success' ? 'rgba(16, 185, 129, 0.9)' :
+    type === 'error'   ? 'rgba(239, 68, 68, 0.9)' :
+                         'rgba(59, 130, 246, 0.9)';
+  const icon =
+    type === 'success' ? '✅' :
+    type === 'error'   ? '❌' :
+                         'ℹ️';
+
   n.style.cssText = `
-    position:fixed; top:100px; right:20px;
-    background:${bg}; color:white;
-    padding:1rem 1.5rem; border-radius:12px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.3);
-    z-index:10000; font-weight:600;
-    backdrop-filter:blur(20px);
-    border:1px solid ${bg.replace('0.9','0.3')};
-    animation:slideInRight 0.3s ease-out;
-    max-width:400px;
+    position: fixed; top: 100px; right: 20px;
+    background: ${bgColor}; color: white;
+    padding: 1rem 1.5rem; border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 10000; font-weight: 600;
+    backdrop-filter: blur(20px);
+    border: 1px solid ${bgColor.replace('0.9','0.3')};
+    animation: slideInRight 0.3s ease-out;
+    max-width: 400px;
   `;
-  n.innerHTML = `<div style="display:flex;align-items:center;gap:0.5rem;">
-                   <span>${icon}</span><span>${msg}</span>
-                 </div>`;
+  n.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <span>${icon}</span><span>${message}</span>
+    </div>
+  `;
   document.body.appendChild(n);
-  setTimeout(()=>{
+  setTimeout(() => {
     n.style.animation = 'slideOutRight 0.3s ease-in';
-    setTimeout(()=>n.remove(),300);
-  },3000);
+    setTimeout(() => n.remove(), 300);
+  }, 3000);
 }
 
 window.initSettingsPage = initSettingsPage;
