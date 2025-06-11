@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연성대학교 학사일정</title>
+    <link rel="stylesheet" href="academic-calendar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 상단 네비게이션 -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <span>🎓</span>
+            <span>연성대학교 학사일정</span>
+        </div>
+        <div class="nav-controls">
+            <select id="semesterSelect" class="semester-selector">
+                <option value="1">1학기</option>
+                <option value="summer">여름학기</option>
+                <option value="2">2학기</option>
+                <option value="winter">겨울학기</option>
+            </select>
+            <button class="back-btn" onclick="goBackToMain()">
+                <i class="fas fa-home"></i>
+                <span>메인으로</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 메인 컨테이너 -->
+    <div class="main-container">
+        <main class="content-area">
+            <!-- 주요 일정 섹션 -->
+            <div class="important-schedule-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-star"></i>
+                        주요 일정
+                    </h2>
+                </div>
+                <div class="important-cards-grid" id="importantCards">
+                    <!-- 중요 일정 카드들이 동적으로 생성됩니다 -->
+                </div>
+            </div>
+
+            <!-- 캘린더 및 일정 목록 그리드 -->
+            <div class="calendar-grid">
+                <!-- 캘린더 카드 -->
+                <div class="calendar-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span id="currentMonthTitle">2025년 6월</span>
+                        </h3>
+                        <div class="calendar-nav-controls">
+                            <button class="nav-control-btn" onclick="prevMonth()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="nav-control-btn today-btn" onclick="goToToday()">
+                                오늘
+                            </button>
+                            <button class="nav-control-btn" onclick="nextMonth()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <div class="day-header sunday">일</div>
+                            <div class="day-header">월</div>
+                            <div class="day-header">화</div>
+                            <div class="day-header">수</div>
+                            <div class="day-header">목</div>
+                            <div class="day-header">금</div>
+                            <div class="day-header saturday">토</div>
+                        </div>
+                        <div class="calendar-body" id="calendarBody">
+                            <!-- 캘린더 날짜들이 동적으로 생성됩니다 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 일정 목록 카드 -->
+                <div class="events-list-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-list"></i>
+                            <span id="monthlyEventsTitle">2025년 6월 학사일정</span>
+                        </h3>
+                        <div class="events-filter">
+                            <button class="filter-btn active" data-type="all">전체</button>
+                            <button class="filter-btn" data-type="academic">학사</button>
+                            <button class="filter-btn" data-type="exam">시험</button>
+                            <button class="filter-btn" data-type="holiday">휴일</button>
+                            <button class="filter-btn" data-type="event">행사</button>
+                            <button class="filter-btn" data-type="registration">수강신청</button>
+                        </div>
+                    </div>
+                    <div class="events-list-container">
+                        <div class="events-list" id="eventsList">
+                            <!-- 일정 목록이 동적으로 생성됩니다 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 일정 상세보기 모달 -->
+    <div class="modal" id="eventDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="detailTitle"></h3>
+                <button id="closeModalBtn" class="modal-close" aria-label="모달 닫기" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="detail-content">
+                        <strong>날짜</strong>
+                        <span id="detailDate"></span>
+                    </div>
+                </div>
+                <div class="detail-item" id="detailPeriod" style="display: none;">
+                    <i class="fas fa-clock"></i>
+                    <div class="detail-content">
+                        <strong>기간</strong>
+                        <span id="detailPeriodText"></span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-tag"></i>
+                    <div class="detail-content">
+                        <strong>구분</strong>
+                        <span id="detailType" class="event-type-badge"></span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="detail-content">
+                        <strong>상세내용</strong>
+                        <p id="detailDescription"></p>
+                    </div>
+                </div>
+                <div class="detail-item" id="detailLocation" style="display: none;">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="detail-content">
+                        <strong>장소</strong>
+                        <span id="detailLocationText"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="academic-calendar.js"></script>
+</body>
+</html>
