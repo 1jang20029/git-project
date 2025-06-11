@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>설정 – 연성대학교 스마트 캠퍼스</title>
-  <!-- Settings 전용 CSS -->
-  <link rel="stylesheet" href="../../css/settings.css" />
+  <!-- Settings 전용 CSS (절대 경로) -->
+  <link rel="stylesheet" href="/css/settings.css" />
 </head>
 <body>
   <div class="content-header">
@@ -46,6 +46,7 @@
       <label for="notifCategory-셔틀버스">셔틀버스</label>
       <input type="checkbox" id="notifCategory-셔틀버스" />
     </div>
+
     <!-- 4. 자동 로그아웃 설정 -->
     <div class="setting-section-title">자동 로그아웃 (활성화 시)</div>
     <div class="setting-item">
@@ -59,12 +60,8 @@
 
     <!-- 5. 키보드 단축키 설정 (최대 5개) -->
     <div class="setting-section-title">키보드 단축키 설정 (최대 5개)</div>
-    <div id="shortcut-list-container">
-      <!-- 단축키 항목들이 이곳에 동적으로 렌더링됩니다 -->
-    </div>
-    <button id="addShortcutBtn" class="add-shortcut-btn">
-      + 단축키 추가
-    </button>
+    <div id="shortcut-list-container"></div>
+    <button id="addShortcutBtn" class="add-shortcut-btn">+ 단축키 추가</button>
 
     <!-- 저장 / 취소 버튼 -->
     <div class="action-buttons">
@@ -73,7 +70,7 @@
     </div>
   </div>
 
-  <!-- Settings 전용 JS -->
-  <script src="../../js/settings.js" defer></script>
+  <!-- Settings 전용 JS (절대 경로, defer) -->
+  <script src="/js/settings.js" defer></script>
 </body>
 </html>
