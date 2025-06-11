@@ -70,7 +70,7 @@ function logout() {
     alert('로그아웃되었습니다.');
     
     // 로그인 페이지로 이동
-    window.location.href = "login.html";
+    window.location.href = "pages/user/login.html";
 }
 
 // 로컬 스토리지에 회원가입 여부 저장

@@ -1181,7 +1181,7 @@ function handleLogout() {
     if (confirm('로그아웃 하시겠습니까?')) {
       localStorage.removeItem('currentLoggedInUser');
       closeUserDropdown();
-      window.location.href = 'login.html';
+      window.location.href = 'pages/user/login.html';
     }
   } else {
     showMessage('로그인 상태가 아닙니다.', 'error');
