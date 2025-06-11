@@ -55,43 +55,33 @@ const safeStorage = {
 // 카카오 회원가입 페이지로 리디렉션
 function redirectToRegister(kakaoId, userInfo) {
     log("회원가입 페이지로 이동");
-    
-    // 세션 스토리지에 임시 데이터 저장
+
     sessionStorage.setItem('temp_social_id', kakaoId);
     sessionStorage.setItem('temp_social_type', 'kakao');
     sessionStorage.setItem('temp_social_name', userInfo.name || '카카오 사용자');
-    
+
     if (userInfo.email) {
         sessionStorage.setItem('temp_social_email', userInfo.email);
     }
-    
+
     if (userInfo.profileImage) {
         sessionStorage.setItem('temp_social_profile_image', userInfo.profileImage);
     }
-    
-    // 바로 회원가입 페이지로 이동
-    window.location.replace("register.html?social=kakao");
+
+    // 회원가입 페이지로 이동
+    window.location.replace("../../pages/user/signup.html");
 }
+
 
 // 이미 가입된 사용자 로그인 처리
 function loginExistingUser(userId) {
     log("기존 카카오 사용자 로그인: " + userId);
-    
-    // 현재 로그인된 사용자로 설정
     safeStorage.setItem('currentLoggedInUser', userId);
-    
-    // 위젯 설정 완료 여부 확인
-    const setupCompleted = safeStorage.getItem(`user_${userId}_setup_completed`) === 'true';
-    
-    // 위젯 설정을 완료한 사용자는 바로 메인 페이지로 이동
-    if (setupCompleted) {
-        window.location.replace("index.html");
-    } else {
-        // 위젯 설정을 완료하지 않은 사용자는 위젯 설정 페이지로 이동
-        safeStorage.setItem(`user_${userId}_first_login`, 'false');
-        window.location.replace("widget-settings.html");
-    }
+
+    // 로그인 후 메인 페이지로 이동
+    window.location.replace("../../index.html");
 }
+
 
 // 카카오 사용자 확인
 function checkKakaoUser(kakaoId) {
