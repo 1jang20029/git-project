@@ -67,53 +67,13 @@
       </div>
 
       <div class="social-login">
-        <div class="social-button naver-button" onclick="naverLogin()">N</div>
-        <a href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code&prompt=login" class="social-button kakao-button">K</a>
-        <div class="social-button google-button" onclick="googleLogin()">G</div>
+        <button class="social-btn naver" onclick="naverLogin()">네이버로 로그인</button>
+        <a class="social-btn kakao" href="https://kauth.kakao.com/oauth/authorize?client_id=beed5990dc19ffd7ab4f2355afa70129&redirect_uri=https://ysu-guide.netlify.app/kakao-callback.html&response_type=code&prompt=login">카카오로 로그인</a>
+        <button class="social-btn google" onclick="googleLogin()">구글로 로그인</button>
       </div>
 
       <div class="register-link">
         아직 계정이 없으신가요? <a href="../../pages/user/signup.html">회원가입</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 네이버 로그인 모달 -->
-  <div id="naverLoginModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title">네이버 로그인</div>
-        <span class="close-modal" onclick="closeModal('naverLoginModal')">&times;</span>
-      </div>
-      <div class="modal-body">
-        <div class="modal-form-group">
-          <label class="form-label">네이버 아이디</label>
-          <input type="text" class="form-input" id="naverId" placeholder="아이디를 입력하세요">
-          <span class="input-icon">👤</span>
-        </div>
-        <div class="modal-form-group">
-          <label class="form-label">네이버 비밀번호</label>
-          <input type="password" class="form-input" id="naverPw" placeholder="비밀번호를 입력하세요">
-          <span class="input-icon">🔒</span>
-        </div>
-
-        <div class="auto-login">
-          <input type="checkbox" id="autoLogin">
-          <label for="autoLogin">로그인 상태 유지</label>
-        </div>
-
-        <div class="naver-benefits">
-          <div class="benefits-title">네이버 계정으로 로그인 시 혜택</div>
-          <ul>
-            <li>네이버 캘린더와 학사일정 연동</li>
-            <li>네이버 지도로 캠퍼스 건물 찾기</li>
-            <li>네이버 메일을 통한 알림 수신</li>
-          </ul>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="modal-button cancel" onclick="closeModal('naverLoginModal')">취소</button>
-        <button class="modal-button login" onclick="processNaverLogin()">로그인</button>
       </div>
     </div>
   </div>

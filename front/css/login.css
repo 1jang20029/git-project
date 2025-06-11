@@ -1,123 +1,178 @@
-/* 기본 스타일 초기화 */
-* {
+/* 기본 배경 및 폰트 */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #f8fafc; /* 메인 페이지와 동일한 밝은 회색 배경 */
-  color: #1f2937;
-  overflow-x: hidden;
-}
-
-/* 컨테이너 구조 */
+/* 전체 컨테이너 */
 .container {
-  padding: 2rem;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-/* 상단 헤더 */
+/* 헤더 */
 header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .back-button {
+  color: #1f2937;
+  font-weight: bold;
   cursor: pointer;
+}
+
+.header-title {
+  font-size: 18px;
   font-weight: bold;
 }
 
-/* 로고 영역 */
+/* 로고 및 슬로건 */
 .logo-container {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .university-logo {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
 }
 
 .slogan {
-  font-size: 1rem;
+  font-size: 14px;
   color: #64748b;
 }
 
-/* 로그인/회원가입 폼 영역 */
-.login-container {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  max-width: 500px;
-  margin: 0 auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
+/* 입력 폼 */
 .form-group {
-  margin-bottom: 1.2rem;
+  margin-bottom: 16px;
 }
 
 .form-label {
   display: block;
-  margin-bottom: 0.4rem;
-  font-weight: 500;
+  margin-bottom: 6px;
+  font-weight: bold;
 }
 
 .form-input {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background-color: #fff;
-  font-size: 1rem;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
-/* 로그인/회원가입 버튼 */
+/* 비밀번호 토글 아이콘 */
+.password-input-container {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.eye-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* 로그인 버튼 */
 .login-button {
   width: 100%;
-  padding: 0.9rem;
-  background-color: #2563eb;
+  background-color: #3b82f6;
   color: white;
+  padding: 12px;
   font-weight: bold;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  margin-top: 8px;
 }
 
-.login-button:hover {
-  background-color: #1d4ed8;
+/* 구분선 */
+.separator {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
 }
 
-/* 하단 링크 */
-.register-link {
-  margin-top: 1.5rem;
+.separator-line {
+  flex: 1;
+  height: 1px;
+  background-color: #cbd5e1;
+}
+
+.separator-text {
+  margin: 0 12px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* 소셜 로그인 */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.social-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 15px;
+  color: white;
+  cursor: pointer;
   text-align: center;
-  font-size: 0.95rem;
+  transition: background 0.3s ease;
+}
+
+.social-btn.naver {
+  background-color: #03c75a;
+}
+
+.social-btn.kakao {
+  background-color: #fee500;
+  color: #3c1e1e;
+}
+
+.social-btn.google {
+  background-color: #4285f4;
+}
+
+/* 회원가입 링크 */
+.register-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
 }
 
 .register-link a {
-  color: #2563eb;
+  color: #3b82f6;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: bold;
 }
 
-.register-link a:hover {
-  text-decoration: underline;
+/* 기타 */
+.auto-login {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* 경고 메시지 */
 .storage-notice {
-  background-color: #ffe5e5;
-  color: #b91c1c;
-  font-size: 0.9rem;
-  padding: 0.8rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+  font-size: 13px;
+  color: #f87171;
   text-align: center;
-  display: none;
+  margin-bottom: 12px;
 }
