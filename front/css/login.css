@@ -13,6 +13,7 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   color: #333;
+  line-height: 1.6;
 }
 
 .container {
@@ -43,6 +44,7 @@ header {
   padding: 8px;
   border-radius: 50%;
   transition: background-color 0.3s ease;
+  user-select: none;
 }
 
 .back-button:hover {
@@ -76,6 +78,7 @@ header {
   margin-bottom: 24px;
   font-size: 14px;
   border: 1px solid #ffeaa7;
+  display: none;
 }
 
 /* =========================
@@ -213,6 +216,12 @@ a:hover {
 
 .login-button:active {
   transform: translateY(0);
+}
+
+.login-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
 }
 
 /* =========================
@@ -447,6 +456,31 @@ a:hover {
 
 .modal-button.login:hover {
   background: #02b351;
+}
+
+/* =========================
+   알림 시스템
+   ========================= */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 /* =========================

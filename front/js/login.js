@@ -39,7 +39,7 @@ function initializeElements() {
    이벤트 리스너 설정
    ========================= */
 function setupEventListeners() {
-  // 폼 제출 이벤트 (수정된 부분)
+  // 폼 제출 이벤트
   const form = document.getElementById('loginForm');
   if (form) {
     form.addEventListener('submit', handleLogin);
@@ -82,7 +82,6 @@ async function handleLogin(e) {
   e.preventDefault();
   console.log('[DEBUG] 로그인 요청 시작');
   
-  // 수정: form.studentId.value가 아닌 직접 getElementById 사용
   const studentId = document.getElementById('studentId').value.trim();
   const password = document.getElementById('password').value.trim();
   const loginButton = document.querySelector('.login-button');
@@ -159,8 +158,8 @@ async function performLogin(studentId, password) {
     setTimeout(() => {
       // 테스트용 계정 (실제로는 서버에서 검증)
       const testAccounts = {
-        '20240001': 'test1234',
-        '20240002': 'password',
+        '20211001': 'test1234',
+        '20220015': 'password',
         '12345678': 'test'
       };
       
@@ -198,8 +197,13 @@ function handleLoginSuccess() {
   
   // 사용자 정보 저장 (실제로는 토큰 등을 저장)
   const studentId = document.getElementById('studentId').value;
-  sessionStorage.setItem('isLoggedIn', 'true');
-  sessionStorage.setItem('studentId', studentId);
+  
+  try {
+    sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('studentId', studentId);
+  } catch (e) {
+    console.warn('Storage not available:', e);
+  }
   
   // 페이지 이동 (딜레이 후)
   setTimeout(() => {
@@ -219,24 +223,40 @@ function handleLoginSuccess() {
 function handleIdSaving(studentId) {
   const saveIdCheckbox = document.getElementById('saveId');
   if (saveIdCheckbox && saveIdCheckbox.checked) {
-    localStorage.setItem('savedStudentId', studentId);
+    try {
+      localStorage.setItem('savedStudentId', studentId);
+    } catch (e) {
+      console.warn('Local storage not available:', e);
+    }
   } else {
-    localStorage.removeItem('savedStudentId');
+    try {
+      localStorage.removeItem('savedStudentId');
+    } catch (e) {
+      console.warn('Local storage not available:', e);
+    }
   }
 }
 
 function loadSavedId() {
-  const savedId = localStorage.getItem('savedStudentId');
-  if (savedId) {
-    document.getElementById('studentId').value = savedId;
-    document.getElementById('saveId').checked = true;
+  try {
+    const savedId = localStorage.getItem('savedStudentId');
+    if (savedId) {
+      document.getElementById('studentId').value = savedId;
+      document.getElementById('saveId').checked = true;
+    }
+  } catch (e) {
+    console.warn('Local storage not available:', e);
   }
 }
 
 function handleSaveIdChange() {
   const saveIdCheckbox = document.getElementById('saveId');
   if (!saveIdCheckbox.checked) {
-    localStorage.removeItem('savedStudentId');
+    try {
+      localStorage.removeItem('savedStudentId');
+    } catch (e) {
+      console.warn('Local storage not available:', e);
+    }
   }
 }
 
@@ -379,36 +399,6 @@ function showNotification(message, type = 'info') {
     closeBtn.style.backgroundColor = 'transparent';
   });
   
-  // 애니메이션 스타일 추가
-  if (!document.querySelector('#notification-styles')) {
-    const style = document.createElement('style');
-    style.id = 'notification-styles';
-    style.textContent = `
-      @keyframes slideInRight {
-        from {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      
-      @keyframes slideOutRight {
-        from {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        to {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-  
   // DOM에 추가
   document.body.appendChild(notification);
   
@@ -497,15 +487,6 @@ function naverLogin() {
 // 구글 로그인
 function googleLogin() {
   showNotification('구글 로그인 기능은 준비 중입니다.', 'info');
-  
-  // 실제 구현 시:
-  /*
-  window.location.href = 'https://accounts.google.com/oauth/authorize?' +
-    'client_id=YOUR_GOOGLE_CLIENT_ID&' +
-    'redirect_uri=' + encodeURIComponent(window.location.origin + '/google-callback.html') + '&' +
-    'response_type=code&' +
-    'scope=email profile';
-  */
 }
 
 // 모달 닫기
@@ -572,7 +553,7 @@ window.addEventListener('beforeunload', function() {
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
   console.log('%c[로그인 페이지] 디버그 모드', 'color: #10b981; font-weight: bold;');
   console.log('테스트 계정:');
-  console.log('- 학번: 20240001, 비밀번호: test1234');
-  console.log('- 학번: 20240002, 비밀번호: password');
+  console.log('- 학번: 20211001, 비밀번호: test1234');
+  console.log('- 학번: 20220015, 비밀번호: password');
   console.log('- 학번: 12345678, 비밀번호: test');
 }
