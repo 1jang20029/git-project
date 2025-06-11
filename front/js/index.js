@@ -218,7 +218,7 @@ function showContent(type) {
 
   if (type === 'settings' && !settingsLoaded) {
     const container = document.getElementById('settingsContent');
-    fetch('pages/user/settings.html')
+    fetch('settings.html')
       .then(res => {
         if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -239,7 +239,7 @@ function showContent(type) {
 
   if (type === 'community' && !communityLoaded) {
     const container = document.getElementById('communityContent');
-    fetch('pages/list/community.html')
+    fetch('community.html')
       .then(res => {
         if (!res.ok) throw new Error('community.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -260,7 +260,7 @@ function showContent(type) {
 
   if (type === 'lecture-review' && !lectureLoaded) {
     const container = document.getElementById('lecture-reviewContent');
-    fetch('pages/list/lecture-review.html')
+    fetch('lecture-review.html')
       .then(res => {
         if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -281,7 +281,7 @@ function showContent(type) {
 
   if (type === 'notices' && !noticesLoaded) {
     const container = document.getElementById('noticesContent');
-    fetch('pages/list/notices.html')
+    fetch('notices.html')
       .then(res => {
         if (!res.ok) throw new Error('notices.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -302,7 +302,7 @@ function showContent(type) {
 
   if (type === 'buildings' && !buildingsLoaded) {
     const container = document.getElementById('buildingsContent');
-    fetch('pages/list/buildings.html')
+    fetch('buildings.html')
       .then(res => {
         if (!res.ok) throw new Error('buildings.html 을 불러오는 중 오류 발생');
         return res.text();
@@ -325,7 +325,7 @@ function showContent(type) {
   if (type === 'academic-calendar' && !academicCalendarLoaded) {
     const container = document.getElementById('academic-calendarContentPane');
     if (container) {
-      fetch('pages/list/academic-calendar.html')
+      fetch('academic-calendar.html')
         .then(res => {
           if (!res.ok) throw new Error('academic-calendar.html 을 불러오는 중 오류 발생');
           return res.text();
@@ -1154,7 +1154,7 @@ async function showProfile() {
   }
   showContent('profile');
   try {
-    const res = await fetch('pages/user/account-edit.html');
+    const res = await fetch('account-edit.html');
     if (!res.ok) throw new Error('Account 편집 화면 로드 실패');
     const html = await res.text();
     if (container) container.innerHTML = html;
