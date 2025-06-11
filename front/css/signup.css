@@ -1,72 +1,128 @@
-/* 기본 리셋 */
+/* 전체 초기화 */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
-  font-family: 'Pretendard', sans-serif;
-  background-color: #f9fbfd;
-  color: #1f2937;
+  background-color: #f7f8fa;
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  color: #111827;
+  line-height: 1.6;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
-  padding-top: 40px;
+  padding: 40px 16px;
 }
 
-/* 상단 네비게이션 */
-header {
-  width: 100%;
-  max-width: 500px;
+/* 헤더 */
+.top-header {
   display: flex;
   justify-content: space-between;
-  padding: 16px;
-  font-weight: bold;
-  font-size: 15px;
-  color: #111827;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 24px;
+  font-weight: 600;
+  font-size: 14px;
 }
 
-/* 폼 전체 컨테이너 */
-.signup-container {
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1f2937;
+  cursor: pointer;
+}
+.back-btn:hover {
+  background: #e2e8f0;
+}
+
+/* 메인 컨테이너 */
+.main-content {
+  background-color: #ffffff;
   width: 100%;
-  max-width: 500px;
-  background-color: white;
+  max-width: 600px;
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* 제목 */
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+/* 섹션 */
+.form-section {
+  margin-bottom: 32px;
+}
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* 역할 선택 */
+.role-grid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
 
-/* 로고 영역 */
-.logo-container {
-  text-align: center;
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
 }
-.university-logo {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-}
-.slogan {
-  font-size: 14px;
-  color: #6b7280;
-  margin-top: 4px;
+.role-card input {
+  margin-left: 4px;
 }
 
-/* 폼 그룹 */
-.form-group {
+/* input 그룹 */
+.input-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.input-group {
+  flex: 1 1 100%;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.form-label {
-  font-size: 14px;
+.input-label {
   font-weight: 600;
-  color: #111827;
+  font-size: 14px;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .form-input {
@@ -75,42 +131,67 @@ header {
   border-radius: 6px;
   font-size: 14px;
   background-color: #f1f5ff;
-  transition: border-color 0.2s;
 }
+
 .form-input:focus {
+  background-color: white;
   border-color: #6366f1;
   outline: none;
-  background-color: white;
+}
+
+/* 드롭다운 */
+.dropdown-container {
+  position: relative;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  margin-top: 4px;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.dropdown-option {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.dropdown-option:hover {
+  background-color: #f3f4f6;
+}
+.dropdown-category {
+  font-weight: bold;
+  font-size: 13px;
+  background-color: #f9fafb;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* 에러 */
+.error-message {
+  font-size: 12px;
+  color: #ef4444;
+  display: none;
 }
 
 /* 버튼 */
-.signup-button {
+.submit-btn {
   width: 100%;
-  padding: 12px;
-  font-size: 14px;
+  padding: 14px;
+  font-size: 15px;
   font-weight: 600;
   background-color: #4f6ef7;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  margin-top: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
-.signup-button:hover {
-  background-color: #3c57db;
-}
-
-/* 하단 링크 */
-.register-link {
-  text-align: center;
-  font-size: 13px;
-  color: #374151;
-}
-.register-link a {
-  color: #4f6ef7;
-  text-decoration: none;
-  margin-left: 4px;
-}
-.register-link a:hover {
-  text-decoration: underline;
+.submit-btn:hover {
+  background-color: #3f56dd;
 }
