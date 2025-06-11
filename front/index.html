@@ -7,8 +7,10 @@
 
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
-  <link rel="stylesheet" href="index.css" />
-  <link rel="stylesheet" href="settings.css" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/index.css" />
+  <link rel="stylesheet" href="./css/settings.css" />
   <link rel="stylesheet" href="./css/buildings.css" />
 </head>
 <body>
@@ -22,7 +24,7 @@
         <span class="nav-icon" title="대시보드">🏠</span>
         <span>대시보드</span>
       </li>
-      <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
+      <li class="nav-item" id="nav-buildings" onclick="openBuildingsPage()">
         <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
         <span>건물 &amp; 시설</span>
       </li>
@@ -42,15 +44,12 @@
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
         <ul class="dropdown-menu">
-          <!-- 내 시간표 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
-          <!-- 학사일정 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
             <span class="nav-icon">🗓️</span><span>학사일정</span>
           </li>
-          <!-- 셔틀버스 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
             <span class="nav-icon">🚌</span><span>셔틀버스</span>
           </li>
@@ -125,8 +124,8 @@
             <div id="map-container">
               <div id="naverMap" style="width:100%;height:100%;"></div>
               <div id="map-overlay">
-                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
-                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍−</button>
+                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍＋</button>
+                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍－</button>
                 <button id="map-reset" onclick="resetMapView()" title="초기화">🏠</button>
                 <button id="map-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
               </div>
@@ -158,10 +157,11 @@
             </div>
             <div id="recentNotices"></div>
           </div>
+          <div id="buildingGrid"></div>
         </div>
       </div>
-      
-      <!-- SPA 분리 영역들 -->
+
+      <!-- SPA 전환 영역 (빌딩 외엔 기존과 동일) -->
       <div id="buildingsContent" style="display:none;"></div>
       <div id="communityContent" style="display:none;"></div>
       <div id="lecture-reviewContent" style="display:none;"></div>
@@ -169,16 +169,15 @@
       <div id="timetableContentPane" style="display:none;"></div>
       <div id="shuttleContentPane" style="display:none;"></div>
       <div id="calendarContentPane" style="display:none;"></div>
-      
-      <!-- 새로 추가: 학사일정 페이지 -->
       <div id="academic-calendarContentPane" style="display:none;"></div>
-      
       <div id="profileContentPane" style="display:none;"></div>
       <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
-  <script src="index.js" defer></script>
-  <script src="settings.js" defer></script>
+
+  <!-- JS -->
+  <script src="./js/index.js" defer></script>
+  <script src="./js/settings.js" defer></script>
   <script src="./js/buildings.js" defer></script>
 </body>
 </html>
