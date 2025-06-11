@@ -18,7 +18,7 @@ const AppState = {
   
   // 페이지 로드 상태
   loadedPages: new Set(),
-  
+
   // 타이머
   autoLogoutTimer: null
 };
@@ -281,7 +281,7 @@ async function loadPageIfNeeded(type) {
   if (AppState.loadedPages.has(type)) return;
   
   const pageConfig = {
-    settings: { file: 'settings.html', init: 'initSettingsPage' },
+    settings: { file: 'pages/user/settings.html', init: 'initSettingsPage' },
     community: { file: 'pages/list/community.html', init: 'initCommunityPage' },
     'lecture-review': { file: 'pages/list/lecture-review.html', init: 'initLectureReviewPage' },
     notices: { file: 'pages/list/notices.html', init: 'initNoticesPage' },
