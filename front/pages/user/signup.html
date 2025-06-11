@@ -1,311 +1,58 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입 - 연성대학교 스마트 캠퍼스</title>
-    <link rel="stylesheet" href="../../css/signup.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 - 연성대학교 Campus Guide</title>
+  <link rel="stylesheet" href="../../css/signup.css" />
 </head>
 <body>
-    <!-- 상단 네비게이션 -->
-    <header class="top-header">
-        <div class="header-left">
-            <div class="brand-logo">
-                <span class="logo-icon">🎓</span>
-                <span class="brand-name">연성대학교 스마트 캠퍼스</span>
-            </div>
-        </div>
-        <div class="header-right">
-            <button class="back-btn" onclick="goBack()">
-                <span class="back-icon">←</span>
-                <span class="back-text">로그인으로 돌아가기</span>
-            </button>
-        </div>
+  <div class="container">
+    <header>
+      <div class="back-button" onclick="goBack()">홈으로</div>
+      <div class="header-title">회원가입</div>
     </header>
 
-    <!-- 메인 컨테이너 -->
-    <main class="main-content">
-        <div class="signup-container">
-            <!-- 페이지 제목 -->
-            <div class="page-header">
-                <h1 class="page-title">회원가입</h1>
-                <p class="page-subtitle">연성대학교 캠퍼스 가이드에 오신 것을 환영합니다</p>
-            </div>
+    <div class="signup-container">
+      <div class="logo-container">
+        <div class="university-logo">연성대학교</div>
+        <div class="slogan">Campus Guide</div>
+      </div>
 
-            <!-- 회원가입 폼 카드 -->
-            <div class="signup-card">
-                <!-- 소셜 로그인 정보 (숨김 상태) -->
-                <div id="socialInfoBox" class="social-info-banner" style="display: none;">
-                    <div class="social-content">
-                        <span id="socialIcon" class="social-platform-icon"></span>
-                        <div class="social-text">
-                            <strong><span id="socialType">소셜</span> 계정으로 간편가입</strong>
-                            <span>추가 정보만 입력하면 가입이 완료됩니다</span>
-                        </div>
-                    </div>
-                </div>
-
-                <form id="registerForm" class="signup-form">
-                    <!-- 역할 선택 -->
-                    <div class="form-section">
-                        <h3 class="section-title">역할 선택</h3>
-                        <div class="role-grid">
-                            <label class="role-card">
-                                <input type="radio" name="userRole" value="student" checked>
-                                <div class="role-content">
-                                    <div class="role-icon">🎓</div>
-                                    <div class="role-info">
-                                        <span class="role-name">학생</span>
-                                        <span class="role-desc">10자리 학번으로 가입</span>
-                                    </div>
-                                </div>
-                            </label>
-                            <label class="role-card">
-                                <input type="radio" name="userRole" value="professor">
-                                <div class="role-content">
-                                    <div class="role-icon">👨‍🏫</div>
-                                    <div class="role-info">
-                                        <span class="role-name">교수</span>
-                                        <span class="role-desc">7자리 교번으로 가입</span>
-                                    </div>
-                                </div>
-                            </label>
-                            <label class="role-card">
-                                <input type="radio" name="userRole" value="staff">
-                                <div class="role-content">
-                                    <div class="role-icon">👥</div>
-                                    <div class="role-info">
-                                        <span class="role-name">교직원</span>
-                                        <span class="role-desc">7자리 직번으로 가입</span>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- 이메일 인증 섹션 (교수/교직원용) -->
-                    <div id="emailVerificationSection" class="form-section verification-section" style="display: none;">
-                        <div class="section-header">
-                            <h3 class="section-title">
-                                <span class="section-icon">📧</span>
-                                이메일 인증
-                            </h3>
-                            <p class="section-desc">교수/교직원은 대학 공식 이메일 인증이 필요합니다</p>
-                        </div>
-                        
-                        <div class="verification-form">
-                            <div class="input-group">
-                                <label class="input-label">대학 이메일 주소 <span class="required">*</span></label>
-                                <div class="input-with-button">
-                                    <input type="email" class="form-input" id="verificationEmail" placeholder="교수/교직원 이메일을 입력하세요">
-                                    <button type="button" class="btn btn-primary" id="sendVerificationBtn">인증코드 발송</button>
-                                </div>
-                                <div class="input-hint">연성대학교 공식 이메일(@yeonsung.ac.kr)을 입력해주세요</div>
-                                <div class="error-message" id="verification-email-error"></div>
-                            </div>
-                            
-                            <div class="input-group" id="verificationCodeGroup" style="display: none;">
-                                <label class="input-label">인증 코드 <span class="required">*</span></label>
-                                <div class="input-with-button">
-                                    <input type="text" class="form-input" id="verificationCode" placeholder="6자리 인증코드 입력" maxlength="6">
-                                    <button type="button" class="btn btn-secondary" id="verifyCodeBtn" disabled>인증확인</button>
-                                </div>
-                                <div class="verification-timer" id="verificationTimer" style="display: none;">
-                                    <span class="timer-icon">⏰</span>
-                                    남은 시간: <span id="timerDisplay">05:00</span>
-                                </div>
-                                <div class="error-message" id="verification-code-error"></div>
-                                <div class="success-message" id="verification-success" style="display: none;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 기본 정보 -->
-                    <div class="form-section">
-                        <h3 class="section-title">기본 정보</h3>
-                        <div class="input-grid">
-                            <div class="input-group">
-                                <label class="input-label" id="idLabel">학번 <span class="required">*</span></label>
-                                <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요" name="studentId">
-                                <div class="input-hint" id="idHint">예: 2024123456</div>
-                                <div class="error-message" id="studentId-error"></div>
-                            </div>
-                            
-                            <div class="input-group">
-                                <label class="input-label">이름 <span class="required">*</span></label>
-                                <input type="text" class="form-input" id="name" placeholder="이름을 입력하세요" name="name">
-                                <div class="error-message" id="name-error"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 비밀번호 (일반 회원가입만) -->
-                    <div id="passwordFields" class="form-section">
-                        <h3 class="section-title">보안 정보</h3>
-                        <div class="input-grid">
-                            <div class="input-group">
-                                <label class="input-label">비밀번호 <span class="required">*</span></label>
-                                <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요" name="password">
-                                <div class="input-hint">영문, 숫자, 특수문자 포함 8자 이상</div>
-                                <div class="error-message" id="password-error"></div>
-                            </div>
-                            
-                            <div class="input-group">
-                                <label class="input-label">비밀번호 확인 <span class="required">*</span></label>
-                                <input type="password" class="form-input" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요" name="confirmPassword">
-                                <div class="error-message" id="confirmPassword-error"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 학과/부서 및 학년 -->
-                    <div class="form-section">
-                        <h3 class="section-title">소속 정보</h3>
-                        <div class="input-grid">
-                            <div class="input-group">
-                                <label class="input-label">학과/부서 <span class="required">*</span></label>
-                                <div class="dropdown-container">
-                                    <input type="text" class="form-input dropdown-input" id="departmentInput" placeholder="학과명을 입력하거나 선택하세요" autocomplete="off" name="department">
-                                    <div class="dropdown-menu" id="departmentDropdown">
-                                        <!-- 스마트 ICT계열 -->
-                                        <div class="dropdown-category">스마트 ICT계열</div>
-                                        <div class="dropdown-option" data-value="전자공학과">전자공학과</div>
-                                        <div class="dropdown-option" data-value="정보통신과">정보통신과</div>
-                                        <div class="dropdown-option" data-value="전기과">전기과</div>
-                                        <div class="dropdown-option" data-value="컴퓨터소프트웨어과">컴퓨터소프트웨어과</div>
-                                        
-                                        <!-- 라이프디자인계열 -->
-                                        <div class="dropdown-category">라이프디자인계열</div>
-                                        <div class="dropdown-option" data-value="건축과">건축과</div>
-                                        <div class="dropdown-option" data-value="실내건축과">실내건축과</div>
-                                        <div class="dropdown-option" data-value="패션디자인비즈니스과">패션디자인비즈니스과</div>
-                                        
-                                        <!-- 문화콘텐츠계열 -->
-                                        <div class="dropdown-category">문화콘텐츠계열</div>
-                                        <div class="dropdown-option" data-value="게임콘텐츠과">게임콘텐츠과</div>
-                                        <div class="dropdown-option" data-value="웹툰만화콘텐츠과">웹툰만화콘텐츠과</div>
-                                        <div class="dropdown-option" data-value="시각디자인과">시각디자인과</div>
-                                        
-                                        <!-- 사회·교육계열 -->
-                                        <div class="dropdown-category">사회·교육계열</div>
-                                        <div class="dropdown-option" data-value="경영학과">경영학과</div>
-                                        <div class="dropdown-option" data-value="유아교육과">유아교육과</div>
-                                        <div class="dropdown-option" data-value="사회복지과">사회복지과</div>
-                                        
-                                        <!-- 보건생명계열 -->
-                                        <div class="dropdown-category">보건생명계열</div>
-                                        <div class="dropdown-option" data-value="치위생과">치위생과</div>
-                                        <div class="dropdown-option" data-value="응급구조과">응급구조과</div>
-                                        <div class="dropdown-option" data-value="식품영양학과">식품영양학과</div>
-                                        
-                                        <!-- 관광조리계열 -->
-                                        <div class="dropdown-category">관광조리계열</div>
-                                        <div class="dropdown-option" data-value="항공서비스과">항공서비스과</div>
-                                        <div class="dropdown-option" data-value="호텔관광과">호텔관광과</div>
-                                        <div class="dropdown-option" data-value="호텔외식조리과">호텔외식조리과</div>
-
-                                        <!-- 교직원 부서 -->
-                                        <div class="dropdown-category staff-departments" id="staffCategory">교직원 부서</div>
-                                        <div class="dropdown-option staff-option" data-value="교무처">교무처</div>
-                                        <div class="dropdown-option staff-option" data-value="학생처">학생처</div>
-                                        <div class="dropdown-option staff-option" data-value="총무처">총무처</div>
-                                        <div class="dropdown-option staff-option" data-value="기획처">기획처</div>
-                                    </div>
-                                    <input type="hidden" id="selectedDepartment" name="selectedDepartment" value="">
-                                </div>
-                                <div class="error-message" id="department-error"></div>
-                            </div>
-                            
-                            <div class="input-group" id="gradeGroup">
-                                <label class="input-label">학년 <span class="required">*</span></label>
-                                <div class="dropdown-container">
-                                    <button type="button" class="form-input dropdown-button" id="gradeDropdownBtn">
-                                        <span class="dropdown-text">학년을 선택하세요</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div class="dropdown-menu" id="gradeDropdown">
-                                        <div class="dropdown-option" data-value="1">1학년</div>
-                                        <div class="dropdown-option" data-value="2">2학년</div>
-                                        <div class="dropdown-option" data-value="3">3학년</div>
-                                        <div class="dropdown-option" data-value="4">4학년</div>
-                                    </div>
-                                    <input type="hidden" id="selectedGrade" name="grade" value="">
-                                </div>
-                                <div class="error-message" id="grade-error"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 연락처 정보 -->
-                    <div class="form-section">
-                        <h3 class="section-title">연락처 정보</h3>
-                        <div class="input-grid">
-                            <div class="input-group">
-                                <label class="input-label">휴대폰 번호 <span class="required">*</span></label>
-                                <input type="tel" class="form-input" id="phone" placeholder="010-0000-0000" maxlength="13" name="phone">
-                                <div class="error-message" id="phone-error"></div>
-                            </div>
-                            
-                            <div class="input-group">
-                                <label class="input-label">이메일 <span class="required">*</span></label>
-                                <input type="email" class="form-input" id="email" placeholder="example@email.com" name="email">
-                                <div class="error-message" id="email-error"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 약관 동의 -->
-                    <div class="form-section">
-                        <h3 class="section-title">약관 동의</h3>
-                        
-                        <div class="agreement-card">
-                            <div class="agreement-header">
-                                <h4 class="agreement-title">이용약관</h4>
-                            </div>
-                            <div class="agreement-content">
-                                <p><strong>제1조 (목적)</strong></p>
-                                <p>본 약관은 연성대학교 캠퍼스 가이드 서비스의 이용조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.</p>
-                                
-                                <p><strong>제2조 (용어의 정의)</strong></p>
-                                <p>1. "서비스"라 함은 연성대학교 캠퍼스 가이드 애플리케이션을 통해 제공되는 모든 서비스를 의미합니다.</p>
-                                <p>2. "사용자"라 함은 본 서비스에 접속하여 이용하는 모든 사람을 의미합니다.</p>
-                            </div>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="agreeTerms" name="agreeTerms">
-                                <span class="checkbox-mark"></span>
-                                <span class="checkbox-text">이용약관에 동의합니다 (필수)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="agreement-card">
-                            <div class="agreement-header">
-                                <h4 class="agreement-title">개인정보 수집 및 이용 동의</h4>
-                            </div>
-                            <div class="agreement-content">
-                                <p><strong>수집항목:</strong> 학번, 이름, 학과, 학년, 휴대폰 번호, 이메일</p>
-                                <p><strong>수집목적:</strong> 서비스 제공, 계정 관리, 공지사항 전달</p>
-                                <p><strong>보유기간:</strong> 회원 탈퇴 시까지</p>
-                            </div>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="agreePrivacy" name="agreePrivacy">
-                                <span class="checkbox-mark"></span>
-                                <span class="checkbox-text">개인정보 수집 및 이용에 동의합니다 (필수)</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- 제출 버튼 -->
-                    <div class="form-footer">
-                        <button type="submit" class="submit-btn">
-                            <span class="btn-icon">🎓</span>
-                            <span class="btn-text">회원가입 완료</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
+      <form id="signupForm">
+        <div class="form-group">
+          <label class="form-label">아이디 (학번)</label>
+          <input type="text" class="form-input" id="studentId" name="studentId" placeholder="학번을 입력하세요">
         </div>
-    </main>
-    
-    <script src="../../js/signup.js"></script>
+
+        <div class="form-group">
+          <label class="form-label">이름</label>
+          <input type="text" class="form-input" id="name" name="name" placeholder="이름을 입력하세요">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input type="password" class="form-input" id="password" name="password" placeholder="비밀번호를 입력하세요">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">비밀번호 확인</label>
+          <input type="password" class="form-input" id="confirmPassword" name="confirmPassword" placeholder="비밀번호를 다시 입력하세요">
+        </div>
+
+        <button type="submit" class="signup-button">회원가입</button>
+      </form>
+
+      <div class="register-link">
+        이미 계정이 있으신가요? <a href="../../pages/user/login.html">로그인</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function goBack() {
+      window.location.href = "../../index.html";
+    }
+  </script>
 </body>
 </html>
