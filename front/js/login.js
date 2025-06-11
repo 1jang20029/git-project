@@ -70,7 +70,7 @@ function logout() {
     alert('로그아웃되었습니다.');
     
     // 로그인 페이지로 이동
-    window.location.href = "pages/user/login.html";
+    window.location.href = "login.html";
 }
 
 // 로컬 스토리지에 회원가입 여부 저장
@@ -95,7 +95,7 @@ function registerUser(studentId, password, name, department, grade, email, phone
     safeStorage.setItem(`user_${studentId}_first_login`, 'true');
     
     // 회원가입 완료 후 로그인 페이지로 리디렉션
-    window.location.href = `pages/user/login.html?newRegistration=true&studentId=${studentId}`;
+    window.location.href = `login.html?newRegistration=true&studentId=${studentId}`;
 }
 
 // 뒤로가기 함수

@@ -1108,7 +1108,7 @@ function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
-    window.location.href = 'pages/user/login.html';
+    window.location.href = 'login.html';
     return;
   }
   if (dropdown && dropdown.classList.contains('show')) {
@@ -1181,7 +1181,7 @@ function handleLogout() {
     if (confirm('로그아웃 하시겠습니까?')) {
       localStorage.removeItem('currentLoggedInUser');
       closeUserDropdown();
-      window.location.href = 'pages/user/login.html';
+      window.location.href = 'login.html';
     }
   } else {
     showMessage('로그인 상태가 아닙니다.', 'error');
