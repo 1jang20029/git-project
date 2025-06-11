@@ -1,72 +1,7 @@
 // ==================================================================================
 // PC 웹 브라우저 최적화 시간표 JavaScript
 // 설정 저장/취소 로직 및 ESC 키 기능 개선
-// MySQL + Node.js 백엔드 연동
 // ==================================================================================
-
-// API 엔드포인트 설정
-const API_BASE_URL = 'http://localhost:3000/api'; // 백엔드 서버 주소
-
-// API 요청 헬퍼 함수
-async function apiRequest(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        },
-        ...options
-    };
-    
-    // 인증 토큰이 있으면 헤더에 추가
-    const token = localStorage.getItem('authToken');
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    try {
-        const response = await fetch(url, config);
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || '서버 오류가 발생했습니다.');
-        }
-        
-        return data;
-    } catch (error) {
-        console.error('API 요청 오류:', error);
-        // 백엔드 연결 실패 시 로컬스토리지 사용
-        return null;
-    }
-}
-
-// 백엔드 API 함수들
-async function syncDataWithBackend() {
-    try {
-        // 시간표 동기화
-        const timetablesData = await apiRequest('/timetables');
-        if (timetablesData) {
-            timetables = timetablesData;
-        }
-        
-        // 과목 동기화
-        const coursesData = await apiRequest(`/courses?timetableId=${currentTimetable.id}&year=${currentSemester.year}&term=${currentSemester.term}`);
-        if (coursesData) {
-            courses = coursesData;
-        }
-        
-        // 설정 동기화
-        const settingsData = await apiRequest('/settings');
-        if (settingsData) {
-            settings = { ...settings, ...settingsData };
-        }
-        
-        return true;
-    } catch (error) {
-        console.log('백엔드 연결 실패, 로컬스토리지 사용');
-        return false;
-    }
-}
 
 // 글로벌 변수 선언
 let courses = [];
@@ -125,10 +60,7 @@ let settingsBackup = null;
 // ==================================================================================
 
 // 페이지 로드 시 실행되는 함수
-document.addEventListener('DOMContentLoaded', async function() {
-    // 백엔드 연동 시도
-    await syncDataWithBackend();
-    
+document.addEventListener('DOMContentLoaded', function() {
     setCurrentSemester();
     loadSettings();
     loadTimetablesFromStorage();
@@ -308,7 +240,7 @@ function updateTimetableMenu() {
 }
 
 // 시간표 선택
-async function selectTimetable(timetableId) {
+function selectTimetable(timetableId) {
     const timetable = timetables.find(t => t.id === timetableId);
     if (!timetable) return;
     
@@ -321,14 +253,14 @@ async function selectTimetable(timetableId) {
     }
     
     updatePageTitle();
-    await loadCoursesFromStorage();
+    loadCoursesFromStorage();
     renderCoursesOnTimetable();
     renderCourseList();
     calculateGrades();
 }
 
 // 드롭다운에서 시간표 삭제
-async function deleteTimetableFromDropdown(timetableId) {
+function deleteTimetableFromDropdown(timetableId) {
     if (timetables.length <= 1) {
         alert('마지막 시간표는 삭제할 수 없습니다.');
         return;
@@ -337,9 +269,6 @@ async function deleteTimetableFromDropdown(timetableId) {
     if (!confirm('정말 이 시간표를 삭제하시겠습니까?')) {
         return;
     }
-    
-    // 백엔드에 삭제 요청
-    const result = await apiRequest(`/timetables/${timetableId}`, { method: 'DELETE' });
     
     const currentUser = localStorage.getItem('currentLoggedInUser');
     if (!currentUser) {
@@ -362,14 +291,14 @@ async function deleteTimetableFromDropdown(timetableId) {
     localStorage.removeItem(semesterKey);
     
     updateTimetableMenu();
-    await loadCoursesFromStorage();
+    loadCoursesFromStorage();
     renderCoursesOnTimetable();
     renderCourseList();
     calculateGrades();
 }
 
 // 시간표 이름 변경
-async function renameTimetable() {
+function renameTimetable() {
     const currentUser = localStorage.getItem('currentLoggedInUser');
     
     if (!currentUser) {
@@ -379,12 +308,6 @@ async function renameTimetable() {
     
     const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
     if (newName && newName.trim() !== "") {
-        // 백엔드에 업데이트 요청
-        const result = await apiRequest(`/timetables/${currentTimetable.id}`, {
-            method: 'PUT',
-            body: JSON.stringify({ name: newName.trim() })
-        });
-        
         currentTimetable.name = newName.trim();
         
         const index = timetables.findIndex(t => t.id === currentTimetable.id);
@@ -401,7 +324,7 @@ async function renameTimetable() {
 }
 
 // 새 시간표 추가
-async function addNewTimetable() {
+function addNewTimetable() {
     const currentUser = localStorage.getItem('currentLoggedInUser');
     
     if (!currentUser) {
@@ -411,14 +334,8 @@ async function addNewTimetable() {
     
     const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
     if (newName && newName.trim() !== "") {
-        // 백엔드에 생성 요청
-        const result = await apiRequest('/timetables', {
-            method: 'POST',
-            body: JSON.stringify({ name: newName.trim() })
-        });
-        
         const maxId = timetables.reduce((max, t) => Math.max(max, t.id), 0);
-        const newId = result ? result.id : maxId + 1;
+        const newId = maxId + 1;
         
         const newTimetable = {
             id: newId,
@@ -435,7 +352,7 @@ async function addNewTimetable() {
         updatePageTitle();
         
         courses = [];
-        await saveCoursesToStorage();
+        saveCoursesToStorage();
         renderCoursesOnTimetable();
         renderCourseList();
         calculateGrades();
@@ -474,7 +391,7 @@ function loadTimetablesFromStorage() {
 // ==================================================================================
 
 // 학기 변경 함수
-async function changeSemester() {
+function changeSemester() {
     const semesterSelect = document.getElementById('semester-select');
     const selectedValue = semesterSelect.value;
     const [year, term] = selectedValue.split('-');
@@ -482,23 +399,14 @@ async function changeSemester() {
     currentSemester.year = parseInt(year);
     currentSemester.term = parseInt(term);
     
-    await loadCoursesFromStorage();
+    loadCoursesFromStorage();
     renderCoursesOnTimetable();
     renderCourseList();
     calculateGrades();
 }
 
 // 로컬 스토리지에서 과목 데이터 로드
-async function loadCoursesFromStorage() {
-    // 백엔드에서 과목 데이터 로드 시도
-    const backendCourses = await apiRequest(`/courses?timetableId=${currentTimetable.id}&year=${currentSemester.year}&term=${currentSemester.term}`);
-    
-    if (backendCourses) {
-        courses = backendCourses;
-        return;
-    }
-    
-    // 백엔드 실패 시 로컬스토리지 사용
+function loadCoursesFromStorage() {
     const currentUser = localStorage.getItem('currentLoggedInUser');
     
     if (currentUser) {
@@ -516,7 +424,7 @@ async function loadCoursesFromStorage() {
 }
 
 // 로컬 스토리지에 과목 데이터 저장
-async function saveCoursesToStorage() {
+function saveCoursesToStorage() {
     const currentUser = localStorage.getItem('currentLoggedInUser');
     
     if (currentUser) {
@@ -691,20 +599,14 @@ function renderCourseList() {
             gradeSelect.value = course.grade;
         }
         
-        gradeSelect.addEventListener('change', async function() {
+        gradeSelect.addEventListener('change', function() {
             const courseId = parseInt(this.dataset.courseId);
             const gradeValue = this.value;
-            
-            // 백엔드에 성적 업데이트 요청
-            await apiRequest(`/courses/${courseId}`, {
-                method: 'PUT',
-                body: JSON.stringify({ grade: gradeValue })
-            });
             
             const courseIndex = courses.findIndex(c => c.id === courseId);
             if (courseIndex !== -1) {
                 courses[courseIndex].grade = gradeValue;
-                await saveCoursesToStorage();
+                saveCoursesToStorage();
                 calculateGrades();
             }
         });
@@ -827,15 +729,12 @@ function editCourse(courseId) {
 }
 
 // 과목 삭제
-async function deleteCourse(courseId) {
+function deleteCourse(courseId) {
     if (!confirm('정말 이 과목을 삭제하시겠습니까?')) return;
-    
-    // 백엔드에 삭제 요청
-    await apiRequest(`/courses/${courseId}`, { method: 'DELETE' });
     
     courses = courses.filter(course => course.id !== courseId);
     
-    await saveCoursesToStorage();
+    saveCoursesToStorage();
     renderCourseList();
     renderCoursesOnTimetable();
     calculateGrades();
@@ -945,7 +844,7 @@ function removeTimeSlot(button) {
 }
 
 // 과목 저장
-async function saveCourse(event) {
+function saveCourse(event) {
     event.preventDefault();
 
     const slotEls = document.querySelectorAll('.time-slot');
@@ -997,7 +896,8 @@ async function saveCourse(event) {
     const color = document.getElementById('course-color').value;
     const grade = document.getElementById('course-grade').value;
 
-    const courseData = {
+    const course = {
+        id: courseId || Date.now(),
         name,
         professor,
         credits,
@@ -1005,38 +905,17 @@ async function saveCourse(event) {
         room,
         color,
         times: slots,
-        grade: grade || null,
-        timetableId: currentTimetable.id,
-        year: currentSemester.year,
-        term: currentSemester.term
+        grade: grade || null
     };
 
     if (courseId) {
-        // 백엔드에 수정 요청
-        const result = await apiRequest(`/courses/${courseId}`, {
-            method: 'PUT',
-            body: JSON.stringify(courseData)
-        });
-        
-        const idx = courses.findIndex(c => c.id === courseId);
-        if (idx !== -1) {
-            courses[idx] = { id: courseId, ...courseData };
-        }
+        const idx = courses.findIndex(c => c.id === course.id);
+        if (idx !== -1) courses[idx] = course;
     } else {
-        // 백엔드에 추가 요청
-        const result = await apiRequest('/courses', {
-            method: 'POST',
-            body: JSON.stringify(courseData)
-        });
-        
-        const newCourse = {
-            id: result ? result.id : Date.now(),
-            ...courseData
-        };
-        courses.push(newCourse);
+        courses.push(course);
     }
 
-    await saveCoursesToStorage();
+    saveCoursesToStorage();
     renderCourseList();
     renderCoursesOnTimetable();
     calculateGrades();
@@ -1123,7 +1002,7 @@ function closeSettings() {
 }
 
 // 설정 저장 - 수정된 함수
-async function saveSettings() {
+function saveSettings() {
     const currentUser = localStorage.getItem('currentLoggedInUser');
     if (!currentUser) {
         alert('로그인이 필요한 서비스입니다.');
@@ -1144,12 +1023,6 @@ async function saveSettings() {
         if (themeSelectEl) settings.appearance = themeSelectEl.value;
         if (timeFormatSelectEl) settings.timeFormat24 = timeFormatSelectEl.value === '24';
         if (weekendSelectEl) settings.showWeekend = weekendSelectEl.value === 'true';
-        
-        // 백엔드에 설정 저장 시도
-        await apiRequest('/settings', {
-            method: 'PUT',
-            body: JSON.stringify(settings)
-        });
         
         // 로컬 스토리지에 저장
         localStorage.setItem(`settings_user_${currentUser}`, JSON.stringify(settings));
@@ -1250,7 +1123,7 @@ function changeWeekendDisplay() {
 }
 
 // 현재 시간표 초기화
-async function deleteTimetable() {
+function deleteTimetable() {
     if (!confirm('현재 시간표의 모든 데이터가 삭제되고 기본 설정으로 초기화됩니다. 계속하시겠습니까?')) {
         return;
     }
@@ -1262,11 +1135,6 @@ async function deleteTimetable() {
     }
     
     try {
-        // 백엔드에서 과목들 삭제
-        for (const course of courses) {
-            await apiRequest(`/courses/${course.id}`, { method: 'DELETE' });
-        }
-        
         // 과목 데이터 초기화
         courses = [];
         
@@ -1278,12 +1146,6 @@ async function deleteTimetable() {
             timeFormat24: true,
             appearance: 'dark'
         };
-        
-        // 백엔드에 설정 저장
-        await apiRequest('/settings', {
-            method: 'PUT',
-            body: JSON.stringify(settings)
-        });
         
         // UI 요소 초기화
         const showProfessorEl = document.getElementById('show-professor');
@@ -1303,7 +1165,7 @@ async function deleteTimetable() {
         
         // 설정 적용
         applyAppearance('dark');
-        await saveCoursesToStorage();
+        saveCoursesToStorage();
         createTimetable();
         renderCourseList();
         calculateGrades();
