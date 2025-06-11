@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회원가입</title>
+
+</head>
+<body>
+  <h2>회원가입</h2>
+  <form id="signupForm" method="post">
+    <input type="text" name="student_number" placeholder="학번" required><br>
+    <input type="email" name="email" placeholder="이메일" required><br>
+    <input type="password" name="password" placeholder="비밀번호" required><br>
+    <input type="text" name="name" placeholder="이름" required><br>
+    <input type="tel" id="phone" name="phone" placeholder="010-1234-5678" pattern="\d{2,3}-\d{3,4}-\d{4}" required><br>
+    <select name="department_id" required>
+      <option value="">학과 선택</option>
+      <option value="1">컴퓨터소프트웨어과</option>
+      <option value="2">전자과</option>
+      <!-- DB 기준 맞게 수정 -->
+    </select><br>
+    <select name="position" required>
+      <option value="1">학생</option>
+      <option value="2">교수</option>
+      <option value="2">교직원</option>
+    </select><br>
+    <button type="submit">가입</button>
+  </form>
+  <script src="../../js/signup.js"></script>
+</body>
+</html>

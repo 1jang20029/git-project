@@ -1,0 +1,192 @@
+/* =============================================================================
+   index.css - 로그인 버튼 스타일 추가
+   공통 스타일 (다크 모드 기본)
+   ============================================================================= */
+
+/* 기존 CSS는 그대로 유지하고 아래 스타일들만 추가 */
+
+/* =========================
+   로그인 버튼 스타일 추가
+   ========================= */
+
+/* 네비게이션의 로그인 버튼 */
+#nav-login {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  margin-left: 1rem;
+}
+
+#nav-login:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  border-color: #10b981;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+#nav-login .nav-icon {
+  color: white !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+}
+
+#nav-login span:not(.nav-icon) {
+  color: white !important;
+  font-weight: 600;
+}
+
+/* 드롭다운의 로그인 버튼 */
+#dropdown-item-login {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background: linear-gradient(135deg, #10b981, #059669);
+  width: 100%;
+  text-align: left;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+#dropdown-item-login:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.login-icon {
+  font-size: 1.1rem;
+  color: white;
+}
+
+/* 로그인 상태별 메뉴 표시/숨김 */
+.logged-out #nav-login {
+  display: flex !important;
+}
+
+.logged-in #nav-login {
+  display: none !important;
+}
+
+.logged-out #dropdown-item-login {
+  display: flex !important;
+}
+
+.logged-in #dropdown-item-login {
+  display: none !important;
+}
+
+.logged-out #logged-in-menu {
+  display: none !important;
+}
+
+.logged-in #logged-in-menu {
+  display: block !important;
+}
+
+/* 로그인 상태에 따른 사용자 프로필 스타일 */
+.logged-out #user-profile {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.logged-out #user-profile:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+}
+
+.logged-in #user-profile {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.logged-in #user-profile:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* 게스트 상태일 때 사용자 정보 스타일 */
+.logged-out #user-name,
+.logged-out #dropdown-user-name {
+  color: #10b981 !important;
+  font-weight: 600;
+}
+
+.logged-out #user-role,
+.logged-out #dropdown-user-role {
+  color: #059669 !important;
+}
+
+/* 로그인 버튼 애니메이션 */
+@keyframes loginPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+#nav-login.pulse {
+  animation: loginPulse 2s infinite;
+}
+
+/* 라이트 모드에서의 로그인 버튼 */
+body.light-mode #nav-login {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+body.light-mode #nav-login:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  border-color: #10b981;
+}
+
+body.light-mode #dropdown-item-login {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+body.light-mode #dropdown-item-login:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+body.light-mode .logged-out #user-profile {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+body.light-mode .logged-out #user-profile:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  #nav-login {
+    margin-left: 0.5rem;
+  }
+  
+  #nav-login span:not(.nav-icon) {
+    display: none;
+  }
+  
+  #nav-login .nav-icon {
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  #nav-login {
+    padding: 0.5rem;
+  }
+}
