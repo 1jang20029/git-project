@@ -302,7 +302,7 @@ function showContent(type) {
 
   if (type === 'buildings' && !buildingsLoaded) {
     const container = document.getElementById('buildingsContent');
-    fetch('buildings.html')
+    fetch('pages/list/buildings.html')
       .then(res => {
         if (!res.ok) throw new Error('buildings.html 을 불러오는 중 오류 발생');
         return res.text();
