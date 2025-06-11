@@ -57,6 +57,15 @@ body::before {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+
+.nav-icon {
+  width: 48px;
+  height: 48px;
+  vertical-align: middle;
+  margin-right: 12px;
+}
+
+
 .back-button {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
