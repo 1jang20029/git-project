@@ -1,7 +1,10 @@
 // ==================================================================================
-// PC 웹 브라우저 최적화 시간표 JavaScript
-// 설정 저장/취소 로직 및 ESC 키 기능 개선
+// PC 웹 브라우저 최적화 시간표 JavaScript - 백엔드 연동 버전
+// MySQL + Node.js 백엔드와 연동하기 위한 프론트엔드 코드
 // ==================================================================================
+
+// API 엔드포인트 설정
+const API_BASE_URL = 'http://localhost:3000/api'; // 백엔드 서버 주소
 
 // 글로벌 변수 선언
 let courses = [];
@@ -25,6 +28,9 @@ let timetables = [
     { id: 2, name: "시간표 2" },
     { id: 3, name: "시간표 3" }
 ];
+
+// 현재 로그인된 사용자 정보
+let currentUser = null;
 
 // 시간 데이터 (교시별 시작 시간)
 const timeData = [
@@ -56,26 +62,205 @@ const gradePoints = {
 let settingsBackup = null;
 
 // ==================================================================================
+// API 통신 함수들
+// ==================================================================================
+
+// API 요청 헬퍼 함수
+async function apiRequest(endpoint, options = {}) {
+    const url = `${API_BASE_URL}${endpoint}`;
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        },
+        ...options
+    };
+    
+    // 인증 토큰이 있으면 헤더에 추가
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    try {
+        const response = await fetch(url, config);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || '서버 오류가 발생했습니다.');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('API 요청 오류:', error);
+        throw error;
+    }
+}
+
+// 사용자 인증 관련 API
+async function loginUser(credentials) {
+    return await apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials)
+    });
+}
+
+async function registerUser(userData) {
+    return await apiRequest('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(userData)
+    });
+}
+
+async function getCurrentUser() {
+    return await apiRequest('/auth/me');
+}
+
+// 시간표 관련 API
+async function getTimetables() {
+    return await apiRequest('/timetables');
+}
+
+async function createTimetable(timetableData) {
+    return await apiRequest('/timetables', {
+        method: 'POST',
+        body: JSON.stringify(timetableData)
+    });
+}
+
+async function updateTimetable(timetableId, timetableData) {
+    return await apiRequest(`/timetables/${timetableId}`, {
+        method: 'PUT',
+        body: JSON.stringify(timetableData)
+    });
+}
+
+async function deleteTimetableAPI(timetableId) {
+    return await apiRequest(`/timetables/${timetableId}`, {
+        method: 'DELETE'
+    });
+}
+
+// 과목 관련 API
+async function getCourses(timetableId, year, term) {
+    return await apiRequest(`/courses?timetableId=${timetableId}&year=${year}&term=${term}`);
+}
+
+async function createCourse(courseData) {
+    return await apiRequest('/courses', {
+        method: 'POST',
+        body: JSON.stringify(courseData)
+    });
+}
+
+async function updateCourse(courseId, courseData) {
+    return await apiRequest(`/courses/${courseId}`, {
+        method: 'PUT',
+        body: JSON.stringify(courseData)
+    });
+}
+
+async function deleteCourseAPI(courseId) {
+    return await apiRequest(`/courses/${courseId}`, {
+        method: 'DELETE'
+    });
+}
+
+// 설정 관련 API
+async function getSettings() {
+    return await apiRequest('/settings');
+}
+
+async function updateSettings(settingsData) {
+    return await apiRequest('/settings', {
+        method: 'PUT',
+        body: JSON.stringify(settingsData)
+    });
+}
+
+// ==================================================================================
 // 초기화 및 이벤트 핸들러
 // ==================================================================================
 
 // 페이지 로드 시 실행되는 함수
-document.addEventListener('DOMContentLoaded', function() {
-    setCurrentSemester();
-    loadSettings();
-    loadTimetablesFromStorage();
-    updateTimetableSelector();
-    loadCoursesFromStorage();
-    document.getElementById('semester-select').value = `${currentSemester.year}-${currentSemester.term}`;
-    createTimetable();
-    renderCourseList();
-    calculateGrades();
-    updatePageTitle();
-    applySettingsToUI();
-    
-    // 이벤트 리스너 등록
-    setupEventListeners();
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // 사용자 인증 확인
+        await checkAuthentication();
+        
+        // 초기 데이터 로드
+        await initializeData();
+        
+        // UI 초기화
+        setCurrentSemester();
+        document.getElementById('semester-select').value = `${currentSemester.year}-${currentSemester.term}`;
+        createTimetable();
+        renderCourseList();
+        calculateGrades();
+        updatePageTitle();
+        applySettingsToUI();
+        
+        // 이벤트 리스너 등록
+        setupEventListeners();
+        
+    } catch (error) {
+        console.error('초기화 오류:', error);
+        // 로그인 페이지로 리다이렉트 또는 오류 메시지 표시
+        handleAuthenticationError();
+    }
 });
+
+// 사용자 인증 확인
+async function checkAuthentication() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+    }
+    
+    try {
+        const userData = await getCurrentUser();
+        currentUser = userData;
+        console.log('현재 사용자:', currentUser);
+    } catch (error) {
+        localStorage.removeItem('authToken');
+        throw error;
+    }
+}
+
+// 초기 데이터 로드
+async function initializeData() {
+    try {
+        // 설정 로드
+        const settingsData = await getSettings();
+        if (settingsData) {
+            settings = { ...settings, ...settingsData };
+            applySettings();
+        }
+        
+        // 시간표 목록 로드
+        const timetablesData = await getTimetables();
+        if (timetablesData && timetablesData.length > 0) {
+            timetables = timetablesData;
+            currentTimetable = timetables[0];
+        }
+        
+        updateTimetableSelector();
+        
+        // 과목 데이터 로드
+        await loadCoursesFromAPI();
+        
+    } catch (error) {
+        console.error('데이터 로드 오류:', error);
+        // 기본값으로 초기화
+    }
+}
+
+// 인증 오류 처리
+function handleAuthenticationError() {
+    alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+    // 로그인 페이지로 리다이렉트
+    window.location.href = '/login.html';
+}
 
 // 이벤트 리스너 설정
 function setupEventListeners() {
@@ -240,27 +425,22 @@ function updateTimetableMenu() {
 }
 
 // 시간표 선택
-function selectTimetable(timetableId) {
+async function selectTimetable(timetableId) {
     const timetable = timetables.find(t => t.id === timetableId);
     if (!timetable) return;
     
     currentTimetable = timetable;
     document.getElementById('selected-timetable').textContent = timetable.name;
     
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (currentUser) {
-        localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
-    }
-    
     updatePageTitle();
-    loadCoursesFromStorage();
+    await loadCoursesFromAPI();
     renderCoursesOnTimetable();
     renderCourseList();
     calculateGrades();
 }
 
 // 드롭다운에서 시간표 삭제
-function deleteTimetableFromDropdown(timetableId) {
+async function deleteTimetableFromDropdown(timetableId) {
     if (timetables.length <= 1) {
         alert('마지막 시간표는 삭제할 수 없습니다.');
         return;
@@ -270,92 +450,79 @@ function deleteTimetableFromDropdown(timetableId) {
         return;
     }
     
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
+    try {
+        await deleteTimetableAPI(timetableId);
+        
+        timetables = timetables.filter(t => t.id !== timetableId);
+        
+        if (currentTimetable.id === timetableId) {
+            currentTimetable = timetables[0];
+            document.getElementById('selected-timetable').textContent = currentTimetable.name;
+            updatePageTitle();
+        }
+        
+        updateTimetableMenu();
+        await loadCoursesFromAPI();
+        renderCoursesOnTimetable();
+        renderCourseList();
+        calculateGrades();
+        
+    } catch (error) {
+        console.error('시간표 삭제 오류:', error);
+        alert('시간표 삭제 중 오류가 발생했습니다.');
     }
-    
-    timetables = timetables.filter(t => t.id !== timetableId);
-    
-    if (currentTimetable.id === timetableId) {
-        currentTimetable = timetables[0];
-        document.getElementById('selected-timetable').textContent = currentTimetable.name;
-        updatePageTitle();
-    }
-    
-    localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
-    localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
-    
-    const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${timetableId}_user_${currentUser}`;
-    localStorage.removeItem(semesterKey);
-    
-    updateTimetableMenu();
-    loadCoursesFromStorage();
-    renderCoursesOnTimetable();
-    renderCourseList();
-    calculateGrades();
 }
 
 // 시간표 이름 변경
-function renameTimetable() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
-    }
-    
+async function renameTimetable() {
     const newName = prompt("시간표 이름을 입력하세요:", currentTimetable.name);
     if (newName && newName.trim() !== "") {
-        currentTimetable.name = newName.trim();
-        
-        const index = timetables.findIndex(t => t.id === currentTimetable.id);
-        if (index !== -1) {
-            timetables[index] = currentTimetable;
+        try {
+            const updatedTimetable = await updateTimetable(currentTimetable.id, {
+                name: newName.trim()
+            });
+            
+            currentTimetable.name = updatedTimetable.name;
+            
+            const index = timetables.findIndex(t => t.id === currentTimetable.id);
+            if (index !== -1) {
+                timetables[index] = currentTimetable;
+            }
+            
+            updateTimetableSelector();
+            updatePageTitle();
+            
+        } catch (error) {
+            console.error('시간표 이름 변경 오류:', error);
+            alert('시간표 이름 변경 중 오류가 발생했습니다.');
         }
-        
-        localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
-        localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
-        
-        updateTimetableSelector();
-        updatePageTitle();
     }
 }
 
 // 새 시간표 추가
-function addNewTimetable() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
-    }
-    
+async function addNewTimetable() {
     const newName = prompt("새 시간표 이름을 입력하세요:", "새 시간표");
     if (newName && newName.trim() !== "") {
-        const maxId = timetables.reduce((max, t) => Math.max(max, t.id), 0);
-        const newId = maxId + 1;
-        
-        const newTimetable = {
-            id: newId,
-            name: newName.trim()
-        };
-        
-        timetables.push(newTimetable);
-        currentTimetable = newTimetable;
-        
-        localStorage.setItem(`timetables_user_${currentUser}`, JSON.stringify(timetables));
-        localStorage.setItem(`currentTimetable_user_${currentUser}`, JSON.stringify(currentTimetable));
-        
-        updateTimetableSelector();
-        updatePageTitle();
-        
-        courses = [];
-        saveCoursesToStorage();
-        renderCoursesOnTimetable();
-        renderCourseList();
-        calculateGrades();
+        try {
+            const newTimetable = await createTimetable({
+                name: newName.trim()
+            });
+            
+            timetables.push(newTimetable);
+            currentTimetable = newTimetable;
+            
+            updateTimetableSelector();
+            updatePageTitle();
+            
+            courses = [];
+            renderCoursesOnTimetable();
+            renderCourseList();
+            calculateGrades();
+            
+        } catch (error) {
+            console.error('새 시간표 추가 오류:', error);
+            alert('새 시간표 추가 중 오류가 발생했습니다.');
+        }
     }
 }
 
@@ -369,29 +536,12 @@ function updateTimetableSelector() {
     document.getElementById('selected-timetable').textContent = currentTimetable.name;
 }
 
-// 로컬 스토리지에서 시간표 목록 로드
-function loadTimetablesFromStorage() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (currentUser) {
-        const savedTimetables = localStorage.getItem(`timetables_user_${currentUser}`);
-        if (savedTimetables) {
-            timetables = JSON.parse(savedTimetables);
-        }
-        
-        const savedCurrentTimetable = localStorage.getItem(`currentTimetable_user_${currentUser}`);
-        if (savedCurrentTimetable) {
-            currentTimetable = JSON.parse(savedCurrentTimetable);
-        }
-    }
-}
-
 // ==================================================================================
 // 학기 및 과목 관리 함수들
 // ==================================================================================
 
 // 학기 변경 함수
-function changeSemester() {
+async function changeSemester() {
     const semesterSelect = document.getElementById('semester-select');
     const selectedValue = semesterSelect.value;
     const [year, term] = selectedValue.split('-');
@@ -399,37 +549,24 @@ function changeSemester() {
     currentSemester.year = parseInt(year);
     currentSemester.term = parseInt(term);
     
-    loadCoursesFromStorage();
+    await loadCoursesFromAPI();
     renderCoursesOnTimetable();
     renderCourseList();
     calculateGrades();
 }
 
-// 로컬 스토리지에서 과목 데이터 로드
-function loadCoursesFromStorage() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (currentUser) {
-        const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
-        const savedCourses = localStorage.getItem(semesterKey);
-        
-        if (savedCourses) {
-            courses = JSON.parse(savedCourses);
-        } else {
-            courses = [];
-        }
-    } else {
+// API에서 과목 데이터 로드
+async function loadCoursesFromAPI() {
+    try {
+        const coursesData = await getCourses(
+            currentTimetable.id, 
+            currentSemester.year, 
+            currentSemester.term
+        );
+        courses = coursesData || [];
+    } catch (error) {
+        console.error('과목 데이터 로드 오류:', error);
         courses = [];
-    }
-}
-
-// 로컬 스토리지에 과목 데이터 저장
-function saveCoursesToStorage() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    
-    if (currentUser) {
-        const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
-        localStorage.setItem(semesterKey, JSON.stringify(courses));
     }
 }
 
@@ -599,15 +736,21 @@ function renderCourseList() {
             gradeSelect.value = course.grade;
         }
         
-        gradeSelect.addEventListener('change', function() {
+        gradeSelect.addEventListener('change', async function() {
             const courseId = parseInt(this.dataset.courseId);
             const gradeValue = this.value;
             
-            const courseIndex = courses.findIndex(c => c.id === courseId);
-            if (courseIndex !== -1) {
-                courses[courseIndex].grade = gradeValue;
-                saveCoursesToStorage();
-                calculateGrades();
+            try {
+                await updateCourse(courseId, { grade: gradeValue });
+                
+                const courseIndex = courses.findIndex(c => c.id === courseId);
+                if (courseIndex !== -1) {
+                    courses[courseIndex].grade = gradeValue;
+                    calculateGrades();
+                }
+            } catch (error) {
+                console.error('성적 업데이트 오류:', error);
+                alert('성적 업데이트 중 오류가 발생했습니다.');
             }
         });
 
@@ -729,15 +872,22 @@ function editCourse(courseId) {
 }
 
 // 과목 삭제
-function deleteCourse(courseId) {
+async function deleteCourse(courseId) {
     if (!confirm('정말 이 과목을 삭제하시겠습니까?')) return;
     
-    courses = courses.filter(course => course.id !== courseId);
-    
-    saveCoursesToStorage();
-    renderCourseList();
-    renderCoursesOnTimetable();
-    calculateGrades();
+    try {
+        await deleteCourseAPI(courseId);
+        
+        courses = courses.filter(course => course.id !== courseId);
+        
+        renderCourseList();
+        renderCoursesOnTimetable();
+        calculateGrades();
+        
+    } catch (error) {
+        console.error('과목 삭제 오류:', error);
+        alert('과목 삭제 중 오류가 발생했습니다.');
+    }
 }
 
 // 모달 닫기
@@ -844,7 +994,7 @@ function removeTimeSlot(button) {
 }
 
 // 과목 저장
-function saveCourse(event) {
+async function saveCourse(event) {
     event.preventDefault();
 
     const slotEls = document.querySelectorAll('.time-slot');
@@ -896,8 +1046,7 @@ function saveCourse(event) {
     const color = document.getElementById('course-color').value;
     const grade = document.getElementById('course-grade').value;
 
-    const course = {
-        id: courseId || Date.now(),
+    const courseData = {
         name,
         professor,
         credits,
@@ -905,22 +1054,35 @@ function saveCourse(event) {
         room,
         color,
         times: slots,
-        grade: grade || null
+        grade: grade || null,
+        timetableId: currentTimetable.id,
+        year: currentSemester.year,
+        term: currentSemester.term
     };
 
-    if (courseId) {
-        const idx = courses.findIndex(c => c.id === course.id);
-        if (idx !== -1) courses[idx] = course;
-    } else {
-        courses.push(course);
+    try {
+        let savedCourse;
+        
+        if (courseId) {
+            // 수정
+            savedCourse = await updateCourse(courseId, courseData);
+            const idx = courses.findIndex(c => c.id === courseId);
+            if (idx !== -1) courses[idx] = savedCourse;
+        } else {
+            // 추가
+            savedCourse = await createCourse(courseData);
+            courses.push(savedCourse);
+        }
+
+        renderCourseList();
+        renderCoursesOnTimetable();
+        calculateGrades();
+        closeModal();
+        
+    } catch (error) {
+        console.error('과목 저장 오류:', error);
+        alert('과목 저장 중 오류가 발생했습니다.');
     }
-
-    saveCoursesToStorage();
-    renderCourseList();
-    renderCoursesOnTimetable();
-    calculateGrades();
-
-    closeModal();
 }
 
 // 에러 메시지 표시 함수
@@ -964,18 +1126,6 @@ function applySettingsToUI() {
     if (weekendSelectEl) weekendSelectEl.value = settings.showWeekend.toString();
 }
 
-// 설정 로드
-function loadSettings() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (currentUser) {
-        const savedSettings = localStorage.getItem(`settings_user_${currentUser}`);
-        if (savedSettings) {
-            settings = { ...settings, ...JSON.parse(savedSettings) };
-            applySettings();
-        }
-    }
-}
-
 // 설정 모달 열기 - 수정된 함수
 function openSettings() {
     // 현재 설정을 백업
@@ -1002,13 +1152,7 @@ function closeSettings() {
 }
 
 // 설정 저장 - 수정된 함수
-function saveSettings() {
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
-    }
-    
+async function saveSettings() {
     try {
         // UI에서 설정값 읽기
         const showProfessorEl = document.getElementById('show-professor');
@@ -1024,8 +1168,8 @@ function saveSettings() {
         if (timeFormatSelectEl) settings.timeFormat24 = timeFormatSelectEl.value === '24';
         if (weekendSelectEl) settings.showWeekend = weekendSelectEl.value === 'true';
         
-        // 로컬 스토리지에 저장
-        localStorage.setItem(`settings_user_${currentUser}`, JSON.stringify(settings));
+        // 백엔드에 저장
+        await updateSettings(settings);
         
         // 설정 적용
         applySettings();
@@ -1036,7 +1180,6 @@ function saveSettings() {
         // 모달 닫기
         document.getElementById('settings-modal').style.display = 'none';
         
-        // 성공 메시지 (선택사항)
         console.log('설정이 저장되었습니다.');
         
     } catch (error) {
@@ -1123,19 +1266,16 @@ function changeWeekendDisplay() {
 }
 
 // 현재 시간표 초기화
-function deleteTimetable() {
+async function deleteTimetable() {
     if (!confirm('현재 시간표의 모든 데이터가 삭제되고 기본 설정으로 초기화됩니다. 계속하시겠습니까?')) {
         return;
     }
     
-    const currentUser = localStorage.getItem('currentLoggedInUser');
-    if (!currentUser) {
-        alert('로그인이 필요한 서비스입니다.');
-        return;
-    }
-    
     try {
-        // 과목 데이터 초기화
+        // 과목 데이터 초기화 (백엔드에서 해당 시간표의 모든 과목 삭제)
+        for (let course of courses) {
+            await deleteCourseAPI(course.id);
+        }
         courses = [];
         
         // 설정 초기화
@@ -1146,6 +1286,9 @@ function deleteTimetable() {
             timeFormat24: true,
             appearance: 'dark'
         };
+        
+        // 백엔드에 설정 저장
+        await updateSettings(settings);
         
         // UI 요소 초기화
         const showProfessorEl = document.getElementById('show-professor');
@@ -1160,12 +1303,8 @@ function deleteTimetable() {
         if (timeFormatSelectEl) timeFormatSelectEl.value = '24';
         if (weekendSelectEl) weekendSelectEl.value = 'true';
         
-        // 로컬 스토리지에 저장
-        localStorage.setItem(`settings_user_${currentUser}`, JSON.stringify(settings));
-        
         // 설정 적용
         applyAppearance('dark');
-        saveCoursesToStorage();
         createTimetable();
         renderCourseList();
         calculateGrades();
@@ -1497,10 +1636,210 @@ function exportToImageFallback(container) {
 }
 
 // ==================================================================================
-// 기타 유틸리티 함수들
+// 로그아웃 및 기타 유틸리티 함수들
 // ==================================================================================
+
+// 로그아웃 함수
+function logout() {
+    if (confirm('정말 로그아웃하시겠습니까?')) {
+        localStorage.removeItem('authToken');
+        currentUser = null;
+        window.location.href = '/login.html';
+    }
+}
 
 // 이전 페이지로 이동
 function goToBack() {
     window.history.back();
+}
+
+// 토큰 갱신 함수 (필요한 경우)
+async function refreshToken() {
+    try {
+        const response = await apiRequest('/auth/refresh', {
+            method: 'POST'
+        });
+        
+        if (response.token) {
+            localStorage.setItem('authToken', response.token);
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('토큰 갱신 오류:', error);
+        return false;
+    }
+}
+
+// API 요청 오류 처리 (토큰 만료 등)
+async function handleApiError(error) {
+    if (error.status === 401) {
+        // 토큰 만료 시 갱신 시도
+        const refreshed = await refreshToken();
+        if (!refreshed) {
+            // 갱신 실패 시 로그인 페이지로 이동
+            localStorage.removeItem('authToken');
+            window.location.href = '/login.html';
+        }
+        return refreshed;
+    }
+    return false;
+}
+
+// 네트워크 연결 상태 확인
+function checkNetworkStatus() {
+    if (!navigator.onLine) {
+        alert('네트워크 연결을 확인해주세요.');
+        return false;
+    }
+    return true;
+}
+
+// 페이지 언로드 시 임시 데이터 정리
+window.addEventListener('beforeunload', function() {
+    // 필요한 경우 임시 데이터 정리
+    settingsBackup = null;
+});
+
+// 에러 리포팅 함수 (선택사항)
+function reportError(error, context = '') {
+    console.error(`오류 발생 [${context}]:`, error);
+    
+    // 개발 환경에서만 상세 오류 표시
+    if (process.env.NODE_ENV === 'development') {
+        console.trace();
+    }
+    
+    // 프로덕션에서는 오류 리포팅 서비스로 전송
+    // 예: Sentry, LogRocket 등
+}
+
+// ==================================================================================
+// 전역 오류 처리
+// ==================================================================================
+
+// 전역 오류 핸들러
+window.addEventListener('error', function(event) {
+    reportError(event.error, 'Global Error');
+});
+
+// Promise 거부 오류 핸들러
+window.addEventListener('unhandledrejection', function(event) {
+    reportError(event.reason, 'Unhandled Promise Rejection');
+    event.preventDefault(); // 콘솔 오류 메시지 방지
+});
+
+// ==================================================================================
+// 추가 유틸리티 함수들
+// ==================================================================================
+
+// 날짜 포맷팅 함수
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// 시간 포맷팅 함수
+function formatTime(hour, minute) {
+    if (settings.timeFormat24) {
+        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    } else {
+        const ampm = hour >= 12 ? '오후' : '오전';
+        const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+        return `${ampm} ${displayHour}:${minute.toString().padStart(2, '0')}`;
+    }
+}
+
+// 데이터 유효성 검사 함수
+function validateCourseData(courseData) {
+    if (!courseData.name || courseData.name.trim() === '') {
+        throw new Error('과목명을 입력해주세요.');
+    }
+    
+    if (!courseData.credits || courseData.credits < 1 || courseData.credits > 6) {
+        throw new Error('학점은 1-6 사이의 값을 입력해주세요.');
+    }
+    
+    if (!courseData.times || courseData.times.length === 0) {
+        throw new Error('시간을 설정해주세요.');
+    }
+    
+    // 시간 유효성 검사
+    for (const time of courseData.times) {
+        if (time.day < 1 || time.day > 6) {
+            throw new Error('올바른 요일을 선택해주세요.');
+        }
+        if (time.start < 1 || time.start > 10 || time.end < 1 || time.end > 10) {
+            throw new Error('올바른 교시를 선택해주세요.');
+        }
+        if (time.start > time.end) {
+            throw new Error('시작 교시는 종료 교시보다 작거나 같아야 합니다.');
+        }
+    }
+    
+    return true;
+}
+
+// 로딩 상태 표시 함수
+function showLoading(message = '처리 중...') {
+    // 로딩 오버레이 생성 또는 표시
+    let loadingOverlay = document.getElementById('loading-overlay');
+    if (!loadingOverlay) {
+        loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'loading-overlay';
+        loadingOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            font-size: 18px;
+        `;
+        document.body.appendChild(loadingOverlay);
+    }
+    loadingOverlay.textContent = message;
+    loadingOverlay.style.display = 'flex';
+}
+
+// 로딩 상태 숨김 함수
+function hideLoading() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'none';
+    }
+}
+
+// 디바운스 함수
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 스로틀 함수
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
 }
