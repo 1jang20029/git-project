@@ -7,8 +7,6 @@
 
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
-  
-  <!-- CSS 파일들 -->
   <link rel="stylesheet" href="./css/index.css" />
   <link rel="stylesheet" href="../front/css/settings.css" />
   <link rel="stylesheet" href="../front/css/buildings.css" />
@@ -47,13 +45,16 @@
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
         <ul class="dropdown-menu">
-          <li class="dropdown-item">
+          <!-- 내 시간표 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
-          <li class="dropdown-item">
+          <!-- 학사일정 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
             <span class="nav-icon">🗓️</span><span>학사일정</span>
           </li>
-          <li class="dropdown-item">
+          <!-- 셔틀버스 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
             <span class="nav-icon">🚌</span><span>셔틀버스</span>
           </li>
         </ul>
@@ -171,38 +172,21 @@
       <div id="timetableContentPane" style="display:none;"></div>
       <div id="shuttleContentPane" style="display:none;"></div>
       <div id="calendarContentPane" style="display:none;"></div>
+      
+      <!-- 새로 추가: 학사일정 페이지 -->
       <div id="academic-calendarContentPane" style="display:none;"></div>
+      
       <div id="profileContentPane" style="display:none;"></div>
       <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
-
-  <!-- 모듈화된 JavaScript 파일들 순서대로 로드 -->
-  <!-- 1. 핵심 상태 관리 -->
-  <script src="./js/index/app-state.js"></script>
-  <script src="./js/index/utils.js"></script>
-  
-  <!-- 2. 기능별 모듈들 -->
-  <script src="./js/index/network-manager.js"></script>
-  <script src="./js/index/data-manager.js"></script>
-  <script src="./js/index/ui-renderer.js"></script>
-  <script src="./js/index/navigation-manager.js"></script>
-  <script src="./js/index/dropdown-manager.js"></script>
-  <script src="./js/index/event-manager.js"></script>
-  <script src="./js/index/session-manager.js"></script>
-  <script src="./js/index/map-manager.js"></script>
-  
-  <!-- 3. 메인 애플리케이션 -->
-  <script src="./js/index/main.js"></script>
-  
-  <!-- 4. 기존 코드 호환성 -->
-  <script src="./js/compatibility.js"></script>
-  
-  <!-- 4. 기존 호환성을 위한 개별 기능 파일들 (필요시) -->
+  <script src="./js/index.js" defer></script>
   <script src="./js/settings.js" defer></script>
   <script src="./js/buildings.js" defer></script>
   <script src="/front/js/community.js" defer></script>
   <script src="/front/js/lecture-review.js" defer></script>
   <script src="/front/js/notices.js" defer></script>
+
+  
 </body>
 </html>
