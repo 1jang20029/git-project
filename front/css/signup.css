@@ -8,13 +8,12 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f8fafc;
+ body {
+    background-color: #f8fafc;
     color: #1f2937;
-    line-height: 1.6;
-    min-height: 100vh;
-}
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
 
 /* =========================
    헤더 (대시보드 스타일)
