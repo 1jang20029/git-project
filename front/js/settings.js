@@ -145,23 +145,29 @@
   // 7) 단축키 리스트 렌더링
   function renderShortcutList() {
     const container = document.getElementById('shortcut-list-container');
+    if (!container) return;
+    
     container.innerHTML = '';
     workingSettings.shortcuts.forEach(entry => {
       const item = createShortcutItem(entry);
       container.appendChild(item);
     });
-    // “+ 단축키 추가” 버튼 바인딩
-    document.getElementById('addShortcutBtn').onclick = () => {
-      if (workingSettings.shortcuts.length >= 5) {
-        showMessage('최대 5개까지 추가 가능합니다', 'error');
-        return;
-      }
-      const newEntry = { id:`shortcut-${Date.now()}`, name:'', key:'' };
-      workingSettings.shortcuts.push(newEntry);
-      persist(LS_KEY_SHORTCUTS, workingSettings.shortcuts);
-      container.appendChild(createShortcutItem(newEntry));
-      showMessage('새 단축키 추가', 'success');
-    };
+    
+    // "+ 단축키 추가" 버튼 바인딩
+    const addBtn = document.getElementById('addShortcutBtn');
+    if (addBtn) {
+      addBtn.onclick = () => {
+        if (workingSettings.shortcuts.length >= 5) {
+          showMessage('최대 5개까지 추가 가능합니다', 'error');
+          return;
+        }
+        const newEntry = { id:`shortcut-${Date.now()}`, name:'', key:'' };
+        workingSettings.shortcuts.push(newEntry);
+        persist(LS_KEY_SHORTCUTS, workingSettings.shortcuts);
+        container.appendChild(createShortcutItem(newEntry));
+        showMessage('새 단축키 추가', 'success');
+      };
+    }
   }
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -193,16 +199,21 @@
     keyInput.tabIndex = 0;           // 포커스 가능
     keyInput.placeholder = entry.key || '키를 눌러주세요';
     keyInput.value       = entry.key;
+    
     // focus 시 어떤 entry에 할당할지 저장
     keyInput.onfocus = () => {
       activeShortcutId = entry.id;
       keyInput.classList.add('waiting-key');
+      keyInput.placeholder = '키를 눌러주세요...';
     };
+    
     // blur 시 해제
     keyInput.onblur = () => {
       activeShortcutId = null;
       keyInput.classList.remove('waiting-key');
+      keyInput.placeholder = keyInput.value || '키를 눌러주세요';
     };
+    
     // click 도 focus
     keyInput.onclick = () => keyInput.focus();
 
@@ -228,36 +239,84 @@
   }
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 8) 글로벌 키다운 핸들러 (단축키 할당)
+  // 8) 글로벌 키다운 핸들러 (단축키 할당) - 수정됨
   function bindGlobalKeydown() {
     window.addEventListener('keydown', e => {
       if (!activeShortcutId) return;
+      
       e.preventDefault();
-      const k = e.key.toUpperCase();
-      // 유효 키: 알파벳/숫자 한 글자 혹은 F1~F12
-      if (!((k.length === 1 && /^[A-Z0-9]$/.test(k)) || /^F[1-9][0-2]?$/.test(k))) return;
+      e.stopPropagation();
+      
+      let keyName = '';
+      
+      // 특수 키들 처리
+      if (e.key.startsWith('F') && e.key.length >= 2) {
+        // F1, F2, ..., F12
+        const fNum = parseInt(e.key.substring(1));
+        if (!isNaN(fNum) && fNum >= 1 && fNum <= 12) {
+          keyName = e.key.toUpperCase();
+        }
+      } else if (e.key.length === 1) {
+        // 알파벳, 숫자
+        const char = e.key.toUpperCase();
+        if (/^[A-Z0-9]$/.test(char)) {
+          keyName = char;
+        }
+      } else {
+        // 기타 특수키들
+        const specialKeys = {
+          'Enter': 'ENTER',
+          'Space': 'SPACE',
+          'Tab': 'TAB',
+          'Escape': 'ESC',
+          'ArrowUp': 'UP',
+          'ArrowDown': 'DOWN',
+          'ArrowLeft': 'LEFT',
+          'ArrowRight': 'RIGHT',
+          'Insert': 'INS',
+          'Delete': 'DEL',
+          'Home': 'HOME',
+          'End': 'END',
+          'PageUp': 'PGUP',
+          'PageDown': 'PGDN'
+        };
+        
+        if (specialKeys[e.key]) {
+          keyName = specialKeys[e.key];
+        }
+      }
+      
+      // 유효하지 않은 키라면 무시
+      if (!keyName) {
+        showMessage('지원하지 않는 키입니다', 'error');
+        return;
+      }
 
       const entry = workingSettings.shortcuts.find(s => s.id === activeShortcutId);
       if (!entry) return;
 
       // 중복 체크 후 스왑 or 단순 대입
-      const other = workingSettings.shortcuts.find(s => s.key === k && s.id !== entry.id);
+      const other = workingSettings.shortcuts.find(s => s.key === keyName && s.id !== entry.id);
       if (other) {
-        const old = entry.key;
-        entry.key    = k;
-        other.key    = old || '';
-        showMessage('키가 스왑되었습니다', 'success');
+        const oldKey = entry.key;
+        entry.key = keyName;
+        other.key = oldKey || '';
+        showMessage(`키가 교체되었습니다: ${keyName}`, 'success');
         updateUIKey(entry.id, entry.key);
         updateUIKey(other.id, other.key);
       } else {
-        entry.key = k;
-        showMessage('키가 설정되었습니다', 'success');
+        entry.key = keyName;
+        showMessage(`키가 설정되었습니다: ${keyName}`, 'success');
         updateUIKey(entry.id, entry.key);
       }
+      
       persist(LS_KEY_SHORTCUTS, workingSettings.shortcuts);
-      // blur 처리
-      const inputEl = document.querySelector(`#${entry.id} .key-input`);
-      inputEl && inputEl.blur();
+      
+      // 포커스 해제
+      setTimeout(() => {
+        const inputEl = document.querySelector(`#${entry.id} .key-input`);
+        if (inputEl) inputEl.blur();
+      }, 100);
     });
   }
 
@@ -266,7 +325,7 @@
   function updateUIKey(itemId, newKey) {
     const el = document.querySelector(`#${itemId} .key-input`);
     if (el) {
-      el.value       = newKey;
+      el.value = newKey;
       el.placeholder = newKey || '키를 눌러주세요';
     }
   }
@@ -274,23 +333,39 @@
   // ──────────────────────────────────────────────────────────────────────────
   // 9) 저장/취소 버튼
   function initSaveCancelButtons() {
-    document.getElementById('saveSettingsBtn').onclick = () => {
-      // 이미 각각의 동작마다 persist 했으니, 안내만
-      showMessage('모든 설정이 저장되었습니다', 'success');
-    };
-    document.getElementById('cancelSettingsBtn').onclick = () => {
-      // 로컬스토리지 내용으로 다시 로드
-      loadSavedSettings();
-      initSettingsPage();
-      showMessage('저장된 설정으로 되돌렸습니다', 'info');
-    };
+    const saveBtn = document.getElementById('saveSettingsBtn');
+    const cancelBtn = document.getElementById('cancelSettingsBtn');
+    
+    if (saveBtn) {
+      saveBtn.onclick = () => {
+        // 이미 각각의 동작마다 persist 했으니, 안내만
+        showMessage('모든 설정이 저장되었습니다', 'success');
+      };
+    }
+    
+    if (cancelBtn) {
+      cancelBtn.onclick = () => {
+        // 로컬스토리지 내용으로 다시 로드
+        loadSavedSettings();
+        initSettingsPage();
+        showMessage('저장된 설정으로 되돌렸습니다', 'info');
+      };
+    }
   }
 
   // ──────────────────────────────────────────────────────────────────────────
   // localStorage 저장 공통
   function persist(key, value) {
-    if (typeof value === 'object') value = JSON.stringify(value);
-    localStorage.setItem(key, value);
+    try {
+      if (typeof value === 'object') {
+        localStorage.setItem(key, JSON.stringify(value));
+      } else {
+        localStorage.setItem(key, String(value));
+      }
+    } catch (e) {
+      console.error('localStorage 저장 실패:', e);
+      showMessage('설정 저장에 실패했습니다', 'error');
+    }
   }
 
   // ──────────────────────────────────────────────────────────────────────────
