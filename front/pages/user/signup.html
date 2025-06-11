@@ -82,7 +82,7 @@
                             <label class="form-label">대학 이메일 주소 <span class="required">*</span></label>
                             <div class="email-input-group">
                                 <input type="email" class="form-input" id="verificationEmail" placeholder="교수/교직원 이메일을 입력하세요" />
-                                <button type="button" class="btn btn-primary" id="sendVerificationBtn" onclick="sendVerificationEmail()">인증코드 발송</button>
+                                <button type="button" class="btn btn-primary" id="sendVerificationBtn">인증코드 발송</button>
                             </div>
                             <div class="form-hint">연성대학교 공식 이메일(@yeonsung.ac.kr)을 입력해주세요</div>
                             <div class="error-message" id="verification-email-error">올바른 대학 이메일을 입력해주세요</div>
@@ -92,7 +92,7 @@
                             <label class="form-label">인증 코드 <span class="required">*</span></label>
                             <div class="code-input-group">
                                 <input type="text" class="form-input" id="verificationCode" placeholder="6자리 인증코드를 입력하세요" maxlength="6" />
-                                <button type="button" class="btn btn-secondary" id="verifyCodeBtn" onclick="verifyEmailCode()" disabled>인증확인</button>
+                                <button type="button" class="btn btn-secondary" id="verifyCodeBtn" disabled>인증확인</button>
                             </div>
                             <div class="verification-timer" id="verificationTimer" style="display: none;">
                                 남은 시간: <span id="timerDisplay">05:00</span>
@@ -107,14 +107,15 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label" id="idLabel">학번</label>
-                        <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요">
+                        <input type="text" class="form-input" id="studentId" placeholder="학번을 입력하세요" name="studentId">
                         <div class="form-hint" id="idHint">예: 2024123456</div>
                         <div class="error-message" id="studentId-error">올바른 학번을 입력해주세요</div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">이름</label>
-                        <input type="text" class="form-input" id="name" placeholder="이름을 입력하세요">
+                        <input type="text" class="form-input" id="name" placeholder="이름을 입력하세요" name="name">
+                        <div class="error-message" id="name-error">이름을 입력해주세요</div>
                     </div>
                 </div>
 
@@ -122,14 +123,14 @@
                 <div id="passwordFields" class="form-grid">
                     <div class="form-group">
                         <label class="form-label">비밀번호</label>
-                        <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요">
+                        <input type="password" class="form-input" id="password" placeholder="비밀번호를 입력하세요" name="password">
                         <div class="form-hint">영문, 숫자, 특수문자를 포함한 8자 이상</div>
                         <div class="error-message" id="password-error">영문, 숫자, 특수문자를 포함한 8자 이상 입력해주세요</div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">비밀번호 확인</label>
-                        <input type="password" class="form-input" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요">
+                        <input type="password" class="form-input" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요" name="confirmPassword">
                         <div class="error-message" id="confirmPassword-error">비밀번호가 일치하지 않습니다</div>
                     </div>
                 </div>
@@ -138,7 +139,7 @@
                     <div class="form-group">
                         <label class="form-label">학과/부서</label>
                         <div class="department-container">
-                            <input type="text" class="form-input" id="departmentInput" placeholder="학과명을 입력하거나 선택하세요" autocomplete="off">
+                            <input type="text" class="form-input" id="departmentInput" placeholder="학과명을 입력하거나 선택하세요" autocomplete="off" name="department">
                             <div class="department-dropdown" id="departmentDropdown">
                                 <!-- 스마트 ICT계열 -->
                                 <div class="department-category">스마트 ICT계열</div>
@@ -214,8 +215,9 @@
                                 <div class="department-option staff-option" data-value="전산실">전산실</div>
                                 <div class="department-option staff-option" data-value="보건실">보건실</div>
                             </div>
-                            <input type="hidden" id="selectedDepartment" name="department" value="">
+                            <input type="hidden" id="selectedDepartment" name="selectedDepartment" value="">
                         </div>
+                        <div class="error-message" id="department-error">학과/부서를 선택해주세요</div>
                     </div>
                     
                     <div class="form-group" id="gradeGroup">
@@ -230,19 +232,20 @@
                             </div>
                             <input type="hidden" id="selectedGrade" name="grade" value="">
                         </div>
+                        <div class="error-message" id="grade-error">학년을 선택해주세요</div>
                     </div>
                 </div>
 
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">휴대폰 번호</label>
-                        <input type="tel" class="form-input" id="phone" placeholder="휴대폰 번호를 입력하세요" maxlength="13" oninput="formatPhoneNumber(this)">
+                        <input type="tel" class="form-input" id="phone" placeholder="휴대폰 번호를 입력하세요" maxlength="13" name="phone">
                         <div class="error-message" id="phone-error">010으로 시작하는 11자리 번호를 입력해주세요</div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">이메일</label>
-                        <input type="email" class="form-input" id="email" placeholder="이메일을 입력하세요">
+                        <input type="email" class="form-input" id="email" placeholder="이메일을 입력하세요" name="email">
                         <div class="error-message" id="email-error">올바른 이메일 형식을 입력해주세요</div>
                     </div>
                 </div>
@@ -265,7 +268,7 @@
                         2. 본 약관은 회사가 필요하다고 인정하는 경우 변경할 수 있으며, 변경된 약관은 서비스 내에 공지함으로써 효력이 발생합니다.
                     </div>
                     <label class="check-item">
-                        <input type="checkbox" id="agreeTerms"> 이용약관에 동의합니다 (필수)
+                        <input type="checkbox" id="agreeTerms" name="agreeTerms"> 이용약관에 동의합니다 (필수)
                     </label>
                 </div>
                 
@@ -282,11 +285,11 @@
                         귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있으나, 동의를 거부할 경우 서비스 이용이 제한됩니다.
                     </div>
                     <label class="check-item">
-                        <input type="checkbox" id="agreePrivacy"> 개인정보 수집 및 이용에 동의합니다 (필수)
+                        <input type="checkbox" id="agreePrivacy" name="agreePrivacy"> 개인정보 수집 및 이용에 동의합니다 (필수)
                     </label>
                 </div>
                 
-                <button type="button" class="register-button" onclick="register()">
+                <button type="submit" class="register-button">
                     🎓 회원가입 완료
                 </button>
             </form>
