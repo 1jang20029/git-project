@@ -3,18 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>연성대학교 스마트 캠퍼스</title>
+  <title>연성대학교 스마트 캠퍼스 - 디버그</title>
 
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
   
   <!-- CSS 파일들 -->
   <link rel="stylesheet" href="./css/index.css" />
-  <link rel="stylesheet" href="../front/css/settings.css" />
-  <link rel="stylesheet" href="../front/css/buildings.css" />
-  <link rel="stylesheet" href="/front/css/community.css" />
-  <link rel="stylesheet" href="/front/css/lecture-review.css" />
-  <link rel="stylesheet" href="/front/css/notices.css" />
+  
+  <style>
+    /* 기본 스타일 - CSS 파일이 없을 경우를 대비 */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: white;
+    }
+    
+    #top-nav {
+      background: #16213e;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    #nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    #main-menu {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 1rem;
+    }
+    
+    .nav-item {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-item.active {
+      background: #0f3460;
+    }
+    
+    #main-container {
+      padding: 2rem;
+    }
+    
+    .debug-info {
+      background: #333;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      border-left: 4px solid #4CAF50;
+    }
+    
+    .error-info {
+      background: #333;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      border-left: 4px solid #f44336;
+    }
+  </style>
 </head>
 <body>
   <nav id="top-nav">
@@ -24,185 +88,162 @@
     </div>
     <ul id="main-menu">
       <li class="nav-item active" id="nav-home" onclick="showContent('home')">
-        <span class="nav-icon" title="대시보드">🏠</span>
-        <span>대시보드</span>
+        <span>🏠 대시보드</span>
       </li>
       <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
-        <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
-        <span>건물 &amp; 시설</span>
-      </li>
-      <li class="nav-item" id="nav-community" onclick="showContent('community')">
-        <span class="nav-icon" title="커뮤니티">💬</span>
-        <span>커뮤니티</span>
-      </li>
-      <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
-        <span class="nav-icon" title="강의평가">⭐</span>
-        <span>강의평가</span>
-      </li>
-      <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
-        <span class="nav-icon" title="공지사항">📢</span>
-        <span>공지사항</span>
-      </li>
-      <li class="nav-item" id="nav-student-services">
-        <span class="nav-icon" title="학생서비스">🎓</span>
-        <span>학생서비스</span>
-        <ul class="dropdown-menu">
-          <li class="dropdown-item">
-            <span class="nav-icon">📅</span><span>내 시간표</span>
-          </li>
-          <li class="dropdown-item">
-            <span class="nav-icon">🗓️</span><span>학사일정</span>
-          </li>
-          <li class="dropdown-item">
-            <span class="nav-icon">🚌</span><span>셔틀버스</span>
-          </li>
-        </ul>
+        <span>🏢 건물정보</span>
       </li>
     </ul>
-    <ul id="quick-menu"></ul>
-    <div id="nav-controls">
-      <div id="search-bar">
-        <span id="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="건물, 교수님, 강의실 검색..." />
-      </div>
-      <div id="user-menu">
-        <div id="notification-btn" onclick="toggleNotifications()">
-          🔔
-          <div id="notification-dot"></div>
-          <div id="notification-dropdown">
-            <div id="notification-header">
-              <div id="notification-title">알림</div>
-              <div id="notification-badge">0</div>
-            </div>
-            <div id="notification-list"></div>
-            <div id="notification-footer">
-              <button id="mark-all-read" onclick="markAllAsRead()">
-                모두 읽음 처리
-              </button>
-            </div>
-          </div>
-        </div>
-        <div id="user-profile" onclick="toggleUserMenu()">
-          <div id="user-avatar">👤</div>
-          <div id="user-info">
-            <div id="user-name">게스트</div>
-            <div id="user-role">방문자</div>
-          </div>
-          <div id="user-dropdown">
-            <div id="dropdown-user-info">
-              <div id="dropdown-user-name">게스트</div>
-              <div id="dropdown-user-role">방문자</div>
-            </div>
-            <button id="dropdown-item-profile" onclick="showProfile()">내 계정</button>
-            <button id="dropdown-item-settings" onclick="showContent('settings')">
-              <span class="settings-icon">⚙️</span><span>설정</span>
-            </button>
-            <div id="dropdown-divider"></div>
-            <button id="dropdown-item-logout" onclick="handleLogout()" style="color:#ef4444;">
-              <span class="logout-icon">🚪</span><span>로그아웃</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </nav>
 
   <div id="main-container">
-    <main id="content-area">
-      <!-- 대시보드 (홈) -->
-      <div id="homeContent">
-        <div id="content-header-home">
-          <h1 id="title-home">대시보드</h1>
-          <div id="breadcrumb-home">
-            <span>홈</span><span>›</span><span>대시보드</span>
-          </div>
-        </div>
-        <div id="statsGrid"></div>
-        <div id="dashboardGrid">
-          <div id="map-card">
-            <div id="card-header-map">
-              <h3 id="card-title-map">캠퍼스 지도</h3>
-              <span id="card-icon-map">🗺️</span>
-            </div>
-            <div id="map-container">
-              <div id="naverMap" style="width:100%;height:100%;"></div>
-              <div id="map-overlay">
-                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
-                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍−</button>
-                <button id="map-reset" onclick="resetMapView()" title="초기화">🏠</button>
-                <button id="map-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
-              </div>
-            </div>
-          </div>
-          <div id="timetable-card">
-            <div id="card-header-timetable">
-              <h3 id="card-title-timetable">오늘의 시간표</h3>
-              <span id="card-icon-timetable">📅</span>
-            </div>
-            <div id="timetableContent"></div>
-          </div>
-          <div id="shuttle-card">
-            <div id="card-header-shuttle">
-              <h3 id="card-title-shuttle">셔틀버스 현황</h3>
-              <span id="card-icon-shuttle">🚌</span>
-            </div>
-            <div id="shuttleRoutes"></div>
-            <div id="shuttle-status">
-              <div id="shuttle-time">--</div>
-              <div id="shuttle-desc">--</div>
-              <div id="shuttleStatus">--</div>
-            </div>
-          </div>
-          <div id="notice-card">
-            <div id="card-header-notice">
-              <h3 id="card-title-notice">최근 공지사항</h3>
-              <span id="card-icon-notice">📢</span>
-            </div>
-            <div id="recentNotices"></div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- SPA 분리 영역들 -->
-      <div id="buildingsContent" style="display:none;"></div>
-      <div id="communityContent" style="display:none;"></div>
-      <div id="lecture-reviewContent" style="display:none;"></div>
-      <div id="noticesContent" style="display:none;"></div>
-      <div id="timetableContentPane" style="display:none;"></div>
-      <div id="shuttleContentPane" style="display:none;"></div>
-      <div id="calendarContentPane" style="display:none;"></div>
-      <div id="academic-calendarContentPane" style="display:none;"></div>
-      <div id="profileContentPane" style="display:none;"></div>
-      <div id="settingsContent" style="display:none;"></div>
-    </main>
+    <div id="debug-status">
+      <h2>🔧 시스템 진단</h2>
+      <div id="debug-results"></div>
+    </div>
+    
+    <div id="homeContent">
+      <h1>대시보드</h1>
+      <p>메인 콘텐츠 영역입니다.</p>
+    </div>
+    
+    <div id="buildingsContent" style="display:none;">
+      <h1>건물 정보</h1>
+      <p>건물 정보 페이지입니다.</p>
+    </div>
   </div>
 
-  <!-- 모듈화된 JavaScript 파일들 순서대로 로드 -->
-  <!-- 1. 핵심 상태 관리 -->
-  <script src="./js/index/app-state.js"></script>
-  <script src="./js/index/utils.js"></script>
-  
-  <!-- 2. 기능별 모듈들 -->
-  <script src="./js/index/network-manager.js"></script>
-  <script src="./js/index/data-manager.js"></script>
-  <script src="./js/index/ui-renderer.js"></script>
-  <script src="./js/index/navigation-manager.js"></script>
-  <script src="./js/index/dropdown-manager.js"></script>
-  <script src="./js/index/event-manager.js"></script>
-  <script src="./js/index/session-manager.js"></script>
-  <script src="./js/index/map-manager.js"></script>
-  
-  <!-- 3. 메인 애플리케이션 -->
-  <script src="./js/index/main.js"></script>
-  
-  <!-- 4. 기존 코드 호환성 -->
-  <script src="./js/compatibility.js"></script>
-  
-  <!-- 4. 기존 호환성을 위한 개별 기능 파일들 (필요시) -->
-  <script src="./js/settings.js" defer></script>
-  <script src="./js/buildings.js" defer></script>
-  <script src="/front/js/community.js" defer></script>
-  <script src="/front/js/lecture-review.js" defer></script>
-  <script src="/front/js/notices.js" defer></script>
+  <!-- 디버깅용 스크립트 -->
+  <script>
+    console.log('🚀 디버그 스크립트 시작');
+    
+    // 디버그 정보 표시 함수
+    function showDebugInfo() {
+      const debugDiv = document.getElementById('debug-results');
+      const results = [];
+      
+      // 1. 모듈 로드 상태 확인
+      const modules = [
+        'AppState', 'Utils', 'NetworkManager', 'DataManager', 
+        'UIRenderer', 'NavigationManager', 'DropdownManager', 
+        'EventManager', 'SessionManager', 'MapManager'
+      ];
+      
+      results.push('<h3>📦 모듈 로드 상태</h3>');
+      modules.forEach(module => {
+        const loaded = window[module] ? '✅' : '❌';
+        const className = window[module] ? 'debug-info' : 'error-info';
+        results.push(`<div class="${className}">${loaded} ${module}</div>`);
+      });
+      
+      // 2. 네이버 지도 API 상태 확인
+      results.push('<h3>🗺️ 네이버 지도 API</h3>');
+      const mapStatus = typeof naver !== 'undefined' && naver.maps ? '✅ 로드됨' : '❌ 로드 실패';
+      const mapClassName = typeof naver !== 'undefined' ? 'debug-info' : 'error-info';
+      results.push(`<div class="${mapClassName}">${mapStatus}</div>`);
+      
+      // 3. DOM 요소 확인
+      results.push('<h3>🎯 DOM 요소</h3>');
+      const elements = ['nav-home', 'nav-buildings', 'homeContent', 'buildingsContent'];
+      elements.forEach(id => {
+        const element = document.getElementById(id);
+        const status = element ? '✅ 존재' : '❌ 없음';
+        const className = element ? 'debug-info' : 'error-info';
+        results.push(`<div class="${className}">${status} #${id}</div>`);
+      });
+      
+      debugDiv.innerHTML = results.join('');
+    }
+    
+    // 기본 showContent 함수 (모듈이 로드되지 않은 경우 대비)
+    function showContent(type) {
+      console.log(`🎯 showContent 호출: ${type}`);
+      
+      // 모든 콘텐츠 숨기기
+      const contents = ['homeContent', 'buildingsContent'];
+      contents.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.style.display = 'none';
+      });
+      
+      // 선택된 콘텐츠 표시
+      const targetElement = document.getElementById(type + 'Content');
+      if (targetElement) {
+        targetElement.style.display = 'block';
+        console.log(`✅ ${type} 콘텐츠 표시됨`);
+      } else {
+        console.error(`❌ ${type}Content 요소를 찾을 수 없음`);
+      }
+      
+      // 네비게이션 활성 상태 업데이트
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      const navItem = document.getElementById('nav-' + type);
+      if (navItem) {
+        navItem.classList.add('active');
+      }
+    }
+    
+    // 페이지 로드 후 진단 실행
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('📱 DOM 로드 완료');
+      setTimeout(showDebugInfo, 1000); // 1초 후 진단 실행
+    });
+  </script>
+
+  <!-- 모듈 파일들 로드 시도 -->
+  <script>
+    // 파일 로드 상태 확인을 위한 함수들
+    function loadScript(src, name) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => {
+          console.log(`✅ ${name} 로드 성공`);
+          resolve();
+        };
+        script.onerror = () => {
+          console.error(`❌ ${name} 로드 실패: ${src}`);
+          reject(new Error(`Failed to load ${name}`));
+        };
+        document.head.appendChild(script);
+      });
+    }
+    
+    // 순차적으로 모듈 로드
+    async function loadModules() {
+      const modules = [
+        { src: './js/index/app-state.js', name: 'AppState' },
+        { src: './js/index/utils.js', name: 'Utils' },
+        { src: './js/index/network-manager.js', name: 'NetworkManager' },
+        { src: './js/index/data-manager.js', name: 'DataManager' },
+        { src: './js/index/ui-renderer.js', name: 'UIRenderer' },
+        { src: './js/index/navigation-manager.js', name: 'NavigationManager' },
+        { src: './js/index/dropdown-manager.js', name: 'DropdownManager' },
+        { src: './js/index/event-manager.js', name: 'EventManager' },
+        { src: './js/index/session-manager.js', name: 'SessionManager' },
+        { src: './js/index/map-manager.js', name: 'MapManager' },
+        { src: './js/index/main.js', name: 'Main' },
+        { src: './js/compatibility.js', name: 'Compatibility' }
+      ];
+      
+      for (const module of modules) {
+        try {
+          await loadScript(module.src, module.name);
+        } catch (error) {
+          console.error(`모듈 로드 중 오류:`, error);
+          // 로드 실패해도 계속 진행
+        }
+      }
+      
+      console.log('📦 모든 모듈 로드 시도 완료');
+      setTimeout(showDebugInfo, 500); // 다시 진단
+    }
+    
+    // DOM 로드 후 모듈 로드 시작
+    document.addEventListener('DOMContentLoaded', loadModules);
+  </script>
 </body>
 </html>
