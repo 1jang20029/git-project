@@ -969,6 +969,16 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         }
         return false;
     };
+
+    function goBack() {
+  // 뒤로가기 히스토리가 있을 경우
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    // 히스토리가 없을 경우 로그인 전 기본 페이지로 이동 (index.html로 설정 가능)
+    window.location.href = '../../index.html';
+  }
+}
     
     console.log('🔧 개발자 도구 함수 등록 완료');
     console.log('- showVerificationCode(): 현재 인증코드 확인');
