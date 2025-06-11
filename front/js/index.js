@@ -1154,7 +1154,7 @@ async function showProfile() {
   }
   showContent('profile');
   try {
-    const res = await fetch('account-edit.html');
+    const res = await fetch('pages/user/account-edit.html');
     if (!res.ok) throw new Error('Account 편집 화면 로드 실패');
     const html = await res.text();
     if (container) container.innerHTML = html;
