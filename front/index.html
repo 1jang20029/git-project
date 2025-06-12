@@ -499,17 +499,34 @@
         padding-left: 0;
       }
 
-      /* 검색/알림/사용자 - 중앙 */
+      /* 검색바 숨김 */
+      #search-bar {
+        display: none;
+      }
+
+      /* 오른쪽 그룹 - 프로필/알림/햄버거를 함께 묶음 */
       #nav-controls {
         order: 2;
         padding-right: 0;
         gap: 6px;
+        display: flex;
+        align-items: center;
+        margin-left: auto;
       }
 
-      /* 햄버거 메뉴 - 오른쪽 */
+      /* 사용자 메뉴를 햄버거와 붙여서 배치 */
+      #user-menu {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-direction: row-reverse; /* 순서 뒤바꿈: 프로필 - 알림 */
+      }
+
+      /* 햄버거 메뉴 - 사용자 메뉴 바로 옆 */
       .mobile-menu-toggle {
         display: block;
         order: 3;
+        margin-left: 6px;
       }
 
       #main-menu {
@@ -538,10 +555,23 @@
         padding: 8px 12px;
         justify-content: flex-start;
         font-size: 13px;
+        position: relative;
       }
 
-      #search-bar {
-        width: 80px;
+      /* 모바일에서 드롭다운 위치 조정 */
+      .dropdown-menu {
+        position: static;
+        display: none;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-top: 6px;
+        padding: 8px;
+        box-shadow: none;
+        border: 1px solid #e9ecef;
+      }
+
+      .nav-item.dropdown-open .dropdown-menu {
+        display: block;
       }
 
       #user-info {
@@ -603,9 +633,7 @@
         display: none;
       }
 
-      #search-bar {
-        width: 60px;
-      }
+      /* 검색바는 이미 숨겨짐 */
 
       #statsGrid {
         grid-template-columns: repeat(2, 1fr);
@@ -683,7 +711,7 @@
         <span class="nav-icon" title="공지사항">📢</span>
         <span class="nav-text">공지사항</span>
       </li>
-      <li class="nav-item" id="nav-student-services">
+      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices()">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span class="nav-text">학생서비스</span>
         <ul class="dropdown-menu">
@@ -931,12 +959,21 @@
       // 모든 네비게이션 아이템에서 active 클래스 제거
       document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
+        item.classList.remove('dropdown-open');
       });
       
       // 클릭된 메뉴 아이템에 active 클래스 추가
       const clickedItem = document.getElementById(`nav-${contentType}`);
       if (clickedItem) {
         clickedItem.classList.add('active');
+      }
+    }
+
+    // 모바일에서 학생서비스 드롭다운 토글
+    function toggleStudentServices() {
+      const studentServicesItem = document.getElementById('nav-student-services');
+      if (window.innerWidth <= 768) {
+        studentServicesItem.classList.toggle('dropdown-open');
       }
     }
 
