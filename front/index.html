@@ -23,6 +23,13 @@
   <style>
     * {
       box-sizing: border-box;
+    /* 컨텐츠 영역 숨김/표시 */
+    #content-area > div {
+      display: none;
+    }
+
+    #content-area > div:first-child {
+      display: block;
     }
 
     body {
@@ -453,6 +460,8 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .service-card {
@@ -534,6 +543,20 @@
     }
 
     @media (max-width: 768px) {
+      #statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 0 12px;
+      }
+
+      .stat-card {
+        padding: 15px;
+      }
+
+      .stat-card-number {
+        font-size: 1.5rem;
+      }
+
       #top-nav {
         display: flex;
         justify-content: space-between;
@@ -617,7 +640,8 @@
       }
 
       .dashboard-welcome {
-        margin: 0 12px 20px 12px;
+        margin: 0 0 20px 0;
+        border-radius: 0;
       }
 
       .services-section {
@@ -626,6 +650,20 @@
     }
 
     @media (max-width: 480px) {
+      #statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 0 12px;
+      }
+
+      .stat-card {
+        padding: 12px;
+      }
+
+      .stat-card-number {
+        font-size: 1.3rem;
+      }
+
       #nav-brand span {
         display: none;
       }
@@ -654,13 +692,43 @@
         font-size: 1.8rem;
       }
     }
-
-    /* 컨텐츠 영역 숨김/표시 */
-    #content-area > div {
-      display: none;
     }
 
-    #content-area > div:first-child {
+    /* 통계 그리드 스타일 추가 */
+    #statsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat-card-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3b82f6;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .stat-card-label {
+      font-size: 0.9rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .stat-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
       display: block;
     }
   </style>
@@ -794,7 +862,28 @@
           </div>
         </div>
 
-        <div id="statsGrid"></div>
+        <div id="statsGrid">
+          <div class="stat-card">
+            <span class="stat-card-icon">📋</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">캠퍼스 건물</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">📝</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">재학생 수</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">🏃</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">운영 서비스</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">📊</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">오늘 일정<br><small style="color:#3b82f6;">📋 진행중</small></span>
+          </div>
+        </div>
         
         <div class="services-section">
           <h2 class="services-title">주요 서비스</h2>
