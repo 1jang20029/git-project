@@ -33,7 +33,7 @@
       min-height: 100vh;
     }
 
-    /* 상단 네비게이션 */
+    /* 상단 네비게이션 - 데스크톱 */
     #top-nav {
       display: grid;
       grid-template-columns: 250px 1fr 300px;
@@ -274,10 +274,16 @@
     .mobile-menu-toggle {
       display: none;
       background: none;
-      border: none;
-      font-size: 18px;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
       cursor: pointer;
-      padding: 4px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      color: #374151;
+    }
+
+    .mobile-menu-toggle:hover {
+      background: #f9fafb;
     }
 
     /* 메인 컨테이너 */
@@ -478,41 +484,32 @@
       }
     }
 
+    /* 모바일 레이아웃 - 768px 이하 */
     @media (max-width: 768px) {
-      /* 모바일 네비게이션 - 완전히 다른 레이아웃 */
       #top-nav {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: 8px 0;
-        position: relative;
+        padding: 8px 12px;
       }
 
-      /* 햄버거 메뉴 - 맨 왼쪽 */
+      /* 브랜드 - 왼쪽 */
+      #nav-brand {
+        order: 1;
+        padding-left: 0;
+      }
+
+      /* 검색/알림/사용자 - 중앙 */
+      #nav-controls {
+        order: 2;
+        padding-right: 0;
+        gap: 6px;
+      }
+
+      /* 햄버거 메뉴 - 오른쪽 */
       .mobile-menu-toggle {
         display: block;
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 10;
-      }
-
-      /* 브랜드 - 중앙 */
-      #nav-brand {
-        flex: 1;
-        justify-content: center;
-        padding: 0;
-        text-align: center;
-      }
-
-      /* 컨트롤 - 오른쪽 */
-      #nav-controls {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 0;
-        gap: 4px;
+        order: 3;
       }
 
       #main-menu {
@@ -544,7 +541,7 @@
       }
 
       #search-bar {
-        width: 100px;
+        width: 80px;
       }
 
       #user-info {
@@ -607,7 +604,7 @@
       }
 
       #search-bar {
-        width: 80px;
+        width: 60px;
       }
 
       #statsGrid {
@@ -704,7 +701,6 @@
     </ul>
     
     <div id="nav-controls">
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
       <div id="search-bar">
         <span id="search-icon">🔍</span>
         <input type="text" id="search-input" placeholder="건물, 교수님, 강의실 검색..." />
@@ -744,6 +740,8 @@
         </div>
       </div>
     </div>
+    
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
   </nav>
 
   <div id="main-container">
