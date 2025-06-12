@@ -410,7 +410,7 @@
       margin-bottom: 12px;
       font-size: 0.9rem;
     }
-    .service-button {
+    .service-button {      
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white !important;
       text-decoration: none;
@@ -431,170 +431,78 @@
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
     @media (max-width: 1024px) {
-      #top-nav {
-        grid-template-columns: 200px 1fr 250px;
-      }
-      .nav-text {
-        display: none;
-      }
-      .nav-item {
-        padding: 4px;
-        min-width: 28px;
-        justify-content: center;
-      }
-      #search-bar {
-        width: 120px;
-      }
+      #top-nav { grid-template-columns: 200px 1fr 250px; }
+      .nav-text { display: none; }
+      .nav-item { padding: 4px; min-width: 28px; justify-content: center; }
+      #search-bar { width: 120px; }
     }
     @media (max-width: 768px) {
-      #top-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 12px;
-      }
-      #nav-brand {
-        order: 1;
-        padding-left: 0;
-      }
-      #search-bar {
-        display: none;
-      }
-      #nav-controls {
-        order: 2;
-        padding-right: 0;
-        gap: 6px;
-        display: flex;
-        align-items: center;
-        margin-left: auto;
-      }
-      #user-menu {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-direction: row-reverse;
-      }
-      .mobile-menu-toggle {
-        display: block;
-        order: 3;
-        margin-left: 6px;
-      }
+      #top-nav { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; }
+      #nav-brand { order: 1; padding-left: 0; }
+      #search-bar { display: none; }
+      #nav-controls { order: 2; padding-right: 0; gap: 6px; display: flex; align-items: center; margin-left: auto; }
+      #user-menu { display: flex; align-items: center; gap: 6px; flex-direction: row-reverse; }
+      .mobile-menu-toggle { display: block; order: 3; margin-left: 6px; }
       #main-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: white;
-        border-top: 1px solid #e5e7eb;
-        flex-direction: column;
-        padding: 12px;
-        gap: 0;
-        z-index: 999;
+        display: none; position: absolute; top: 100%; left: 0; right: 0; background: white;
+        border-top: 1px solid #e5e7eb; flex-direction: column; padding: 12px; gap: 0; z-index: 999;
       }
-      #main-menu.mobile-open {
-        display: flex;
-      }
-      .nav-text {
-        display: inline;
-      }
-      .nav-item {
-        padding: 8px 12px;
-        justify-content: flex-start;
-        font-size: 13px;
-        position: relative;
-        margin: 0;
-      }
-      .sub-menu {
-        display: block;
-        background: #f1f5f9;
-        border-radius: 6px;
-        margin-top: 4px;
-      }
-      .sub-menu-item {
-        padding: 8px 16px 8px 32px;
-        font-size: 12px;
-      }
-      #user-info {
-        display: none;
-      }
-      #statsGrid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        padding: 0 12px;
-      }
-      .stat-card {
-        padding: 15px;
-      }
-      .stat-card-number {
-        font-size: 1.5rem;
-      }
-      .welcome-title {
-        font-size: 1.5rem;
-      }
-      .welcome-subtitle {
-        font-size: 0.9rem;
-      }
-      .welcome-stats {
-        gap: 20px;
-      }
-      .stat-number {
-        font-size: 1.4rem;
-      }
-      .services-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-      #main-container {
-        padding: 15px 0;
-      }
-      .dashboard-welcome {
-        margin: 0 0 20px 0;
-        border-radius: 0;
-      }
-      .services-section {
-        padding: 0 12px;
-      }
+      #main-menu.mobile-open { display: flex; }
+      .nav-text { display: inline; }
+      .nav-item { padding: 8px 12px; justify-content: flex-start; font-size: 13px; position: relative; margin: 0; }
+      .sub-menu { display: block; background: #f1f5f9; border-radius: 6px; margin-top: 4px; }
+      .sub-menu-item { padding: 8px 16px 8px 32px; font-size: 12px; }
+      #user-info { display: none; }
+      #statsGrid { grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 12px; }
+      .stat-card { padding: 15px; }
+      .stat-card-number { font-size: 1.5rem; }
+      .welcome-title { font-size: 1.5rem; }
+      .welcome-subtitle { font-size: 0.9rem; }
+      .welcome-stats { gap: 20px; }
+      .stat-number { font-size: 1.4rem; }
+      .services-grid { grid-template-columns: 1fr; gap: 15px; }
+      #main-container { padding: 15px 0; }
+      .dashboard-welcome { margin: 0 0 20px 0; border-radius: 0; }
+      .services-section { padding: 0 12px; }
     }
     @media (max-width: 480px) {
-      #nav-brand span {
-        display: none;
-      }
-      #statsGrid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        padding: 0 12px;
-      }
-      .stat-card {
-        padding: 12px;
-      }
-      .stat-card-number {
-        font-size: 1.3rem;
-      }
-      .welcome-title {
-        font-size: 1.2rem;
-      }
-      .stat-number {
-        font-size: 1.2rem;
-      }
-      .services-title {
-        font-size: 1.4rem;
-      }
-      .service-card {
-        padding: 15px;
-      }
-      .service-icon {
-        font-size: 1.8rem;
-      }
+      #nav-brand span { display: none; }
+      #statsGrid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 12px; }
+      .stat-card { padding: 12px; }
+      .stat-card-number { font-size: 1.3rem; }
+      .welcome-title { font-size: 1.2rem; }
+      .stat-number { font-size: 1.2rem; }
+      .services-title { font-size: 1.4rem; }
+      .service-card { padding: 15px; }
+      .service-icon { font-size: 1.8rem; }
     }
     /* 컨텐츠 영역 숨김/표시 */
     #content-area > div { display: none; }
     #content-area > div:first-child { display: block; }
+    /* 프로필 드롭다운 링크 스타일 */
+    #user-dropdown a {
+      display: block;
+      text-decoration: none;
+      margin: 4px 0;
+      padding: 6px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: #f9fafb;
+      color: #374151;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+    #user-dropdown a:hover {
+      background: #e5e7eb;
+    }
+    #dropdown-divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 8px 0;
+    }
   </style>
 </head>
-
 <body>
-
   <nav id="top-nav">
     <div id="nav-brand">
       <a href="./index.html" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
@@ -625,10 +533,15 @@
         <span class="nav-icon" title="공지사항">📢</span>
         <span class="nav-text">공지사항</span>
       </li>
-      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices()">
+      <li
+        class="nav-item"
+        id="nav-student-services"
+        onclick="toggleStudentServices()"
+        onmouseover="if(window.innerWidth>768) this.classList.add('dropdown-active')"
+        onmouseout="if(window.innerWidth>768) this.classList.remove('dropdown-active')"
+      >
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span class="nav-text">학생서비스</span>
-        <!-- 데스크톱용 드롭다운 -->
         <ul class="dropdown-menu">
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
@@ -641,7 +554,6 @@
           </li>
         </ul>
       </li>
-      <!-- 모바일 서브메뉴 -->
       <ul class="sub-menu" id="sub-menu">
         <li class="sub-menu-item" onclick="openTimetablePage()">
           <span class="nav-icon">📅</span><span>내 시간표</span>
@@ -683,14 +595,10 @@
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <button id="dropdown-item-profile" onclick="showProfile()">내 계정</button>
-            <button id="dropdown-item-settings" onclick="showContent('settings')">
-              <span class="settings-icon">⚙️</span><span>설정</span>
-            </button>
+            <a href="./profile-edit.html">내 계정</a>
+            <a href="./index.html#settings">설정</a>
             <div id="dropdown-divider"></div>
-            <button id="dropdown-item-logout" onclick="handleLogout()" style="color:#ef4444;">
-              <span class="logout-icon">🚪</span><span>로그아웃</span>
-            </button>
+            <a href="#" style="color:#ef4444;" onclick="handleLogout()">로그아웃</a>
           </div>
         </div>
       </div>
@@ -794,7 +702,6 @@
           </div>
         </div>
       </div>
-      <!-- 추가 콘텐츠 영역 (초기에는 숨김) -->
       <div id="buildingsContent" style="display:none;"></div>
       <div id="communityContent" style="display:none;"></div>
       <div id="lecture-reviewContent" style="display:none;"></div>
@@ -863,7 +770,7 @@
       document.getElementById('sub-menu').classList.remove('expanded');
       const clicked = document.getElementById(`nav-${contentType}`);
       if (clicked) clicked.classList.add('active');
-      // 실제 콘텐츠 전환 로직은 여기에 추가하세요.
+      // 콘텐츠 전환 로직 추가 가능
     }
 
     function handleLogout() {
@@ -893,6 +800,7 @@
       const subMenu = document.getElementById('sub-menu');
       const notificationDropdown = document.getElementById('notification-dropdown');
       const userDropdown = document.getElementById('user-dropdown');
+
       if (!notificationBtn.contains(event.target)) {
         notificationDropdown.classList.remove('show');
       }
@@ -910,6 +818,7 @@
       const mobileToggle = document.querySelector('.mobile-menu-toggle');
       const subMenu = document.getElementById('sub-menu');
       const studentServices = document.getElementById('nav-student-services');
+
       if (window.innerWidth > 768) {
         mainMenu.classList.remove('mobile-open');
         mobileToggle.textContent = '☰';
