@@ -2,33 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-  <meta name="description" content="연성대학교 스마트 캠퍼스 - 학생들을 위한 통합 서비스 플랫폼" />
-  <meta name="keywords" content="연성대학교, 스마트캠퍼스, 시간표, 건물안내, 셔틀버스, 강의평가" />
-  <meta name="author" content="연성대학교" />
-  
-  <!-- Open Graph 메타 태그 -->
-  <meta property="og:title" content="연성대학교 스마트 캠퍼스" />
-  <meta property="og:description" content="학생들을 위한 통합 서비스 플랫폼" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="" />
-  <meta property="og:image" content="./img/campus_icon.png" />
-  
-  <!-- 파비콘 -->
-  <link rel="icon" type="image/png" href="./img/campus_icon.png" />
-  <link rel="apple-touch-icon" href="./img/campus_icon.png" />
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
 
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
-  
-  <!-- 폰트 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- CSS 파일들 -->
   <link rel="stylesheet" href="./css/index.css" />
   <link rel="stylesheet" href="./css/settings.css" />
   <link rel="stylesheet" href="./css/academic-calendar.css" />
@@ -41,159 +19,98 @@
   <link rel="stylesheet" href="./css/register.css" />
   <link rel="stylesheet" href="./css/shuttle.css" />
   <link rel="stylesheet" href="./css/timetable.css" />
+
 </head>
 <body>
-  <!-- 모바일 메뉴 오버레이 -->
-  <div id="mobile-menu-overlay" onclick="closeMobileMenu()" aria-hidden="true"></div>
-
-  <!-- 상단 네비게이션 -->
-  <nav id="top-nav" role="navigation" aria-label="주요 네비게이션">
-    <!-- 모바일 햄버거 메뉴 버튼 -->
-    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="메뉴 열기" aria-expanded="false">
-      ☰
-    </button>
-    
-    <!-- 브랜드 로고 -->
+  <nav id="top-nav">
     <div id="nav-brand">
-      <a href="./index.html" aria-label="홈으로 이동" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
-        <img src="./img/campus_icon.png" alt="연성대학교 로고" width="24" height="24" style="margin-right:8px;" />
+      <a href="./index.html" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
+        <img src="./img/campus_icon.png" alt="캠퍼스 아이콘"
+            style="width:24px; height:24px; margin-right:8px;" />
         <span>연성대학교 스마트 캠퍼스</span>
       </a>
     </div>
-    
-    <!-- 데스크톱 메인 메뉴 -->
-    <ul id="main-menu" role="menubar">
-      <li class="nav-item active" id="nav-home" role="menuitem" tabindex="0" onclick="showContent('home')" onkeydown="handleMenuKeydown(event, 'home')">
-        <span class="nav-icon" aria-hidden="true">🏠</span>
+    <ul id="main-menu">
+      <li class="nav-item active" id="nav-home" onclick="showContent('home')">
+        <span class="nav-icon" title="대시보드">🏠</span>
         <span>대시보드</span>
       </li>
-      <li class="nav-item" id="nav-buildings" role="menuitem" tabindex="0" onclick="showContent('buildings')" onkeydown="handleMenuKeydown(event, 'buildings')">
-        <span class="nav-icon" aria-hidden="true">🏢</span>
+      <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
+        <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
         <span>건물 &amp; 시설</span>
       </li>
-      <li class="nav-item" id="nav-community" role="menuitem" tabindex="0" onclick="showContent('community')" onkeydown="handleMenuKeydown(event, 'community')">
-        <span class="nav-icon" aria-hidden="true">💬</span>
+      <li class="nav-item" id="nav-community" onclick="showContent('community')">
+        <span class="nav-icon" title="커뮤니티">💬</span>
         <span>커뮤니티</span>
       </li>
-      <li class="nav-item" id="nav-lecture-review" role="menuitem" tabindex="0" onclick="showContent('lecture-review')" onkeydown="handleMenuKeydown(event, 'lecture-review')">
-        <span class="nav-icon" aria-hidden="true">⭐</span>
+      <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
+        <span class="nav-icon" title="강의평가">⭐</span>
         <span>강의평가</span>
       </li>
-      <li class="nav-item" id="nav-notices" role="menuitem" tabindex="0" onclick="showContent('notices')" onkeydown="handleMenuKeydown(event, 'notices')">
-        <span class="nav-icon" aria-hidden="true">📢</span>
+      <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
+        <span class="nav-icon" title="공지사항">📢</span>
         <span>공지사항</span>
       </li>
-      <li class="nav-item" id="nav-student-services" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">
-        <span class="nav-icon" aria-hidden="true">🎓</span>
+      <li class="nav-item" id="nav-student-services">
+        <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
-        <ul class="dropdown-menu" role="menu" aria-label="학생 서비스 메뉴">
-          <li class="dropdown-item" role="menuitem" tabindex="0" onclick="event.stopPropagation(); openTimetablePage();" onkeydown="handleDropdownKeydown(event, 'timetable')">
-            <span class="nav-icon" aria-hidden="true">📅</span>
-            <span>내 시간표</span>
+        <ul class="dropdown-menu">
+          <!-- 내 시간표 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
+            <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
-          <li class="dropdown-item" role="menuitem" tabindex="0" onclick="event.stopPropagation(); openCalendarPage();" onkeydown="handleDropdownKeydown(event, 'calendar')">
-            <span class="nav-icon" aria-hidden="true">🗓️</span>
-            <span>학사일정</span>
+          <!-- 학사일정 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
+            <span class="nav-icon">🗓️</span><span>학사일정</span>
           </li>
-          <li class="dropdown-item" role="menuitem" tabindex="0" onclick="event.stopPropagation(); openShuttlePage();" onkeydown="handleDropdownKeydown(event, 'shuttle')">
-            <span class="nav-icon" aria-hidden="true">🚌</span>
-            <span>셔틀버스</span>
+          <!-- 셔틀버스 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
+            <span class="nav-icon">🚌</span><span>셔틀버스</span>
           </li>
         </ul>
       </li>
     </ul>
-    
-    <!-- 빠른 접근 메뉴 -->
-    <ul id="quick-menu" role="menubar" aria-label="빠른 접근 메뉴"></ul>
-    
-    <!-- 네비게이션 컨트롤 -->
+    <ul id="quick-menu"></ul>
     <div id="nav-controls">
-      <!-- 검색창 -->
-      <div id="search-bar" role="search">
-        <span id="search-icon" aria-hidden="true">🔍</span>
-        <input 
-          type="text" 
-          id="search-input" 
-          placeholder="건물, 교수님, 강의실 검색..." 
-          aria-label="검색"
-          autocomplete="off"
-        />
+      <div id="search-bar">
+        <span id="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="건물, 교수님, 강의실 검색..." />
       </div>
-      
-      <!-- 사용자 메뉴 -->
       <div id="user-menu">
-        <!-- 알림 버튼 -->
-        <div id="notification-btn" 
-             onclick="toggleNotifications()" 
-             role="button" 
-             tabindex="0"
-             aria-label="알림"
-             aria-haspopup="true"
-             aria-expanded="false"
-             onkeydown="handleButtonKeydown(event, toggleNotifications)">
-          <span aria-hidden="true">🔔</span>
-          <div id="notification-dot" aria-hidden="true"></div>
-          
-          <!-- 알림 드롭다운 -->
-          <div id="notification-dropdown" role="menu" aria-label="알림 목록">
+        <div id="notification-btn" onclick="toggleNotifications()">
+          🔔
+          <div id="notification-dot"></div>
+          <div id="notification-dropdown">
             <div id="notification-header">
               <div id="notification-title">알림</div>
               <div id="notification-badge">0</div>
             </div>
-            <div id="notification-list" role="list"></div>
+            <div id="notification-list"></div>
             <div id="notification-footer">
-              <button id="mark-all-read" 
-                      onclick="markAllAsRead()"
-                      role="button"
-                      tabindex="0">
+              <button id="mark-all-read" onclick="markAllAsRead()">
                 모두 읽음 처리
               </button>
             </div>
           </div>
         </div>
-        
-        <!-- 사용자 프로필 -->
-        <div id="user-profile" 
-             onclick="toggleUserMenu()" 
-             role="button" 
-             tabindex="0"
-             aria-label="사용자 메뉴"
-             aria-haspopup="true"
-             aria-expanded="false"
-             onkeydown="handleButtonKeydown(event, toggleUserMenu)">
-          <div id="user-avatar" aria-hidden="true">👤</div>
-          <div id="user-info" aria-hidden="true">
+        <div id="user-profile" onclick="toggleUserMenu()">
+          <div id="user-avatar">👤</div>
+          <div id="user-info">
             <div id="user-name">게스트</div>
             <div id="user-role">방문자</div>
           </div>
-          
-          <!-- 사용자 드롭다운 -->
-          <div id="user-dropdown" role="menu" aria-label="사용자 메뉴">
+          <div id="user-dropdown">
             <div id="dropdown-user-info">
               <div id="dropdown-user-name">게스트</div>
               <div id="dropdown-user-role">방문자</div>
             </div>
-            <button id="dropdown-item-profile" 
-                    onclick="showProfile()" 
-                    role="menuitem" 
-                    tabindex="0">
-              내 계정
+            <button id="dropdown-item-profile" onclick="showProfile()">내 계정</button>
+            <button id="dropdown-item-settings" onclick="showContent('settings')">
+              <span class="settings-icon">⚙️</span><span>설정</span>
             </button>
-            <button id="dropdown-item-settings" 
-                    onclick="showContent('settings')" 
-                    role="menuitem" 
-                    tabindex="0">
-              <span class="settings-icon" aria-hidden="true">⚙️</span>
-              <span>설정</span>
-            </button>
-            <div id="dropdown-divider" role="separator"></div>
-            <button id="dropdown-item-logout" 
-                    onclick="handleLogout()" 
-                    role="menuitem" 
-                    tabindex="0"
-                    style="color:#ef4444;">
-              <span class="logout-icon" aria-hidden="true">🚪</span>
-              <span>로그아웃</span>
+            <div id="dropdown-divider"></div>
+            <button id="dropdown-item-logout" onclick="handleLogout()" style="color:#ef4444;">
+              <span class="logout-icon">🚪</span><span>로그아웃</span>
             </button>
           </div>
         </div>
@@ -201,272 +118,108 @@
     </div>
   </nav>
 
-  <!-- 모바일 메뉴 -->
-  <div id="mobile-menu" role="menu" aria-label="모바일 메뉴">
-    <div class="nav-item" 
-         onclick="showContent('home'); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'home')">
-      <span class="nav-icon" aria-hidden="true">🏠</span>
-      <span>대시보드</span>
-    </div>
-    <div class="nav-item" 
-         onclick="showContent('buildings'); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'buildings')">
-      <span class="nav-icon" aria-hidden="true">🏢</span>
-      <span>건물 & 시설</span>
-    </div>
-    <div class="nav-item" 
-         onclick="showContent('community'); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'community')">
-      <span class="nav-icon" aria-hidden="true">💬</span>
-      <span>커뮤니티</span>
-    </div>
-    <div class="nav-item" 
-         onclick="showContent('lecture-review'); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'lecture-review')">
-      <span class="nav-icon" aria-hidden="true">⭐</span>
-      <span>강의평가</span>
-    </div>
-    <div class="nav-item" 
-         onclick="showContent('notices'); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'notices')">
-      <span class="nav-icon" aria-hidden="true">📢</span>
-      <span>공지사항</span>
-    </div>
-    <div class="nav-item" 
-         onclick="openTimetablePage(); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'timetable')">
-      <span class="nav-icon" aria-hidden="true">📅</span>
-      <span>내 시간표</span>
-    </div>
-    <div class="nav-item" 
-         onclick="openCalendarPage(); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'calendar')">
-      <span class="nav-icon" aria-hidden="true">🗓️</span>
-      <span>학사일정</span>
-    </div>
-    <div class="nav-item" 
-         onclick="openShuttlePage(); closeMobileMenu();" 
-         role="menuitem" 
-         tabindex="0"
-         onkeydown="handleMobileMenuKeydown(event, 'shuttle')">
-      <span class="nav-icon" aria-hidden="true">🚌</span>
-      <span>셔틀버스</span>
-    </div>
-  </div>
-
-  <!-- 메인 컨테이너 -->
   <div id="main-container">
-    <main id="content-area" role="main">
-      <!-- 대시보드 (홈) -->
+    <main id="content-area">
+      <!-- 대시보드 (홈) - 수정된 부분만 -->
       <div id="homeContent">
-        <header id="content-header-home">
-          <div>
-            <h1 id="title-home">대시보드</h1>
-            <nav id="breadcrumb-home" aria-label="페이지 경로">
-              <span>홈</span><span aria-hidden="true">›</span><span>대시보드</span>
-            </nav>
+        <div id="content-header-home">
+          <h1 id="title-home">대시보드</h1>
+          <div id="breadcrumb-home">
+            <span>홈</span><span>›</span><span>대시보드</span>
           </div>
-        </header>
+        </div>
         
         <!-- 웰컴 섹션 -->
-        <section class="dashboard-welcome" aria-labelledby="welcome-title">
+        <div class="dashboard-welcome">
           <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
-          <h1 class="welcome-title" id="welcome-title">
-            함께 만드는 스마트한<br>연성대학교 캠퍼스
-          </h1>
+          <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
           <p class="welcome-subtitle">
             🎓 언제 어디서나 편리하게, 🤝 학생들과 함께하며<br>
             💡 스마트한 대학생활을 시작해보세요
           </p>
-          <div class="welcome-stats" role="list" aria-label="캠퍼스 통계">
-            <div class="stat-item" role="listitem">
-              <span class="stat-number" aria-label="8547명 이상">8,547+</span>
+          <div class="welcome-stats">
+            <div class="stat-item">
+              <span class="stat-number">8,547+</span>
               <span class="stat-text">활성 사용자</span>
             </div>
-            <div class="stat-item" role="listitem">
-              <span class="stat-number" aria-label="24개">24</span>
+            <div class="stat-item">
+              <span class="stat-number">24</span>
               <span class="stat-text">편의 서비스</span>
             </div>
-            <div class="stat-item" role="listitem">
-              <span class="stat-number" aria-label="98퍼센트">98%</span>
+            <div class="stat-item">
+              <span class="stat-number">98%</span>
               <span class="stat-text">만족도</span>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- 통계 그리드 -->
-        <section id="statsGrid" aria-labelledby="stats-title">
-          <h2 id="stats-title" class="sr-only">캠퍼스 주요 통계</h2>
-          <!-- 통계 카드들이 동적으로 삽입됩니다 -->
-        </section>
+        <div id="statsGrid"></div>
         
         <!-- 서비스 섹션 -->
-        <section class="services-section" aria-labelledby="services-title">
-          <h2 class="services-title" id="services-title">주요 서비스</h2>
-          <div class="services-grid" role="list">
-            <div class="service-card" 
-                 onclick="showContent('buildings')" 
-                 role="button" 
-                 tabindex="0"
-                 onkeydown="handleServiceCardKeydown(event, 'buildings')"
-                 aria-label="건물 및 시설 안내 서비스">
-              <span class="service-icon" aria-hidden="true">🏢</span>
+        <div class="services-section">
+          <h2 class="services-title">주요 서비스</h2>
+          <div class="services-grid">
+            <div class="service-card" onclick="showContent('buildings')">
+              <span class="service-icon">🏢</span>
               <h3 class="service-title">건물 & 시설</h3>
               <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
-              <a href="#" class="service-button" onclick="event.preventDefault()">둘러보기</a>
+              <a href="#" class="service-button">둘러보기</a>
             </div>
             
-            <div class="service-card" 
-                 onclick="showContent('community')" 
-                 role="button" 
-                 tabindex="0"
-                 onkeydown="handleServiceCardKeydown(event, 'community')"
-                 aria-label="커뮤니티 서비스">
-              <span class="service-icon" aria-hidden="true">💬</span>
+            <div class="service-card" onclick="showContent('community')">
+              <span class="service-icon">💬</span>
               <h3 class="service-title">커뮤니티</h3>
               <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
-              <a href="#" class="service-button" onclick="event.preventDefault()">참여하기</a>
+              <a href="#" class="service-button">참여하기</a>
             </div>
             
-            <div class="service-card" 
-                 onclick="showContent('lecture-review')" 
-                 role="button" 
-                 tabindex="0"
-                 onkeydown="handleServiceCardKeydown(event, 'lecture-review')"
-                 aria-label="강의평가 서비스">
-              <span class="service-icon" aria-hidden="true">⭐</span>
+            <div class="service-card" onclick="showContent('lecture-review')">
+              <span class="service-icon">⭐</span>
               <h3 class="service-title">강의평가</h3>
               <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
-              <a href="#" class="service-button" onclick="event.preventDefault()">평가보기</a>
+              <a href="#" class="service-button">평가보기</a>
             </div>
             
-            <div class="service-card" 
-                 onclick="openTimetablePage()" 
-                 role="button" 
-                 tabindex="0"
-                 onkeydown="handleServiceCardKeydown(event, 'timetable')"
-                 aria-label="내 시간표 서비스">
-              <span class="service-icon" aria-hidden="true">📅</span>
+            <div class="service-card" onclick="openTimetablePage()">
+              <span class="service-icon">📅</span>
               <h3 class="service-title">내 시간표</h3>
               <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
-              <a href="#" class="service-button" onclick="event.preventDefault()">관리하기</a>
+              <a href="#" class="service-button">관리하기</a>
             </div>
             
-            <div class="service-card" 
-                 onclick="openShuttlePage()" 
-                 role="button" 
-                 tabindex="0"
-                 onkeydown="handleServiceCardKeydown(event, 'shuttle')"
-                 aria-label="셔틀버스 서비스">
-              <span class="service-icon" aria-hidden="true">🚌</span>
+            <div class="service-card" onclick="openShuttlePage()">
+              <span class="service-icon">🚌</span>
               <h3 class="service-title">셔틀버스</h3>
               <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
-              <a href="#" class="service-button" onclick="event.preventDefault()">확인하기</a>
+              <a href="#" class="service-button">확인하기</a>
             </div>
             
-            <div class="service-card" 
-                 onclick="showContent('notices')" 
-                 role="button" 
-                 tabindex="0"
-                 onkeydown="handleServiceCardKeydown(event, 'notices')"
-                 aria-label="공지사항 서비스">
-              <span class="service-icon" aria-hidden="true">📢</span>
+            <div class="service-card" onclick="showContent('notices')">
+              <span class="service-icon">📢</span>
               <h3 class="service-title">공지사항</h3>
               <p class="service-description">학교의 최신 소식을 확인하세요</p>
-              <a href="#" class="service-button" onclick="event.preventDefault()">보러가기</a>
+              <a href="#" class="service-button">보러가기</a>
             </div>
           </div>
-        </section>
-
-        <!-- 오늘의 시간표 섹션 -->
-        <section id="timetable-section" aria-labelledby="timetable-title">
-          <h2 id="timetable-title">오늘의 시간표</h2>
-          <div id="timetableContent">
-            <!-- 시간표 내용이 동적으로 삽입됩니다 -->
-          </div>
-        </section>
-
-        <!-- 최근 공지사항 섹션 -->
-        <section id="recent-notices-section" aria-labelledby="recent-notices-title">
-          <h2 id="recent-notices-title">최근 공지사항</h2>
-          <div id="recentNotices">
-            <!-- 공지사항 내용이 동적으로 삽입됩니다 -->
-          </div>
-        </section>
-
-        <!-- 인기 강의평가 섹션 -->
-        <section id="popular-reviews-section" aria-labelledby="popular-reviews-title">
-          <h2 id="popular-reviews-title">인기 강의평가</h2>
-          <div id="popularReviews">
-            <!-- 강의평가 내용이 동적으로 삽입됩니다 -->
-          </div>
-        </section>
-
-        <!-- 최신 강의평가 섹션 -->
-        <section id="recent-reviews-section" aria-labelledby="recent-reviews-title">
-          <h2 id="recent-reviews-title">최신 강의평가</h2>
-          <div id="recentReviews">
-            <!-- 강의평가 내용이 동적으로 삽입됩니다 -->
-          </div>
-        </section>
-
-        <!-- 셔틀버스 섹션 -->
-        <section id="shuttle-section" aria-labelledby="shuttle-title">
-          <h2 id="shuttle-title">셔틀버스 정보</h2>
-          <div id="shuttleRoutes">
-            <!-- 셔틀 노선 탭이 동적으로 삽입됩니다 -->
-          </div>
-          <div id="shuttle-status-container">
-            <div id="shuttleStatus">운행 정보 로딩 중...</div>
-            <div id="shuttle-time">--:--</div>
-            <div id="shuttle-desc">--</div>
-          </div>
-        </section>
-
-        <!-- 건물 그리드 섹션 -->
-        <section id="buildings-section" aria-labelledby="buildings-title">
-          <h2 id="buildings-title">주요 건물</h2>
-          <div id="buildingGrid">
-            <!-- 건물 카드들이 동적으로 삽입됩니다 -->
-          </div>
-        </section>
+        </div>
       </div>
       
       <!-- SPA 분리 영역들 -->
-      <div id="buildingsContent" style="display:none;" role="tabpanel" aria-labelledby="nav-buildings"></div>
-      <div id="communityContent" style="display:none;" role="tabpanel" aria-labelledby="nav-community"></div>
-      <div id="lecture-reviewContent" style="display:none;" role="tabpanel" aria-labelledby="nav-lecture-review"></div>
-      <div id="noticesContent" style="display:none;" role="tabpanel" aria-labelledby="nav-notices"></div>
-      <div id="timetableContentPane" style="display:none;" role="tabpanel"></div>
-      <div id="shuttleContentPane" style="display:none;" role="tabpanel"></div>
-      <div id="calendarContentPane" style="display:none;" role="tabpanel"></div>
-      <div id="academic-calendarContentPane" style="display:none;" role="tabpanel"></div>
-      <div id="profileContentPane" style="display:none;" role="tabpanel"></div>
-      <div id="settingsContent" style="display:none;" role="tabpanel" aria-labelledby="nav-settings"></div>
+      <div id="buildingsContent" style="display:none;"></div>
+      <div id="communityContent" style="display:none;"></div>
+      <div id="lecture-reviewContent" style="display:none;"></div>
+      <div id="noticesContent" style="display:none;"></div>
+      <div id="timetableContentPane" style="display:none;"></div>
+      <div id="shuttleContentPane" style="display:none;"></div>
+      <div id="calendarContentPane" style="display:none;"></div>
+      
+      <!-- 새로 추가: 학사일정 페이지 -->
+      <div id="academic-calendarContentPane" style="display:none;"></div>
+      
+      <div id="profileContentPane" style="display:none;"></div>
+      <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
-
-  <!-- 스크린 리더 전용 텍스트 -->
-  <div class="sr-only">
-    <h1>연성대학교 스마트 캠퍼스 - 학생을 위한 통합 서비스 플랫폼</h1>
-  </div>
-
-  <!-- JavaScript 파일들 -->
   <script src="./js/index.js" defer></script>
   <script src="./js/settings.js" defer></script>
   <script src="./js/buildings.js" defer></script>
@@ -480,20 +233,5 @@
   <script src="./js/register.js" defer></script>
   <script src="./js/shuttle.js" defer></script>
   <script src="./js/timetable.js" defer></script>
-
-  <!-- 스크린 리더 전용 스타일 -->
-  <style>
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-  </style>
 </body>
 </html>
