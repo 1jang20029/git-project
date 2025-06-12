@@ -445,9 +445,9 @@
     }
 
     .services-grid {
-      display: grid !important;
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      gap: 24px !important;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
       margin: 0 auto;
       max-width: 1200px;
       width: 100%;
@@ -916,6 +916,9 @@
           <div class="stat-card">
             <span class="stat-card-icon">📊</span>
             <span class="stat-card-number">0</span>
+          <div class="stat-card">
+            <span class="stat-card-icon">📊</span>
+            <span class="stat-card-number">0</span>
             <span class="stat-card-label">오늘 일정<br><small style="color:#3b82f6;">📋 진행중</small></span>
           </div>
         </div>
@@ -923,7 +926,6 @@
         <div class="services-section">
           <h2 class="services-title">주요 서비스</h2>
           <div class="services-grid">
-            <div class="service-card" onclick="showContent('buildings')">
             <div class="service-card" onclick="showContent('buildings')">
               <div>
                 <span class="service-icon">🏢</span>
