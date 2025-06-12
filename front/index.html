@@ -136,9 +136,10 @@
     #nav-controls {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       padding-right: 24px;
       flex-shrink: 0;
+      min-width: 280px;
     }
 
     #search-bar {
@@ -146,9 +147,9 @@
       align-items: center;
       background: #f3f4f6;
       border-radius: 20px;
-      padding: 8px 16px;
-      gap: 8px;
-      width: 240px;
+      padding: 6px 12px;
+      gap: 6px;
+      width: 200px;
       flex-shrink: 0;
     }
 
@@ -498,6 +499,27 @@
       padding: 8px;
     }
 
+    /* 중간 크기 화면 대응 (1024px 이하) */
+    @media (max-width: 1024px) {
+      #main-menu {
+        gap: 2px;
+      }
+      
+      .nav-item {
+        padding: 6px 8px;
+        font-size: 12px;
+        gap: 3px;
+      }
+      
+      #search-bar {
+        width: 160px;
+      }
+      
+      #nav-controls {
+        gap: 8px;
+      }
+    }
+
     /* 태블릿 스타일 (768px 이하) */
     @media (max-width: 768px) {
       #top-nav {
@@ -507,15 +529,17 @@
 
       #nav-brand {
         padding-left: 16px;
+        min-width: auto;
       }
 
       #nav-controls {
         padding-right: 16px;
         gap: 8px;
+        min-width: auto;
       }
 
       #search-bar {
-        width: 180px;
+        width: 140px;
         flex: 1;
       }
 
