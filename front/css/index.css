@@ -800,109 +800,28 @@ body {
 .dashboard-welcome {
   text-align: center;
   margin-bottom: 3rem;
-  padding: 3rem 2rem;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  border-radius: 20px;
+  padding: 2rem;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.dashboard-welcome::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
-  animation: rotate 20s linear infinite;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.welcome-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  position: relative;
-  z-index: 2;
-  animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-10px); }
-  60% { transform: translateY(-5px); }
 }
 
 .welcome-title {
-  font-size: 3rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #f1f5f9, #3b82f6, #8b5cf6);
-  background-size: 200% 200%;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
-  position: relative;
-  z-index: 2;
-  animation: gradientShift 3s ease-in-out infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  margin-bottom: 1rem;
 }
 
 .welcome-subtitle {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #94a3b8;
-  max-width: 700px;
-  margin: 0 auto 2rem;
-  line-height: 1.8;
-  position: relative;
-  z-index: 2;
-}
-
-.welcome-stats {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  margin-top: 2rem;
-  position: relative;
-  z-index: 2;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.stat-item .stat-number {
-  font-size: 2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.stat-item .stat-text {
-  font-size: 0.9rem;
-  color: #64748b;
-  font-weight: 500;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 /* 서비스 섹션 */
@@ -1262,27 +1181,18 @@ body.light-mode #card-title-buildings-map {
 
 /* 라이트 모드 대시보드 스타일 */
 body.light-mode .dashboard-welcome {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-body.light-mode .dashboard-welcome::before {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
-}
-
 body.light-mode .welcome-title {
-  background: linear-gradient(135deg, #1f2937, #3b82f6, #8b5cf6);
-  background-size: 200% 200%;
+  background: linear-gradient(135deg, #1f2937, #6b7280);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 body.light-mode .welcome-subtitle {
-  color: #6b7280;
-}
-
-body.light-mode .stat-item .stat-text {
   color: #6b7280;
 }
 
@@ -1342,11 +1252,7 @@ body.light-mode .service-description {
   }
   
   .welcome-title {
-    font-size: 2.2rem;
-  }
-  
-  .welcome-stats {
-    gap: 2rem;
+    font-size: 2rem;
   }
   
   .services-title {
@@ -1380,12 +1286,7 @@ body.light-mode .service-description {
   }
   
   .dashboard-welcome {
-    padding: 2rem 1rem;
-  }
-  
-  .welcome-stats {
-    flex-direction: column;
-    gap: 1.5rem;
+    padding: 1.5rem;
   }
   
   .service-card {
