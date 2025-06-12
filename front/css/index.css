@@ -10,12 +10,15 @@
 }
 
 html {
-  /* 브라우저 확대/축소 무시하고 고정 크기 유지 */
+  /* 브라우저 확대/축소 완전 무시 */
   zoom: 1 !important;
+  -moz-transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
   transform: scale(1) !important;
   transform-origin: 0 0 !important;
   width: 100% !important;
   height: 100% !important;
+  font-size: 16px !important; /* 기본 폰트 크기 고정 */
 }
 
 body {
@@ -24,11 +27,14 @@ body {
   color: #ffffff;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* 확대/축소 방지 */
+  /* 확대/축소 완전 방지 */
   zoom: 1 !important;
+  -moz-transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
   transform: scale(1) !important;
   transform-origin: 0 0 !important;
-  min-width: 1200px; /* 최소 너비 설정 */
+  min-width: 1400px; /* 최소 너비 설정 */
+  font-size: 16px !important; /* 폰트 크기 고정 */
 }
 
 /* ==================================================
@@ -858,11 +864,11 @@ body {
   display: inline-block;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 8px 24px; /* px로 고정 */
   border-radius: 25px;
-  font-size: 0.9rem;
+  font-size: 14px; /* px로 고정 */
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px; /* px로 고정 */
   position: relative;
   z-index: 2;
   animation: bounce 2s ease-in-out infinite;
