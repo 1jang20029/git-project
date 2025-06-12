@@ -10,44 +10,20 @@
 }
 
 html {
-  /* 브라우저 확대/축소 완전 차단 */
-  zoom: 1 !important;
-  -moz-transform: scale(1) !important;
-  -webkit-transform: scale(1) !important;
-  -ms-transform: scale(1) !important;
-  transform: scale(1) !important;
-  transform-origin: 0 0 !important;
+  /* 브라우저 기본 설정 유지 */
   width: 100% !important;
   height: 100% !important;
-  font-size: 16px !important; /* 기본 폰트 크기 고정 */
-  /* 추가 확대 방지 설정 */
-  -webkit-text-size-adjust: 100% !important;
-  -moz-text-size-adjust: 100% !important;
-  -ms-text-size-adjust: 100% !important;
-  text-size-adjust: 100% !important;
+  font-size: 16px; /* 기본 폰트 크기 */
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #0a0e27;
   color: #ffffff;
-  overflow-x: auto; /* 가로 스크롤 허용으로 변경 */
+  overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* 확대/축소 완전 방지 */
-  zoom: 1 !important;
-  -moz-transform: scale(1) !important;
-  -webkit-transform: scale(1) !important;
-  -ms-transform: scale(1) !important;
-  transform: scale(1) !important;
-  transform-origin: 0 0 !important;
-  width: 1400px !important; /* 고정 너비 */
-  min-width: 1400px !important; /* 최소 너비 설정 */
-  font-size: 16px !important; /* 폰트 크기 고정 */
-  /* 추가 확대 방지 설정 */
-  -webkit-text-size-adjust: 100% !important;
-  -moz-text-size-adjust: 100% !important;
-  -ms-text-size-adjust: 100% !important;
-  text-size-adjust: 100% !important;
+  min-width: 1400px; /* 최소 너비 설정 */
+  font-size: 16px; /* 폰트 크기 고정 */
 }
 
 /* ==================================================

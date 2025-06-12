@@ -24,6 +24,53 @@ let autoLogoutTimer = null;
 // 학과 코드 ↔ 이름 매핑 객체
 const departmentMap = {};
 
+// ─────────── 브라우저 확대/축소에 따른 UI 크기 보정 코드 ───────────
+function maintainUIScale() {
+  // 현재 브라우저 zoom 레벨 감지
+  function getZoomLevel() {
+    return window.devicePixelRatio || 1;
+  }
+
+  // UI 요소들을 zoom 레벨에 반비례하여 스케일링
+  function adjustUIScale() {
+    const zoomLevel = window.innerWidth / window.screen.width;
+    const scale = 1 / zoomLevel;
+    
+    // 모든 주요 UI 요소에 역스케일링 적용
+    const elementsToScale = [
+      '#top-nav',
+      '#content-area',
+      '.dashboard-welcome',
+      '.services-grid',
+      '#statsGrid',
+      '.stat-card',
+      '.service-card'
+    ];
+    
+    elementsToScale.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(element => {
+        if (element) {
+          element.style.transform = `scale(${scale})`;
+          element.style.transformOrigin = 'top left';
+        }
+      });
+    });
+    
+    // 폰트 크기도 조정
+    document.documentElement.style.fontSize = `${16 * scale}px`;
+  }
+
+  // 페이지 로드 시 초기 설정
+  adjustUIScale();
+
+  // resize 이벤트로 zoom 변화 감지
+  window.addEventListener('resize', adjustUIScale);
+  
+  // 주기적으로 체크 (일부 브라우저에서 resize 이벤트가 발생하지 않을 수 있음)
+  setInterval(adjustUIScale, 200);
+}
+
 // ─────────── 외부 페이지 URL 설정 ───────────
 const EXTERNAL_PAGES = {
   timetable: 'pages/list/timetable.html',      // 내 시간표 페이지
@@ -82,6 +129,9 @@ function showStudentServiceDropdown() {
 
 // ─────────── DOMContentLoaded ───────────
 document.addEventListener('DOMContentLoaded', () => {
+  // UI 크기 보정 코드 실행
+  maintainUIScale();
+
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
     showContent(hash);
@@ -684,7 +734,7 @@ function renderShuttleRoutes(routes) {
   });
 }
 
-// ─────────── selectShuttleRoute: 셔틀 노선 선택 및 상태 렌더링 ───────────
+// ─────────── selectShuttleRoute: 셔틀 노선 선택 및 상태 렌더
 async function selectShuttleRoute(routeId, route) {
   try {
     document.querySelectorAll('.route-tab').forEach(tab => tab.classList.remove('active'));
@@ -1381,6 +1431,172 @@ function applyKeyboardShortcuts() {
     }
   });
 }
+
+// ─────────── applyUserShortcuts: 사용자 정의 단축키 적용 ───────────
+function applyUserShortcuts() {
+  document.addEventListener('keydown', e => {
+    const targetTag = e.target.tagName;
+    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
+    resetAutoLogoutTimer();
+    const pressedKey = e.key.toUpperCase();
+    const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
+    const matched = userShortcuts.find(entry => entry.key === pressedKey);
+    if (!matched) return;
+    if (!matched.name) return;
+    e.preventDefault();
+    const label = matched.name.toLowerCase();
+    if (label.includes('대시보드')) { showContent('home'); return; }
+    if (label.includes('건물')) { showContent('buildings'); return; }
+    if (label.includes('커뮤니티')) { showContent('community'); return; }
+    if (label.includes('강의평가')) { showContent('lecture-review'); return; }
+    if (label.includes('공지사항')) { showContent('notices'); return; }
+    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; } // 외부 페이지로 수정
+    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; } // 외부 페이지로 수정
+    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; } // 외부 페이지로 수정
+    if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
+    if (label.includes('설정')) { showContent('settings'); return; }
+    if (label.includes('알림')) { toggleNotifications(); return; }
+    if (label.includes('로그아웃')) { handleLogout(); return; }
+    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        themeToggle.checked = !themeToggle.checked;
+        themeToggle.dispatchEvent(new Event('change'));
+      }
+      return;
+    }
+    if (label.includes('내 위치') || label.includes('위치')) { trackUserLocation(); return; }
+    if (label.includes('확대')) { zoomIn(); return; }
+    if (label.includes('축소')) { zoomOut(); return; }
+    if (label.includes('초기화') || label.includes('리셋')) { resetMapView(); return; }
+    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
+  });
+}
+
+// ─────────── storage 이벤트: 로그인/프로필/테마 갱신 ───────────
+window.addEventListener('storage', event => {
+  if (
+    event.key === 'currentLoggedInUser' ||
+    (event.key && event.key.includes('_profileImage'))
+  ) {
+    checkUserStatus();
+    updateTimetable();
+  }
+  if (event.key === 'lightMode') {
+    const savedMode = localStorage.getItem('lightMode');
+    if (savedMode === 'true') document.body.classList.add('light-mode');
+    else document.body.classList.remove('light-mode');
+  }
+});
+
+// ─────────── pageshow 이벤트: 페이지 복원 시 갱신 ───────────
+window.addEventListener('pageshow', event => {
+  if (event.persisted) {
+    checkUserStatus();
+    updateTimetable();
+  }
+  const savedMode = localStorage.getItem('lightMode');
+  if (savedMode === 'true') document.body.classList.add('light-mode');
+  else document.body.classList.remove('light-mode');
+});
+
+// ─────────── 기존 내부 네비게이션 함수들 (하위 호환성을 위해 유지) ───────────
+function navigateToTimetable() { 
+  console.log('내부 시간표 네비게이션 - 외부 페이지로 리디렉션');
+  openTimetablePage();
+}
+
+function navigateToShuttle() { 
+  console.log('내부 셔틀버스 네비게이션 - 외부 페이지로 리디렉션');
+  openShuttlePage();
+}
+
+function navigateToCalendar() { 
+  console.log('내부 학사일정 네비게이션 - 외부 페이지로 리디렉션');
+  openCalendarPage();
+}
+
+// ─────────── zoomIn, zoomOut, resetMapView ───────────
+function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
+function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
+function resetMapView() {
+  if (naverMap) {
+    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
+    naverMap.setCenter(yeonsung);
+    naverMap.setZoom(16);
+  }
+}
+
+// ─────────── trackUserLocation: 사용자 위치 표시 ───────────
+function trackUserLocation() {
+  if (!navigator.geolocation) {
+    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      if (!naverMap) {
+        showMessage('지도가 초기화되지 않았습니다', 'error', '');
+        return;
+      }
+      const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      if (userMarker) userMarker.setMap(null);
+      userMarker = new naver.maps.Marker({
+        position: userPos,
+        map: naverMap,
+        icon: {
+          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+          anchor: new naver.maps.Point(10, 10)
+        }
+      });
+      naverMap.setCenter(userPos);
+      naverMap.setZoom(17);
+      showMessage('현재 위치를 찾았습니다', 'success', '');
+    },
+    error => {
+      let message = '위치를 찾을 수 없습니다';
+      switch (error.code) {
+        case error.PERMISSION_DENIED:    message = '위치 권한이 거부되었습니다'; break;
+        case error.POSITION_UNAVAILABLE: message = '위치 정보를 사용할 수 없습니다'; break;
+        case error.TIMEOUT:              message = '위치 요청 시간이 초과되었습니다'; break;
+      }
+      showMessage(message, 'error', '');
+    }
+  );
+}
+
+// ─────────── showBuildingOnMap: 메인 페이지 건물 보기 ───────────
+function showBuildingOnMap(buildingId) {
+  showContent('buildings');
+  setTimeout(() => {
+    if (naverMap.refresh) naverMap.refresh();
+  }, 100);
+}
+
+// ─────────── getBuildingDirections: 길찾기 준비 중 ───────────
+function getBuildingDirections(buildingId) {
+  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
+}
+
+// ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
+function viewNoticeDetail(noticeId) {
+  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
+}document.addEventListener('keydown', e => {
+    const targetTag = e.target.tagName;
+    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
+    resetAutoLogoutTimer();
+    const key = e.key.toUpperCase();
+    if (key === (shortcuts.openNotifications || '').toUpperCase()) {
+      e.preventDefault();
+      toggleNotifications();
+      return;
+    }
+    if (key === (shortcuts.goToSettings || '').toUpperCase()) {
+      e.preventDefault();
+      showContent('settings');
+      return;
+    }
+  });
 
 // ─────────── applyUserShortcuts: 사용자 정의 단축키 적용 ───────────
 function applyUserShortcuts() {
