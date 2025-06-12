@@ -1,151 +1,419 @@
-/* reset */
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #fff;
-  color: #1f1f1f;
-  line-height: 1.4;
-}
-a { text-decoration: none; color: inherit; }
-
-/* 상단 네비게이션 */
-.nav-top {
-  display: flex;
-  justify-content: space-between;
-  padding: 16px;
-}
-.nav-link {
-  font-size: 14px;
-  color: #555;
-}
-.nav-link.active {
-  font-weight: 600;
-  color: #000;
+    background-color: #f5f5f5;
+    color: #333;
 }
 
-/* 안내 문구 */
-.notice {
-  text-align: center;
-  padding: 8px 16px;
-  color: #d33;
-  font-size: 14px;
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 로그인 래퍼 */
-.login-wrapper {
-  max-width: 360px;
-  margin: 24px auto;
-  text-align: center;
-}
-.site-title {
-  font-size: 28px;
-  font-weight: 700;
-}
-.site-subtitle {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 24px;
+header {
+    background-color: #c62917;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
 }
 
-/* 폼 스타일 */
-.login-form .form-group {
-  text-align: left;
-  margin-bottom: 16px;
-}
-.login-form label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 14px;
-}
-.login-form input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #f1f5f9;
-  font-size: 14px;
-}
-.password-group .password-wrap {
-  position: relative;
-}
-.eye-btn {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  width: 24px;
-  height: 24px;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-.eye-hidden { display: none; }
-
-/* 옵션 행 */
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  font-size: 14px;
-}
-.find-link {
-  color: #5b39d0;
+.back-button {
+    font-size: 20px;
+    margin-right: 16px;
+    cursor: pointer;
 }
 
-/* 버튼 */
-.btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
-.btn-login {
-  background: #6366f1;
-  color: #fff;
-  margin-bottom: 24px;
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
 }
 
-/* 구분선 */
+.login-container {
+    padding: 32px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.university-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #c62917;
+    margin-bottom: 8px;
+}
+
+.slogan {
+    font-size: 16px;
+    color: #666;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-input:focus {
+    border-color: #c62917;
+    outline: none;
+}
+
+.login-button {
+    width: 100%;
+    padding: 14px;
+    background-color: #c62917;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    margin-top: 16px;
+}
+
+.login-options a {
+    color: #666;
+    text-decoration: none;
+}
+
 .separator {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 16px 0;
-  color: #888;
-  font-size: 14px;
+    display: flex;
+    align-items: center;
+    margin: 32px 0;
+    color: #888;
 }
-.separator::before,
-.separator::after {
-  content: '';
-  flex: 1;
-  border-top: 1px solid #ddd;
-}
-.separator::before { margin-right: 8px; }
-.separator::after { margin-left: 8px; }
 
-/* 소셜 로그인 버튼 */
-.social-login .btn {
-  margin-bottom: 12px;
-  font-weight: 600;
+.separator-line {
+    flex: 1;
+    height: 1px;
+    background-color: #ddd;
 }
-.btn-naver   { background: #2db400; color: #fff; }
-.btn-kakao   { background: #fee500; color: #3c1e1e; }
-.btn-google  { background: #4285f4; color: #fff; }
 
-/* 회원가입 링크 */
-.register-link {
-  margin-top: 16px;
-  font-size: 14px;
+.separator-text {
+    padding: 0 16px;
+    font-size: 14px;
 }
-.register-link a {
-  color: #5b39d0;
-  font-weight: 600;
+
+.social-login {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.social-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-decoration: none;
+}
+
+.social-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.naver-button {
+    background-color: #03C75A;
+    color: white;
+}
+
+.kakao-button {
+    background-color: #FEE500;
+    color: #3A1D1D;
+}
+
+.google-button {
+    background-color: white;
+    color: #4285F4;
+    border: 1px solid #ddd;
+}
+
+.sign-link {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 14px;
+    color: #666;
+}
+
+.sign-link a {
+    color: #c62917;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* 네이버 로그인 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 0;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideDown 0.3s;
+    overflow: hidden;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    background-color: #03C75A;
+    color: white;
+    padding: 16px 20px;
+    position: relative;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.modal-title:before {
+    content: "N";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    height: 28px;
+    background-color: white;
+    color: #03C75A;
+    border-radius: 50%;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.close-modal {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.close-modal:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-form-group {
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.modal-form-group .form-label {
+    color: #333;
+    font-weight: 500;
+}
+
+.modal-form-group .form-input {
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    transition: all 0.3s;
+}
+
+.modal-form-group .form-input:focus {
+    border-color: #03C75A;
+    background-color: white;
+    box-shadow: 0 0 0 2px rgba(3, 199, 90, 0.2);
+}
+
+.input-icon {
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    color: #aaa;
+}
+
+.modal-footer {
+    padding: 16px 20px;
+    background-color: #f5f5f5;
+    text-align: right;
+    border-top: 1px solid #eee;
+}
+
+.modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.modal-button.cancel {
+    background-color: #eee;
+    color: #666;
+    margin-right: 10px;
+}
+
+.modal-button.cancel:hover {
+    background-color: #ddd;
+}
+
+.modal-button.login {
+    background-color: #03C75A;
+    color: white;
+}
+
+.modal-button.login:hover {
+    background-color: #02b050;
+}
+
+.naver-benefits {
+    margin-top: 16px;
+    background-color: #f5f9f7;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.benefits-title {
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #03C75A;
+}
+
+/* 자동 입력 체크박스 */
+.auto-login {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.auto-login input {
+    margin-right: 8px;
+}
+
+.auto-login label {
+    font-size: 13px;
+    color: #666;
+}
+
+/* 저장소 접근 관련 알림 */
+.storage-notice {
+    background-color: #fffde7;
+    border: 1px solid #fff9c4;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #5d4037;
+    margin-bottom: 15px;
+    display: none;
+}
+
+
+/* 비밀번호 입력 컨테이너 스타일 */
+.password-input-container {
+    position: relative;
+    width: 100%;
+}
+
+/* 비밀번호 토글 스팬 스타일 */
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+
+/* 눈 아이콘 스타일 */
+.eye-icon {
+    width: 24px;
+    height: 24px;
+    stroke: #666;
+    stroke-width: 2;
+}
+
+.password-toggle:hover .eye-icon {
+    stroke: #000;
+}
+
+/* 눈 아이콘이 있는 경우 패딩 조정 */
+.password-input-container .form-input {
+    padding-right: 40px;
 }
