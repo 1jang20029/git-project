@@ -1,6 +1,6 @@
 /* =============================================================================
    index.css
-   공통 스타일 (다크 모드 기본) - 화면 잘림 방지 버전
+   공통 스타일 (다크 모드 기본) - 화면 잘림 완전 해결 버전
    ============================================================================= */
 
 * {
@@ -9,35 +9,37 @@
   box-sizing: border-box;
 }
 
-/* 1. HTML/Body 뷰포트 설정 수정 */
+/* 뷰포트 설정 - 브라우저 확대/축소에 대응 */
 html {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden; /* 가로 스크롤 방지 */
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  /* 브라우저 줌에 관계없이 뷰포트 기준으로 스케일링 */
+  zoom: 1;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #0a0e27;
   color: #ffffff;
-  overflow-x: hidden; /* 가로 스크롤 방지 */
+  overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* 기본 폰트 크기를 vw 단위로 조정하여 반응형으로 만들기 */
-  font-size: calc(14px + 0.2vw); /* 뷰포트 너비에 따라 조정 */
-  width: 100%;
+  /* 뷰포트 기준 폰트 크기 - 화면 너비에 비례 */
+  font-size: clamp(12px, 1.2vw, 18px);
+  width: 100vw;
   min-height: 100vh;
   position: relative;
 }
 
 /* ==================================================
-   상단 네비게이션 바 (#top-nav) - 반응형 조정
+   상단 네비게이션 바 (#top-nav) - 뷰포트 기준 크기
    ================================================== */
 #top-nav {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  /* 패딩을 vw 단위로 조정 */
-  padding: calc(12px + 0.3vw) calc(16px + 1vw);
+  /* 뷰포트 기준 패딩 - 화면 크기에 비례 */
+  padding: clamp(8px, 1vh, 16px) clamp(12px, 2vw, 32px);
   position: fixed;
   top: 0;
   left: 0;
@@ -46,60 +48,58 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* 높이를 vh 단위로 조정 */
-  height: calc(60px + 1.5vh);
-  max-height: 90px; /* 최대 높이 제한 */
-  min-height: 60px; /* 최소 높이 보장 */
+  /* 뷰포트 기준 높이 - 화면 높이에 비례 */
+  height: clamp(50px, 8vh, 80px);
   transition: all 0.3s ease;
-  width: 100%;
+  width: 100vw;
   box-sizing: border-box;
 }
 
-/* 로고 + 타이틀 - 반응형 조정 */
+/* 로고 + 타이틀 */
 #nav-brand {
   display: flex;
   align-items: center;
-  gap: calc(8px + 0.2vw);
-  /* 폰트 크기를 vw 단위로 조정 */
-  font-size: calc(16px + 0.3vw);
+  gap: clamp(6px, 0.5vw, 12px);
+  /* 뷰포트 기준 폰트 크기 */
+  font-size: clamp(14px, 1.8vw, 24px);
   font-weight: 700;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   white-space: nowrap;
-  flex-shrink: 0; /* 축소 방지 */
+  flex-shrink: 0;
 }
 
 /* =========================
-   상단 메인 메뉴 (가로) - 반응형 조정
+   상단 메인 메뉴 (가로)
    ========================= */
 #main-menu {
   display: flex;
   align-items: center;
   list-style: none;
-  margin-left: calc(16px + 1vw);
-  gap: calc(8px + 0.5vw);
-  flex-wrap: nowrap; /* 줄바꿈 방지 */
+  margin-left: clamp(12px, 2vw, 32px);
+  gap: clamp(6px, 1vw, 16px);
+  flex-wrap: nowrap;
 }
 
 #main-menu .nav-item {
   display: flex;
   align-items: center;
-  gap: calc(4px + 0.2vw);
-  padding: calc(6px + 0.2vw) calc(8px + 0.5vw);
+  gap: clamp(3px, 0.4vw, 8px);
+  padding: clamp(4px, 0.6vh, 10px) clamp(6px, 1vw, 16px);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  position: relative; /* 드롭다운 위치 기준 */
-  min-height: calc(32px + 0.5vh);
+  position: relative;
+  height: clamp(28px, 4vh, 40px);
   white-space: nowrap;
-  flex-shrink: 0; /* 축소 방지 */
-  flex-grow: 0; /* 확대 방지 */
-  font-size: calc(12px + 0.2vw);
+  flex-shrink: 0;
+  flex-grow: 0;
+  font-size: clamp(11px, 1.2vw, 16px);
 }
 
 #main-menu .nav-item:hover {
@@ -124,19 +124,19 @@ body {
 }
 
 #main-menu .nav-icon {
-  font-size: calc(14px + 0.2vw);
+  font-size: clamp(12px, 1.4vw, 20px);
   display: inline-block;
-  width: calc(20px + 0.2vw);
+  width: clamp(16px, 1.8vw, 24px);
   text-align: center;
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
-  flex-shrink: 0; /* 축소 방지 */
+  flex-shrink: 0;
 }
 
 /* =========================
-   학생서비스 드롭다운 메뉴 - 반응형 조정
+   학생서비스 드롭다운 메뉴
    ========================= */
 #nav-student-services .dropdown-menu {
   position: absolute;
@@ -146,8 +146,8 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  min-width: calc(160px + 2vw);
-  padding: calc(6px + 0.2vw) 0;
+  min-width: clamp(140px, 20vw, 200px);
+  padding: clamp(4px, 0.5vh, 8px) 0;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   display: none;
   z-index: 1100;
@@ -160,13 +160,13 @@ body {
 #nav-student-services .dropdown-item {
   display: flex;
   align-items: center;
-  gap: calc(6px + 0.2vw);
-  padding: calc(6px + 0.2vw) calc(12px + 0.5vw);
+  gap: clamp(4px, 0.6vw, 8px);
+  padding: clamp(4px, 0.6vh, 8px) clamp(8px, 1.2vw, 16px);
   cursor: pointer;
   transition: background 0.2s ease;
   color: #f1f5f9;
-  font-size: calc(12px + 0.1vw);
-  min-height: calc(28px + 0.5vh);
+  font-size: clamp(10px, 1.1vw, 14px);
+  height: clamp(24px, 3.5vh, 32px);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -177,8 +177,8 @@ body {
 }
 
 #nav-student-services .dropdown-item .nav-icon {
-  font-size: calc(14px + 0.1vw);
-  width: calc(18px + 0.1vw);
+  font-size: clamp(11px, 1.2vw, 16px);
+  width: clamp(14px, 1.6vw, 20px);
   text-align: center;
   background: none;
   -webkit-background-clip: unset;
@@ -188,29 +188,29 @@ body {
 }
 
 /* =========================
-   상단 빠른 접근 메뉴 (가로) - 반응형 조정
+   상단 빠른 접근 메뉴 (가로)
    ========================= */
 #quick-menu {
   display: flex;
   align-items: center;
   list-style: none;
-  margin-left: calc(12px + 0.5vw);
-  gap: calc(6px + 0.3vw);
+  margin-left: clamp(8px, 1.2vw, 24px);
+  gap: clamp(4px, 0.8vw, 12px);
 }
 
 #quick-menu .quick-item {
   display: flex;
   align-items: center;
-  gap: calc(3px + 0.1vw);
-  padding: calc(4px + 0.1vw) calc(8px + 0.3vw);
+  gap: clamp(2px, 0.3vw, 4px);
+  padding: clamp(3px, 0.4vh, 6px) clamp(6px, 0.8vw, 12px);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  font-size: calc(11px + 0.1vw);
-  min-height: calc(26px + 0.3vh);
+  font-size: clamp(9px, 1vw, 14px);
+  height: clamp(22px, 3vh, 28px);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -221,23 +221,23 @@ body {
 }
 
 #quick-menu .quick-item .nav-icon {
-  font-size: calc(13px + 0.1vw);
-  width: calc(16px + 0.1vw);
+  font-size: clamp(10px, 1.1vw, 16px);
+  width: clamp(12px, 1.4vw, 20px);
   text-align: center;
   flex-shrink: 0;
 }
 
 /* =========================
-   검색창 / 알림 / 유저 메뉴 - 반응형 조정
+   검색창 / 알림 / 유저 메뉴
    ========================= */
 #nav-controls {
   display: flex;
   align-items: center;
-  gap: calc(12px + 0.5vw);
-  flex-shrink: 0; /* 축소 방지 */
+  gap: clamp(8px, 1.2vw, 16px);
+  flex-shrink: 0;
 }
 
-/* 검색창 - 반응형 조정 */
+/* 검색창 */
 #search-bar {
   position: relative;
   display: flex;
@@ -248,17 +248,13 @@ body {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  padding: calc(8px + 0.2vw) calc(12px + 0.3vw) calc(8px + 0.2vw) calc(36px + 0.8vw);
-  /* 너비를 vw 단위로 조정하되 최대/최소 제한 */
-  width: calc(200px + 8vw);
-  max-width: 350px;
-  min-width: 180px;
+  padding: clamp(6px, 0.8vh, 12px) clamp(8px, 1.2vw, 16px) clamp(6px, 0.8vh, 12px) clamp(24px, 3.5vw, 40px);
+  /* 검색창 너비를 뷰포트에 비례하여 조정 */
+  width: clamp(120px, 20vw, 300px);
   color: #f1f5f9;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.1vw, 14px);
   transition: all 0.3s ease;
-  height: calc(32px + 0.8vh);
-  max-height: 50px;
-  min-height: 36px;
+  height: clamp(28px, 4.5vh, 44px);
   box-sizing: border-box;
 }
 
@@ -271,16 +267,16 @@ body {
 
 #search-icon {
   position: absolute;
-  left: calc(12px + 0.3vw);
+  left: clamp(8px, 1.2vw, 16px);
   color: #94a3b8;
-  font-size: calc(14px + 0.1vw);
+  font-size: clamp(11px, 1.2vw, 16px);
 }
 
-/* 알림 버튼 - 반응형 조정 */
+/* 알림 버튼 */
 #user-menu {
   display: flex;
   align-items: center;
-  gap: calc(12px + 0.3vw);
+  gap: clamp(8px, 1vw, 16px);
   position: relative;
 }
 
@@ -288,17 +284,13 @@ body {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  padding: calc(8px + 0.2vw);
+  padding: clamp(6px, 0.8vw, 12px);
   color: #94a3b8;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  width: calc(32px + 0.8vw);
-  height: calc(32px + 0.8vh);
-  max-width: 48px;
-  max-height: 48px;
-  min-width: 36px;
-  min-height: 36px;
+  width: clamp(24px, 3.5vw, 44px);
+  height: clamp(24px, 3.5vh, 44px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -313,15 +305,15 @@ body {
 
 #notification-dot {
   position: absolute;
-  top: calc(2px + 0.1vw);
-  right: calc(2px + 0.1vw);
-  width: calc(6px + 0.1vw);
-  height: calc(6px + 0.1vw);
+  top: clamp(1px, 0.2vw, 4px);
+  right: clamp(1px, 0.2vw, 4px);
+  width: clamp(4px, 0.6vw, 8px);
+  height: clamp(4px, 0.6vw, 8px);
   background: #ef4444;
   border-radius: 50%;
 }
 
-/* 알림 드롭다운 - 반응형 조정 */
+/* 알림 드롭다운 */
 #notification-dropdown {
   position: absolute;
   top: 100%;
@@ -331,13 +323,13 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
   padding: 0;
-  min-width: calc(300px + 4vw);
-  max-width: calc(350px + 6vw);
+  min-width: clamp(250px, 35vw, 400px);
+  max-width: 90vw;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   z-index: 1100;
   display: none;
-  margin-top: calc(6px + 0.2vw);
-  max-height: calc(400px + 10vh);
+  margin-top: clamp(4px, 0.6vh, 8px);
+  max-height: clamp(300px, 60vh, 500px);
   overflow-y: auto;
 }
 
@@ -347,7 +339,7 @@ body {
 }
 
 #notification-header {
-  padding: calc(12px + 0.5vw) calc(16px + 0.8vw);
+  padding: clamp(8px, 1.2vw, 16px) clamp(12px, 1.8vw, 24px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   display: flex;
   justify-content: space-between;
@@ -355,7 +347,7 @@ body {
 }
 
 #notification-title {
-  font-size: calc(14px + 0.2vw);
+  font-size: clamp(12px, 1.4vw, 16px);
   font-weight: 600;
   color: #f1f5f9;
 }
@@ -363,19 +355,19 @@ body {
 #notification-badge {
   background: #ef4444;
   color: white;
-  padding: calc(2px + 0.1vw) calc(6px + 0.2vw);
+  padding: clamp(2px, 0.3vw, 4px) clamp(4px, 0.6vw, 8px);
   border-radius: 10px;
-  font-size: calc(10px + 0.1vw);
+  font-size: clamp(8px, 1vw, 12px);
   font-weight: 600;
 }
 
 #notification-list {
-  max-height: calc(300px + 8vh);
+  max-height: clamp(200px, 40vh, 400px);
   overflow-y: auto;
 }
 
 .notification-item {
-  padding: calc(12px + 0.5vw) calc(16px + 0.8vw);
+  padding: clamp(8px, 1.2vw, 16px) clamp(12px, 1.8vw, 24px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -398,39 +390,39 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: calc(6px + 0.2vw);
+  margin-bottom: clamp(4px, 0.6vw, 8px);
 }
 
 .notification-category {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
-  padding: calc(2px + 0.1vw) calc(6px + 0.2vw);
+  padding: clamp(1px, 0.2vw, 4px) clamp(3px, 0.5vw, 8px);
   border-radius: 8px;
-  font-size: calc(8px + 0.1vw);
+  font-size: clamp(7px, 0.9vw, 12px);
   font-weight: 600;
 }
 
 .notification-time {
   color: #94a3b8;
-  font-size: calc(10px + 0.1vw);
+  font-size: clamp(8px, 1vw, 12px);
 }
 
 .notification-content {
   color: #f1f5f9;
   font-weight: 500;
-  margin-bottom: calc(3px + 0.1vw);
+  margin-bottom: clamp(2px, 0.3vw, 4px);
   line-height: 1.4;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.1vw, 14px);
 }
 
 .notification-summary {
   color: #94a3b8;
-  font-size: calc(11px + 0.1vw);
+  font-size: clamp(9px, 1vw, 13px);
   line-height: 1.3;
 }
 
 #notification-footer {
-  padding: calc(12px + 0.5vw) calc(16px + 0.8vw);
+  padding: clamp(8px, 1.2vw, 16px) clamp(12px, 1.8vw, 24px);
   border-top: 1px solid rgba(148, 163, 184, 0.1);
   text-align: center;
 }
@@ -439,11 +431,11 @@ body {
   background: none;
   border: 1px solid rgba(148, 163, 184, 0.3);
   color: #94a3b8;
-  padding: calc(6px + 0.2vw) calc(12px + 0.4vw);
+  padding: clamp(4px, 0.6vw, 8px) clamp(8px, 1.2vw, 16px);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: calc(11px + 0.1vw);
+  font-size: clamp(9px, 1vw, 13px);
 }
 
 #mark-all-read:hover {
@@ -453,21 +445,20 @@ body {
 }
 
 /* =========================
-   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운) - 반응형 조정
+   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운)
    ========================= */
 #user-profile {
   display: flex;
   align-items: center;
-  gap: calc(8px + 0.3vw);
+  gap: clamp(4px, 0.8vw, 12px);
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  padding: calc(6px + 0.2vw) calc(12px + 0.4vw);
+  padding: clamp(4px, 0.6vh, 8px) clamp(6px, 1vw, 16px);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  min-height: calc(32px + 0.8vh);
-  max-height: calc(48px + 1vh);
+  height: clamp(24px, 3.5vh, 44px);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -478,13 +469,9 @@ body {
 }
 
 #user-avatar {
-  font-size: calc(14px + 0.2vw);
-  width: calc(22px + 0.4vw);
-  height: calc(22px + 0.4vw);
-  max-width: 32px;
-  max-height: 32px;
-  min-width: 20px;
-  min-height: 20px;
+  font-size: clamp(12px, 1.4vw, 18px);
+  width: clamp(16px, 2.2vw, 28px);
+  height: clamp(16px, 2.2vw, 28px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -499,15 +486,15 @@ body {
 
 #user-name {
   font-weight: 600;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.1vw, 14px);
 }
 
 #user-role {
-  font-size: calc(10px + 0.1vw);
+  font-size: clamp(8px, 1vw, 12px);
   color: #94a3b8;
 }
 
-/* "내 계정", "설정", "로그아웃" 드롭다운 영역 - 반응형 조정 */
+/* "내 계정", "설정", "로그아웃" 드롭다운 영역 */
 #user-dropdown {
   position: absolute;
   top: 100%;
@@ -516,12 +503,12 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  padding: calc(6px + 0.2vw) 0;
-  min-width: calc(180px + 2vw);
+  padding: clamp(4px, 0.6vw, 8px) 0;
+  min-width: clamp(150px, 22vw, 200px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   z-index: 1100;
   display: none;
-  margin-top: calc(6px + 0.2vw);
+  margin-top: clamp(4px, 0.6vh, 8px);
 }
 
 #user-dropdown.show {
@@ -531,20 +518,20 @@ body {
 
 /* 드롭다운 상단 유저 정보 */
 #dropdown-user-info {
-  padding: calc(12px + 0.5vw);
+  padding: clamp(8px, 1.2vw, 16px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  margin-bottom: calc(6px + 0.2vw);
+  margin-bottom: clamp(4px, 0.6vw, 8px);
 }
 
 #dropdown-user-name {
   font-weight: 600;
   color: #f1f5f9;
-  margin-bottom: calc(3px + 0.1vw);
-  font-size: calc(12px + 0.1vw);
+  margin-bottom: clamp(2px, 0.3vw, 4px);
+  font-size: clamp(10px, 1.1vw, 14px);
 }
 
 #dropdown-user-role {
-  font-size: calc(11px + 0.1vw);
+  font-size: clamp(9px, 1vw, 13px);
   color: #94a3b8;
 }
 
@@ -552,12 +539,12 @@ body {
 #dropdown-item-profile {
   display: block;
   width: 100%;
-  padding: calc(8px + 0.3vw) calc(12px + 0.5vw);
+  padding: clamp(6px, 0.8vw, 12px) clamp(8px, 1.2vw, 16px);
   color: #f1f5f9;
   background: none;
   border: none;
   text-align: left;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.1vw, 14px);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -571,8 +558,8 @@ body {
 #dropdown-item-settings {
   display: flex;
   align-items: center;
-  gap: calc(8px + 0.3vw);
-  padding: calc(8px + 0.3vw) calc(12px + 0.5vw);
+  gap: clamp(4px, 0.8vw, 12px);
+  padding: clamp(6px, 0.8vw, 12px) clamp(8px, 1.2vw, 16px);
   color: #f1f5f9;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -580,7 +567,7 @@ body {
   background: none;
   width: 100%;
   text-align: left;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.1vw, 14px);
 }
 
 #dropdown-item-settings:hover {
@@ -592,8 +579,8 @@ body {
 #dropdown-item-logout {
   display: flex;
   align-items: center;
-  gap: calc(8px + 0.3vw);
-  padding: calc(8px + 0.3vw) calc(12px + 0.5vw);
+  gap: clamp(4px, 0.8vw, 12px);
+  padding: clamp(6px, 0.8vw, 12px) clamp(8px, 1.2vw, 16px);
   color: #f1f5f9;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -601,7 +588,7 @@ body {
   background: none;
   width: 100%;
   text-align: left;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.1vw, 14px);
 }
 
 #dropdown-item-logout:hover {
@@ -613,25 +600,25 @@ body {
 #dropdown-divider {
   height: 1px;
   background: rgba(148, 163, 184, 0.1);
-  margin: calc(6px + 0.2vw) 0;
+  margin: clamp(4px, 0.6vw, 8px) 0;
 }
 
 /* ==================================================
-   메인 컨텐츠 영역 - 반응형 조정
+   메인 컨텐츠 영역
    ================================================== */
 #main-container {
-  /* 상단 네비 높이만큼 띄워줌 - 반응형 조정 */
-  margin-top: calc(60px + 1.5vh);
-  width: 100%;
+  /* 상단 네비 높이만큼 띄워줌 */
+  margin-top: clamp(50px, 8vh, 80px);
+  width: 100vw;
   overflow-x: hidden;
 }
 
 #content-area {
   flex: 1;
-  padding: calc(24px + 1vw);
+  padding: clamp(16px, 3vw, 32px);
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   transition: all 0.3s ease;
-  width: 100%;
+  width: 100vw;
   box-sizing: border-box;
 }
 
@@ -667,7 +654,7 @@ body {
 #content-header-settings {
   display: flex;
   align-items: center;
-  margin-bottom: calc(24px + 1vw);
+  margin-bottom: clamp(16px, 3vw, 32px);
 }
 
 #content-header-home h1,
@@ -680,7 +667,7 @@ body {
 #content-header-calendar-pane h1,
 #content-header-profile-pane h1,
 #content-header-settings h1 {
-  font-size: calc(24px + 0.8vw);
+  font-size: clamp(20px, 4vw, 32px);
   font-weight: 700;
   background: linear-gradient(135deg, #f1f5f9, #94a3b8);
   -webkit-background-clip: text;
@@ -700,9 +687,9 @@ body {
 #breadcrumb-settings {
   display: flex;
   align-items: center;
-  gap: calc(6px + 0.2vw);
-  margin-top: calc(6px + 0.2vw);
-  font-size: calc(12px + 0.1vw);
+  gap: clamp(4px, 0.6vw, 8px);
+  margin-top: clamp(4px, 0.6vw, 8px);
+  font-size: clamp(10px, 1.2vw, 14px);
   color: #64748b;
 }
 
@@ -713,8 +700,8 @@ body {
 #dashboardGrid-lecture-review,
 #buildingGrid {
   display: grid;
-  gap: calc(16px + 0.8vw);
-  margin-bottom: calc(24px + 1vw);
+  gap: clamp(12px, 2vw, 24px);
+  margin-bottom: clamp(16px, 3vw, 32px);
 }
 
 #statsGrid {
@@ -722,7 +709,7 @@ body {
 }
 
 #buildingGrid {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(clamp(250px, 30vw, 350px), 1fr));
 }
 
 /* 카드, 통계 박스 등 기본 스타일 */
@@ -735,7 +722,7 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
-  padding: calc(16px + 0.8vw);
+  padding: clamp(12px, 2vw, 24px);
   transition: all 0.3s ease;
 }
 
@@ -752,18 +739,18 @@ body {
 /* 숫자/레이블 스타일 */
 .stat-number,
 .activity-number {
-  font-size: calc(32px + 0.8vw);
+  font-size: clamp(24px, 4vw, 40px);
   font-weight: 800;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: calc(6px + 0.2vw);
+  margin-bottom: clamp(4px, 0.6vw, 8px);
 }
 
 .stat-label,
 .activity-label {
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.2vw, 14px);
   color: #94a3b8;
   font-weight: 500;
 }
@@ -773,17 +760,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: calc(12px + 0.4vw);
+  margin-bottom: clamp(8px, 1.2vw, 16px);
 }
 
 #card-title-buildings-map {
-  font-size: calc(14px + 0.2vw);
+  font-size: clamp(12px, 1.6vw, 20px);
   font-weight: 600;
   color: #f1f5f9;
 }
 
 #card-icon-buildings-map {
-  font-size: calc(18px + 0.4vw);
+  font-size: clamp(16px, 2vw, 24px);
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
@@ -796,27 +783,28 @@ body {
 }
 
 .building-name {
-  font-size: calc(16px + 0.2vw);
+  font-size: clamp(14px, 1.8vw, 18px);
   font-weight: 600;
   color: #f1f5f9;
-  margin-bottom: calc(6px + 0.2vw);
+  margin-bottom: clamp(4px, 0.6vw, 8px);
 }
 
 .building-desc {
   color: #94a3b8;
-  margin-bottom: calc(16px + 0.8vw);
+  margin-bottom: clamp(12px, 2vw, 24px);
   line-height: 1.5;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.2vw, 14px);
 }
 
 .building-actions {
   display: flex;
-  gap: calc(8px + 0.3vw);
+  gap: clamp(6px, 1vw, 12px);
+  flex-wrap: wrap;
 }
 
-/* 버튼 공통 스타일 - 반응형 조정 */
+/* 버튼 공통 스타일 */
 .btn {
-  padding: calc(8px + 0.3vw) calc(16px + 0.6vw);
+  padding: clamp(6px, 1vw, 12px) clamp(12px, 2vw, 24px);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -826,8 +814,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: calc(6px + 0.2vw);
-  font-size: calc(12px + 0.1vw);
+  gap: clamp(4px, 0.6vw, 8px);
+  font-size: clamp(10px, 1.2vw, 14px);
 }
 
 .btn-primary {
@@ -860,25 +848,25 @@ body {
 /* 빈 상태 메시지 */
 .empty-state {
   text-align: center;
-  padding: calc(32px + 1.6vw) calc(12px + 0.4vw);
+  padding: clamp(24px, 4vw, 48px) clamp(8px, 1.2vw, 16px);
   color: #94a3b8;
 }
 
 .empty-state h3 {
-  font-size: calc(16px + 0.2vw);
-  margin-bottom: calc(6px + 0.2vw);
+  font-size: clamp(14px, 1.8vw, 18px);
+  margin-bottom: clamp(4px, 0.6vw, 8px);
   color: #64748b;
 }
 
 /* ==================================================
-   대시보드 전용 스타일 추가 - 반응형 조정
+   대시보드 전용 스타일 추가
    ================================================== */
 
 /* 웰컴 섹션 */
 .dashboard-welcome {
   text-align: center;
-  margin-bottom: calc(32px + 1.6vw);
-  padding: calc(32px + 1.6vw) calc(24px + 1.2vw);
+  margin-bottom: clamp(24px, 4vw, 48px);
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 32px);
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
   border-radius: 20px;
   border: 1px solid rgba(148, 163, 184, 0.1);
@@ -906,11 +894,11 @@ body {
   display: inline-block;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
-  padding: calc(6px + 0.2vw) calc(16px + 0.8vw);
+  padding: clamp(4px, 0.8vw, 8px) clamp(12px, 2vw, 24px);
   border-radius: 25px;
-  font-size: calc(12px + 0.2vw);
+  font-size: clamp(10px, 1.4vw, 14px);
   font-weight: 600;
-  margin-bottom: calc(16px + 0.8vw);
+  margin-bottom: clamp(12px, 2vw, 24px);
   position: relative;
   z-index: 2;
   animation: bounce 2s ease-in-out infinite;
@@ -923,14 +911,14 @@ body {
 }
 
 .welcome-title {
-  font-size: calc(32px + 1.6vw);
+  font-size: clamp(24px, 6vw, 48px);
   font-weight: 800;
   background: linear-gradient(135deg, #f1f5f9, #3b82f6, #8b5cf6);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: calc(16px + 0.8vw);
+  margin-bottom: clamp(12px, 2vw, 24px);
   line-height: 1.2;
   position: relative;
   z-index: 2;
@@ -943,10 +931,10 @@ body {
 }
 
 .welcome-subtitle {
-  font-size: calc(14px + 0.4vw);
+  font-size: clamp(12px, 1.8vw, 18px);
   color: #94a3b8;
   max-width: 700px;
-  margin: 0 auto calc(24px + 1.2vw);
+  margin: 0 auto clamp(16px, 3vw, 32px);
   line-height: 1.8;
   position: relative;
   z-index: 2;
@@ -955,8 +943,8 @@ body {
 .welcome-stats {
   display: flex;
   justify-content: center;
-  gap: calc(32px + 1.6vw);
-  margin-top: calc(24px + 1.2vw);
+  gap: clamp(16px, 4vw, 48px);
+  margin-top: clamp(16px, 3vw, 32px);
   position: relative;
   z-index: 2;
   flex-wrap: wrap;
@@ -966,11 +954,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: calc(6px + 0.2vw);
+  gap: clamp(4px, 0.6vw, 8px);
 }
 
 .stat-item .stat-number {
-  font-size: calc(24px + 0.8vw);
+  font-size: clamp(20px, 3vw, 32px);
   font-weight: 800;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
@@ -979,28 +967,28 @@ body {
 }
 
 .stat-item .stat-text {
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.2vw, 14px);
   color: #64748b;
   font-weight: 500;
 }
 
 /* 서비스 섹션 */
 .services-section {
-  margin-top: calc(32px + 1.6vw);
+  margin-top: clamp(24px, 4vw, 48px);
 }
 
 .services-title {
-  font-size: calc(20px + 0.8vw);
+  font-size: clamp(18px, 3vw, 28px);
   font-weight: 600;
   color: #f1f5f9;
   text-align: center;
-  margin-bottom: calc(24px + 1.2vw);
+  margin-bottom: clamp(16px, 3vw, 32px);
 }
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: calc(16px + 0.8vw);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25vw, 300px), 1fr));
+  gap: clamp(12px, 2vw, 24px);
 }
 
 .service-card {
@@ -1008,7 +996,7 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
-  padding: calc(24px + 1.2vw);
+  padding: clamp(16px, 3vw, 32px);
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -1022,22 +1010,22 @@ body {
 }
 
 .service-icon {
-  font-size: calc(32px + 1.2vw);
-  margin-bottom: calc(12px + 0.4vw);
+  font-size: clamp(24px, 4vw, 40px);
+  margin-bottom: clamp(8px, 1.2vw, 16px);
   display: block;
 }
 
 .service-title {
-  font-size: calc(16px + 0.2vw);
+  font-size: clamp(14px, 1.8vw, 18px);
   font-weight: 600;
   color: #f1f5f9;
-  margin-bottom: calc(6px + 0.2vw);
+  margin-bottom: clamp(4px, 0.6vw, 8px);
 }
 
 .service-description {
   color: #94a3b8;
-  font-size: calc(12px + 0.1vw);
-  margin-bottom: calc(16px + 0.8vw);
+  font-size: clamp(10px, 1.2vw, 14px);
+  margin-bottom: clamp(12px, 2vw, 24px);
   line-height: 1.5;
 }
 
@@ -1045,14 +1033,14 @@ body {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  padding: calc(8px + 0.3vw) calc(16px + 0.8vw);
+  padding: clamp(6px, 1vw, 12px) clamp(12px, 2vw, 24px);
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
-  font-size: calc(12px + 0.1vw);
+  font-size: clamp(10px, 1.2vw, 14px);
 }
 
 .service-button:hover {
@@ -1061,7 +1049,7 @@ body {
 }
 
 /* ==================================================
-   추가된 "건물 & 시설 안내" 전용 오버라이드 CSS - 반응형 조정
+   추가된 "건물 & 시설 안내" 전용 오버라이드 CSS
    ================================================== */
 
 /* 1) #buildingsMapCard: 흰색 카드 배경 + 블러 + 라운드 + 테두리 */
@@ -1070,8 +1058,8 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  margin: 0 calc(24px + 1.2vw) calc(24px + 1.2vw) calc(24px + 1.2vw);
-  padding: calc(16px + 0.8vw);
+  margin: 0 clamp(16px, 3vw, 32px) clamp(16px, 3vw, 32px) clamp(16px, 3vw, 32px);
+  padding: clamp(12px, 2vw, 24px);
   position: relative;
 }
 #buildingsMapCard:hover {
@@ -1085,23 +1073,21 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: calc(12px + 0.4vw);
+  margin-bottom: clamp(8px, 1.2vw, 16px);
 }
 #card-title-buildings-map {
-  font-size: calc(16px + 0.4vw);
+  font-size: clamp(14px, 2vw, 20px);
   font-weight: 600;
   color: #1f2937;  /* 짙은 그레이 색상 */
 }
 #card-icon-buildings-map {
-  font-size: calc(20px + 0.4vw);
+  font-size: clamp(16px, 2.4vw, 24px);
 }
 
-/* 3) #buildings-map-container: 지도 영역 높이를 반응형으로 조정 */
+/* 3) #buildings-map-container: 지도 영역 높이를 뷰포트에 맞게 조정 */
 #buildings-map-container {
   width: 100%;
-  height: calc(400px + 20vh);
-  max-height: 700px;
-  min-height: 300px;
+  height: clamp(250px, 40vh, 600px);
   border-radius: 12px;
   overflow: hidden;
   position: relative;
@@ -1112,14 +1098,14 @@ body {
   background: #f8fafc;
 }
 
-/* 4) 지도 위의 버튼들 (확대/축소/초기화/내 위치) 스타일 - 반응형 조정 */
+/* 4) 지도 위의 버튼들 (확대/축소/초기화/내 위치) 스타일 */
 #buildings-map-overlay {
   position: absolute;
-  top: calc(12px + 0.4vw);
-  right: calc(12px + 0.4vw);
+  top: clamp(8px, 1.2vw, 16px);
+  right: clamp(8px, 1.2vw, 16px);
   display: flex;
   flex-direction: column;
-  gap: calc(6px + 0.2vw);
+  gap: clamp(4px, 0.6vw, 8px);
   z-index: 100;
 }
 #buildings-zoom-in,
@@ -1130,17 +1116,13 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  padding: calc(8px + 0.3vw);
+  padding: clamp(6px, 1vw, 12px);
   color: #94a3b9;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: calc(14px + 0.2vw);
-  width: calc(32px + 0.8vw);
-  height: calc(32px + 0.8vw);
-  max-width: 44px;
-  max-height: 44px;
-  min-width: 32px;
-  min-height: 32px;
+  font-size: clamp(12px, 1.6vw, 16px);
+  width: clamp(24px, 3.5vw, 40px);
+  height: clamp(24px, 3.5vw, 40px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1205,7 +1187,7 @@ body {
 
 /* 스크롤바 스타일 */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: clamp(4px, 0.6vw, 8px);
 }
 
 ::-webkit-scrollbar-track {
@@ -1222,7 +1204,7 @@ body {
 }
 
 /* ==================================================
-   라이트 모드 - 반응형 조정
+   라이트 모드
    ================================================== */
 body.light-mode {
   background: #ffffff;
@@ -1399,22 +1381,18 @@ body.light-mode .service-description {
   color: #6b7280;
 }
 
-/* 반응형 디자인 - 뷰포트 기반 조정 */
+/* 반응형 디자인 - 뷰포트 기반 브레이크포인트 */
 @media (max-width: 1200px) {
   #statsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
   
   .services-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  #buildings-map-container {
-    height: calc(350px + 15vh);
+    grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 35vw, 250px), 1fr));
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   #main-menu {
     display: none;
   }
@@ -1423,164 +1401,74 @@ body.light-mode .service-description {
     display: none;
   }
   
-  #search-input {
-    max-width: 200px;
-    min-width: 150px;
+  #statsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  #content-area {
-    padding: calc(16px + 0.5vw);
-  }
-  
-  #statsGrid,
   .services-grid {
     grid-template-columns: 1fr;
   }
   
   .welcome-stats {
-    gap: calc(24px + 1.2vw);
-  }
-  
-  .services-title {
-    font-size: calc(18px + 0.6vw);
-  }
-  
-  #buildings-map-container {
-    height: calc(300px + 10vh);
-  }
-}
-
-@media (max-width: 600px) {
-  #top-nav {
-    padding: calc(8px + 0.2vw) calc(12px + 0.4vw);
-    height: calc(50px + 1vh);
-  }
-  
-  #main-container {
-    margin-top: calc(50px + 1vh);
-  }
-  
-  #nav-brand {
-    font-size: calc(14px + 0.2vw);
-    gap: calc(6px + 0.1vw);
-  }
-  
-  #search-input {
-    max-width: 150px;
-    min-width: 120px;
-  }
-  
-  #notification-btn {
-    width: calc(28px + 0.6vw);
-    height: calc(28px + 0.6vw);
-    max-width: 40px;
-    max-height: 40px;
-  }
-  
-  #user-profile {
-    min-height: calc(28px + 0.6vw);
-    max-height: calc(40px + 0.8vw);
-    padding: calc(4px + 0.1vw) calc(8px + 0.2vw);
-  }
-  
-  .welcome-title {
-    font-size: calc(24px + 1.2vw);
-  }
-  
-  .dashboard-welcome {
-    padding: calc(24px + 1.2vw) calc(16px + 0.8vw);
-  }
-  
-  .welcome-stats {
     flex-direction: column;
-    gap: calc(16px + 0.8vw);
+    gap: clamp(12px, 2vw, 24px);
+  }
+}
+
+@media (max-width: 480px) {
+  #statsGrid {
+    grid-template-columns: 1fr;
   }
   
-  .service-card {
-    padding: calc(16px + 0.8vw);
-  }
-  
-  #buildingsMapCard {
-    margin: 0 calc(12px + 0.4vw) calc(12px + 0.4vw) calc(12px + 0.4vw);
-    padding: calc(12px + 0.4vw);
+  #buildingGrid {
+    grid-template-columns: 1fr;
   }
   
   #buildings-map-container {
-    height: calc(250px + 8vh);
-    min-height: 200px;
+    height: clamp(200px, 30vh, 400px);
   }
 }
 
-@media (max-width: 400px) {
-  #top-nav {
-    height: calc(45px + 0.8vh);
-    padding: calc(6px + 0.1vw) calc(8px + 0.2vw);
-  }
-  
-  #main-container {
-    margin-top: calc(45px + 0.8vh);
-  }
-  
-  #search-input {
-    max-width: 120px;
-    min-width: 100px;
-    font-size: calc(10px + 0.1vw);
-  }
-  
-  #notification-btn {
-    width: calc(24px + 0.4vw);
-    height: calc(24px + 0.4vw);
-    max-width: 32px;
-    max-height: 32px;
-  }
-  
-  #user-name {
-    font-size: calc(10px + 0.1vw);
-  }
-  
-  #user-role {
-    font-size: calc(9px + 0.1vw);
-  }
-  
-  .welcome-title {
-    font-size: calc(20px + 1vw);
-  }
-}
-
-/* 극단적인 확대/축소에 대한 제한 */
+/* 극단적인 화면 크기 제한 */
 @media (min-width: 2000px) {
   body {
-    font-size: 18px; /* 최대 폰트 크기 제한 */
+    font-size: 18px;
   }
   
   #top-nav {
-    height: 100px; /* 최대 높이 제한 */
+    height: 80px;
+    padding: 16px 32px;
   }
   
   #main-container {
-    margin-top: 100px;
+    margin-top: 80px;
   }
   
   .welcome-title {
-    font-size: 64px; /* 최대 제목 크기 제한 */
+    font-size: 48px;
   }
 }
 
-@media (max-width: 300px) {
+@media (max-width: 320px) {
   body {
-    font-size: 12px; /* 최소 폰트 크기 보장 */
+    font-size: 12px;
   }
   
   #top-nav {
-    height: 40px; /* 최소 높이 보장 */
+    height: 50px;
+    padding: 8px 12px;
   }
   
   #main-container {
-    margin-top: 40px;
+    margin-top: 50px;
   }
   
   .welcome-title {
-    font-size: 18px; /* 최소 제목 크기 보장 */
+    font-size: 20px;
+  }
+  
+  #buildings-map-container {
+    height: 180px;
   }
 }
 
