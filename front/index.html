@@ -29,7 +29,7 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8fafc;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
     }
 
@@ -328,47 +328,53 @@
       margin: 0;
     }
 
-    /* 대시보드 웰컴 섹션 */
+    /* 대시보드 컨텐츠 */
     .dashboard-welcome {
       text-align: center;
-      padding: 40px 20px;
-      background: #f1f5f9;
+      padding: 30px 20px;
+      /* 밝은 보라색 그라데이션으로 변경 (첫 번째 이미지와 동일) */
+      background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%) !important;
       border-radius: 0;
-      margin: 0 0 40px 0;
+      color: white;
+      margin: 0 0 25px 0;
       width: 100%;
-      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .dashboard-welcome * {
+      color: white !important;
     }
 
     .welcome-badge {
       display: inline-block;
-      background: #6366f1;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      margin-bottom: 20px;
-      color: white;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      margin-bottom: 12px;
+      color: white !important;
       font-weight: 500;
     }
 
     .welcome-title {
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       line-height: 1.2;
-      color: #6366f1;
+      color: white !important;
     }
 
     .welcome-subtitle {
-      font-size: 1.1rem;
-      margin-bottom: 40px;
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 25px;
       line-height: 1.6;
-      color: #64748b;
+      color: white !important;
     }
 
     .welcome-stats {
       display: flex;
       justify-content: center;
-      gap: 60px;
+      gap: 30px;
       flex-wrap: wrap;
     }
 
@@ -378,16 +384,15 @@
 
     .stat-number {
       display: block;
-      font-size: 2.5rem;
+      font-size: 1.8rem;
       font-weight: 700;
-      color: #6366f1;
-      margin-bottom: 8px;
+      color: white !important;
     }
 
     .stat-text {
-      font-size: 1rem;
-      color: #64748b;
-      font-weight: 500;
+      font-size: 0.85rem;
+      opacity: 0.8;
+      color: white !important;
     }
 
     /* 통계 그리드 */
@@ -396,7 +401,7 @@
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
       padding: 0 20px;
-      margin-bottom: 50px;
+      margin-bottom: 30px;
     }
 
     .stat-card {
@@ -411,14 +416,14 @@
     .stat-card-number {
       font-size: 2rem;
       font-weight: 700;
-      color: #3b82f6;
+      color: #3b82f6 !important;
       display: block;
       margin-bottom: 8px;
     }
 
     .stat-card-label {
       font-size: 0.9rem;
-      color: #6b7280;
+      color: #6b7280 !important;
       font-weight: 500;
     }
 
@@ -430,86 +435,83 @@
 
     /* 서비스 섹션 */
     .services-section {
+      margin-top: 30px;
       padding: 0 20px;
       width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
     }
 
     .services-title {
       text-align: center;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 40px;
+      color: #1f2937 !important;
+      margin-bottom: 25px;
     }
 
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .service-card {
       background: white;
-      border-radius: 16px;
-      padding: 32px 24px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       transition: all 0.3s ease;
       cursor: pointer;
-      min-height: 240px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      border: 1px solid #e5e7eb;
     }
 
     .service-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      border-color: #6366f1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border-color: #3b82f6;
     }
 
     .service-icon {
-      font-size: 3rem;
-      margin-bottom: 16px;
+      font-size: 2rem;
+      margin-bottom: 12px;
       display: block;
     }
 
     .service-title {
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      color: #1f2937;
-      margin-bottom: 12px;
+      color: #1f2937 !important;
+      margin-bottom: 6px;
     }
 
     .service-description {
-      color: #64748b;
+      color: #6b7280 !important;
       line-height: 1.5;
-      margin-bottom: 24px;
-      font-size: 0.95rem;
-      flex-grow: 1;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
     }
 
     .service-button {
-      background: #6366f1;
-      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white !important;
       text-decoration: none;
       font-weight: 500;
       font-size: 14px;
       border: none;
       padding: 12px 24px;
-      border-radius: 8px;
+      border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
+      margin-top: 8px;
       width: 100%;
       display: block;
     }
 
     .service-button:hover {
-      background: #5b5ce6;
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
       transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
 
     /* 반응형 미디어 쿼리 */
@@ -530,11 +532,6 @@
       
       #search-bar {
         width: 120px;
-      }
-
-      .services-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
       }
     }
 
@@ -635,7 +632,6 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
         padding: 0 12px;
-        margin-bottom: 30px;
       }
 
       .stat-card {
@@ -647,29 +643,24 @@
       }
 
       .welcome-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
       }
 
       .welcome-subtitle {
-        font-size: 1rem;
+        font-size: 0.9rem;
       }
 
       .welcome-stats {
-        gap: 30px;
+        gap: 20px;
       }
 
       .stat-number {
-        font-size: 2rem;
+        font-size: 1.4rem;
       }
 
       .services-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .service-card {
-        padding: 24px 20px;
-        min-height: 200px;
+        gap: 15px;
       }
 
       #main-container {
@@ -677,17 +668,12 @@
       }
 
       .dashboard-welcome {
-        margin: 0 0 30px 0;
-        padding: 30px 20px;
+        margin: 0 0 20px 0;
+        border-radius: 0;
       }
 
       .services-section {
         padding: 0 12px;
-      }
-
-      .services-title {
-        font-size: 1.5rem;
-        margin-bottom: 24px;
       }
     }
 
@@ -711,24 +697,23 @@
       }
 
       .welcome-title {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
       }
 
       .stat-number {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
       }
 
       .services-title {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
       }
 
       .service-card {
-        padding: 20px 16px;
-        min-height: 180px;
+        padding: 15px;
       }
 
       .service-icon {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
       }
     }
 
@@ -863,23 +848,23 @@
         
         <div class="dashboard-welcome">
           <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
-          <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
-          <p class="welcome-subtitle">
+          <h1 class="welcome-title" style="color: white !important;">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
+          <p class="welcome-subtitle" style="color: white !important;">
             🎓 언제 어디서나 편리하게, 🤝 학생들과 함께하며<br>
             💡 스마트한 대학생활을 시작해보세요
           </p>
           <div class="welcome-stats">
             <div class="stat-item">
-              <span class="stat-number">8,547+</span>
-              <span class="stat-text">활성 사용자</span>
+              <span class="stat-number" style="color: white !important;">8,547+</span>
+              <span class="stat-text" style="color: white !important;">활성 사용자</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number">24</span>
-              <span class="stat-text">편의 서비스</span>
+              <span class="stat-number" style="color: white !important;">24</span>
+              <span class="stat-text" style="color: white !important;">편의 서비스</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number">98%</span>
-              <span class="stat-text">만족도</span>
+              <span class="stat-number" style="color: white !important;">98%</span>
+              <span class="stat-text" style="color: white !important;">만족도</span>
             </div>
           </div>
         </div>
@@ -911,57 +896,44 @@
           <h2 class="services-title">주요 서비스</h2>
           <div class="services-grid">
             <div class="service-card" onclick="showContent('buildings')">
-            <div class="service-card" onclick="showContent('buildings')">
-              <div>
-                <span class="service-icon">🏢</span>
-                <h3 class="service-title">건물 & 시설</h3>
-                <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
-              </div>
+              <span class="service-icon">🏢</span>
+              <h3 class="service-title">건물 & 시설</h3>
+              <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
               <button class="service-button">둘러보기</button>
             </div>
             
             <div class="service-card" onclick="showContent('community')">
-              <div>
-                <span class="service-icon">💬</span>
-                <h3 class="service-title">커뮤니티</h3>
-                <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
-              </div>
+              <span class="service-icon">💬</span>
+              <h3 class="service-title">커뮤니티</h3>
+              <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
               <button class="service-button">참여하기</button>
             </div>
             
             <div class="service-card" onclick="showContent('lecture-review')">
-              <div>
-                <span class="service-icon">⭐</span>
-                <h3 class="service-title">강의평가</h3>
-                <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
-              </div>
+              <span class="service-icon">⭐</span>
+              <h3 class="service-title">강의평가</h3>
+              <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
               <button class="service-button">평가보기</button>
             </div>
             
             <div class="service-card" onclick="openTimetablePage()">
-              <div>
-                <span class="service-icon">📅</span>
-                <h3 class="service-title">내 시간표</h3>
-                <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
-              </div>
+              <span class="service-icon">📅</span>
+              <h3 class="service-title">내 시간표</h3>
+              <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
               <button class="service-button">관리하기</button>
             </div>
             
             <div class="service-card" onclick="openShuttlePage()">
-              <div>
-                <span class="service-icon">🚌</span>
-                <h3 class="service-title">셔틀버스</h3>
-                <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
-              </div>
+              <span class="service-icon">🚌</span>
+              <h3 class="service-title">셔틀버스</h3>
+              <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
               <button class="service-button">확인하기</button>
             </div>
             
             <div class="service-card" onclick="showContent('notices')">
-              <div>
-                <span class="service-icon">📢</span>
-                <h3 class="service-title">공지사항</h3>
-                <p class="service-description">학교의 최신 소식을 확인하세요</p>
-              </div>
+              <span class="service-icon">📢</span>
+              <h3 class="service-title">공지사항</h3>
+              <p class="service-description">학교의 최신 소식을 확인하세요</p>
               <button class="service-button">보러가기</button>
             </div>
           </div>
