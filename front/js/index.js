@@ -1,1171 +1,587 @@
-// ─────────── renderLectureReviewsMain: 메인 페이지용 강의평가 렌더링 ───────────
-function renderLectureReviewsMain(popular, recent) {
-  const popEl = document.getElementById('popularReviews');
-  const recEl = document.getElementById('recentReviews');
-  if (!popEl || !recEl) return;
+// =============================================================================
+// 기존 index.js 파일에 추가할 완전한 반응형 웹 개선 코드
+// =============================================================================
 
-  popEl.innerHTML = '';
-  recEl.innerHTML = '';
+// ─────────── 반응형 관련 전역 변수 추가 ───────────
+let isMobileMenuOpen = false;
+let lastScrollTop = 0;
+let scrollTimeout = null;
+let resizeTimeout = null;
+let touchStartY = 0;
+let touchStartX = 0;
 
-  popular.forEach(r => {
-    if (!isCategoryEnabled('강의평가')) return;
-    const item = document.createElement('div');
-    item.className = 'notice-item';
-    item.innerHTML = `
-      <div class="notice-header">
-        <span class="notice-category">${r.category || ''}</span>
-        <span class="notice-date" style="color:#f59e0b;">
-          ${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}
-        </span>
-      </div>
-      <div class="notice-title">${r.title}</div>
-      <div class="notice-summary">"${r.comment}"</div>
-      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
-      </div>
-    `;
-    popEl.appendChild(item);
-  });
+// ─────────── 모바일 메뉴 제어 함수들 ───────────
 
-  recent.forEach(r => {
-    if (!isCategoryEnabled('강의평가')) return;
-    const item = document.createElement('div');
-    item.className = 'notice-item';
-    item.innerHTML = `
-      <div class="notice-header">
-        <span class="notice-category">${r.category}</span>
-        <span class="notice-date">${r.timeAgo}</span>
-      </div>
-      <div class="notice-title">${r.title}</div>
-      <div class="notice-summary">"${r.comment}"</div>
-      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
-      </div>
-    `;
-    recEl.appendChild(item);
-  });
-}
-
-// ─────────── initNaverMap: 네이버 지도 초기화 ───────────
-function initNaverMap() {
-  if (typeof naver === 'undefined' || !naver.maps) {
-    console.error('네이버 지도 API가 로드되지 않았습니다.');
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
-    return;
-  }
-
-  const mapContainer = document.getElementById('naverMap');
-  if (!mapContainer) return;
-
-  try {
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    const mapOptions = {
-      center: yeonsung,
-      zoom: 16,
-      minZoom: 14,
-      maxZoom: 19,
-      zoomControl: false,
-      logoControl: false,
-      mapDataControl: false,
-      scaleControl: false,
-    };
-    naverMap = new naver.maps.Map(mapContainer, mapOptions);
-  } catch (error) {
-    console.error('지도 초기화 오류:', error);
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
-  }
-}
-
-// ─────────── addMapMarkers: 건물 마커 추가 ───────────
-function addMapMarkers(buildings) {
-  if (!naverMap) return;
-  try {
-    mapMarkers.forEach(m => m.setMap(null));
-    infoWindows.forEach(iw => iw.close());
-    mapMarkers = [];
-    infoWindows = [];
-
-    buildings.forEach(b => {
-      const marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(b.position.lat, b.position.lng),
-        map: naverMap,
-        title: b.name,
-      });
-
-      const infoWindow = new naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
-            <strong style="color: #3b82f6;">${b.name}</strong><br>
-            <span style="color: #94a3b8;">${b.description}</span>
-          </div>
-        `,
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        anchorSize: new naver.maps.Size(0, 0),
-      });
-
-      naver.maps.Event.addListener(marker, 'click', () => {
-        infoWindows.forEach(iw => iw.close());
-        infoWindow.open(naverMap, marker);
-      });
-
-      mapMarkers.push(marker);
-      infoWindows.push(infoWindow);
-    });
-  } catch (error) {
-    console.error('지도 마커 추가 오류:', error);
-  }
-}
-
-// ─────────── showErrorFallback: 에러 발생 시 화면 대체 ───────────
-function showErrorFallback(containerId, message) {
-  const container = document.getElementById(containerId);
-  if (container) {
-    container.innerHTML = `
-      <div class="error-fallback">
-        <h3>⚠️ 오류 발생</h3>
-        <p>${message}</p>
-      </div>
-    `;
-  }
-}
-
-// ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
-function updateTimetable() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  const contentEl = document.getElementById('timetableContent');
-  if (!contentEl) return;  
+/**
+ * 모바일 메뉴 토글 함수
+ */
+function toggleMobileMenu() {
+  const mobileMenu = document.getElementById('mobile-menu');
+  const overlay = document.getElementById('mobile-menu-overlay');
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   
-  if (!currentUser) {
-    contentEl.innerHTML = `
-      <div class="empty-state">
-        <h3>🔒 로그인 필요</h3>
-        <p>개인 시간표를 확인하려면 로그인하세요</p>
-      </div>
-    `;
+  if (!mobileMenu || !overlay || !mobileMenuBtn) {
+    console.warn('모바일 메뉴 요소를 찾을 수 없습니다.');
     return;
   }
-
-  // 로컬 스토리지에서 시간표 데이터 로드
-  const courses = loadCoursesFromLocalStorage(currentUser);
-  if (!courses || courses.length === 0) {
-    contentEl.innerHTML = `
-      <div class="empty-state">
-        <h3>📅 시간표 없음</h3>
-        <p>등록된 시간표가 없습니다. 시간표 페이지에서 과목을 추가해보세요</p>
-        <button class="btn btn-primary" onclick="openTimetablePage()" style="margin-top: 1rem;">
-          📅 시간표 관리
-        </button>
-      </div>
-    `;
-    return;
-  }
-
-  renderTimetable(courses);
-}
-
-// ─────────── loadCoursesFromLocalStorage: 로컬 스토리지에서 과목 데이터 로드 ───────────
-function loadCoursesFromLocalStorage(currentUser) {
-  try {
-    // 현재 학기 계산
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-    
-    let semester = { year: currentYear, term: 1 };
-    if (currentMonth >= 3 && currentMonth <= 6) {
-      semester = { year: currentYear, term: 1 };
-    } else if (currentMonth >= 9 && currentMonth <= 12) {
-      semester = { year: currentYear, term: 2 };
-    } else if (currentMonth >= 1 && currentMonth <= 2) {
-      semester = { year: currentYear - 1, term: 2 };
-    }
-
-    // 현재 시간표 ID 가져오기
-    const currentTimetableData = localStorage.getItem(`currentTimetable_user_${currentUser}`);
-    let currentTimetableId = 1; // 기본값
-    if (currentTimetableData) {
-      try {
-        const timetable = JSON.parse(currentTimetableData);
-        currentTimetableId = timetable.id || 1;
-      } catch (e) {
-        console.error('시간표 ID 파싱 오류:', e);
-      }
-    }
-
-    // 과목 데이터 로드
-    const semesterKey = `courses_${semester.year}_${semester.term}_${currentTimetableId}_user_${currentUser}`;
-    const savedCourses = localStorage.getItem(semesterKey);
-    
-    if (savedCourses) {
-      return JSON.parse(savedCourses);
-    }
-    
-    return [];
-  } catch (error) {
-    console.error('로컬 스토리지에서 과목 로드 오류:', error);
-    return [];
-  }
-}
-
-// ─────────── renderTimetable: 오늘 시간표 렌더링 ───────────
-function renderTimetable(courses) {
-  const contentEl = document.getElementById('timetableContent');
-  if (!contentEl) return;
   
-  const now = new Date();
-  const currentDay = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
-  const currentTime = now.getHours() * 60 + now.getMinutes();
-  const todayCourses = [];
+  if (mobileMenu.classList.contains('show')) {
+    closeMobileMenu();
+  } else {
+    openMobileMenu();
+  }
+}
 
-  // 오늘 요일의 과목들을 찾아서 처리
-  courses.forEach(course => {
-    if (!course.times || !Array.isArray(course.times)) return;
+/**
+ * 모바일 메뉴 열기 함수
+ */
+function openMobileMenu() {
+  const mobileMenu = document.getElementById('mobile-menu');
+  const overlay = document.getElementById('mobile-menu-overlay');
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  
+  if (mobileMenu && overlay && mobileMenuBtn) {
+    // 다른 드롭다운 먼저 닫기
+    closeAllDropdowns();
     
-    course.times.forEach(timeSlot => {
-      // timeSlot.day는 1(월)~6(토), currentDay는 0(일)~6(토)
-      // 월요일(1) = currentDay(1), 화요일(2) = currentDay(2), ..., 토요일(6) = currentDay(6)
-      // 일요일은 제외 (대학교 수업 없음)
-      
-      if (timeSlot.day === currentDay && currentDay !== 0) {
-        // 수업 시간 계산 (1교시 = 9:30~10:20, 2교시 = 10:30~11:20, ...)
-        const startHour = 8 + timeSlot.start;
-        const startMinute = 30;
-        const endHour = 8 + timeSlot.end + 1;
-        const endMinute = 20;
-        
-        const startTime = startHour * 60 + startMinute;
-        const endTime = endHour * 60 + endMinute;
-        
-        let status = 'upcoming';
-        let timeInfo = '';
-        let statusText = '';
-        
-        if (currentTime >= startTime && currentTime < endTime) {
-          status = 'current';
-          const remaining = endTime - currentTime;
-          timeInfo = formatTimeRemaining(remaining, '종료까지');
-          statusText = '수강 중';
-        } else if (currentTime >= endTime) {
-          status = 'finished';
-          timeInfo = '수업 종료';
-          statusText = '수강 종료';
-        } else {
-          const toStart = startTime - currentTime;
-          if (toStart > 0) {
-            status = 'upcoming';
-            timeInfo = formatTimeRemaining(toStart, '시작까지');
-            statusText = '수강 예정';
-          } else {
-            status = 'upcoming';
-            timeInfo = '곧 시작';
-            statusText = '수강 예정';
-          }
-        }
-        
-        todayCourses.push({
-          name: course.name,
-          room: course.room || '강의실 미정',
-          professor: course.professor || '교수명 미정',
-          status,
-          statusText,
-          timeInfo,
-          displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')} ~ ${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
-          startTime,
-          endTime,
-          color: course.color || 'color-1'
-        });
-      }
+    mobileMenu.classList.add('show');
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden'; // 스크롤 방지
+    isMobileMenuOpen = true;
+    
+    // ARIA 속성 업데이트
+    mobileMenuBtn.setAttribute('aria-expanded', 'true');
+    mobileMenuBtn.setAttribute('aria-label', '메뉴 닫기');
+    
+    // 접근성: 포커스 관리
+    const firstFocusable = mobileMenu.querySelector('.nav-item');
+    if (firstFocusable) {
+      setTimeout(() => firstFocusable.focus(), 100);
+    }
+    
+    // 모바일 메뉴 애니메이션
+    requestAnimationFrame(() => {
+      mobileMenu.style.transform = 'translateY(0)';
     });
-  });
+  }
+}
 
-  // 시간순으로 정렬
-  todayCourses.sort((a, b) => a.startTime - b.startTime);
-
-  if (todayCourses.length === 0) {
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    const todayName = dayNames[currentDay];
+/**
+ * 모바일 메뉴 닫기 함수
+ */
+function closeMobileMenu() {
+  const mobileMenu = document.getElementById('mobile-menu');
+  const overlay = document.getElementById('mobile-menu-overlay');
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  
+  if (mobileMenu && overlay && mobileMenuBtn) {
+    mobileMenu.classList.remove('show');
+    overlay.classList.remove('show');
+    document.body.style.overflow = ''; // 스크롤 복원
+    isMobileMenuOpen = false;
     
-    contentEl.innerHTML = `
-      <div class="empty-state">
-        <h3>📅 오늘은 휴일</h3>
-        <p>${todayName}요일에는 수업이 없습니다</p>
-        <button class="btn btn-primary" onclick="openTimetablePage()" style="margin-top: 1rem;">
-          📅 시간표 관리
-        </button>
-      </div>
-    `;
-    return;
-  }
-
-  contentEl.innerHTML = '';
-  todayCourses.forEach(courseInfo => {
-    const div = document.createElement('div');
-    div.className = `class-item class-status-${courseInfo.status}`;
+    // ARIA 속성 업데이트
+    mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    mobileMenuBtn.setAttribute('aria-label', '메뉴 열기');
     
-    // 상태별 아이콘
-    const statusIcon = {
-      current: '🟢',
-      upcoming: '🟡', 
-      finished: '🔴'
-    }[courseInfo.status];
-    
-    div.innerHTML = `
-      <div class="class-time">
-        <div class="class-time-main">${courseInfo.displayTime}</div>
-        <div class="class-time-remaining ${courseInfo.status}">${courseInfo.timeInfo}</div>
-      </div>
-      <div class="class-info">
-        <div class="class-name">${courseInfo.name}</div>
-        <div class="class-location">${courseInfo.professor} | ${courseInfo.room}</div>
-      </div>
-      <div class="class-status status-${courseInfo.status}">
-        <span>${statusIcon}</span>
-        <span>${courseInfo.statusText}</span>
-      </div>
-    `;
-    
-    contentEl.appendChild(div);
-  });
-}
-
-// ─────────── formatTimeRemaining: 남은 시간 텍스트 생성 ───────────
-function formatTimeRemaining(minutes, suffix) {
-  if (minutes < 60) {
-    return `${minutes}분 ${suffix}`;
-  } else {
-    const hours = Math.floor(minutes / 60);
-    const remain = minutes % 60;
-    if (remain === 0) {
-      return `${hours}시간 ${suffix}`;
-    } else {
-      return `${hours}시간 ${remain}분 ${suffix}`;
-    }
-  }
-}
-
-// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
-function toggleNotifications() {
-  const dd = document.getElementById('notification-dropdown');
-  if (dd && dd.classList.contains('show')) {
-    closeNotificationDropdown();
-  } else {
-    showNotificationDropdown();
-  }
-}
-
-function showNotificationDropdown() {
-  closeUserDropdown();
-  const dd = document.getElementById('notification-dropdown');
-  if (dd) dd.classList.add('show');
-}
-
-function closeNotificationDropdown() {
-  const dd = document.getElementById('notification-dropdown');
-  if (dd) dd.classList.remove('show');
-}
-
-// ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
-function toggleUserMenu() {
-  const dropdown = document.getElementById('user-dropdown');
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (!currentUser) {
-    window.location.href = 'pages/user/login.html';
-    return;
-  }
-  if (dropdown && dropdown.classList.contains('show')) {
-    closeUserDropdown();
-  } else {
-    showUserDropdown();
-  }
-}
-
-function showUserDropdown() {
-  closeNotificationDropdown();
-  const dropdown = document.getElementById('user-dropdown');
-  if (dropdown) dropdown.classList.add('show');
-}
-
-function closeUserDropdown() {
-  const dropdown = document.getElementById('user-dropdown');
-  if (dropdown) dropdown.classList.remove('show');
-}
-
-// ─────────── closeAllDropdowns: 모든 드롭다운 닫기 ───────────
-function closeAllDropdowns() {
-  closeNotificationDropdown();
-  closeUserDropdown();
-  closeStudentServiceDropdown();
-}
-
-// ─────────── showProfile: 프로필 화면 로드 ───────────
-async function showProfile() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (!currentUser) {
-    showMessage('로그인이 필요한 서비스입니다.', 'error');
-    return;
-  }
-  const container = document.getElementById('profileContentPane');
-  if (container) {
-    container.innerHTML = `
-      <div style="text-align:center; padding:2rem;">
-        <div class="loading-spinner"></div>
-        <span style="margin-left:0.5rem;">계정 정보를 불러오는 중...</span>
-      </div>
-    `;
-  }
-  showContent('profile');
-  try {
-    const res = await fetch('pages/user/account-edit.html');
-    if (!res.ok) throw new Error('Account 편집 화면 로드 실패');
-    const html = await res.text();
-    if (container) container.innerHTML = html;
-  } catch (err) {
-    console.error(err);
-    if (container) {
-      container.innerHTML = `
-        <div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>계정 편집 화면을 불러올 수 없습니다</p>
-        </div>
-      `;
-    }
-    return;
-  }
-  checkUserStatus();
-  updateTimetable();
-}
-
-// ─────────── handleLogout: 로그아웃 처리 ───────────
-function handleLogout() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (currentUser) {
-    if (confirm('로그아웃 하시겠습니까?')) {
-      localStorage.removeItem('currentLoggedInUser');
-      closeUserDropdown();
-      window.location.href = 'pages/user/login.html';
-    }
-  } else {
-    showMessage('로그인 상태가 아닙니다.', 'error');
-  }
-}
-
-// ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
-async function handleGlobalSearch() {
-  const query = document.getElementById('search-input').value.trim().toLowerCase();
-  if (!query) return;
-  if (!isOnline) {
-    showMessage('오프라인 상태에서는 검색을 사용할 수 없습니다', 'error');
-    return;
-  }
-  try {
-    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('buildings');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  try {
-    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('notices');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  showMessage('검색 결과를 찾을 수 없습니다.', 'info');
-}
-
-// ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
-function checkUserStatus() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  const userNameEl  = document.getElementById('user-name');
-  const userRoleEl  = document.getElementById('user-role');
-  const dropdownNameEl = document.getElementById('dropdown-user-name');
-  const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl   = document.getElementById('user-avatar');
-  if (currentUser && isOnline) {
-    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-      .then(res => {
-        if (!res.ok) throw new Error('API 응답 오류');
-        return res.json();
-      })
-      .then(user => {
-        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
-        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
-        if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
-        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
-        updateProfileImage(user);
-      })
-      .catch(() => {
-        setGuestMode();
-      });
-  } else {
-    setGuestMode();
-  }
-}
-
-// ─────────── setGuestMode: 게스트 모드로 UI 초기화 ───────────
-function setGuestMode() {
-  const userNameEl    = document.getElementById('user-name');
-  const userRoleEl    = document.getElementById('user-role');
-  const dropdownNameEl = document.getElementById('dropdown-user-name');
-  const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl      = document.getElementById('user-avatar');
-  if (userNameEl) userNameEl.textContent     = '게스트';
-  if (userRoleEl) userRoleEl.textContent     = '방문자';
-  if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
-  if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
-  if (avatarEl) avatarEl.textContent         = '👤';
-}
-
-// ─────────── updateProfileImage: 프로필 이미지 적용 ───────────
-function updateProfileImage(user) {
-  const avatarEl = document.getElementById('user-avatar');
-  if (!avatarEl) return;
-  if (user.profileImageType === 'emoji') {
-    avatarEl.textContent = user.profileImage || '👤';
-  } else if (user.profileImage) {
-    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
-  } else {
-    avatarEl.textContent = '👤';
-  }
-}
-
-// ─────────── showMessage: 우측 상단 알림 ───────────
-function showMessage(message, type = 'info', category = '') {
-  if (category && !isCategoryEnabled(category)) return;
-  if (!shouldShowNotification()) return;
-  const notification = document.createElement('div');
-  const bgColor =
-    type === 'success'
-      ? 'rgba(16, 185, 129, 0.9)'
-      : type === 'error'
-      ? 'rgba(239, 68, 68, 0.9)'
-      : 'rgba(59, 130, 246, 0.9)';
-  const icon =
-    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-  notification.style.cssText = `
-    position: fixed;
-    top: 100px; 
-    right: 20px;
-    background: ${bgColor};
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    z-index: 10000;
-    font-weight: 600;
-    backdrop-filter: blur(20px);
-    border: 1px solid ${bgColor.replace('0.9', '0.3')};
-    animation: slideInRight 0.3s ease-out;
-    max-width: 400px;
-  `;
-  notification.innerHTML = `
-    <div style="display:flex;align-items:center;gap:0.5rem;">
-      <span>${icon}</span>
-      <span>${message}</span>
-    </div>
-  `;
-  document.body.appendChild(notification);
-  setTimeout(() => {
-    notification.style.animation = 'slideOutRight 0.3s ease-in';
+    // 포커스를 햄버거 메뉴 버튼으로 되돌림
     setTimeout(() => {
-      if (notification.parentNode) notification.parentNode.removeChild(notification);
-    }, 300);
-  }, 3000);
+      if (mobileMenuBtn) {
+        mobileMenuBtn.focus();
+      }
+    }, 100);
+  }
 }
 
-// ─────────── shouldShowNotification: DND 모드 검사 ───────────
-function shouldShowNotification() {
-  const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
-  if (!dnd.enabled) return true;
-  const now = new Date();
-  const totalMinutes = now.getHours() * 60 + now.getMinutes();
-  const startHM = dnd.startHour * 60 + dnd.startMinute;
-  const endHM   = dnd.endHour * 60 + dnd.endMinute;
-  if (startHM < endHM) {
-    return !(totalMinutes >= startHM && totalMinutes < endHM);
+// ─────────── 반응형 레이아웃 조정 함수들 ───────────
+
+/**
+ * 화면 크기별 레이아웃 조정
+ */
+function adjustLayoutForScreenSize() {
+  const screenWidth = window.innerWidth;
+  const nav = document.getElementById('top-nav');
+  const searchInput = document.getElementById('search-input');
+  const mainMenu = document.getElementById('main-menu');
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const quickMenu = document.getElementById('quick-menu');
+  
+  // CSS 클래스 제거
+  if (nav) {
+    nav.classList.remove('mobile', 'tablet', 'ultra-mobile');
+  }
+  
+  if (screenWidth <= 480) {
+    // 초소형 모바일 (480px 이하)
+    if (searchInput) {
+      searchInput.placeholder = '검색...';
+      searchInput.style.fontSize = '12px';
+    }
+    if (nav) nav.classList.add('ultra-mobile');
+    if (mainMenu) mainMenu.style.display = 'none';
+    if (quickMenu) quickMenu.style.display = 'none';
+    if (mobileMenuBtn) mobileMenuBtn.style.display = 'flex';
+    
+    // 브랜드 텍스트 숨김
+    const brandText = document.querySelector('#nav-brand span');
+    if (brandText) brandText.style.display = 'none';
+    
+  } else if (screenWidth <= 768) {
+    // 모바일 (768px 이하)
+    if (searchInput) {
+      searchInput.placeholder = '검색...';
+      searchInput.style.fontSize = '14px';
+    }
+    if (nav) nav.classList.add('mobile');
+    if (mainMenu) mainMenu.style.display = 'none';
+    if (quickMenu) quickMenu.style.display = 'none';
+    if (mobileMenuBtn) mobileMenuBtn.style.display = 'flex';
+    
+    // 브랜드 텍스트 표시
+    const brandText = document.querySelector('#nav-brand span');
+    if (brandText) brandText.style.display = 'inline';
+    
+  } else if (screenWidth <= 1024) {
+    // 태블릿 (1024px 이하)
+    if (searchInput) {
+      searchInput.placeholder = '검색...';
+      searchInput.style.fontSize = '14px';
+    }
+    if (nav) nav.classList.add('tablet');
+    if (mainMenu) mainMenu.style.display = 'flex';
+    if (quickMenu) quickMenu.style.display = 'flex';
+    if (mobileMenuBtn) mobileMenuBtn.style.display = 'none';
+    closeMobileMenu(); // 태블릿 이상에서는 모바일 메뉴 닫기
+    
+    // 태블릿에서는 메뉴 텍스트 숨기기
+    const menuTexts = document.querySelectorAll('#main-menu .nav-item span:not(.nav-icon)');
+    menuTexts.forEach(text => text.style.display = 'none');
+    
   } else {
-    return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
-  }
-}
-
-// ─────────── isCategoryEnabled: 카테고리별 알림 설정 확인 ───────────
-function isCategoryEnabled(category) {
-  const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
-  return catSettings[category] === true;
-}
-
-// ─────────── setupAutoLogout: 자동 로그아웃 로직 초기화 ───────────
-function setupAutoLogout() {
-  document.addEventListener('mousemove', resetAutoLogoutTimer);
-  document.addEventListener('keypress', resetAutoLogoutTimer);
-  document.addEventListener('click', resetAutoLogoutTimer);
-  resetAutoLogoutTimer();
-}
-
-function resetAutoLogoutTimer() {
-  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
-  const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
-  if (!cfg.enabled) return;
-  const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
-  autoLogoutTimer = setTimeout(() => {
-    localStorage.removeItem('currentLoggedInUser');
-    showMessage('자동 로그아웃되었습니다', 'info');
-    checkUserStatus();
-    showContent('home');
-  }, timeoutMs);
-}
-
-// ─────────── applyKeyboardShortcuts: 기존 단축키 적용 ───────────
-function applyKeyboardShortcuts() {
-  const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
-    toggleSidebar: 'F2',
-    openNotifications: 'F3',
-    goToSettings: 'F4'
-  };
-  document.addEventListener('keydown', e => {
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
-    resetAutoLogoutTimer();
-    const key = e.key.toUpperCase();
-    if (key === (shortcuts.openNotifications || '').toUpperCase()) {
-      e.preventDefault();
-      toggleNotifications();
-      return;
+    // 데스크톱 (1024px 초과)
+    if (searchInput) {
+      searchInput.placeholder = '건물, 교수님, 강의실 검색...';
+      searchInput.style.fontSize = '14px';
     }
-    if (key === (shortcuts.goToSettings || '').toUpperCase()) {
-      e.preventDefault();
-      showContent('settings');
-      return;
-    }
-  });
-}
-
-// ─────────── applyUserShortcuts: 사용자 정의 단축키 적용 ───────────
-function applyUserShortcuts() {
-  document.addEventListener('keydown', e => {
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
-    resetAutoLogoutTimer();
-    const pressedKey = e.key.toUpperCase();
-    const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
-    const matched = userShortcuts.find(entry => entry.key === pressedKey);
-    if (!matched) return;
-    if (!matched.name) return;
-    e.preventDefault();
-    const label = matched.name.toLowerCase();
-    if (label.includes('대시보드')) { showContent('home'); return; }
-    if (label.includes('건물')) { showContent('buildings'); return; }
-    if (label.includes('커뮤니티')) { showContent('community'); return; }
-    if (label.includes('강의평가')) { showContent('lecture-review'); return; }
-    if (label.includes('공지사항')) { showContent('notices'); return; }
-    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; } // 외부 페이지로 수정
-    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; } // 외부 페이지로 수정
-    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; } // 외부 페이지로 수정
-    if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
-    if (label.includes('설정')) { showContent('settings'); return; }
-    if (label.includes('알림')) { toggleNotifications(); return; }
-    if (label.includes('로그아웃')) { handleLogout(); return; }
-    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
-      const themeToggle = document.getElementById('themeToggle');
-      if (themeToggle) {
-        themeToggle.checked = !themeToggle.checked;
-        themeToggle.dispatchEvent(new Event('change'));
-      }
-      return;
-    }
-    if (label.includes('내 위치') || label.includes('위치')) { trackUserLocation(); return; }
-    if (label.includes('확대')) { zoomIn(); return; }
-    if (label.includes('축소')) { zoomOut(); return; }
-    if (label.includes('초기화') || label.includes('리셋')) { resetMapView(); return; }
-    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
-  });
-}
-
-// ─────────── storage 이벤트: 로그인/프로필/테마 갱신 ───────────
-window.addEventListener('storage', event => {
-  if (
-    event.key === 'currentLoggedInUser' ||
-    (event.key && event.key.includes('_profileImage'))
-  ) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  if (event.key === 'lightMode') {
-    const savedMode = localStorage.getItem('lightMode');
-    if (savedMode === 'true') document.body.classList.add('light-mode');
-    else document.body.classList.remove('light-mode');
-  }
-});
-
-// ─────────── pageshow 이벤트: 페이지 복원 시 갱신 ───────────
-window.addEventListener('pageshow', event => {
-  if (event.persisted) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  const savedMode = localStorage.getItem('lightMode');
-  if (savedMode === 'true') document.body.classList.add('light-mode');
-  else document.body.classList.remove('light-mode');
-});
-
-// ─────────── 기존 내부 네비게이션 함수들 (하위 호환성을 위해 유지) ───────────
-function navigateToTimetable() { 
-  console.log('내부 시간표 네비게이션 - 외부 페이지로 리디렉션');
-  openTimetablePage();
-}
-
-function navigateToShuttle() { 
-  console.log('내부 셔틀버스 네비게이션 - 외부 페이지로 리디렉션');
-  openShuttlePage();
-}
-
-function navigateToCalendar() { 
-  console.log('내부 학사일정 네비게이션 - 외부 페이지로 리디렉션');
-  openCalendarPage();
-}
-
-// ─────────── zoomIn, zoomOut, resetMapView ───────────
-function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
-function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
-function resetMapView() {
-  if (naverMap) {
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    naverMap.setCenter(yeonsung);
-    naverMap.setZoom(16);
-  }
-}
-
-// ─────────── trackUserLocation: 사용자 위치 표시 ───────────
-function trackUserLocation() {
-  if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
-        return;
-      }
-      const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      if (userMarker) userMarker.setMap(null);
-      userMarker = new naver.maps.Marker({
-        position: userPos,
-        map: naverMap,
-        icon: {
-          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
-          anchor: new naver.maps.Point(10, 10)
-        }
-      });
-      naverMap.setCenter(userPos);
-      naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
-    },
-    error => {
-      let message = '위치를 찾을 수 없습니다';
-      switch (error.code) {
-        case error.PERMISSION_DENIED:    message = '위치 권한이 거부되었습니다'; break;
-        case error.POSITION_UNAVAILABLE: message = '위치 정보를 사용할 수 없습니다'; break;
-        case error.TIMEOUT:              message = '위치 요청 시간이 초과되었습니다'; break;
-      }
-      showMessage(message, 'error', '');
-    }
-  );
-}
-
-// ─────────── showBuildingOnMap: 메인 페이지 건물 보기 ───────────
-function showBuildingOnMap(buildingId) {
-  showContent('buildings');
-  setTimeout(() => {
-    if (naverMap.refresh) naverMap.refresh();
-  }, 100);
-}
-
-// ─────────── getBuildingDirections: 길찾기 준비 중 ───────────
-function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
-}
-
-// ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
-function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
-}
-
-// =============================================================================
-// 안전한 반응형 기능 추가 (기존 코드와 충돌 방지)
-// =============================================================================
-
-// 안전한 네임스페이스 생성 (충돌 방지)
-window.ResponsiveManager = (function() {
-  'use strict';
-  
-  // 내부 변수들
-  let isMobileMenuOpen = false;
-  let lastScrollTop = 0;
-  let initializationAttempted = false;
-  
-  // 모바일 메뉴 관련 함수들
-  function toggleMobileMenu() {
-    try {
-      const mobileMenu = document.getElementById('mobile-menu');
-      const overlay = document.getElementById('mobile-menu-overlay');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      
-      if (!mobileMenu || !overlay || !mobileMenuBtn) {
-        console.log('모바일 메뉴 요소가 없습니다. HTML을 먼저 업데이트하세요.');
-        return;
-      }
-      
-      if (mobileMenu.classList.contains('show')) {
-        closeMobileMenu();
-      } else {
-        openMobileMenu();
-      }
-    } catch (error) {
-      console.error('모바일 메뉴 토글 오류:', error);
-    }
+    if (mainMenu) mainMenu.style.display = 'flex';
+    if (quickMenu) quickMenu.style.display = 'flex';
+    if (mobileMenuBtn) mobileMenuBtn.style.display = 'none';
+    closeMobileMenu(); // 데스크톱에서는 모바일 메뉴 닫기
+    
+    // 데스크톱에서는 모든 텍스트 표시
+    const menuTexts = document.querySelectorAll('#main-menu .nav-item span:not(.nav-icon)');
+    menuTexts.forEach(text => text.style.display = 'inline');
+    
+    const brandText = document.querySelector('#nav-brand span');
+    if (brandText) brandText.style.display = 'inline';
   }
   
-  function openMobileMenu() {
-    try {
-      const mobileMenu = document.getElementById('mobile-menu');
-      const overlay = document.getElementById('mobile-menu-overlay');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  // 네비게이션 높이 조정
+  if (screenWidth <= 768) {
+    document.documentElement.style.setProperty('--nav-height', 'var(--nav-height-mobile)');
+  } else {
+    document.documentElement.style.setProperty('--nav-height', '80px');
+  }
+}
+
+/**
+ * 터치 디바이스 지원 추가
+ */
+function addTouchSupport() {
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  if (isTouchDevice) {
+    document.body.classList.add('touch-device');
+    
+    // 터치 이벤트를 모든 상호작용 요소에 추가
+    const interactiveElements = document.querySelectorAll(
+      '.nav-item, .service-card, .building-card, .btn, .notification-item, .stat-card'
+    );
+    
+    interactiveElements.forEach(element => {
+      // 터치 시작
+      element.addEventListener('touchstart', function(e) {
+        this.classList.add('touch-active');
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
       
-      if (mobileMenu && overlay && mobileMenuBtn) {
-        // 기존 드롭다운 닫기 (안전하게)
-        if (typeof window.closeAllDropdowns === 'function') {
-          window.closeAllDropdowns();
-        }
+      // 터치 이동 (스크롤 감지)
+      element.addEventListener('touchmove', function(e) {
+        const touchY = e.touches[0].clientY;
+        const touchX = e.touches[0].clientX;
+        const deltaY = Math.abs(touchY - touchStartY);
+        const deltaX = Math.abs(touchX - touchStartX);
         
-        mobileMenu.classList.add('show');
-        overlay.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        isMobileMenuOpen = true;
-        
-        mobileMenuBtn.setAttribute('aria-expanded', 'true');
-        mobileMenuBtn.setAttribute('aria-label', '메뉴 닫기');
-        mobileMenuBtn.innerHTML = '✕'; // X 아이콘으로 변경
-      }
-    } catch (error) {
-      console.error('모바일 메뉴 열기 오류:', error);
-    }
-  }
-  
-  function closeMobileMenu() {
-    try {
-      const mobileMenu = document.getElementById('mobile-menu');
-      const overlay = document.getElementById('mobile-menu-overlay');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      
-      if (mobileMenu && overlay && mobileMenuBtn) {
-        mobileMenu.classList.remove('show');
-        overlay.classList.remove('show');
-        document.body.style.overflow = '';
-        isMobileMenuOpen = false;
-        
-        mobileMenuBtn.setAttribute('aria-expanded', 'false');
-        mobileMenuBtn.setAttribute('aria-label', '메뉴 열기');
-        mobileMenuBtn.innerHTML = '☰'; // 햄버거 아이콘으로 복원
-      }
-    } catch (error) {
-      console.error('모바일 메뉴 닫기 오류:', error);
-    }
-  }
-  
-  // 레이아웃 조정 (안전한 버전)
-  function adjustLayoutForScreenSize() {
-    try {
-      const screenWidth = window.innerWidth;
-      const mainMenu = document.getElementById('main-menu');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      const quickMenu = document.getElementById('quick-menu');
-      const searchInput = document.getElementById('search-input');
-      
-      if (screenWidth <= 768) {
-        // 모바일
-        if (mainMenu) mainMenu.style.display = 'none';
-        if (quickMenu) quickMenu.style.display = 'none';
-        if (mobileMenuBtn) mobileMenuBtn.style.display = 'flex';
-        if (searchInput) searchInput.placeholder = '검색...';
-      } else {
-        // 데스크톱
-        if (mainMenu) mainMenu.style.display = 'flex';
-        if (quickMenu) quickMenu.style.display = 'flex';
-        if (mobileMenuBtn) mobileMenuBtn.style.display = 'none';
-        if (searchInput) searchInput.placeholder = '건물, 교수님, 강의실 검색...';
-        closeMobileMenu();
-      }
-    } catch (error) {
-      console.error('레이아웃 조정 오류:', error);
-    }
-  }
-  
-  // 스크롤 효과 (안전한 버전)
-  function addSafeScrollEffects() {
-    try {
-      let ticking = false;
-      
-      window.addEventListener('scroll', function() {
-        if (!ticking) {
-          requestAnimationFrame(function() {
-            if (window.innerWidth <= 768 && !isMobileMenuOpen) {
-              const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-              const nav = document.getElementById('top-nav');
-              
-              if (nav) {
-                if (scrollTop > lastScrollTop && scrollTop > 100) {
-                  nav.style.transform = 'translateY(-100%)';
-                  nav.style.transition = 'transform 0.3s ease';
-                } else {
-                  nav.style.transform = 'translateY(0)';
-                  nav.style.transition = 'transform 0.3s ease';
-                }
-              }
-              
-              lastScrollTop = scrollTop;
-            }
-            ticking = false;
-          });
-          ticking = true;
+        // 스크롤로 판단되면 터치 효과 제거
+        if (deltaY > 10 || deltaX > 10) {
+          this.classList.remove('touch-active');
         }
       }, { passive: true });
-    } catch (error) {
-      console.error('스크롤 효과 오류:', error);
-    }
+      
+      // 터치 종료
+      element.addEventListener('touchend', function() {
+        // 약간의 지연으로 터치 효과 제거 (시각적 피드백)
+        setTimeout(() => {
+          this.classList.remove('touch-active');
+        }, 150);
+      }, { passive: true });
+      
+      // 터치 취소
+      element.addEventListener('touchcancel', function() {
+        this.classList.remove('touch-active');
+      }, { passive: true });
+    });
   }
-  
-  // 터치 지원 추가
-  function addBasicTouchSupport() {
-    try {
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      
-      if (isTouchDevice) {
-        document.body.classList.add('touch-device');
-        
-        // 기본적인 터치 효과만 추가
-        const touchElements = document.querySelectorAll('.nav-item, .service-card, .btn');
-        touchElements.forEach(element => {
-          element.addEventListener('touchstart', function() {
-            this.style.transform = 'scale(0.98)';
-          }, { passive: true });
-          
-          element.addEventListener('touchend', function() {
-            setTimeout(() => {
-              this.style.transform = '';
-            }, 150);
-          }, { passive: true });
-        });
-      }
-    } catch (error) {
-      console.error('터치 지원 추가 오류:', error);
-    }
-  }
-  
-  // 이벤트 리스너 안전 등록
-  function setupSafeEventListeners() {
-    try {
-      // 리사이즈 이벤트
-      let resizeTimeout;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          adjustLayoutForScreenSize();
-          if (window.innerWidth > 768) {
-            closeMobileMenu();
-          }
-        }, 250);
-      });
-      
-      // ESC 키 이벤트
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && isMobileMenuOpen) {
-          closeMobileMenu();
-        }
-      });
-      
-      // 오버레이 클릭 이벤트
-      const overlay = document.getElementById('mobile-menu-overlay');
-      if (overlay) {
-        overlay.addEventListener('click', closeMobileMenu);
-        overlay.addEventListener('touchend', function(e) {
-          e.preventDefault();
-          closeMobileMenu();
-        }, { passive: false });
-      }
-      
-      // 모바일 메뉴 버튼 이벤트
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-        mobileMenuBtn.addEventListener('touchend', function(e) {
-          e.preventDefault();
-          toggleMobileMenu();
-        }, { passive: false });
-      }
-      
-      // 검색창 모바일 최적화
-      const searchInput = document.getElementById('search-input');
-      if (searchInput) {
-        searchInput.addEventListener('focus', function() {
-          if (window.innerWidth <= 768) {
-            this.style.transform = 'scale(1.05)';
-            this.style.transition = 'transform 0.3s ease';
-          }
-        });
-        
-        searchInput.addEventListener('blur', function() {
-          this.style.transform = '';
-        });
-      }
-      
-    } catch (error) {
-      console.error('이벤트 리스너 등록 오류:', error);
-    }
-  }
-  
-  // 기존 closeAllDropdowns 함수 확장
-  function enhanceCloseAllDropdowns() {
-    try {
-      const originalCloseAllDropdowns = window.closeAllDropdowns;
-      
-      window.closeAllDropdowns = function() {
-        // 기존 드롭다운 닫기
-        if (typeof originalCloseAllDropdowns === 'function') {
-          originalCloseAllDropdowns();
-        }
-        
-        // 모바일 메뉴도 닫기
-        closeMobileMenu();
-      };
-    } catch (error) {
-      console.error('closeAllDropdowns 확장 오류:', error);
-    }
-  }
-  
-  // 안전한 초기화
-  function initSafely() {
-    if (initializationAttempted) {
-      console.log('ResponsiveManager 이미 초기화됨');
-      return true;
-    }
-    
-    try {
-      console.log('안전한 반응형 기능 초기화 시작...');
-      
-      // HTML 요소들이 있는지 체크
-      const requiredElements = [
-        'mobile-menu',
-        'mobile-menu-overlay', 
-        'mobile-menu-btn'
-      ];
-      
-      const missingElements = requiredElements.filter(id => !document.getElementById(id));
-      
-      if (missingElements.length > 0) {
-        console.warn('누락된 HTML 요소들:', missingElements);
-        console.warn('기본 반응형 기능만 활성화합니다.');
-        
-        // 기본적인 레이아웃 조정만 수행
-        adjustLayoutForScreenSize();
-        
-        let resizeTimeout;
-        window.addEventListener('resize', function() {
-          clearTimeout(resizeTimeout);
-          resizeTimeout = setTimeout(adjustLayoutForScreenSize, 250);
-        });
-        
-        initializationAttempted = true;
-        return false;
-      }
-      
-      // 모든 요소가 있다면 전체 기능 초기화
-      adjustLayoutForScreenSize();
-      setupSafeEventListeners();
-      addSafeScrollEffects();
-      addBasicTouchSupport();
-      enhanceCloseAllDropdowns();
-      
-      console.log('안전한 반응형 기능 초기화 완료');
-      initializationAttempted = true;
-      return true;
-      
-    } catch (error) {
-      console.error('안전한 초기화 실패:', error);
-      initializationAttempted = true;
-      return false;
-    }
-  }
-  
-  // 공개 API
-  return {
-    init: initSafely,
-    toggleMobileMenu: toggleMobileMenu,
-    closeMobileMenu: closeMobileMenu,
-    adjustLayout: adjustLayoutForScreenSize,
-    isInitialized: () => initializationAttempted
-  };
-})();
+}
 
-// 안전한 자동 초기화 (오류 발생 시 중단)
-(function() {
-  try {
-    // 기존 DOMContentLoaded 이벤트 이후에 실행
-    function safeInit() {
-      try {
-        setTimeout(function() {
-          if (window.ResponsiveManager && !window.ResponsiveManager.isInitialized()) {
-            const success = window.ResponsiveManager.init();
-            if (success) {
-              console.log('✅ 반응형 기능이 성공적으로 초기화되었습니다.');
-            } else {
-              console.log('⚠️ 일부 반응형 기능이 제한적으로 초기화되었습니다.');
-            }
-          }
-        }, 1000); // 기존 코드 로드 후 1초 뒤 실행
-      } catch (error) {
-        console.error('ResponsiveManager 초기화 중 오류:', error);
-      }
-    }
+/**
+ * 스크롤 효과 추가 (모바일에서 네비게이션 자동 숨김)
+ */
+function addScrollEffects() {
+  let ticking = false;
+  
+  function updateNavOnScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const nav = document.getElementById('top-nav');
     
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', safeInit);
+    if (!nav) return;
+    
+    // 모바일에서만 스크롤 시 네비게이션 숨김
+    if (window.innerWidth <= 768 && !isMobileMenuOpen) {
+      if (scrollTop > lastScrollTop && scrollTop > 100) {
+        // 스크롤 다운 - 네비게이션 숨김
+        nav.style.transform = 'translateY(-100%)';
+        nav.style.transition = 'transform 0.3s ease';
+      } else {
+        // 스크롤 업 - 네비게이션 표시
+        nav.style.transform = 'translateY(0)';
+        nav.style.transition = 'transform 0.3s ease';
+      }
     } else {
-      safeInit();
+      // 데스크톱에서는 항상 표시
+      nav.style.transform = 'translateY(0)';
     }
-  } catch (error) {
-    console.error('ResponsiveManager 자동 초기화 설정 실패:', error);
+    
+    // 스크롤 위치에 따른 배경 투명도 조정
+    if (scrollTop > 50) {
+      nav.style.background = 'rgba(15, 23, 42, 0.98)';
+      nav.style.backdropFilter = 'blur(25px)';
+    } else {
+      nav.style.background = 'rgba(15, 23, 42, 0.95)';
+      nav.style.backdropFilter = 'blur(20px)';
+    }
+    
+    lastScrollTop = scrollTop;
+    ticking = false;
   }
-})();
+  
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(updateNavOnScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+}
 
-// 전역 함수로 노출 (기존 HTML에서 호출할 수 있도록)
-window.toggleMobileMenu = function() {
-  if (window.ResponsiveManager) {
-    window.ResponsiveManager.toggleMobileMenu();
-  } else {
-    console.warn('ResponsiveManager가 초기화되지 않았습니다.');
+/**
+ * 검색창 모바일 최적화
+ */
+function enhanceSearchForMobile() {
+  const searchInput = document.getElementById('search-input');
+  const searchBar = document.getElementById('search-bar');
+  
+  if (!searchInput || !searchBar) return;
+  
+  let originalWidth = '';
+  let isExpanded = false;
+  
+  // 모바일에서 검색창 포커스 시 확장
+  searchInput.addEventListener('focus', function() {
+    if (window.innerWidth <= 768) {
+      originalWidth = this.style.width || '';
+      this.style.width = 'clamp(200px, 50vw, 300px)';
+      this.style.transition = 'width 0.3s ease';
+      searchBar.style.zIndex = '1001'; // 다른 요소 위에 표시
+      isExpanded = true;
+    }
+  });
+  
+  // 포커스 해제 시 원래 크기로
+  searchInput.addEventListener('blur', function() {
+    if (window.innerWidth <= 768 && isExpanded) {
+      setTimeout(() => {
+        this.style.width = originalWidth;
+        searchBar.style.zIndex = '';
+        isExpanded = false;
+      }, 150); // 약간의 지연으로 클릭 이벤트 처리 시간 확보
+    }
+  });
+  
+  // 검색 실행 최적화
+  let searchTimeout;
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+    
+    if (query.length > 0) {
+      searchTimeout = setTimeout(() => {
+        // 실시간 검색 제안 (추후 구현 가능)
+        console.log('실시간 검색:', query);
+      }, 300);
+    }
+  });
+}
+
+/**
+ * 키보드 네비게이션 지원
+ */
+function addKeyboardNavigation() {
+  // 키보드 네비게이션 상태 관리
+  let isKeyboardNavigation = false;
+  
+  document.addEventListener('keydown', function(e) {
+    // 입력 필드에서는 키보드 네비게이션 비활성화
+    const activeElement = document.activeElement;
+    const isInputField = activeElement && (
+      activeElement.tagName === 'INPUT' || 
+      activeElement.tagName === 'TEXTAREA' || 
+      activeElement.isContentEditable
+    );
+    
+    // Tab 키 네비게이션 감지
+    if (e.key === 'Tab') {
+      isKeyboardNavigation = true;
+      document.body.classList.add('keyboard-navigation');
+    }
+    
+    // ESC 키로 모든 메뉴 닫기
+    if (e.key === 'Escape') {
+      closeMobileMenu();
+      closeAllDropdowns();
+      return;
+    }
+    
+    if (isInputField) return;
+    
+    // 모바일 메뉴에서 화살표 키 네비게이션
+    if (isMobileMenuOpen && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      e.preventDefault();
+      const mobileMenu = document.getElementById('mobile-menu');
+      const navItems = Array.from(mobileMenu.querySelectorAll('.nav-item'));
+      const currentIndex = navItems.indexOf(activeElement);
+      
+      if (currentIndex !== -1) {
+        let nextIndex;
+        if (e.key === 'ArrowDown') {
+          nextIndex = (currentIndex + 1) % navItems.length;
+        } else {
+          nextIndex = (currentIndex - 1 + navItems.length) % navItems.length;
+        }
+        navItems[nextIndex].focus();
+      } else if (navItems.length > 0) {
+        navItems[0].focus();
+      }
+    }
+    
+    // 메인 메뉴에서 좌우 화살표 키 네비게이션
+    if (!isMobileMenuOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      const mainMenu = document.getElementById('main-menu');
+      if (mainMenu && mainMenu.style.display !== 'none') {
+        const navItems = Array.from(mainMenu.querySelectorAll('.nav-item'));
+        const currentIndex = navItems.indexOf(activeElement);
+        
+        if (currentIndex !== -1) {
+          e.preventDefault();
+          let nextIndex;
+          if (e.key === 'ArrowRight') {
+            nextIndex = (currentIndex + 1) % navItems.length;
+          } else {
+            nextIndex = (currentIndex - 1 + navItems.length) % navItems.length;
+          }
+          navItems[nextIndex].focus();
+        }
+      }
+    }
+    
+    // 숫자 키로 빠른 네비게이션 (1-6)
+    if (e.key >= '1' && e.key <= '6' && !isInputField) {
+      const shortcuts = ['home', 'buildings', 'community', 'lecture-review', 'notices', 'settings'];
+      const target = shortcuts[parseInt(e.key) - 1];
+      if (target) {
+        e.preventDefault();
+        if (target === 'settings') {
+          showContent('settings');
+        } else {
+          showContent(target);
+        }
+        closeMobileMenu();
+      }
+    }
+  });
+  
+  // 마우스 사용 시 키보드 네비게이션 표시 제거
+  document.addEventListener('mousedown', function() {
+    isKeyboardNavigation = false;
+    document.body.classList.remove('keyboard-navigation');
+  });
+  
+  // 포커스 트랩 (모바일 메뉴용)
+  document.addEventListener('focusin', function(e) {
+    if (isMobileMenuOpen) {
+      const mobileMenu = document.getElementById('mobile-menu');
+      const focusableElements = mobileMenu.querySelectorAll('.nav-item');
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      
+      if (!mobileMenu.contains(e.target)) {
+        firstElement.focus();
+      }
+    }
+  });
+}
+
+/**
+ * 드롭다운 메뉴 터치 최적화
+ */
+function optimizeDropdownsForTouch() {
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  if (isTouchDevice) {
+    // 학생서비스 드롭다운 터치 처리
+    const studentServicesItem = document.getElementById('nav-student-services');
+    if (studentServicesItem) {
+      let touchHandled = false;
+      
+      studentServicesItem.addEventListener('touchstart', function(e) {
+        touchHandled = true;
+        e.preventDefault();
+        
+        const dropdown = this.querySelector('.dropdown-menu');
+        const isVisible = dropdown && dropdown.style.display === 'block';
+        
+        // 다른 드롭다운 닫기
+        closeAllDropdowns();
+        
+        if (!isVisible && dropdown) {
+          dropdown.style.display = 'block';
+          dropdown.style.opacity = '1';
+          dropdown.style.visibility = 'visible';
+          dropdown.style.transform = 'translateY(0)';
+          dropdown.style.pointerEvents = 'auto';
+        }
+      }, { passive: false });
+      
+      // 터치 후 마우스 이벤트 차단
+      studentServicesItem.addEventListener('click', function(e) {
+        if (touchHandled) {
+          e.preventDefault();
+          touchHandled = false;
+        }
+      });
+    }
+    
+    // 사용자 메뉴 터치 처리
+    const userProfile = document.getElementById('user-profile');
+    if (userProfile) {
+      userProfile.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        toggleUserMenu();
+      }, { passive: false });
+    }
+    
+    // 알림 버튼 터치 처리
+    const notificationBtn = document.getElementById('notification-btn');
+    if (notificationBtn) {
+      notificationBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        toggleNotifications();
+      }, { passive: false });
+    }
   }
-};
+}
 
-window.closeMobileMenu = function() {
-  if (window.ResponsiveManager) {
-    window.ResponsiveManager.closeMobileMenu();
+/**
+ * 이미지 lazy loading 최적화
+ */
+function optimizeImageLoading() {
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          const src = img.dataset.src;
+          if (src) {
+            img.src = src;
+            img.removeAttribute('data-src');
+            img.classList.remove('lazy');
+            img.classList.add('loaded');
+            observer.unobserve(img);
+          }
+        }
+      });
+    }, {
+      rootMargin: '50px 0px',
+      threshold: 0.01
+    });
+    
+    // data-src 속성을 가진 이미지들에 lazy loading 적용
+    document.querySelectorAll('img[data-src]').forEach(img => {
+      img.classList.add('lazy');
+      imageObserver.observe(img);
+    });
   }
-};
+}
 
-// 키보드 네비게이션 핸들러들 (HTML에서 사용)
-window.handleMenuKeydown = function(event, target) {
+/**
+ * 성능 최적화를 위한 디바운스 함수
+ */
+function debounce(func, wait, immediate) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      timeout = null;
+      if (!immediate) func(...args);
+    };
+    const callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func(...args);
+  };
+}
+
+/**
+ * 스로틀 함수 (스크롤 이벤트용)
+ */
+function throttle(func, limit) {
+  let inThrottle;
+  return function() {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  }
+}
+
+// ─────────── 접근성 관련 함수들 ───────────
+
+/**
+ * 메뉴 키보드 이벤트 처리
+ */
+function handleMenuKeydown(event, target) {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     showContent(target);
   }
-};
+}
 
-window.handleDropdownKeydown = function(event, target) {
+/**
+ * 드롭다운 키보드 이벤트 처리
+ */
+function handleDropdownKeydown(event, target) {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     switch(target) {
@@ -1174,9 +590,12 @@ window.handleDropdownKeydown = function(event, target) {
       case 'shuttle': openShuttlePage(); break;
     }
   }
-};
+}
 
-window.handleMobileMenuKeydown = function(event, target) {
+/**
+ * 모바일 메뉴 키보드 이벤트 처리
+ */
+function handleMobileMenuKeydown(event, target) {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     switch(target) {
@@ -1185,20 +604,24 @@ window.handleMobileMenuKeydown = function(event, target) {
       case 'shuttle': openShuttlePage(); break;
       default: showContent(target); break;
     }
-    if (window.ResponsiveManager) {
-      window.ResponsiveManager.closeMobileMenu();
-    }
+    closeMobileMenu();
   }
-};
+}
 
-window.handleButtonKeydown = function(event, callback) {
+/**
+ * 버튼 키보드 이벤트 처리
+ */
+function handleButtonKeydown(event, callback) {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     callback();
   }
-};
+}
 
-window.handleServiceCardKeydown = function(event, target) {
+/**
+ * 서비스 카드 키보드 이벤트 처리
+ */
+function handleServiceCardKeydown(event, target) {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     switch(target) {
@@ -1207,96 +630,597 @@ window.handleServiceCardKeydown = function(event, target) {
       default: showContent(target); break;
     }
   }
-};
-
-// 개발 환경에서 디버그 정보 출력
-if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-  console.log('🎯 연성대학교 스마트 캠퍼스 - 개발 모드');
-  console.log('📱 반응형 웹: 준비됨');
-  console.log('🔧 디버그 모드: 활성화');
-}// index.js - 완전한 코드 (기존 + 안전한 반응형 기능)
-
-// ─────────── 전역 변수 선언 ───────────
-let naverMap;
-let mapMarkers = [];
-let infoWindows = [];
-let userMarker = null;
-let userLocation = null;
-let currentContent = 'home';
-let unreadNotifications = 0;
-let isOnline = navigator.onLine;
-
-// 페이지 로드 상태 변수
-let settingsLoaded = false;
-let communityLoaded = false;
-let lectureLoaded = false;
-let noticesLoaded = false;
-let buildingsLoaded = false;
-let academicCalendarLoaded = false;
-
-// 자동 로그아웃 타이머
-let autoLogoutTimer = null;
-
-// 학과 코드 ↔ 이름 매핑 객체
-const departmentMap = {};
-
-// ─────────── 외부 페이지 URL 설정 ───────────
-const EXTERNAL_PAGES = {
-  timetable: 'pages/list/timetable.html',      // 내 시간표 페이지
-  calendar: 'pages/list/academic-calendar.html', // 학사일정 페이지  
-  shuttle: 'pages/list/shuttle.html'           // 셔틀버스 페이지
-};
-
-// ─────────── 외부 페이지 이동 함수들 (현재 창에서 이동) ───────────
-function openTimetablePage() {
-  console.log('내 시간표 페이지로 이동');
-  closeAllDropdowns();
-  
-  // 현재 창에서 이동
-  window.location.href = EXTERNAL_PAGES.timetable;
 }
 
-function openCalendarPage() {
-  console.log('학사일정 페이지로 이동');
-  closeAllDropdowns();
+// ─────────── 향상된 사용자 경험 함수들 ───────────
+
+/**
+ * 스마트 알림 시스템
+ */
+function enhanceNotifications() {
+  // 알림 권한 요청 (브라우저 알림)
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        console.log('알림 권한이 허용되었습니다.');
+      }
+    });
+  }
   
-  // 현재 창에서 이동
-  window.location.href = EXTERNAL_PAGES.calendar;
-}
-
-function openShuttlePage() {
-  console.log('셔틀버스 페이지로 이동');
-  closeAllDropdowns();
-  
-  // 현재 창에서 이동
-  window.location.href = EXTERNAL_PAGES.shuttle;
-}
-
-// ─────────── 개선된 드롭다운 처리 함수들 ───────────
-
-// 학생서비스 드롭다운 닫기 함수 개선
-function closeStudentServiceDropdown() {
-  const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
-  if (dropdown) {
-    dropdown.style.opacity = '0';
-    dropdown.style.visibility = 'hidden';
-    dropdown.style.transform = 'translateY(-10px)';
-    dropdown.style.pointerEvents = 'none';
+  // 웹 앱 매니페스트 지원
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(err => {
+      console.log('Service Worker 등록 실패:', err);
+    });
   }
 }
 
-// 드롭다운 표시 함수 추가
-function showStudentServiceDropdown() {
-  const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
-  if (dropdown) {
-    dropdown.style.opacity = '1';
-    dropdown.style.visibility = 'visible';
-    dropdown.style.transform = 'translateY(0)';
-    dropdown.style.pointerEvents = 'auto';
+/**
+ * 오프라인 지원
+ */
+function addOfflineSupport() {
+  window.addEventListener('online', function() {
+    showMessage('인터넷 연결이 복구되었습니다', 'success');
+    // 오프라인 중 발생한 작업들을 동기화
+    syncOfflineData();
+  });
+  
+  window.addEventListener('offline', function() {
+    showMessage('오프라인 모드입니다. 일부 기능이 제한됩니다', 'warning');
+  });
+}
+
+/**
+ * 오프라인 데이터 동기화
+ */
+function syncOfflineData() {
+  // 오프라인 중 저장된 데이터가 있다면 서버와 동기화
+  const offlineData = localStorage.getItem('offlineData');
+  if (offlineData) {
+    try {
+      const data = JSON.parse(offlineData);
+      // 서버로 데이터 전송 로직
+      console.log('오프라인 데이터 동기화 중...', data);
+      localStorage.removeItem('offlineData');
+    } catch (error) {
+      console.error('오프라인 데이터 동기화 실패:', error);
+    }
   }
 }
 
-// ─────────── DOMContentLoaded ───────────
+/**
+ * 사용자 활동 추적 (개인정보 보호)
+ */
+function trackUserActivity() {
+  let activityTimeout;
+  let isUserActive = true;
+  
+  function resetActivityTimer() {
+    clearTimeout(activityTimeout);
+    if (!isUserActive) {
+      isUserActive = true;
+      console.log('사용자가 다시 활성화되었습니다.');
+    }
+    
+    activityTimeout = setTimeout(() => {
+      isUserActive = false;
+      console.log('사용자가 비활성 상태입니다.');
+    }, 300000); // 5분
+  }
+  
+  // 사용자 활동 이벤트들
+  ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+    document.addEventListener(event, resetActivityTimer, { passive: true });
+  });
+  
+  resetActivityTimer();
+}
+
+// ─────────── 메인 초기화 함수 ───────────
+
+/**
+ * 반응형 기능 초기화
+ */
+function initializeResponsiveFeatures() {
+  console.log('반응형 기능 초기화 시작...');
+  
+  try {
+    // 기본 반응형 기능들
+    addTouchSupport();
+    adjustLayoutForScreenSize();
+    addScrollEffects();
+    enhanceSearchForMobile();
+    addKeyboardNavigation();
+    optimizeDropdownsForTouch();
+    optimizeImageLoading();
+    
+    // 향상된 기능들
+    enhanceNotifications();
+    addOfflineSupport();
+    trackUserActivity();
+    
+    console.log('반응형 기능 초기화 완료');
+  } catch (error) {
+    console.error('반응형 기능 초기화 중 오류:', error);
+  }
+}
+
+/**
+ * 이벤트 리스너 등록
+ */
+function setupResponsiveEventListeners() {
+  // 리사이즈 이벤트 (디바운스 적용)
+  const debouncedResize = debounce(() => {
+    adjustLayoutForScreenSize();
+    
+    // 지도가 있다면 리사이즈
+    if (window.naverMap && window.naverMap.refresh) {
+      setTimeout(() => {
+        window.naverMap.refresh();
+      }, 100);
+    }
+  }, 250);
+  
+  window.addEventListener('resize', debouncedResize);
+  
+  // 화면 방향 변경 이벤트
+  window.addEventListener('orientationchange', function() {
+    setTimeout(() => {
+      adjustLayoutForScreenSize();
+      closeMobileMenu();
+      
+      // 지도 새로고침
+      if (window.naverMap && window.naverMap.refresh) {
+        window.naverMap.refresh();
+      }
+    }, 100);
+  });
+  
+  // ESC 키로 모든 메뉴 닫기
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeMobileMenu();
+      closeAllDropdowns();
+    }
+  });
+  
+  // 바깥 클릭으로 모바일 메뉴 닫기 (오버레이)
+  const overlay = document.getElementById('mobile-menu-overlay');
+  if (overlay) {
+    overlay.addEventListener('click', closeMobileMenu);
+    overlay.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      closeMobileMenu();
+    }, { passive: false });
+  }
+  
+  // 페이지 가시성 변경 감지 (탭 전환 등)
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      // 페이지가 숨겨졌을 때
+      console.log('페이지가 백그라운드로 이동했습니다.');
+    } else {
+      // 페이지가 다시 보여질 때
+      console.log('페이지가 포그라운드로 이동했습니다.');
+      adjustLayoutForScreenSize();
+    }
+  });
+  
+  // 터치 제스처 지원 (스와이프 등)
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let touchEndY = 0;
+  
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  
+  document.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    handleSwipeGesture();
+  }, { passive: true });
+  
+  function handleSwipeGesture() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const minSwipeDistance = 50;
+    
+    // 가로 스와이프가 세로 스와이프보다 큰 경우
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      if (deltaX > 0) {
+        // 오른쪽 스와이프 - 모바일 메뉴 열기 (왼쪽 가장자리에서만)
+        if (touchStartX < 50 && window.innerWidth <= 768) {
+          openMobileMenu();
+        }
+      } else {
+        // 왼쪽 스와이프 - 모바일 메뉴 닫기
+        if (isMobileMenuOpen) {
+          closeMobileMenu();
+        }
+      }
+    }
+  }
+}
+
+/**
+ * 성능 최적화 함수
+ */
+function optimizePerformance() {
+  // 이미지 최적화
+  const images = document.querySelectorAll('img');
+  images.forEach(img => {
+    // 이미지가 로드되기 전까지 placeholder 표시
+    if (!img.complete) {
+      img.style.backgroundColor = '#f3f4f6';
+      img.style.minHeight = '100px';
+    }
+    
+    img.addEventListener('load', function() {
+      this.style.backgroundColor = '';
+      this.style.minHeight = '';
+      this.classList.add('loaded');
+    });
+    
+    img.addEventListener('error', function() {
+      this.src = '/img/placeholder.png'; // 기본 이미지
+      this.alt = '이미지를 불러올 수 없습니다';
+    });
+  });
+  
+  // 스크롤 성능 최적화
+  let ticking = false;
+  
+  function optimizedScrollHandler() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        // 스크롤 관련 처리
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+  
+  window.addEventListener('scroll', optimizedScrollHandler, { passive: true });
+}
+
+/**
+ * 접근성 개선 함수
+ */
+function enhanceAccessibility() {
+  // 고대비 모드 감지
+  if (window.matchMedia && window.matchMedia('(prefers-contrast: high)').matches) {
+    document.body.classList.add('high-contrast');
+  }
+  
+  // 애니메이션 감소 모드 감지
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.body.classList.add('reduced-motion');
+  }
+  
+  // 색상 테마 감지
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    document.body.classList.add('prefers-light');
+  }
+  
+  // 포커스 관리 개선
+  const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  
+  document.addEventListener('keydown', function(e) {
+    // Tab 트래핑 (모달이나 드롭다운에서)
+    if (e.key === 'Tab') {
+      const focusable = Array.from(document.querySelectorAll(focusableElements));
+      const firstFocusable = focusable[0];
+      const lastFocusable = focusable[focusable.length - 1];
+      
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          lastFocusable.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastFocusable) {
+          firstFocusable.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  });
+  
+  // ARIA 라이브 영역 설정
+  const liveRegion = document.createElement('div');
+  liveRegion.setAttribute('aria-live', 'polite');
+  liveRegion.setAttribute('aria-atomic', 'true');
+  liveRegion.className = 'sr-only';
+  liveRegion.id = 'live-region';
+  document.body.appendChild(liveRegion);
+}
+
+/**
+ * 라이브 영역에 메시지 표시 (스크린 리더용)
+ */
+function announceToScreenReader(message) {
+  const liveRegion = document.getElementById('live-region');
+  if (liveRegion) {
+    liveRegion.textContent = message;
+    setTimeout(() => {
+      liveRegion.textContent = '';
+    }, 1000);
+  }
+}
+
+/**
+ * PWA 지원 추가
+ */
+function addPWASupport() {
+  // 웹 앱 매니페스트 체크
+  const manifestLink = document.querySelector('link[rel="manifest"]');
+  if (!manifestLink) {
+    const manifest = document.createElement('link');
+    manifest.rel = 'manifest';
+    manifest.href = '/manifest.json';
+    document.head.appendChild(manifest);
+  }
+  
+  // iOS 웹앱 메타태그
+  if (!document.querySelector('meta[name="apple-mobile-web-app-capable"]')) {
+    const iosCapable = document.createElement('meta');
+    iosCapable.name = 'apple-mobile-web-app-capable';
+    iosCapable.content = 'yes';
+    document.head.appendChild(iosCapable);
+  }
+  
+  // Service Worker 등록
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered: ', registration);
+        })
+        .catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    });
+  }
+  
+  // 앱 설치 프롬프트
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // 설치 버튼 표시 (선택사항)
+    const installButton = document.getElementById('install-button');
+    if (installButton) {
+      installButton.style.display = 'block';
+      installButton.addEventListener('click', () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('사용자가 앱 설치를 승인했습니다');
+          }
+          deferredPrompt = null;
+        });
+      });
+    }
+  });
+}
+
+/**
+ * 에러 처리 및 로깅 개선
+ */
+function setupErrorHandling() {
+  // 전역 에러 핸들러
+  window.addEventListener('error', function(e) {
+    console.error('전역 에러:', e.error);
+    
+    // 사용자에게 친화적인 에러 메시지 표시
+    if (window.showMessage) {
+      showMessage('일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error');
+    }
+    
+    // 에러 로깅 (개발 환경에서만)
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      console.group('에러 상세 정보');
+      console.error('파일:', e.filename);
+      console.error('라인:', e.lineno);
+      console.error('컬럼:', e.colno);
+      console.error('스택:', e.error?.stack);
+      console.groupEnd();
+    }
+  });
+  
+  // Promise rejection 핸들러
+  window.addEventListener('unhandledrejection', function(e) {
+    console.error('처리되지 않은 Promise 거부:', e.reason);
+    e.preventDefault();
+    
+    if (window.showMessage) {
+      showMessage('네트워크 오류가 발생했습니다. 연결을 확인해주세요.', 'error');
+    }
+  });
+}
+
+/**
+ * 기존 closeAllDropdowns 함수 확장
+ */
+function enhanceCloseAllDropdowns() {
+  const originalCloseAllDropdowns = window.closeAllDropdowns;
+  
+  window.closeAllDropdowns = function() {
+    // 기존 드롭다운 닫기
+    if (typeof originalCloseAllDropdowns === 'function') {
+      originalCloseAllDropdowns();
+    }
+    
+    // 모바일 메뉴도 닫기
+    closeMobileMenu();
+    
+    // 확장된 검색창 복원
+    const searchInput = document.getElementById('search-input');
+    const searchBar = document.getElementById('search-bar');
+    if (searchInput && searchBar) {
+      searchInput.style.width = '';
+      searchBar.style.zIndex = '';
+    }
+  };
+}
+
+/**
+ * 브라우저 호환성 체크
+ */
+function checkBrowserCompatibility() {
+  const unsupportedFeatures = [];
+  
+  // 필수 기능들 체크
+  if (!('Promise' in window)) unsupportedFeatures.push('Promise');
+  if (!('fetch' in window)) unsupportedFeatures.push('Fetch API');
+  if (!('addEventListener' in window)) unsupportedFeatures.push('Event Listeners');
+  if (!('classList' in document.createElement('div'))) unsupportedFeatures.push('ClassList');
+  
+  if (unsupportedFeatures.length > 0) {
+    console.warn('지원되지 않는 기능들:', unsupportedFeatures);
+    
+    // 폴리필 로드 또는 대체 기능 제공
+    if (window.showMessage) {
+      showMessage('일부 기능이 제한될 수 있습니다. 최신 브라우저 사용을 권장합니다.', 'warning');
+    }
+  }
+}
+
+// ─────────── 메인 실행 함수 ───────────
+
+/**
+ * DOMContentLoaded 이벤트에서 호출할 메인 함수
+ */
+function initializeAllResponsiveFeatures() {
+  console.log('🚀 반응형 웹 기능 초기화 시작...');
+  
+  try {
+    // 브라우저 호환성 체크
+    checkBrowserCompatibility();
+    
+    // 핵심 반응형 기능
+    initializeResponsiveFeatures();
+    
+    // 이벤트 리스너 설정
+    setupResponsiveEventListeners();
+    
+    // 성능 최적화
+    optimizePerformance();
+    
+    // 접근성 개선
+    enhanceAccessibility();
+    
+    // PWA 지원
+    addPWASupport();
+    
+    // 에러 처리
+    setupErrorHandling();
+    
+    // 기존 함수 확장
+    enhanceCloseAllDropdowns();
+    
+    // 초기 레이아웃 설정
+    adjustLayoutForScreenSize();
+    
+    console.log('✅ 반응형 웹 기능 초기화 완료');
+    
+    // 초기화 완료 알림 (개발 환경에서만)
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      console.log('📱 모바일 최적화: 활성화');
+      console.log('⌨️ 키보드 네비게이션: 활성화');
+      console.log('👆 터치 지원: 활성화');
+      console.log('🎨 다크모드 지원: 활성화');
+      console.log('♿ 접근성 개선: 활성화');
+    }
+    
+  } catch (error) {
+    console.error('❌ 반응형 기능 초기화 중 오류:', error);
+    
+    // 기본적인 모바일 메뉴라도 동작하도록 폴백
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+    }
+  }
+}
+
+// ─────────── 유틸리티 함수들 ───────────
+
+/**
+ * 디바이스 감지 유틸리티
+ */
+const DeviceDetector = {
+  isMobile: () => window.innerWidth <= 768,
+  isTablet: () => window.innerWidth > 768 && window.innerWidth <= 1024,
+  isDesktop: () => window.innerWidth > 1024,
+  isTouchDevice: () => 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+  isIOS: () => /iPad|iPhone|iPod/.test(navigator.userAgent),
+  isAndroid: () => /Android/.test(navigator.userAgent),
+  isStandalone: () => window.matchMedia && window.matchMedia('(display-mode: standalone)').matches
+};
+
+/**
+ * 반응형 유틸리티 함수들
+ */
+const ResponsiveUtils = {
+  // 현재 브레이크포인트 반환
+  getCurrentBreakpoint: () => {
+    const width = window.innerWidth;
+    if (width <= 480) return 'xs';
+    if (width <= 768) return 'sm';
+    if (width <= 1024) return 'md';
+    if (width <= 1200) return 'lg';
+    return 'xl';
+  },
+  
+  // 뷰포트 크기 정보
+  getViewportInfo: () => ({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    devicePixelRatio: window.devicePixelRatio || 1,
+    orientation: window.screen?.orientation?.type || 'unknown'
+  }),
+  
+  // 스크롤 위치 정보
+  getScrollInfo: () => ({
+    top: window.pageYOffset || document.documentElement.scrollTop,
+    left: window.pageXOffset || document.documentElement.scrollLeft,
+    maxY: document.documentElement.scrollHeight - window.innerHeight,
+    maxX: document.documentElement.scrollWidth - window.innerWidth
+  })
+};
+
+// ─────────── 전역 스코프에 함수 노출 ───────────
+
+// 기존 index.js에서 사용할 수 있도록 전역 함수로 노출
+window.toggleMobileMenu = toggleMobileMenu;
+window.closeMobileMenu = closeMobileMenu;
+window.openMobileMenu = openMobileMenu;
+window.adjustLayoutForScreenSize = adjustLayoutForScreenSize;
+window.handleMenuKeydown = handleMenuKeydown;
+window.handleDropdownKeydown = handleDropdownKeydown;
+window.handleMobileMenuKeydown = handleMobileMenuKeydown;
+window.handleButtonKeydown = handleButtonKeydown;
+window.handleServiceCardKeydown = handleServiceCardKeydown;
+window.announceToScreenReader = announceToScreenReader;
+window.DeviceDetector = DeviceDetector;
+window.ResponsiveUtils = ResponsiveUtils;
+
+// ─────────── 즉시 실행 (문서 로드 상태에 따라) ───────────
+
+// 문서가 이미 로드된 경우 즉시 실행
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeAllResponsiveFeatures);
+} else {
+  // DOM이 이미 로드되었다면 즉시 실행
+  initializeAllResponsiveFeatures();
+}
+
+// ─────────── DOMContentLoaded 이벤트 리스너 - 완전한 코드 ───────────
 document.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash.slice(1);
   if (hash && document.getElementById(hash + 'Content')) {
@@ -1395,1777 +1319,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetAutoLogoutTimer();
   });
+
+  // ★★★ 반응형 기능 초기화 - 이 한 줄을 추가하세요! ★★★
+  initializeAllResponsiveFeatures();
 });
-
-// ─────────── 네트워크 상태 감지 ───────────
-function setupNetworkListeners() {
-  window.addEventListener('online', () => {
-    isOnline = true;
-    showMessage('인터넷 연결이 복구되었습니다', 'success');
-    initializeApp();
-  });
-
-  window.addEventListener('offline', () => {
-    isOnline = false;
-    showMessage('인터넷 연결이 끊어졌습니다. 일부 기능이 제한될 수 있습니다', 'error');
-  });
-}
-
-// ─────────── showContent: SPA 전환 ───────────
-function showContent(type) {
-  const panes = [
-    'homeContent',
-    'buildingsContent',
-    'communityContent',
-    'lecture-reviewContent',
-    'noticesContent',
-    'timetableContentPane',
-    'shuttleContentPane',
-    'calendarContentPane',
-    'academic-calendarContentPane',
-    'profileContentPane',
-    'settingsContent'
-  ];
-
-  panes.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-
-  if (type === 'settings' && !settingsLoaded) {
-    const container = document.getElementById('settingsContent');
-    fetch('pages/user/settings.html')
-      .then(res => {
-        if (!res.ok) throw new Error('settings.html 을 불러오는 중 오류 발생');
-        return res.text();
-      })
-      .then(html => {
-        container.innerHTML = html;
-        settingsLoaded = true;
-        if (window.initSettingsPage) window.initSettingsPage();
-      })
-      .catch(err => {
-        console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>설정 화면을 불러올 수 없습니다</p>
-        </div>`;
-      });
-  }
-
-  if (type === 'community' && !communityLoaded) {
-    const container = document.getElementById('communityContent');
-    fetch('pages/user/community.html')
-      .then(res => {
-        if (!res.ok) throw new Error('community.html 을 불러오는 중 오류 발생');
-        return res.text();
-      })
-      .then(html => {
-        container.innerHTML = html;
-        communityLoaded = true;
-        if (window.initCommunityPage) window.initCommunityPage();
-      })
-      .catch(err => {
-        console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>커뮤니티 화면을 불러올 수 없습니다</p>
-        </div>`;
-      });
-  }
-
-  if (type === 'lecture-review' && !lectureLoaded) {
-    const container = document.getElementById('lecture-reviewContent');
-    fetch('pages/list/lecture-review.html')
-      .then(res => {
-        if (!res.ok) throw new Error('lecture-review.html 을 불러오는 중 오류 발생');
-        return res.text();
-      })
-      .then(html => {
-        container.innerHTML = html;
-        lectureLoaded = true;
-        if (window.initLectureReviewPage) window.initLectureReviewPage();
-      })
-      .catch(err => {
-        console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>강의평가 화면을 불러올 수 없습니다</p>
-        </div>`;
-      });
-  }
-
-  if (type === 'notices' && !noticesLoaded) {
-    const container = document.getElementById('noticesContent');
-    fetch('pages/list/notices.html')
-      .then(res => {
-        if (!res.ok) throw new Error('notices.html 을 불러오는 중 오류 발생');
-        return res.text();
-      })
-      .then(html => {
-        container.innerHTML = html;
-        noticesLoaded = true;
-        if (window.initNoticesPage) window.initNoticesPage();
-      })
-      .catch(err => {
-        console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>공지사항 화면을 불러올 수 없습니다</p>
-        </div>`;
-      });
-  }
-
-  if (type === 'buildings' && !buildingsLoaded) {
-    const container = document.getElementById('buildingsContent');
-    fetch('pages/list/buildings.html')
-      .then(res => {
-        if (!res.ok) throw new Error('buildings.html 을 불러오는 중 오류 발생');
-        return res.text();
-      })
-      .then(html => {
-        container.innerHTML = html;
-        buildingsLoaded = true;
-        if (window.initBuildingsPage) window.initBuildingsPage();
-      })
-      .catch(err => {
-        console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>건물 페이지를 불러올 수 없습니다</p>
-        </div>`;
-      });
-  }
-
-  // academic-calendar 페이지 처리 (내부용 - 사용하지 않음)
-  if (type === 'academic-calendar' && !academicCalendarLoaded) {
-    const container = document.getElementById('academic-calendarContentPane');
-    if (container) {
-      fetch('pages/list/academic-calendar.html')
-        .then(res => {
-          if (!res.ok) throw new Error('academic-calendar.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then(html => {
-          container.innerHTML = html;
-          academicCalendarLoaded = true;
-          if (window.initAcademicCalendarPage) window.initAcademicCalendarPage();
-        })
-        .catch(err => {
-          console.error(err);
-          container.innerHTML = `<div class="error-fallback">
-            <h3>⚠️ 오류 발생</h3>
-            <p>학사일정 화면을 불러올 수 없습니다</p>
-          </div>`;
-        });
-    }
-  }
-
-  const targetMap = {
-    home: 'homeContent',
-    buildings: 'buildingsContent',
-    community: 'communityContent',
-    'lecture-review': 'lecture-reviewContent',
-    notices: 'noticesContent',
-    timetable: 'timetableContentPane',
-    shuttle: 'shuttleContentPane',
-    'academic-calendar': 'academic-calendarContentPane',
-    calendar: 'calendarContentPane',
-    profile: 'profileContentPane',
-    settings: 'settingsContent'
-  };
-
-  const targetId = targetMap[type] || 'homeContent';
-  const targetEl = document.getElementById(targetId);
-  if (targetEl) {
-    targetEl.style.display = 'block';
-    targetEl.classList.add('fade-in');
-  }
-
-  document.querySelectorAll('#main-menu .nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  const navItem = document.getElementById('nav-' + type);
-  if (navItem) navItem.classList.add('active');
-
-  currentContent = type;
-  window.location.hash = type;
-
-  if ((type === 'buildings' || type === 'academic-calendar') && naverMap) {
-    setTimeout(() => {
-      if (naverMap.refresh) naverMap.refresh();
-    }, 100);
-  }
-}
-
-// ─────────── initializeApp: 앱 초기화 ───────────
-async function initializeApp() {
-  try {
-    await loadDepartments();
-    initNaverMap();
-    await Promise.all([
-      loadStats(),
-      loadNotifications(),
-      loadBuildingsMain(),
-      loadNotices(),
-      loadShuttleInfo(),
-      loadLectureReviews()
-    ]);
-    checkUserStatus();
-    updateTimetable();
-
-    setInterval(() => {
-      if (isOnline) {
-        loadShuttleInfo();
-        updateTimetable();
-      }
-    }, 60000);
-
-  } catch (error) {
-    console.error('앱 초기화 오류:', error);
-    showMessage('일부 기능을 불러오는 중 오류가 발생했습니다', 'error');
-  }
-}
-
-// ─────────── loadDepartments: 학과 데이터 로드 ───────────
-async function loadDepartments() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/departments');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const list = await res.json();
-    list.forEach(item => {
-      departmentMap[item.code] = item.name;
-    });
-  } catch (err) {
-    console.error('학과 데이터 로드 실패:', err);
-  }
-}
-
-// ─────────── loadNotifications: 알림 데이터 로드 ───────────
-async function loadNotifications() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/notifications');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const notifications = await res.json();
-    renderNotifications(notifications);
-  } catch (err) {
-    console.error('알림 데이터 로드 실패:', err);
-    renderNotifications([]);
-  }
-}
-
-// ─────────── renderNotifications: 알림 목록 렌더링 ───────────
-function renderNotifications(notifications) {
-  const listEl = document.getElementById('notification-list');
-  const countEl = document.getElementById('notification-badge');
-  if (!listEl || !countEl) return;
-
-  listEl.innerHTML = '';
-  unreadNotifications = 0;
-
-  notifications.forEach(n => {
-    if (!isCategoryEnabled(n.category)) return;
-    if (!shouldShowNotification()) return;
-
-    const item = document.createElement('div');
-    item.className = 'notification-item' + (n.unread ? ' unread' : '');
-    item.onclick = () => markAsRead(item, n.id, n.category);
-    item.innerHTML = `
-      <div class="notification-meta">
-        <span class="notification-category">${n.category}</span>
-        <span class="notification-time">${n.time}</span>
-      </div>
-      <div class="notification-content">${n.title}</div>
-      <div class="notification-summary">${n.summary}</div>
-    `;
-    listEl.appendChild(item);
-    if (n.unread) unreadNotifications++;
-  });
-
-  countEl.textContent = unreadNotifications;
-  const dotEl = document.getElementById('notification-dot');
-  if (dotEl) {
-    dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
-  }
-}
-
-// ─────────── markAsRead: 개별 알림 읽음 처리 ───────────
-function markAsRead(el, id, category) {
-  if (el.classList.contains('unread')) {
-    el.classList.remove('unread');
-    unreadNotifications--;
-    if (isOnline) {
-      fetch(`/api/notifications/${id}/read`, { method: 'POST' })
-        .catch(err => console.error('알림 읽음 처리 실패:', err));
-    }
-    updateNotificationCount();
-  }
-}
-
-// ─────────── markAllAsRead: 모든 알림 읽음 처리 ───────────
-function markAllAsRead() {
-  document.querySelectorAll('.notification-item.unread').forEach(item => {
-    item.classList.remove('unread');
-  });
-
-  if (isOnline) {
-    fetch('/api/notifications/mark-all-read', { method: 'POST' })
-      .catch(err => console.error('전체 알림 읽음 처리 실패:', err));
-  }
-
-  unreadNotifications = 0;
-  updateNotificationCount();
-  showMessage('모든 알림을 읽음 처리했습니다.', 'success');
-}
-
-// ─────────── updateNotificationCount: 알림 뱃지 갱신 ───────────
-function updateNotificationCount() {
-  const countEl = document.getElementById('notification-badge');
-  const dotEl = document.getElementById('notification-dot');
-  if (countEl) countEl.textContent = unreadNotifications;
-  if (dotEl) dotEl.style.display = unreadNotifications > 0 ? 'block' : 'none';
-}
-
-// ─────────── loadStats: 통계 데이터 로드 ───────────
-async function loadStats() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/stats');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const stats = await res.json();
-    renderStats(stats);
-  } catch (err) {
-    console.error('통계 데이터 로드 실패:', err);
-    renderStats({
-      totalBuildings: 0,
-      totalStudents: 0,
-      activeServices: 0,
-      todayEvents: 0,
-      newBuildingsText: '',
-      studentGrowthText: '',
-      newServicesText: ''
-    });
-  }
-}
-
-// ─────────── renderStats: 통계 데이터 렌더링 ───────────
-function renderStats(stats) {
-  const statsGrid = document.getElementById('statsGrid');
-  if (!statsGrid) return;
-
-  statsGrid.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-number">${stats.totalBuildings}</div>
-      <div class="stat-label">캠퍼스 건물</div>
-      <div class="stat-change positive">
-        <span>↗</span>
-        <span>${stats.newBuildingsText}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">${stats.totalStudents}</div>
-      <div class="stat-label">재학생 수</div>
-      <div class="stat-change positive">
-        <span>↗</span>
-        <span>${stats.studentGrowthText}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">${stats.activeServices}</div>
-      <div class="stat-label">운영 서비스</div>
-      <div class="stat-change positive">
-        <span>↗</span>
-        <span>${stats.newServicesText}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">${stats.todayEvents}</div>
-      <div class="stat-label">오늘 일정</div>
-      <div class="stat-change">
-        <span>📅</span>
-        <span>진행중</span>
-      </div>
-    </div>
-  `;
-}
-
-// ─────────── loadBuildingsMain: 메인 페이지용 건물 데이터 로드 (대시보드 부분) ───────────
-async function loadBuildingsMain() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/buildings');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const buildings = await res.json();
-    renderBuildingsMain(buildings);
-    addMapMarkers(buildings);
-  } catch (err) {
-    console.error('건물 데이터 로드 실패:', err);
-    renderBuildingsMain([]);
-    addMapMarkers([]);
-  }
-}
-
-// ─────────── renderBuildingsMain: 메인 페이지용 건물 카드 렌더링 ───────────
-function renderBuildingsMain(buildings) {
-  const grid = document.getElementById('buildingGrid');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-  buildings.forEach(b => {
-    const card = document.createElement('div');
-    card.className = 'building-card';
-    card.onclick = () => showContent('buildings');
-    card.innerHTML = `
-      <h3 class="building-name">${b.name}</h3>
-      <p class="building-desc">${b.description}</p>
-      <div class="building-actions">
-        <button class="btn btn-primary" onclick="showBuildingOnMap('${b.id}')">📍 지도에서 보기</button>
-        <button class="btn btn-outline" onclick="getBuildingDirections('${b.id}')">🧭 길찾기</button>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-// ─────────── loadNotices: 메인 페이지용 공지사항 데이터 로드 ───────────
-async function loadNotices() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/notifications');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const notices = await res.json();
-    renderNoticesMain(notices);
-  } catch (err) {
-    console.error('공지사항 데이터 로드 실패:', err);
-    renderNoticesMain([]);
-  }
-}
-
-// ─────────── renderNoticesMain: 메인 페이지용 최근 공지사항 렌더링 ───────────
-function renderNoticesMain(notices) {
-  const recentEl = document.getElementById('recentNotices');
-  if (!recentEl) return;
-  recentEl.innerHTML = '';
-  notices.forEach((n, idx) => {
-    if (idx < 2) {
-      const item = document.createElement('div');
-      item.className = 'notice-item';
-      item.onclick = () => viewNoticeDetail(n.id);
-      item.innerHTML = `
-        <div class="notice-header">
-          <span class="notice-category">${n.category_name || '일반'}</span>
-          <span class="notice-date">${n.published_at}</span>
-        </div>
-        <div class="notice-title">${n.title}</div>
-        <div class="notice-summary">${n.content.slice(0, 100)}…</div>
-      `;
-      recentEl.appendChild(item);
-    }
-  });
-}
-
-// ─────────── loadShuttleInfo: 셔틀버스 데이터 로드 ───────────
-async function loadShuttleInfo() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const res = await fetch('/api/shuttle/routes');
-    if (!res.ok) throw new Error('API 응답 오류');
-    const routes = await res.json();
-    renderShuttleRoutes(routes);
-    if (routes.length > 0) selectShuttleRoute(routes[0].id, routes[0]);
-  } catch (err) {
-    console.error('셔틀버스 데이터 로드 실패:', err);
-    renderShuttleRoutes([]);
-    selectShuttleRoute(null, null);
-  }
-}
-
-// ─────────── renderShuttleRoutes: 셔틀 루트 탭 렌더링 ───────────
-function renderShuttleRoutes(routes) {
-  const tabs = document.getElementById('shuttleRoutes');
-  if (!tabs) return;
-
-  tabs.innerHTML = '';
-  routes.forEach((r, idx) => {
-    const tab = document.createElement('div');
-    tab.className = 'route-tab' + (idx === 0 ? ' active' : '');
-    tab.onclick = () => selectShuttleRoute(r.id, r);
-    tab.innerHTML = `
-      <div class="route-name">${r.name}</div>
-      <div class="route-desc">${r.desc}</div>
-    `;
-    tabs.appendChild(tab);
-  });
-}
-
-// ─────────── selectShuttleRoute: 셔틀 노선 선택 및 상태 렌더링 ───────────
-async function selectShuttleRoute(routeId, route) {
-  try {
-    document.querySelectorAll('.route-tab').forEach(tab => tab.classList.remove('active'));
-    const tabs = Array.from(document.querySelectorAll('.route-tab'));
-    const selectedTab = tabs.find(t => route && t.textContent.includes(route.name));
-    if (selectedTab) selectedTab.classList.add('active');
-    if (!route) throw new Error('유효한 노선 없음');
-    renderShuttleStatus(route);
-  } catch (err) {
-    console.error('셔틀 노선 선택 오류:', err);
-    renderShuttleStatus({ time: '--', desc: '--', status: 'stopped' });
-  }
-}
-
-// ─────────── renderShuttleStatus: 셔틀 상태 렌더링 ───────────
-function renderShuttleStatus(route) {
-  const timeEl   = document.getElementById('shuttle-time');
-  const descEl   = document.getElementById('shuttle-desc');
-  const statusEl = document.getElementById('shuttleStatus');
-  if (timeEl) timeEl.textContent = route.time || '--';
-  if (descEl) descEl.textContent = route.desc || '--';
-  if (statusEl) {
-    const status = route.status === 'running' ? 'running' : 'stopped';
-    statusEl.className = `status-badge status-${status}`;
-    statusEl.innerHTML =
-      status === 'running'
-        ? '<span>🟢</span><span>운행중</span>'
-        : '<span>🔴</span><span>운행종료</span>';
-  }
-}
-
-// ─────────── loadLectureReviews: 메인 페이지용 강의평가 데이터 로드 ───────────
-async function loadLectureReviews() {
-  try {
-    if (!isOnline) throw new Error('오프라인 모드');
-    const [popRes, recRes] = await Promise.all([
-      fetch('/api/reviews/popular'),
-      fetch('/api/reviews/recent'),
-    ]);
-
-    if (!popRes.ok || !recRes.ok) throw new Error('API 응답 오류');
-
-    const popular = await popRes.json();
-    const recent  = await recRes.json();
-    renderLectureReviewsMain(popular, recent);
-  } catch (err) {
-    console.error('강의평가 데이터 로드 실패:', err);
-    renderLectureReviewsMain([], []);
-  }
-}
-
-// ─────────── renderLectureReviewsMain: 메인 페이지용 강의평가 렌더링 ───────────
-function renderLectureReviewsMain(popular, recent) {
-  const popEl = document.getElementById('popularReviews');
-  const recEl = document.getElementById('recentReviews');
-  if (!popEl || !recEl) return;
-
-  popEl.innerHTML = '';
-  recEl.innerHTML = '';
-
-  popular.forEach(r => {
-    if (!isCategoryEnabled('강의평가')) return;
-    const item = document.createElement('div');
-    item.className = 'notice-item';
-    item.innerHTML = `
-      <div class="notice-header">
-        <span class="notice-category">${r.category || ''}</span>
-        <span class="notice-date" style="color:#f59e0b;">
-          ${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}
-        </span>
-      </div>
-      <div class="notice-title">${r.title}</div>
-      <div class="notice-summary">"${r.comment}"</div>
-      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
-      </div>
-    `;
-    popEl.appendChild(item);
-  });
-
-  recent.forEach(r => {
-    if (!isCategoryEnabled('강의평가')) return;
-    const item = document.createElement('div');
-    item.className = 'notice-item';
-    item.innerHTML = `
-      <div class="notice-header">
-        <span class="notice-category">${r.category}</span>
-        <span class="notice-date">${r.timeAgo}</span>
-      </div>
-      <div class="notice-title">${r.title}</div>
-      <div class="notice-summary">"${r.comment}"</div>
-      <div style="margin-top:0.5rem; color:#3b82f6; font-size:0.9rem; font-weight:600;">
-        평점: ${r.rating}/5.0 | ${departmentMap[r.department] || r.department}
-      </div>
-    `;
-    recEl.appendChild(item);
-  });
-}
-
-// ─────────── initNaverMap: 네이버 지도 초기화 ───────────
-function initNaverMap() {
-  if (typeof naver === 'undefined' || !naver.maps) {
-    console.error('네이버 지도 API가 로드되지 않았습니다.');
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
-    return;
-  }
-
-  const mapContainer = document.getElementById('naverMap');
-  if (!mapContainer) return;
-
-  try {
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    const mapOptions = {
-      center: yeonsung,
-      zoom: 16,
-      minZoom: 14,
-      maxZoom: 19,
-      zoomControl: false,
-      logoControl: false,
-      mapDataControl: false,
-      scaleControl: false,
-    };
-    naverMap = new naver.maps.Map(mapContainer, mapOptions);
-  } catch (error) {
-    console.error('지도 초기화 오류:', error);
-    showErrorFallback('naverMap', '지도를 불러올 수 없습니다');
-  }
-}
-
-// ─────────── addMapMarkers: 건물 마커 추가 ───────────
-function addMapMarkers(buildings) {
-  if (!naverMap) return;
-  try {
-    mapMarkers.forEach(m => m.setMap(null));
-    infoWindows.forEach(iw => iw.close());
-    mapMarkers = [];
-    infoWindows = [];
-
-    buildings.forEach(b => {
-      const marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(b.position.lat, b.position.lng),
-        map: naverMap,
-        title: b.name,
-      });
-
-      const infoWindow = new naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px; background: #1e293b; color: white; border-radius: 8px; border: 1px solid #3b82f6;">
-            <strong style="color: #3b82f6;">${b.name}</strong><br>
-            <span style="color: #94a3b8;">${b.description}</span>
-          </div>
-        `,
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        anchorSize: new naver.maps.Size(0, 0),
-      });
-
-      naver.maps.Event.addListener(marker, 'click', () => {
-        infoWindows.forEach(iw => iw.close());
-        infoWindow.open(naverMap, marker);
-      });
-
-      mapMarkers.push(marker);
-      infoWindows.push(infoWindow);
-    });
-  } catch (error) {
-    console.error('지도 마커 추가 오류:', error);
-  }
-}
-
-// ─────────── showErrorFallback: 에러 발생 시 화면 대체 ───────────
-function showErrorFallback(containerId, message) {
-  const container = document.getElementById(containerId);
-  if (container) {
-    container.innerHTML = `
-      <div class="error-fallback">
-        <h3>⚠️ 오류 발생</h3>
-        <p>${message}</p>
-      </div>
-    `;
-  }
-}
-
-// ─────────── updateTimetable: 사용자 시간표 갱신 ───────────
-function updateTimetable() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  const contentEl = document.getElementById('timetableContent');
-  if (!contentEl) return;  
-  
-  if (!currentUser) {
-    contentEl.innerHTML = `
-      <div class="empty-state">
-        <h3>🔒 로그인 필요</h3>
-        <p>개인 시간표를 확인하려면 로그인하세요</p>
-      </div>
-    `;
-    return;
-  }
-
-  // 로컬 스토리지에서 시간표 데이터 로드
-  const courses = loadCoursesFromLocalStorage(currentUser);
-  if (!courses || courses.length === 0) {
-    contentEl.innerHTML = `
-      <div class="empty-state">
-        <h3>📅 시간표 없음</h3>
-        <p>등록된 시간표가 없습니다. 시간표 페이지에서 과목을 추가해보세요</p>
-        <button class="btn btn-primary" onclick="openTimetablePage()" style="margin-top: 1rem;">
-          📅 시간표 관리
-        </button>
-      </div>
-    `;
-    return;
-  }
-
-  renderTimetable(courses);
-}
-
-// ─────────── loadCoursesFromLocalStorage: 로컬 스토리지에서 과목 데이터 로드 ───────────
-function loadCoursesFromLocalStorage(currentUser) {
-  try {
-    // 현재 학기 계산
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-    
-    let semester = { year: currentYear, term: 1 };
-    if (currentMonth >= 3 && currentMonth <= 6) {
-      semester = { year: currentYear, term: 1 };
-    } else if (currentMonth >= 9 && currentMonth <= 12) {
-      semester = { year: currentYear, term: 2 };
-    } else if (currentMonth >= 1 && currentMonth <= 2) {
-      semester = { year: currentYear - 1, term: 2 };
-    }
-
-    // 현재 시간표 ID 가져오기
-    const currentTimetableData = localStorage.getItem(`currentTimetable_user_${currentUser}`);
-    let currentTimetableId = 1; // 기본값
-    if (currentTimetableData) {
-      try {
-        const timetable = JSON.parse(currentTimetableData);
-        currentTimetableId = timetable.id || 1;
-      } catch (e) {
-        console.error('시간표 ID 파싱 오류:', e);
-      }
-    }
-
-    // 과목 데이터 로드
-    const semesterKey = `courses_${semester.year}_${semester.term}_${currentTimetableId}_user_${currentUser}`;
-    const savedCourses = localStorage.getItem(semesterKey);
-    
-    if (savedCourses) {
-      return JSON.parse(savedCourses);
-    }
-    
-    return [];
-  } catch (error) {
-    console.error('로컬 스토리지에서 과목 로드 오류:', error);
-    return [];
-  }
-}
-
-// ─────────── renderTimetable: 오늘 시간표 렌더링 ───────────
-function renderTimetable(courses) {
-  const contentEl = document.getElementById('timetableContent');
-  if (!contentEl) return;
-  
-  const now = new Date();
-  const currentDay = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
-  const currentTime = now.getHours() * 60 + now.getMinutes();
-  const todayCourses = [];
-
-  // 오늘 요일의 과목들을 찾아서 처리
-  courses.forEach(course => {
-    if (!course.times || !Array.isArray(course.times)) return;
-    
-    course.times.forEach(timeSlot => {
-      // timeSlot.day는 1(월)~6(토), currentDay는 0(일)~6(토)
-      // 월요일(1) = currentDay(1), 화요일(2) = currentDay(2), ..., 토요일(6) = currentDay(6)
-      // 일요일은 제외 (대학교 수업 없음)
-      
-      if (timeSlot.day === currentDay && currentDay !== 0) {
-        // 수업 시간 계산 (1교시 = 9:30~10:20, 2교시 = 10:30~11:20, ...)
-        const startHour = 8 + timeSlot.start;
-        const startMinute = 30;
-        const endHour = 8 + timeSlot.end + 1;
-        const endMinute = 20;
-        
-        const startTime = startHour * 60 + startMinute;
-        const endTime = endHour * 60 + endMinute;
-        
-        let status = 'upcoming';
-        let timeInfo = '';
-        let statusText = '';
-        
-        if (currentTime >= startTime && currentTime < endTime) {
-          status = 'current';
-          const remaining = endTime - currentTime;
-          timeInfo = formatTimeRemaining(remaining, '종료까지');
-          statusText = '수강 중';
-        } else if (currentTime >= endTime) {
-          status = 'finished';
-          timeInfo = '수업 종료';
-          statusText = '수강 종료';
-        } else {
-          const toStart = startTime - currentTime;
-          if (toStart > 0) {
-            status = 'upcoming';
-            timeInfo = formatTimeRemaining(toStart, '시작까지');
-            statusText = '수강 예정';
-          } else {
-            status = 'upcoming';
-            timeInfo = '곧 시작';
-            statusText = '수강 예정';
-          }
-        }
-        
-        todayCourses.push({
-          name: course.name,
-          room: course.room || '강의실 미정',
-          professor: course.professor || '교수명 미정',
-          status,
-          statusText,
-          timeInfo,
-          displayTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')} ~ ${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
-          startTime,
-          endTime,
-          color: course.color || 'color-1'
-        });
-      }
-    });
-  });
-
-  // 시간순으로 정렬
-  todayCourses.sort((a, b) => a.startTime - b.startTime);
-
-  if (todayCourses.length === 0) {
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    const todayName = dayNames[currentDay];
-    
-    contentEl.innerHTML = `
-      <div class="empty-state">
-        <h3>📅 오늘은 휴일</h3>
-        <p>${todayName}요일에는 수업이 없습니다</p>
-        <button class="btn btn-primary" onclick="openTimetablePage()" style="margin-top: 1rem;">
-          📅 시간표 관리
-        </button>
-      </div>
-    `;
-    return;
-  }
-
-  contentEl.innerHTML = '';
-  todayCourses.forEach(courseInfo => {
-    const div = document.createElement('div');
-    div.className = `class-item class-status-${courseInfo.status}`;
-    
-    // 상태별 아이콘
-    const statusIcon = {
-      current: '🟢',
-      upcoming: '🟡', 
-      finished: '🔴'
-    }[courseInfo.status];
-    
-    div.innerHTML = `
-      <div class="class-time">
-        <div class="class-time-main">${courseInfo.displayTime}</div>
-        <div class="class-time-remaining ${courseInfo.status}">${courseInfo.timeInfo}</div>
-      </div>
-      <div class="class-info">
-        <div class="class-name">${courseInfo.name}</div>
-        <div class="class-location">${courseInfo.professor} | ${courseInfo.room}</div>
-      </div>
-      <div class="class-status status-${courseInfo.status}">
-        <span>${statusIcon}</span>
-        <span>${courseInfo.statusText}</span>
-      </div>
-    `;
-    
-    contentEl.appendChild(div);
-  });
-}
-
-// ─────────── formatTimeRemaining: 남은 시간 텍스트 생성 ───────────
-function formatTimeRemaining(minutes, suffix) {
-  if (minutes < 60) {
-    return `${minutes}분 ${suffix}`;
-  } else {
-    const hours = Math.floor(minutes / 60);
-    const remain = minutes % 60;
-    if (remain === 0) {
-      return `${hours}시간 ${suffix}`;
-    } else {
-      return `${hours}시간 ${remain}분 ${suffix}`;
-    }
-  }
-}
-
-// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
-function toggleNotifications() {
-  const dd = document.getElementById('notification-dropdown');
-  if (dd && dd.classList.contains('show')) {
-    closeNotificationDropdown();
-  } else {
-    showNotificationDropdown();
-  }
-}
-
-function showNotificationDropdown() {
-  closeUserDropdown();
-  const dd = document.getElementById('notification-dropdown');
-  if (dd) dd.classList.add('show');
-}
-
-function closeNotificationDropdown() {
-  const dd = document.getElementById('notification-dropdown');
-  if (dd) dd.classList.remove('show');
-}
-
-// ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
-function toggleUserMenu() {
-  const dropdown = document.getElementById('user-dropdown');
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (!currentUser) {
-    window.location.href = 'pages/user/login.html';
-    return;
-  }
-  if (dropdown && dropdown.classList.contains('show')) {
-    closeUserDropdown();
-  } else {
-    showUserDropdown();
-  }
-}
-
-function showUserDropdown() {
-  closeNotificationDropdown();
-  const dropdown = document.getElementById('user-dropdown');
-  if (dropdown) dropdown.classList.add('show');
-}
-
-function closeUserDropdown() {
-  const dropdown = document.getElementById('user-dropdown');
-  if (dropdown) dropdown.classList.remove('show');
-}
-
-// ─────────── closeAllDropdowns: 모든 드롭다운 닫기 ───────────
-function closeAllDropdowns() {
-  closeNotificationDropdown();
-  closeUserDropdown();
-  closeStudentServiceDropdown();
-}
-
-// ─────────── showProfile: 프로필 화면 로드 ───────────
-async function showProfile() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (!currentUser) {
-    showMessage('로그인이 필요한 서비스입니다.', 'error');
-    return;
-  }
-  const container = document.getElementById('profileContentPane');
-  if (container) {
-    container.innerHTML = `
-      <div style="text-align:center; padding:2rem;">
-        <div class="loading-spinner"></div>
-        <span style="margin-left:0.5rem;">계정 정보를 불러오는 중...</span>
-      </div>
-    `;
-  }
-  showContent('profile');
-  try {
-    const res = await fetch('pages/user/account-edit.html');
-    if (!res.ok) throw new Error('Account 편집 화면 로드 실패');
-    const html = await res.text();
-    if (container) container.innerHTML = html;
-  } catch (err) {
-    console.error(err);
-    if (container) {
-      container.innerHTML = `
-        <div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>계정 편집 화면을 불러올 수 없습니다</p>
-        </div>
-      `;
-    }
-    return;
-  }
-  checkUserStatus();
-  updateTimetable();
-}
-
-// ─────────── handleLogout: 로그아웃 처리 ───────────
-function handleLogout() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  if (currentUser) {
-    if (confirm('로그아웃 하시겠습니까?')) {
-      localStorage.removeItem('currentLoggedInUser');
-      closeUserDropdown();
-      window.location.href = 'pages/user/login.html';
-    }
-  } else {
-    showMessage('로그인 상태가 아닙니다.', 'error');
-  }
-}
-
-// ─────────── handleGlobalSearch: 전역 검색 처리 ───────────
-async function handleGlobalSearch() {
-  const query = document.getElementById('search-input').value.trim().toLowerCase();
-  if (!query) return;
-  if (!isOnline) {
-    showMessage('오프라인 상태에서는 검색을 사용할 수 없습니다', 'error');
-    return;
-  }
-  try {
-    const res = await fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('buildings');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  try {
-    const res = await fetch(`/api/notices/search?q=${encodeURIComponent(query)}`);
-    if (res.ok) {
-      showContent('notices');
-      document.getElementById('search-input').value = '';
-      return;
-    }
-  } catch {}
-  showMessage('검색 결과를 찾을 수 없습니다.', 'info');
-}
-
-// ─────────── checkUserStatus: 로그인 여부, 사용자 정보 업데이트 ───────────
-function checkUserStatus() {
-  const currentUser = localStorage.getItem('currentLoggedInUser');
-  const userNameEl  = document.getElementById('user-name');
-  const userRoleEl  = document.getElementById('user-role');
-  const dropdownNameEl = document.getElementById('dropdown-user-name');
-  const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl   = document.getElementById('user-avatar');
-  if (currentUser && isOnline) {
-    fetch(`/api/users/${encodeURIComponent(currentUser)}`)
-      .then(res => {
-        if (!res.ok) throw new Error('API 응답 오류');
-        return res.json();
-      })
-      .then(user => {
-        if (userNameEl) userNameEl.textContent     = user.name || '사용자';
-        if (userRoleEl) userRoleEl.textContent     = departmentMap[user.department] || '학생';
-        if (dropdownNameEl) dropdownNameEl.textContent = user.name || '사용자';
-        if (dropdownRoleEl) dropdownRoleEl.textContent = departmentMap[user.department] || '학생';
-        updateProfileImage(user);
-      })
-      .catch(() => {
-        setGuestMode();
-      });
-  } else {
-    setGuestMode();
-  }
-}
-
-// ─────────── setGuestMode: 게스트 모드로 UI 초기화 ───────────
-function setGuestMode() {
-  const userNameEl    = document.getElementById('user-name');
-  const userRoleEl    = document.getElementById('user-role');
-  const dropdownNameEl = document.getElementById('dropdown-user-name');
-  const dropdownRoleEl = document.getElementById('dropdown-user-role');
-  const avatarEl      = document.getElementById('user-avatar');
-  if (userNameEl) userNameEl.textContent     = '게스트';
-  if (userRoleEl) userRoleEl.textContent     = '방문자';
-  if (dropdownNameEl) dropdownNameEl.textContent = '게스트';
-  if (dropdownRoleEl) dropdownRoleEl.textContent = '방문자';
-  if (avatarEl) avatarEl.textContent         = '👤';
-}
-
-// ─────────── updateProfileImage: 프로필 이미지 적용 ───────────
-function updateProfileImage(user) {
-  const avatarEl = document.getElementById('user-avatar');
-  if (!avatarEl) return;
-  if (user.profileImageType === 'emoji') {
-    avatarEl.textContent = user.profileImage || '👤';
-  } else if (user.profileImage) {
-    avatarEl.innerHTML = `<img src="${user.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="프로필">`;
-  } else {
-    avatarEl.textContent = '👤';
-  }
-}
-
-// ─────────── showMessage: 우측 상단 알림 ───────────
-function showMessage(message, type = 'info', category = '') {
-  if (category && !isCategoryEnabled(category)) return;
-  if (!shouldShowNotification()) return;
-  const notification = document.createElement('div');
-  const bgColor =
-    type === 'success'
-      ? 'rgba(16, 185, 129, 0.9)'
-      : type === 'error'
-      ? 'rgba(239, 68, 68, 0.9)'
-      : 'rgba(59, 130, 246, 0.9)';
-  const icon =
-    type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-  notification.style.cssText = `
-    position: fixed;
-    top: 100px; 
-    right: 20px;
-    background: ${bgColor};
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    z-index: 10000;
-    font-weight: 600;
-    backdrop-filter: blur(20px);
-    border: 1px solid ${bgColor.replace('0.9', '0.3')};
-    animation: slideInRight 0.3s ease-out;
-    max-width: 400px;
-  `;
-  notification.innerHTML = `
-    <div style="display:flex;align-items:center;gap:0.5rem;">
-      <span>${icon}</span>
-      <span>${message}</span>
-    </div>
-  `;
-  document.body.appendChild(notification);
-  setTimeout(() => {
-    notification.style.animation = 'slideOutRight 0.3s ease-in';
-    setTimeout(() => {
-      if (notification.parentNode) notification.parentNode.removeChild(notification);
-    }, 300);
-  }, 3000);
-}
-
-// ─────────── shouldShowNotification: DND 모드 검사 ───────────
-function shouldShowNotification() {
-  const dnd = JSON.parse(localStorage.getItem('doNotDisturb')) || { enabled: false };
-  if (!dnd.enabled) return true;
-  const now = new Date();
-  const totalMinutes = now.getHours() * 60 + now.getMinutes();
-  const startHM = dnd.startHour * 60 + dnd.startMinute;
-  const endHM   = dnd.endHour * 60 + dnd.endMinute;
-  if (startHM < endHM) {
-    return !(totalMinutes >= startHM && totalMinutes < endHM);
-  } else {
-    return !((totalMinutes >= startHM && totalMinutes < 1440) || (totalMinutes < endHM));
-  }
-}
-
-// ─────────── isCategoryEnabled: 카테고리별 알림 설정 확인 ───────────
-function isCategoryEnabled(category) {
-  const catSettings = JSON.parse(localStorage.getItem('notificationCategories')) || {};
-  return catSettings[category] === true;
-}
-
-// ─────────── setupAutoLogout: 자동 로그아웃 로직 초기화 ───────────
-function setupAutoLogout() {
-  document.addEventListener('mousemove', resetAutoLogoutTimer);
-  document.addEventListener('keypress', resetAutoLogoutTimer);
-  document.addEventListener('click', resetAutoLogoutTimer);
-  resetAutoLogoutTimer();
-}
-
-function resetAutoLogoutTimer() {
-  if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
-  const cfg = JSON.parse(localStorage.getItem('autoLogout')) || { enabled: false, timeoutMinutes: 0 };
-  if (!cfg.enabled) return;
-  const timeoutMs = cfg.timeoutMinutes * 60 * 1000;
-  autoLogoutTimer = setTimeout(() => {
-    localStorage.removeItem('currentLoggedInUser');
-    showMessage('자동 로그아웃되었습니다', 'info');
-    checkUserStatus();
-    showContent('home');
-  }, timeoutMs);
-}
-
-// ─────────── applyKeyboardShortcuts: 기존 단축키 적용 ───────────
-function applyKeyboardShortcuts() {
-  const shortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || {
-    toggleSidebar: 'F2',
-    openNotifications: 'F3',
-    goToSettings: 'F4'
-  };
-  document.addEventListener('keydown', e => {
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
-    resetAutoLogoutTimer();
-    const key = e.key.toUpperCase();
-    if (key === (shortcuts.openNotifications || '').toUpperCase()) {
-      e.preventDefault();
-      toggleNotifications();
-      return;
-    }
-    if (key === (shortcuts.goToSettings || '').toUpperCase()) {
-      e.preventDefault();
-      showContent('settings');
-      return;
-    }
-  });
-}
-
-// ─────────── applyUserShortcuts: 사용자 정의 단축키 적용 ───────────
-function applyUserShortcuts() {
-  document.addEventListener('keydown', e => {
-    const targetTag = e.target.tagName;
-    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || e.target.isContentEditable) return;
-    resetAutoLogoutTimer();
-    const pressedKey = e.key.toUpperCase();
-    const userShortcuts = JSON.parse(localStorage.getItem('keyboardShortcuts')) || [];
-    const matched = userShortcuts.find(entry => entry.key === pressedKey);
-    if (!matched) return;
-    if (!matched.name) return;
-    e.preventDefault();
-    const label = matched.name.toLowerCase();
-    if (label.includes('대시보드')) { showContent('home'); return; }
-    if (label.includes('건물')) { showContent('buildings'); return; }
-    if (label.includes('커뮤니티')) { showContent('community'); return; }
-    if (label.includes('강의평가')) { showContent('lecture-review'); return; }
-    if (label.includes('공지사항')) { showContent('notices'); return; }
-    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; }
-    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; }
-    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; }
-    if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
-    if (label.includes('설정')) { showContent('settings'); return; }
-    if (label.includes('알림')) { toggleNotifications(); return; }
-    if (label.includes('로그아웃')) { handleLogout(); return; }
-    if (label.includes('테마') || label.includes('다크') || label.includes('라이트')) {
-      const themeToggle = document.getElementById('themeToggle');
-      if (themeToggle) {
-        themeToggle.checked = !themeToggle.checked;
-        themeToggle.dispatchEvent(new Event('change'));
-      }
-      return;
-    }
-    if (label.includes('내 위치') || label.includes('위치')) { trackUserLocation(); return; }
-    if (label.includes('확대')) { zoomIn(); return; }
-    if (label.includes('축소')) { zoomOut(); return; }
-    if (label.includes('초기화') || label.includes('리셋')) { resetMapView(); return; }
-    console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
-  });
-}
-
-// ─────────── storage 이벤트: 로그인/프로필/테마 갱신 ───────────
-window.addEventListener('storage', event => {
-  if (
-    event.key === 'currentLoggedInUser' ||
-    (event.key && event.key.includes('_profileImage'))
-  ) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  if (event.key === 'lightMode') {
-    const savedMode = localStorage.getItem('lightMode');
-    if (savedMode === 'true') document.body.classList.add('light-mode');
-    else document.body.classList.remove('light-mode');
-  }
-});
-
-// ─────────── pageshow 이벤트: 페이지 복원 시 갱신 ───────────
-window.addEventListener('pageshow', event => {
-  if (event.persisted) {
-    checkUserStatus();
-    updateTimetable();
-  }
-  const savedMode = localStorage.getItem('lightMode');
-  if (savedMode === 'true') document.body.classList.add('light-mode');
-  else document.body.classList.remove('light-mode');
-});
-
-// ─────────── 기존 내부 네비게이션 함수들 (하위 호환성을 위해 유지) ───────────
-function navigateToTimetable() { 
-  console.log('내부 시간표 네비게이션 - 외부 페이지로 리디렉션');
-  openTimetablePage();
-}
-
-function navigateToShuttle() { 
-  console.log('내부 셔틀버스 네비게이션 - 외부 페이지로 리디렉션');
-  openShuttlePage();
-}
-
-function navigateToCalendar() { 
-  console.log('내부 학사일정 네비게이션 - 외부 페이지로 리디렉션');
-  openCalendarPage();
-}
-
-// ─────────── zoomIn, zoomOut, resetMapView ───────────
-function zoomIn()    { if (naverMap) naverMap.setZoom(naverMap.getZoom() + 1); }
-function zoomOut()   { if (naverMap) naverMap.setZoom(naverMap.getZoom() - 1); }
-function resetMapView() {
-  if (naverMap) {
-    const yeonsung = new naver.maps.LatLng(37.39661657434427, 126.90772437800818);
-    naverMap.setCenter(yeonsung);
-    naverMap.setZoom(16);
-  }
-}
-
-// ─────────── trackUserLocation: 사용자 위치 표시 ───────────
-function trackUserLocation() {
-  if (!navigator.geolocation) {
-    showMessage('위치 서비스를 지원하지 않습니다', 'error', '');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      if (!naverMap) {
-        showMessage('지도가 초기화되지 않았습니다', 'error', '');
-        return;
-      }
-      const userPos = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      if (userMarker) userMarker.setMap(null);
-      userMarker = new naver.maps.Marker({
-        position: userPos,
-        map: naverMap,
-        icon: {
-          content: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
-          anchor: new naver.maps.Point(10, 10)
-        }
-      });
-      naverMap.setCenter(userPos);
-      naverMap.setZoom(17);
-      showMessage('현재 위치를 찾았습니다', 'success', '');
-    },
-    error => {
-      let message = '위치를 찾을 수 없습니다';
-      switch (error.code) {
-        case error.PERMISSION_DENIED:    message = '위치 권한이 거부되었습니다'; break;
-        case error.POSITION_UNAVAILABLE: message = '위치 정보를 사용할 수 없습니다'; break;
-        case error.TIMEOUT:              message = '위치 요청 시간이 초과되었습니다'; break;
-      }
-      showMessage(message, 'error', '');
-    }
-  );
-}
-
-// ─────────── showBuildingOnMap: 메인 페이지 건물 보기 ───────────
-function showBuildingOnMap(buildingId) {
-  showContent('buildings');
-  setTimeout(() => {
-    if (naverMap && naverMap.refresh) naverMap.refresh();
-  }, 100);
-}
-
-// ─────────── getBuildingDirections: 길찾기 준비 중 ───────────
-function getBuildingDirections(buildingId) {
-  showMessage('길찾기 기능은 준비 중입니다', 'info', '');
-}
-
-// ─────────── viewNoticeDetail: 공지사항 상세보기 준비 중 ───────────
-function viewNoticeDetail(noticeId) {
-  showMessage('공지사항 상세보기는 준비 중입니다', 'info', '');
-}
-
-// =============================================================================
-// 안전한 반응형 기능 추가 (기존 코드와 충돌 방지)
-// =============================================================================
-
-// 안전한 네임스페이스 생성 (충돌 방지)
-window.ResponsiveManager = (function() {
-  'use strict';
-  
-  // 내부 변수들
-  let isMobileMenuOpen = false;
-  let lastScrollTop = 0;
-  let initializationAttempted = false;
-  
-  // 모바일 메뉴 관련 함수들
-  function toggleMobileMenu() {
-    try {
-      const mobileMenu = document.getElementById('mobile-menu');
-      const overlay = document.getElementById('mobile-menu-overlay');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      
-      if (!mobileMenu || !overlay || !mobileMenuBtn) {
-        console.log('모바일 메뉴 요소가 없습니다. HTML을 먼저 업데이트하세요.');
-        return;
-      }
-      
-      if (mobileMenu.classList.contains('show')) {
-        closeMobileMenu();
-      } else {
-        openMobileMenu();
-      }
-    } catch (error) {
-      console.error('모바일 메뉴 토글 오류:', error);
-    }
-  }
-  
-  function openMobileMenu() {
-    try {
-      const mobileMenu = document.getElementById('mobile-menu');
-      const overlay = document.getElementById('mobile-menu-overlay');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      
-      if (mobileMenu && overlay && mobileMenuBtn) {
-        // 기존 드롭다운 닫기 (안전하게)
-        if (typeof window.closeAllDropdowns === 'function') {
-          window.closeAllDropdowns();
-        }
-        
-        mobileMenu.classList.add('show');
-        overlay.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        isMobileMenuOpen = true;
-        
-        mobileMenuBtn.setAttribute('aria-expanded', 'true');
-        mobileMenuBtn.setAttribute('aria-label', '메뉴 닫기');
-        mobileMenuBtn.innerHTML = '✕'; // X 아이콘으로 변경
-      }
-    } catch (error) {
-      console.error('모바일 메뉴 열기 오류:', error);
-    }
-  }
-  
-  function closeMobileMenu() {
-    try {
-      const mobileMenu = document.getElementById('mobile-menu');
-      const overlay = document.getElementById('mobile-menu-overlay');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      
-      if (mobileMenu && overlay && mobileMenuBtn) {
-        mobileMenu.classList.remove('show');
-        overlay.classList.remove('show');
-        document.body.style.overflow = '';
-        isMobileMenuOpen = false;
-        
-        mobileMenuBtn.setAttribute('aria-expanded', 'false');
-        mobileMenuBtn.setAttribute('aria-label', '메뉴 열기');
-        mobileMenuBtn.innerHTML = '☰'; // 햄버거 아이콘으로 복원
-      }
-    } catch (error) {
-      console.error('모바일 메뉴 닫기 오류:', error);
-    }
-  }
-  
-  // 레이아웃 조정 (안전한 버전)
-  function adjustLayoutForScreenSize() {
-    try {
-      const screenWidth = window.innerWidth;
-      const mainMenu = document.getElementById('main-menu');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      const quickMenu = document.getElementById('quick-menu');
-      const searchInput = document.getElementById('search-input');
-      
-      if (screenWidth <= 768) {
-        // 모바일
-        if (mainMenu) mainMenu.style.display = 'none';
-        if (quickMenu) quickMenu.style.display = 'none';
-        if (mobileMenuBtn) mobileMenuBtn.style.display = 'flex';
-        if (searchInput) searchInput.placeholder = '검색...';
-      } else {
-        // 데스크톱
-        if (mainMenu) mainMenu.style.display = 'flex';
-        if (quickMenu) quickMenu.style.display = 'flex';
-        if (mobileMenuBtn) mobileMenuBtn.style.display = 'none';
-        if (searchInput) searchInput.placeholder = '건물, 교수님, 강의실 검색...';
-        closeMobileMenu();
-      }
-    } catch (error) {
-      console.error('레이아웃 조정 오류:', error);
-    }
-  }
-  
-  // 스크롤 효과 (안전한 버전)
-  function addSafeScrollEffects() {
-    try {
-      let ticking = false;
-      
-      window.addEventListener('scroll', function() {
-        if (!ticking) {
-          requestAnimationFrame(function() {
-            if (window.innerWidth <= 768 && !isMobileMenuOpen) {
-              const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-              const nav = document.getElementById('top-nav');
-              
-              if (nav) {
-                if (scrollTop > lastScrollTop && scrollTop > 100) {
-                  nav.style.transform = 'translateY(-100%)';
-                  nav.style.transition = 'transform 0.3s ease';
-                } else {
-                  nav.style.transform = 'translateY(0)';
-                  nav.style.transition = 'transform 0.3s ease';
-                }
-              }
-              
-              lastScrollTop = scrollTop;
-            }
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }, { passive: true });
-    } catch (error) {
-      console.error('스크롤 효과 오류:', error);
-    }
-  }
-  
-  // 터치 지원 추가
-  function addBasicTouchSupport() {
-    try {
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      
-      if (isTouchDevice) {
-        document.body.classList.add('touch-device');
-        
-        // 기본적인 터치 효과만 추가
-        const touchElements = document.querySelectorAll('.nav-item, .service-card, .btn');
-        touchElements.forEach(element => {
-          element.addEventListener('touchstart', function() {
-            this.style.transform = 'scale(0.98)';
-          }, { passive: true });
-          
-          element.addEventListener('touchend', function() {
-            setTimeout(() => {
-              this.style.transform = '';
-            }, 150);
-          }, { passive: true });
-        });
-      }
-    } catch (error) {
-      console.error('터치 지원 추가 오류:', error);
-    }
-  }
-  
-  // 이벤트 리스너 안전 등록
-  function setupSafeEventListeners() {
-    try {
-      // 리사이즈 이벤트
-      let resizeTimeout;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          adjustLayoutForScreenSize();
-          if (window.innerWidth > 768) {
-            closeMobileMenu();
-          }
-        }, 250);
-      });
-      
-      // ESC 키 이벤트
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && isMobileMenuOpen) {
-          closeMobileMenu();
-        }
-      });
-      
-      // 오버레이 클릭 이벤트
-      const overlay = document.getElementById('mobile-menu-overlay');
-      if (overlay) {
-        overlay.addEventListener('click', closeMobileMenu);
-        overlay.addEventListener('touchend', function(e) {
-          e.preventDefault();
-          closeMobileMenu();
-        }, { passive: false });
-      }
-      
-      // 모바일 메뉴 버튼 이벤트
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-        mobileMenuBtn.addEventListener('touchend', function(e) {
-          e.preventDefault();
-          toggleMobileMenu();
-        }, { passive: false });
-      }
-      
-      // 검색창 모바일 최적화
-      const searchInput = document.getElementById('search-input');
-      if (searchInput) {
-        searchInput.addEventListener('focus', function() {
-          if (window.innerWidth <= 768) {
-            this.style.transform = 'scale(1.05)';
-            this.style.transition = 'transform 0.3s ease';
-          }
-        });
-        
-        searchInput.addEventListener('blur', function() {
-          this.style.transform = '';
-        });
-      }
-      
-    } catch (error) {
-      console.error('이벤트 리스너 등록 오류:', error);
-    }
-  }
-  
-  // 기존 closeAllDropdowns 함수 확장
-  function enhanceCloseAllDropdowns() {
-    try {
-      const originalCloseAllDropdowns = window.closeAllDropdowns;
-      
-      window.closeAllDropdowns = function() {
-        // 기존 드롭다운 닫기
-        if (typeof originalCloseAllDropdowns === 'function') {
-          originalCloseAllDropdowns();
-        }
-        
-        // 모바일 메뉴도 닫기
-        closeMobileMenu();
-      };
-    } catch (error) {
-      console.error('closeAllDropdowns 확장 오류:', error);
-    }
-  }
-  
-  // 안전한 초기화
-  function initSafely() {
-    if (initializationAttempted) {
-      console.log('ResponsiveManager 이미 초기화됨');
-      return true;
-    }
-    
-    try {
-      console.log('안전한 반응형 기능 초기화 시작...');
-      
-      // HTML 요소들이 있는지 체크
-      const requiredElements = [
-        'mobile-menu',
-        'mobile-menu-overlay', 
-        'mobile-menu-btn'
-      ];
-      
-      const missingElements = requiredElements.filter(id => !document.getElementById(id));
-      
-      if (missingElements.length > 0) {
-        console.warn('누락된 HTML 요소들:', missingElements);
-        console.warn('기본 반응형 기능만 활성화합니다.');
-        
-        // 기본적인 레이아웃 조정만 수행
-        adjustLayoutForScreenSize();
-        
-        let resizeTimeout;
-        window.addEventListener('resize', function() {
-          clearTimeout(resizeTimeout);
-          resizeTimeout = setTimeout(adjustLayoutForScreenSize, 250);
-        });
-        
-        initializationAttempted = true;
-        return false;
-      }
-      
-      // 모든 요소가 있다면 전체 기능 초기화
-      adjustLayoutForScreenSize();
-      setupSafeEventListeners();
-      addSafeScrollEffects();
-      addBasicTouchSupport();
-      enhanceCloseAllDropdowns();
-      
-      console.log('안전한 반응형 기능 초기화 완료');
-      initializationAttempted = true;
-      return true;
-      
-    } catch (error) {
-      console.error('안전한 초기화 실패:', error);
-      initializationAttempted = true;
-      return false;
-    }
-  }
-  
-  // 공개 API
-  return {
-    init: initSafely,
-    toggleMobileMenu: toggleMobileMenu,
-    closeMobileMenu: closeMobileMenu,
-    adjustLayout: adjustLayoutForScreenSize,
-    isInitialized: () => initializationAttempted
-  };
-})();
-
-// 안전한 자동 초기화 (오류 발생 시 중단)
-(function() {
-  try {
-    // 기존 DOMContentLoaded 이벤트 이후에 실행
-    function safeInit() {
-      try {
-        setTimeout(function() {
-          if (window.ResponsiveManager && !window.ResponsiveManager.isInitialized()) {
-            const success = window.ResponsiveManager.init();
-            if (success) {
-              console.log('✅ 반응형 기능이 성공적으로 초기화되었습니다.');
-            } else {
-              console.log('⚠️ 일부 반응형 기능이 제한적으로 초기화되었습니다.');
-            }
-          }
-        }, 1000); // 기존 코드 로드 후 1초 뒤 실행
-      } catch (error) {
-        console.error('ResponsiveManager 초기화 중 오류:', error);
-      }
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', safeInit);
-    } else {
-      safeInit();
-    }
-  } catch (error) {
-    console.error('ResponsiveManager 자동 초기화 설정 실패:', error);
-  }
-})();
-
-// 전역 함수로 노출 (기존 HTML에서 호출할 수 있도록)
-window.toggleMobileMenu = function() {
-  if (window.ResponsiveManager) {
-    window.ResponsiveManager.toggleMobileMenu();
-  } else {
-    console.warn('ResponsiveManager가 초기화되지 않았습니다.');
-  }
-};
-
-window.closeMobileMenu = function() {
-  if (window.ResponsiveManager) {
-    window.ResponsiveManager.closeMobileMenu();
-  }
-};
-
-// 키보드 네비게이션 핸들러들 (HTML에서 사용)
-window.handleMenuKeydown = function(event, target) {
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    showContent(target);
-  }
-};
-
-window.handleDropdownKeydown = function(event, target) {
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    switch(target) {
-      case 'timetable': openTimetablePage(); break;
-      case 'calendar': openCalendarPage(); break;
-      case 'shuttle': openShuttlePage(); break;
-    }
-  }
-};
-
-window.handleMobileMenuKeydown = function(event, target) {
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    switch(target) {
-      case 'timetable': openTimetablePage(); break;
-      case 'calendar': openCalendarPage(); break;
-      case 'shuttle': openShuttlePage(); break;
-      default: showContent(target); break;
-    }
-    if (window.ResponsiveManager) {
-      window.ResponsiveManager.closeMobileMenu();
-    }
-  }
-};
-
-window.handleButtonKeydown = function(event, callback) {
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    callback();
-  }
-};
-
-window.handleServiceCardKeydown = function(event, target) {
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    switch(target) {
-      case 'timetable': openTimetablePage(); break;
-      case 'shuttle': openShuttlePage(); break;
-      default: showContent(target); break;
-    }
-  }
-};
-
-// 개발 환경에서 디버그 정보 출력
-if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-  console.log('🎯 연성대학교 스마트 캠퍼스 - 개발 모드');
-  console.log('📱 반응형 웹: 준비됨');
-  console.log('🔧 디버그 모드: 활성화');
-}
