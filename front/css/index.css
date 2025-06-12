@@ -10,10 +10,15 @@
 }
 
 html {
-  /* 브라우저 기본 설정 유지 */
+  /* 브라우저 확대/축소 완전 무시 */
+  zoom: 1 !important;
+  -moz-transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
+  transform: scale(1) !important;
+  transform-origin: 0 0 !important;
   width: 100% !important;
   height: 100% !important;
-  font-size: 16px; /* 기본 폰트 크기 */
+  font-size: 16px !important; /* 기본 폰트 크기 고정 */
 }
 
 body {
@@ -22,8 +27,14 @@ body {
   color: #ffffff;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* 확대/축소 완전 방지 */
+  zoom: 1 !important;
+  -moz-transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
+  transform: scale(1) !important;
+  transform-origin: 0 0 !important;
   min-width: 1400px; /* 최소 너비 설정 */
-  font-size: 16px; /* 폰트 크기 고정 */
+  font-size: 16px !important; /* 폰트 크기 고정 */
 }
 
 /* ==================================================
