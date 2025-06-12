@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="./css/register.css" />
   <link rel="stylesheet" href="./css/shuttle.css" />
   <link rel="stylesheet" href="./css/timetable.css" />
+
 </head>
 <body>
   <nav id="top-nav">
@@ -51,12 +52,15 @@
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
         <ul class="dropdown-menu">
+          <!-- 내 시간표 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
+          <!-- 학사일정 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
             <span class="nav-icon">🗓️</span><span>학사일정</span>
           </li>
+          <!-- 셔틀버스 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
             <span class="nav-icon">🚌</span><span>셔틀버스</span>
           </li>
@@ -80,7 +84,9 @@
             </div>
             <div id="notification-list"></div>
             <div id="notification-footer">
-              <button id="mark-all-read" onclick="markAllAsRead()">모두 읽음 처리</button>
+              <button id="mark-all-read" onclick="markAllAsRead()">
+                모두 읽음 처리
+              </button>
             </div>
           </div>
         </div>
@@ -111,27 +117,8 @@
 
   <div id="main-container">
     <main id="content-area">
+      <!-- 대시보드 (홈) -->
       <div id="homeContent">
-        <!-- Dashboard 설명 UI 섹션 -->
-        <section id="dashboard-explanation" class="info-card">
-          <div class="info-header">
-            <h2>대시보드 소개</h2>
-          </div>
-          <div class="info-body">
-            <p>이 대시보드 페이지는 연성대학교 스마트 캠퍼스 웹 앱의 핵심 정보를 한눈에 파악할 수 있도록 설계되었습니다.</p>
-            <ul class="dashboard-list">
-              <li class="item-buildings"><strong>캠퍼스 건물</strong>: 현재 등록된 건물 수 및 최근 추가된 건물 변동 내역을 확인할 수 있습니다.</li>
-              <li class="item-students"><strong>재학생 수</strong>: 실시간 재학생 현황과 학생 수 변동 추이를 제공합니다.</li>
-              <li class="item-services"><strong>운영 서비스</strong>: 현재 활성화된 서비스 개수와 신규 서비스 정보를 보여줍니다.</li>
-              <li class="item-schedule"><strong>오늘 일정</strong>: 오늘 진행 중인 이벤트나 일정 건수를 요약하여 표시합니다.</li>
-            </ul>
-            <p class="info-footer">
-              사용자는 이 페이지에서 지도를 통해 건물 위치를 확인하거나, 오늘의 시간표, 셔틀버스 운행 현황, 최신 공지사항 등을 빠르게 탐색할 수 있습니다.
-            </p>
-          </div>
-        </section>
-
-
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
           <div id="breadcrumb-home">
@@ -184,6 +171,7 @@
         </div>
       </div>
       
+      <!-- SPA 분리 영역들 -->
       <div id="buildingsContent" style="display:none;"></div>
       <div id="communityContent" style="display:none;"></div>
       <div id="lecture-reviewContent" style="display:none;"></div>
@@ -191,7 +179,10 @@
       <div id="timetableContentPane" style="display:none;"></div>
       <div id="shuttleContentPane" style="display:none;"></div>
       <div id="calendarContentPane" style="display:none;"></div>
+      
+      <!-- 새로 추가: 학사일정 페이지 -->
       <div id="academic-calendarContentPane" style="display:none;"></div>
+      
       <div id="profileContentPane" style="display:none;"></div>
       <div id="settingsContent" style="display:none;"></div>
     </main>
