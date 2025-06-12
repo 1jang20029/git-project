@@ -1,6 +1,7 @@
 /* =============================================================================
-   register.css - 연성대학교 회원가입 페이지 (수정된 UI)
+   sign.css - 연성대학교 회원가입 페이지 (수정된 UI)
    ============================================================================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -56,15 +57,6 @@ body::before {
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-
-.nav-icon {
-  width: 48px;
-  height: 48px;
-  vertical-align: middle;
-  margin-right: 12px;
-}
-
 
 .back-button {
     background: rgba(255, 255, 255, 0.2);
@@ -180,7 +172,7 @@ body::before {
     font-size: 1rem;
 }
 
-/* 폼 그리드 */
+/* 폼 레이아웃 */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -188,7 +180,6 @@ body::before {
     margin-bottom: 2rem;
 }
 
-/* 폼 그룹 */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -243,7 +234,7 @@ body::before {
     font-weight: 400;
 }
 
-/* 힌트 및 에러 */
+/* 힌트 및 에러 메시지 */
 .form-hint {
     font-size: 0.85rem;
     color: #6b7280;
@@ -451,6 +442,73 @@ body::before {
     display: none;
 }
 
+/* 학년 드롭다운 */
+.grade-dropdown {
+    position: relative;
+}
+
+.grade-button {
+    width: 100%;
+    padding: 1.125rem 1.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
+    color: #1e293b;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    min-height: 56px;
+}
+
+.grade-button:hover {
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+}
+
+.grade-button:after {
+    content: "▼";
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.grade-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 12px;
+    z-index: 100;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-top: 0.5rem;
+}
+
+.grade-content.show {
+    display: block;
+}
+
+.grade-option {
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    color: #1e293b;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.grade-option:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
 /* 약관 동의 */
 .agreement {
     background: rgba(255, 255, 255, 0.9);
@@ -656,7 +714,7 @@ body::before {
         padding: 0.5rem;
     }
     
-    .register-card {
+    .sign-card {
         padding: 2rem;
         max-width: 100%;
     }
@@ -689,12 +747,12 @@ body::before {
         padding: 0.25rem;
     }
 
-    .register-card {
+    .sign-card {
         padding: 1.5rem;
         border-radius: 16px;
     }
 
-    .register-title {
+    .sign-title {
         font-size: 2rem;
         margin-bottom: 2rem;
     }
