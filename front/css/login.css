@@ -1,178 +1,151 @@
-/* 기본 배경 및 폰트 */
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: #f8fafc;
+/* reset */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
-
-/* 전체 컨테이너 */
-.container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 40px 20px;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #fff;
+  color: #1f1f1f;
+  line-height: 1.4;
 }
+a { text-decoration: none; color: inherit; }
 
-/* 헤더 */
-header {
+/* 상단 네비게이션 */
+.nav-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  padding: 16px;
 }
-
-.back-button {
-  color: #1f2937;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.header-title {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-/* 로고 및 슬로건 */
-.logo-container {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.university-logo {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.slogan {
+.nav-link {
   font-size: 14px;
-  color: #64748b;
+  color: #555;
+}
+.nav-link.active {
+  font-weight: 600;
+  color: #000;
 }
 
-/* 입력 폼 */
-.form-group {
+/* 안내 문구 */
+.notice {
+  text-align: center;
+  padding: 8px 16px;
+  color: #d33;
+  font-size: 14px;
+}
+
+/* 로그인 래퍼 */
+.login-wrapper {
+  max-width: 360px;
+  margin: 24px auto;
+  text-align: center;
+}
+.site-title {
+  font-size: 28px;
+  font-weight: 700;
+}
+.site-subtitle {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+/* 폼 스타일 */
+.login-form .form-group {
+  text-align: left;
   margin-bottom: 16px;
 }
-
-.form-label {
+.login-form label {
   display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-}
-
-.form-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  margin-bottom: 4px;
   font-size: 14px;
 }
-
-/* 비밀번호 토글 아이콘 */
-.password-input-container {
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f1f5f9;
+  font-size: 14px;
+}
+.password-group .password-wrap {
   position: relative;
 }
-
-.password-toggle {
+.eye-btn {
   position: absolute;
   top: 50%;
   right: 12px;
+  width: 24px;
+  height: 24px;
   transform: translateY(-50%);
-  cursor: pointer;
-}
-
-.eye-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* 로그인 버튼 */
-.login-button {
-  width: 100%;
-  background-color: #3b82f6;
-  color: white;
-  padding: 12px;
-  font-weight: bold;
+  background: none;
   border: none;
-  border-radius: 6px;
+  padding: 0;
   cursor: pointer;
-  margin-top: 8px;
+}
+.eye-hidden { display: none; }
+
+/* 옵션 행 */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.find-link {
+  color: #5b39d0;
+}
+
+/* 버튼 */
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.btn-login {
+  background: #6366f1;
+  color: #fff;
+  margin-bottom: 24px;
 }
 
 /* 구분선 */
 .separator {
   display: flex;
   align-items: center;
-  margin: 20px 0;
-}
-
-.separator-line {
-  flex: 1;
-  height: 1px;
-  background-color: #cbd5e1;
-}
-
-.separator-text {
-  margin: 0 12px;
-  color: #64748b;
+  text-align: center;
+  margin: 16px 0;
+  color: #888;
   font-size: 14px;
 }
-
-/* 소셜 로그인 */
-.social-login {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid #ddd;
 }
+.separator::before { margin-right: 8px; }
+.separator::after { margin-left: 8px; }
 
-.social-btn {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 15px;
-  color: white;
-  cursor: pointer;
-  text-align: center;
-  transition: background 0.3s ease;
+/* 소셜 로그인 버튼 */
+.social-login .btn {
+  margin-bottom: 12px;
+  font-weight: 600;
 }
-
-.social-btn.naver {
-  background-color: #03c75a;
-}
-
-.social-btn.kakao {
-  background-color: #fee500;
-  color: #3c1e1e;
-}
-
-.social-btn.google {
-  background-color: #4285f4;
-}
+.btn-naver   { background: #2db400; color: #fff; }
+.btn-kakao   { background: #fee500; color: #3c1e1e; }
+.btn-google  { background: #4285f4; color: #fff; }
 
 /* 회원가입 링크 */
 .register-link {
-  text-align: center;
-  margin-top: 24px;
+  margin-top: 16px;
   font-size: 14px;
 }
-
 .register-link a {
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-/* 기타 */
-.auto-login {
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.storage-notice {
-  font-size: 13px;
-  color: #f87171;
-  text-align: center;
-  margin-bottom: 12px;
+  color: #5b39d0;
+  font-weight: 600;
 }
