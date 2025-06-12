@@ -69,22 +69,20 @@
       gap: 2px;
       justify-content: center;
       overflow: hidden;
-      flex-direction: column;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
+      gap: 2px;
+      padding: 3px 6px;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s ease;
-      font-size: 13px;
+      font-size: 11px;
       white-space: nowrap;
       min-width: 0;
       flex-shrink: 1;
-      margin: 2px 0;
     }
 
     .nav-item:hover {
@@ -98,7 +96,7 @@
     }
 
     .nav-icon {
-      font-size: 16px;
+      font-size: 12px;
       flex-shrink: 0;
     }
 
@@ -108,7 +106,7 @@
       min-width: 0;
     }
 
-    /* 학생서비스 하위 메뉴 */
+    /* 학생서비스 하위 메뉴 - 모바일 전용 */
     .sub-menu {
       max-height: 0;
       overflow: hidden;
@@ -117,11 +115,13 @@
       margin: 0;
       padding: 0;
       border-radius: 8px;
+      display: none; /* 기본적으로 숨김 */
     }
 
     .sub-menu.expanded {
       max-height: 200px;
       padding: 8px 0;
+      display: block;
     }
 
     .sub-menu-item {
@@ -528,10 +528,6 @@
       #search-bar {
         width: 120px;
       }
-
-      #main-menu {
-        flex-direction: row;
-      }
     }
 
     /* 모바일 레이아웃 - 768px 이하 */
@@ -609,8 +605,9 @@
         margin: 0;
       }
 
-      /* 모바일에서 서브메뉴 스타일 */
+      /* 모바일에서만 서브메뉴 표시 */
       .sub-menu {
+        display: block;
         background: #f1f5f9;
         border-radius: 6px;
         margin-top: 4px;
