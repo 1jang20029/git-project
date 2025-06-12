@@ -100,7 +100,7 @@ function registerUser(studentId, password, name, department, grade, email, phone
 
 // 뒤로가기 함수
 function goBack() {
-    window.location.href = "/index.html";
+    window.location.href = "/front/index.html";
 }
 
 // 일반 로그인 처리 함수
