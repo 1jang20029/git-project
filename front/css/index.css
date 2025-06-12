@@ -560,3 +560,47 @@ body.light-mode {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* index.css에 이어서 추가 */
+#dashboard-explanation .dashboard-list {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+}
+#dashboard-explanation .dashboard-list li {
+  position: relative;
+  padding-left: 1.5em;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+/* 컬러 마커 */
+#dashboard-explanation .dashboard-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  font-size: 1.2em;
+  line-height: 1;
+}
+#dashboard-explanation .item-buildings::before { color: #3b82f6; }
+#dashboard-explanation .item-students::before  { color: #8b5cf6; }
+#dashboard-explanation .item-services::before  { color: #f472b6; }
+#dashboard-explanation .item-schedule::before  { color: #22d3ee; }
+
+/* 키워드 컬러 */
+#dashboard-explanation .item-buildings strong { color: #3b82f6; }
+#dashboard-explanation .item-students strong  { color: #8b5cf6; }
+#dashboard-explanation .item-services strong  { color: #f472b6; }
+#dashboard-explanation .item-schedule strong  { color: #22d3ee; }
+
+/* 바닥글(footer) 강조 */
+#dashboard-explanation .info-footer {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.15);
+  border-radius: 8px;
+  color: #e0f2fe;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
