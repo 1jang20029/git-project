@@ -2,8 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1400, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="format-detection" content="telephone=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>연성대학교 스마트 캠퍼스</title>
 
   <!-- 네이버 지도 API -->
@@ -118,7 +117,7 @@
 
   <div id="main-container">
     <main id="content-area">
-      <!-- 대시보드 (홈) - 수정된 부분만 -->
+      <!-- 대시보드 (홈) -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -126,78 +125,48 @@
             <span>홈</span><span>›</span><span>대시보드</span>
           </div>
         </div>
-        
-        <!-- 웰컴 섹션 -->
-        <div class="dashboard-welcome">
-          <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
-          <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
-          <p class="welcome-subtitle">
-            🎓 언제 어디서나 편리하게, 🤝 학생들과 함께하며<br>
-            💡 스마트한 대학생활을 시작해보세요
-          </p>
-          <div class="welcome-stats">
-            <div class="stat-item">
-              <span class="stat-number">8,547+</span>
-              <span class="stat-text">활성 사용자</span>
+        <div id="statsGrid"></div>
+        <div id="dashboardGrid">
+          <div id="map-card">
+            <div id="card-header-map">
+              <h3 id="card-title-map">캠퍼스 지도</h3>
+              <span id="card-icon-map">🗺️</span>
             </div>
-            <div class="stat-item">
-              <span class="stat-number">24</span>
-              <span class="stat-text">편의 서비스</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-number">98%</span>
-              <span class="stat-text">만족도</span>
+            <div id="map-container">
+              <div id="naverMap" style="width:100%;height:100%;"></div>
+              <div id="map-overlay">
+                <button id="map-zoom-in" onclick="zoomIn()" title="확대">🔍+</button>
+                <button id="map-zoom-out" onclick="zoomOut()" title="축소">🔍−</button>
+                <button id="map-reset" onclick="resetMapView()" title="초기화">🏠</button>
+                <button id="map-track-user" onclick="trackUserLocation()" title="내 위치">📍</button>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div id="statsGrid"></div>
-        
-        <!-- 서비스 섹션 -->
-        <div class="services-section">
-          <h2 class="services-title">주요 서비스</h2>
-          <div class="services-grid">
-            <div class="service-card" onclick="showContent('buildings')">
-              <span class="service-icon">🏢</span>
-              <h3 class="service-title">건물 & 시설</h3>
-              <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
-              <a href="#" class="service-button">둘러보기</a>
+          <div id="timetable-card">
+            <div id="card-header-timetable">
+              <h3 id="card-title-timetable">오늘의 시간표</h3>
+              <span id="card-icon-timetable">📅</span>
             </div>
-            
-            <div class="service-card" onclick="showContent('community')">
-              <span class="service-icon">💬</span>
-              <h3 class="service-title">커뮤니티</h3>
-              <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
-              <a href="#" class="service-button">참여하기</a>
+            <div id="timetableContent"></div>
+          </div>
+          <div id="shuttle-card">
+            <div id="card-header-shuttle">
+              <h3 id="card-title-shuttle">셔틀버스 현황</h3>
+              <span id="card-icon-shuttle">🚌</span>
             </div>
-            
-            <div class="service-card" onclick="showContent('lecture-review')">
-              <span class="service-icon">⭐</span>
-              <h3 class="service-title">강의평가</h3>
-              <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
-              <a href="#" class="service-button">평가보기</a>
+            <div id="shuttleRoutes"></div>
+            <div id="shuttle-status">
+              <div id="shuttle-time">--</div>
+              <div id="shuttle-desc">--</div>
+              <div id="shuttleStatus">--</div>
             </div>
-            
-            <div class="service-card" onclick="openTimetablePage()">
-              <span class="service-icon">📅</span>
-              <h3 class="service-title">내 시간표</h3>
-              <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
-              <a href="#" class="service-button">관리하기</a>
+          </div>
+          <div id="notice-card">
+            <div id="card-header-notice">
+              <h3 id="card-title-notice">최근 공지사항</h3>
+              <span id="card-icon-notice">📢</span>
             </div>
-            
-            <div class="service-card" onclick="openShuttlePage()">
-              <span class="service-icon">🚌</span>
-              <h3 class="service-title">셔틀버스</h3>
-              <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
-              <a href="#" class="service-button">확인하기</a>
-            </div>
-            
-            <div class="service-card" onclick="showContent('notices')">
-              <span class="service-icon">📢</span>
-              <h3 class="service-title">공지사항</h3>
-              <p class="service-description">학교의 최신 소식을 확인하세요</p>
-              <a href="#" class="service-button">보러가기</a>
-            </div>
+            <div id="recentNotices"></div>
           </div>
         </div>
       </div>
