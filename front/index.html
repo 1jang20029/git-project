@@ -1,419 +1,237 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>반응형 웹 페이지</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>연성대학교 스마트 캠퍼스</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
+  <!-- 네이버 지도 API -->
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
+  <link rel="stylesheet" href="./css/index.css" />
+  <link rel="stylesheet" href="./css/settings.css" />
+  <link rel="stylesheet" href="./css/academic-calendar.css" />
+  <link rel="stylesheet" href="./css/account-edit.css" />
+  <link rel="stylesheet" href="./css/community.css" />
+  <link rel="stylesheet" href="./css/find-id-pw.css" />
+  <link rel="stylesheet" href="./css/lecture-review.css" />
+  <link rel="stylesheet" href="./css/login.css" />
+  <link rel="stylesheet" href="./css/notices.css" />
+  <link rel="stylesheet" href="./css/register.css" />
+  <link rel="stylesheet" href="./css/shuttle.css" />
+  <link rel="stylesheet" href="./css/timetable.css" />
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* 헤더 */
-        header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-menu a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-        }
-
-        .nav-menu a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: white;
-            margin: 3px 0;
-            transition: 0.3s;
-            border-radius: 2px;
-        }
-
-        /* 메인 섹션 */
-        .hero {
-            text-align: center;
-            padding: 4rem 0;
-            color: white;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease forwards;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.3s forwards;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.6s forwards;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        /* 카드 섹션 */
-        .cards-section {
-            padding: 4rem 0;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* 푸터 */
-        footer {
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
-            margin-top: 2rem;
-        }
-
-        /* 애니메이션 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 태블릿 스타일 */
-        @media (max-width: 768px) {
-            .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 70px;
-                flex-direction: column;
-                background: rgba(0, 0, 0, 0.9);
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                padding: 2rem 0;
-                gap: 1rem;
-            }
-
-            .nav-menu.active {
-                left: 0;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .hamburger.active span:nth-child(2) {
-                opacity: 0;
-            }
-
-            .hamburger.active span:nth-child(1) {
-                transform: translateY(8px) rotate(45deg);
-            }
-
-            .hamburger.active span:nth-child(3) {
-                transform: translateY(-8px) rotate(-45deg);
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-        }
-
-        /* 모바일 스타일 */
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 15px;
-            }
-
-            .hero {
-                padding: 2rem 0;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .cards-section {
-                padding: 2rem 0;
-            }
-
-            .card {
-                padding: 1.5rem;
-            }
-
-            .cta-button {
-                padding: 0.8rem 1.5rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* 큰 화면 스타일 */
-        @media (min-width: 1400px) {
-            .hero h1 {
-                font-size: 4rem;
-            }
-
-            .cards-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-    </style>
 </head>
 <body>
-    <header>
-        <nav class="container">
-            <a href="#" class="logo">MyWebsite</a>
-            <ul class="nav-menu">
-                <li><a href="#home">홈</a></li>
-                <li><a href="#about">소개</a></li>
-                <li><a href="#services">서비스</a></li>
-                <li><a href="#contact">연락처</a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+  <nav id="top-nav">
+    <div id="nav-brand">
+      <a href="./index.html" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
+        <img src="./img/campus_icon.png" alt="캠퍼스 아이콘"
+            style="width:24px; height:24px; margin-right:8px;" />
+        <span>연성대학교 스마트 캠퍼스</span>
+      </a>
+    </div>
+    <ul id="main-menu">
+      <li class="nav-item active" id="nav-home" onclick="showContent('home')">
+        <span class="nav-icon" title="대시보드">🏠</span>
+        <span>대시보드</span>
+      </li>
+      <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
+        <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
+        <span>건물 &amp; 시설</span>
+      </li>
+      <li class="nav-item" id="nav-community" onclick="showContent('community')">
+        <span class="nav-icon" title="커뮤니티">💬</span>
+        <span>커뮤니티</span>
+      </li>
+      <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
+        <span class="nav-icon" title="강의평가">⭐</span>
+        <span>강의평가</span>
+      </li>
+      <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
+        <span class="nav-icon" title="공지사항">📢</span>
+        <span>공지사항</span>
+      </li>
+      <li class="nav-item" id="nav-student-services">
+        <span class="nav-icon" title="학생서비스">🎓</span>
+        <span>학생서비스</span>
+        <ul class="dropdown-menu">
+          <!-- 내 시간표 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
+            <span class="nav-icon">📅</span><span>내 시간표</span>
+          </li>
+          <!-- 학사일정 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
+            <span class="nav-icon">🗓️</span><span>학사일정</span>
+          </li>
+          <!-- 셔틀버스 - 현재 창에서 이동 -->
+          <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
+            <span class="nav-icon">🚌</span><span>셔틀버스</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <ul id="quick-menu"></ul>
+    <div id="nav-controls">
+      <div id="search-bar">
+        <span id="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="건물, 교수님, 강의실 검색..." />
+      </div>
+      <div id="user-menu">
+        <div id="notification-btn" onclick="toggleNotifications()">
+          🔔
+          <div id="notification-dot"></div>
+          <div id="notification-dropdown">
+            <div id="notification-header">
+              <div id="notification-title">알림</div>
+              <div id="notification-badge">0</div>
             </div>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero" id="home">
-            <div class="container">
-                <h1>안녕하세요! 반응형 웹사이트입니다</h1>
-                <p>모든 디바이스에서 완벽하게 작동하는 현대적인 웹 경험을 제공합니다</p>
-                <a href="#services" class="cta-button">더 알아보기</a>
+            <div id="notification-list"></div>
+            <div id="notification-footer">
+              <button id="mark-all-read" onclick="markAllAsRead()">
+                모두 읽음 처리
+              </button>
             </div>
-        </section>
-
-        <section class="cards-section" id="services">
-            <div class="container">
-                <h2 class="section-title">우리의 서비스</h2>
-                <p class="section-subtitle">다양한 디바이스와 화면 크기에 최적화된 서비스를 제공합니다</p>
-                
-                <div class="cards-grid">
-                    <div class="card">
-                        <span class="card-icon">📱</span>
-                        <h3>모바일 최적화</h3>
-                        <p>스마트폰과 태블릿에서 완벽한 사용자 경험을 제공합니다.</p>
-                    </div>
-                    <div class="card">
-                        <span class="card-icon">💻</span>
-                        <h3>데스크톱 지원</h3>
-                        <p>큰 화면에서도 아름답고 기능적인 인터페이스를 제공합니다.</p>
-                    </div>
-                    <div class="card">
-                        <span class="card-icon">⚡</span>
-                        <h3>빠른 로딩</h3>
-                        <p>최적화된 코드로 모든 디바이스에서 빠른 성능을 보장합니다.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 MyWebsite. 모든 권리 보유.</p>
+          </div>
         </div>
-    </footer>
+        <div id="user-profile" onclick="toggleUserMenu()">
+          <div id="user-avatar">👤</div>
+          <div id="user-info">
+            <div id="user-name">게스트</div>
+            <div id="user-role">방문자</div>
+          </div>
+          <div id="user-dropdown">
+            <div id="dropdown-user-info">
+              <div id="dropdown-user-name">게스트</div>
+              <div id="dropdown-user-role">방문자</div>
+            </div>
+            <button id="dropdown-item-profile" onclick="showProfile()">내 계정</button>
+            <button id="dropdown-item-settings" onclick="showContent('settings')">
+              <span class="settings-icon">⚙️</span><span>설정</span>
+            </button>
+            <div id="dropdown-divider"></div>
+            <button id="dropdown-item-logout" onclick="handleLogout()" style="color:#ef4444;">
+              <span class="logout-icon">🚪</span><span>로그아웃</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-    <script>
-        // 햄버거 메뉴 토글
-        const hamburger = document.querySelector('.hamburger');
-        const navMenu = document.querySelector('.nav-menu');
+  <div id="main-container">
+    <main id="content-area">
+      <!-- 대시보드 (홈) - 수정된 부분만 -->
+      <div id="homeContent">
+        <div id="content-header-home">
+          <h1 id="title-home">대시보드</h1>
+          <div id="breadcrumb-home">
+            <span>홈</span><span>›</span><span>대시보드</span>
+          </div>
+        </div>
+        
+        <!-- 웰컴 섹션 -->
+        <div class="dashboard-welcome">
+          <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
+          <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
+          <p class="welcome-subtitle">
+            🎓 언제 어디서나 편리하게, 🤝 학생들과 함께하며<br>
+            💡 스마트한 대학생활을 시작해보세요
+          </p>
+          <div class="welcome-stats">
+            <div class="stat-item">
+              <span class="stat-number">8,547+</span>
+              <span class="stat-text">활성 사용자</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">24</span>
+              <span class="stat-text">편의 서비스</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">98%</span>
+              <span class="stat-text">만족도</span>
+            </div>
+          </div>
+        </div>
 
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // 네비게이션 링크 클릭 시 메뉴 닫기
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
-        });
-
-        // 부드러운 스크롤
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // 스크롤 애니메이션
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // 카드들에 스크롤 애니메이션 적용
-        document.querySelectorAll('.card').forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
-            observer.observe(card);
-        });
-    </script>
+        <div id="statsGrid"></div>
+        
+        <!-- 서비스 섹션 -->
+        <div class="services-section">
+          <h2 class="services-title">주요 서비스</h2>
+          <div class="services-grid">
+            <div class="service-card" onclick="showContent('buildings')">
+              <span class="service-icon">🏢</span>
+              <h3 class="service-title">건물 & 시설</h3>
+              <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
+              <a href="#" class="service-button">둘러보기</a>
+            </div>
+            
+            <div class="service-card" onclick="showContent('community')">
+              <span class="service-icon">💬</span>
+              <h3 class="service-title">커뮤니티</h3>
+              <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
+              <a href="#" class="service-button">참여하기</a>
+            </div>
+            
+            <div class="service-card" onclick="showContent('lecture-review')">
+              <span class="service-icon">⭐</span>
+              <h3 class="service-title">강의평가</h3>
+              <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
+              <a href="#" class="service-button">평가보기</a>
+            </div>
+            
+            <div class="service-card" onclick="openTimetablePage()">
+              <span class="service-icon">📅</span>
+              <h3 class="service-title">내 시간표</h3>
+              <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
+              <a href="#" class="service-button">관리하기</a>
+            </div>
+            
+            <div class="service-card" onclick="openShuttlePage()">
+              <span class="service-icon">🚌</span>
+              <h3 class="service-title">셔틀버스</h3>
+              <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
+              <a href="#" class="service-button">확인하기</a>
+            </div>
+            
+            <div class="service-card" onclick="showContent('notices')">
+              <span class="service-icon">📢</span>
+              <h3 class="service-title">공지사항</h3>
+              <p class="service-description">학교의 최신 소식을 확인하세요</p>
+              <a href="#" class="service-button">보러가기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SPA 분리 영역들 -->
+      <div id="buildingsContent" style="display:none;"></div>
+      <div id="communityContent" style="display:none;"></div>
+      <div id="lecture-reviewContent" style="display:none;"></div>
+      <div id="noticesContent" style="display:none;"></div>
+      <div id="timetableContentPane" style="display:none;"></div>
+      <div id="shuttleContentPane" style="display:none;"></div>
+      <div id="calendarContentPane" style="display:none;"></div>
+      
+      <!-- 새로 추가: 학사일정 페이지 -->
+      <div id="academic-calendarContentPane" style="display:none;"></div>
+      
+      <div id="profileContentPane" style="display:none;"></div>
+      <div id="settingsContent" style="display:none;"></div>
+    </main>
+  </div>
+  <script src="./js/index.js" defer></script>
+  <script src="./js/settings.js" defer></script>
+  <script src="./js/buildings.js" defer></script>
+  <script src="./js/academic-calendar.js" defer></script>
+  <script src="./js/account-edit.js" defer></script>
+  <script src="./js/community.js" defer></script>
+  <script src="./js/find-id-pw.js" defer></script>
+  <script src="./js/lecture-review.js" defer></script>
+  <script src="./js/login.js" defer></script>
+  <script src="./js/notices.js" defer></script>
+  <script src="./js/register.js" defer></script>
+  <script src="./js/shuttle.js" defer></script>
+  <script src="./js/timetable.js" defer></script>
 </body>
 </html>
