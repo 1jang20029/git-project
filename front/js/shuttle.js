@@ -554,7 +554,7 @@ function updateRouteDisplay(scheduleData) {
 
 // 홈으로 이동
 function goToHome() {
-    window.location.href = 'index.html';
+    window.location.href = "/front/index.html";
 }
 
 // 페이지 로드 시 초기화
