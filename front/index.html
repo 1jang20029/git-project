@@ -245,6 +245,108 @@
       min-width: 200px;
     }
 
+    #user-dropdown.show,
+    #notification-dropdown.show {
+      display: block;
+    }
+
+    /* 드롭다운 내부 스타일 추가 */
+    #dropdown-user-info {
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 12px;
+    }
+
+    #dropdown-user-name {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+
+    #dropdown-user-role {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    #dropdown-item-profile,
+    #dropdown-item-settings,
+    #dropdown-item-logout {
+      width: 100%;
+      padding: 10px 12px;
+      margin: 4px 0;
+      border: none;
+      background: none;
+      text-align: left;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+
+    #dropdown-item-profile:hover,
+    #dropdown-item-settings:hover {
+      background: #f3f4f6;
+    }
+
+    #dropdown-item-logout:hover {
+      background: #fef2f2;
+    }
+
+    #dropdown-divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 8px 0;
+    }
+
+    /* 알림 드롭다운 스타일 */
+    #notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    #notification-title {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    #notification-badge {
+      background: #ef4444;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    #notification-list {
+      min-height: 60px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      padding: 20px 0;
+    }
+
+    #mark-all-read {
+      width: 100%;
+      padding: 8px 12px;
+      background: #f3f4f6;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+
+    #mark-all-read:hover {
+      background: #e5e7eb;
+    }
+
     /* 메인 컨테이너 */
     #main-container {
       padding: 24px;
@@ -747,40 +849,62 @@
     // 알림 토글 함수 (기존 함수들이 외부 파일에 있다고 가정)
     function toggleNotifications() {
       const dropdown = document.getElementById('notification-dropdown');
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      const userDropdown = document.getElementById('user-dropdown');
+      
+      // 다른 드롭다운 닫기
+      userDropdown.classList.remove('show');
+      
+      // 알림 드롭다운 토글
+      dropdown.classList.toggle('show');
     }
 
     function toggleUserMenu() {
       const dropdown = document.getElementById('user-dropdown');
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      const notificationDropdown = document.getElementById('notification-dropdown');
+      
+      // 다른 드롭다운 닫기
+      notificationDropdown.classList.remove('show');
+      
+      // 사용자 드롭다운 토글
+      dropdown.classList.toggle('show');
     }
 
     function markAllAsRead() {
       // 외부 JS 파일에서 구현
+      console.log('모든 알림을 읽음 처리합니다.');
     }
 
     function showProfile() {
       // 외부 JS 파일에서 구현
+      console.log('프로필 페이지로 이동합니다.');
+      document.getElementById('user-dropdown').classList.remove('show');
     }
 
     function showContent(contentType) {
       // 외부 JS 파일에서 구현
+      console.log(`${contentType} 콘텐츠를 표시합니다.`);
+      document.getElementById('user-dropdown').classList.remove('show');
     }
 
     function handleLogout() {
       // 외부 JS 파일에서 구현
+      console.log('로그아웃 처리합니다.');
+      document.getElementById('user-dropdown').classList.remove('show');
     }
 
     function openTimetablePage() {
       // 외부 JS 파일에서 구현
+      console.log('시간표 페이지를 엽니다.');
     }
 
     function openCalendarPage() {
       // 외부 JS 파일에서 구현
+      console.log('학사일정 페이지를 엽니다.');
     }
 
     function openShuttlePage() {
       // 외부 JS 파일에서 구현
+      console.log('셔틀버스 페이지를 엽니다.');
     }
 
     // 외부 클릭 시 드롭다운 닫기
