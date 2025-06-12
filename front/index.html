@@ -23,13 +23,6 @@
   <style>
     * {
       box-sizing: border-box;
-    /* 컨텐츠 영역 숨김/표시 */
-    #content-area > div {
-      display: none;
-    }
-
-    #content-area > div:first-child {
-      display: block;
     }
 
     body {
@@ -40,7 +33,7 @@
       min-height: 100vh;
     }
 
-    /* 상단 네비게이션 - 그리드 레이아웃 사용 */
+    /* 상단 네비게이션 */
     #top-nav {
       display: grid;
       grid-template-columns: 250px 1fr 300px;
@@ -277,111 +270,21 @@
       display: block;
     }
 
-    /* 드롭다운 내부 스타일 */
-    #dropdown-user-info {
-      padding-bottom: 8px;
-      border-bottom: 1px solid #e5e7eb;
-      margin-bottom: 8px;
-    }
-
-    #dropdown-user-name {
-      font-weight: 600;
-      color: #1f2937;
-      margin-bottom: 2px;
-      font-size: 12px;
-    }
-
-    #dropdown-user-role {
-      font-size: 10px;
-      color: #6b7280;
-    }
-
-    #dropdown-item-profile,
-    #dropdown-item-settings,
-    #dropdown-item-logout {
-      width: 100%;
-      padding: 6px 8px;
-      margin: 2px 0;
-      border: none;
+    /* 모바일 대응 햄버거 메뉴 */
+    .mobile-menu-toggle {
+      display: none;
       background: none;
-      text-align: left;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s;
-      font-size: 11px;
-    }
-
-    #dropdown-item-profile:hover,
-    #dropdown-item-settings:hover {
-      background: #f3f4f6;
-    }
-
-    #dropdown-item-logout:hover {
-      background: #fef2f2;
-    }
-
-    #dropdown-divider {
-      height: 1px;
-      background: #e5e7eb;
-      margin: 6px 0;
-    }
-
-    /* 알림 드롭다운 스타일 */
-    #notification-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    #notification-title {
-      font-weight: 600;
-      color: #1f2937;
-      font-size: 12px;
-    }
-
-    #notification-badge {
-      background: #ef4444;
-      color: white;
-      padding: 1px 6px;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 500;
-    }
-
-    #notification-list {
-      min-height: 40px;
-      text-align: center;
-      color: #6b7280;
-      font-size: 11px;
-      padding: 15px 0;
-    }
-
-    #mark-all-read {
-      width: 100%;
-      padding: 6px 8px;
-      background: #f3f4f6;
       border: none;
-      border-radius: 4px;
+      font-size: 18px;
       cursor: pointer;
-      font-size: 10px;
-      color: #6b7280;
-      margin-top: 6px;
-    }
-
-    #mark-all-read:hover {
-      background: #e5e7eb;
+      padding: 4px;
     }
 
     /* 메인 컨테이너 */
     #main-container {
       padding: 20px 0;
-      max-width: 1200px;
-      margin: 0 auto;
       width: 100%;
+      margin: 0;
     }
 
     /* 대시보드 컨텐츠 */
@@ -389,9 +292,10 @@
       text-align: center;
       padding: 30px 20px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 16px;
+      border-radius: 0;
       color: white;
-      margin: 0 20px 25px 20px;
+      margin: 0 0 25px 0;
+      width: 100%;
     }
 
     .welcome-badge {
@@ -401,7 +305,7 @@
       border-radius: 16px;
       font-size: 12px;
       margin-bottom: 12px;
-      color: white;
+      color: white !important;
       font-weight: 500;
     }
 
@@ -410,6 +314,7 @@
       font-weight: 700;
       margin-bottom: 12px;
       line-height: 1.2;
+      color: white !important;
     }
 
     .welcome-subtitle {
@@ -417,6 +322,7 @@
       opacity: 0.9;
       margin-bottom: 25px;
       line-height: 1.6;
+      color: white !important;
     }
 
     .welcome-stats {
@@ -434,25 +340,65 @@
       display: block;
       font-size: 1.8rem;
       font-weight: 700;
-      color: #60a5fa;
+      color: #60a5fa !important;
     }
 
     .stat-text {
       font-size: 0.85rem;
       opacity: 0.8;
+      color: white !important;
+    }
+
+    /* 통계 그리드 */
+    #statsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat-card-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3b82f6 !important;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .stat-card-label {
+      font-size: 0.9rem;
+      color: #6b7280 !important;
+      font-weight: 500;
+    }
+
+    .stat-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      display: block;
     }
 
     /* 서비스 섹션 */
     .services-section {
       margin-top: 30px;
       padding: 0 20px;
+      width: 100%;
     }
 
     .services-title {
       text-align: center;
       font-size: 1.8rem;
       font-weight: 700;
-      color: #1f2937;
+      color: #1f2937 !important;
       margin-bottom: 25px;
     }
 
@@ -489,36 +435,26 @@
     .service-title {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #1f2937;
+      color: #1f2937 !important;
       margin-bottom: 6px;
     }
 
     .service-description {
-      color: #6b7280;
+      color: #6b7280 !important;
       line-height: 1.5;
       margin-bottom: 12px;
       font-size: 0.9rem;
     }
 
     .service-button {
-      color: #3b82f6;
+      color: #3b82f6 !important;
       text-decoration: none;
       font-weight: 500;
       font-size: 12px;
     }
 
     .service-button:hover {
-      color: #1e40af;
-    }
-
-    /* 모바일 대응 햄버거 메뉴 */
-    .mobile-menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 4px;
+      color: #1e40af !important;
     }
 
     /* 반응형 미디어 쿼리 */
@@ -543,28 +479,40 @@
     }
 
     @media (max-width: 768px) {
-      #statsGrid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        padding: 0 12px;
-      }
-
-      .stat-card {
-        padding: 15px;
-      }
-
-      .stat-card-number {
-        font-size: 1.5rem;
-      }
-
+      /* 모바일 네비게이션 - 완전히 다른 레이아웃 */
       #top-nav {
         display: flex;
-        justify-content: space-between;
+        align-items: center;
         padding: 8px 0;
+        position: relative;
       }
 
+      /* 햄버거 메뉴 - 맨 왼쪽 */
+      .mobile-menu-toggle {
+        display: block;
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+      }
+
+      /* 브랜드 - 중앙 */
       #nav-brand {
-        padding-left: 12px;
+        flex: 1;
+        justify-content: center;
+        padding: 0;
+        text-align: center;
+      }
+
+      /* 컨트롤 - 오른쪽 */
+      #nav-controls {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0;
+        gap: 4px;
       }
 
       #main-menu {
@@ -595,23 +543,27 @@
         font-size: 13px;
       }
 
-      .mobile-menu-toggle {
-        display: block;
-        order: -1;
-        margin-left: 12px;
-      }
-
-      #nav-controls {
-        padding-right: 12px;
-        gap: 4px;
-      }
-
       #search-bar {
         width: 100px;
       }
 
       #user-info {
         display: none;
+      }
+
+      /* 통계 그리드 모바일 */
+      #statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 0 12px;
+      }
+
+      .stat-card {
+        padding: 15px;
+      }
+
+      .stat-card-number {
+        font-size: 1.5rem;
       }
 
       .welcome-title {
@@ -650,6 +602,14 @@
     }
 
     @media (max-width: 480px) {
+      #nav-brand span {
+        display: none;
+      }
+
+      #search-bar {
+        width: 80px;
+      }
+
       #statsGrid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
@@ -662,14 +622,6 @@
 
       .stat-card-number {
         font-size: 1.3rem;
-      }
-
-      #nav-brand span {
-        display: none;
-      }
-
-      #search-bar {
-        width: 80px;
       }
 
       .welcome-title {
@@ -692,43 +644,13 @@
         font-size: 1.8rem;
       }
     }
+
+    /* 컨텐츠 영역 숨김/표시 */
+    #content-area > div {
+      display: none;
     }
 
-    /* 통계 그리드 스타일 추가 */
-    #statsGrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 0 20px;
-      margin-bottom: 30px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      border: 1px solid #e5e7eb;
-    }
-
-    .stat-card-number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #3b82f6;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .stat-card-label {
-      font-size: 0.9rem;
-      color: #6b7280;
-      font-weight: 500;
-    }
-
-    .stat-card-icon {
-      font-size: 1.5rem;
-      margin-bottom: 12px;
+    #content-area > div:first-child {
       display: block;
     }
   </style>
@@ -797,11 +719,6 @@
               <div id="notification-badge">0</div>
             </div>
             <div id="notification-list">새로운 알림이 없습니다</div>
-            <div id="notification-footer">
-              <button id="mark-all-read" onclick="markAllAsRead()">
-                모두 읽음 처리
-              </button>
-            </div>
           </div>
         </div>
         <div id="user-profile" onclick="toggleUserMenu()">
