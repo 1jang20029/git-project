@@ -406,14 +406,21 @@ function changeSemester() {
 }
 
 // 로컬 스토리지에서 과목 데이터 로드
-async function loadCoursesFromAPI() {
-  const { courses: serverCourses } = await apiRequest(
-    `/courses?userId=${currentUserId}&year=${currentSemester.year}&term=${currentSemester.term}`
-  );
-  courses = serverCourses;
-  renderCourseList();
-  renderCoursesOnTimetable();
-  calculateGrades();
+function loadCoursesFromStorage() {
+    const currentUser = localStorage.getItem('currentLoggedInUser');
+    
+    if (currentUser) {
+        const semesterKey = `courses_${currentSemester.year}_${currentSemester.term}_${currentTimetable.id}_user_${currentUser}`;
+        const savedCourses = localStorage.getItem(semesterKey);
+        
+        if (savedCourses) {
+            courses = JSON.parse(savedCourses);
+        } else {
+            courses = [];
+        }
+    } else {
+        courses = [];
+    }
 }
 
 // 로컬 스토리지에 과목 데이터 저장
@@ -837,35 +844,84 @@ function removeTimeSlot(button) {
 }
 
 // 과목 저장
-async function saveCourse(event) {
-  event.preventDefault();
-  // … form에서 course 객체 생성 …
-  
-  if (course.id) {
-    // (1) 이미 있는 과목이면 PUT 요청으로 “수정”
-    await apiRequest(`/courses/${course.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(course)
-    });
-  } else {
-    // (2) 신규 과목이면 POST 요청으로 “생성”
-    await apiRequest('/courses', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...course,
-        userId: currentUserId,
-        semester: currentSemester
-      })
-    });
-  }
-  
-  // (3) 저장이 끝나면 다시 서버에서 전체 과목 리스트를 불러와 화면을 그린다
-  await loadCoursesFromAPI();
-  
-  // (4) 모달 닫기
-  closeModal();
-}
+function saveCourse(event) {
+    event.preventDefault();
 
+    const slotEls = document.querySelectorAll('.time-slot');
+    const slots = Array.from(slotEls).map(slot => ({
+        day: parseInt(slot.querySelector('.day-select').value, 10),
+        start: parseInt(slot.querySelector('.start-select').value, 10),
+        end: parseInt(slot.querySelector('.end-select').value, 10)
+    }));
+
+    // 같은 과목 내에서 시간대 겹침 검사
+    for (let i = 0; i < slots.length; i++) {
+        for (let j = i + 1; j < slots.length; j++) {
+            if (slots[i].day === slots[j].day) {
+                if (slots[i].start <= slots[j].end && slots[j].start <= slots[i].end) {
+                    showTimeError('⚠️ 같은 과목 내에 시간이 겹칩니다.');
+                    return;
+                }
+            }
+        }
+    }
+
+    // 기존 시간표 과목과 겹치는지 검사
+    const editingId = document.getElementById('course-id').value
+        ? parseInt(document.getElementById('course-id').value, 10)
+        : null;
+
+    for (let s of slots) {
+        for (let c of courses) {
+            if (editingId !== null && c.id === editingId) continue;
+            for (let t of c.times) {
+                if (s.day === t.day) {
+                    if (s.start <= t.end && t.start <= s.end) {
+                        showTimeError('⚠️ 해당 시간대에 이미 다른 과목이 있습니다.');
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    removeTimeError();
+
+    const courseId = editingId;
+    const name = document.getElementById('course-name').value.trim();
+    const professor = document.getElementById('course-professor').value.trim();
+    const credits = parseInt(document.getElementById('course-credits').value, 10);
+    const type = document.getElementById('course-type').value;
+    const room = document.getElementById('course-room').value.trim();
+    const color = document.getElementById('course-color').value;
+    const grade = document.getElementById('course-grade').value;
+
+    const course = {
+        id: courseId || Date.now(),
+        name,
+        professor,
+        credits,
+        type,
+        room,
+        color,
+        times: slots,
+        grade: grade || null
+    };
+
+    if (courseId) {
+        const idx = courses.findIndex(c => c.id === course.id);
+        if (idx !== -1) courses[idx] = course;
+    } else {
+        courses.push(course);
+    }
+
+    saveCoursesToStorage();
+    renderCourseList();
+    renderCoursesOnTimetable();
+    calculateGrades();
+
+    closeModal();
+}
 
 // 에러 메시지 표시 함수
 function showTimeError(text) {
