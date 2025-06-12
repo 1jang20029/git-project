@@ -448,6 +448,8 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
+      margin: 0 auto;
+      max-width: 1200px;
     }
 
     .service-card {
@@ -459,10 +461,11 @@
       border: 1px solid #e2e8f0;
       transition: all 0.3s ease;
       cursor: pointer;
-      min-height: 240px;
+      min-height: 280px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      width: 100%;
     }
 
     .service-card:hover {
@@ -513,6 +516,13 @@
     }
 
     /* 반응형 미디어 쿼리 */
+    @media (max-width: 1200px) {
+      .services-grid {
+        max-width: 900px;
+        gap: 20px;
+      }
+    }
+
     @media (max-width: 1024px) {
       #top-nav {
         grid-template-columns: 200px 1fr 250px;
@@ -535,6 +545,7 @@
       .services-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
+        max-width: 600px;
       }
     }
 
