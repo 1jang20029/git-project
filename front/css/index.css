@@ -249,7 +249,7 @@ body {
   border-radius: 12px;
   padding: clamp(4px, 1vh, 15px) clamp(6px, 1.8vw, 20px) clamp(4px, 1vh, 15px) clamp(20px, 4.5vw, 45px);
   /* 80%에서 더 작게, 100%에서 더 크게 */
-  width: clamp(100px, 25vw, 350px);
+  width: clamp(10px, 25vw, 350px);
   color: #f1f5f9;
   font-size: clamp(8px, 1.4vw, 16px);
   transition: all 0.3s ease;
