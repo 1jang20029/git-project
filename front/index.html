@@ -499,6 +499,23 @@
       padding: 8px;
     }
 
+    /* 중간 크기 화면 대응 (1200px 이하) */
+    @media (max-width: 1200px) {
+      .nav-item .nav-text {
+        display: none;
+      }
+      
+      .nav-item {
+        padding: 8px;
+        min-width: 40px;
+        justify-content: center;
+      }
+      
+      .nav-item .nav-icon {
+        font-size: 16px;
+      }
+    }
+
     /* 중간 크기 화면 대응 (1024px 이하) */
     @media (max-width: 1024px) {
       #main-menu {
@@ -705,27 +722,27 @@
     <ul id="main-menu">
       <li class="nav-item active" id="nav-home" onclick="showContent('home')">
         <span class="nav-icon" title="대시보드">🏠</span>
-        <span>대시보드</span>
+        <span class="nav-text">대시보드</span>
       </li>
       <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
         <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
-        <span>건물 &amp; 시설</span>
+        <span class="nav-text">건물 &amp; 시설</span>
       </li>
       <li class="nav-item" id="nav-community" onclick="showContent('community')">
         <span class="nav-icon" title="커뮤니티">💬</span>
-        <span>커뮤니티</span>
+        <span class="nav-text">커뮤니티</span>
       </li>
       <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
         <span class="nav-icon" title="강의평가">⭐</span>
-        <span>강의평가</span>
+        <span class="nav-text">강의평가</span>
       </li>
       <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
         <span class="nav-icon" title="공지사항">📢</span>
-        <span>공지사항</span>
+        <span class="nav-text">공지사항</span>
       </li>
       <li class="nav-item" id="nav-student-services">
         <span class="nav-icon" title="학생서비스">🎓</span>
-        <span>학생서비스</span>
+        <span class="nav-text">학생서비스</span>
         <ul class="dropdown-menu">
           <!-- 내 시간표 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
