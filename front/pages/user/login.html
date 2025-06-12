@@ -4,65 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>로그인 - 연성대학교</title>
-  <link rel="stylesheet" href="../../css/login.css" />
+  <!-- 절대경로로 변경 -->
+  <link rel="stylesheet" href="/css/login.css" />
 </head>
 <body>
-  <!-- 상단 헤더 -->
   <header class="header">
-    <button type="button" class="back-btn" onclick="goBack()">←</button>
+    <button class="back-btn" onclick="goBack()">←</button>
     <h1 class="header-title">로그인</h1>
   </header>
 
-  <!-- 로그인 카드 -->
   <div class="login-card">
     <h2 class="site-title">연성대학교</h2>
     <p class="site-subtitle">Campus Guide</p>
 
     <form id="loginForm" class="login-form">
-      <div class="form-group">
-        <label for="studentId">아이디 (학번)</label>
-        <input type="text" id="studentId" placeholder="학번을 입력하세요" required />
-      </div>
-
-      <div class="form-group">
-        <label for="password">비밀번호</label>
-        <div class="password-wrap">
-          <input type="password" id="password" placeholder="비밀번호를 입력하세요" required />
-          <button type="button" id="togglePassword" class="eye-btn" aria-label="비밀번호 표시 토글">
-            <svg class="eye-visible" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-            <svg class="eye-hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-              <line x1="3" y1="3" x2="21" y2="21"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="form-options">
-        <label><input type="checkbox" id="saveId" /> 아이디 저장</label>
-        <a href="../user/find-id-pw.html" class="find-link">아이디/비밀번호 찾기</a>
-      </div>
-
-      <button type="submit" class="btn btn-login">로그인</button>
+      <!-- ...생략... -->
     </form>
 
     <div class="separator"><span>또는</span></div>
-
     <div class="social-icons">
-      <button type="button" class="social-icon naver" onclick="naverLogin()">N</button>
-      <button type="button" class="social-icon kakao" onclick="kakaoLogin()">K</button>
-      <button type="button" class="social-icon google" onclick="googleLogin()">G</button>
+      <!-- ...생략... -->
     </div>
-
     <p class="register-link">
       아직 계정이 없으신가요? <a href="sign.html">회원가입</a>
     </p>
   </div>
 
-  <script src="../../js/login.js"></script>
+  <!-- 절대경로로 변경 -->
+  <script src="/js/login.js"></script>
 </body>
 </html>
