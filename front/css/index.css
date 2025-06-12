@@ -1,5 +1,5 @@
 /* =============================================================================
-   index.css
+   index.css - 웹 확대 시 UI 깨짐 방지 개선판
    공통 스타일 (다크 모드 기본)
    ============================================================================= */
 
@@ -9,22 +9,29 @@
   box-sizing: border-box;
 }
 
+/* 루트 폰트 크기를 rem 기반으로 설정 */
+html {
+  font-size: 16px; /* 기본 폰트 크기 */
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #0a0e27;
   color: #ffffff;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* 최소 폰트 크기 설정으로 가독성 보장 */
+  min-width: 320px;
 }
 
 /* ==================================================
-   상단 네비게이션 바 (#top-nav)
+   상단 네비게이션 바 (#top-nav) - 반응형 개선
    ================================================== */
 #top-nav {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem; /* rem 단위로 변경 */
   position: fixed;
   top: 0;
   left: 0;
@@ -33,47 +40,57 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  min-height: 4rem; /* 고정 높이 대신 최소 높이 */
   transition: all 0.3s ease;
+  /* 플렉스 래핑 허용 */
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-/* 로고 + 타이틀 */
+/* 로고 + 타이틀 - 반응형 개선 */
 #nav-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.3rem;
+  gap: 0.5rem;
+  font-size: clamp(1rem, 2.5vw, 1.3rem); /* 반응형 폰트 크기 */
   font-weight: 700;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   white-space: nowrap;
+  /* 최소 너비 설정 */
+  min-width: fit-content;
 }
 
 /* =========================
-   상단 메인 메뉴 (가로)
+   상단 메인 메뉴 (가로) - 반응형 개선
    ========================= */
 #main-menu {
   display: flex;
   align-items: center;
   list-style: none;
-  margin-left: 2rem;
-  gap: 1rem;
+  margin-left: 1rem;
+  gap: 0.5rem;
+  /* 플렉스 래핑 허용 */
+  flex-wrap: wrap;
 }
 
 #main-menu .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  position: relative; /* 드롭다운 위치 기준 */
+  position: relative;
+  /* 최소 크기 설정 */
+  min-width: fit-content;
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
 }
 
 #main-menu .nav-item:hover {
@@ -89,18 +106,18 @@ body {
 #main-menu .nav-item.active::before {
   content: '';
   position: absolute;
-  left: -3px;
+  left: -0.2rem;
   top: 0;
   bottom: 0;
-  width: 3px;
+  width: 0.2rem;
   background: #3b82f6;
-  border-radius: 0 2px 2px 0;
+  border-radius: 0 0.125rem 0.125rem 0;
 }
 
 #main-menu .nav-icon {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
   display: inline-block;
-  width: 24px;
+  width: 1.5rem;
   text-align: center;
   background: none;
   -webkit-background-clip: unset;
@@ -109,7 +126,7 @@ body {
 }
 
 /* =========================
-   학생서비스 드롭다운 메뉴
+   학생서비스 드롭다운 메뉴 - 반응형 개선
    ========================= */
 #nav-student-services .dropdown-menu {
   position: absolute;
@@ -118,12 +135,16 @@ body {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  min-width: 180px;
+  border-radius: 0.5rem;
+  min-width: 11rem;
+  max-width: 15rem; /* 최대 너비 설정 */
   padding: 0.5rem 0;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0.625rem 1.5625rem rgba(0, 0, 0, 0.3);
   display: none;
   z-index: 1100;
+  /* 스크롤 허용 */
+  max-height: 20rem;
+  overflow-y: auto;
 }
 
 #nav-student-services:hover .dropdown-menu {
@@ -138,7 +159,9 @@ body {
   cursor: pointer;
   transition: background 0.2s ease;
   color: #f1f5f9;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+  /* 텍스트 줄바꿈 허용 */
+  word-wrap: break-word;
 }
 
 #nav-student-services .dropdown-item:hover {
@@ -147,38 +170,41 @@ body {
 }
 
 #nav-student-services .dropdown-item .nav-icon {
-  font-size: 1.1rem;
-  width: 20px;
+  font-size: clamp(1rem, 1.8vw, 1.1rem);
+  width: 1.25rem;
   text-align: center;
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
+  flex-shrink: 0; /* 아이콘 크기 고정 */
 }
 
 /* =========================
-   상단 빠른 접근 메뉴 (가로)
+   상단 빠른 접근 메뉴 (가로) - 반응형 개선
    ========================= */
 #quick-menu {
   display: flex;
   align-items: center;
   list-style: none;
-  margin-left: 1.5rem;
-  gap: 0.75rem;
+  margin-left: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 #quick-menu .quick-item {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  font-size: 0.9rem;
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  min-width: fit-content;
 }
 
 #quick-menu .quick-item:hover {
@@ -187,18 +213,20 @@ body {
 }
 
 #quick-menu .quick-item .nav-icon {
-  font-size: 1.1rem;
-  width: 20px;
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  width: 1.25rem;
   text-align: center;
 }
 
 /* =========================
-   검색창 / 알림 / 유저 메뉴
+   검색창 / 알림 / 유저 메뉴 - 반응형 개선
    ========================= */
 #nav-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  min-width: fit-content;
 }
 
 /* 검색창 */
@@ -211,45 +239,52 @@ body {
 #search-input {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
-  padding: 0.75rem 1rem 0.75rem 3rem;
-  width: 300px;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  width: clamp(200px, 25vw, 300px); /* 반응형 너비 */
   color: #f1f5f9;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   transition: all 0.3s ease;
 }
 
 #search-input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
   background: rgba(30, 41, 59, 0.95);
 }
 
 #search-icon {
   position: absolute;
-  left: 1rem;
+  left: 0.75rem;
   color: #94a3b8;
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
 }
 
 /* 알림 버튼 */
 #user-menu {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   position: relative;
+  flex-wrap: wrap;
 }
 
 #notification-btn {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   padding: 0.75rem;
   color: #94a3b8;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
 }
 
 #notification-btn:hover {
@@ -262,13 +297,13 @@ body {
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
-  width: 8px;
-  height: 8px;
+  width: 0.5rem;
+  height: 0.5rem;
   background: #ef4444;
   border-radius: 50%;
 }
 
-/* 알림 드롭다운 */
+/* 알림 드롭다운 - 반응형 개선 */
 #notification-dropdown {
   position: absolute;
   top: 100%;
@@ -276,15 +311,15 @@ body {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
+  border-radius: 0.75rem;
   padding: 0;
-  min-width: 350px;
-  max-width: 400px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  min-width: clamp(300px, 40vw, 400px); /* 반응형 너비 */
+  max-width: 90vw; /* 최대 너비 제한 */
+  box-shadow: 0 0.625rem 1.5625rem rgba(0, 0, 0, 0.3);
   z-index: 1100;
   display: none;
   margin-top: 0.5rem;
-  max-height: 500px;
+  max-height: 31.25rem;
   overflow-y: auto;
 }
 
@@ -299,10 +334,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 #notification-title {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
   font-weight: 600;
   color: #f1f5f9;
 }
@@ -311,13 +348,15 @@ body {
   background: #ef4444;
   color: white;
   padding: 0.25rem 0.5rem;
-  border-radius: 10px;
-  font-size: 0.75rem;
+  border-radius: 0.625rem;
+  font-size: clamp(0.7rem, 1rem, 0.75rem);
   font-weight: 600;
+  min-width: 1.5rem;
+  text-align: center;
 }
 
 #notification-list {
-  max-height: 400px;
+  max-height: 25rem;
   overflow-y: auto;
 }
 
@@ -338,7 +377,7 @@ body {
 
 .notification-item.unread {
   background: rgba(59, 130, 246, 0.05);
-  border-left: 3px solid #3b82f6;
+  border-left: 0.1875rem solid #3b82f6;
 }
 
 .notification-meta {
@@ -346,20 +385,24 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .notification-category {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   padding: 0.25rem 0.5rem;
-  border-radius: 8px;
-  font-size: 0.7rem;
+  border-radius: 0.5rem;
+  font-size: clamp(0.6rem, 1vw, 0.7rem);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .notification-time {
   color: #94a3b8;
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 1vw, 0.75rem);
+  white-space: nowrap;
 }
 
 .notification-content {
@@ -367,12 +410,15 @@ body {
   font-weight: 500;
   margin-bottom: 0.25rem;
   line-height: 1.4;
+  font-size: clamp(0.85rem, 1.2vw, 0.9rem);
+  word-wrap: break-word;
 }
 
 .notification-summary {
   color: #94a3b8;
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 1.1vw, 0.85rem);
   line-height: 1.3;
+  word-wrap: break-word;
 }
 
 #notification-footer {
@@ -386,10 +432,10 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.3);
   color: #94a3b8;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 1.1vw, 0.85rem);
 }
 
 #mark-all-read:hover {
@@ -399,19 +445,20 @@ body {
 }
 
 /* =========================
-   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운)
+   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운) - 반응형 개선
    ========================= */
 #user-profile {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
-  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  min-width: fit-content;
 }
 
 #user-profile:hover {
@@ -420,25 +467,42 @@ body {
 }
 
 #user-avatar {
-  font-size: 1.25rem;
+  font-size: clamp(1.1rem, 1.8vw, 1.25rem);
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
 }
 
 #user-info {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  min-width: 0; /* 텍스트 오버플로우 처리 */
 }
 
 #user-name {
   font-weight: 600;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 8rem;
 }
 
 #user-role {
-  font-size: 0.9rem;
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
   color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 8rem;
 }
 
-/* "내 계정", "설정", "로그아웃" 드롭다운 영역 */
+/* "내 계정", "설정", "로그아웃" 드롭다운 영역 - 반응형 개선 */
 #user-dropdown {
   position: absolute;
   top: 100%;
@@ -446,10 +510,11 @@ body {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
+  border-radius: 0.75rem;
   padding: 0.5rem 0;
-  min-width: 200px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  min-width: 12.5rem;
+  max-width: 15rem;
+  box-shadow: 0 0.625rem 1.5625rem rgba(0, 0, 0, 0.3);
   z-index: 1100;
   display: none;
   margin-top: 0.5rem;
@@ -471,11 +536,14 @@ body {
   font-weight: 600;
   color: #f1f5f9;
   margin-bottom: 0.25rem;
+  font-size: clamp(0.9rem, 1.3vw, 1rem);
+  word-wrap: break-word;
 }
 
 #dropdown-user-role {
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 1.1vw, 0.85rem);
   color: #94a3b8;
+  word-wrap: break-word;
 }
 
 /* "내 계정" 버튼 */
@@ -487,7 +555,7 @@ body {
   background: none;
   border: none;
   text-align: left;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -510,6 +578,7 @@ body {
   background: none;
   width: 100%;
   text-align: left;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
 }
 
 #dropdown-item-settings:hover {
@@ -530,6 +599,7 @@ body {
   background: none;
   width: 100%;
   text-align: left;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
 }
 
 #dropdown-item-logout:hover {
@@ -545,21 +615,23 @@ body {
 }
 
 /* ==================================================
-   메인 컨텐츠 영역
+   메인 컨텐츠 영역 - 반응형 개선
    ================================================== */
 #main-container {
-  margin-top: 80px; /* 상단 네비 높이만큼 띄워줌 */
+  margin-top: 4rem; /* 네비 높이에 맞춰 조정 */
+  min-height: calc(100vh - 4rem);
 }
 
 #content-area {
   flex: 1;
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   transition: all 0.3s ease;
+  min-height: 100%;
 }
 
 /* ==================================================
-   각 화면(홈, 건물, 커뮤니티, 등) 공통 레이아웃
+   각 화면(홈, 건물, 커뮤니티, 등) 공통 레이아웃 - 반응형 개선
    ================================================== */
 #homeContent,
 #buildingsContent,
@@ -590,7 +662,9 @@ body {
 #content-header-settings {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 #content-header-home h1,
@@ -603,7 +677,7 @@ body {
 #content-header-calendar-pane h1,
 #content-header-profile-pane h1,
 #content-header-settings h1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
   background: linear-gradient(135deg, #f1f5f9, #94a3b8);
   -webkit-background-clip: text;
@@ -625,36 +699,37 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   color: #64748b;
+  flex-wrap: wrap;
 }
 
-/* 통계, 대시보드 등 그리드 레이아웃 */
+/* 통계, 대시보드 등 그리드 레이아웃 - 반응형 개선 */
 #statsGrid,
 #dashboardGrid,
 #dashboardGrid-community,
 #dashboardGrid-lecture-review,
 #buildingGrid {
   display: grid;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  }
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
 
 #statsGrid {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 #dashboardGrid,
 #dashboardGrid-community,
 #dashboardGrid-lecture-review {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 #buildingGrid {
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 40vw, 350px), 1fr));
 }
 
-/* 카드, 통계 박스 등 기본 스타일 */
+/* 카드, 통계 박스 등 기본 스타일 - 반응형 개선 */
 .stat-card,
 .activity-stat,
 .building-card,
@@ -672,9 +747,11 @@ body {
   background: rgba(30, 41, 59, 0.5);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 0.75rem;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
   transition: all 0.3s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .stat-card:hover,
@@ -693,29 +770,30 @@ body {
 #buildingsMapCard:hover {
   background: rgba(30, 41, 59, 0.7);
   border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px);
+  transform: translateY(-0.125rem);
 }
 
-/* 숫자/레이블 스타일 */
+/* 숫자/레이블 스타일 - 반응형 개선 */
 .stat-number,
 .activity-number {
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 800;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
 .stat-label,
 .activity-label {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   color: #94a3b8;
   font-weight: 500;
 }
 
-/* 카드 헤더 (지도, 시간표, 셔틀, 공지 등) */
+/* 카드 헤더 (지도, 시간표, 셔틀, 공지 등) - 반응형 개선 */
 #card-header-map,
 #card-header-timetable,
 #card-header-shuttle,
@@ -730,6 +808,8 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 #card-title-map,
@@ -742,9 +822,10 @@ body {
 #card-title-recent-reviews,
 #card-title-write-review,
 #card-title-buildings-map {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 1.8vw, 1.1rem);
   font-weight: 600;
   color: #f1f5f9;
+  word-wrap: break-word;
 }
 
 #card-icon-map,
@@ -757,44 +838,39 @@ body {
 #card-icon-recent-reviews,
 #card-icon-write-review,
 #card-icon-buildings-map {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
+  flex-shrink: 0;
 }
 
 /* =========================
-   캠퍼스 지도 카드 (#map-card)
+   캠퍼스 지도 카드 (#map-card) - 반응형 개선
    ========================= */
 #map-card {
   grid-column: span 1;
-  height: 400px;
+  height: clamp(300px, 40vh, 400px);
   position: relative;
   overflow: hidden;
 }
 
-@media (max-width: 1024px) {
-  #map-card {
-    grid-column: span 1;
-    height: 300px;
-  }
-}
-
-/* 지도 컨테이너 */
+/* 지도 컨테이너 - 반응형 개선 */
 #map-container,
 #buildings-map-container {
   width: 100%;
   height: 100%;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   overflow: hidden;
+  position: relative;
 }
 
-/* 지도의 오른쪽 상단 컨트롤 버튼 그룹을 아래로 내림 및 왼쪽으로 이동 */
+/* 지도의 오른쪽 상단 컨트롤 버튼 그룹 - 반응형 개선 */
 #map-overlay {
   position: absolute;
-  top: 5rem;    /* 아이콘 위치를 훨씬 아래로 내리기 위해 5rem으로 설정 */
-  right: 2rem;  /* 오른쪽에서 2rem 만큼 떨어뜨려 아이콘을 더 왼쪽으로 배치 */
+  top: clamp(0.5rem, 2vw, 1rem);
+  right: clamp(0.5rem, 2vw, 1rem);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -808,11 +884,17 @@ body {
   background: rgba(15, 23, 42, 0.9);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
+  border-radius: 0.5rem;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem);
   color: #94a3b9;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #map-zoom-in:hover,
@@ -825,11 +907,10 @@ body {
 }
 
 /* =========================
-   오늘의 시간표 카드 (#timetable-card)
+   오늘의 시간표 카드 (#timetable-card) - 반응형 개선
    ========================= */
-/* 오늘의 시간표 카드 스타일 개선 */
 #timetable-card {
-  max-height: 500px;
+  max-height: clamp(400px, 50vh, 500px);
   overflow-y: auto;
 }
 
@@ -837,18 +918,20 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: clamp(0.75rem, 2vw, 1rem);
   margin-bottom: 0.75rem;
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   transition: all 0.3s ease;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .class-item:hover {
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 .class-item:last-child {
@@ -859,21 +942,23 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-width: 120px;
+  min-width: clamp(100px, 20vw, 120px);
+  flex-shrink: 0;
 }
 
 .class-time-main {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   font-weight: 600;
   color: #f1f5f9;
   margin-bottom: 0.25rem;
 }
 
 .class-time-remaining {
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .class-time-remaining.current {
@@ -893,19 +978,22 @@ body {
 
 .class-info {
   flex: 1;
-  margin: 0 1rem;
+  margin: 0 0.5rem;
+  min-width: 0; /* 텍스트 오버플로우 처리 */
 }
 
 .class-name {
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.3vw, 1rem);
   font-weight: 600;
   color: #f1f5f9;
   margin-bottom: 0.25rem;
+  word-wrap: break-word;
 }
 
 .class-location {
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 1.1vw, 0.85rem);
   color: #94a3b8;
+  word-wrap: break-word;
 }
 
 .class-status {
@@ -913,19 +1001,21 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  min-width: 80px;
+  min-width: clamp(70px, 15vw, 80px);
   text-align: center;
+  flex-shrink: 0;
 }
 
 .class-status span:first-child {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
 }
 
 .class-status span:last-child {
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
   font-weight: 600;
   padding: 0.25rem 0.5rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
+  white-space: nowrap;
 }
 
 .status-current span:last-child {
@@ -945,32 +1035,34 @@ body {
 
 /* 상태별 왼쪽 보더 표시 */
 .class-status-current {
-  border-left: 3px solid #10b981;
+  border-left: 0.1875rem solid #10b981;
 }
 
 .class-status-upcoming {
-  border-left: 3px solid #f59e0b;
+  border-left: 0.1875rem solid #f59e0b;
 }
 
 .class-status-finished {
-  border-left: 3px solid #94a3b8;
+  border-left: 0.1875rem solid #94a3b8;
 }
 
 /* =========================
-   셔틀버스 카드 (#shuttle-card)
+   셔틀버스 카드 (#shuttle-card) - 반응형 개선
    ========================= */
 #shuttleRoutes {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .route-tab {
   flex: 1;
-  padding: 0.75rem;
+  min-width: 0; /* 플렉스 아이템 축소 허용 */
+  padding: clamp(0.5rem, 1.5vw, 0.75rem);
   background: rgba(15, 23, 42, 0.3);
   border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -984,38 +1076,42 @@ body {
 .route-name {
   font-weight: 600;
   color: #f1f5f9;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   margin-bottom: 0.25rem;
+  word-wrap: break-word;
 }
 
 .route-desc {
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 1vw, 0.75rem);
   color: #94a3b8;
+  word-wrap: break-word;
 }
 
-/* 셔틀버스 현황 박스(회색 박스를 없애려면 배경/보더 투명) */
+/* 셔틀버스 현황 박스 - 반응형 개선 */
 #shuttle-status {
-  background: transparent;      /* 배경을 투명하게 설정해서 회색 박스가 보이지 않도록 함 */
-  border: none;                 /* 테두리 없앰 */
-  padding: 0;                   /* 여백 제거 */
+  background: transparent;
+  border: none;
+  padding: 0;
   text-align: center;
   margin-bottom: 1rem;
 }
 
 #shuttle-time {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
   font-weight: 700;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
 #shuttle-desc {
   color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   margin-bottom: 1rem;
+  word-wrap: break-word;
 }
 
 #shuttleStatus {
@@ -1023,9 +1119,10 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  border-radius: 1.25rem;
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .status-running {
@@ -1039,7 +1136,7 @@ body {
 }
 
 /* =========================
-   공지사항 리스트 (#recentNotices, #fullNoticeList)
+   공지사항 리스트 (#recentNotices, #fullNoticeList) - 반응형 개선
    ========================= */
 #recentNotices,
 #fullNoticeList {
@@ -1057,65 +1154,77 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .notice-category {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  border-radius: 0.75rem;
+  font-size: clamp(0.7rem, 1vw, 0.75rem);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .notice-date {
   color: #94a3b8;
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 1.1vw, 0.85rem);
+  white-space: nowrap;
 }
 
 .notice-title {
   font-weight: 600;
   color: #f1f5f9;
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  word-wrap: break-word;
+  line-height: 1.4;
 }
 
 .notice-summary {
   color: #94a3b8;
   line-height: 1.6;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  word-wrap: break-word;
 }
 
 /* =========================
-   건물 카드 (.building-card)
+   건물 카드 (.building-card) - 반응형 개선
    ========================= */
 .building-card {
   cursor: pointer;
 }
 
 .building-name {
-  font-size: 1.2rem;
+  font-size: clamp(1.1rem, 1.8vw, 1.2rem);
   font-weight: 600;
   color: #f1f5f9;
   margin-bottom: 0.5rem;
+  word-wrap: break-word;
+  line-height: 1.3;
 }
 
 .building-desc {
   color: #94a3b8;
   margin-bottom: 1.5rem;
   line-height: 1.5;
+  font-size: clamp(0.85rem, 1.2vw, 0.9rem);
+  word-wrap: break-word;
 }
 
 .building-actions {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-/* 버튼 공통 스타일 */
+/* 버튼 공통 스타일 - 반응형 개선 */
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: clamp(0.6rem, 1.5vw, 0.75rem) clamp(1rem, 2vw, 1.5rem);
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -1124,7 +1233,9 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 .btn-primary {
@@ -1133,8 +1244,8 @@ body {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1.5625rem rgba(59, 130, 246, 0.3);
 }
 
 .btn-outline {
@@ -1154,24 +1265,29 @@ body {
   color: #3b82f6;
 }
 
-/* 빈 상태 메시지 */
+/* 빈 상태 메시지 - 반응형 개선 */
 .empty-state {
   text-align: center;
-  padding: 3rem 1rem;
+  padding: clamp(2rem, 5vw, 3rem) 1rem;
   color: #94a3b8;
 }
 
 .empty-state h3 {
-  font-size: 1.2rem;
+  font-size: clamp(1.1rem, 2vw, 1.2rem);
   margin-bottom: 0.5rem;
   color: #64748b;
+}
+
+.empty-state p {
+  font-size: clamp(0.9rem, 1.3vw, 1rem);
+  line-height: 1.5;
 }
 
 /* 애니메이션 키프레임 */
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-0.625rem);
   }
   to {
     opacity: 1;
@@ -1182,7 +1298,7 @@ body {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(1.25rem);
   }
   to {
     opacity: 1;
@@ -1216,9 +1332,9 @@ body {
   }
 }
 
-/* 스크롤바 스타일 */
+/* 스크롤바 스타일 - 반응형 개선 */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: clamp(4px, 1vw, 6px);
 }
 
 ::-webkit-scrollbar-track {
@@ -1227,7 +1343,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(59, 130, 246, 0.5);
-  border-radius: 3px;
+  border-radius: 0.1875rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -1235,7 +1351,7 @@ body {
 }
 
 /* ==================================================
-   라이트 모드
+   라이트 모드 - 반응형 개선
    ================================================== */
 body.light-mode {
   background: #ffffff;
@@ -1436,115 +1552,69 @@ body.light-mode .status-finished span:last-child {
   color: #64748b;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  #search-input {
-    width: 200px;
-  }
-  #statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  #dashboardGrid,
-  #dashboardGrid-community,
-  #dashboardGrid-lecture-review {
-    grid-template-columns: 1fr;
-  }
-  #map-card {
-    grid-column: span 1;
-    height: 300px;
-  }
-  #main-menu {
-    display: none;
-  }
-  #quick-menu {
-    display: none;
-  }
+/* 라이트 모드 스크롤바 */
+body.light-mode ::-webkit-scrollbar-track {
+  background: rgba(248, 250, 252, 0.5);
 }
 
-@media (max-width: 480px) {
-  #top-nav {
-    padding: 1rem;
-  }
-  #search-input {
-    width: 150px;
-  }
-  #content-area {
-    padding: 1rem;
-  }
-  #statsGrid {
-    grid-template-columns: 1fr;
-  }
-  #dashboardGrid,
-  #dashboardGrid-community,
-  #dashboardGrid-lecture-review {
-    grid-template-columns: 1fr;
-  }
-  #buildingsMapCard {
-    height: 200px;
-  }
+body.light-mode ::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
 }
 
-/* =============================================================================
-   추가된 "건물 & 시설 안내" 전용 오버라이드 CSS
-   (두 번째 스크린샷과 동일하게 만들고,
-   지도 높이를 두 배(600px)로 늘리는 부분)
-   ============================================================================= */
-
-/* 1) #buildingsMapCard: 흰색 카드 배경 + 블러 + 라운드 + 테두리 */
+/* 건물 & 시설 안내 전용 오버라이드 CSS - 반응형 개선 */
 #buildingsMapCard {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
-  margin: 0 2rem 2rem 2rem;
-  padding: 1.5rem;
+  border-radius: 0.75rem;
+  margin: 0 clamp(1rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
   position: relative;
 }
+
 #buildingsMapCard:hover {
   background: rgba(255, 255, 255, 1);
   border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px);
+  transform: translateY(-0.125rem);
 }
 
-/* 2) #card-header-buildings-map: 카드 헤더 스타일 (두 번째 사진과 완전히 동일) */
 #card-header-buildings-map {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-}
-#card-title-buildings-map {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;  /* 짙은 그레이 색상 */
-}
-#card-icon-buildings-map {
-  font-size: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-/* 3) #buildings-map-container: 지도 영역 높이를 두 배로 늘림 */
+#card-title-buildings-map {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  font-weight: 600;
+  color: #1f2937;
+}
+
+#card-icon-buildings-map {
+  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+}
+
 #buildings-map-container {
   width: 100%;
-  height: 600px;         /* ← 두 번째 화면의 약 절반 높이가 300px 정도였다면, 여기서 2배인 600px을 지정 */
-  border-radius: 12px;
+  height: clamp(300px, 50vh, 600px);
+  border-radius: 0.75rem;
   overflow: hidden;
   position: relative;
 }
+
 #buildingsMap {
   width: 100%;
   height: 100%;
-  background: #f8fafc;   /* 로딩 중 흰 배경 스타일까지 유지 */
+  background: #f8fafc;
 }
 
-/* 4) 지도 위의 버튼들 (확대/축소/초기화/내 위치) 스타일 */
 #buildings-map-overlay {
   position: absolute;
   top: 1rem;
@@ -1554,6 +1624,7 @@ body.light-mode .status-finished span:last-child {
   gap: 0.5rem;
   z-index: 100;
 }
+
 #buildings-zoom-in,
 #buildings-zoom-out,
 #buildings-reset,
@@ -1561,30 +1632,454 @@ body.light-mode .status-finished span:last-child {
   background: rgba(15, 23, 42, 0.9);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
+  border-radius: 0.5rem;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem);
   color: #94a3b9;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 #buildings-zoom-in:hover,
 #buildings-zoom-out:hover,
 #buildings-reset:hover,
 #buildings-track-user:hover {
-  background: rgba(59, 130,246, 0.2);
+  background: rgba(59, 130, 246, 0.2);
   color: #3b82f6;
   border-color: #3b82f6;
 }
 
-/* 5) 반응형: 화면 폭이 좁아질 때 지도 높이를 줄여서 보기 편하게 조정 */
-@media (max-width: 1024px) {
-  #buildings-map-container {
-    height: 400px;  /* 1024px 이하에서는 400px */
+/* 반응형 디자인 개선 */
+@media (max-width: 1200px) {
+  #nav-brand {
+    font-size: 1.1rem;
+  }
+  
+  #main-menu .nav-item span:not(.nav-icon) {
+    display: none;
+  }
+  
+  #quick-menu {
+    display: none;
+  }
+  
+  #search-input {
+    width: 200px;
   }
 }
+
 @media (max-width: 768px) {
-  #buildings-map-container {
-    height: 300px;  /* 768px 이하에서는 300px */
+  #top-nav {
+    padding: 0.5rem 0.75rem;
+    min-height: 3.5rem;
   }
+  
+  #nav-brand {
+    font-size: 1rem;
+  }
+  
+  #main-menu {
+    display: none;
+  }
+  
+  #search-input {
+    width: 150px;
+  }
+  
+  #user-info {
+    display: none;
+  }
+  
+  #statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  #dashboardGrid,
+  #dashboardGrid-community,
+  #dashboardGrid-lecture-review {
+    grid-template-columns: 1fr;
+  }
+  
+  #map-card {
+    grid-column: span 1;
+    height: 250px;
+  }
+  
+  .class-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .class-time,
+  .class-info,
+  .class-status {
+    width: 100%;
+    margin: 0;
+  }
+  
+  .class-status {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .building-actions {
+    flex-direction: column;
+  }
+  
+  #main-container {
+    margin-top: 3.5rem;
+  }
+  
+  #buildings-map-container {
+    height: clamp(250px, 40vh, 400px);
+  }
+}
+
+@media (max-width: 480px) {
+  #top-nav {
+    padding: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    min-height: auto;
+  }
+  
+  #nav-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  #search-input {
+    width: 120px;
+  }
+  
+  #content-area {
+    padding: 1rem;
+  }
+  
+  #statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  #dashboardGrid,
+  #dashboardGrid-community,
+  #dashboardGrid-lecture-review {
+    grid-template-columns: 1fr;
+  }
+  
+  #buildingsMapCard {
+    margin: 0 0.5rem 1rem 0.5rem;
+    padding: 1rem;
+  }
+  
+  #buildings-map-container {
+    height: 200px;
+  }
+  
+  .class-item {
+    padding: 0.75rem;
+  }
+  
+  .notification-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  #map-overlay,
+  #buildings-map-overlay {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  #map-zoom-in,
+  #map-zoom-out,
+  #map-reset,
+  #map-track-user,
+  #buildings-zoom-in,
+  #buildings-zoom-out,
+  #buildings-reset,
+  #buildings-track-user {
+    padding: 0.5rem;
+    min-width: 2rem;
+    min-height: 2rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* 접근성 개선 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  #top-nav {
+    border-bottom: 2px solid rgba(148, 163, 184, 0.5);
+  }
+  
+  .stat-card,
+  .building-card,
+  .notice-item,
+  #map-card,
+  #timetable-card,
+  #shuttle-card,
+  #notice-card {
+    border: 2px solid rgba(148, 163, 184, 0.3);
+  }
+  
+  .btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* 다크모드 선호 사용자를 위한 추가 스타일 */
+@media (prefers-color-scheme: dark) {
+  body:not(.light-mode) {
+    background: #0a0e27;
+    color: #ffffff;
+  }
+}
+
+/* 라이트모드 선호 사용자를 위한 추가 스타일 */
+@media (prefers-color-scheme: light) {
+  body.light-mode {
+    background: #ffffff;
+    color: #1f2937;
+  }
+}
+
+/* 터치 디바이스 최적화 */
+@media (hover: none) and (pointer: coarse) {
+  .nav-item,
+  .quick-item,
+  .btn,
+  .route-tab,
+  .class-item,
+  .building-card,
+  .notice-item {
+    min-height: 44px; /* 터치 타겟 최소 크기 */
+  }
+  
+  #notification-btn,
+  #user-profile {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* 호버 효과 제거 */
+  .nav-item:hover,
+  .quick-item:hover,
+  .btn:hover,
+  .route-tab:hover,
+  .class-item:hover,
+  .building-card:hover,
+  .notice-item:hover {
+    transform: none;
+  }
+}
+
+/* 인쇄 스타일 */
+@media print {
+  #top-nav,
+  #nav-controls,
+  .btn,
+  #map-overlay,
+  #buildings-map-overlay {
+    display: none !important;
+  }
+  
+  #main-container {
+    margin-top: 0;
+  }
+  
+  #content-area {
+    padding: 0;
+    background: white !important;
+    color: black !important;
+  }
+  
+  .stat-card,
+  .building-card,
+  .notice-item,
+  #timetable-card,
+  #shuttle-card,
+  #notice-card {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+}
+
+/* 추가 유틸리티 클래스 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.break-words {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 포커스 스타일 개선 */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+[tabindex]:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* 스크린 리더를 위한 숨김 텍스트 */
+.nav-item .nav-icon::after {
+  content: attr(title);
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* 로딩 애니메이션 */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  border-top-color: #3b82f6;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 에러 상태 스타일 */
+.error-fallback {
+  text-align: center;
+  padding: 2rem;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 0.75rem;
+}
+
+.error-fallback h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.error-fallback p {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* 성공 상태 스타일 */
+.success-message {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+/* 경고 상태 스타일 */
+.warning-message {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+/* 정보 상태 스타일 */
+.info-message {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+/* 스켈레톤 로딩 효과 */
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(148, 163, 184, 0.1) 25%, 
+    rgba(148, 163, 184, 0.2) 50%, 
+    rgba(148, 163, 184, 0.1) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 툴팁 스타일 */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  margin-bottom: 0.5rem;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
