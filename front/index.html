@@ -168,7 +168,7 @@
     #user-menu {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
     }
 
     #notification-btn {
@@ -178,6 +178,7 @@
       padding: 8px;
       border-radius: 50%;
       transition: background 0.2s;
+      margin-right: 8px;
     }
 
     #notification-btn:hover {
@@ -204,6 +205,7 @@
       border-radius: 16px;
       transition: background 0.2s;
       position: relative;
+      margin-left: 8px;
     }
 
     #user-profile:hover {
@@ -501,6 +503,10 @@
 
     /* 중간 크기 화면 대응 (1200px 이하) */
     @media (max-width: 1200px) {
+      #top-nav {
+        gap: 12px;
+      }
+      
       .nav-item .nav-text {
         display: none;
       }
@@ -514,12 +520,20 @@
       .nav-item .nav-icon {
         font-size: 16px;
       }
+      
+      #main-menu {
+        gap: 6px;
+      }
     }
 
     /* 중간 크기 화면 대응 (1024px 이하) */
     @media (max-width: 1024px) {
+      #top-nav {
+        gap: 8px;
+      }
+      
       #main-menu {
-        gap: 2px;
+        gap: 4px;
       }
       
       .nav-item {
@@ -535,6 +549,10 @@
       #nav-controls {
         gap: 8px;
       }
+      
+      #user-menu {
+        gap: 12px;
+      }
     }
 
     /* 태블릿 스타일 (768px 이하) */
@@ -542,6 +560,7 @@
       #top-nav {
         padding: 12px 0;
         flex-wrap: wrap;
+        gap: 16px;
       }
 
       #nav-brand {
@@ -551,13 +570,25 @@
 
       #nav-controls {
         padding-right: 16px;
-        gap: 8px;
+        gap: 12px;
         min-width: auto;
       }
 
       #search-bar {
         width: 140px;
         flex: 1;
+      }
+
+      #user-menu {
+        gap: 12px;
+      }
+
+      #notification-btn {
+        margin-right: 4px;
+      }
+
+      #user-profile {
+        margin-left: 4px;
       }
 
       #main-menu {
