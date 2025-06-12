@@ -445,11 +445,12 @@
     }
 
     .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 24px !important;
       margin: 0 auto;
       max-width: 1200px;
+      width: 100%;
     }
 
     .service-card {
@@ -466,6 +467,7 @@
       flex-direction: column;
       justify-content: space-between;
       width: 100%;
+      box-sizing: border-box;
     }
 
     .service-card:hover {
