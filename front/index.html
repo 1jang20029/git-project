@@ -120,7 +120,8 @@
       z-index: 1001;
     }
 
-    .nav-item:hover .dropdown-menu {
+    .nav-item:hover .dropdown-menu,
+    .nav-item.dropdown-active .dropdown-menu {
       display: block;
     }
 
@@ -453,14 +454,25 @@
     }
 
     .service-button {
-      color: #3b82f6 !important;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white !important;
       text-decoration: none;
       font-weight: 500;
-      font-size: 12px;
+      font-size: 14px;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 8px;
+      width: 100%;
+      display: block;
     }
 
     .service-button:hover {
-      color: #1e40af !important;
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
 
     /* 반응형 미디어 쿼리 */
@@ -835,42 +847,42 @@
               <span class="service-icon">🏢</span>
               <h3 class="service-title">건물 & 시설</h3>
               <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
-              <a href="#" class="service-button">둘러보기</a>
+              <button class="service-button">둘러보기</button>
             </div>
             
             <div class="service-card" onclick="showContent('community')">
               <span class="service-icon">💬</span>
               <h3 class="service-title">커뮤니티</h3>
               <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
-              <a href="#" class="service-button">참여하기</a>
+              <button class="service-button">참여하기</button>
             </div>
             
             <div class="service-card" onclick="showContent('lecture-review')">
               <span class="service-icon">⭐</span>
               <h3 class="service-title">강의평가</h3>
               <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
-              <a href="#" class="service-button">평가보기</a>
+              <button class="service-button">평가보기</button>
             </div>
             
             <div class="service-card" onclick="openTimetablePage()">
               <span class="service-icon">📅</span>
               <h3 class="service-title">내 시간표</h3>
               <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
-              <a href="#" class="service-button">관리하기</a>
+              <button class="service-button">관리하기</button>
             </div>
             
             <div class="service-card" onclick="openShuttlePage()">
               <span class="service-icon">🚌</span>
               <h3 class="service-title">셔틀버스</h3>
               <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
-              <a href="#" class="service-button">확인하기</a>
+              <button class="service-button">확인하기</button>
             </div>
             
             <div class="service-card" onclick="showContent('notices')">
               <span class="service-icon">📢</span>
               <h3 class="service-title">공지사항</h3>
               <p class="service-description">학교의 최신 소식을 확인하세요</p>
-              <a href="#" class="service-button">보러가기</a>
+              <button class="service-button">보러가기</button>
             </div>
           </div>
         </div>
@@ -972,8 +984,18 @@
     // 모바일에서 학생서비스 드롭다운 토글
     function toggleStudentServices() {
       const studentServicesItem = document.getElementById('nav-student-services');
+      
       if (window.innerWidth <= 768) {
+        // 모바일에서는 드롭다운 열기/닫기
         studentServicesItem.classList.toggle('dropdown-open');
+      } else {
+        // 데스크톱에서는 호버로 작동하므로 클릭 시 드롭다운 상태 토글
+        const dropdown = studentServicesItem.querySelector('.dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        } else {
+          dropdown.style.display = 'block';
+        }
       }
     }
 
