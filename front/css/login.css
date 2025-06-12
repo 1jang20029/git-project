@@ -173,14 +173,14 @@ header {
     border: 1px solid #ddd;
 }
 
-.sign-link {
+.signup-link {
     text-align: center;
     margin-top: 32px;
     font-size: 14px;
     color: #666;
 }
 
-.sign-link a {
+.signup-link a {
     color: #c62917;
     font-weight: bold;
     text-decoration: none;

@@ -1,5 +1,5 @@
 /* =============================================================================
-   sign.css - 연성대학교 회원가입 페이지 (수정된 UI)
+   up.css - 연성대학교 회원가입 페이지 (수정된 UI)
    ============================================================================= */
 
 * {
@@ -714,7 +714,7 @@ body::before {
         padding: 0.5rem;
     }
     
-    .sign-card {
+    .signup-card {
         padding: 2rem;
         max-width: 100%;
     }
@@ -747,12 +747,12 @@ body::before {
         padding: 0.25rem;
     }
 
-    .sign-card {
+    .signup-card {
         padding: 1.5rem;
         border-radius: 16px;
     }
 
-    .sign-title {
+    .signup-title {
         font-size: 2rem;
         margin-bottom: 2rem;
     }
