@@ -398,3 +398,28 @@
   }
   
   .main-section-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  #statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  #statsGrid .stat-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  #statsGrid .stat-number {
+    font-size: 3rem;
+  }
+  
+  .service-card {
+    padding: 2rem 1.5rem;
+  }
+}
