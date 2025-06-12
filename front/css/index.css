@@ -1,6 +1,6 @@
 /* =============================================================================
    index.css
-   공통 스타일 (다크 모드 기본)
+   공통 스타일 (다크 모드 기본) - 확대/축소 대응 버전
    ============================================================================= */
 
 * {
@@ -15,16 +15,18 @@ body {
   color: #ffffff;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 16px; /* 기본 폰트 크기 고정 */
+  zoom: 1; /* 기본 줌 레벨 고정 */
 }
 
 /* ==================================================
-   상단 네비게이션 바 (#top-nav)
+   상단 네비게이션 바 (#top-nav) - 확대/축소 대응
    ================================================== */
 #top-nav {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  padding: 1rem 2rem;
+  padding: 16px 32px; /* rem 대신 px 사용 */
   position: fixed;
   top: 0;
   left: 0;
@@ -33,16 +35,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  height: 80px; /* 고정 높이 유지 */
   transition: all 0.3s ease;
+  zoom: 1; /* 확대/축소 방지 */
+  transform-origin: top left;
 }
 
-/* 로고 + 타이틀 */
+/* 로고 + 타이틀 - 고정 크기 */
 #nav-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.3rem;
+  gap: 12px; /* rem 대신 px */
+  font-size: 20px; /* rem 대신 px */
   font-weight: 700;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
@@ -52,21 +56,21 @@ body {
 }
 
 /* =========================
-   상단 메인 메뉴 (가로)
+   상단 메인 메뉴 (가로) - 고정 크기
    ========================= */
 #main-menu {
   display: flex;
   align-items: center;
   list-style: none;
-  margin-left: 2rem;
-  gap: 1rem;
+  margin-left: 32px; /* rem 대신 px */
+  gap: 16px; /* rem 대신 px */
 }
 
 #main-menu .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 8px; /* rem 대신 px */
+  padding: 8px 16px; /* rem 대신 px */
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -74,6 +78,10 @@ body {
   font-weight: 500;
   background: transparent;
   position: relative; /* 드롭다운 위치 기준 */
+  min-height: 40px; /* 고정 최소 높이 */
+  white-space: nowrap;
+  flex-shrink: 0; /* 축소 방지 */
+  flex-grow: 0; /* 확대 방지 */
 }
 
 #main-menu .nav-item:hover {
@@ -98,7 +106,7 @@ body {
 }
 
 #main-menu .nav-icon {
-  font-size: 1.2rem;
+  font-size: 18px; /* rem 대신 px */
   display: inline-block;
   width: 24px;
   text-align: center;
@@ -106,10 +114,11 @@ body {
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
+  flex-shrink: 0; /* 축소 방지 */
 }
 
 /* =========================
-   학생서비스 드롭다운 메뉴
+   학생서비스 드롭다운 메뉴 - 고정 크기
    ========================= */
 #nav-student-services .dropdown-menu {
   position: absolute;
@@ -120,7 +129,7 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
   min-width: 180px;
-  padding: 0.5rem 0;
+  padding: 8px 0; /* rem 대신 px */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   display: none;
   z-index: 1100;
@@ -133,12 +142,15 @@ body {
 #nav-student-services .dropdown-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 8px; /* rem 대신 px */
+  padding: 8px 16px; /* rem 대신 px */
   cursor: pointer;
   transition: background 0.2s ease;
   color: #f1f5f9;
-  font-size: 0.9rem;
+  font-size: 14px; /* rem 대신 px */
+  min-height: 36px; /* 최소 높이 고정 */
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 #nav-student-services .dropdown-item:hover {
@@ -147,38 +159,42 @@ body {
 }
 
 #nav-student-services .dropdown-item .nav-icon {
-  font-size: 1.1rem;
+  font-size: 16px; /* rem 대신 px */
   width: 20px;
   text-align: center;
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
   background-clip: unset;
+  flex-shrink: 0;
 }
 
 /* =========================
-   상단 빠른 접근 메뉴 (가로)
+   상단 빠른 접근 메뉴 (가로) - 고정 크기
    ========================= */
 #quick-menu {
   display: flex;
   align-items: center;
   list-style: none;
-  margin-left: 1.5rem;
-  gap: 0.75rem;
+  margin-left: 24px; /* rem 대신 px */
+  gap: 12px; /* rem 대신 px */
 }
 
 #quick-menu .quick-item {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.4rem 0.8rem;
+  gap: 4px; /* rem 대신 px */
+  padding: 6px 12px; /* rem 대신 px */
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #94a3b8;
   font-weight: 500;
   background: transparent;
-  font-size: 0.9rem;
+  font-size: 14px; /* rem 대신 px */
+  min-height: 32px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 #quick-menu .quick-item:hover {
@@ -187,21 +203,22 @@ body {
 }
 
 #quick-menu .quick-item .nav-icon {
-  font-size: 1.1rem;
+  font-size: 16px; /* rem 대신 px */
   width: 20px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 /* =========================
-   검색창 / 알림 / 유저 메뉴
+   검색창 / 알림 / 유저 메뉴 - 고정 크기
    ========================= */
 #nav-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px; /* rem 대신 px */
 }
 
-/* 검색창 */
+/* 검색창 - 고정 크기 */
 #search-bar {
   position: relative;
   display: flex;
@@ -212,11 +229,13 @@ body {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  padding: 0.75rem 1rem 0.75rem 3rem;
-  width: 300px;
+  padding: 12px 16px 12px 48px; /* rem 대신 px */
+  width: 300px; /* 고정 너비 */
   color: #f1f5f9;
-  font-size: 0.9rem;
+  font-size: 14px; /* rem 대신 px */
   transition: all 0.3s ease;
+  height: 44px; /* 고정 높이 */
+  box-sizing: border-box;
 }
 
 #search-input:focus {
@@ -228,16 +247,16 @@ body {
 
 #search-icon {
   position: absolute;
-  left: 1rem;
+  left: 16px; /* rem 대신 px */
   color: #94a3b8;
-  font-size: 1.1rem;
+  font-size: 16px; /* rem 대신 px */
 }
 
-/* 알림 버튼 */
+/* 알림 버튼 - 고정 크기 */
 #user-menu {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px; /* rem 대신 px */
   position: relative;
 }
 
@@ -245,11 +264,17 @@ body {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 12px; /* rem 대신 px */
   color: #94a3b8;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  width: 44px; /* 고정 크기 */
+  height: 44px; /* 고정 크기 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 #notification-btn:hover {
@@ -260,8 +285,8 @@ body {
 
 #notification-dot {
   position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
+  top: 4px; /* rem 대신 px */
+  right: 4px; /* rem 대신 px */
   width: 8px;
   height: 8px;
   background: #ef4444;
@@ -283,7 +308,7 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   z-index: 1100;
   display: none;
-  margin-top: 0.5rem;
+  margin-top: 8px; /* rem 대신 px */
   max-height: 500px;
   overflow-y: auto;
 }
@@ -294,7 +319,7 @@ body {
 }
 
 #notification-header {
-  padding: 1rem 1.5rem;
+  padding: 16px 24px; /* rem 대신 px */
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   display: flex;
   justify-content: space-between;
@@ -302,7 +327,7 @@ body {
 }
 
 #notification-title {
-  font-size: 1.1rem;
+  font-size: 16px; /* rem 대신 px */
   font-weight: 600;
   color: #f1f5f9;
 }
@@ -310,9 +335,9 @@ body {
 #notification-badge {
   background: #ef4444;
   color: white;
-  padding: 0.25rem 0.5rem;
+  padding: 4px 8px; /* rem 대신 px */
   border-radius: 10px;
-  font-size: 0.75rem;
+  font-size: 12px; /* rem 대신 px */
   font-weight: 600;
 }
 
@@ -322,7 +347,7 @@ body {
 }
 
 .notification-item {
-  padding: 1rem 1.5rem;
+  padding: 16px 24px; /* rem 대신 px */
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -345,38 +370,38 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px; /* rem 대신 px */
 }
 
 .notification-category {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
-  padding: 0.25rem 0.5rem;
+  padding: 4px 8px; /* rem 대신 px */
   border-radius: 8px;
-  font-size: 0.7rem;
+  font-size: 10px; /* rem 대신 px */
   font-weight: 600;
 }
 
 .notification-time {
   color: #94a3b8;
-  font-size: 0.75rem;
+  font-size: 12px; /* rem 대신 px */
 }
 
 .notification-content {
   color: #f1f5f9;
   font-weight: 500;
-  margin-bottom: 0.25rem;
+  margin-bottom: 4px; /* rem 대신 px */
   line-height: 1.4;
 }
 
 .notification-summary {
   color: #94a3b8;
-  font-size: 0.85rem;
+  font-size: 13px; /* rem 대신 px */
   line-height: 1.3;
 }
 
 #notification-footer {
-  padding: 1rem 1.5rem;
+  padding: 16px 24px; /* rem 대신 px */
   border-top: 1px solid rgba(148, 163, 184, 0.1);
   text-align: center;
 }
@@ -385,11 +410,11 @@ body {
   background: none;
   border: 1px solid rgba(148, 163, 184, 0.3);
   color: #94a3b8;
-  padding: 0.5rem 1rem;
+  padding: 8px 16px; /* rem 대신 px */
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.85rem;
+  font-size: 13px; /* rem 대신 px */
 }
 
 #mark-all-read:hover {
@@ -399,19 +424,22 @@ body {
 }
 
 /* =========================
-   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운)
+   사용자 프로필 (내 계정, 설정, 로그아웃 드롭다운) - 고정 크기
    ========================= */
 #user-profile {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px; /* rem 대신 px */
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  padding: 0.5rem 1rem;
+  padding: 8px 16px; /* rem 대신 px */
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  min-height: 44px; /* 최소 높이 고정 */
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 #user-profile:hover {
@@ -420,7 +448,13 @@ body {
 }
 
 #user-avatar {
-  font-size: 1.25rem;
+  font-size: 18px; /* rem 대신 px */
+  width: 28px; /* 고정 크기 */
+  height: 28px; /* 고정 크기 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 #user-info {
@@ -431,10 +465,11 @@ body {
 
 #user-name {
   font-weight: 600;
+  font-size: 14px; /* rem 대신 px */
 }
 
 #user-role {
-  font-size: 0.9rem;
+  font-size: 12px; /* rem 대신 px */
   color: #94a3b8;
 }
 
@@ -447,12 +482,12 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  padding: 0.5rem 0;
+  padding: 8px 0; /* rem 대신 px */
   min-width: 200px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   z-index: 1100;
   display: none;
-  margin-top: 0.5rem;
+  margin-top: 8px; /* rem 대신 px */
 }
 
 #user-dropdown.show {
@@ -462,19 +497,20 @@ body {
 
 /* 드롭다운 상단 유저 정보 */
 #dropdown-user-info {
-  padding: 1rem;
+  padding: 16px; /* rem 대신 px */
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px; /* rem 대신 px */
 }
 
 #dropdown-user-name {
   font-weight: 600;
   color: #f1f5f9;
-  margin-bottom: 0.25rem;
+  margin-bottom: 4px; /* rem 대신 px */
+  font-size: 14px; /* rem 대신 px */
 }
 
 #dropdown-user-role {
-  font-size: 0.85rem;
+  font-size: 13px; /* rem 대신 px */
   color: #94a3b8;
 }
 
@@ -482,12 +518,12 @@ body {
 #dropdown-item-profile {
   display: block;
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 12px 16px; /* rem 대신 px */
   color: #f1f5f9;
   background: none;
   border: none;
   text-align: left;
-  font-size: 1rem;
+  font-size: 14px; /* rem 대신 px */
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -501,8 +537,8 @@ body {
 #dropdown-item-settings {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 12px; /* rem 대신 px */
+  padding: 12px 16px; /* rem 대신 px */
   color: #f1f5f9;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -510,6 +546,7 @@ body {
   background: none;
   width: 100%;
   text-align: left;
+  font-size: 14px; /* rem 대신 px */
 }
 
 #dropdown-item-settings:hover {
@@ -521,8 +558,8 @@ body {
 #dropdown-item-logout {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 12px; /* rem 대신 px */
+  padding: 12px 16px; /* rem 대신 px */
   color: #f1f5f9;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -530,6 +567,7 @@ body {
   background: none;
   width: 100%;
   text-align: left;
+  font-size: 14px; /* rem 대신 px */
 }
 
 #dropdown-item-logout:hover {
@@ -541,19 +579,19 @@ body {
 #dropdown-divider {
   height: 1px;
   background: rgba(148, 163, 184, 0.1);
-  margin: 0.5rem 0;
+  margin: 8px 0; /* rem 대신 px */
 }
 
 /* ==================================================
    메인 컨텐츠 영역
    ================================================== */
 #main-container {
-  margin-top: 80px; /* 상단 네비 높이만큼 띄워줌 */
+  margin-top: 80px; /* 상단 네비 높이만큼 띄워줌 - 고정값 */
 }
 
 #content-area {
   flex: 1;
-  padding: 2rem;
+  padding: 32px; /* rem 대신 px */
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   transition: all 0.3s ease;
 }
@@ -590,7 +628,7 @@ body {
 #content-header-settings {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 32px; /* rem 대신 px */
 }
 
 #content-header-home h1,
@@ -603,7 +641,7 @@ body {
 #content-header-calendar-pane h1,
 #content-header-profile-pane h1,
 #content-header-settings h1 {
-  font-size: 2rem;
+  font-size: 32px; /* rem 대신 px */
   font-weight: 700;
   background: linear-gradient(135deg, #f1f5f9, #94a3b8);
   -webkit-background-clip: text;
@@ -623,9 +661,9 @@ body {
 #breadcrumb-settings {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+  gap: 8px; /* rem 대신 px */
+  margin-top: 8px; /* rem 대신 px */
+  font-size: 14px; /* rem 대신 px */
   color: #64748b;
 }
 
@@ -636,8 +674,8 @@ body {
 #dashboardGrid-lecture-review,
 #buildingGrid {
   display: grid;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 24px; /* rem 대신 px */
+  margin-bottom: 32px; /* rem 대신 px */
 }
 
 #statsGrid {
@@ -658,7 +696,7 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 24px; /* rem 대신 px */
   transition: all 0.3s ease;
 }
 
@@ -675,18 +713,18 @@ body {
 /* 숫자/레이블 스타일 */
 .stat-number,
 .activity-number {
-  font-size: 2.5rem;
+  font-size: 40px; /* rem 대신 px */
   font-weight: 800;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px; /* rem 대신 px */
 }
 
 .stat-label,
 .activity-label {
-  font-size: 0.9rem;
+  font-size: 14px; /* rem 대신 px */
   color: #94a3b8;
   font-weight: 500;
 }
@@ -696,17 +734,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 16px; /* rem 대신 px */
 }
 
 #card-title-buildings-map {
-  font-size: 1.1rem;
+  font-size: 16px; /* rem 대신 px */
   font-weight: 600;
   color: #f1f5f9;
 }
 
 #card-icon-buildings-map {
-  font-size: 1.5rem;
+  font-size: 24px; /* rem 대신 px */
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
@@ -719,26 +757,26 @@ body {
 }
 
 .building-name {
-  font-size: 1.2rem;
+  font-size: 18px; /* rem 대신 px */
   font-weight: 600;
   color: #f1f5f9;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px; /* rem 대신 px */
 }
 
 .building-desc {
   color: #94a3b8;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px; /* rem 대신 px */
   line-height: 1.5;
 }
 
 .building-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 12px; /* rem 대신 px */
 }
 
 /* 버튼 공통 스타일 */
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 12px 24px; /* rem 대신 px */
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -748,8 +786,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
+  gap: 8px; /* rem 대신 px */
+  font-size: 14px; /* rem 대신 px */
 }
 
 .btn-primary {
@@ -782,13 +820,13 @@ body {
 /* 빈 상태 메시지 */
 .empty-state {
   text-align: center;
-  padding: 3rem 1rem;
+  padding: 48px 16px; /* rem 대신 px */
   color: #94a3b8;
 }
 
 .empty-state h3 {
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  font-size: 18px; /* rem 대신 px */
+  margin-bottom: 8px; /* rem 대신 px */
   color: #64748b;
 }
 
@@ -799,8 +837,8 @@ body {
 /* 웰컴 섹션 */
 .dashboard-welcome {
   text-align: center;
-  margin-bottom: 3rem;
-  padding: 3rem 2rem;
+  margin-bottom: 48px; /* rem 대신 px */
+  padding: 48px 32px; /* rem 대신 px */
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
   border-radius: 20px;
   border: 1px solid rgba(148, 163, 184, 0.1);
@@ -828,11 +866,11 @@ body {
   display: inline-block;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 8px 24px; /* rem 대신 px */
   border-radius: 25px;
-  font-size: 0.9rem;
+  font-size: 14px; /* rem 대신 px */
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px; /* rem 대신 px */
   position: relative;
   z-index: 2;
   animation: bounce 2s ease-in-out infinite;
@@ -845,14 +883,14 @@ body {
 }
 
 .welcome-title {
-  font-size: 3rem;
+  font-size: 48px; /* rem 대신 px */
   font-weight: 800;
   background: linear-gradient(135deg, #f1f5f9, #3b82f6, #8b5cf6);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px; /* rem 대신 px */
   line-height: 1.2;
   position: relative;
   z-index: 2;
@@ -865,10 +903,10 @@ body {
 }
 
 .welcome-subtitle {
-  font-size: 1.2rem;
+  font-size: 18px; /* rem 대신 px */
   color: #94a3b8;
   max-width: 700px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 32px; /* rem 대신 px */
   line-height: 1.8;
   position: relative;
   z-index: 2;
@@ -877,8 +915,8 @@ body {
 .welcome-stats {
   display: flex;
   justify-content: center;
-  gap: 3rem;
-  margin-top: 2rem;
+  gap: 48px; /* rem 대신 px */
+  margin-top: 32px; /* rem 대신 px */
   position: relative;
   z-index: 2;
 }
@@ -887,11 +925,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px; /* rem 대신 px */
 }
 
 .stat-item .stat-number {
-  font-size: 2rem;
+  font-size: 32px; /* rem 대신 px */
   font-weight: 800;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
@@ -900,28 +938,28 @@ body {
 }
 
 .stat-item .stat-text {
-  font-size: 0.9rem;
+  font-size: 14px; /* rem 대신 px */
   color: #64748b;
   font-weight: 500;
 }
 
 /* 서비스 섹션 */
 .services-section {
-  margin-top: 3rem;
+  margin-top: 48px; /* rem 대신 px */
 }
 
 .services-title {
-  font-size: 1.8rem;
+  font-size: 28px; /* rem 대신 px */
   font-weight: 600;
   color: #f1f5f9;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 32px; /* rem 대신 px */
 }
 
 .services-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 24px; /* rem 대신 px */
 }
 
 .service-card {
@@ -929,7 +967,7 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 32px; /* rem 대신 px */
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -943,22 +981,22 @@ body {
 }
 
 .service-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 40px; /* rem 대신 px */
+  margin-bottom: 16px; /* rem 대신 px */
   display: block;
 }
 
 .service-title {
-  font-size: 1.2rem;
+  font-size: 18px; /* rem 대신 px */
   font-weight: 600;
   color: #f1f5f9;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px; /* rem 대신 px */
 }
 
 .service-description {
   color: #94a3b8;
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
+  font-size: 14px; /* rem 대신 px */
+  margin-bottom: 24px; /* rem 대신 px */
   line-height: 1.5;
 }
 
@@ -966,7 +1004,7 @@ body {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 12px 24px; /* rem 대신 px */
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -990,8 +1028,8 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  margin: 0 2rem 2rem 2rem;
-  padding: 1.5rem;
+  margin: 0 32px 32px 32px; /* rem 대신 px */
+  padding: 24px; /* rem 대신 px */
   position: relative;
 }
 #buildingsMapCard:hover {
@@ -1005,15 +1043,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 16px; /* rem 대신 px */
 }
 #card-title-buildings-map {
-  font-size: 1.25rem;
+  font-size: 20px; /* rem 대신 px */
   font-weight: 600;
   color: #1f2937;  /* 짙은 그레이 색상 */
 }
 #card-icon-buildings-map {
-  font-size: 1.5rem;
+  font-size: 24px; /* rem 대신 px */
 }
 
 /* 3) #buildings-map-container: 지도 영역 높이를 두 배로 늘림 */
@@ -1033,11 +1071,11 @@ body {
 /* 4) 지도 위의 버튼들 (확대/축소/초기화/내 위치) 스타일 */
 #buildings-map-overlay {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 16px; /* rem 대신 px */
+  right: 16px; /* rem 대신 px */
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px; /* rem 대신 px */
   z-index: 100;
 }
 #buildings-zoom-in,
@@ -1048,17 +1086,22 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 12px; /* rem 대신 px */
   color: #94a3b9;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 16px; /* rem 대신 px */
+  width: 40px; /* 고정 크기 */
+  height: 40px; /* 고정 크기 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #buildings-zoom-in:hover,
 #buildings-zoom-out:hover,
 #buildings-reset:hover,
 #buildings-track-user:hover {
-  background: rgba(59, 130,246, 0.2);
+  background: rgba(59, 130, 246, 0.2);
   color: #3b82f6;
   border-color: #3b82f6;
 }
@@ -1131,7 +1174,7 @@ body {
 }
 
 /* ==================================================
-   라이트 모드
+   라이트 모드 - 고정 크기 적용
    ================================================== */
 body.light-mode {
   background: #ffffff;
@@ -1308,7 +1351,7 @@ body.light-mode .service-description {
   color: #6b7280;
 }
 
-/* 반응형 디자인 */
+/* 반응형 디자인 - 고정 크기 적용 */
 @media (max-width: 1024px) {
   #statsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -1325,15 +1368,20 @@ body.light-mode .service-description {
   #buildings-map-container {
     height: 400px;
   }
+  
+  #search-input {
+    width: 250px; /* 고정 너비 */
+  }
+  
+  #main-menu {
+    margin-left: 24px; /* rem 대신 px */
+    gap: 12px; /* rem 대신 px */
+  }
 }
 
 @media (max-width: 768px) {
-  #search-input {
-    width: 200px;
-  }
-  
   #content-area {
-    padding: 1rem;
+    padding: 16px; /* rem 대신 px */
   }
   
   #statsGrid,
@@ -1342,15 +1390,15 @@ body.light-mode .service-description {
   }
   
   .welcome-title {
-    font-size: 2.2rem;
+    font-size: 35px; /* rem 대신 px */
   }
   
   .welcome-stats {
-    gap: 2rem;
+    gap: 32px; /* rem 대신 px */
   }
   
   .services-title {
-    font-size: 1.5rem;
+    font-size: 24px; /* rem 대신 px */
   }
   
   #buildings-map-container {
@@ -1364,37 +1412,123 @@ body.light-mode .service-description {
   #quick-menu {
     display: none;
   }
+  
+  #search-input {
+    width: 200px; /* 고정 너비 */
+  }
+  
+  #top-nav {
+    padding: 12px 16px; /* rem 대신 px */
+  }
+  
+  #nav-brand {
+    font-size: 18px; /* rem 대신 px */
+    gap: 8px; /* rem 대신 px */
+  }
 }
 
 @media (max-width: 480px) {
   #top-nav {
-    padding: 1rem;
+    padding: 8px 12px; /* rem 대신 px */
+    height: 64px; /* 모바일에서는 높이 축소 */
   }
   
-  #search-input {
-    width: 150px;
+  #main-container {
+    margin-top: 64px; /* 모바일 네비 높이에 맞춤 */
   }
   
   .welcome-title {
-    font-size: 1.8rem;
+    font-size: 28px; /* rem 대신 px */
   }
   
   .dashboard-welcome {
-    padding: 2rem 1rem;
+    padding: 32px 16px; /* rem 대신 px */
   }
   
   .welcome-stats {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 24px; /* rem 대신 px */
   }
   
   .service-card {
-    padding: 1.5rem;
+    padding: 24px; /* rem 대신 px */
   }
   
   #buildingsMapCard {
     height: 200px;
+    margin: 0 16px 16px 16px; /* rem 대신 px */
   }
+  
+  #search-input {
+    width: 150px; /* 고정 너비 */
+    padding: 8px 12px 8px 36px; /* rem 대신 px */
+    height: 36px; /* 고정 높이 */
+    font-size: 12px; /* rem 대신 px */
+  }
+  
+  #search-icon {
+    left: 12px; /* rem 대신 px */
+    font-size: 14px; /* rem 대신 px */
+  }
+  
+  #notification-btn {
+    width: 36px; /* 고정 크기 */
+    height: 36px; /* 고정 크기 */
+    padding: 8px; /* rem 대신 px */
+  }
+  
+  #user-profile {
+    padding: 6px 12px; /* rem 대신 px */
+    min-height: 36px; /* 최소 높이 고정 */
+  }
+  
+  #user-avatar {
+    width: 24px; /* 고정 크기 */
+    height: 24px; /* 고정 크기 */
+    font-size: 16px; /* rem 대신 px */
+  }
+  
+  #user-name {
+    font-size: 12px; /* rem 대신 px */
+  }
+  
+  #user-role {
+    font-size: 10px; /* rem 대신 px */
+  }
+}
+
+/* 확대/축소 시에도 비율 유지를 위한 추가 설정 */
+html {
+  /* 최대/최소 확대 비율 제한 */
+  min-zoom: 0.5;
+  max-zoom: 3.0;
+  /* 사용자 확대/축소 허용하되 레이아웃은 유지 */
+  user-zoom: zoom;
+}
+
+/* 중요한 요소들의 크기 고정 */
+.nav-item,
+.dropdown-item,
+#search-input,
+#notification-btn,
+#user-profile {
+  /* 확대/축소 시에도 크기 유지 */
+  transform-origin: center;
+  box-sizing: border-box;
+}
+
+/* 텍스트 크기 고정 설정 */
+#top-nav * {
+  /* 폰트 크기를 px로 고정하여 확대/축소 영향 최소화 */
+  font-size: inherit;
+}
+
+/* 플렉스 아이템 축소 방지 */
+#main-menu .nav-item,
+#nav-student-services .dropdown-item,
+#user-menu > * {
+  flex-shrink: 0; /* 축소 방지 */
+  flex-grow: 0; /* 확대 방지 */
 }
 
 @media (prefers-reduced-motion: reduce) {
