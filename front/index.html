@@ -328,19 +328,21 @@
       margin: 0;
     }
 
-    /* 대시보드 컨텐츠 */
+    /* 대시보드 컨텐츠 - 모든 텍스트를 강제로 흰색으로 */
     .dashboard-welcome {
       text-align: center;
       padding: 30px 20px;
-      /* 밝은 보라색 그라데이션으로 변경 (첫 번째 이미지와 동일) */
-      background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%) !important;
+      background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
       border-radius: 0;
-      color: white;
+      color: white !important;
       margin: 0 0 25px 0;
       width: 100%;
     }
 
-    .dashboard-welcome * {
+    .dashboard-welcome h1,
+    .dashboard-welcome p,
+    .dashboard-welcome span,
+    .dashboard-welcome div {
       color: white !important;
     }
 
@@ -848,23 +850,23 @@
         
         <div class="dashboard-welcome">
           <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
-          <h1 class="welcome-title" style="color: white !important;">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
-          <p class="welcome-subtitle" style="color: white !important;">
+          <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
+          <p class="welcome-subtitle">
             🎓 언제 어디서나 편리하게, 🤝 학생들과 함께하며<br>
             💡 스마트한 대학생활을 시작해보세요
           </p>
           <div class="welcome-stats">
             <div class="stat-item">
-              <span class="stat-number" style="color: white !important;">8,547+</span>
-              <span class="stat-text" style="color: white !important;">활성 사용자</span>
+              <span class="stat-number">8,547+</span>
+              <span class="stat-text">활성 사용자</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number" style="color: white !important;">24</span>
-              <span class="stat-text" style="color: white !important;">편의 서비스</span>
+              <span class="stat-number">24</span>
+              <span class="stat-text">편의 서비스</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number" style="color: white !important;">98%</span>
-              <span class="stat-text" style="color: white !important;">만족도</span>
+              <span class="stat-number">98%</span>
+              <span class="stat-text">만족도</span>
             </div>
           </div>
         </div>
