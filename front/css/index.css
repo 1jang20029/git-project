@@ -9,12 +9,26 @@
   box-sizing: border-box;
 }
 
+html {
+  /* 브라우저 확대/축소 무시하고 고정 크기 유지 */
+  zoom: 1 !important;
+  transform: scale(1) !important;
+  transform-origin: 0 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #0a0e27;
   color: #ffffff;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* 확대/축소 방지 */
+  zoom: 1 !important;
+  transform: scale(1) !important;
+  transform-origin: 0 0 !important;
+  min-width: 1200px; /* 최소 너비 설정 */
 }
 
 /* ==================================================
@@ -35,6 +49,10 @@ body {
   justify-content: space-between;
   height: 80px;
   transition: all 0.3s ease;
+  /* 확대/축소 무시 */
+  zoom: 1 !important;
+  transform: scale(1) !important;
+  min-width: 1200px; /* 최소 너비 고정 */
 }
 
 /* 로고 + 타이틀 */
@@ -549,6 +567,10 @@ body {
    ================================================== */
 #main-container {
   margin-top: 80px; /* 상단 네비 높이만큼 띄워줌 */
+  /* 확대/축소 무시 */
+  zoom: 1 !important;
+  transform: scale(1) !important;
+  min-width: 1200px; /* 최소 너비 고정 */
 }
 
 #content-area {
@@ -556,6 +578,11 @@ body {
   padding: 2rem;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   transition: all 0.3s ease;
+  /* 확대/축소 무시 */
+  zoom: 1 !important;
+  transform: scale(1) !important;
+  max-width: 1400px; /* 최대 너비 제한 */
+  margin: 0 auto; /* 중앙 정렬 */
 }
 
 /* ==================================================
@@ -806,6 +833,9 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.1);
   position: relative;
   overflow: hidden;
+  max-width: 1200px; /* 최대 너비 고정 */
+  margin-left: auto; /* 중앙 정렬 */
+  margin-right: auto; /* 중앙 정렬 */
 }
 
 .dashboard-welcome::before {
