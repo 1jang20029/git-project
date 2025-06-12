@@ -100,7 +100,7 @@ function registerUser(studentId, password, name, department, grade, email, phone
 
 // 뒤로가기 함수
 function goBack() {
-    window.location.href = "index.html";
+    window.location.href = "front/index.html";
 }
 
 // 일반 로그인 처리 함수
@@ -160,7 +160,7 @@ function login() {
     } else {
         // 이미 로그인한 적이 있는 경우 메인 페이지로 이동
         alert('로그인이 완료되었습니다.');
-        window.location.href = "index.html";
+        window.location.href = "front/index.html";
     }
 }
 
@@ -316,7 +316,7 @@ function processNaverLogin() {
         } else {
             // 첫 로그인이 아닌 경우 바로 메인 페이지로
             alert('네이버 계정으로 로그인이 완료되었습니다.');
-            window.location.href = "index.html";
+            window.location.href = "front/index.html";
         }
     } catch (error) {
         console.error('네이버 로그인 처리 중 오류:', error);
