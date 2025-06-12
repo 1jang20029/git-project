@@ -3,15 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>연성대학교 스마트 캠퍼스 (테스트용)</title>
+  <title>연성대학교 스마트 캠퍼스</title>
 
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
+  <link rel="stylesheet" href="./css/index.css" />
+  <link rel="stylesheet" href="./css/settings.css" />
+  <link rel="stylesheet" href="./css/academic-calendar.css" />
+  <link rel="stylesheet" href="./css/account-edit.css" />
+  <link rel="stylesheet" href="./css/community.css" />
+  <link rel="stylesheet" href="./css/find-id-pw.css" />
+  <link rel="stylesheet" href="./css/lecture-review.css" />
+  <link rel="stylesheet" href="./css/login.css" />
+  <link rel="stylesheet" href="./css/notices.css" />
+  <link rel="stylesheet" href="./css/register.css" />
+  <link rel="stylesheet" href="./css/shuttle.css" />
+  <link rel="stylesheet" href="./css/timetable.css" />
 
   <style>
     * {
       box-sizing: border-box;
     }
+
     body {
       margin: 0;
       padding: 0;
@@ -19,6 +32,7 @@
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
     }
+
     /* 상단 네비게이션 - 데스크톱 */
     #top-nav {
       display: grid;
@@ -34,6 +48,7 @@
       width: 100%;
       min-height: 56px;
     }
+
     /* 브랜드 영역 */
     #nav-brand {
       display: flex;
@@ -44,6 +59,7 @@
       padding-left: 20px;
       overflow: hidden;
     }
+
     /* 메뉴 영역 */
     #main-menu {
       display: flex;
@@ -54,6 +70,7 @@
       justify-content: center;
       overflow: hidden;
     }
+
     .nav-item {
       display: flex;
       align-items: center;
@@ -67,23 +84,28 @@
       min-width: 0;
       flex-shrink: 1;
     }
+
     .nav-item:hover {
       background: rgba(59, 130, 246, 0.1);
       color: #1e40af;
     }
+
     .nav-item.active {
       background: #3b82f6;
       color: white;
     }
+
     .nav-icon {
       font-size: 12px;
       flex-shrink: 0;
     }
+
     .nav-text {
       overflow: hidden;
       text-overflow: ellipsis;
       min-width: 0;
     }
+
     /* 학생서비스 하위 메뉴 - 모바일 전용 */
     .sub-menu {
       max-height: 0;
@@ -93,13 +115,15 @@
       margin: 0;
       padding: 0;
       border-radius: 8px;
-      display: none;
+      display: none; /* 기본적으로 숨김 */
     }
+
     .sub-menu.expanded {
       max-height: 200px;
       padding: 8px 0;
       display: block;
     }
+
     .sub-menu-item {
       display: flex;
       align-items: center;
@@ -110,10 +134,12 @@
       font-size: 13px;
       color: #6b7280;
     }
+
     .sub-menu-item:hover {
       background: #e5e7eb;
       color: #1f2937;
     }
+
     /* 드롭다운 메뉴 - 데스크톱용 */
     .dropdown-menu {
       position: absolute;
@@ -127,10 +153,12 @@
       min-width: 160px;
       z-index: 1001;
     }
+
     .nav-item:hover .dropdown-menu,
     .nav-item.dropdown-active .dropdown-menu {
       display: block;
     }
+
     .dropdown-item {
       display: flex;
       align-items: center;
@@ -141,9 +169,11 @@
       transition: background 0.2s;
       font-size: 12px;
     }
+
     .dropdown-item:hover {
       background: #f3f4f6;
     }
+
     /* 오른쪽 컨트롤 영역 */
     #nav-controls {
       display: flex;
@@ -152,6 +182,7 @@
       padding-right: 20px;
       justify-content: flex-end;
     }
+
     #search-bar {
       display: flex;
       align-items: center;
@@ -162,6 +193,7 @@
       width: 160px;
       flex-shrink: 0;
     }
+
     #search-input {
       border: none;
       outline: none;
@@ -170,18 +202,22 @@
       font-size: 11px;
       min-width: 0;
     }
+
     #search-input::placeholder {
       color: #9ca3af;
     }
+
     #search-icon {
       font-size: 12px;
       color: #6b7280;
     }
+
     #user-menu {
       display: flex;
       align-items: center;
       gap: 6px;
     }
+
     #notification-btn {
       position: relative;
       cursor: pointer;
@@ -190,9 +226,11 @@
       border-radius: 50%;
       transition: background 0.2s;
     }
+
     #notification-btn:hover {
       background: rgba(0, 0, 0, 0.05);
     }
+
     #notification-dot {
       position: absolute;
       top: 3px;
@@ -203,6 +241,7 @@
       border-radius: 50%;
       display: none;
     }
+
     #user-profile {
       display: flex;
       align-items: center;
@@ -213,9 +252,11 @@
       transition: background 0.2s;
       position: relative;
     }
+
     #user-profile:hover {
       background: rgba(0, 0, 0, 0.05);
     }
+
     #user-avatar {
       width: 24px;
       height: 24px;
@@ -226,20 +267,25 @@
       justify-content: center;
       font-size: 12px;
     }
+
     #user-info {
       text-align: left;
     }
+
     #user-name {
       font-size: 11px;
       font-weight: 500;
       color: #1f2937;
       line-height: 1;
     }
+
     #user-role {
       font-size: 9px;
       color: #6b7280;
       line-height: 1;
     }
+
+    /* 드롭다운들 */
     #notification-dropdown,
     #user-dropdown {
       position: absolute;
@@ -253,10 +299,13 @@
       min-width: 200px;
       z-index: 1002;
     }
+
     #user-dropdown.show,
     #notification-dropdown.show {
       display: block;
     }
+
+    /* 모바일 대응 햄버거 메뉴 */
     .mobile-menu-toggle {
       display: none;
       background: none;
@@ -267,23 +316,29 @@
       border-radius: 6px;
       color: #374151;
     }
+
     .mobile-menu-toggle:hover {
       background: #f9fafb;
     }
+
+    /* 메인 컨테이너 */
     #main-container {
       padding: 20px 0;
       width: 100%;
       margin: 0;
     }
+
+    /* 대시보드 컨텐츠 */
     .dashboard-welcome {
       text-align: center;
       padding: 30px 20px;
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       border-radius: 0;
       color: white;
       margin: 0 0 25px 0;
       width: 100%;
     }
+
     .welcome-badge {
       display: inline-block;
       background: rgba(255, 255, 255, 0.2);
@@ -294,6 +349,7 @@
       color: white !important;
       font-weight: 500;
     }
+
     .welcome-title {
       font-size: 2rem;
       font-weight: 700;
@@ -301,6 +357,7 @@
       line-height: 1.2;
       color: white !important;
     }
+
     .welcome-subtitle {
       font-size: 1rem;
       opacity: 0.9;
@@ -308,26 +365,32 @@
       line-height: 1.6;
       color: white !important;
     }
+
     .welcome-stats {
       display: flex;
       justify-content: center;
       gap: 30px;
       flex-wrap: wrap;
     }
+
     .stat-item {
       text-align: center;
     }
+
     .stat-number {
       display: block;
       font-size: 1.8rem;
       font-weight: 700;
       color: #60a5fa !important;
     }
+
     .stat-text {
       font-size: 0.85rem;
       opacity: 0.8;
       color: white !important;
     }
+
+    /* 통계 그리드 */
     #statsGrid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -335,6 +398,7 @@
       padding: 0 20px;
       margin-bottom: 30px;
     }
+
     .stat-card {
       background: white;
       border-radius: 12px;
@@ -343,6 +407,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       border: 1px solid #e5e7eb;
     }
+
     .stat-card-number {
       font-size: 2rem;
       font-weight: 700;
@@ -350,21 +415,26 @@
       display: block;
       margin-bottom: 8px;
     }
+
     .stat-card-label {
       font-size: 0.9rem;
       color: #6b7280 !important;
       font-weight: 500;
     }
+
     .stat-card-icon {
       font-size: 1.5rem;
       margin-bottom: 12px;
       display: block;
     }
+
+    /* 서비스 섹션 */
     .services-section {
       margin-top: 30px;
       padding: 0 20px;
       width: 100%;
     }
+
     .services-title {
       text-align: center;
       font-size: 1.8rem;
@@ -372,6 +442,7 @@
       color: #1f2937 !important;
       margin-bottom: 25px;
     }
+
     .services-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -379,6 +450,7 @@
       max-width: 1200px;
       margin: 0 auto;
     }
+
     .service-card {
       background: white;
       border-radius: 12px;
@@ -388,28 +460,33 @@
       cursor: pointer;
       border: 1px solid #e5e7eb;
     }
+
     .service-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       border-color: #3b82f6;
     }
+
     .service-icon {
       font-size: 2rem;
       margin-bottom: 12px;
       display: block;
     }
+
     .service-title {
       font-size: 1.1rem;
       font-weight: 600;
       color: #1f2937 !important;
       margin-bottom: 6px;
     }
+
     .service-description {
       color: #6b7280 !important;
       line-height: 1.5;
       margin-bottom: 12px;
       font-size: 0.9rem;
     }
+
     .service-button {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white !important;
@@ -425,27 +502,35 @@
       width: 100%;
       display: block;
     }
+
     .service-button:hover {
       background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
+
+    /* 반응형 미디어 쿼리 */
     @media (max-width: 1024px) {
       #top-nav {
         grid-template-columns: 200px 1fr 250px;
       }
+      
       .nav-text {
         display: none;
       }
+      
       .nav-item {
         padding: 4px;
         min-width: 28px;
         justify-content: center;
       }
+      
       #search-bar {
         width: 120px;
       }
     }
+
+    /* 모바일 레이아웃 - 768px 이하 */
     @media (max-width: 768px) {
       #top-nav {
         display: flex;
@@ -453,13 +538,19 @@
         align-items: center;
         padding: 8px 12px;
       }
+
+      /* 브랜드 - 왼쪽 */
       #nav-brand {
         order: 1;
         padding-left: 0;
       }
+
+      /* 검색바 숨김 */
       #search-bar {
         display: none;
       }
+
+      /* 오른쪽 그룹 - 프로필/알림/햄버거를 함께 묶음 */
       #nav-controls {
         order: 2;
         padding-right: 0;
@@ -468,17 +559,22 @@
         align-items: center;
         margin-left: auto;
       }
+
+      /* 사용자 메뉴를 햄버거와 붙여서 배치 */
       #user-menu {
         display: flex;
         align-items: center;
         gap: 6px;
-        flex-direction: row-reverse;
+        flex-direction: row-reverse; /* 순서 뒤바꿈: 프로필 - 알림 */
       }
+
+      /* 햄버거 메뉴 - 사용자 메뉴 바로 옆 */
       .mobile-menu-toggle {
         display: block;
         order: 3;
         margin-left: 6px;
       }
+
       #main-menu {
         display: none;
         position: absolute;
@@ -492,12 +588,15 @@
         gap: 0;
         z-index: 999;
       }
+
       #main-menu.mobile-open {
         display: flex;
       }
+
       .nav-text {
         display: inline;
       }
+
       .nav-item {
         padding: 8px 12px;
         justify-content: flex-start;
@@ -505,112 +604,141 @@
         position: relative;
         margin: 0;
       }
+
+      /* 모바일에서만 서브메뉴 표시 */
       .sub-menu {
         display: block;
         background: #f1f5f9;
         border-radius: 6px;
         margin-top: 4px;
       }
+
       .sub-menu-item {
         padding: 8px 16px 8px 32px;
         font-size: 12px;
       }
+
       #user-info {
         display: none;
       }
+
+      /* 통계 그리드 모바일 */
       #statsGrid {
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
         padding: 0 12px;
       }
+
       .stat-card {
         padding: 15px;
       }
+
       .stat-card-number {
         font-size: 1.5rem;
       }
+
       .welcome-title {
         font-size: 1.5rem;
       }
+
       .welcome-subtitle {
         font-size: 0.9rem;
       }
+
       .welcome-stats {
         gap: 20px;
       }
+
       .stat-number {
         font-size: 1.4rem;
       }
+
       .services-grid {
         grid-template-columns: 1fr;
         gap: 15px;
       }
+
       #main-container {
         padding: 15px 0;
       }
+
       .dashboard-welcome {
         margin: 0 0 20px 0;
         border-radius: 0;
       }
+
       .services-section {
         padding: 0 12px;
       }
     }
+
     @media (max-width: 480px) {
       #nav-brand span {
         display: none;
       }
+
       #statsGrid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
         padding: 0 12px;
       }
+
       .stat-card {
         padding: 12px;
       }
+
       .stat-card-number {
         font-size: 1.3rem;
       }
+
       .welcome-title {
         font-size: 1.2rem;
       }
+
       .stat-number {
         font-size: 1.2rem;
       }
+
       .services-title {
         font-size: 1.4rem;
       }
+
       .service-card {
         padding: 15px;
       }
+
       .service-icon {
         font-size: 1.8rem;
       }
     }
+
     /* 컨텐츠 영역 숨김/표시 */
-    #content-area > div { display: none; }
-    #content-area > div:first-child { display: block; }
+    #content-area > div {
+      display: none;
+    }
+
+    #content-area > div:first-child {
+      display: block;
+    }
   </style>
 </head>
-
 <body>
-
   <nav id="top-nav">
     <div id="nav-brand">
       <a href="./index.html" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
         <img src="./img/campus_icon.png" alt="캠퍼스 아이콘"
-             style="width:20px; height:20px; margin-right:6px;" />
+            style="width:20px; height:20px; margin-right:6px;" />
         <span>연성대학교 스마트 캠퍼스</span>
       </a>
     </div>
-
+    
     <ul id="main-menu">
       <li class="nav-item active" id="nav-home" onclick="showContent('home')">
         <span class="nav-icon" title="대시보드">🏠</span>
         <span class="nav-text">대시보드</span>
       </li>
       <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
-        <span class="nav-icon" title="건물 & 시설">🏢</span>
+        <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
         <span class="nav-text">건물 & 시설</span>
       </li>
       <li class="nav-item" id="nav-community" onclick="showContent('community')">
@@ -628,7 +756,7 @@
       <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices()">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span class="nav-text">학생서비스</span>
-        <!-- 데스크톱용 드롭다운 -->
+        <!-- 데스크톱용 드롭다운 (호버) -->
         <ul class="dropdown-menu">
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
@@ -641,20 +769,24 @@
           </li>
         </ul>
       </li>
-      <!-- 모바일 서브메뉴 -->
+      
+      <!-- 모바일용 서브메뉴 -->
       <ul class="sub-menu" id="sub-menu">
         <li class="sub-menu-item" onclick="openTimetablePage()">
-          <span class="nav-icon">📅</span><span>내 시간표</span>
+          <span class="nav-icon">📅</span>
+          <span>내 시간표</span>
         </li>
         <li class="sub-menu-item" onclick="openCalendarPage()">
-          <span class="nav-icon">🗓️</span><span>학사일정</span>
+          <span class="nav-icon">🗓️</span>
+          <span>학사일정</span>
         </li>
         <li class="sub-menu-item" onclick="openShuttlePage()">
-          <span class="nav-icon">🚌</span><span>셔틀버스</span>
+          <span class="nav-icon">🚌</span>
+          <span>셔틀버스</span>
         </li>
       </ul>
     </ul>
-
+    
     <div id="nav-controls">
       <div id="search-bar">
         <span id="search-icon">🔍</span>
@@ -695,7 +827,7 @@
         </div>
       </div>
     </div>
-
+    
     <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
   </nav>
 
@@ -708,6 +840,7 @@
             <span>홈</span><span>›</span><span>대시보드</span>
           </div>
         </div>
+        
         <div class="dashboard-welcome">
           <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
           <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
@@ -730,6 +863,7 @@
             </div>
           </div>
         </div>
+
         <div id="statsGrid">
           <div class="stat-card">
             <span class="stat-card-icon">📋</span>
@@ -752,6 +886,12 @@
             <span class="stat-card-label">오늘 일정<br><small style="color:#3b82f6;">📋 진행중</small></span>
           </div>
         </div>
+        
+        <div class="services-section">
+          <h2 class="services-title">주요 서비스</h2>
+          <div class="services-grid">
+            <div class="service-card" onclick="showContent('buildings')">
+              <span class="service-icon">🏢</span>
         <div class="services-section">
           <h2 class="services-title">주요 서비스</h2>
           <div class="services-grid">
@@ -761,30 +901,35 @@
               <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
               <button class="service-button">둘러보기</button>
             </div>
+            
             <div class="service-card" onclick="showContent('community')">
               <span class="service-icon">💬</span>
               <h3 class="service-title">커뮤니티</h3>
               <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
               <button class="service-button">참여하기</button>
             </div>
+            
             <div class="service-card" onclick="showContent('lecture-review')">
               <span class="service-icon">⭐</span>
               <h3 class="service-title">강의평가</h3>
               <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
               <button class="service-button">평가보기</button>
             </div>
+            
             <div class="service-card" onclick="openTimetablePage()">
               <span class="service-icon">📅</span>
               <h3 class="service-title">내 시간표</h3>
               <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
               <button class="service-button">관리하기</button>
             </div>
+            
             <div class="service-card" onclick="openShuttlePage()">
               <span class="service-icon">🚌</span>
               <h3 class="service-title">셔틀버스</h3>
               <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
               <button class="service-button">확인하기</button>
             </div>
+            
             <div class="service-card" onclick="showContent('notices')">
               <span class="service-icon">📢</span>
               <h3 class="service-title">공지사항</h3>
@@ -794,7 +939,7 @@
           </div>
         </div>
       </div>
-      <!-- 추가 콘텐츠 영역 (초기에는 숨김) -->
+      
       <div id="buildingsContent" style="display:none;"></div>
       <div id="communityContent" style="display:none;"></div>
       <div id="lecture-reviewContent" style="display:none;"></div>
@@ -807,11 +952,26 @@
       <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
+  
+  <script src="./js/index.js" defer></script>
+  <script src="./js/settings.js" defer></script>
+  <script src="./js/buildings.js" defer></script>
+  <script src="./js/academic-calendar.js" defer></script>
+  <script src="./js/account-edit.js" defer></script>
+  <script src="./js/community.js" defer></script>
+  <script src="./js/find-id-pw.js" defer></script>
+  <script src="./js/lecture-review.js" defer></script>
+  <script src="./js/login.js" defer></script>
+  <script src="./js/notices.js" defer></script>
+  <script src="./js/register.js" defer></script>
+  <script src="./js/shuttle.js" defer></script>
+  <script src="./js/timetable.js" defer></script>
 
   <script>
     function toggleMobileMenu() {
       const mainMenu = document.getElementById('main-menu');
       const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      
       if (mainMenu.classList.contains('mobile-open')) {
         mainMenu.classList.remove('mobile-open');
         mobileToggle.textContent = '☰';
@@ -824,23 +984,39 @@
     function toggleNotifications() {
       const dropdown = document.getElementById('notification-dropdown');
       const userDropdown = document.getElementById('user-dropdown');
+      
       userDropdown.classList.remove('show');
-      dropdown.classList.toggle('show');
+      
+      if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+      } else {
+        dropdown.classList.add('show');
+      }
     }
 
     function toggleUserMenu() {
       const dropdown = document.getElementById('user-dropdown');
       const notificationDropdown = document.getElementById('notification-dropdown');
+      
       notificationDropdown.classList.remove('show');
-      dropdown.classList.toggle('show');
+      
+      if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+      } else {
+        dropdown.classList.add('show');
+      }
     }
 
+    // 학생서비스 드롭다운/서브메뉴 토글
     function toggleStudentServices() {
       const subMenu = document.getElementById('sub-menu');
       const studentServicesItem = document.getElementById('nav-student-services');
+      
       if (window.innerWidth <= 768) {
+        // 모바일에서는 서브메뉴 펼치기/접기
         subMenu.classList.toggle('expanded');
       } else {
+        // 데스크톱에서는 클릭으로 드롭다운 토글
         studentServicesItem.classList.toggle('dropdown-active');
       }
     }
@@ -857,13 +1033,21 @@
     function showContent(contentType) {
       console.log(`${contentType} 콘텐츠를 표시합니다.`);
       document.getElementById('user-dropdown').classList.remove('show');
+      
+      // 모든 네비게이션 아이템에서 active 클래스 제거
       document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active', 'dropdown-active');
+        item.classList.remove('active');
+        item.classList.remove('dropdown-active');
       });
+      
+      // 서브메뉴 닫기
       document.getElementById('sub-menu').classList.remove('expanded');
-      const clicked = document.getElementById(`nav-${contentType}`);
-      if (clicked) clicked.classList.add('active');
-      // 실제 콘텐츠 전환 로직은 여기에 추가하세요.
+      
+      // 클릭된 메뉴 아이템에 active 클래스 추가
+      const clickedItem = document.getElementById(`nav-${contentType}`);
+      if (clickedItem) {
+        clickedItem.classList.add('active');
+      }
     }
 
     function handleLogout() {
@@ -873,19 +1057,23 @@
 
     function openTimetablePage() {
       console.log('시간표 페이지를 엽니다.');
+      // 서브메뉴 닫기
       document.getElementById('sub-menu').classList.remove('expanded');
     }
 
     function openCalendarPage() {
       console.log('학사일정 페이지를 엽니다.');
+      // 서브메뉴 닫기
       document.getElementById('sub-menu').classList.remove('expanded');
     }
 
     function openShuttlePage() {
       console.log('셔틀버스 페이지를 엽니다.');
+      // 서브메뉴 닫기
       document.getElementById('sub-menu').classList.remove('expanded');
     }
 
+    // 외부 클릭 시 드롭다운 닫기
     document.addEventListener('click', function(event) {
       const notificationBtn = document.getElementById('notification-btn');
       const userProfile = document.getElementById('user-profile');
@@ -893,23 +1081,29 @@
       const subMenu = document.getElementById('sub-menu');
       const notificationDropdown = document.getElementById('notification-dropdown');
       const userDropdown = document.getElementById('user-dropdown');
+      
       if (!notificationBtn.contains(event.target)) {
         notificationDropdown.classList.remove('show');
       }
+      
       if (!userProfile.contains(event.target)) {
         userDropdown.classList.remove('show');
       }
+
+      // 학생서비스 드롭다운/서브메뉴 외부 클릭 시 닫기
       if (!studentServices.contains(event.target) && !subMenu.contains(event.target)) {
         studentServices.classList.remove('dropdown-active');
         subMenu.classList.remove('expanded');
       }
     });
 
+    // 윈도우 리사이즈 시 모바일 메뉴 자동 닫기
     window.addEventListener('resize', function() {
       const mainMenu = document.getElementById('main-menu');
       const mobileToggle = document.querySelector('.mobile-menu-toggle');
       const subMenu = document.getElementById('sub-menu');
       const studentServices = document.getElementById('nav-student-services');
+      
       if (window.innerWidth > 768) {
         mainMenu.classList.remove('mobile-open');
         mobileToggle.textContent = '☰';
@@ -919,9 +1113,13 @@
       }
     });
 
+    // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
+      // 기본 활성 메뉴 설정
       const homeMenu = document.getElementById('nav-home');
-      if (homeMenu) homeMenu.classList.add('active');
+      if (homeMenu) {
+        homeMenu.classList.add('active');
+      }
     });
   </script>
 </body>
