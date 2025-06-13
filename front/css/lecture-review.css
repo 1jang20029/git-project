@@ -15,9 +15,11 @@ body {
 /* content-header */
 .content-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
   margin-bottom: 2rem;
   padding: 0 2rem;
+  text-align: center;
 }
 
 .content-header h1 {
@@ -27,15 +29,62 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin-bottom: 0.5rem;
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
   font-size: 0.9rem;
   color: #64748b;
+}
+
+/* 강의평가 빈 상태 메시지 개선 */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  margin: 2rem;
+  backdrop-filter: blur(20px);
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #f1f5f9; /* 어두운 배경에 잘 보이는 밝은 색상 */
+  font-weight: 600;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: #94a3b8; /* 적당한 회색 색상 */
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* 강의평가 작성 버튼 개선 */
+.empty-state .btn {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.empty-state .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
 }
 
 /* dashboardGrid-lecture-review */
@@ -108,11 +157,28 @@ body {
   font-style: italic;
 }
 
-/* 빈 상태 */
-.empty-state {
-  text-align: center;
+/* 빈 상태 - 카드 내부용 */
+#popularReviews .empty-state,
+#recentReviews .empty-state {
+  background: transparent;
+  border: none;
+  padding: 2rem 1rem;
+  margin: 0;
   color: #64748b;
-  padding: 2rem;
+}
+
+#popularReviews .empty-state h3,
+#recentReviews .empty-state h3 {
+  font-size: 1rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+#popularReviews .empty-state p,
+#recentReviews .empty-state p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0;
 }
 
 /* 단일 평가 아이템 */
@@ -253,11 +319,31 @@ body.light-mode .breadcrumb {
   color: #6b7280;
 }
 
+/* 라이트 모드 빈 상태 개선 */
+body.light-mode .empty-state {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .empty-state h3 {
+  color: #1f2937; /* 라이트 모드에서는 어두운 색상 */
+}
+
+body.light-mode .empty-state p {
+  color: #6b7280; /* 라이트 모드에서는 회색 */
+}
+
 body.light-mode #popular-reviews-card,
 body.light-mode #recent-reviews-card,
 body.light-mode #write-review-card {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode #card-title-popular-reviews,
+body.light-mode #card-title-recent-reviews,
+body.light-mode #card-title-write-review {
+  color: #1f2937;
 }
 
 body.light-mode .evaluation-item {
@@ -274,8 +360,26 @@ body.light-mode .evaluation-meta {
   color: #6b7280;
 }
 
-body.light-mode .loading,
-body.light-mode .empty-state {
+body.light-mode .loading {
+  color: #6b7280;
+}
+
+body.light-mode #popularReviews .empty-state,
+body.light-mode #recentReviews .empty-state {
+  color: #6b7280;
+}
+
+body.light-mode #popularReviews .empty-state h3,
+body.light-mode #recentReviews .empty-state h3 {
+  color: #374151;
+}
+
+body.light-mode #popularReviews .empty-state p,
+body.light-mode #recentReviews .empty-state p {
+  color: #6b7280;
+}
+
+body.light-mode #write-review-desc {
   color: #6b7280;
 }
 
@@ -299,6 +403,11 @@ body.light-mode #error-message {
   
   #dashboardGrid-lecture-review {
     margin: 0 1rem 1rem 1rem;
+  }
+  
+  .empty-state {
+    margin: 1rem;
+    padding: 3rem 1.5rem;
   }
   
   .content-header h1 {
