@@ -107,28 +107,37 @@
       min-width: 0;
     }
 
-    /* 드롭다운 메뉴 - 수정된 부분 */
+    /* 드롭다운 메뉴 - 완전히 재작성 */
     .dropdown-menu {
       position: absolute;
       top: 100%;
       left: 0;
       background: white;
       border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       padding: 6px;
-      display: none;
       min-width: 160px;
-      z-index: 1001;
+      z-index: 2000;
+      
+      /* 기본적으로 숨김 */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
     }
 
     /* PC 버전 - 호버 시 드롭다운 표시 */
     .nav-item:hover .dropdown-menu {
-      display: block;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
 
     /* 클릭 시에도 드롭다운 표시 (모바일용) */
     .nav-item.dropdown-open .dropdown-menu {
-      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) !important;
     }
 
     .dropdown-item {
@@ -577,19 +586,28 @@
 
       /* 모바일에서 드롭다운 위치 조정 */
       .dropdown-menu {
-        position: static;
-        display: none;
-        background: #f8f9fa;
-        border-radius: 6px;
-        margin-top: 6px;
-        padding: 8px;
-        box-shadow: none;
-        border: 1px solid #e9ecef;
-        z-index: 1600;
+        position: static !important;
+        background: #f8f9fa !important;
+        border-radius: 6px !important;
+        margin-top: 6px !important;
+        padding: 8px !important;
+        box-shadow: none !important;
+        border: 1px solid #e9ecef !important;
+        z-index: 1600 !important;
+        
+        /* 모바일에서는 다른 방식으로 숨김/표시 */
+        opacity: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        transform: none !important;
+        transition: all 0.3s ease !important;
       }
 
       .nav-item.dropdown-open .dropdown-menu {
-        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        max-height: 200px !important;
       }
 
       #user-info {
@@ -987,26 +1005,49 @@
       }
     }
 
-    // 모바일에서 학생서비스 드롭다운 토글 - 수정된 부분
+    // 학생서비스 드롭다운 토글 - 강화된 버전
     function toggleStudentServices() {
+      console.log('toggleStudentServices 호출됨');
+      
       const studentServicesItem = document.getElementById('nav-student-services');
       
-      // 모바일에서만 드롭다운 토글 (PC에서는 호버로 처리)
-      if (window.innerWidth <= 768) {
-        // 다른 드롭다운 먼저 닫기
-        document.querySelectorAll('.nav-item').forEach(item => {
-          if (item !== studentServicesItem) {
-            item.classList.remove('dropdown-open');
-          }
-        });
-        
-        // 학생서비스 드롭다운 토글
-        studentServicesItem.classList.toggle('dropdown-open');
-        console.log('모바일 드롭다운 토글:', studentServicesItem.classList.contains('dropdown-open'));
+      if (!studentServicesItem) {
+        console.error('학생서비스 아이템을 찾을 수 없습니다');
+        return;
+      }
+      
+      // 현재 상태 확인
+      const isCurrentlyOpen = studentServicesItem.classList.contains('dropdown-open');
+      console.log('현재 드롭다운 상태:', isCurrentlyOpen ? '열림' : '닫힘');
+      
+      // 다른 모든 드롭다운 닫기
+      document.querySelectorAll('.nav-item').forEach(item => {
+        if (item !== studentServicesItem) {
+          item.classList.remove('dropdown-open');
+        }
+      });
+      
+      // 학생서비스 드롭다운 토글
+      if (isCurrentlyOpen) {
+        studentServicesItem.classList.remove('dropdown-open');
+        console.log('드롭다운 닫힘');
       } else {
-        // PC에서는 클릭 시에도 토글 (호버와 함께)
-        studentServicesItem.classList.toggle('dropdown-open');
-        console.log('PC 드롭다운 토글:', studentServicesItem.classList.contains('dropdown-open'));
+        studentServicesItem.classList.add('dropdown-open');
+        console.log('드롭다운 열림');
+      }
+      
+      // 드롭다운 메뉴 요소 확인
+      const dropdownMenu = studentServicesItem.querySelector('.dropdown-menu');
+      if (dropdownMenu) {
+        console.log('드롭다운 메뉴 찾음');
+        const computedStyle = window.getComputedStyle(dropdownMenu);
+        console.log('계산된 스타일:');
+        console.log('- opacity:', computedStyle.opacity);
+        console.log('- visibility:', computedStyle.visibility);
+        console.log('- transform:', computedStyle.transform);
+        console.log('- z-index:', computedStyle.zIndex);
+      } else {
+        console.error('드롭다운 메뉴를 찾을 수 없습니다');
       }
     }
 
