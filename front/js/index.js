@@ -1,5 +1,160 @@
 // index.js
 
+// -------------------------- INLINE SCRIPT FROM index.html --------------------------
+
+// 모바일 메뉴 토글
+function toggleMobileMenu() {
+  const mainMenu = document.getElementById('main-menu');
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  if (mainMenu.classList.contains('mobile-open')) {
+    mainMenu.classList.remove('mobile-open');
+    mobileToggle.textContent = '☰';
+  } else {
+    mainMenu.classList.add('mobile-open');
+    mobileToggle.textContent = '✕';
+  }
+}
+
+// 학생서비스 드롭다운 토글
+function toggleStudentServices(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  const studentServicesItem = document.getElementById('nav-student-services');
+  // 모바일에서만 클릭으로 토글
+  if (window.innerWidth <= 768) {
+    studentServicesItem.classList.toggle('dropdown-open');
+  }
+}
+
+// 알림 토글
+function toggleNotifications() {
+  const dropdown = document.getElementById('notification-dropdown');
+  const userDropdown = document.getElementById('user-dropdown');
+  userDropdown.classList.remove('show');
+  if (dropdown.classList.contains('show')) {
+    dropdown.classList.remove('show');
+  } else {
+    dropdown.classList.add('show');
+  }
+}
+
+// 사용자 메뉴 토글
+function toggleUserMenu() {
+  const dropdown = document.getElementById('user-dropdown');
+  const notificationDropdown = document.getElementById('notification-dropdown');
+  notificationDropdown.classList.remove('show');
+  if (dropdown.classList.contains('show')) {
+    dropdown.classList.remove('show');
+  } else {
+    dropdown.classList.add('show');
+  }
+}
+
+// 알림 읽음 처리
+function markAllAsRead() {
+  console.log('모든 알림을 읽음 처리합니다.');
+}
+
+// 프로필 표시
+function showProfile() {
+  console.log('프로필 페이지로 이동합니다.');
+  document.getElementById('user-dropdown').classList.remove('show');
+}
+
+// 컨텐츠 표시
+function showContent(contentType) {
+  console.log(`${contentType} 콘텐츠를 표시합니다.`);
+  
+  // 모든 드롭다운 닫기
+  document.getElementById('user-dropdown').classList.remove('show');
+  document.getElementById('notification-dropdown').classList.remove('show');
+  
+  // 모바일 메뉴 닫기
+  const mainMenu = document.getElementById('main-menu');
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  if (mainMenu.classList.contains('mobile-open')) {
+    mainMenu.classList.remove('mobile-open');
+    mobileToggle.textContent = '☰';
+  }
+  
+  // 모든 네비게이션 아이템에서 active, dropdown-open 제거
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    item.classList.remove('dropdown-open');
+  });
+  
+  // 클릭된 메뉴에 active 추가
+  const clickedItem = document.getElementById(`nav-${contentType}`);
+  if (clickedItem) {
+    clickedItem.classList.add('active');
+  }
+}
+
+// 로그아웃 처리
+function handleLogout() {
+  console.log('로그아웃 처리합니다.');
+  document.getElementById('user-dropdown').classList.remove('show');
+}
+
+// 외부 페이지로 이동 함수들 (index.html inline)
+function openTimetablePage() {
+  console.log('시간표 페이지로 이동합니다.');
+  window.location.href = 'pages/list/timetable.html';
+}
+function openCalendarPage() {
+  console.log('학사일정 페이지로 이동합니다.');
+  window.location.href = 'pages/list/academic-calendar.html';
+}
+function openShuttlePage() {
+  console.log('셔틀버스 페이지로 이동합니다.');
+  window.location.href = 'pages/list/shuttle.html';
+}
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener('click', function(event) {
+  const notificationBtn = document.getElementById('notification-btn');
+  const userProfile = document.getElementById('user-profile');
+  const notificationDropdown = document.getElementById('notification-dropdown');
+  const userDropdown = document.getElementById('user-dropdown');
+  const studentServices = document.getElementById('nav-student-services');
+
+  if (!notificationBtn.contains(event.target)) {
+    notificationDropdown.classList.remove('show');
+  }
+  if (!userProfile.contains(event.target)) {
+    userDropdown.classList.remove('show');
+  }
+  // 모바일에서 학생서비스 드롭다운 외부 클릭 시 닫기
+  if (window.innerWidth <= 768 && !studentServices.contains(event.target)) {
+    studentServices.classList.remove('dropdown-open');
+  }
+});
+
+// 윈도우 리사이즈 시 메뉴 자동 닫기
+window.addEventListener('resize', function() {
+  const mainMenu = document.getElementById('main-menu');
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+
+  if (window.innerWidth > 768) {
+    mainMenu.classList.remove('mobile-open');
+    mobileToggle.textContent = '☰';
+    // 학생서비스 드롭다운 닫기
+    document.getElementById('nav-student-services').classList.remove('dropdown-open');
+  }
+});
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+  const homeMenu = document.getElementById('nav-home');
+  if (homeMenu) {
+    homeMenu.classList.add('active');
+  }
+});
+
+// -------------------------- EXISTING index.js CONTENT --------------------------
+
 // ─────────── 전역 변수 선언 ───────────
 let naverMap;
 let mapMarkers = [];
@@ -32,33 +187,23 @@ const EXTERNAL_PAGES = {
 };
 
 // ─────────── 외부 페이지 이동 함수들 (현재 창에서 이동) ───────────
-function openTimetablePage() {
+function openTimetablePageExternal() {
   console.log('내 시간표 페이지로 이동');
   closeAllDropdowns();
-  
-  // 현재 창에서 이동
   window.location.href = EXTERNAL_PAGES.timetable;
 }
-
-function openCalendarPage() {
+function openCalendarPageExternal() {
   console.log('학사일정 페이지로 이동');
   closeAllDropdowns();
-  
-  // 현재 창에서 이동
   window.location.href = EXTERNAL_PAGES.calendar;
 }
-
-function openShuttlePage() {
+function openShuttlePageExternal() {
   console.log('셔틀버스 페이지로 이동');
   closeAllDropdowns();
-  
-  // 현재 창에서 이동
   window.location.href = EXTERNAL_PAGES.shuttle;
 }
 
 // ─────────── 개선된 드롭다운 처리 함수들 ───────────
-
-// 학생서비스 드롭다운 닫기 함수 개선
 function closeStudentServiceDropdown() {
   const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
   if (dropdown) {
@@ -68,8 +213,6 @@ function closeStudentServiceDropdown() {
     dropdown.style.pointerEvents = 'none';
   }
 }
-
-// 드롭다운 표시 함수 추가
 function showStudentServiceDropdown() {
   const dropdown = document.querySelector('#nav-student-services .dropdown-menu');
   if (dropdown) {
@@ -116,20 +259,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const studentServices = document.getElementById('nav-student-services');
   if (studentServices) {
     let hoverTimeout;
-    
+
     // 마우스 엔터 시 드롭다운 표시
     studentServices.addEventListener('mouseenter', () => {
       clearTimeout(hoverTimeout);
       showStudentServiceDropdown();
     });
-    
+
     // 마우스 리브 시 약간의 지연 후 드롭다운 숨김
     studentServices.addEventListener('mouseleave', () => {
       hoverTimeout = setTimeout(() => {
         closeStudentServiceDropdown();
       }, 150); // 150ms 지연
     });
-    
+
     // 드롭다운 메뉴 자체에도 이벤트 추가
     const dropdown = studentServices.querySelector('.dropdown-menu');
     if (dropdown) {
@@ -137,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(hoverTimeout);
         showStudentServiceDropdown();
       });
-      
+
       dropdown.addEventListener('mouseleave', () => {
         hoverTimeout = setTimeout(() => {
           closeStudentServiceDropdown();
@@ -154,11 +297,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         e.preventDefault();
         console.log(`드롭다운 항목 ${index} 클릭됨`);
-        
+
         switch(index) {
-          case 0: openTimetablePage(); break;
-          case 1: openCalendarPage(); break;
-          case 2: openShuttlePage(); break;
+          case 0: openTimetablePageExternal(); break;
+          case 1: openCalendarPageExternal(); break;
+          case 2: openShuttlePageExternal(); break;
         }
       });
     });
@@ -173,7 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!ntBtn) closeNotificationDropdown();
     if (!upBtn) closeUserDropdown();
     if (!ssBtn) {
-      // 학생서비스 영역 밖을 클릭하면 드롭다운 즉시 숨김
       closeStudentServiceDropdown();
     }
 
@@ -216,6 +358,7 @@ function showContent(type) {
     if (el) el.style.display = 'none';
   });
 
+  // Lazy load 각 콘텐츠
   if (type === 'settings' && !settingsLoaded) {
     const container = document.getElementById('settingsContent');
     fetch('pages/user/settings.html')
@@ -230,13 +373,9 @@ function showContent(type) {
       })
       .catch(err => {
         console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>설정 화면을 불러올 수 없습니다</p>
-        </div>`;
+        container.innerHTML = `<div class="error-fallback"><h3>⚠️ 오류 발생</h3><p>설정 화면을 불러올 수 없습니다</p></div>`;
       });
   }
-
   if (type === 'community' && !communityLoaded) {
     const container = document.getElementById('communityContent');
     fetch('pages/user/community.html')
@@ -251,13 +390,9 @@ function showContent(type) {
       })
       .catch(err => {
         console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>커뮤니티 화면을 불러올 수 없습니다</p>
-        </div>`;
+        container.innerHTML = `<div class="error-fallback"><h3>⚠️ 오류 발생</h3><p>커뮤니티 화면을 불러올 수 없습니다</p></div>`;
       });
   }
-
   if (type === 'lecture-review' && !lectureLoaded) {
     const container = document.getElementById('lecture-reviewContent');
     fetch('pages/list/lecture-review.html')
@@ -272,13 +407,9 @@ function showContent(type) {
       })
       .catch(err => {
         console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>강의평가 화면을 불러올 수 없습니다</p>
-        </div>`;
+        container.innerHTML = `<div class="error-fallback"><h3>⚠️ 오류 발생</h3><p>강의평가 화면을 불러올 수 없습니다</p></div>`;
       });
   }
-
   if (type === 'notices' && !noticesLoaded) {
     const container = document.getElementById('noticesContent');
     fetch('pages/list/notices.html')
@@ -293,56 +424,27 @@ function showContent(type) {
       })
       .catch(err => {
         console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>공지사항 화면을 불러올 수 없습니다</p>
-        </div>`;
+        container.innerHTML = `<div class="error-fallback"><h3>⚠️ 오류 발생</h3><p>공지사항 화면을 불러올 수 없습니다</p></div>`;
       });
   }
-
-  if (type === 'buildings' && !buildingsLoaded) {
-    const container = document.getElementById('buildingsContent');
-    fetch('pages/list/buildings.html')
+  if ((type === 'buildings' || type === 'academic-calendar') && !buildingsLoaded) {
+    const container = document.getElementById(type === 'buildings' ? 'buildingsContent' : 'academic-calendarContentPane');
+    const url = type === 'buildings' ? 'pages/list/buildings.html' : 'pages/list/academic-calendar.html';
+    fetch(url)
       .then(res => {
-        if (!res.ok) throw new Error('buildings.html 을 불러오는 중 오류 발생');
+        if (!res.ok) throw new Error(`${url} 을 불러오는 중 오류 발생`);
         return res.text();
       })
       .then(html => {
         container.innerHTML = html;
         buildingsLoaded = true;
-        if (window.initBuildingsPage) window.initBuildingsPage();
+        if (type === 'buildings' && window.initBuildingsPage) window.initBuildingsPage();
+        if (type === 'academic-calendar' && window.initAcademicCalendarPage) window.initAcademicCalendarPage();
       })
       .catch(err => {
         console.error(err);
-        container.innerHTML = `<div class="error-fallback">
-          <h3>⚠️ 오류 발생</h3>
-          <p>건물 페이지를 불러올 수 없습니다</p>
-        </div>`;
+        container.innerHTML = `<div class="error-fallback"><h3>⚠️ 오류 발생</h3><p>${type === 'buildings' ? '건물' : '학사일정'} 화면을 불러올 수 없습니다</p></div>`;
       });
-  }
-
-  // academic-calendar 페이지 처리 (내부용 - 사용하지 않음)
-  if (type === 'academic-calendar' && !academicCalendarLoaded) {
-    const container = document.getElementById('academic-calendarContentPane');
-    if (container) {
-      fetch('pages/list/academic-calendar.html')
-        .then(res => {
-          if (!res.ok) throw new Error('academic-calendar.html 을 불러오는 중 오류 발생');
-          return res.text();
-        })
-        .then(html => {
-          container.innerHTML = html;
-          academicCalendarLoaded = true;
-          if (window.initAcademicCalendarPage) window.initAcademicCalendarPage();
-        })
-        .catch(err => {
-          console.error(err);
-          container.innerHTML = `<div class="error-fallback">
-            <h3>⚠️ 오류 발생</h3>
-            <p>학사일정 화면을 불러올 수 없습니다</p>
-          </div>`;
-        });
-    }
   }
 
   const targetMap = {
@@ -358,7 +460,6 @@ function showContent(type) {
     profile: 'profileContentPane',
     settings: 'settingsContent'
   };
-
   const targetId = targetMap[type] || 'homeContent';
   const targetEl = document.getElementById(targetId);
   if (targetEl) {
@@ -366,6 +467,7 @@ function showContent(type) {
     targetEl.classList.add('fade-in');
   }
 
+  // 네비게이션 active 처리
   document.querySelectorAll('#main-menu .nav-item').forEach(item => {
     item.classList.remove('active');
   });
@@ -375,6 +477,7 @@ function showContent(type) {
   currentContent = type;
   window.location.hash = type;
 
+  // 지도가 있는 페이지 재렌더링
   if ((type === 'buildings' || type === 'academic-calendar') && naverMap) {
     setTimeout(() => {
       if (naverMap.refresh) naverMap.refresh();
@@ -489,7 +592,7 @@ function markAsRead(el, id, category) {
 }
 
 // ─────────── markAllAsRead: 모든 알림 읽음 처리 ───────────
-function markAllAsRead() {
+function markAllAsReadGlobal() {
   document.querySelectorAll('.notification-item.unread').forEach(item => {
     item.classList.remove('unread');
   });
@@ -872,8 +975,8 @@ function showErrorFallback(containerId, message) {
 function updateTimetable() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   const contentEl = document.getElementById('timetableContent');
-  if (!contentEl) return;  
-  
+  if (!contentEl) return;
+
   if (!currentUser) {
     contentEl.innerHTML = `
       <div class="empty-state">
@@ -905,11 +1008,10 @@ function updateTimetable() {
 // ─────────── loadCoursesFromLocalStorage: 로컬 스토리지에서 과목 데이터 로드 ───────────
 function loadCoursesFromLocalStorage(currentUser) {
   try {
-    // 현재 학기 계산
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1;
-    
+
     let semester = { year: currentYear, term: 1 };
     if (currentMonth >= 3 && currentMonth <= 6) {
       semester = { year: currentYear, term: 1 };
@@ -919,9 +1021,8 @@ function loadCoursesFromLocalStorage(currentUser) {
       semester = { year: currentYear - 1, term: 2 };
     }
 
-    // 현재 시간표 ID 가져오기
     const currentTimetableData = localStorage.getItem(`currentTimetable_user_${currentUser}`);
-    let currentTimetableId = 1; // 기본값
+    let currentTimetableId = 1;
     if (currentTimetableData) {
       try {
         const timetable = JSON.parse(currentTimetableData);
@@ -931,14 +1032,13 @@ function loadCoursesFromLocalStorage(currentUser) {
       }
     }
 
-    // 과목 데이터 로드
     const semesterKey = `courses_${semester.year}_${semester.term}_${currentTimetableId}_user_${currentUser}`;
     const savedCourses = localStorage.getItem(semesterKey);
-    
+
     if (savedCourses) {
       return JSON.parse(savedCourses);
     }
-    
+
     return [];
   } catch (error) {
     console.error('로컬 스토리지에서 과목 로드 오류:', error);
@@ -950,35 +1050,29 @@ function loadCoursesFromLocalStorage(currentUser) {
 function renderTimetable(courses) {
   const contentEl = document.getElementById('timetableContent');
   if (!contentEl) return;
-  
+
   const now = new Date();
   const currentDay = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
   const currentTime = now.getHours() * 60 + now.getMinutes();
   const todayCourses = [];
 
-  // 오늘 요일의 과목들을 찾아서 처리
   courses.forEach(course => {
     if (!course.times || !Array.isArray(course.times)) return;
-    
+
     course.times.forEach(timeSlot => {
-      // timeSlot.day는 1(월)~6(토), currentDay는 0(일)~6(토)
-      // 월요일(1) = currentDay(1), 화요일(2) = currentDay(2), ..., 토요일(6) = currentDay(6)
-      // 일요일은 제외 (대학교 수업 없음)
-      
       if (timeSlot.day === currentDay && currentDay !== 0) {
-        // 수업 시간 계산 (1교시 = 9:30~10:20, 2교시 = 10:30~11:20, ...)
         const startHour = 8 + timeSlot.start;
         const startMinute = 30;
         const endHour = 8 + timeSlot.end + 1;
         const endMinute = 20;
-        
+
         const startTime = startHour * 60 + startMinute;
         const endTime = endHour * 60 + endMinute;
-        
+
         let status = 'upcoming';
         let timeInfo = '';
         let statusText = '';
-        
+
         if (currentTime >= startTime && currentTime < endTime) {
           status = 'current';
           const remaining = endTime - currentTime;
@@ -1000,7 +1094,7 @@ function renderTimetable(courses) {
             statusText = '수강 예정';
           }
         }
-        
+
         todayCourses.push({
           name: course.name,
           room: course.room || '강의실 미정',
@@ -1017,13 +1111,12 @@ function renderTimetable(courses) {
     });
   });
 
-  // 시간순으로 정렬
   todayCourses.sort((a, b) => a.startTime - b.startTime);
 
   if (todayCourses.length === 0) {
     const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
     const todayName = dayNames[currentDay];
-    
+
     contentEl.innerHTML = `
       <div class="empty-state">
         <h3>📅 오늘은 휴일</h3>
@@ -1040,14 +1133,13 @@ function renderTimetable(courses) {
   todayCourses.forEach(courseInfo => {
     const div = document.createElement('div');
     div.className = `class-item class-status-${courseInfo.status}`;
-    
-    // 상태별 아이콘
+
     const statusIcon = {
       current: '🟢',
-      upcoming: '🟡', 
+      upcoming: '🟡',
       finished: '🔴'
     }[courseInfo.status];
-    
+
     div.innerHTML = `
       <div class="class-time">
         <div class="class-time-main">${courseInfo.displayTime}</div>
@@ -1062,7 +1154,7 @@ function renderTimetable(courses) {
         <span>${courseInfo.statusText}</span>
       </div>
     `;
-    
+
     contentEl.appendChild(div);
   });
 }
@@ -1082,8 +1174,8 @@ function formatTimeRemaining(minutes, suffix) {
   }
 }
 
-// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
-function toggleNotifications() {
+// ─────────── toggleNotifications: 알림 드롭다운 토글 (다중 정의 주의) ───────────
+function toggleNotificationsDropdown() {
   const dd = document.getElementById('notification-dropdown');
   if (dd && dd.classList.contains('show')) {
     closeNotificationDropdown();
@@ -1091,20 +1183,18 @@ function toggleNotifications() {
     showNotificationDropdown();
   }
 }
-
 function showNotificationDropdown() {
   closeUserDropdown();
   const dd = document.getElementById('notification-dropdown');
   if (dd) dd.classList.add('show');
 }
-
 function closeNotificationDropdown() {
   const dd = document.getElementById('notification-dropdown');
   if (dd) dd.classList.remove('show');
 }
 
-// ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
-function toggleUserMenu() {
+// ─────────── toggleUserMenu: 사용자 메뉴 토글 (다중 정의 주의) ───────────
+function toggleUserMenuDropdown() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
@@ -1117,13 +1207,11 @@ function toggleUserMenu() {
     showUserDropdown();
   }
 }
-
 function showUserDropdown() {
   closeNotificationDropdown();
   const dropdown = document.getElementById('user-dropdown');
   if (dropdown) dropdown.classList.add('show');
 }
-
 function closeUserDropdown() {
   const dropdown = document.getElementById('user-dropdown');
   if (dropdown) dropdown.classList.remove('show');
@@ -1137,7 +1225,7 @@ function closeAllDropdowns() {
 }
 
 // ─────────── showProfile: 프로필 화면 로드 ───────────
-async function showProfile() {
+async function loadProfile() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (!currentUser) {
     showMessage('로그인이 필요한 서비스입니다.', 'error');
@@ -1175,7 +1263,7 @@ async function showProfile() {
 }
 
 // ─────────── handleLogout: 로그아웃 처리 ───────────
-function handleLogout() {
+function handleLogoutGlobal() {
   const currentUser = localStorage.getItem('currentLoggedInUser');
   if (currentUser) {
     if (confirm('로그아웃 하시겠습니까?')) {
@@ -1400,9 +1488,9 @@ function applyUserShortcuts() {
     if (label.includes('커뮤니티')) { showContent('community'); return; }
     if (label.includes('강의평가')) { showContent('lecture-review'); return; }
     if (label.includes('공지사항')) { showContent('notices'); return; }
-    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; } // 외부 페이지로 수정
-    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; } // 외부 페이지로 수정
-    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; } // 외부 페이지로 수정
+    if (label.includes('내 시간표') || label.includes('시간표')) { openTimetablePage(); return; }
+    if (label.includes('셔틀버스') || label.includes('셔틀')) { openShuttlePage(); return; }
+    if (label.includes('학사일정') || label.includes('학사')) { openCalendarPage(); return; }
     if (label.includes('프로필') || label.includes('내 계정')) { showContent('profile'); return; }
     if (label.includes('설정')) { showContent('settings'); return; }
     if (label.includes('알림')) { toggleNotifications(); return; }
@@ -1450,18 +1538,16 @@ window.addEventListener('pageshow', event => {
   else document.body.classList.remove('light-mode');
 });
 
-// ─────────── 기존 내부 네비게이션 함수들 (하위 호환성을 위해 유지) ───────────
-function navigateToTimetable() { 
+// ─────────── 기존 내부 네비게이션 함수들 (하위 호환성 유지) ───────────
+function navigateToTimetable() {
   console.log('내부 시간표 네비게이션 - 외부 페이지로 리디렉션');
   openTimetablePage();
 }
-
-function navigateToShuttle() { 
+function navigateToShuttle() {
   console.log('내부 셔틀버스 네비게이션 - 외부 페이지로 리디렉션');
   openShuttlePage();
 }
-
-function navigateToCalendar() { 
+function navigateToCalendar() {
   console.log('내부 학사일정 네비게이션 - 외부 페이지로 리디렉션');
   openCalendarPage();
 }
