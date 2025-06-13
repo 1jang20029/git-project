@@ -107,7 +107,7 @@
       min-width: 0;
     }
 
-    /* 드롭다운 메뉴 - 모던한 디자인 */
+    /* 드롭다운 메뉴 - 원본 코드 방식 + 모던 디자인 */
     .dropdown-menu {
       position: absolute;
       top: 100%;
@@ -118,37 +118,44 @@
       padding: 12px;
       min-width: 200px;
       z-index: 9999;
-      display: none;
       border: none;
-    }
-
-    /* PC와 모바일 모두 - 클릭 시 드롭다운 표시 */
-    .nav-item.dropdown-open .dropdown-menu {
-      display: block !important;
-    }
-
-    /* PC 전용 - 호버 시에도 드롭다운 표시 */
-    @media (min-width: 769px) {
-      .nav-item:hover .dropdown-menu {
-        display: block !important;
-      }
+      
+      /* 기본적으로 숨김 - 원본 코드 방식 */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
     }
 
     .dropdown-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 10px;
-      border-radius: 6px;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s;
-      font-size: 12px;
-      color: #1f2937;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      color: white;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .dropdown-item:last-child {
+      margin-bottom: 0;
     }
 
     .dropdown-item:hover {
-      background: #f3f4f6;
-      color: #1e40af;
+      background: rgba(255, 255, 255, 0.1);
+      color: #60a5fa;
+      transform: translateX(4px);
+    }
+
+    .dropdown-item .nav-icon {
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
     }
 
     /* 오른쪽 컨트롤 영역 */
@@ -583,12 +590,12 @@
       /* 모바일에서 드롭다운 위치 조정 */
       .dropdown-menu {
         position: static !important;
-        background: #f8f9fa !important;
-        border-radius: 6px !important;
-        margin-top: 6px !important;
-        padding: 8px !important;
-        box-shadow: none !important;
-        border: 1px solid #e9ecef !important;
+        background: #2d3748 !important;
+        border-radius: 12px !important;
+        margin-top: 8px !important;
+        padding: 12px !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+        border: none !important;
         z-index: 1600 !important;
         display: none !important;
       }
@@ -597,15 +604,18 @@
         display: block !important;
       }
 
-      /* 모바일에서 드롭다운 아이템 텍스트 색상 */
+      /* 모바일에서 드롭다운 아이템 스타일 */
       .dropdown-item {
-        color: #1f2937 !important;
-        font-size: 13px !important;
+        color: white !important;
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+        font-weight: 500 !important;
       }
 
       .dropdown-item:hover {
-        background: #e5e7eb !important;
-        color: #1e40af !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #60a5fa !important;
+        transform: translateX(4px) !important;
       }
 
       #user-info {
@@ -746,9 +756,9 @@
         <span class="nav-text">공지사항</span>
       </li>
       <li class="nav-item" id="nav-student-services">
-        <span class="nav-icon" title="학생서비스" onclick="toggleStudentServices(event)">🎓</span>
-        <span class="nav-text" onclick="toggleStudentServices(event)">학생서비스</span>
-        <ul class="dropdown-menu" id="student-services-dropdown">
+        <span class="nav-icon" title="학생서비스">🎓</span>
+        <span class="nav-text">학생서비스</span>
+        <ul class="dropdown-menu">
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
@@ -1003,53 +1013,44 @@
       }
     }
 
-    // 학생서비스 드롭다운 토글 - 완전히 새로운 방식
+    // 학생서비스 드롭다운 토글 - 모던 디자인 적용
     function toggleStudentServices(event) {
-      console.log('🔥🔥🔥 toggleStudentServices 호출됨!!! 🔥🔥🔥');
+      console.log('🔥 학생서비스 클릭!');
       
       if (event) {
         event.preventDefault();
         event.stopPropagation();
       }
       
-      // 직접 드롭다운 메뉴를 찾아서 토글
       const dropdownMenu = document.getElementById('student-services-dropdown');
       
       if (!dropdownMenu) {
-        console.error('❌❌❌ 드롭다운 메뉴를 찾을 수 없습니다!!!');
+        console.error('❌ 드롭다운 메뉴를 찾을 수 없습니다');
         return;
       }
       
-      console.log('✅ 드롭다운 메뉴 찾음:', dropdownMenu);
-      
       // 현재 display 상태 확인
       const currentDisplay = window.getComputedStyle(dropdownMenu).display;
-      console.log('현재 display 상태:', currentDisplay);
+      console.log('현재 상태:', currentDisplay);
       
-      // 직접 스타일 변경
+      // 직접 스타일 변경 - 모던 디자인 적용
       if (currentDisplay === 'none') {
         dropdownMenu.style.display = 'block';
         dropdownMenu.style.position = 'absolute';
         dropdownMenu.style.top = '100%';
         dropdownMenu.style.left = '0';
         dropdownMenu.style.zIndex = '9999';
-        dropdownMenu.style.background = 'white';
-        dropdownMenu.style.border = '1px solid #ccc';
-        dropdownMenu.style.borderRadius = '8px';
-        dropdownMenu.style.padding = '8px';
-        dropdownMenu.style.minWidth = '160px';
-        dropdownMenu.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-        console.log('🟢🟢🟢 드롭다운 열었습니다!!!');
+        dropdownMenu.style.background = '#2d3748';
+        dropdownMenu.style.borderRadius = '12px';
+        dropdownMenu.style.padding = '12px';
+        dropdownMenu.style.minWidth = '200px';
+        dropdownMenu.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
+        dropdownMenu.style.border = 'none';
+        console.log('🟢 드롭다운 열림 - 모던 스타일 적용!');
       } else {
         dropdownMenu.style.display = 'none';
-        console.log('🔴🔴🔴 드롭다운 닫았습니다!!!');
+        console.log('🔴 드롭다운 닫힘');
       }
-      
-      // 최종 상태 확인
-      setTimeout(() => {
-        const finalDisplay = window.getComputedStyle(dropdownMenu).display;
-        console.log('최종 display 상태:', finalDisplay);
-      }, 100);
     }
 
     function handleLogout() {
