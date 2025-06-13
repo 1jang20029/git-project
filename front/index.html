@@ -83,7 +83,6 @@
       white-space: nowrap;
       min-width: 0;
       flex-shrink: 1;
-      position: relative;
     }
 
     .nav-item:hover {
@@ -107,7 +106,7 @@
       min-width: 0;
     }
 
-    /* 드롭다운 메뉴 - 데스크톱 호버용 */
+    /* 드롭다운 메뉴 */
     .dropdown-menu {
       position: absolute;
       top: 100%;
@@ -269,47 +268,6 @@
     #user-dropdown.show,
     #notification-dropdown.show {
       display: block;
-    }
-
-    #user-dropdown button {
-      background: none;
-      border: none;
-      width: 100%;
-      text-align: left;
-      padding: 8px 12px;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: background 0.2s;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    #user-dropdown button:hover {
-      background: #f3f4f6;
-    }
-
-    #dropdown-divider {
-      height: 1px;
-      background: #e5e7eb;
-      margin: 8px 0;
-    }
-
-    #dropdown-user-info {
-      padding: 8px 12px;
-      border-bottom: 1px solid #e5e7eb;
-      margin-bottom: 8px;
-    }
-
-    #dropdown-user-name {
-      font-weight: 500;
-      color: #1f2937;
-    }
-
-    #dropdown-user-role {
-      font-size: 12px;
-      color: #6b7280;
     }
 
     /* 모바일 대응 햄버거 메뉴 */
@@ -583,8 +541,6 @@
         padding: 12px;
         gap: 6px;
         z-index: 999;
-        max-height: 400px;
-        overflow-y: auto;
       }
 
       #main-menu.mobile-open {
@@ -596,32 +552,26 @@
       }
 
       .nav-item {
-        padding: 12px 16px;
+        padding: 8px 12px;
         justify-content: flex-start;
-        font-size: 14px;
+        font-size: 13px;
         position: relative;
       }
 
-      /* 모바일에서 드롭다운 메뉴 스타일 조정 */
+      /* 모바일에서 드롭다운 위치 조정 */
       .dropdown-menu {
         position: static;
         display: none;
         background: #f8f9fa;
         border-radius: 6px;
-        margin-top: 8px;
+        margin-top: 6px;
         padding: 8px;
         box-shadow: none;
         border: 1px solid #e9ecef;
-        z-index: auto;
       }
 
       .nav-item.dropdown-open .dropdown-menu {
         display: block;
-      }
-
-      .dropdown-item {
-        padding: 10px 12px;
-        font-size: 13px;
       }
 
       #user-info {
@@ -682,6 +632,8 @@
       #nav-brand span {
         display: none;
       }
+
+      /* 검색바는 이미 숨겨짐 */
 
       #statsGrid {
         grid-template-columns: repeat(2, 1fr);
@@ -897,6 +849,7 @@
               <span class="service-icon">⭐</span>
               <h3 class="service-title">강의평가</h3>
               <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
+              <a href="#" class="service-button">평가보기</a>
             </div>
             
             <div class="service-card" onclick="openTimetablePage()">
@@ -1016,14 +969,12 @@
       }
     }
 
-    // 모바일에서 학생서비스 드롭다운 토글 (PC에서는 호버로 동작)
+    // 모바일에서 학생서비스 드롭다운 토글
     function toggleStudentServices() {
       const studentServicesItem = document.getElementById('nav-student-services');
       if (window.innerWidth <= 768) {
-        // 모바일에서만 클릭으로 토글
         studentServicesItem.classList.toggle('dropdown-open');
       }
-      // PC에서는 호버로 자동 표시되므로 별도 처리 불필요
     }
 
     function handleLogout() {
@@ -1047,7 +998,6 @@
     document.addEventListener('click', function(event) {
       const notificationBtn = document.getElementById('notification-btn');
       const userProfile = document.getElementById('user-profile');
-      const studentServices = document.getElementById('nav-student-services');
       const notificationDropdown = document.getElementById('notification-dropdown');
       const userDropdown = document.getElementById('user-dropdown');
       
@@ -1058,23 +1008,16 @@
       if (!userProfile.contains(event.target)) {
         userDropdown.classList.remove('show');
       }
-      
-      // 모바일에서 학생서비스 드롭다운 외부 클릭 시 닫기
-      if (window.innerWidth <= 768 && !studentServices.contains(event.target)) {
-        studentServices.classList.remove('dropdown-open');
-      }
     });
 
     // 윈도우 리사이즈 시 모바일 메뉴 자동 닫기
     window.addEventListener('resize', function() {
       const mainMenu = document.getElementById('main-menu');
       const mobileToggle = document.querySelector('.mobile-menu-toggle');
-      const studentServices = document.getElementById('nav-student-services');
       
       if (window.innerWidth > 768) {
         mainMenu.classList.remove('mobile-open');
         mobileToggle.textContent = '☰';
-        studentServices.classList.remove('dropdown-open');
       }
     });
 
