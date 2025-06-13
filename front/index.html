@@ -122,17 +122,13 @@
     }
 
     /* PC 버전에서 호버 시 드롭다운 표시 */
-    @media (min-width: 769px) {
-      .nav-item:hover .dropdown-menu {
-        display: block;
-      }
+    .nav-item:hover .dropdown-menu {
+      display: block;
     }
 
-    /* 모바일에서는 호버 대신 클릭으로 제어 */
-    @media (max-width: 768px) {
-      .nav-item.dropdown-open .dropdown-menu {
-        display: block;
-      }
+    /* 클릭 시에도 드롭다운 표시 */
+    .nav-item.dropdown-open .dropdown-menu {
+      display: block;
     }
 
     .dropdown-item {
@@ -592,6 +588,10 @@
         z-index: 1600;
       }
 
+      .nav-item.dropdown-open .dropdown-menu {
+        display: block;
+      }
+
       #user-info {
         display: none;
       }
@@ -987,15 +987,12 @@
       }
     }
 
-    // 모바일과 PC에서 학생서비스 드롭다운 토글
+    // 학생서비스 드롭다운 토글 (PC와 모바일 모두)
     function toggleStudentServices() {
       const studentServicesItem = document.getElementById('nav-student-services');
       
-      // 모바일에서만 드롭다운 토글
-      if (window.innerWidth <= 768) {
-        studentServicesItem.classList.toggle('dropdown-open');
-      }
-      // PC에서는 호버로 처리되므로 별도 동작 불필요
+      // 모든 화면 크기에서 클릭 시 토글
+      studentServicesItem.classList.toggle('dropdown-open');
     }
 
     function handleLogout() {
