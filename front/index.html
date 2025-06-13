@@ -121,8 +121,18 @@
       z-index: 1001;
     }
 
-    .nav-item:hover .dropdown-menu {
-      display: block;
+    /* PC 버전에서 호버 시 드롭다운 표시 */
+    @media (min-width: 769px) {
+      .nav-item:hover .dropdown-menu {
+        display: block;
+      }
+    }
+
+    /* 모바일에서는 호버 대신 클릭으로 제어 */
+    @media (max-width: 768px) {
+      .nav-item.dropdown-open .dropdown-menu {
+        display: block;
+      }
     }
 
     .dropdown-item {
@@ -307,7 +317,7 @@
 
     .welcome-badge {
       display: inline-block;
-      background: rgba(255, 255, 255, 0.2);
+      background: #6366f1;
       padding: 4px 12px;
       border-radius: 16px;
       font-size: 12px;
@@ -329,7 +339,7 @@
       opacity: 0.9;
       margin-bottom: 25px;
       line-height: 1.6;
-      color: white !important;
+      color: #1f2937 !important;
     }
 
     .welcome-stats {
@@ -353,7 +363,7 @@
     .stat-text {
       font-size: 0.85rem;
       opacity: 0.8;
-      color: white !important;
+      color: #1f2937 !important;
     }
 
     /* 통계 그리드 */
@@ -580,10 +590,6 @@
         box-shadow: none;
         border: 1px solid #e9ecef;
         z-index: 1600;
-      }
-
-      .nav-item.dropdown-open .dropdown-menu {
-        display: block;
       }
 
       #user-info {
@@ -981,12 +987,15 @@
       }
     }
 
-    // 모바일에서 학생서비스 드롭다운 토글
+    // 모바일과 PC에서 학생서비스 드롭다운 토글
     function toggleStudentServices() {
       const studentServicesItem = document.getElementById('nav-student-services');
+      
+      // 모바일에서만 드롭다운 토글
       if (window.innerWidth <= 768) {
         studentServicesItem.classList.toggle('dropdown-open');
       }
+      // PC에서는 호버로 처리되므로 별도 동작 불필요
     }
 
     function handleLogout() {
