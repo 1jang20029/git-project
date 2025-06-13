@@ -128,14 +128,16 @@
     }
 
     /* PC 버전 - 호버 시 드롭다운 표시 */
-    .nav-item:hover .dropdown-menu {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-      pointer-events: auto;
+    @media (min-width: 769px) {
+      .nav-item:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
     }
 
-    /* 클릭 시에도 드롭다운 표시 (모바일용) */
+    /* 클릭 시에도 드롭다운 표시 (PC와 모바일 모두) */
     .nav-item.dropdown-open .dropdown-menu {
       opacity: 1 !important;
       visibility: visible !important;
@@ -765,7 +767,7 @@
         <span class="nav-icon" title="공지사항">📢</span>
         <span class="nav-text">공지사항</span>
       </li>
-      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices()">
+      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices(event)">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span class="nav-text">학생서비스</span>
         <ul class="dropdown-menu">
@@ -1023,9 +1025,15 @@
       }
     }
 
-    // 학생서비스 드롭다운 토글 - 강화된 버전
-    function toggleStudentServices() {
+    // 학생서비스 드롭다운 토글 - PC/모바일 모두 지원
+    function toggleStudentServices(event) {
       console.log('toggleStudentServices 호출됨');
+      
+      // 이벤트가 있다면 기본 동작 방지
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       
       const studentServicesItem = document.getElementById('nav-student-services');
       
@@ -1037,6 +1045,7 @@
       // 현재 상태 확인
       const isCurrentlyOpen = studentServicesItem.classList.contains('dropdown-open');
       console.log('현재 드롭다운 상태:', isCurrentlyOpen ? '열림' : '닫힘');
+      console.log('화면 크기:', window.innerWidth);
       
       // 다른 모든 드롭다운 닫기
       document.querySelectorAll('.nav-item').forEach(item => {
@@ -1052,18 +1061,30 @@
       } else {
         studentServicesItem.classList.add('dropdown-open');
         console.log('드롭다운 열림');
+        
+        // PC에서는 3초 후 자동으로 닫기 (무한 호버 방지)
+        if (window.innerWidth > 768) {
+          setTimeout(() => {
+            if (studentServicesItem.classList.contains('dropdown-open')) {
+              studentServicesItem.classList.remove('dropdown-open');
+              console.log('PC 자동 닫힘');
+            }
+          }, 3000);
+        }
       }
       
       // 드롭다운 메뉴 요소 확인
       const dropdownMenu = studentServicesItem.querySelector('.dropdown-menu');
       if (dropdownMenu) {
         console.log('드롭다운 메뉴 찾음');
-        const computedStyle = window.getComputedStyle(dropdownMenu);
-        console.log('계산된 스타일:');
-        console.log('- opacity:', computedStyle.opacity);
-        console.log('- visibility:', computedStyle.visibility);
-        console.log('- transform:', computedStyle.transform);
-        console.log('- z-index:', computedStyle.zIndex);
+        setTimeout(() => {
+          const computedStyle = window.getComputedStyle(dropdownMenu);
+          console.log('계산된 스타일:');
+          console.log('- opacity:', computedStyle.opacity);
+          console.log('- visibility:', computedStyle.visibility);
+          console.log('- transform:', computedStyle.transform);
+          console.log('- z-index:', computedStyle.zIndex);
+        }, 100);
       } else {
         console.error('드롭다운 메뉴를 찾을 수 없습니다');
       }
