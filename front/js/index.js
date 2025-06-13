@@ -1534,6 +1534,24 @@ function viewNoticeDetail(noticeId) {
 }
 
 
+// 햄버거 메뉴 토글 함수 - 기존 코드에 추가
+function toggleMobileMenu() {
+  const menu = document.getElementById('main-menu');
+  if (menu) {
+    menu.classList.toggle('mobile-open');
+  }
+}
+
+// 학생서비스 드롭다운 토글 함수 - 기존 코드에 추가  
+function toggleStudentServices(event) {
+  event.stopPropagation();
+  const dropdown = document.getElementById('nav-student-services');
+  if (dropdown) {
+    dropdown.classList.toggle('dropdown-open');
+  }
+}
+
+
 
 
 
