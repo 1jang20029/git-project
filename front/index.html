@@ -955,7 +955,32 @@
 
     function showContent(contentType) {
       console.log(`${contentType} 콘텐츠를 표시합니다.`);
+      
+      // 사용자 드롭다운 닫기
       document.getElementById('user-dropdown').classList.remove('show');
+      
+      // 모든 컨텐츠 영역 숨기기
+      const contentAreas = document.querySelectorAll('#content-area > div');
+      contentAreas.forEach(area => {
+        area.style.display = 'none';
+      });
+      
+      // 해당 컨텐츠 영역 표시
+      const targetContent = document.getElementById(`${contentType}Content`);
+      if (targetContent) {
+        targetContent.style.display = 'block';
+        targetContent.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center;">
+            <h2 style="color: #1f2937; margin-bottom: 20px;">${getContentTitle(contentType)}</h2>
+            <p style="color: #6b7280; font-size: 16px;">
+              ${getContentDescription(contentType)}
+            </p>
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #3b82f6;">
+              <p style="color: #374151; margin: 0;">페이지 개발 중입니다. 곧 서비스를 제공할 예정입니다.</p>
+            </div>
+          </div>
+        `;
+      }
       
       // 모든 네비게이션 아이템에서 active 클래스 제거
       document.querySelectorAll('.nav-item').forEach(item => {
@@ -969,13 +994,47 @@
         clickedItem.classList.add('active');
       }
     }
+    
+    function getContentTitle(contentType) {
+      const titles = {
+        'home': '대시보드',
+        'buildings': '건물 & 시설',
+        'community': '커뮤니티',
+        'lecture-review': '강의평가',
+        'notices': '공지사항',
+        'settings': '설정'
+      };
+      return titles[contentType] || '페이지';
+    }
+    
+    function getContentDescription(contentType) {
+      const descriptions = {
+        'home': '캠퍼스의 모든 정보를 한눈에 확인하세요.',
+        'buildings': '캠퍼스 내 모든 건물과 시설 정보를 제공합니다.',
+        'community': '학생들과 소통하고 정보를 공유하는 공간입니다.',
+        'lecture-review': '강의에 대한 솔직한 후기와 평가를 확인하세요.',
+        'notices': '학교의 중요한 공지사항과 소식을 전달합니다.',
+        'settings': '개인 설정을 관리하고 앱을 커스터마이징하세요.'
+      };
+      return descriptions[contentType] || '해당 페이지의 내용이 표시됩니다.';
+    }
 
-    // 학생서비스 드롭다운 토글 - 완전히 새로 작성
+    // 학생서비스 드롭다운 토글 - 디버깅 강화
     function toggleStudentServices(event) {
-      event.preventDefault();
-      event.stopPropagation();
+      console.log('toggleStudentServices 함수 호출됨');
+      
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       
       const studentServicesItem = document.getElementById('nav-student-services');
+      console.log('학생서비스 아이템:', studentServicesItem);
+      
+      if (!studentServicesItem) {
+        console.error('학생서비스 아이템을 찾을 수 없습니다.');
+        return;
+      }
       
       // 다른 모든 드롭다운 닫기
       document.querySelectorAll('.nav-item').forEach(item => {
@@ -985,9 +1044,22 @@
       });
       
       // 학생서비스 드롭다운 토글
+      const wasOpen = studentServicesItem.classList.contains('show-dropdown');
       studentServicesItem.classList.toggle('show-dropdown');
       
-      console.log('학생서비스 드롭다운 토글:', studentServicesItem.classList.contains('show-dropdown'));
+      console.log('드롭다운 상태 변경:', wasOpen ? '열림→닫힘' : '닫힘→열림');
+      console.log('현재 클래스:', studentServicesItem.className);
+      
+      // 드롭다운 메뉴 요소 확인
+      const dropdownMenu = studentServicesItem.querySelector('.dropdown-menu');
+      console.log('드롭다운 메뉴 요소:', dropdownMenu);
+      
+      if (dropdownMenu) {
+        const computedStyle = window.getComputedStyle(dropdownMenu);
+        console.log('드롭다운 메뉴 display:', computedStyle.display);
+        console.log('드롭다운 메뉴 visibility:', computedStyle.visibility);
+        console.log('드롭다운 메뉴 opacity:', computedStyle.opacity);
+      }
     }
 
     function handleLogout() {
@@ -999,18 +1071,55 @@
       console.log('시간표 페이지를 엽니다.');
       // 드롭다운 닫기
       document.getElementById('nav-student-services').classList.remove('show-dropdown');
+      // 실제 페이지 컨텐츠 표시
+      showStudentServiceContent('timetable', '내 시간표', '개인 맞춤형 시간표를 관리할 수 있습니다.');
     }
 
     function openCalendarPage() {
       console.log('학사일정 페이지를 엽니다.');
       // 드롭다운 닫기
       document.getElementById('nav-student-services').classList.remove('show-dropdown');
+      // 실제 페이지 컨텐츠 표시
+      showStudentServiceContent('calendar', '학사일정', '학교의 주요 일정과 학사 캘린더를 확인하세요.');
     }
 
     function openShuttlePage() {
       console.log('셔틀버스 페이지를 엽니다.');
       // 드롭다운 닫기
       document.getElementById('nav-student-services').classList.remove('show-dropdown');
+      // 실제 페이지 컨텐츠 표시
+      showStudentServiceContent('shuttle', '셔틀버스', '실시간 셔틀버스 운행 정보와 시간표를 제공합니다.');
+    }
+    
+    function showStudentServiceContent(serviceType, title, description) {
+      // 모든 컨텐츠 영역 숨기기
+      const contentAreas = document.querySelectorAll('#content-area > div');
+      contentAreas.forEach(area => {
+        area.style.display = 'none';
+      });
+      
+      // 해당 서비스 컨텐츠 표시
+      const targetContent = document.getElementById(`${serviceType}ContentPane`);
+      if (targetContent) {
+        targetContent.style.display = 'block';
+        targetContent.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center;">
+            <h2 style="color: #1f2937; margin-bottom: 20px;">${title}</h2>
+            <p style="color: #6b7280; font-size: 16px; margin-bottom: 30px;">
+              ${description}
+            </p>
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #3b82f6;">
+              <p style="color: #374151; margin: 0;">서비스 개발 중입니다. 곧 제공될 예정입니다.</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      // 네비게이션 상태 업데이트
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.getElementById('nav-student-services').classList.add('active');
     }
 
     // 외부 클릭 시 모든 드롭다운 닫기
