@@ -83,6 +83,7 @@
       white-space: nowrap;
       min-width: 0;
       flex-shrink: 1;
+      position: relative;
     }
 
     .nav-item:hover {
@@ -346,7 +347,7 @@
       display: block;
       font-size: 1.8rem;
       font-weight: 700;
-      color: #60a5fa !important;
+      color: white !important;
     }
 
     .stat-text {
@@ -410,7 +411,7 @@
 
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
       max-width: 1200px;
       margin: 0 auto;
@@ -453,14 +454,20 @@
     }
 
     .service-button {
-      color: #3b82f6 !important;
+      background: #3b82f6;
+      color: white !important;
       text-decoration: none;
       font-weight: 500;
       font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      transition: background 0.2s;
     }
 
     .service-button:hover {
-      color: #1e40af !important;
+      background: #1e40af !important;
+      color: white !important;
     }
 
     /* 반응형 미디어 쿼리 */
@@ -481,6 +488,10 @@
       
       #search-bar {
         width: 120px;
+      }
+
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -540,7 +551,7 @@
         flex-direction: column;
         padding: 12px;
         gap: 6px;
-        z-index: 999;
+        z-index: 1500;
       }
 
       #main-menu.mobile-open {
@@ -568,6 +579,7 @@
         padding: 8px;
         box-shadow: none;
         border: 1px solid #e9ecef;
+        z-index: 1600;
       }
 
       .nav-item.dropdown-open .dropdown-menu {
