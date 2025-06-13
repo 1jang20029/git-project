@@ -20,57 +20,748 @@
   <link rel="stylesheet" href="./css/shuttle.css" />
   <link rel="stylesheet" href="./css/timetable.css" />
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    /* 상단 네비게이션 - 데스크톱 */
+    #top-nav {
+      display: grid;
+      grid-template-columns: 250px 1fr 300px;
+      align-items: center;
+      padding: 8px 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+      min-height: 56px;
+    }
+
+    /* 브랜드 영역 */
+    #nav-brand {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      color: #1e40af;
+      white-space: nowrap;
+      padding-left: 20px;
+      overflow: hidden;
+    }
+
+    /* 메뉴 영역 */
+    #main-menu {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 2px;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 6px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 11px;
+      white-space: nowrap;
+      min-width: 0;
+      flex-shrink: 1;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: #1e40af;
+    }
+
+    .nav-item.active {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .nav-icon {
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .nav-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    /* 드롭다운 메뉴 - 모던한 디자인 */
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #2d3748;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      min-width: 200px;
+      z-index: 9999;
+      display: none;
+      border: none;
+    }
+
+    /* PC와 모바일 모두 - 클릭 시 드롭다운 표시 */
+    .nav-item.dropdown-open .dropdown-menu {
+      display: block !important;
+    }
+
+    /* PC 전용 - 호버 시에도 드롭다운 표시 */
+    @media (min-width: 769px) {
+      .nav-item:hover .dropdown-menu {
+        display: block !important;
+      }
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 12px;
+      color: #1f2937;
+    }
+
+    .dropdown-item:hover {
+      background: #f3f4f6;
+      color: #1e40af;
+    }
+
+    /* 오른쪽 컨트롤 영역 */
+    #nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-right: 20px;
+      justify-content: flex-end;
+    }
+
+    #search-bar {
+      display: flex;
+      align-items: center;
+      background: #f3f4f6;
+      border-radius: 14px;
+      padding: 4px 8px;
+      gap: 4px;
+      width: 160px;
+      flex-shrink: 0;
+    }
+
+    #search-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      flex: 1;
+      font-size: 11px;
+      min-width: 0;
+    }
+
+    #search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    #search-icon {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    #user-menu {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #notification-btn {
+      position: relative;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    #notification-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    #notification-dot {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 6px;
+      height: 6px;
+      background: #ef4444;
+      border-radius: 50%;
+      display: none;
+    }
+
+    #user-profile {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 3px 6px;
+      border-radius: 12px;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    #user-profile:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    #user-avatar {
+      width: 24px;
+      height: 24px;
+      background: #e5e7eb;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    #user-info {
+      text-align: left;
+    }
+
+    #user-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: #1f2937;
+      line-height: 1;
+    }
+
+    #user-role {
+      font-size: 9px;
+      color: #6b7280;
+      line-height: 1;
+    }
+
+    /* 드롭다운들 */
+    #notification-dropdown,
+    #user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      padding: 12px;
+      display: none;
+      min-width: 200px;
+      z-index: 1002;
+    }
+
+    #user-dropdown.show,
+    #notification-dropdown.show {
+      display: block;
+    }
+
+    /* 모바일 대응 햄버거 메뉴 */
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 8px 10px;
+      border-radius: 6px;
+      color: #374151;
+    }
+
+    .mobile-menu-toggle:hover {
+      background: #f9fafb;
+    }
+
+    /* 메인 컨테이너 */
+    #main-container {
+      padding: 20px 0;
+      width: 100%;
+      margin: 0;
+    }
+
+    /* 대시보드 컨텐츠 */
+    .dashboard-welcome {
+      text-align: center;
+      padding: 30px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 0;
+      color: white;
+      margin: 0 0 25px 0;
+      width: 100%;
+    }
+
+    .welcome-badge {
+      display: inline-block;
+      background: #6366f1;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      margin-bottom: 12px;
+      color: white !important;
+      font-weight: 500;
+    }
+
+    .welcome-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.2;
+      color: white !important;
+    }
+
+    .welcome-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 25px;
+      line-height: 1.6;
+      color: #1f2937 !important;
+    }
+
+    .welcome-stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: white !important;
+    }
+
+    .stat-text {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      color: #1f2937 !important;
+    }
+
+    /* 통계 그리드 */
+    #statsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat-card-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3b82f6 !important;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .stat-card-label {
+      font-size: 0.9rem;
+      color: #6b7280 !important;
+      font-weight: 500;
+    }
+
+    .stat-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    /* 서비스 섹션 */
+    .services-section {
+      margin-top: 30px;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    .services-title {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1f2937 !important;
+      margin-bottom: 25px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .service-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid #e5e7eb;
+    }
+
+    .service-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border-color: #3b82f6;
+    }
+
+    .service-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .service-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1f2937 !important;
+      margin-bottom: 6px;
+    }
+
+    .service-description {
+      color: #6b7280 !important;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+
+    .service-button {
+      background: #3b82f6;
+      color: white !important;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+
+    .service-button:hover {
+      background: #1e40af !important;
+      color: white !important;
+    }
+
+    /* 반응형 미디어 쿼리 */
+    @media (max-width: 1024px) {
+      #top-nav {
+        grid-template-columns: 200px 1fr 250px;
+      }
+      
+      .nav-text {
+        display: none;
+      }
+      
+      .nav-item {
+        padding: 4px;
+        min-width: 28px;
+        justify-content: center;
+      }
+      
+      #search-bar {
+        width: 120px;
+      }
+
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* 모바일 레이아웃 - 768px 이하 */
+    @media (max-width: 768px) {
+      #top-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+      }
+
+      /* 브랜드 - 왼쪽 */
+      #nav-brand {
+        order: 1;
+        padding-left: 0;
+      }
+
+      /* 검색바 숨김 */
+      #search-bar {
+        display: none;
+      }
+
+      /* 오른쪽 그룹 - 프로필/알림/햄버거를 함께 묶음 */
+      #nav-controls {
+        order: 2;
+        padding-right: 0;
+        gap: 6px;
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+      }
+
+      /* 사용자 메뉴를 햄버거와 붙여서 배치 */
+      #user-menu {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-direction: row-reverse; /* 순서 뒤바꿈: 프로필 - 알림 */
+      }
+
+      /* 햄버거 메뉴 - 사용자 메뉴 바로 옆 */
+      .mobile-menu-toggle {
+        display: block;
+        order: 3;
+        margin-left: 6px;
+      }
+
+      #main-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+        flex-direction: column;
+        padding: 12px;
+        gap: 6px;
+        z-index: 1500;
+      }
+
+      #main-menu.mobile-open {
+        display: flex;
+      }
+
+      .nav-text {
+        display: inline;
+      }
+
+      .nav-item {
+        padding: 8px 12px;
+        justify-content: flex-start;
+        font-size: 13px;
+        position: relative;
+      }
+
+      /* 모바일에서 드롭다운 위치 조정 */
+      .dropdown-menu {
+        position: static !important;
+        background: #f8f9fa !important;
+        border-radius: 6px !important;
+        margin-top: 6px !important;
+        padding: 8px !important;
+        box-shadow: none !important;
+        border: 1px solid #e9ecef !important;
+        z-index: 1600 !important;
+        display: none !important;
+      }
+
+      .nav-item.dropdown-open .dropdown-menu {
+        display: block !important;
+      }
+
+      /* 모바일에서 드롭다운 아이템 텍스트 색상 */
+      .dropdown-item {
+        color: #1f2937 !important;
+        font-size: 13px !important;
+      }
+
+      .dropdown-item:hover {
+        background: #e5e7eb !important;
+        color: #1e40af !important;
+      }
+
+      #user-info {
+        display: none;
+      }
+
+      /* 통계 그리드 모바일 */
+      #statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 0 12px;
+      }
+
+      .stat-card {
+        padding: 15px;
+      }
+
+      .stat-card-number {
+        font-size: 1.5rem;
+      }
+
+      .welcome-title {
+        font-size: 1.5rem;
+      }
+
+      .welcome-subtitle {
+        font-size: 0.9rem;
+      }
+
+      .welcome-stats {
+        gap: 20px;
+      }
+
+      .stat-number {
+        font-size: 1.4rem;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      #main-container {
+        padding: 15px 0;
+      }
+
+      .dashboard-welcome {
+        margin: 0 0 20px 0;
+        border-radius: 0;
+      }
+
+      .services-section {
+        padding: 0 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #nav-brand span {
+        display: none;
+      }
+
+      /* 검색바는 이미 숨겨짐 */
+
+      #statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 0 12px;
+      }
+
+      .stat-card {
+        padding: 12px;
+      }
+
+      .stat-card-number {
+        font-size: 1.3rem;
+      }
+
+      .welcome-title {
+        font-size: 1.2rem;
+      }
+
+      .stat-number {
+        font-size: 1.2rem;
+      }
+
+      .services-title {
+        font-size: 1.4rem;
+      }
+
+      .service-card {
+        padding: 15px;
+      }
+
+      .service-icon {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* 컨텐츠 영역 숨김/표시 */
+    #content-area > div {
+      display: none;
+    }
+
+    #content-area > div:first-child {
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <nav id="top-nav">
     <div id="nav-brand">
       <a href="./index.html" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
         <img src="./img/campus_icon.png" alt="캠퍼스 아이콘"
-            style="width:24px; height:24px; margin-right:8px;" />
+            style="width:20px; height:20px; margin-right:6px;" />
         <span>연성대학교 스마트 캠퍼스</span>
       </a>
     </div>
+    
     <ul id="main-menu">
       <li class="nav-item active" id="nav-home" onclick="showContent('home')">
         <span class="nav-icon" title="대시보드">🏠</span>
-        <span>대시보드</span>
+        <span class="nav-text">대시보드</span>
       </li>
       <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
         <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
-        <span>건물 &amp; 시설</span>
+        <span class="nav-text">건물 &amp; 시설</span>
       </li>
       <li class="nav-item" id="nav-community" onclick="showContent('community')">
         <span class="nav-icon" title="커뮤니티">💬</span>
-        <span>커뮤니티</span>
+        <span class="nav-text">커뮤니티</span>
       </li>
       <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
         <span class="nav-icon" title="강의평가">⭐</span>
-        <span>강의평가</span>
+        <span class="nav-text">강의평가</span>
       </li>
       <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
         <span class="nav-icon" title="공지사항">📢</span>
-        <span>공지사항</span>
+        <span class="nav-text">공지사항</span>
       </li>
       <li class="nav-item" id="nav-student-services">
-        <span class="nav-icon" title="학생서비스">🎓</span>
-        <span>학생서비스</span>
-        <ul class="dropdown-menu">
-          <!-- 내 시간표 - 현재 창에서 이동 -->
+        <span class="nav-icon" title="학생서비스" onclick="toggleStudentServices(event)">🎓</span>
+        <span class="nav-text" onclick="toggleStudentServices(event)">학생서비스</span>
+        <ul class="dropdown-menu" id="student-services-dropdown">
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
-          <!-- 학사일정 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
             <span class="nav-icon">🗓️</span><span>학사일정</span>
           </li>
-          <!-- 셔틀버스 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
             <span class="nav-icon">🚌</span><span>셔틀버스</span>
           </li>
         </ul>
       </li>
     </ul>
-    <ul id="quick-menu"></ul>
+    
     <div id="nav-controls">
       <div id="search-bar">
         <span id="search-icon">🔍</span>
@@ -85,12 +776,7 @@
               <div id="notification-title">알림</div>
               <div id="notification-badge">0</div>
             </div>
-            <div id="notification-list"></div>
-            <div id="notification-footer">
-              <button id="mark-all-read" onclick="markAllAsRead()">
-                모두 읽음 처리
-              </button>
-            </div>
+            <div id="notification-list">새로운 알림이 없습니다</div>
           </div>
         </div>
         <div id="user-profile" onclick="toggleUserMenu()">
@@ -116,11 +802,12 @@
         </div>
       </div>
     </div>
+    
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
   </nav>
 
   <div id="main-container">
     <main id="content-area">
-      <!-- 대시보드 (홈) - 수정된 부분만 -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -129,7 +816,6 @@
           </div>
         </div>
         
-        <!-- 웰컴 섹션 -->
         <div class="dashboard-welcome">
           <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
           <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
@@ -153,9 +839,29 @@
           </div>
         </div>
 
-        <div id="statsGrid"></div>
+        <div id="statsGrid">
+          <div class="stat-card">
+            <span class="stat-card-icon">📋</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">캠퍼스 건물</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">📝</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">재학생 수</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">🏃</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">운영 서비스</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">📊</span>
+            <span class="stat-card-number">0</span>
+            <span class="stat-card-label">오늘 일정<br><small style="color:#3b82f6;">📋 진행중</small></span>
+          </div>
+        </div>
         
-        <!-- 서비스 섹션 -->
         <div class="services-section">
           <h2 class="services-title">주요 서비스</h2>
           <div class="services-grid">
@@ -204,7 +910,6 @@
         </div>
       </div>
       
-      <!-- SPA 분리 영역들 -->
       <div id="buildingsContent" style="display:none;"></div>
       <div id="communityContent" style="display:none;"></div>
       <div id="lecture-reviewContent" style="display:none;"></div>
@@ -212,14 +917,12 @@
       <div id="timetableContentPane" style="display:none;"></div>
       <div id="shuttleContentPane" style="display:none;"></div>
       <div id="calendarContentPane" style="display:none;"></div>
-      
-      <!-- 새로 추가: 학사일정 페이지 -->
       <div id="academic-calendarContentPane" style="display:none;"></div>
-      
       <div id="profileContentPane" style="display:none;"></div>
       <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
+  
   <script src="./js/index.js" defer></script>
   <script src="./js/settings.js" defer></script>
   <script src="./js/buildings.js" defer></script>
@@ -233,5 +936,186 @@
   <script src="./js/register.js" defer></script>
   <script src="./js/shuttle.js" defer></script>
   <script src="./js/timetable.js" defer></script>
+
+  <script>
+    function toggleMobileMenu() {
+      const mainMenu = document.getElementById('main-menu');
+      const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (mainMenu.classList.contains('mobile-open')) {
+        mainMenu.classList.remove('mobile-open');
+        mobileToggle.textContent = '☰';
+      } else {
+        mainMenu.classList.add('mobile-open');
+        mobileToggle.textContent = '✕';
+      }
+    }
+
+    function toggleNotifications() {
+      const dropdown = document.getElementById('notification-dropdown');
+      const userDropdown = document.getElementById('user-dropdown');
+      
+      userDropdown.classList.remove('show');
+      
+      if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+      } else {
+        dropdown.classList.add('show');
+      }
+    }
+
+    function toggleUserMenu() {
+      const dropdown = document.getElementById('user-dropdown');
+      const notificationDropdown = document.getElementById('notification-dropdown');
+      
+      notificationDropdown.classList.remove('show');
+      
+      if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+      } else {
+        dropdown.classList.add('show');
+      }
+    }
+
+    function markAllAsRead() {
+      console.log('모든 알림을 읽음 처리합니다.');
+    }
+
+    function showProfile() {
+      console.log('프로필 페이지로 이동합니다.');
+      document.getElementById('user-dropdown').classList.remove('show');
+    }
+
+    function showContent(contentType) {
+      console.log(`${contentType} 콘텐츠를 표시합니다.`);
+      document.getElementById('user-dropdown').classList.remove('show');
+      
+      // 모든 네비게이션 아이템에서 active 클래스 제거
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        item.classList.remove('dropdown-open');
+      });
+      
+      // 클릭된 메뉴 아이템에 active 클래스 추가
+      const clickedItem = document.getElementById(`nav-${contentType}`);
+      if (clickedItem) {
+        clickedItem.classList.add('active');
+      }
+    }
+
+    // 학생서비스 드롭다운 토글 - 완전히 새로운 방식
+    function toggleStudentServices(event) {
+      console.log('🔥🔥🔥 toggleStudentServices 호출됨!!! 🔥🔥🔥');
+      
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      // 직접 드롭다운 메뉴를 찾아서 토글
+      const dropdownMenu = document.getElementById('student-services-dropdown');
+      
+      if (!dropdownMenu) {
+        console.error('❌❌❌ 드롭다운 메뉴를 찾을 수 없습니다!!!');
+        return;
+      }
+      
+      console.log('✅ 드롭다운 메뉴 찾음:', dropdownMenu);
+      
+      // 현재 display 상태 확인
+      const currentDisplay = window.getComputedStyle(dropdownMenu).display;
+      console.log('현재 display 상태:', currentDisplay);
+      
+      // 직접 스타일 변경
+      if (currentDisplay === 'none') {
+        dropdownMenu.style.display = 'block';
+        dropdownMenu.style.position = 'absolute';
+        dropdownMenu.style.top = '100%';
+        dropdownMenu.style.left = '0';
+        dropdownMenu.style.zIndex = '9999';
+        dropdownMenu.style.background = 'white';
+        dropdownMenu.style.border = '1px solid #ccc';
+        dropdownMenu.style.borderRadius = '8px';
+        dropdownMenu.style.padding = '8px';
+        dropdownMenu.style.minWidth = '160px';
+        dropdownMenu.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+        console.log('🟢🟢🟢 드롭다운 열었습니다!!!');
+      } else {
+        dropdownMenu.style.display = 'none';
+        console.log('🔴🔴🔴 드롭다운 닫았습니다!!!');
+      }
+      
+      // 최종 상태 확인
+      setTimeout(() => {
+        const finalDisplay = window.getComputedStyle(dropdownMenu).display;
+        console.log('최종 display 상태:', finalDisplay);
+      }, 100);
+    }
+
+    function handleLogout() {
+      console.log('로그아웃 처리합니다.');
+      document.getElementById('user-dropdown').classList.remove('show');
+    }
+
+    function openTimetablePage() {
+      console.log('시간표 페이지를 엽니다.');
+      // 드롭다운 닫기
+      document.getElementById('nav-student-services').classList.remove('dropdown-open');
+    }
+
+    function openCalendarPage() {
+      console.log('학사일정 페이지를 엽니다.');
+      // 드롭다운 닫기
+      document.getElementById('nav-student-services').classList.remove('dropdown-open');
+    }
+
+    function openShuttlePage() {
+      console.log('셔틀버스 페이지를 엽니다.');
+      // 드롭다운 닫기
+      document.getElementById('nav-student-services').classList.remove('dropdown-open');
+    }
+
+    // 외부 클릭 시 드롭다운 닫기
+    document.addEventListener('click', function(event) {
+      const notificationBtn = document.getElementById('notification-btn');
+      const userProfile = document.getElementById('user-profile');
+      const notificationDropdown = document.getElementById('notification-dropdown');
+      const userDropdown = document.getElementById('user-dropdown');
+      const studentServices = document.getElementById('nav-student-services');
+      
+      if (!notificationBtn.contains(event.target)) {
+        notificationDropdown.classList.remove('show');
+      }
+      
+      if (!userProfile.contains(event.target)) {
+        userDropdown.classList.remove('show');
+      }
+      
+      // 학생서비스 드롭다운 외부 클릭 시 닫기
+      if (!studentServices.contains(event.target)) {
+        studentServices.classList.remove('dropdown-open');
+      }
+    });
+
+    // 윈도우 리사이즈 시 모바일 메뉴 자동 닫기
+    window.addEventListener('resize', function() {
+      const mainMenu = document.getElementById('main-menu');
+      const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (window.innerWidth > 768) {
+        mainMenu.classList.remove('mobile-open');
+        mobileToggle.textContent = '☰';
+      }
+    });
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+      // 기본 활성 메뉴 설정
+      const homeMenu = document.getElementById('nav-home');
+      if (homeMenu) {
+        homeMenu.classList.add('active');
+      }
+    });
+  </script>
 </body>
 </html>
