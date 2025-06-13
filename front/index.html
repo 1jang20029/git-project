@@ -8,7 +8,6 @@
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
   <link rel="stylesheet" href="./css/index.css" />
-  <link rel="stylesheet" href="./css/buildings.css" />
   <link rel="stylesheet" href="./css/settings.css" />
   <link rel="stylesheet" href="./css/academic-calendar.css" />
   <link rel="stylesheet" href="./css/account-edit.css" />
@@ -20,6 +19,7 @@
   <link rel="stylesheet" href="./css/register.css" />
   <link rel="stylesheet" href="./css/shuttle.css" />
   <link rel="stylesheet" href="./css/timetable.css" />
+
 </head>
 <body>
   <nav id="top-nav">
@@ -30,7 +30,6 @@
         <span>연성대학교 스마트 캠퍼스</span>
       </a>
     </div>
-    
     <ul id="main-menu">
       <li class="nav-item active" id="nav-home" onclick="showContent('home')">
         <span class="nav-icon" title="대시보드">🏠</span>
@@ -52,24 +51,31 @@
         <span class="nav-icon" title="공지사항">📢</span>
         <span>공지사항</span>
       </li>
-      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices(event)">
+      <li class="nav-item" id="nav-student-services">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span>학생서비스</span>
         <ul class="dropdown-menu">
+          <!-- 내 시간표 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
             <span class="nav-icon">📅</span><span>내 시간표</span>
           </li>
+          <!-- 학사일정 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
             <span class="nav-icon">🗓️</span><span>학사일정</span>
           </li>
+          <!-- 셔틀버스 - 현재 창에서 이동 -->
           <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
             <span class="nav-icon">🚌</span><span>셔틀버스</span>
           </li>
         </ul>
       </li>
     </ul>
-    
+    <ul id="quick-menu"></ul>
     <div id="nav-controls">
+      <div id="search-bar">
+        <span id="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="건물, 교수님, 강의실 검색..." />
+      </div>
       <div id="user-menu">
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
@@ -79,10 +85,12 @@
               <div id="notification-title">알림</div>
               <div id="notification-badge">0</div>
             </div>
-            <div id="notification-list">새로운 알림이 없습니다</div>
-            <button id="mark-all-read" onclick="markAllAsRead()">
-              모두 읽음 처리
-            </button>
+            <div id="notification-list"></div>
+            <div id="notification-footer">
+              <button id="mark-all-read" onclick="markAllAsRead()">
+                모두 읽음 처리
+              </button>
+            </div>
           </div>
         </div>
         <div id="user-profile" onclick="toggleUserMenu()">
@@ -108,12 +116,11 @@
         </div>
       </div>
     </div>
-    
-    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
   </nav>
 
   <div id="main-container">
     <main id="content-area">
+      <!-- 대시보드 (홈) - 수정된 부분만 -->
       <div id="homeContent">
         <div id="content-header-home">
           <h1 id="title-home">대시보드</h1>
@@ -122,6 +129,7 @@
           </div>
         </div>
         
+        <!-- 웰컴 섹션 -->
         <div class="dashboard-welcome">
           <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
           <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
@@ -145,25 +153,9 @@
           </div>
         </div>
 
-        <div id="statsGrid">
-          <div class="stat-card">
-            <span class="stat-number">0</span>
-            <span class="stat-label">캠퍼스 건물</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number">0</span>
-            <span class="stat-label">재학생 수</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number">0</span>
-            <span class="stat-label">운영 서비스</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number">0</span>
-            <span class="stat-label">오늘 일정</span>
-          </div>
-        </div>
+        <div id="statsGrid"></div>
         
+        <!-- 서비스 섹션 -->
         <div class="services-section">
           <h2 class="services-title">주요 서비스</h2>
           <div class="services-grid">
@@ -212,6 +204,7 @@
         </div>
       </div>
       
+      <!-- SPA 분리 영역들 -->
       <div id="buildingsContent" style="display:none;"></div>
       <div id="communityContent" style="display:none;"></div>
       <div id="lecture-reviewContent" style="display:none;"></div>
@@ -219,12 +212,14 @@
       <div id="timetableContentPane" style="display:none;"></div>
       <div id="shuttleContentPane" style="display:none;"></div>
       <div id="calendarContentPane" style="display:none;"></div>
+      
+      <!-- 새로 추가: 학사일정 페이지 -->
       <div id="academic-calendarContentPane" style="display:none;"></div>
+      
       <div id="profileContentPane" style="display:none;"></div>
       <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
-  
   <script src="./js/index.js" defer></script>
   <script src="./js/settings.js" defer></script>
   <script src="./js/buildings.js" defer></script>
