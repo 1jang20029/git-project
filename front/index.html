@@ -117,13 +117,14 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       padding: 6px;
       min-width: 160px;
-      z-index: 2000;
+      z-index: 9999;
       
       /* 기본적으로 숨김 */
       opacity: 0;
       visibility: hidden;
       transform: translateY(-10px);
       transition: all 0.2s ease;
+      pointer-events: none;
     }
 
     /* PC 버전 - 호버 시 드롭다운 표시 */
@@ -131,6 +132,7 @@
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
+      pointer-events: auto;
     }
 
     /* 클릭 시에도 드롭다운 표시 (모바일용) */
@@ -138,6 +140,7 @@
       opacity: 1 !important;
       visibility: visible !important;
       transform: translateY(0) !important;
+      pointer-events: auto !important;
     }
 
     .dropdown-item {
@@ -149,10 +152,12 @@
       cursor: pointer;
       transition: background 0.2s;
       font-size: 12px;
+      color: #1f2937;
     }
 
     .dropdown-item:hover {
       background: #f3f4f6;
+      color: #1e40af;
     }
 
     /* 오른쪽 컨트롤 영역 */
@@ -602,12 +607,25 @@
         overflow: hidden !important;
         transform: none !important;
         transition: all 0.3s ease !important;
+        pointer-events: none !important;
       }
 
       .nav-item.dropdown-open .dropdown-menu {
         opacity: 1 !important;
         visibility: visible !important;
         max-height: 200px !important;
+        pointer-events: auto !important;
+      }
+
+      /* 모바일에서 드롭다운 아이템 텍스트 색상 */
+      .dropdown-item {
+        color: #1f2937 !important;
+        font-size: 13px !important;
+      }
+
+      .dropdown-item:hover {
+        background: #e5e7eb !important;
+        color: #1e40af !important;
       }
 
       #user-info {
