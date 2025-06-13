@@ -80,6 +80,35 @@ function showStudentServiceDropdown() {
   }
 }
 
+// ─────────── 모바일 메뉴 토글 ───────────
+function toggleMobileMenu() {
+  const mainMenu = document.getElementById('main-menu');
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  
+  if (mainMenu.classList.contains('mobile-open')) {
+    mainMenu.classList.remove('mobile-open');
+    mobileToggle.textContent = '☰';
+  } else {
+    mainMenu.classList.add('mobile-open');
+    mobileToggle.textContent = '✕';
+  }
+}
+
+// ─────────── 학생서비스 드롭다운 토글 ───────────
+function toggleStudentServices(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  const studentServicesItem = document.getElementById('nav-student-services');
+  
+  // 모바일에서만 클릭으로 토글
+  if (window.innerWidth <= 768) {
+    studentServicesItem.classList.toggle('dropdown-open');
+  }
+}
+
 // ─────────── DOMContentLoaded ───────────
 document.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash.slice(1);
@@ -178,7 +207,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     resetAutoLogoutTimer();
+    
+    // 외부 클릭 시 추가 드롭다운 처리
+    const notificationBtn = document.getElementById('notification-btn');
+    const userProfile = document.getElementById('user-profile');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    const userDropdown = document.getElementById('user-dropdown');
+    const studentServices = document.getElementById('nav-student-services');
+    
+    if (!notificationBtn.contains(event.target)) {
+      notificationDropdown.classList.remove('show');
+    }
+    
+    if (!userProfile.contains(event.target)) {
+      userDropdown.classList.remove('show');
+    }
+    
+    // 모바일에서 학생서비스 드롭다운 외부 클릭 시 닫기
+    if (window.innerWidth <= 768 && !studentServices.contains(event.target)) {
+      studentServices.classList.remove('dropdown-open');
+    }
   });
+
+  // 페이지 로드 시 홈 메뉴 활성화
+  const homeMenu = document.getElementById('nav-home');
+  if (homeMenu) {
+    homeMenu.classList.add('active');
+  }
 });
 
 // ─────────── 네트워크 상태 감지 ───────────
@@ -379,6 +434,30 @@ function showContent(type) {
     setTimeout(() => {
       if (naverMap.refresh) naverMap.refresh();
     }, 100);
+  }
+
+  // 모든 드롭다운 닫기
+  document.getElementById('user-dropdown').classList.remove('show');
+  document.getElementById('notification-dropdown').classList.remove('show');
+  
+  // 모바일 메뉴 닫기
+  const mainMenu = document.getElementById('main-menu');
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  if (mainMenu.classList.contains('mobile-open')) {
+    mainMenu.classList.remove('mobile-open');
+    mobileToggle.textContent = '☰';
+  }
+  
+  // 모든 네비게이션 아이템에서 active 클래스 제거
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    item.classList.remove('dropdown-open');
+  });
+  
+  // 클릭된 메뉴 아이템에 active 클래스 추가
+  const clickedItem = document.getElementById(`nav-${type}`);
+  if (clickedItem) {
+    clickedItem.classList.add('active');
   }
 }
 
@@ -1082,13 +1161,17 @@ function formatTimeRemaining(minutes, suffix) {
   }
 }
 
-// ─────────── toggleNotifications: 알림 드롭다운 토글 ───────────
+// ─────────── 알림 토글 ───────────
 function toggleNotifications() {
-  const dd = document.getElementById('notification-dropdown');
-  if (dd && dd.classList.contains('show')) {
-    closeNotificationDropdown();
+  const dropdown = document.getElementById('notification-dropdown');
+  const userDropdown = document.getElementById('user-dropdown');
+  
+  userDropdown.classList.remove('show');
+  
+  if (dropdown.classList.contains('show')) {
+    dropdown.classList.remove('show');
   } else {
-    showNotificationDropdown();
+    dropdown.classList.add('show');
   }
 }
 
@@ -1103,7 +1186,7 @@ function closeNotificationDropdown() {
   if (dd) dd.classList.remove('show');
 }
 
-// ─────────── toggleUserMenu: 사용자 메뉴 토글 ───────────
+// ─────────── 사용자 메뉴 토글 ───────────
 function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   const currentUser = localStorage.getItem('currentLoggedInUser');
@@ -1111,10 +1194,14 @@ function toggleUserMenu() {
     window.location.href = 'pages/user/login.html';
     return;
   }
-  if (dropdown && dropdown.classList.contains('show')) {
-    closeUserDropdown();
+  
+  const notificationDropdown = document.getElementById('notification-dropdown');
+  notificationDropdown.classList.remove('show');
+  
+  if (dropdown.classList.contains('show')) {
+    dropdown.classList.remove('show');
   } else {
-    showUserDropdown();
+    dropdown.classList.add('show');
   }
 }
 
@@ -1422,6 +1509,20 @@ function applyUserShortcuts() {
     console.log(`등록된 단축키 "${matched.name}"(${matched.key}) 가 호출되었으나, 매핑된 기능이 없습니다.`);
   });
 }
+
+// ─────────── 윈도우 리사이즈 이벤트 ───────────
+window.addEventListener('resize', function() {
+  const mainMenu = document.getElementById('main-menu');
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  
+  if (window.innerWidth > 768) {
+    mainMenu.classList.remove('mobile-open');
+    mobileToggle.textContent = '☰';
+    
+    // 학생서비스 드롭다운도 닫기
+    document.getElementById('nav-student-services').classList.remove('dropdown-open');
+  }
+});
 
 // ─────────── storage 이벤트: 로그인/프로필/테마 갱신 ───────────
 window.addEventListener('storage', event => {
