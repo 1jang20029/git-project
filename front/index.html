@@ -7,18 +7,6 @@
 
   <!-- 네이버 지도 API -->
   <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
-  <link rel="stylesheet" href="./css/index.css" />
-  <link rel="stylesheet" href="./css/settings.css" />
-  <link rel="stylesheet" href="./css/academic-calendar.css" />
-  <link rel="stylesheet" href="./css/account-edit.css" />
-  <link rel="stylesheet" href="./css/community.css" />
-  <link rel="stylesheet" href="./css/find-id-pw.css" />
-  <link rel="stylesheet" href="./css/lecture-review.css" />
-  <link rel="stylesheet" href="./css/login.css" />
-  <link rel="stylesheet" href="./css/notices.css" />
-  <link rel="stylesheet" href="./css/register.css" />
-  <link rel="stylesheet" href="./css/shuttle.css" />
-  <link rel="stylesheet" href="./css/timetable.css" />
 
   <style>
     * {
@@ -107,43 +95,47 @@
       min-width: 0;
     }
 
-    /* 드롭다운 메뉴 */
+    /* 드롭다운 메뉴 - 완전히 새로 작성 */
     .dropdown-menu {
       position: absolute;
       top: 100%;
       left: 0;
+      right: 0;
       background: white;
       border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      padding: 6px;
-      display: none;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      padding: 8px;
       min-width: 160px;
-      z-index: 1001;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
     }
 
-    /* PC 버전에서 호버 시 드롭다운 표시 */
-    .nav-item:hover .dropdown-menu {
-      display: block;
-    }
-
-    /* 클릭 시에도 드롭다운 표시 */
-    .nav-item.dropdown-open .dropdown-menu {
-      display: block;
+    /* PC 버전 - 호버와 클릭 모두 지원 */
+    .nav-item:hover .dropdown-menu,
+    .nav-item.show-dropdown .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
 
     .dropdown-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 10px;
+      gap: 8px;
+      padding: 10px 12px;
       border-radius: 6px;
       cursor: pointer;
       transition: background 0.2s;
-      font-size: 12px;
+      font-size: 13px;
+      color: #374151;
     }
 
     .dropdown-item:hover {
       background: #f3f4f6;
+      color: #1e40af;
     }
 
     /* 오른쪽 컨트롤 영역 */
@@ -536,7 +528,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        flex-direction: row-reverse; /* 순서 뒤바꿈: 프로필 - 알림 */
+        flex-direction: row-reverse;
       }
 
       /* 햄버거 메뉴 - 사용자 메뉴 바로 옆 */
@@ -575,21 +567,28 @@
         position: relative;
       }
 
-      /* 모바일에서 드롭다운 위치 조정 */
+      /* 모바일에서 드롭다운 완전히 다시 설정 */
       .dropdown-menu {
-        position: static;
-        display: none;
-        background: #f8f9fa;
-        border-radius: 6px;
-        margin-top: 6px;
-        padding: 8px;
-        box-shadow: none;
-        border: 1px solid #e9ecef;
-        z-index: 1600;
+        position: static !important;
+        background: #f8f9fa !important;
+        border-radius: 6px !important;
+        margin-top: 8px !important;
+        padding: 8px !important;
+        box-shadow: none !important;
+        border: 1px solid #e9ecef !important;
+        z-index: 1600 !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        transform: none !important;
+        transition: all 0.3s ease !important;
       }
 
-      .nav-item.dropdown-open .dropdown-menu {
-        display: block;
+      .nav-item.show-dropdown .dropdown-menu {
+        opacity: 1 !important;
+        visibility: visible !important;
+        max-height: 200px !important;
       }
 
       #user-info {
@@ -650,8 +649,6 @@
       #nav-brand span {
         display: none;
       }
-
-      /* 검색바는 이미 숨겨짐 */
 
       #statsGrid {
         grid-template-columns: repeat(2, 1fr);
@@ -729,7 +726,7 @@
         <span class="nav-icon" title="공지사항">📢</span>
         <span class="nav-text">공지사항</span>
       </li>
-      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices()">
+      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices(event)">
         <span class="nav-icon" title="학생서비스">🎓</span>
         <span class="nav-text">학생서비스</span>
         <ul class="dropdown-menu">
@@ -906,20 +903,6 @@
       <div id="settingsContent" style="display:none;"></div>
     </main>
   </div>
-  
-  <script src="./js/index.js" defer></script>
-  <script src="./js/settings.js" defer></script>
-  <script src="./js/buildings.js" defer></script>
-  <script src="./js/academic-calendar.js" defer></script>
-  <script src="./js/account-edit.js" defer></script>
-  <script src="./js/community.js" defer></script>
-  <script src="./js/find-id-pw.js" defer></script>
-  <script src="./js/lecture-review.js" defer></script>
-  <script src="./js/login.js" defer></script>
-  <script src="./js/notices.js" defer></script>
-  <script src="./js/register.js" defer></script>
-  <script src="./js/shuttle.js" defer></script>
-  <script src="./js/timetable.js" defer></script>
 
   <script>
     function toggleMobileMenu() {
@@ -977,7 +960,7 @@
       // 모든 네비게이션 아이템에서 active 클래스 제거
       document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
-        item.classList.remove('dropdown-open');
+        item.classList.remove('show-dropdown');
       });
       
       // 클릭된 메뉴 아이템에 active 클래스 추가
@@ -987,12 +970,24 @@
       }
     }
 
-    // 학생서비스 드롭다운 토글 (PC와 모바일 모두)
-    function toggleStudentServices() {
+    // 학생서비스 드롭다운 토글 - 완전히 새로 작성
+    function toggleStudentServices(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
       const studentServicesItem = document.getElementById('nav-student-services');
       
-      // 모든 화면 크기에서 클릭 시 토글
-      studentServicesItem.classList.toggle('dropdown-open');
+      // 다른 모든 드롭다운 닫기
+      document.querySelectorAll('.nav-item').forEach(item => {
+        if (item !== studentServicesItem) {
+          item.classList.remove('show-dropdown');
+        }
+      });
+      
+      // 학생서비스 드롭다운 토글
+      studentServicesItem.classList.toggle('show-dropdown');
+      
+      console.log('학생서비스 드롭다운 토글:', studentServicesItem.classList.contains('show-dropdown'));
     }
 
     function handleLogout() {
@@ -1002,33 +997,47 @@
 
     function openTimetablePage() {
       console.log('시간표 페이지를 엽니다.');
+      // 드롭다운 닫기
+      document.getElementById('nav-student-services').classList.remove('show-dropdown');
     }
 
     function openCalendarPage() {
       console.log('학사일정 페이지를 엽니다.');
+      // 드롭다운 닫기
+      document.getElementById('nav-student-services').classList.remove('show-dropdown');
     }
 
     function openShuttlePage() {
       console.log('셔틀버스 페이지를 엽니다.');
+      // 드롭다운 닫기
+      document.getElementById('nav-student-services').classList.remove('show-dropdown');
     }
 
-    // 외부 클릭 시 드롭다운 닫기
+    // 외부 클릭 시 모든 드롭다운 닫기
     document.addEventListener('click', function(event) {
       const notificationBtn = document.getElementById('notification-btn');
       const userProfile = document.getElementById('user-profile');
       const notificationDropdown = document.getElementById('notification-dropdown');
       const userDropdown = document.getElementById('user-dropdown');
+      const studentServices = document.getElementById('nav-student-services');
       
+      // 알림 드롭다운
       if (!notificationBtn.contains(event.target)) {
         notificationDropdown.classList.remove('show');
       }
       
+      // 사용자 드롭다운
       if (!userProfile.contains(event.target)) {
         userDropdown.classList.remove('show');
       }
+      
+      // 학생서비스 드롭다운
+      if (!studentServices.contains(event.target)) {
+        studentServices.classList.remove('show-dropdown');
+      }
     });
 
-    // 윈도우 리사이즈 시 모바일 메뉴 자동 닫기
+    // 윈도우 리사이즈 시 메뉴 자동 닫기
     window.addEventListener('resize', function() {
       const mainMenu = document.getElementById('main-menu');
       const mobileToggle = document.querySelector('.mobile-menu-toggle');
@@ -1036,6 +1045,11 @@
       if (window.innerWidth > 768) {
         mainMenu.classList.remove('mobile-open');
         mobileToggle.textContent = '☰';
+        
+        // 모바일에서 열린 드롭다운들 닫기
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.classList.remove('show-dropdown');
+        });
       }
     });
 
@@ -1046,6 +1060,8 @@
       if (homeMenu) {
         homeMenu.classList.add('active');
       }
+      
+      console.log('페이지 로드 완료 - 드롭다운 기능 활성화됨');
     });
   </script>
 </body>
