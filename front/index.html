@@ -192,13 +192,11 @@
       text-align: center;
     }
 
-    /* 오른쪽 컨트롤 - 중앙 배치로 변경 */
+    /* 오른쪽 컨트롤 - 우측 끝으로 배치 */
     #nav-controls {
       display: flex;
       align-items: center;
       gap: 16px;
-      flex: 1;
-      justify-content: center;
     }
 
     /* 검색창 제거 */
@@ -750,10 +748,6 @@
         padding: 24px;
       }
       
-      #search-input {
-        width: 250px;
-      }
-      
       .services-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -800,12 +794,12 @@
       #nav-controls {
         order: 2;
         gap: 12px;
+        justify-content: flex-end;
+        flex: 0;
+        margin-left: auto;
       }
 
-      /* 검색바 숨김 */
-      #search-bar {
-        display: none;
-      }
+      /* 검색바 숨김 (이미 전역에서 숨겨짐) */
 
       /* 메인 메뉴를 모바일 스타일로 변경 */
       #main-menu {
@@ -1040,18 +1034,15 @@
     }
 
     body.light-mode #search-input {
-      background: rgba(240, 240, 240, 0.8);
-      color: #1f2937;
-      border: 1px solid rgba(148, 163, 184, 0.2);
+      display: none;
     }
 
     body.light-mode #search-input:focus {
-      background: rgba(240, 240, 240, 1);
-      color: #1f2937;
+      display: none;
     }
 
     body.light-mode #search-icon {
-      color: #6b7280;
+      display: none;
     }
 
     body.light-mode #notification-btn {
@@ -1307,10 +1298,6 @@
     </ul>
     
     <div id="nav-controls">
-      <div id="search-bar">
-        <span id="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="건물, 교수님, 강의실 검색..." />
-      </div>
       <div id="user-menu">
         <div id="notification-btn" onclick="toggleNotifications()">
           🔔
