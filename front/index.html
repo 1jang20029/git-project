@@ -58,7 +58,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 32px;
+      padding: 0 48px;
     }
 
     /* 로고 + 타이틀 */
@@ -196,7 +196,9 @@
     #nav-controls {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
+      margin-left: auto;
+      padding-left: 24px;
     }
 
     /* 검색창 제거 */
@@ -741,11 +743,16 @@
     /* 태블릿 (1024px 이하) */
     @media (max-width: 1024px) {
       #top-nav {
-        padding: 0 24px;
+        padding: 0 32px;
       }
       
       #main-container {
         padding: 24px;
+      }
+      
+      #nav-controls {
+        gap: 16px;
+        padding-left: 16px;
       }
       
       .services-grid {
@@ -793,10 +800,11 @@
       /* 사용자 컨트롤 순서 */
       #nav-controls {
         order: 2;
-        gap: 12px;
+        gap: 16px;
         justify-content: flex-end;
         flex: 0;
         margin-left: auto;
+        padding-left: 0;
       }
 
       /* 검색바 숨김 (이미 전역에서 숨겨짐) */
