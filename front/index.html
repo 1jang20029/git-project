@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>연성대학교 스마트 캠퍼스</title>
+
+  <!-- 네이버 지도 API -->
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=5qggqdvx3j&submodules=direction" defer></script>
+  <link rel="stylesheet" href="./css/index.css" />
+  <link rel="stylesheet" href="./css/settings.css" />
+  <link rel="stylesheet" href="./css/academic-calendar.css" />
+  <link rel="stylesheet" href="./css/account-edit.css" />
+  <link rel="stylesheet" href="./css/community.css" />
+  <link rel="stylesheet" href="./css/find-id-pw.css" />
+  <link rel="stylesheet" href="./css/lecture-review.css" />
+  <link rel="stylesheet" href="./css/login.css" />
+  <link rel="stylesheet" href="./css/notices.css" />
+  <link rel="stylesheet" href="./css/register.css" />
+  <link rel="stylesheet" href="./css/shuttle.css" />
+  <link rel="stylesheet" href="./css/timetable.css" />
+
+  <style>
+    /* =============================================================================
+   반응형 스타일 (기본 스타일 + 미디어 쿼리)
+   ============================================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0a0e27;
+  color: #ffffff;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ==================================================
+   상단 네비게이션 바 - 반응형
+   ================================================== */
+#top-nav {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+}
+
+/* 로고 + 타이틀 */
+#nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  z-index: 1001;
+}
+
+/* 햄버거 메뉴 버튼 (기본 숨김) */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1002;
+  width: 44px;
+  height: 44px;
+  /* display: flex;  제거했습니다 */
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-toggle:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* 메인 메뉴 */
+#main-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 16px;
+  position: static;
+  background: transparent;
+  flex-direction: row;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+#main-menu .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #94a3b8;
+  font-weight: 500;
+  background: transparent;
+  position: relative;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+#main-menu .nav-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+#main-menu .nav-item.active {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+#main-menu .nav-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 학생서비스 드롭다운 */
+#nav-student-services .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #2d3748;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 12px;
+  min-width: 200px;
+  z-index: 9999;
+  display: none;
+  border: none;
+}
+
+#nav-student-services:hover .dropdown-menu {
+  display: block;
+}
+
+#nav-student-services .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: white;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+#nav-student-services .dropdown-item:last-child {
+  margin-bottom: 0;
+}
+
+#nav-student-services .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #60a5fa;
+  transform: translateX(4px);
+}
+
+#nav-student-services .dropdown-item .nav-icon {
+  font-size: 18px;
+  width: 20px;
+  text-align: center;
+}
+
+/* 오른쪽 컨트롤 - 우측 끝으로 배치 */
+#nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
+  padding-left: 24px;
+}
+
+/* 검색창 제거 */
+#search-bar {
+  display: none;
+}
+
+/* 사용자 메뉴 */
+#user-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+#notification-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#notification-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+#notification-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  display: none;
+}
+
+#user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 44px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#user-profile:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+#user-avatar {
+  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+#user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+#user-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #f1f5f9;
+}
+
+#user-role {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* 드롭다운들 */
+#notification-dropdown,
+#user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 200px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 1100;
+  display: none;
+  margin-top: 8px;
+}
+
+#user-dropdown.show,
+#notification-dropdown.show {
+  display: block;
+  animation: fadeInDown 0.3s ease-out;
+}
+
+/* 드롭다운 스타일들 */
+#notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+#notification-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+#notification-badge {
+  background: #ef4444;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#dropdown-user-info {
+  padding: 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  margin-bottom: 8px;
+}
+
+#dropdown-user-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+#dropdown-user-role {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+#dropdown-item-profile,
+#dropdown-item-settings,
+#dropdown-item-logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #f1f5f9;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+#dropdown-item-profile:hover,
+#dropdown-item-settings:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+#dropdown-item-logout:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+#dropdown-divider {
+  height: 1px;
+  background: rgba(148, 163, 184, 0.1);
+  margin: 8px 0;
+}
+
+#mark-all-read {
+  background: none;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+#mark-all-read:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* ==================================================
+   메인 컨텐츠 영역
+   ================================================== */
+#main-container {
+  margin-top: 80px;
+  padding: 32px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  min-height: calc(100vh - 80px);
+}
+
+#content-area {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 컨텐츠 헤더 */
+#content-header-home,
+#content-header-buildings,
+#content-header-community,
+#content-header-lecture-review,
+#content-header-notices,
+#content-header-settings {
+  margin-bottom: 32px;
+}
+
+#content-header-home h1,
+#content-header-buildings h1,
+#content-header-community h1,
+#content-header-lecture-review h1,
+#content-header-notices h1,
+#content-header-settings h1 {
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+#breadcrumb-home,
+#breadcrumb-buildings,
+#breadcrumb-community,
+#breadcrumb-lecture-review,
+#breadcrumb-notices,
+#breadcrumb-settings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* 대시보드 웰컴 섹션 */
+.dashboard-welcome {
+  text-align: center;
+  margin-bottom: 48px;
+  padding: 48px 32px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-badge {
+  display: inline-block;
+  background: #6366f1;
+  color: white;
+  padding: 8px 24px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.welcome-title {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f1f5f9, #3b82f6, #8b5cf6);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.welcome-subtitle {
+  font-size: 18px;
+  color: #1f2937;
+  max-width: 700px;
+  margin: 0 auto 32px;
+  line-height: 1.8;
+}
+
+.welcome-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-item .stat-number {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f1f5f9, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-item .stat-text {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* 통계 그리드 */
+#statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.stat-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+.stat-card .stat-number {
+  font-size: 40px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.stat-card .stat-label {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* 서비스 섹션 */
+.services-section {
+  margin-top: 48px;
+}
+
+.services-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #f1f5f9;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.service-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.service-card:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.service-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.service-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.service-description {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.service-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.service-button:hover {
+  background: #1e40af;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* 애니메이션 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeInDown 0.6s ease-out;
+}
+
+/* 공통 버튼 스타일 */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
+}
+
+.btn-outline:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* 빈 상태 메시지 */
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: #94a3b8;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #64748b;
+}
+
+/* 컨텐츠 영역 숨김/표시 */
+#content-area > div {
+  display: none;
+}
+
+#content-area > div:first-child {
+  display: block;
+}
+
+/* ==================================================
+   반응형 미디어 쿼리
+   ================================================== */
+
+/* 태블릿 (1024px 이하) */
+@media (max-width: 1024px) {
+  #top-nav {
+    padding: 0 32px;
+  }
+  
+  #main-container {
+    padding: 24px;
+  }
+  
+  #nav-controls {
+    gap: 16px;
+    padding-left: 16px;
+  }
+  
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  #statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .welcome-title {
+    font-size: 36px;
+  }
+  
+  .welcome-stats {
+    gap: 32px;
+  }
+}
+
+/* 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  #top-nav {
+    height: 56px;
+    padding: 0 12px;
+    justify-content: space-between;
+  }
+  
+  #main-container {
+    margin-top: 56px;
+    padding: 16px;
+  }
+
+  /* 햄버거 메뉴 표시 */
+  .mobile-menu-toggle {
+    display: flex;
+    order: 3;
+    margin-left: 8px;
+    padding: 8px;
+    font-size: 16px;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 로고 순서 */
+  #nav-brand {
+    order: 1;
+    font-size: 12px;
+    gap: 6px;
+    flex: 1;
+    max-width: 60%;
+    overflow: hidden;
+  }
+
+  #nav-brand span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 사용자 컨트롤 순서 */
+  #nav-controls {
+    order: 2;
+    gap: 8px;
+    justify-content: flex-end;
+    flex: 0;
+    margin-left: 8px;
+    padding-left: 0;
+    margin-right: 4px;
+  }
+
+  /* 메인 메뉴를 모바일 스타일로 변경 */
+  #main-menu {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+    flex-direction: column;
+    padding: 16px;
+    gap: 8px;
+    display: none;
+    z-index: 999;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+
+  #main-menu.mobile-open {
+    display: flex;
+  }
+
+  #main-menu .nav-item {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  /* 학생서비스 드롭다운 모바일 스타일 */
+  #nav-student-services .dropdown-menu {
+    position: static;
+    background: #2d3748;
+    border-radius: 8px;
+    margin-top: 8px;
+    box-shadow: none;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    display: none;
+  }
+
+  #nav-student-services.dropdown-open .dropdown-menu {
+    display: block;
+  }
+
+  /* 사용자 정보 텍스트 숨김 */
+  #user-info {
+    display: none;
+  }
+
+  /* 알림 버튼 크기 조정 */
+  #notification-btn {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #user-profile {
+    padding: 8px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #user-avatar {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 웰컴 섹션 */
+  .dashboard-welcome {
+    padding: 32px 16px;
+    margin-bottom: 32px;
+  }
+
+  .welcome-title {
+    font-size: 28px;
+  }
+
+  .welcome-subtitle {
+    font-size: 16px;
+  }
+
+  .welcome-stats {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* 서비스 그리드 */
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .service-card {
+    padding: 24px;
+  }
+
+  /* 통계 그리드 */
+  #statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .stat-card .stat-number {
+    font-size: 32px;
+  }
+
+  /* 헤더 텍스트 크기 */
+  #content-header-home h1,
+  #content-header-buildings h1,
+  #content-header-community h1,
+  #content-header-lecture-review h1,
+  #content-header-notices h1,
+  #content-header-settings h1 {
+    font-size: 24px;
+  }
+
+  .services-title {
+    font-size: 22px;
+  }
+
+  /* 드롭다운 크기 조정 */
+  #notification-dropdown,
+  #user-dropdown {
+    min-width: 280px;
+    max-width: calc(100vw - 32px);
+    left: auto;
+    right: 0;
+  }
+}
+
+/* 작은 모바일 (480px 이하) */
+@media (max-width: 480px) {
+  #top-nav {
+    height: 48px;
+    padding: 0 8px;
+  }
+
+  #main-container {
+    margin-top: 48px;
+    padding: 12px;
+  }
+
+  #main-menu {
+    top: 48px;
+    padding: 12px;
+  }
+
+  #nav-brand {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .mobile-menu-toggle {
+    margin-left: 6px;
+    padding: 8px;
+    font-size: 14px;
+    width: 40px;
+    height: 40px;
+  }
+
+  #nav-controls {
+    margin-right: 2px;
+    gap: 6px;
+  }
+
+  #notification-btn {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  #user-profile {
+    padding: 8px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  #user-avatar {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+  }
+
+  .welcome-title {
+    font-size: 24px;
+  }
+
+  .welcome-subtitle {
+    font-size: 14px;
+  }
+
+  .dashboard-welcome {
+    padding: 24px 12px;
+  }
+
+  .service-card {
+    padding: 20px;
+  }
+
+  .service-icon {
+    font-size: 32px;
+  }
+
+  .service-title {
+    font-size: 16px;
+  }
+
+  .service-description {
+    font-size: 13px;
+  }
+
+  #statsGrid {
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-card .stat-number {
+    font-size: 28px;
+  }
+
+  #notification-dropdown,
+  #user-dropdown {
+    min-width: 260px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .services-title {
+    font-size: 20px;
+  }
+
+  #content-header-home h1,
+  #content-header-buildings h1,
+  #content-header-community h1,
+  #content-header-lecture-review h1,
+  #content-header-notices h1,
+  #content-header-settings h1 {
+    font-size: 20px;
+  }
+}
+
+/* 라이트 모드 */
+body.light-mode {
+  background: #ffffff;
+  color: #000000;
+}
+
+body.light-mode #top-nav {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+body.light-mode #search-input {
+  display: none;
+}
+
+body.light-mode #search-input:focus {
+  display: none;
+}
+
+body.light-mode #search-icon {
+  display: none;
+}
+
+body.light-mode #notification-btn {
+  background: rgba(240, 240, 240, 0.8);
+  color: #374151;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode #notification-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+body.light-mode #user-profile {
+  background: rgba(240, 240, 240, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode #user-profile:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+body.light-mode #user-name {
+  color: #1f2937;
+}
+
+body.light-mode #user-role {
+  color: #6b7280;
+}
+
+body.light-mode #notification-dropdown,
+body.light-mode #user-dropdown {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+body.light-mode #notification-title,
+body.light-mode #dropdown-user-name {
+  color: #1f2937;
+}
+
+body.light-mode #dropdown-user-role {
+  color: #6b7280;
+}
+
+body.light-mode #dropdown-item-profile,
+body.light-mode #dropdown-item-settings,
+body.light-mode #dropdown-item-logout {
+  color: #1f2937;
+}
+
+body.light-mode #main-container {
+  background: #f8fafc;
+  color: #1f2937;
+}
+
+body.light-mode #content-header-home h1,
+body.light-mode #content-header-buildings h1,
+body.light-mode #content-header-community h1,
+body.light-mode #content-header-lecture-review h1,
+body.light-mode #content-header-notices h1,
+body.light-mode #content-header-settings h1 {
+  background: linear-gradient(135deg, #1f2937, #6b7280);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.light-mode #breadcrumb-home,
+body.light-mode #breadcrumb-buildings,
+body.light-mode #breadcrumb-community,
+body.light-mode #breadcrumb-lecture-review,
+body.light-mode #breadcrumb-notices,
+body.light-mode #breadcrumb-settings {
+  color: #6b7280;
+}
+
+body.light-mode .stat-card,
+body.light-mode .service-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .stat-card .stat-label,
+body.light-mode .service-description {
+  color: #6b7280;
+}
+
+body.light-mode .service-title,
+body.light-mode .services-title {
+  color: #1f2937;
+}
+
+body.light-mode .dashboard-welcome {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode .welcome-title {
+  background: linear-gradient(135deg, #1f2937, #3b82f6, #8b5cf6);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.light-mode .welcome-subtitle {
+  color: #6b7280;
+}
+
+body.light-mode .stat-item .stat-text {
+  color: #6b7280;
+}
+
+body.light-mode #main-menu {
+  background: rgba(255, 255, 255, 0.98);
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.light-mode #main-menu .nav-item {
+  color: #374151;
+}
+
+body.light-mode #main-menu .nav-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+body.light-mode #main-menu .nav-item.active {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+body.light-mode .mobile-menu-toggle {
+  color: #374151;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+body.light-mode .mobile-menu-toggle:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* 모바일에서 터치 친화적인 버튼 크기 */
+@media (max-width: 768px) {
+  .nav-item,
+  .dropdown-item,
+  .btn,
+  .service-button {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  #notification-btn,
+  #user-profile {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* 접근성 개선 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 고해상도 디스플레이 대응 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  #nav-brand img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* 가로 모드 모바일 대응 */
+@media (max-height: 500px) and (orientation: landscape) {
+  #top-nav {
+    height: 48px;
+  }
+
+  #main-container {
+    margin-top: 48px;
+    padding: 12px;
+  }
+
+  #main-menu {
+    top: 48px;
+    max-height: calc(100vh - 48px);
+  }
+
+  .dashboard-welcome {
+    padding: 24px 16px;
+  }
+
+  .welcome-title {
+    font-size: 24px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <nav id="top-nav">
+    <div id="nav-brand">
+      <a href="./index.html" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
+        <img src="./img/campus_icon.png" alt="캠퍼스 아이콘"
+            style="width:24px; height:24px; margin-right:8px;" />
+        <span>연성대학교 스마트 캠퍼스</span>
+      </a>
+    </div>
+    
+    <ul id="main-menu">
+      <li class="nav-item active" id="nav-home" onclick="showContent('home')">
+        <span class="nav-icon" title="대시보드">🏠</span>
+        <span>대시보드</span>
+      </li>
+      <li class="nav-item" id="nav-buildings" onclick="showContent('buildings')">
+        <span class="nav-icon" title="건물 &amp; 시설">🏢</span>
+        <span>건물 &amp; 시설</span>
+      </li>
+      <li class="nav-item" id="nav-community" onclick="showContent('community')">
+        <span class="nav-icon" title="커뮤니티">💬</span>
+        <span>커뮤니티</span>
+      </li>
+      <li class="nav-item" id="nav-lecture-review" onclick="showContent('lecture-review')">
+        <span class="nav-icon" title="강의평가">⭐</span>
+        <span>강의평가</span>
+      </li>
+      <li class="nav-item" id="nav-notices" onclick="showContent('notices')">
+        <span class="nav-icon" title="공지사항">📢</span>
+        <span>공지사항</span>
+      </li>
+      <li class="nav-item" id="nav-student-services" onclick="toggleStudentServices(event)">
+        <span class="nav-icon" title="학생서비스">🎓</span>
+        <span>학생서비스</span>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item" onclick="event.stopPropagation(); openTimetablePage();">
+            <span class="nav-icon">📅</span><span>내 시간표</span>
+          </li>
+          <li class="dropdown-item" onclick="event.stopPropagation(); openCalendarPage();">
+            <span class="nav-icon">🗓️</span><span>학사일정</span>
+          </li>
+          <li class="dropdown-item" onclick="event.stopPropagation(); openShuttlePage();">
+            <span class="nav-icon">🚌</span><span>셔틀버스</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    
+    <div id="nav-controls">
+      <div id="user-menu">
+        <div id="notification-btn" onclick="toggleNotifications()">
+          🔔
+          <div id="notification-dot"></div>
+          <div id="notification-dropdown">
+            <div id="notification-header">
+              <div id="notification-title">알림</div>
+              <div id="notification-badge">0</div>
+            </div>
+            <div id="notification-list">새로운 알림이 없습니다</div>
+            <button id="mark-all-read" onclick="markAllAsRead()">
+              모두 읽음 처리
+            </button>
+          </div>
+        </div>
+        <div id="user-profile" onclick="toggleUserMenu()">
+          <div id="user-avatar">👤</div>
+          <div id="user-info">
+            <div id="user-name">게스트</div>
+            <div id="user-role">방문자</div>
+          </div>
+          <div id="user-dropdown">
+            <div id="dropdown-user-info">
+              <div id="dropdown-user-name">게스트</div>
+              <div id="dropdown-user-role">방문자</div>
+            </div>
+            <button id="dropdown-item-profile" onclick="showProfile()">내 계정</button>
+            <button id="dropdown-item-settings" onclick="showContent('settings')">
+              <span class="settings-icon">⚙️</span><span>설정</span>
+            </button>
+            <div id="dropdown-divider"></div>
+            <button id="dropdown-item-logout" onclick="handleLogout()" style="color:#ef4444;">
+              <span class="logout-icon">🚪</span><span>로그아웃</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+  </nav>
+
+  <div id="main-container">
+    <main id="content-area">
+      <div id="homeContent">
+        <div id="content-header-home">
+          <h1 id="title-home">대시보드</h1>
+          <div id="breadcrumb-home">
+            <span>홈</span><span>›</span><span>대시보드</span>
+          </div>
+        </div>
+        
+        <div class="dashboard-welcome">
+          <div class="welcome-badge">✨ 새로운 캠퍼스 경험</div>
+          <h1 class="welcome-title">함께 만드는 스마트한<br>연성대학교 캠퍼스</h1>
+          <p class="welcome-subtitle">
+            🎓 언제 어디서나 편리하게, 🤝 학생들과 함께하며<br>
+            💡 스마트한 대학생활을 시작해보세요
+          </p>
+          <div class="welcome-stats">
+            <div class="stat-item">
+              <span class="stat-number">8,547+</span>
+              <span class="stat-text">활성 사용자</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">24</span>
+              <span class="stat-text">편의 서비스</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">98%</span>
+              <span class="stat-text">만족도</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="statsGrid">
+          <div class="stat-card">
+            <span class="stat-number">0</span>
+            <span class="stat-label">캠퍼스 건물</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">0</span>
+            <span class="stat-label">재학생 수</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">0</span>
+            <span class="stat-label">운영 서비스</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">0</span>
+            <span class="stat-label">오늘 일정</span>
+          </div>
+        </div>
+        
+        <div class="services-section">
+          <h2 class="services-title">주요 서비스</h2>
+          <div class="services-grid">
+            <div class="service-card" onclick="showContent('buildings')">
+              <span class="service-icon">🏢</span>
+              <h3 class="service-title">건물 & 시설</h3>
+              <p class="service-description">캠퍼스 내 모든 건물과 시설의 위치를 쉽게 찾아보세요</p>
+              <a href="#" class="service-button">둘러보기</a>
+            </div>
+            
+            <div class="service-card" onclick="showContent('community')">
+              <span class="service-icon">💬</span>
+              <h3 class="service-title">커뮤니티</h3>
+              <p class="service-description">학생들과 소통하고 정보를 공유하세요</p>
+              <a href="#" class="service-button">참여하기</a>
+            </div>
+            
+            <div class="service-card" onclick="showContent('lecture-review')">
+              <span class="service-icon">⭐</span>
+              <h3 class="service-title">강의평가</h3>
+              <p class="service-description">강의에 대한 솔직한 평가를 확인하세요</p>
+              <a href="#" class="service-button">평가보기</a>
+            </div>
+            
+            <div class="service-card" onclick="openTimetablePage()">
+              <span class="service-icon">📅</span>
+              <h3 class="service-title">내 시간표</h3>
+              <p class="service-description">개인 맞춤형 시간표를 관리하세요</p>
+              <a href="#" class="service-button">관리하기</a>
+            </div>
+            
+            <div class="service-card" onclick="openShuttlePage()">
+              <span class="service-icon">🚌</span>
+              <h3 class="service-title">셔틀버스</h3>
+              <p class="service-description">실시간 셔틀버스 운행 정보를 확인하세요</p>
+              <a href="#" class="service-button">확인하기</a>
+            </div>
+            
+            <div class="service-card" onclick="showContent('notices')">
+              <span class="service-icon">📢</span>
+              <h3 class="service-title">공지사항</h3>
+              <p class="service-description">학교의 최신 소식을 확인하세요</p>
+              <a href="#" class="service-button">보러가기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="buildingsContent" style="display:none;"></div>
+      <div id="communityContent" style="display:none;"></div>
+      <div id="lecture-reviewContent" style="display:none;"></div>
+      <div id="noticesContent" style="display:none;"></div>
+      <div id="timetableContentPane" style="display:none;"></div>
+      <div id="shuttleContentPane" style="display:none;"></div>
+      <div id="calendarContentPane" style="display:none;"></div>
+      <div id="academic-calendarContentPane" style="display:none;"></div>
+      <div id="profileContentPane" style="display:none;"></div>
+      <div id="settingsContent" style="display:none;"></div>
+    </main>
+  </div>
+  
+  <script src="./js/index.js" defer></script>
+  <script src="./js/settings.js" defer></script>
+  <script src="./js/buildings.js" defer></script>
+  <script src="./js/academic-calendar.js" defer></script>
+  <script src="./js/account-edit.js" defer></script>
+  <script src="./js/community.js" defer></script>
+  <script src="./js/find-id-pw.js" defer></script>
+  <script src="./js/lecture-review.js" defer></script>
+  <script src="./js/login.js" defer></script>
+  <script src="./js/notices.js" defer></script>
+  <script src="./js/register.js" defer></script>
+  <script src="./js/shuttle.js" defer></script>
+  <script src="./js/timetable.js" defer></script>
+
+
+</body>
+</html>
