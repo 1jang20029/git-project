@@ -1,4 +1,3 @@
-
 // 디버깅 로그 추가
 function log(message) {
     console.log("[카카오 로그인]", message);
@@ -80,16 +79,15 @@ function loginExistingUser(userId) {
     // 현재 로그인된 사용자로 설정
     safeStorage.setItem('currentLoggedInUser', userId);
     
-    // 위젯 설정 완료 여부 확인
-    const setupCompleted = safeStorage.getItem(`user_${userId}_setup_completed`) === 'true';
-    
-    // 위젯 설정을 완료한 사용자는 바로 메인 페이지로 이동
-    if (setupCompleted) {
-        window.location.replace("index.html");
-    } else {
-        // 위젯 설정을 완료하지 않은 사용자는 위젯 설정 페이지로 이동
-        safeStorage.setItem(`user_${userId}_first_login`, 'false');
-        window.location.replace("widget-settings.html");
+    // 바로 메인 페이지로 이동 (여러 경로 시도)
+    try {
+        window.location.replace("/");
+    } catch (e) {
+        try {
+            window.location.replace("../index.html");
+        } catch (e2) {
+            window.location.replace("./index.html");
+        }
     }
 }
 

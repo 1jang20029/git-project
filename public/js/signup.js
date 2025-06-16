@@ -73,7 +73,12 @@ function setupEventListeners() {
         const input = document.getElementById(id);
         if (input) {
             input.addEventListener('blur', () => validateField(id));
-            input.addEventListener('input', () => clearError(id));
+            input.addEventListener('input', () => {
+                clearError(id);
+                if (id === 'password' || id === 'confirmPassword') {
+                    validateField(id);
+                }
+            });
         }
     });
 }
@@ -328,8 +333,7 @@ function validateForm() {
         if(!validateField(fid)) valid=false;
     });
     // 비밀번호 검증 (소셜이 아닐 때)
-    const socialType = new URLSearchParams(window.location.search).get('social');
-    if(!socialType){
+    if(!new URLSearchParams(window.location.search).get('social')){
         if(!validateField('password')||!validateField('confirmPassword')) valid=false;
     }
     // 학과 검사
@@ -361,10 +365,10 @@ function validateField(id) {
             break;
         case 'password':
             if(!v){ ok=false; msg='비밀번호를 입력해주세요'; }
-            else if(!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/.test(v)){ ok=false; msg='영문, 숫자, 특수문자를 포함한 8자 이상 입력해주세요'; }
+            else if(!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/.test(v)){ ok=false; msg='영문·숫자·특수문자 포함 8자 이상 입력해주세요'; }
             break;
         case 'confirmPassword':
-            const pw = document.getElementById('password')?.value;
+            const pw = document.getElementById('password')?.value.trim();
             if(!v){ ok=false; msg='비밀번호 확인을 입력해주세요'; }
             else if(v!==pw){ ok=false; msg='비밀번호가 일치하지 않습니다'; }
             break;
@@ -418,7 +422,7 @@ function collectFormData() {
         name: document.getElementById('name').value.trim(),
         department: document.getElementById('selectedDepartment').value||document.getElementById('departmentInput').value.trim(),
         phone: document.getElementById('phone').value.trim(),
-        email: document.getElementById('email')?.value.trim()||'',
+        email: document.getElementById('verificationEmail')?.value.trim()||'',
         role, socialType,
         registrationDate: new Date().toISOString()
     };
@@ -500,7 +504,7 @@ if(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1
         console.log('❌ 발급된 인증 코드가 없습니다.');
         return null;
     };
-    window.quickVerify = ()=>{
+    window.quickVerify = ()=>{ 
         if(!emailVerificationData.code){ console.log('❌ 인증 코드가 없습니다.'); return false; }
         const ci = document.getElementById('verificationCode');
         ci.value = emailVerificationData.code;

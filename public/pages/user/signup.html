@@ -120,6 +120,24 @@
                 </div>
 
                 <div class="form-grid">
+                    <!-- 비밀번호 -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">비밀번호 <span class="required">*</span></label>
+                        <input type="password" id="password" class="form-input"
+                            placeholder="영문·숫자·특수문자 포함 8자 이상 입력하세요">
+                        <div id="password-error" class="error-message"></div>
+                    </div>
+
+                    <!-- 비밀번호 확인 -->
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">비밀번호 확인 <span class="required">*</span></label>
+                        <input type="password" id="confirmPassword" class="form-input"
+                            placeholder="비밀번호를 다시 입력하세요">
+                        <div id="confirmPassword-error" class="error-message"></div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">학과/부서</label>
                         <div class="department-container">
