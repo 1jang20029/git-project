@@ -84,9 +84,9 @@ function loginExistingUser(userId) {
         window.location.replace("/");
     } catch (e) {
         try {
-            window.location.replace("../index.html");
+            window.location.replace("/");
         } catch (e2) {
-            window.location.replace("./index.html");
+            window.location.replace("/");
         }
     }
 }
